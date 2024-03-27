@@ -31,7 +31,6 @@
 #include	<QMutex>
 #include	"dab-config.h"
 
-
 class	RadioInterface;
 class	ensembleDescriptor;
 class	dabConfig;
@@ -47,20 +46,17 @@ public:
 	void		connect_channel		();
 	void		disconnect_channel	();
 	bool		syncReached		();
+
 	void		data_for_audioservice	(const QString &, audiodata &);
 	void		data_for_packetservice	(const QString &,
 	                                          packetdata *, int16_t);
-	int		get_subCh_id		(const QString &, uint32_t);
 	int		get_nrComps		(uint32_t);
-	int		get_SCIds		(const QString &);
 	std::vector<serviceId>	get_services	(int);
 
 	QString		find_service		(uint32_t, int);
 	void		get_parameters		(const QString &,
 	                                           uint32_t *, int *);
         uint8_t		get_ecc			();
-	uint16_t	get_countryName 	();
-	uint8_t		get_countryId		();
 	int32_t		get_ensembleId		();
 	QString		get_ensembleName	();
 	void		get_channelInfo		(channel_data *, int);
@@ -198,7 +194,7 @@ private:
 	QString		audioData		(int index);
 	QString		packetData		(int index);
 signals:
-	void		add_to_ensemble		(const QString &, int);
+	void		add_to_ensemble		(const QString &, int, int);
 	void		name_of_ensemble	(int, const QString &);
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);

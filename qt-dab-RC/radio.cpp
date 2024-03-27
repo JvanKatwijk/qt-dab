@@ -366,8 +366,8 @@ QString h;
 	   configHandler_p	-> connect_streamTable	();
 	}
 	else {
-	   delete configHandler_p;
-	   configHandler_p = new audioPlayer ();
+	   delete soundOut_p;
+	   soundOut_p = new audioPlayer ();
 	}
 	   
 #endif
@@ -648,12 +648,8 @@ void	RadioInterface::no_signal_found () {
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::add_to_ensemble (const QString &serviceName,
-	                                             int32_t SId) {
+	                                           int32_t SId, int  subChId) {
 	if (!running. load())
-	   return;
-
-	int subChId = my_ofdmHandler -> get_subCh_id (serviceName, SId);
-	if (subChId < 0)
 	   return;
 
 	serviceId ed;
@@ -990,7 +986,7 @@ uint8_t localBuffer [length + 8];
 	   return;
 	}
 #ifdef	DATA_STREAMER
-	fprintf (stderr, "%d\n", length);
+//	fprintf (stderr, "%d\n", length);
 	dataBuffer. getDataFromBuffer (&localBuffer [8], length);
 	localBuffer [0] = 0xFF;
 	localBuffer [1] = 0x00;
@@ -1062,7 +1058,7 @@ void	RadioInterface::changeinConfiguration () {
 //	The service is gone, it may be the subservice of another one
 	   s. SCIds = 0;
 	   s. serviceName =
-	               my_ofdmHandler -> find_service (s. SId, s. SCIds);
+	               my_ofdmHandler -> find_service (s. SId, 0);
 	   if (s. serviceName != "") {
 	      startService (s);
 	   }
@@ -1078,10 +1074,10 @@ void	RadioInterface::changeinConfiguration () {
 	                        (channel. backgroundServices. begin () + i);
 	   }
 	   else {	// (re)start the service
-	      if (my_ofdmHandler -> is_audioservice (ss)) {
-	         audiodata ad;
+	      audiodata ad;
+	      my_ofdmHandler -> data_for_audioservice (ss, ad);
+	      if (ad. defined) {
 	         FILE *f = channel. backgroundServices. at (i). fd;
-	         my_ofdmHandler -> data_for_audioservice (ss, ad);
 	         my_ofdmHandler -> 
 	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId  = ad. subchId;
@@ -1093,7 +1089,6 @@ void	RadioInterface::changeinConfiguration () {
 	                   set_dataChannel (pd, &dataBuffer, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId     = pd. subchId;
 	      }
-
 	   }
 	}
 }
@@ -2055,19 +2050,20 @@ QString serviceName	= s. serviceName;
 	      streamerOut_p -> addRds (std::string (serviceName. toUtf8 (). data ()));
 #endif
 	}
-	else
-	if (my_ofdmHandler -> is_packetservice (serviceName)) {
+	else {
 	   packetdata pd;
 	   my_ofdmHandler -> data_for_packetservice (serviceName, &pd, 0);
-	   channel. currentService. valid	= true;
-	   channel. currentService. is_audio	= false;
-	   channel. currentService. subChId	= pd. subchId;
-	   startPacketservice (serviceName);
-	}
-	else {
-	   QMessageBox::warning (this, tr ("Warning"),
- 	                         tr ("insufficient data for this program\n"));
-	   dabSettings_p	-> setValue (PRESET_NAME, "");
+	   if (pd. defined) {
+	      channel. currentService. valid	= true;
+	      channel. currentService. is_audio	= false;
+	      channel. currentService. subChId	= pd. subchId;
+	      startPacketservice (serviceName);
+	   }
+	   else {
+	      QMessageBox::warning (this, tr ("Warning"),
+ 	                           tr ("insufficient data for this program\n"));
+	      dabSettings_p	-> setValue (PRESET_NAME, "");
+	   }
 	}
 }
 //
@@ -2117,6 +2113,23 @@ packetdata pd;
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
 	   return;
+	}
+
+	int nrComps	= 
+	     my_ofdmHandler -> get_nrComps (channel. currentService. SId);
+	if (nrComps > 1)
+	   fprintf (stderr,  "%s has %d components\b",
+	                     channel. currentService. serviceName. toLatin1 (). data (), nrComps);
+	for (int i = 1; i < nrComps; i ++) {
+	   packetdata lpd;
+	   my_ofdmHandler -> data_for_packetservice (pd. serviceName, &lpd, i);
+	   if (lpd. defined) {
+	      my_ofdmHandler -> set_dataChannel (lpd, &dataBuffer, FORE_GROUND);
+	      fprintf (stderr, "adding %s (%d) as subservice\n",
+	                            lpd. serviceName. toUtf8 (). data (),
+	                            lpd. subchId);
+	      break;
+	   }
 	}
 
 	switch (pd. DSCTy) {

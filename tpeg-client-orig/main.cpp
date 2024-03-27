@@ -35,13 +35,8 @@ int	main (int argc, char **argv) {
 Client	*myClient;
 
 	QApplication a (argc, argv);
-	try {
-	   myClient 	= new Client ();
-	   myClient	-> show ();
-	}  catch (...) {
-	   fprintf (stderr, "Initing client failed\n");
-	   exit (1);
-	}
+	myClient 	= new Client ();
+	myClient	-> show ();
 	a. exec ();
 /*
  *	done:

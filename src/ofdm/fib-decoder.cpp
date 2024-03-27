@@ -40,8 +40,6 @@
 	myRadioInterface	= mr;
 	memset (dateTime, 0, sizeof (dateTime));
 
-//	connect (this, SIGNAL (addtoEnsemble (const QString &, int)),
-//	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
 	connect (this, SIGNAL (name_of_ensemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (name_of_ensemble (int, const QString &)));
@@ -68,14 +66,11 @@
 	mjd		= 0;
 }
 	
-	fibDecoder::~fibDecoder() {
+	fibDecoder::~fibDecoder () {
 	delete	nextConfig;
 	delete	currentConfig;
 	delete	ensemble;
 }
-
-//static
-//uint8_t bits [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 
 //	FIB's are segments of 256 bits. When here, we already
 //	passed the crc and we start unpacking into FIGs
@@ -160,12 +155,12 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 9:              // country, LTO & international table (8.1.3.2)
-              FIG0Extension9 (d);
-              break;
+	      FIG0Extension9 (d);
+	      break;
 
-           case 10:             // date and time (8.1.3.1)
-              FIG0Extension10 (d);
-              break;
+	   case 10:             // date and time (8.1.3.1)
+	      FIG0Extension10 (d);
+	      break;
 
 	   case 11:		// obsolete
 	      break;
@@ -192,12 +187,12 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 18:             // announcement support (8.1.6.1)
-              FIG0Extension18 (d);
-              break;
+	      FIG0Extension18 (d);
+	      break;
 
-           case 19:             // announcement switching (8.1.6.2)
-              FIG0Extension19 (d);
-              break;
+	   case 19:             // announcement switching (8.1.6.2)
+	      FIG0Extension19 (d);
+	      break;
 
 	   case 20:		// service component information (8.1.4)
 	      break;		// to be implemented
@@ -233,7 +228,6 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 
 //	Ensemble information, 6.4.1
 //	FIG0/0 indicated a change in channel organization
-//	we are not equipped for that, so we just ignore it for the moment
 //	The info is MCI
 void	fibDecoder::FIG0Extension0 (uint8_t *d) {
 uint16_t        EId;
@@ -481,7 +475,7 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	if (serviceCompIndex == -1)
 	   return used;
 
-//	We want to have the subchannel OK
+//	We want to have the subchannel filled in already
 	if (!localBase -> subChannels [SubChId]. inUse)
 	   return used;
 //
@@ -505,7 +499,7 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 
 	if (!ensemble -> services [serviceIndex]. is_shown) {
 	   add_to_ensemble (serviceName,
-	                  ensemble -> services [serviceIndex]. SId);
+	                  ensemble -> services [serviceIndex]. SId, SubChId);
 	}
 	ensemble -> services [serviceIndex]. is_shown			= true;
 	localBase -> serviceComps [serviceCompIndex]. is_madePublic	= true;
@@ -603,14 +597,13 @@ int16_t	fibDecoder::HandleFIG0Extension8 (uint8_t	*d,
 int16_t	bitOffset	= used * 8;
 uint32_t	SId	= getLBits (d, bitOffset, PD_bit == 1 ? 32 : 16);
 uint8_t		lsFlag;
-uint16_t	SCIds;
 uint8_t		extensionFlag;
 dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
 	(void)OE_bit;
 	bitOffset	+= PD_bit == 1 ? 32 : 16;
 	extensionFlag   = getBits_1 (d, bitOffset);
-	SCIds		= getBits_4 (d, bitOffset + 4);
+	uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
 
 //	int serviceIndex = find_service (SId);
 	bitOffset	+= 8;
@@ -632,6 +625,7 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   int16_t compIndex = findServiceComponent (localBase, SCId);
 	   if (compIndex != -1) {
 	      localBase -> serviceComps [compIndex]. SCIds = SCIds;
+	      localBase -> serviceComps [compIndex]. SCIds = SCId;
 	   }
 	   bitOffset += 8;
 	}
@@ -850,8 +844,8 @@ dabConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	                 i < myCluster -> services. size (); i ++) {
 	            const QString name =
 	               ensemble  -> services [myCluster -> services [i]]. serviceLabel;
-                     emit stop_announcement (name, subChId);
-                 }
+	             emit stop_announcement (name, subChId);
+	         }
 	      }
 	   }
 	}
@@ -1049,7 +1043,7 @@ int16_t		offset;
 	int charSet		= getBits_4 (d, 8);
 	QString dataName	=
 	               toQStringUsingCharset ((const char *) label,
-                                              (CharacterSet) charSet);
+	                                      (CharacterSet) charSet);
 	for (int i = dataName. length (); i < 16; i ++)
 	   dataName. append (' ');
 	int16_t compIndex =
@@ -1057,8 +1051,12 @@ int16_t		offset;
 	if (compIndex > 0) {
 	   if (find_service (dataName) == -1) {
 	      if (currentConfig -> serviceComps [compIndex]. TMid == 0) {
-	         createService (dataName, "",  SId, SCIds);
-	         add_to_ensemble (dataName, SId);
+	         int subChId = 
+	             currentConfig -> serviceComps [compIndex]. subchannelId;
+	         if (subChId >= 0) {
+	            createService (dataName, "",  SId, SCIds);
+	            add_to_ensemble (dataName, SId, subChId);
+	         }
 	      }
 	   }
 	}
@@ -1181,7 +1179,7 @@ int	serviceIndex	= find_service (SId);
 	   base	-> serviceComps [firstFree]. inUse		= true;
 	   ensemble -> services [serviceIndex]. SCIds		= 0;
 
-	   add_to_ensemble (dataName, SId);
+	   add_to_ensemble (dataName, SId, subChId);
 	}
 	ensemble -> services [serviceIndex]. is_shown	= true;
 }
@@ -1250,8 +1248,7 @@ bool	match (QString s1, QString s2) {
 }
 //
 int	fibDecoder::find_service	(const QString &s) {
-int	i;
-	for (i = 0; i < 64; i ++) {
+	for (int i = 0; i < 64; i ++) {
 	   if (!ensemble -> services [i]. inUse)
 	      continue;
 	   if (match (s, ensemble -> services [i]. serviceLabel))
@@ -1261,8 +1258,7 @@ int	i;
 }
 
 int	fibDecoder::find_service	 (uint32_t SId) {
-int	i;
-	for (i = 0; i < 64; i ++) {
+	for (int i = 0; i < 64; i ++) {
 	   if (!ensemble -> services [i]. inUse)
 	      return -1;
 	   if (ensemble -> services [i]. SId == SId)
@@ -1428,15 +1424,17 @@ void	fibDecoder::connect_channel () {
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	ensemble	-> reset ();
-	connect (this, SIGNAL (add_to_ensemble (const QString &, int)),
-	         myRadioInterface, SLOT (add_to_ensemble (const QString &, int)));
+	connect (this, SIGNAL (add_to_ensemble (const QString &, int, int)),
+	         myRadioInterface, SLOT (add_to_ensemble (const QString &,
+	                                                          int, int)));
 	fibLocker. unlock();
 }
 
 void	fibDecoder::disconnect_channel () {
 	fibLocker. lock ();
-	disconnect (this, SIGNAL (add_to_ensemble (const QString &, int)),
-	         myRadioInterface, SLOT (add_to_ensemble (const QString &, int)));
+	disconnect (this, SIGNAL (add_to_ensemble (const QString &, int, int)),
+	         myRadioInterface, SLOT (add_to_ensemble (const QString &,
+	                                                        int, int)));
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	ensemble	-> reset ();
@@ -1447,36 +1445,11 @@ bool	fibDecoder::syncReached() {
 	return  ensemble -> isSynced;
 }
 
-int	fibDecoder::get_subCh_id	(const QString &s, uint32_t dummy_SId) {
-int serviceIndex	= find_service (s);
-
-	(void)dummy_SId;
-	fibLocker. lock();
-
-	int SId		= ensemble	-> services [serviceIndex]. SId;
-	int SCIds	= ensemble	-> services [serviceIndex]. SCIds;
-
-	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
-	if (compIndex == -1) {
-	   fibLocker. unlock ();
-	   return -1;
-	}
-
-	int subChId = currentConfig -> serviceComps [compIndex]. subchannelId;
-	fibLocker. unlock ();
-	return subChId;
-}
-
 int	fibDecoder::get_nrComps	(uint32_t SId) {
 int serviceIndex	= find_service (SId);
 	if (serviceIndex == -1)
 	   return -1;
 	return ensemble	-> services [serviceIndex]. nrComps;
-}
-
-int	fibDecoder::get_SCIds	(const QString &s) {
-	int serviceIndex	= find_service (s);
-	return ensemble	-> services [serviceIndex]. SCIds;
 }
 
 void	fibDecoder::data_for_audioservice (const QString &s, audiodata &ad) {
@@ -1677,7 +1650,7 @@ int32_t	fibDecoder::get_ensembleId () {
 	   return 0;
 }
 
-QString	fibDecoder::get_ensembleName() {
+QString	fibDecoder::get_ensembleName () {
 	if (ensemble -> namePresent)
 	   return ensemble -> ensembleName;
 	else
@@ -1698,15 +1671,6 @@ uint8_t	fibDecoder::get_ecc	() {
 	   return ensemble -> ecc_byte;
 	return 0;
 }
-
-uint16_t fibDecoder::get_countryName () {
-	return (get_ecc () << 8) | get_countryId ();
-}
-
-uint8_t	fibDecoder::get_countryId () {
-	return ensemble -> countryId;
-}
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1785,31 +1749,6 @@ void	adjustTime (int32_t *dateTime) {
 	}
 }
 
-//QString	mapTime (int32_t *dateTime) {
-//QString result	= QString::number (dateTime [0]);
-//	result. append ("-");
-//	result. append (monthTable [dateTime [1] - 1]);
-//	result. append ("-");
-//
-//	QString day	= QString ("%1").
-//	                      arg (dateTime [2], 2, 10, QChar ('0'));
-//	result. append (day);
-//	result. append (" ");
-//	int hours	= dateTime [3];
-//	if (hours < 0)	hours += 24;
-//	if (hours >= 24) hours -= 24;
-//
-//	dateTime [3] = hours;
-//	QString hoursasString 
-//		= QString ("%1"). arg (hours, 2, 10, QChar ('0'));
-//	result. append (hoursasString);
-//	result. append (":");
-//	QString minutesasString =
-//	              QString ("%1"). arg (dateTime [4], 2, 10, QChar ('0'));
-//	result. append (minutesasString);
-//	return result;
-//}
-//
 //	Date and Time
 //	FIG0/10 are copied from the work of
 //	Michael Hoehn
@@ -1875,8 +1814,8 @@ void	fibDecoder::set_epgData	(uint32_t SId, int32_t theTime,
 	                         const QString &theText,
 	                         const QString &theDescr) {
 	for (int i = 0; i < 64; i ++) {
-           if (ensemble -> services [i]. inUse &&
-               ensemble -> services [i]. SId == SId) {
+	   if (ensemble -> services [i]. inUse &&
+	       ensemble -> services [i]. SId == SId) {
 	   
 	      service *S = &(ensemble -> services [i]);
 	      for (uint16_t j = 0; j < S -> epgData. size (); j ++) {
@@ -2056,27 +1995,23 @@ int dabType	= currentConfig -> serviceComps [index]. ASCTy;
 QString	fibDecoder::languageOf 		(int index) {
 int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
 int language	= currentConfig -> subChannels [subChannel]. language;
-//textMapper theMapper;
 
 	return  getLanguage (language);
-//	return theMapper. get_programm_language_string (language);
 }
 
 QString	fibDecoder::programTypeOf	(int index) {
 int sid = currentConfig -> serviceComps [index]. SId;
 int serviceIndex        = find_service (sid);
 int programType		=  ensemble -> services [serviceIndex]. programType;
-//textMapper theMapper;
 
 	return getProgramType (programType);
-//	return theMapper. get_programm_type_string (programType);
 }
 
 QString	fibDecoder::fmFreqOf		(int index) {
 int sid	= currentConfig -> serviceComps [index]. SId;
 int serviceIndex	= find_service (sid);
 	return ensemble -> services [serviceIndex]. fmFrequency != -1 ?
-              QString::number (ensemble -> services [serviceIndex].fmFrequency):
+	      QString::number (ensemble -> services [serviceIndex].fmFrequency):
 	                                      "    ";
 }
 
@@ -2183,14 +2118,15 @@ QStringList l2 = s2. split (";");
 uint32_t	fibDecoder::julianDate	() {
 	return mjd;
 }
-
+//
+//	required for ETI generation
 void	fibDecoder::get_channelInfo (channel_data *d, int n) {
-        d       -> in_use	= currentConfig -> subChannels [n]. inUse;
-        d       -> id		= currentConfig -> subChannels [n]. SubChId;
-        d       -> start_cu	= currentConfig -> subChannels [n]. startAddr;
-        d       -> protlev	= currentConfig -> subChannels [n]. protLevel; 
-        d       -> size		= currentConfig -> subChannels [n]. Length;
-        d       -> bitrate	= currentConfig -> subChannels [n]. bitRate;
-        d       -> uepFlag	= currentConfig -> subChannels [n]. shortForm;
+	d       -> in_use	= currentConfig -> subChannels [n]. inUse;
+	d       -> id		= currentConfig -> subChannels [n]. SubChId;
+	d       -> start_cu	= currentConfig -> subChannels [n]. startAddr;
+	d       -> protlev	= currentConfig -> subChannels [n]. protLevel; 
+	d       -> size		= currentConfig -> subChannels [n]. Length;
+	d       -> bitrate	= currentConfig -> subChannels [n]. bitRate;
+	d       -> uepFlag	= currentConfig -> subChannels [n]. shortForm;
 }
 

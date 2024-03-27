@@ -40,11 +40,11 @@ public:
 	}
 void	reset		() {
 	inUse		= false;
+	hasName		= false;
+	serviceLabel	= "";
 	SId		= 0;
 	SCIds		= 0;
 	nrComps		= 0;
-	hasName		= false;
-	serviceLabel	= "";
 	shortName	= "";
 	language	= 0;
 	programType	= 0;
@@ -119,6 +119,7 @@ int16_t		SCIds;		// for audio channels
 //      The service component describes the actual service
 //      It really should be a union, the component data for
 //      audio and data are quite different
+
 class	serviceComponentDescriptor {
 public:
 	serviceComponentDescriptor() {
@@ -137,14 +138,14 @@ void	reset		() {
 
 bool		inUse;		// field in use
 int8_t		TMid;		// the transport mode
-uint32_t	SId;
+uint32_t	SId;		// SId of "owner"
+uint16_t	SCId;		// component within the ensemble
 int16_t		SCIds;		// component within service
 int16_t		subchannelId;	// used in both audio and packet
 int16_t		componentNr;    // component
 int16_t		ASCTy;          // used for audio
 int16_t		DSCTy;		// used in packet
 int16_t		PS_flag;	// use for both audio and packet
-uint16_t	SCId;           // Component Id (12 bit, unique)
 uint8_t		CAflag;         // used in packet (or not at all)
 uint8_t		DGflag;         // used for TDC
 int16_t		packetAddress;  // used in packet

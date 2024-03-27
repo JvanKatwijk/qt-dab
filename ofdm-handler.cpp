@@ -505,29 +505,8 @@ std::vector<serviceId>	ofdmHandler::get_services	(int n) {
 	return theFicHandler. get_services (n);
 }
 
-int	ofdmHandler::get_subCh_id	(const QString &s,
-	                                          uint32_t SId) {
-	return theFicHandler. get_subCh_id (s, SId);
-}
-
 int	ofdmHandler::get_nrComps	(uint32_t SId) {
 	return theFicHandler. get_nrComps (SId);
-}
-
-int	ofdmHandler::get_SCIds		(const QString &s) {
-	return theFicHandler. get_SCIds (s);
-}
-
-bool	ofdmHandler::is_audioservice	(const QString &s) {
-audiodata ad;
-	theFicHandler. data_for_audioservice (s, ad);
-	return ad. defined;
-}
-
-bool	ofdmHandler::is_packetservice	(const QString &s) {
-packetdata pd;
-	theFicHandler. data_for_packetservice (s, &pd, 0);
-	return pd. defined;
 }
 
 void	ofdmHandler::data_for_audioservice	(const QString &s,
@@ -543,10 +522,6 @@ void	ofdmHandler::data_for_packetservice	(const QString &s,
 
 uint8_t	ofdmHandler::get_ecc 		() {
 	return theFicHandler. get_ecc();
-}
-
-uint16_t ofdmHandler::get_countryName	() {
-	return theFicHandler. get_countryName ();
 }
 
 int32_t ofdmHandler::get_ensembleId	() {

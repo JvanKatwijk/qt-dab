@@ -1,0 +1,27 @@
+
+Qt-DAB has as one of its configuration options, an option
+to send decoded (but not interpreted{ TPEG data to a TCP port,
+By default, port 8888 is chosen, but a command line parameter in Qt-DAB
+allows another port to be selected (Note that this setting is NOT
+maintained between program invocations).
+
+if - in configurating Qt-DAB - the option 
+CONFIG          += datastreamer
+is uncommented, the relevant modules are included in the Qt-DAB
+program.
+If configured, TPEG data is sent in packages, with a header
+	localBuffer [0] = 0xFF;
+        localBuffer [1] = 0x00;
+        localBuffer [2] = 0xFF;
+        localBuffer [3] = 0x00;
+        localBuffer [4] = (length & 0xFF) >> 8;
+        localBuffer [5] = length & 0xFF;
+        localBuffer [6] = 0x00;
+        localBuffer [7] = frametype == 0 ? 0 : 0xFF;
+through the aforementioned port.
+
+This directory contains the source for a simple client that reads
+the data and dispatches it, the assumption being that proprietary
+encoding or encryptions are added by the user.
+
+

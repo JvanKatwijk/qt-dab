@@ -57,7 +57,6 @@ private:
 	bool		serviceComponentFrameheaderCRC (uint8_t *data,
 	                                                int16_t offset,
 	                                                int16_t maxL);
-	void		to_python	(uint8_t *, int);
 
 	QTcpSocket	streamer;
 	QTimer		*connectionTimer;

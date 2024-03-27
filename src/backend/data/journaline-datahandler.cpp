@@ -53,9 +53,7 @@ int32_t	res;
 	for (uint16_t i = 0; i < len / 8; i ++)
 	   buffer [i] = getBits (data, 8 * i, 8);
 
-	fprintf (stderr, "adding datagroup to journaline\n");
 	res = DAB_DATAGROUP_DECODER_putData (theDecoder, len / 8, buffer);
-	fprintf (stderr, "With res = %d\n", res);
 	if (res < 0)
 	   return;
 }

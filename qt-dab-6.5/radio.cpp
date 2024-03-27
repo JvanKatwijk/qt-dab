@@ -620,12 +620,8 @@ void	RadioInterface::no_signal_found () {
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::add_to_ensemble (const QString &serviceName,
-	                                             int32_t SId) {
+	                                           int32_t SId, int subChId) {
 	if (!running. load())
-	   return;
-
-	int subChId = my_ofdmHandler -> get_subCh_id (serviceName, SId);
-	if (subChId < 0)
 	   return;
 
 	serviceId ed;
@@ -1041,10 +1037,10 @@ void	RadioInterface::changeinConfiguration () {
 	                        (channel. backgroundServices. begin () + i);
 	   }
 	   else {	// (re)start the service
-	      if (my_ofdmHandler -> is_audioservice (ss)) {
-	         audiodata ad;
+	      audiodata ad;
+	      my_ofdmHandler -> data_for_audioservice (ss, ad);
+	      if (ad. defined) {
 	         FILE *f = channel. backgroundServices. at (i). fd;
-	         my_ofdmHandler -> data_for_audioservice (ss, ad);
 	         my_ofdmHandler -> 
 	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId  = ad. subchId;
@@ -2035,19 +2031,20 @@ QString serviceName	= s. serviceName;
 	      streamerOut_p -> addRds (std::string (serviceName. toUtf8 (). data ()));
 #endif
 	}
-	else
-	if (my_ofdmHandler -> is_packetservice (serviceName)) {
+	else {
 	   packetdata pd;
 	   my_ofdmHandler -> data_for_packetservice (serviceName, &pd, 0);
-	   channel. currentService. valid		= true;
-	   channel. currentService. is_audio	= false;
-	   channel. currentService. subChId	= pd. subchId;
-	   startPacketservice (serviceName);
-	}
-	else {
-	   QMessageBox::warning (this, tr ("Warning"),
+	   if (pd. defined) {
+	      channel. currentService. valid		= true;
+	      channel. currentService. is_audio		= false;
+	      channel. currentService. subChId		= pd. subchId;
+	      startPacketservice (serviceName);
+	   }
+	   else {
+	      QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));
-	   dabSettings_p	-> setValue (PRESET_NAME, "");
+	      dabSettings_p	-> setValue (PRESET_NAME, "");
+	   }
 	}
 }
 

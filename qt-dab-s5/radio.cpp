@@ -822,22 +822,18 @@ void	RadioInterface::channel_timeOut() {
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::add_to_ensemble (const QString &serviceName,
-	                                             int32_t SId) {
+	                                             int SId, int32_t subChId) {
 int	serviceOrder;
 	if (!running. load())
 	   return;
 
-	if (my_ofdmHandler -> get_subCh_id (serviceName, SId) < 0)
-	   return;
-	(void)SId;
 	serviceId ed;
 	ed. name	= serviceName;
 	ed. SId		= SId;
 	if (isMember (serviceList, ed))
 	   return;
 
-	ed. subChId	=
-	    my_ofdmHandler -> get_subCh_id (serviceName, SId);
+	ed. subChId	= subChId;
 	serviceOrder	=
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
@@ -1250,11 +1246,12 @@ int	serviceOrder;
 	      channel. backgroundServices. erase
 	                        (channel. backgroundServices. begin () + i);
 	   }
-	   else {	// (re)start the service
-	      if (my_ofdmHandler -> is_audioservice (ss)) {
-	         audiodata ad;
+	   else {	
+	      audiodata ad;
+	      my_ofdmHandler -> data_for_audioservice (ss, ad);
+	      // (re)start the service
+	      if (ad. defined) {
 	         FILE *f = channel. backgroundServices. at (i). fd;
-	         my_ofdmHandler -> data_for_audioservice (ss, ad);
 	         my_ofdmHandler -> 
 	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId  = ad. subchId;
@@ -2733,7 +2730,6 @@ QString serviceName	= s. serviceName;
 	serviceLabel	-> setText (serviceName);
 	dynamicLabel	-> setText ("");
 	audiodata ad;
-	     
 	my_ofdmHandler -> data_for_audioservice (serviceName, ad);
 	if (ad. defined) {
 	   channel. currentService. valid	= true;
@@ -2755,19 +2751,20 @@ QString serviceName	= s. serviceName;
 	      streamerOut -> addRds (std::string (serviceName. toUtf8 (). data ()));
 #endif
 	}
-	else
-	if (my_ofdmHandler -> is_packetservice (serviceName)) {
+	else {
 	   packetdata pd;
 	   my_ofdmHandler -> data_for_packetservice (serviceName, &pd, 0);
-	   channel. currentService. valid		= true;
-	   channel. currentService. is_audio	= false;
-	   channel. currentService. subChId	= pd. subchId;
-	   startPacketservice (serviceName);
-	}
-	else {
-	   QMessageBox::warning (this, tr ("Warning"),
+	   if (pd. defined) {
+	      channel. currentService. valid		= true;
+	      channel. currentService. is_audio	= false;
+	      channel. currentService. subChId	= pd. subchId;
+	      startPacketservice (serviceName);
+	   }
+	   else {
+	      QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));
-	   dabSettings	-> setValue ("presetname", "");
+	      dabSettings	-> setValue ("presetname", "");
+	   }
 	}
 }
 

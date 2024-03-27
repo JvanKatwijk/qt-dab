@@ -72,19 +72,14 @@ public:
 	void		get_parameters		(const QString &,
 	                                         uint32_t *, int *);
 	std::vector<serviceId>	get_services	(int);
-	bool		is_audioservice		(const QString &s);
-	bool		is_packetservice	(const QString &s);
         void		data_for_audioservice	(const QString &,
 	                                             audiodata &);
         void		data_for_packetservice	(const QString &,
 	                                             packetdata *, int16_t);
-	int		get_subCh_id		(const QString &, uint32_t);
 	int		get_nrComps		(uint32_t);
-	int		get_SCIds		(const QString &);
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();
-        QString		get_ensembleName	();
-	uint16_t	get_countryName		();
+	QString		get_ensembleName	();
 	void		set_epgData		(int32_t, int32_t,
 	                                         const QString &,
 	                                         const QString &);

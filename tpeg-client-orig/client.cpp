@@ -32,14 +32,6 @@
 #include	<QHostAddress>
 #include	"client.h"
 //
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "numpy/arrayobject.h"
-#include "python3.11/Python.h"
-#include<iostream>
-
-PyObject *pName, *pModule, *pFunc, *pArgs;
-
-wchar_t	*modulePath	= L"/tmp";
 
 #define swap(a) (((a) << 8) | ((a) >> 8))
 
@@ -95,44 +87,11 @@ int16_t	i;
 	connectionTimer	-> setInterval (1000);
 	connect (connectionTimer, SIGNAL (timeout ()),
 	         this, SLOT (timerTick ()));
-
-	Py_SetProgramName (L"TPEG client");
-        Py_Initialize ();
-        _import_array ();
-//
-//	openlr needs to be loaded explicitly
-        pName = PyUnicode_FromString ("openlr");
-	pModule = PyImport_Import (pName);     // Load the module object
-	if (pModule == nullptr) {
-	   fprintf (stderr, "Cannot lod openlr module]n");
-	   throw (20);
-	}
-	PySys_SetPath (modulePath);
-        pName = PyUnicode_FromString ("myModule");
-	if (pName == nullptr) {
-	   fprintf (stderr, "pName fout\n");
-	   throw (20);
-	} 
-
-	pModule = PyImport_Import (pName);     // Load the module object
-//      PyImport_Import error checking here
-        Py_DECREF (pName);
-        if (!pModule) {
-           fprintf (stderr, "Loading module failed]n");
-	   throw (21);
-        }
-        pFunc = PyObject_GetAttrString (pModule, "PrintArray");
-	if (pFunc == nullptr) {
-	   fprintf (stderr, "Cannot access decoder function\n");
-	   throw (22);
-	}
 }
 //
+
 	Client::~Client	() {
 	connected	= false;
-	Py_DECREF (pModule);
-        Py_DECREF (pFunc);
-        Py_Finalize ();     
 }
 //
 void	Client::wantConnect () {
@@ -208,6 +167,7 @@ int16_t	i;
 int	searchState = SEARCH_HEADER;
 
 void	Client::handle (uint8_t d) {
+int16_t i;
 	if (searchState == SEARCH_HEADER) {
 	   headertester. shift (d);
 	   if (headertester. hasHeader ()) {
@@ -236,7 +196,6 @@ void	Client::handle (uint8_t d) {
 void	Client::terminate	() {
 	if (connected) {
 	   streamer. close ();
-	   connected = false;
 	}
 	accept ();
 }
@@ -251,44 +210,17 @@ void	Client::timerTick () {
 
 void	Client::handleFrameType_0 (uint8_t *dataBuffer, int16_t Length) {
 	fprintf (stderr, "Frametype_0: ");
-	fprintf (stderr, "\nnumber of services %d, Length %d\n",
-	                                     dataBuffer [0], Length);
-	for (int i = 0; i < Length; i ++)
-	   fprintf (stderr, "%d ", dataBuffer [i]);
-	fprintf (stderr, "\n");
-	to_python (dataBuffer, Length);
-}
-
-void	Client::to_python (uint8_t *dataBuffer, int Length) {
-	npy_intp dims[1]{Length};
-	PyObject *py_array;
-
-//	convert dataBuffer to NumPy array
-	PyObject *pArray = PyArray_SimpleNewFromData (
-	       1, dims, NPY_UBYTE, reinterpret_cast<void*> (dataBuffer));
-	if (pArray == nullptr) {
-	   fprintf (stderr, "Dit werkt niet\n");
-	   return;
-	}
-	PyArrayObject *np_arr = reinterpret_cast<PyArrayObject*>(pArray);
-        py_array = PyArray_SimpleNewFromData (1, dims, NPY_BYTE, dataBuffer);
-	pArgs = PyTuple_New (1);
-        PyTuple_SetItem (pArgs, 0, py_array);
-        if (PyCallable_Check (pFunc)) {
-           PyObject_CallObject (pFunc, pArgs);
-        } else {
-           printf ("Function not callable !\n");
-        }
-
-        Py_DECREF (py_array);            // Clean up
+	fprintf (stderr, "\nnumber of services %d\n", dataBuffer [0]);
 }
 
 void	Client::handleFrameType_1 (uint8_t *dataBuffer, int16_t Length) {
-	fprintf (stderr, "frametype 1 %x %x %x %x\n",
+	fprintf (stderr, "type 1 %x %x %x %x\n",
 	         dataBuffer [0],
 	         dataBuffer [1], dataBuffer [2], dataBuffer [3]);
-	to_python (dataBuffer, Length);
 
+	for (int i = 0; i < Length; i ++)
+	   fprintf (stderr, "%x (%c) ", dataBuffer [i], dataBuffer [i]);
+	fprintf (stderr, "\n");
 	if (dataBuffer [3] == 0) {	// encryption 0
 	   int16_t index   = 4;
 	   while (index < Length) {
@@ -311,7 +243,7 @@ void	Client::handleFrameType_1 (uint8_t *dataBuffer, int16_t Length) {
 	                  "sCi = %o, segLen = %d (index = %d, Length = %d)\n",
 	                   sCi, segLen, index, Length);
 	         for (int i = 0; i < Length; i ++)
-	            fprintf (stderr, "%d (%c) ", testVector [i], testVector [i]);
+	            fprintf (stderr, "%d (%c) ", testVector [i]);
 	         fprintf (stderr, "\n");
 	      }
 	      else {
@@ -342,4 +274,5 @@ uint16_t        crc;
            testVector [3 + i] = data [offset + 5 + i];
 	return usCalculCRC (testVector, 3 + size) == crc;
 }
+
 

@@ -60,7 +60,7 @@
 	      break;
 
 	   case 44:
-	      fprintf (stderr, "goinh to install gournaline\n");
+	      fprintf (stderr, "going to install gournaline\n");
 	      my_dataHandler	= new journaline_dataHandler();
 	      break;
 

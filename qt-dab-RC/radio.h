@@ -399,7 +399,8 @@ public slots:
 	void			show_clock_error	(int);
 
 	void			show_Corrector		(int, float);
-	void			add_to_ensemble		(const QString &, int);
+	void			add_to_ensemble		(const QString &,
+	                                                          int, int);
 	void			name_of_ensemble	(int, const QString &);
 	void			nrServices		(int);
 	void			show_frameErrors	(int);

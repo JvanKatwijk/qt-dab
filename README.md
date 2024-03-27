@@ -21,7 +21,7 @@ was the default, the sound interface provides by Qt is rewritten and
 made into the default. A selection will be applied in the
 next program invocation.
 If the Qt-audio interface is selected, a volume slider is shown on
-the mai widget.
+the main widget.
 
 ------------------------------------------------------------------------
 About Qt-DAB-6.5
@@ -56,11 +56,11 @@ As in the previous version, control on muting the audio is delegated
 to the icon of the loadspeaker. The speaker indication tells whether or
 not sound is "on".
 
-Base on user's request, input can be obtained from "spy-servers", i.e.
+Based on user's request, input can be obtained from "spy-servers", i.e.
 remote from over the internet.
 Such a spy server can handle AIRspy devices and RT2832
 based dabsticks. Of course the connection should be able to handle
-data with a reasonable bandwidth. For 16 bit data, i.e. a sample takes 2 x 2 bytes, one needs 10MB/s (slightly  ore actually since the data is transmitted 
+data with a reasonable (read: high) bandwidth. For 16 bit data, i.e. a sample takes 2 x 2 bytes, one needs 10MB/s (slightly  ore actually since the data is transmitted 
 as packages with a header).
 
 Also, the Soapy interface was rewritten and (seems to) work(s) fine.
@@ -93,7 +93,8 @@ Introduction
 
 The current version is 6.5. Versions 5.5 is still available
 and can be built, using the same set of sources as the current one.
-The development version can be found in the "qt-dab-RC" directory.
+A development version, named Qt-BAB-6X,  can be found
+in the "qt-dab-RC" directory.
 
 Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are
 - as usual -available. 
@@ -117,11 +118,11 @@ a view on the correlation of the signal and the TII spectrum can be selected. Fu
   * Possibility of displaying a map with position(s) of received transmitter(s),
   * *Favorites* for easy switching of programs in different ensembles (see section *Favorites*),
   * *Dumping* of the input data of the DAB channel (Warning: produces large raw files!) into `.sdr` files or `.xml` file formats and playing them again later (see section on xml format),
-  * Saving audio as uncompressed ".wav" files, and saving *aac* frames from DAB+ services for processing by e.g. VLC,
+  * Saving audio as uncompressed ".wav" files (48000 two channels), and saving *aac* frames from DAB+ services for processing by e.g. VLC,
   * Saving the ensemble content description: audio and data streams, including almost all technical data into a text file readable by e.g *LibreOfficeCalc*
   * Advanced scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
   * ip output: when configured the ip data - if selected - is sent to a specified ip address (default: 127.0.0.1:8888),
-  * TPEG output: when configured the data is sent to a specified ip address,
+  * TPEG output: when configured the data is sent as datagrams to port 8888;
   * EPG detection and building up a time table,
   * Supports as input device:
    	- SDR DAB sticks (RTL2838U or similar), 
@@ -131,7 +132,7 @@ a view on the correlation of the signal and the TII spectrum can be selected. Fu
 	- limeSDR, 
 	- Adalm Pluto,
 	- **untested** UHD (anyone wants to help testing?)
-	- Soapy, a renewed soapy interface driver is even able to map other samplerates than the required 2048000 (limited to the range 2000000 .. 3000000);
+	- Soapy, a renewed soapy interface driver is even able to map other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000);
 	- input from a spyServer,
 	- ExtIO (experimental, Windows only),
 	- rtl_tcp servers,
@@ -344,6 +345,14 @@ It is strongly advised to use qmake/make for the compilation process,
 the **qt-dab-6.X.pro** file contains (much) more configuration options
 than the **CMakeLists.txt" file does.
 
+Note that the scheme presented below applied to "bullseye" on the RPI,
+i.e. a Linux variant. While for Debian derived distributions (e.g. Ubuntu)
+this scheme probably works more or less directly, for other distributions
+names of the library packahes may be different. Note that in all cases, 
+the development versions are required.
+
+For Windows the easiest approach is to install msys/mingw.
+
 Step 1
 -----------------------------------------------------------------
 
@@ -365,10 +374,12 @@ I load the required libraries as given below:
  *   sudo apt-get install qtbase5-dev libqt5svg5-dev
  *   sudo apt-get install libfdk-aac-dev
 
-If you want to use a physical device - e.g. an SDRplay, or an AIRspy
+If you want to use a physical device - e.g. a DABstick, an SDRplay, or an AIRspy
 you need to install the driver libraries for these devices as well.
+For most common devices repositories of common Linux distributions contain
+a driver library.
 
-for SDRplay devices you should download the - proprietary - driver software
+for SDRplay devices one should download the - proprietary - driver software
 from the SDRplay site. For the AIRspy the bullseye repository provides a
 library.
 
@@ -385,8 +396,8 @@ version is developed on an Fedora box, the soapy library used does not seem comp
 X86_64 based system.
 
 One may choose between 'CONFIG += single' or 'CONFIG += double'. In the latter
-case (the default one, all computations in the "front end" are dome with
-double precision arithmetic.
+case, all computations in the "front end" are done with double precision
+arithmetic.
 
 Note that by default a choice is made for `CONFIG += tiiLib` (see step 4),
 the alternative opyion 'CONFIG+=preCompiled' will **NOT** work since it requires
@@ -401,7 +412,9 @@ run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates 
 Step 4
 -----------------------------------------------------------------
 
-Unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` from the *library* subdirectory (which contains the database data for finding the transmitter's name and location) into the user's home directory.) If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
+Unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` from the *library* subdirectory in the home directory.
+The unpacked file contains a copy of the database for finding the transmitter's name and location.
+If Qt-DAB cannot find the file, decoding input will just function, without showing the names and without "maps" option of course.
 
 :information_source: Note: Building a version on a fresh install of "bullseye" on the RPI gave a version that wouldn't run: The `Qt_PLUGIN_PATH` was not set. Setting it as given below solved - for me - the problem:
 
