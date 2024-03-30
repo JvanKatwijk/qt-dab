@@ -24,7 +24,7 @@
 
 #include	"dab-constants.h"
 #include	<vector>
-#include	<qwt.h>
+#include	"qwt-2.h"
 #include	<qwt_slider.h>
 #include	<qwt_plot.h>
 #include	<qwt_plot_curve.h>

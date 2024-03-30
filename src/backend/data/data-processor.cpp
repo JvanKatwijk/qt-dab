@@ -55,8 +55,11 @@
 	      my_dataHandler	= new virtual_dataHandler();
 	      break;
 
-	   case 5:			
-	      my_dataHandler	= new tdc_dataHandler (mr, dataBuffer, appType);
+	   case 5:
+	      if (appType == 0x44a)
+	         my_dataHandler	= new journaline_dataHandler();
+	      else
+	         my_dataHandler	= new tdc_dataHandler (mr, dataBuffer, appType);
 	      break;
 
 	   case 44:

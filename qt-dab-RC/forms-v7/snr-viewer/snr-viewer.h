@@ -34,7 +34,7 @@
 #include	<atomic>
 #include	<stdio.h>
 #include	"ui_snr-widget.h"
-#include	<qwt.h>
+#include	"qwt-2.h"
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>
@@ -47,7 +47,6 @@
 #include        <qwt_picker_machine.h>
 #include        <qwt_scale_widget.h>
 #include        <QBrush>
-
 
 class	RadioInterface;
 class	snrViewer: public QObject, Ui_snrWidget {
@@ -72,8 +71,8 @@ private:
 	QwtPlotGrid	grid;
 	QwtPlotPicker	*lm_picker;
 	QwtPickerMachine	*lpickerMachine;
-	std::vector<double>	X_axis;
-	std::vector<double>	Y_Buffer;
+	std::vector<floatQwt>	X_axis;
+	std::vector<floatQwt>	Y_Buffer;
 	float		get_db		(float);
 	int16_t		displaySize;
 	QwtPlot		*plotgrid;

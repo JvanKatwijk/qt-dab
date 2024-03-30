@@ -104,72 +104,71 @@ QString	colorString;
 
 void	audioDisplay::createSpectrum  (std::complex<int16_t> *data,
 	                              int amount, int sampleRate) {
-double	X_axis [displaySize];
-double	Y_values [displaySize];
-int16_t	i, j;
+auto X_axis	= dynVec (floatQwt, displaySize);
+auto Y_values	= dynVec (floatQwt, displaySize);
+//floatQwt	X_axis [displaySize];
+//floatQwt	Y_values [displaySize];
 int16_t	averageCount	= 3;
 
 	if (amount > spectrumSize)
 	   amount = spectrumSize;
 	for (int i = 0; i < amount; i ++)
 	   spectrumBuffer [i] = 
-	             std::complex<float> (real (data [i]) / 32768.0f,
+	             Complex (real (data [i]) / 32768.0f,
 	                                  imag (data [i]) / 32768.0);
 
 	for (int i = amount; i < spectrumSize;  i ++)
 	   spectrumBuffer [i] = Complex (0, 0);
 //	and window it
 
-	for (i = 0; i < spectrumSize; i ++)
+	for (int i = 0; i < spectrumSize; i ++)
 	   spectrumBuffer [i] = spectrumBuffer [i] * Window [i];
 
 	fft. fft (spectrumBuffer);
 //
 //	first X axis labels
-	for (i = 0; i < displaySize; i ++)
+	for (int i = 0; i < displaySize; i ++)
 	   X_axis [i] = 
-	          (double)((i) * (double) sampleRate / 2) / displaySize / 1000;
+	          (floatQwt)((i) * (floatQwt) sampleRate / 2) / displaySize / 1000;
 //
 //	and map the spectrumSize values onto displaySize elements
-	for (i = 0; i < displaySize; i ++) {
-	   double f	= 0;
-	   for (j = 0; j < spectrumSize / 2 / displaySize; j ++)
+	for (int i = 0; i < displaySize; i ++) {
+	   floatQwt f	= 0;
+	   for (int j = 0; j < spectrumSize / 2 / displaySize; j ++)
 	      f += abs (spectrumBuffer [i * spectrumSize / 2 / displaySize  + j]);
 
 	   Y_values [i] = f / (spectrumSize / 2 / displaySize);
 	}
 //
 //	average the image a little.
-	for (i = 0; i < displaySize; i ++) {
+	for (int i = 0; i < displaySize; i ++) {
 	   if (std::isnan (Y_values [i]) || std::isinf (Y_values [i]))
 	      continue;
 	   displayBuffer [i] = 
-	          (double)(averageCount - 1) /averageCount * displayBuffer [i] +
+	          (floatQwt)(averageCount - 1) /averageCount * displayBuffer [i] +
 	           1.0f / averageCount * Y_values [i];
 	}
 
 	memcpy (Y_values,
-	        displayBuffer, displaySize * sizeof (double));
+	        displayBuffer, displaySize * sizeof (floatQwt));
 	ViewSpectrum (X_axis, Y_values, 100, 0);
 }
 
-void	audioDisplay::ViewSpectrum (double *X_axis,
-		                       double *Y1_value,
-	                               double amp,
-	                               int32_t marker) {
-uint16_t	i;
+void	audioDisplay::ViewSpectrum (floatQwt *X_axis,
+		                    floatQwt *Y1_value,
+	                            floatQwt amp, int32_t marker) {
 float	amp1	= amp / 100;
 
 	(void)marker;
 	amp		= amp / 50.0 * (-get_db (0));
 	plotGrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
+				         (floatQwt)X_axis [0],
 				         X_axis [displaySize - 1]);
 	plotGrid	-> enableAxis (QwtPlot::xBottom);
 	plotGrid	-> setAxisScale (QwtPlot::yLeft,
 				         get_db (0), get_db (0) + amp1 * 40);
 
-	for (i = 0; i < displaySize; i ++) 
+	for (int i = 0; i < displaySize; i ++) 
 	   Y1_value [i] = get_db (amp1 * Y1_value [i]); 
 
 	spectrumCurve. setBaseline (get_db (0));

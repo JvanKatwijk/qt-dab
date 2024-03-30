@@ -86,8 +86,8 @@ QString	colorString	= "black";
 
 void	nullScope::display	(const Complex *V, int amount) {
 float	max	= 0;
-double X_axis [512];
-double Y_values [512];
+floatQwt X_axis [512];
+floatQwt Y_values [512];
 	(void)amount;
 	for (int i = 0; i < 512; i ++) {
 	   X_axis [i] = 2 * i;
@@ -97,7 +97,7 @@ double Y_values [512];
 	}
 	   
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
+				         (floatQwt)X_axis [0],
 				         X_axis [512 - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,

@@ -1,0 +1,2986 @@
+qt.qpa.qgnomeplatform.theme: The desktop style for QtQuick Controls 2 applications is not available on the system (qqc2-desktop-style). The application may look broken.
+Socket createdI am now accepting connections ...
+Socket createdI am now accepting connections ...
+The devicelist 
+alsa_output.pci-0000_05_00.6.analog-stereo
+pipewire
+default
+hdmi:CARD=Generic,DEV=0
+sysdefault:CARD=Generic_1
+front:CARD=Generic_1,DEV=0
+surround21:CARD=Generic_1,DEV=0
+surround40:CARD=Generic_1,DEV=0
+surround41:CARD=Generic_1,DEV=0
+surround50:CARD=Generic_1,DEV=0
+surround51:CARD=Generic_1,DEV=0
+surround71:CARD=Generic_1,DEV=0
+Length of deviceList 12
+document has 5 topnodes
+Datablocks has 1 siblings
+weer een block
+sampleRate =	2048000
+nrChannels	= 2
+bitsperChannel = 14
+container	= int16
+byteOrder	= LSB
+iqOrder	= IQ
+nrBlocks	= 1 (1)
+>>>   1 608733756 Channel -2036626432 DAB
+nrElements = 608733756
+Got a signal for setting to 1
+Got a signal for setting to 1
+reader task wordt gestart
+channel reset: all services will be stopped
+304366878 samples have to be read, order is IQ
+samples to read 304366878
+Hamburg/Heinrich-Hertz-Turm 404.4 km 65.6 °  (24.0m) (24,000000)
+going to open Dlf Nova        
+we have now 1 backends running
+going to open Dlf Nova        
+we have now 2 backends running
+adding Dlf Nova         (14) as subservice
+
+
+Menu: the Title is Deutschlandfunk - Sport with 15000 objectId
+14002 : DFB-Vizepräsidentin - „Chance auf Frauen-WM 2027 in Deutschland steht bei 50:50“
+14003 : Debatte um deutsche Bewerbung - Die Frage nach dem Vermächtnis Olympischer Spiele
+14004 : Debatte um Eishockey-Investor - Kölner Haie zwischen Moral und finanzieller Abhängigkeit
+14005 : Olympische Spiele - IOC und Russland: Noch viele offene Fragen
+14006 : Skiflug-Weltcup der Frauen - Skispringerin Schmid: "Fühlt sich nochmal cooler an"
+14007 : Nordische Kombination - Bundestrainer ziehen unterschiedliche Bilanz
+14008 : Sieg gegen Österreich - DHB-Team für Olympia qualifiziert: „Ein bisschen souverän“
+14009 : Nach Protesten in Belarus - Oppositionelle Sportler auch im Exil weiter unter Druck
+14010 : Krieg in Gaza - Israels Sport gerät unter Druck
+14011 : Konflikt im Wintersport - DSV-Sportchef Maier: FIS-Präsident Eliasch hat "keine Ahnung"
+14012 : Staatsdoping in der DDR - Wie geht es weiter mit der Entschädigung für Dopingopfer?
+14013 : Doping im Sport - Was die "Enhanced Games" aus medizinischer Sicht gefährlich macht
+14014 : "Hall of Fame" des Sports - Historiker: Deutscher Sport blendet NS-Vergangenheit aus
+14015 : Eintracht Gladau - Fußballmannschaft mit Rechtsextremen darf weiterspielen
+14016 : Kritik an Entwicklungsplan - Landessportbünde bleiben Bewegungsgipfel fern
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+Menu: the Title is Deutschlandfunk - Gesellschaft with 13500 objectId
+12357 : Endometriose - Wie die chronische Erkrankung den Alltag von Frauen erschwert
+12358 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+12359 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+12360 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+12361 : Deutscher Wald - Genutzt, aber auch geschützt?
+12362 : Tagebuch aus Gaza - Ein Blick ins Grauen
+12363 : Schulstraßen - Wie Kinder sicherer durch den Verkehr kommen
+12364 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+12365 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+12366 : Martin Sellner - Rechtsextremist darf nicht mehr einreisen
+12367 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+12368 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+12369 : Sexuelle Belästigung - Niedersachsen will "Catcalling" härter bestrafen
+12370 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+12371 : Organspende - Initiative "Leben Spenden" plädiert für Widerspruchslösung
+
+
+Menu: the Title is Deutschlandfunk - Wirtschaft, Umwelt und Verbraucher with 7500 objectId
+6813 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+6814 : Krankenhausreform - Großer Wurf oder großer Murks?
+6815 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+6816 : E-Auto-Fabrik - Tesla in Grünheide – Segen oder Fluch?
+6817 : Klimaziele 2030 - Kommentar: Der Klimakrise nicht vollends ausgeliefert
+6818 : Umwelt- und Menschenrechte - Wirkt das Lieferkettengesetz?
+6819 : Tarifstreit - Wie Bahn und GDL wieder zusammenfinden könnten
+6820 : Glyphosat - Krebsgefahr vom Acker oder Segen für die Landwirtschaft?
+6821 : Schienenverkehr - GDL und Deutsche Bahn: Eskalation eines Konflikts
+6822 : Kommentar zum Bahnstreik - Weselskys Streik torpediert die Verkehrswende
+6823 : WTO-Konferenz in Abu Dhabi - WTO-Gipfel endet ohne Einigung in wichtigen Fragen
+6824 : Fachkräftemangel - Warum Deutschland Migranten braucht
+6825 : Flüchtlinge aus der Ukraine - Integration mit Hindernissen
+6826 : Containerschifffahrt - Wie Reedereien den Lauf der Weltwirtschaft bestimmen
+6827 : Stress statt Innovation - Warum ein Teil der Mitte Probleme mit dem Wandel hat
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk Kultur - HÃ¶rspiel und Feature with 30000 objectId
+29576 : Aus der Reihe: Feature-Antenne - Die Stimme spricht zum Unbewussten
+29577 : Die Scheune
+29578 : Anorexie - Gefährliche Freundschaften: Im Hungern nicht allein
+29579 : Japanischer Noir-Krimi: Die Kunst des Stehlens - Der Dieb
+29580 : Lob der Lücke - Zwischen-Raum
+29581 : Ein Bauhaus-Konzeptalbum - AUDIO.SPACE.MACHINE
+29582 : Wenn Töchterseelen zerbrechen - Teufelsmütter
+29583 : Nachhaltige Klangkunst mit Alltagsgegenständen - IRL
+29584 : Hörspiel: Machtverhältnisse in der Fürsorgearbeit - Der Assistent
+29585 : Serie übers Erwachsenwerden - Abi 21 (3/3)
+29586 : Hörspiel nach John Alec Baker - Der Wanderfalke
+29587 : Entführt im Auftrag des Vatikans - Die Affäre Finaly
+29588 : Krimi-Hörspiel: Professor van Dusen | Folge 41 - Professor van Dusen trifft Kaiser Wilhelm
+29589 : Eine Bedienungsanleitung - "Solange sie können vorwärtz und abwärtz"
+29590 : Hörspiel über die Verfolgung der Sinti im NS - Keine Namen, niemand
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Seewetter with 15006 objectId
+15321 : Warnungen
+15322 : Seewetterlage
+15323 : Vorhersage
+15324 : Weitere Aussichten
+
+
+Menu: the Title is Deutschlandfunk Kulturnachrichten with 21000 objectId
+20592 : Barbi Marković gewinnt Belletristik-Preis der Leipziger Buchmesse
+20593 : Afghanistan: Geraubte Antiken für den Whirlpool
+20594 : Dedecius-Preis für deutsch-polnische Übersetzer vergeben
+20595 : Leony singt den offiziellen EM-Song
+20596 : Buchmesse zeichnet Kinder- und Jugendbücher aus
+20597 : Gericht genehmigt Kirchenabriss trotz Denkmalschutz
+20598 : Rote Badehose von David Hasselhoff im Museum
+20599 : Kinder lesen nicht weniger als früher
+20600 : Der Bayerischer Kabarettpreis geht an Florian Schroeder
+20601 : Damien Hirst soll Skulpturen falsch datiert haben
+20602 : Leipziger Buchmesse mit Festakt eröffnet
+20603 : Die Leipziger Buchmesse unterstützt den Auftritt der Ukraine
+20604 : Der US-amerikanische Schauspieler M. Emmet Walsh ist tot
+20605 : Bundestags-Abgeordnete stellen Berlinale-Förderung infrage
+20606 : Der International Ibsen Award geht an die Argentinierin Lola Arias
+
+
+Menu: the Title is Deutschlandfunk - Kultur with 10500 objectId
+9340 : „Anzeigenhauptmeister“ - Zwischen Medienhype und Cybermobbing  
+9341 : Pieter Bruegel - Ein Spiegel für den Betrachter?
+9342 : Kommentar zum Gendern in Bayern - Formaljuristisch ist das Verbot ordentlich definiert
+9343 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+9344 : Literatur - Buchverlage wirtschaften weiter im Krisenmodus
+9345 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+9346 : Judenhass - Kurt Münzer: "Jude ans Kreuz!"
+9347 : Christa Wolf - Eine gesamtdeutsche Schriftstellerin
+9348 : Urtyp des Faschisten - Thomas Mann: "Der Zauberberg"
+9349 : Gesangslehrerin Judith Kamphues - "Das gemeinsame Singen zaubert ein Lächeln ins Gesicht"
+9350 : Weimarer Republik - Wie die Kinderliteratur den Faschismus erahnte
+9351 : Mordende Freikorps - Hermynia Zur Mühlen: "Die weiße Pest"
+9352 : Friedensplädoyer - Bruno Frank: "Politische Novelle"
+9353 : Aachener Dom - Frühjahrsputz für den 900 Jahre alten Barbarossaleuchter
+9354 : Zukunft der Kirchen - Frankreichs Bischöfe machen Inventur
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Nova - Film with 33000 objectId
+32875 : Hape Kerkeling zu Gast: "Ich hadere oft mit meinem Erfolg"
+32876 : Auftakt des Kafka-Filmjahres 2024 - "Die Herrlichkeit des Lebens"
+32877 : Das Signal: Neue Netflixserie mit Peri Baumeister und Florian David Fitz
+32878 : Oscar-Kandidat "The Zone of Interest" - Der Horrorsound des Nazi-Regimes
+32879 : Berlinale 24 - Deutsche Filme herausragend
+32880 : Skandalfilm: Warum "Schock" ein gelungenes Kino-Regie-Debüt ist
+32881 : All of Us Strangers: Regisseur Andrew Haigh über Queersein und den neuen Film
+32882 : Karoline Herfurth und Tom Schilling - Intensive Intimität, perfekt einstudiert
+32883 : ARD-Serie "2 Minuten - 24/7": Elternsein nonstop
+32884 : Maximilian Mundt und Anna-Lena Schwing: Neue Stoffe :bitte günstig und schnell
+32885 : Film 15 Jahre - Fortsetzung von Vier Minuten
+32886 : Regisseur Taika Waititi - "Wir haben den tollsten Job der Welt"
+32887 : Lost and Found 2023 - Wo ihr verpasste Serien und Filme findet
+32888 : Film "Girl You Know It's True" - Milli Vanilli: Die Wahrheit übers Lügen
+32889 : "Falling Into Place" von Aylin Tezel: "Ich wusste nicht, wie stark ich bin"
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Deutschlandfunk Nova - Update with 45000 objectId
+43812 : Biometrie, Atomkraft, Bahnbilanz
+43813 : Bodentruppen, Elektroschrott, Tiktok-Politik
+43814 : Terrorverdacht, Bürgergeld, Merkmethoden
+43815 : Opposition in Russland, Linksextremismus, Paketstationen
+43816 : Anti-Putin-Aktivistin, Klimaziele, Haustiere
+43817 : Taurus, Fast Fashion, Tiktok
+43818 : Pro-ukrainische Russen, KI-Gesetz, Klimagerechtigkeit
+43819 : Flugsicherheit, Wehrpflicht, Junge Alternative
+43820 : Ramadan, Oscars, Taurus
+43821 : Frauenrechte, Bahnstreik, Biden
+43822 : Weltraumbatterien, Streik, Make-Up
+43823 : Israel, Streik, Donald Trump
+43824 : RAF-Terroristen, US-Präsidentschaftswahl, Rente
+43825 : Bahnstreik, TikTok, Frühling
+43826 : Putin, Schalttag, NSU
+
+
+Menu: the Title is Deutschlandfunk Kultur - Kultur with 22500 objectId
+21310 : Golden Records der NASA - Was für ein Menschenbild haben Außerirdische?
+21311 : Evke Rulffes: "Die Erfindung der Hausfrau" - Eine schleichende Entmündigung
+21312 : "Herr Puntila" in Berlin - Die Volksbühne auf der Bühne der Volksbühne
+21313 : 100. Todestag von Fernand Khnopff - Die Kunst des Rätselns
+21314 : Prachtband über Vögel - Schönheit, Glanz und Prunk
+21315 : Til Schweigers neuer Film - Geschmacklos und durchgeknallt
+21316 : Prostitutions-Ausstellung "Gesichtslos" - 20 Euro für einmal Sex
+21317 : "TV Total"-Comeback - Retro-Fernsehen als Gefühlsanker für die Ü40
+21318 : Preisgekröntes Hörspiel - türken, feuer
+21319 : Neu im Kino: "Lieber Thomas" - Die unaufhörliche Suche des Thomas Brasch
+21320 : Toxische Männlichkeit und Computerspiele - Panische Angst vor dem Machtverlust
+21321 : Kabarettist Ursus Wehrli - "Ich habe Paul Klee statistisch geordnet"
+21322 : "Hyperland" in der ZDF-Mediathek - Dystopie der Bewertungsgesellschaft
+21323 : Architekturstreit in Potsdam - Turmbau zu Babelsberg
+21324 : Rückgabe kolonialer Raubkunst - Folgt auf die Restitution die Absolution?
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk - Sport with 15000 objectId
+14002 : DFB-Vizepräsidentin - „Chance auf Frauen-WM 2027 in Deutschland steht bei 50:50“
+14003 : Debatte um deutsche Bewerbung - Die Frage nach dem Vermächtnis Olympischer Spiele
+14004 : Debatte um Eishockey-Investor - Kölner Haie zwischen Moral und finanzieller Abhängigkeit
+14005 : Olympische Spiele - IOC und Russland: Noch viele offene Fragen
+14006 : Skiflug-Weltcup der Frauen - Skispringerin Schmid: "Fühlt sich nochmal cooler an"
+14007 : Nordische Kombination - Bundestrainer ziehen unterschiedliche Bilanz
+14008 : Sieg gegen Österreich - DHB-Team für Olympia qualifiziert: „Ein bisschen souverän“
+14009 : Nach Protesten in Belarus - Oppositionelle Sportler auch im Exil weiter unter Druck
+14010 : Krieg in Gaza - Israels Sport gerät unter Druck
+14011 : Konflikt im Wintersport - DSV-Sportchef Maier: FIS-Präsident Eliasch hat "keine Ahnung"
+14012 : Staatsdoping in der DDR - Wie geht es weiter mit der Entschädigung für Dopingopfer?
+14013 : Doping im Sport - Was die "Enhanced Games" aus medizinischer Sicht gefährlich macht
+14014 : "Hall of Fame" des Sports - Historiker: Deutscher Sport blendet NS-Vergangenheit aus
+14015 : Eintracht Gladau - Fußballmannschaft mit Rechtsextremen darf weiterspielen
+14016 : Kritik an Entwicklungsplan - Landessportbünde bleiben Bewegungsgipfel fern
+
+
+Menu: the Title is Deutschlandfunk - Gesellschaft with 13500 objectId
+12357 : Endometriose - Wie die chronische Erkrankung den Alltag von Frauen erschwert
+12358 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+12359 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+12360 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+12361 : Deutscher Wald - Genutzt, aber auch geschützt?
+12362 : Tagebuch aus Gaza - Ein Blick ins Grauen
+12363 : Schulstraßen - Wie Kinder sicherer durch den Verkehr kommen
+12364 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+12365 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+12366 : Martin Sellner - Rechtsextremist darf nicht mehr einreisen
+12367 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+12368 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+12369 : Sexuelle Belästigung - Niedersachsen will "Catcalling" härter bestrafen
+12370 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+12371 : Organspende - Initiative "Leben Spenden" plädiert für Widerspruchslösung
+
+
+Menu: the Title is Deutschlandfunk - Europa with 12000 objectId
+10793 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+10794 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+10795 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+10796 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+10797 : Deutsche Ukrainehilfe - Waffen liefern, Waffenruhe debattieren?
+10798 : Vor dem EU-Gipfel - Scholz: "Ukraine solange unterstützen wie erforderlich"
+10799 : Ukrainische Exporte - Warum Polen EU-Zollabgaben für die Ukraine fordert
+10800 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+10801 : Beschwerdehefte - Was aus Frankreichs Versprechen für Bürgerbeteiligung wurde
+10802 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+10803 : Flucht und Migration - Warum die EU Migrationsabkommen abschließt
+10804 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+10805 : Der Tag - EU-Milliarden für Ägyptens Herrscher
+10806 : Humanitäre Hilfe - Warum es weniger Geld für mehr Bedürftige gibt
+10807 : Nach Wahlen - Ex-Botschafter erkennt Zeichen für ein besseres Russland
+
+
+Menu: the Title is Deutschlandfunk - Wirtschaft, Umwelt und Verbraucher with 7500 objectId
+6813 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+6814 : Krankenhausreform - Großer Wurf oder großer Murks?
+6815 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+6816 : E-Auto-Fabrik - Tesla in Grünheide – Segen oder Fluch?
+6817 : Klimaziele 2030 - Kommentar: Der Klimakrise nicht vollends ausgeliefert
+6818 : Umwelt- und Menschenrechte - Wirkt das Lieferkettengesetz?
+6819 : Tarifstreit - Wie Bahn und GDL wieder zusammenfinden könnten
+6820 : Glyphosat - Krebsgefahr vom Acker oder Segen für die Landwirtschaft?
+6821 : Schienenverkehr - GDL und Deutsche Bahn: Eskalation eines Konflikts
+6822 : Kommentar zum Bahnstreik - Weselskys Streik torpediert die Verkehrswende
+6823 : WTO-Konferenz in Abu Dhabi - WTO-Gipfel endet ohne Einigung in wichtigen Fragen
+6824 : Fachkräftemangel - Warum Deutschland Migranten braucht
+6825 : Flüchtlinge aus der Ukraine - Integration mit Hindernissen
+6826 : Containerschifffahrt - Wie Reedereien den Lauf der Weltwirtschaft bestimmen
+6827 : Stress statt Innovation - Warum ein Teil der Mitte Probleme mit dem Wandel hat
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Talk with 36000 objectId
+34549 : Deep Talk - Sven und Rahel sagen Tschüss
+34550 : Sanaz Azimipour, hat das iranische Regime Angst vor der Protestbewegung?
+34551 : Stefan Koldehoff, macht Kunst Dich glücklich?
+34552 : Hannah Meul, wie fühlt es sich an, mit zwei Fingern in der Wand zu hängen?
+34553 : Johannes Hillje, ist die AfD normal geworden?
+34554 : Alexander Tiesenhausen, wird Liebeskummer ernst genug genommen?
+34555 : Marcel Sebastian, wie entscheiden wir, ob wir Tiere streicheln oder schlachten?
+34556 : Hebamme Tobi, warum sind auch Männer gute Hebammen?
+34557 : Veronique Kouchev, wie fühlt sich Asperger-Autismus für Dich an?
+34558 : "Ronen Steinke, warum brauchen wir keinen Verfassungsschutz?"
+34559 : Stephan Orth, warum soll man noch nach England reisen?
+34560 : Hannah Emde, warum ist Artenschutz so wichtig für unsere Gesundheit?
+34561 : Lisanne Richter, warum ist Catcalling kein Kompliment?
+34562 : "Chris Rock Jackson, wie hat Breakdance dir geholfen?"
+34563 : Carsten Schermuly, als wie gefährlich empfinden Mitarbeitende New Work?
+
+
+Menu: the Title is Deutschlandfunk - Wissen with 9000 objectId
+8952 : Atomenergie - Was taugen die Reaktoren der nächsten Generation?
+8953 : Ulugh Beg - Der Herrscher der Astronomie und von Samarkand
+8954 : "Das Feature" empfiehlt - Podcast "Deep Science - Wer rettet die Erde?"
+8955 : Meteorologie - Warum Wettervorhersagen mal zutreffen - und mal nicht
+8956 : B. F. Skinner - Der Mann, der die Psychologie von der Couch ins Labor holte
+8957 : Transportkapsel - Der kleine Weltraumgipfel und das kühne ESA-Ziel
+8958 : WMO-Bericht - Klimaforscher: Deutschland muss bei CO2-Reduktion vorangehen
+8959 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+8960 : Zecken - Virologe: "In ganz Deutschland kann man sich mit FSME infizieren"
+8961 : Frühlingsanfang - Die Jahreszeiten der gekippten Erde
+8962 : Europa - Sichere Rohstoffversorgung durch Recycling?
+8963 : Sri Lanka - Gescheiterte Biowende sorgt für kalten Entzug
+8964 : Justus Georg Westphal - Der vergessene Astronom und sein verschwundener Komet
+8965 : Markus Scheumann - Viermal die Fünf – Jubiläum für die Sternzeit-Stimme
+8966 : AI Act der EU - Fesseln für die künstliche Intelligenz
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Liebe with 34500 objectId
+33792 : Gewalt in Beziehungen - Darum gibt es kaum Anzeigen
+33793 : Abtreibungsrecht in der Verfassung - ist Frankreich ein Vorbild für Deutschland?
+33794 : Freundschaft plus - Warum körperliche Nähe dazu gehören kann
+33795 : Geld abdrücken als Vorliebe - Was hinter Findom steckt
+33796 : Sorry, leider falsche Partei - Wie Liebe und Politik zusammenhängen
+33797 : Beziehungstipps vom Chatbot - Geht das überhaupt?
+33798 : Offene Beziehung - Warum sexuelle Freiheit auch nicht immer einfach ist
+33799 : Bisexualität - Warum mehr Verständnis wichtig ist
+33800 : Trennung - Wie wir eine Beziehung gut beenden
+33801 : Fernbeziehung - Wie Liebe auch auf Distanz funktionieren kann
+33802 : 116 016 - Hilfe bei Gewalt gegen Frauen rund um die Uhr
+33803 : Sex auf G - Was hinter Chemsexpartys steckt
+33804 : Best Of 2023: Vom Po, Pornosucht und Polyamorie
+33805 : Getrennt wohnen - Warum immer weniger Paare zusammen leben
+33806 : Online-Dating - Warum es sich lohnt, Dating-Gewohnheiten zu ändern
+
+
+Menu: the Title is Deutschlandfunk Kultur - HÃ¶rspiel und Feature with 30000 objectId
+29576 : Aus der Reihe: Feature-Antenne - Die Stimme spricht zum Unbewussten
+29577 : Die Scheune
+29578 : Anorexie - Gefährliche Freundschaften: Im Hungern nicht allein
+29579 : Japanischer Noir-Krimi: Die Kunst des Stehlens - Der Dieb
+29580 : Lob der Lücke - Zwischen-Raum
+29581 : Ein Bauhaus-Konzeptalbum - AUDIO.SPACE.MACHINE
+29582 : Wenn Töchterseelen zerbrechen - Teufelsmütter
+29583 : Nachhaltige Klangkunst mit Alltagsgegenständen - IRL
+29584 : Hörspiel: Machtverhältnisse in der Fürsorgearbeit - Der Assistent
+29585 : Serie übers Erwachsenwerden - Abi 21 (3/3)
+29586 : Hörspiel nach John Alec Baker - Der Wanderfalke
+29587 : Entführt im Auftrag des Vatikans - Die Affäre Finaly
+29588 : Krimi-Hörspiel: Professor van Dusen | Folge 41 - Professor van Dusen trifft Kaiser Wilhelm
+29589 : Eine Bedienungsanleitung - "Solange sie können vorwärtz und abwärtz"
+29590 : Hörspiel über die Verfolgung der Sinti im NS - Keine Namen, niemand
+
+
+Menu: the Title is Deutschlandfunk Nova - History with 40500 objectId
+40151 : Französische Revolution - Der Code Civil
+40152 : IAA 1934 - Geburt des VW-Käfers
+40153 : Toleranter Eroberer - Kyros der Große
+40154 : Siebzigster Geburtstag von Recep Tayyip Erdogan
+40155 : Jahrtausendhochwasser 1784
+40156 : Sowjetunion - der Abzug aus Afghanistan
+40157 : Social-Media-Geschichte - Gefällt mir? 20 Jahre Facebook
+40158 : Der Tod Karls des Großen
+40159 : Bedeutende Herrscherinnen - Queen Victoria
+40160 : Sowjetunion - Lenins Tod
+40161 : Nordische Mythologie - Die "Edda" als Ursprung germanischer Göttersagen
+40162 : Aus "Landlords Game" wird Monopoly
+40163 : Nachkriegsdeutschland - Das Kabarett der "Insulaner"
+40164 : Katholische Kirche - Das rätselhafte Petrusgrab im Petersdom
+40165 : DDR - Die Gründung der "Jungen Pioniere"
+
+
+Menu: the Title is Deutschlandfunk Nova - Einhundert with 39000 objectId
+38707 : In eigener Sache: Die Einhundert macht eine Pause
+38708 : Au-pair - Bettys Traum wird zum Alptraum
+38709 : Identität - Alissa traut sich endlich jüdisch zu sein
+38710 : Spätabtreibung - Lea steht vor der schwersten Entscheidung ihres Lebens (Teil 1)
+38711 : Spätabtreibung - Lea steht vor der schwersten Entscheidung ihres Lebens (Teil 2)
+38712 : Trauerrednerin: Nach dem Tod der Oma geht Jennifer neue Wege
+38713 : Queere Identität: Alex bricht mit seinem Vater, um er selbst zu sein
+38714 : Flucht - Iryna ist in der Ukraine ein Star, in Berlin muss sie neu anfangen
+38715 : Alleinerziehend - Sarah ist überfordert vom Wunschkind (Teil 1)
+38716 : Alleinerziehend - Sarah ist überfordert vom Wunschkind (Teil 2)
+38717 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 1)
+38718 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 2)
+38719 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 3)
+38720 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 4)
+38721 : Eurodance - Lori Glori will ihre Stimme von DJ Bobo zurück (Teil 1)
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+
+
+Menu: the Title is Deutschlandfunk Nova - HÃ¶rsaal with 42000 objectId
+41745 : Rechtsextremismus - Brandanschläge und Asyldebatte in den 1990ern
+41746 : Degrowth - Muss eine Wirtschaft immer wachsen?
+41747 : Sprachgeschichte - Die deutsche Sprache wandelt sich ständig
+41748 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 1)
+41749 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 2)
+41750 : NS Verbrechen - Bremen als Drehkreuz der Todesmärsche
+41751 : Rechtswissenschaft - Wie die AfD die Schulen verändern könnte
+41752 : Soziologie - So ticken die Babyboomer
+41753 : Kognitionsforschung - Über den Zusammenhang von Sprache und Denken
+41754 : Nahostkrieg - Israel, Gaza und das humanitäre Völkerrecht
+41755 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 1)
+41756 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 2)
+41757 : Zwei Jahre nach dem Überfall - Russlands Krieg gegen die Ukraine
+41758 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 1)
+41759 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 2)
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Medien with 37500 objectId
+36755 : Zwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & FacebookZwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & Facebook
+36756 : Wir starten die Was mit Medien ExplorerWir starten die Was mit Medien Explorer
+36757 : Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?
+36758 : Warum ist digitale Resilienz mehr als ein Buzzword?Warum ist digitale Resilienz mehr als ein Buzzword?
+36759 : Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus?Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus, Sara Schurmann?
+36760 : Welche Rolle spielen Fake News kurz vor der Bundestagswahl?Welche Rolle spielen Fakes kurz vor der Bundestagswahl, Valerie Scholz?
+36761 : Wird Bild Live das deutsche Fox News?Wird Bild Live das deutsche Fox News?
+36762 : Ein Jahr Medien Insider (Teil 2)Ein Jahr Medien Insider (Teil 2)
+36763 : Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?
+36764 : Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?
+36765 : 5 Trends zum digitalen Nachrichten-Konsum5 Trends über digitalen Nachrichten-Konsum
+36766 : Gute Werbung, schlechte WerbungGute Werbung, schlechte Werbung
+36767 : Wie verändert sich die Podcast-Welt?Wie verändert sich die Podcast-Szene?
+36768 : Was können wir von der BILD im Wahlkampf erwarten?Was können wir von der BILD im Wahlkampf erwarten?
+36769 : Podcast-Update: Was war, was kommtPodcast-Update: Was war, was kommt
+36770 : Was steckt hinter Facebook News, Guido Bülow?Was steckt hinter Facebook News, Guido Bülow?
+
+
+Menu: the Title is Deutschlandfunk Kulturnachrichten with 21000 objectId
+20592 : Barbi Marković gewinnt Belletristik-Preis der Leipziger Buchmesse
+20593 : Afghanistan: Geraubte Antiken für den Whirlpool
+20594 : Dedecius-Preis für deutsch-polnische Übersetzer vergeben
+20595 : Leony singt den offiziellen EM-Song
+20596 : Buchmesse zeichnet Kinder- und Jugendbücher aus
+20597 : Gericht genehmigt Kirchenabriss trotz Denkmalschutz
+20598 : Rote Badehose von David Hasselhoff im Museum
+20599 : Kinder lesen nicht weniger als früher
+20600 : Der Bayerischer Kabarettpreis geht an Florian Schroeder
+20601 : Damien Hirst soll Skulpturen falsch datiert haben
+20602 : Leipziger Buchmesse mit Festakt eröffnet
+20603 : Die Leipziger Buchmesse unterstützt den Auftritt der Ukraine
+20604 : Der US-amerikanische Schauspieler M. Emmet Walsh ist tot
+20605 : Bundestags-Abgeordnete stellen Berlinale-Förderung infrage
+20606 : Der International Ibsen Award geht an die Argentinierin Lola Arias
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk - Die Nachrichten with 3000 objectId
+2403 : Gipfel in Brüssel - EU beschließt Beitrittsverhandlungen mit Bosnien-Herzegowina
+2404 : Rede beim EU-Gipfel - Selenskyj drängt auf rasche Nutzung russischer Vermögenswerte
+2405 : Nahost-Krieg - Blinken warnt erneut vor israelischer Bodenoffensive auf die Stadt Rafah
+2406 : Bundestag - Mandat für Mittelmeer-Einsatz "Sea Guardian" verlängert
+2407 : Leipziger Buchmesse - Bundespräsident Steinmeier ruft zu Zusammenhalt und Tatkraft auf
+2408 : Irland - Harris Favorit für Amt des Regierungschefs
+2409 : Katalonien - Puigdemont bestätigt geplante Rückkehr für Teilnahme an Regional-Wahlen
+2410 : Warnung vor Missbrauch - UNO-Vollversammlung billigt erste Resolution zu Künstlicher Intelligenz
+2411 : Handelsabkommen mit Kanada - Französischer Senat stimmt gegen Ceta
+2412 : Wettbewerbsverstöße - US-Justizministerium erhebt Anklage gegen Apple
+2413 : Bundesrat - Gegner und Befürworter von Cannabis-Legalisierung werben vor morgiger Abstimmung noch einmal für ihre Positionen
+2414 : Mittelmeer - Behörden in Italien setzen erneut Rettungsschiff fest
+2415 : Energiekonferenz - EU-Staaten werben in Brüssel für Atomenergie
+2416 : NS-Verbrechen im KZ Buchenwald - Kriminalbiologe bestätigt: Lampenschirm wurde aus Menschenhaut gefertigt
+2417 : Aus für Adidas - DFB wird ab 2027 von Nike ausgestattet
+
+
+Menu: the Title is Deutschlandfunk - Politik with 6000 objectId
+4748 : Schuldenbremse - Warum Sachsen-Anhalt eine Reform benötigt
+4749 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+4750 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+4751 : Krankenhausreform - Großer Wurf oder großer Murks?
+4752 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+4753 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+4754 : Ampelstreit und Bauernproteste - Tierschutz droht zu scheitern
+4755 : Deutscher Wald - Genutzt, aber auch geschützt?
+4756 : Zivilschutz an Schulen - Sollen unsere Kinder den Kriegsfall üben?
+4757 : Krankenhausreform - Warum es den Kliniken so schlecht geht
+4758 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+4759 : Politikberater Lange - Warum die Ukraine zu langsam mit Waffen beliefert wird
+4760 : Tagebuch aus Gaza - Ein Blick ins Grauen
+4761 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+4762 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kulturnachrichten with 21000 objectId
+20592 : Barbi Marković gewinnt Belletristik-Preis der Leipziger Buchmesse
+20593 : Afghanistan: Geraubte Antiken für den Whirlpool
+20594 : Dedecius-Preis für deutsch-polnische Übersetzer vergeben
+20595 : Leony singt den offiziellen EM-Song
+20596 : Buchmesse zeichnet Kinder- und Jugendbücher aus
+20597 : Gericht genehmigt Kirchenabriss trotz Denkmalschutz
+20598 : Rote Badehose von David Hasselhoff im Museum
+20599 : Kinder lesen nicht weniger als früher
+20600 : Der Bayerischer Kabarettpreis geht an Florian Schroeder
+20601 : Damien Hirst soll Skulpturen falsch datiert haben
+20602 : Leipziger Buchmesse mit Festakt eröffnet
+20603 : Die Leipziger Buchmesse unterstützt den Auftritt der Ukraine
+20604 : Der US-amerikanische Schauspieler M. Emmet Walsh ist tot
+20605 : Bundestags-Abgeordnete stellen Berlinale-Förderung infrage
+20606 : Der International Ibsen Award geht an die Argentinierin Lola Arias
+
+
+Menu: the Title is Deutschlandfunk Kultur - Literatur with 25500 objectId
+24665 : Rezensionen - Die Bücher des Monats
+24666 : Auszeichnung für „Minihorror" - Barbi Marković erhält Preis der Leipziger Buchmesse 2024
+24667 : Preis der Leipziger Buchmesse - Barbi Marković gewinnt mit absurden Monstern
+24668 : Leipziger Buchmesse - Was eine Buchmesse in schwierigen Zeiten leisten kann
+24669 : Leipziger Buchmesse - Die Höhepunkte der Frühlingsschau der Buchbranche
+24670 : Leipziger Buchmesse - Kanzlerrede, Preisverleihung und Proteste
+24671 : März 2024 - Buchtipps zur Leipziger Buchmesse
+24672 : Preis der Leipziger Buchmesse - Diese Romane können gewinnen
+24673 : Lakonisch trifft 54books - Die glamouröse Zukunft der Literatur!
+24674 : Preis der Leipziger Buchmesse 2024 - Die Liste der Nominierten überrascht
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+going to write file /tmp/Qt-DAB-files/Nova
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk - Die Nachrichten with 3000 objectId
+2403 : Gipfel in Brüssel - EU beschließt Beitrittsverhandlungen mit Bosnien-Herzegowina
+2404 : Rede beim EU-Gipfel - Selenskyj drängt auf rasche Nutzung russischer Vermögenswerte
+2405 : Nahost-Krieg - Blinken warnt erneut vor israelischer Bodenoffensive auf die Stadt Rafah
+2406 : Bundestag - Mandat für Mittelmeer-Einsatz "Sea Guardian" verlängert
+2407 : Leipziger Buchmesse - Bundespräsident Steinmeier ruft zu Zusammenhalt und Tatkraft auf
+2408 : Irland - Harris Favorit für Amt des Regierungschefs
+2409 : Katalonien - Puigdemont bestätigt geplante Rückkehr für Teilnahme an Regional-Wahlen
+2410 : Warnung vor Missbrauch - UNO-Vollversammlung billigt erste Resolution zu Künstlicher Intelligenz
+2411 : Handelsabkommen mit Kanada - Französischer Senat stimmt gegen Ceta
+2412 : Wettbewerbsverstöße - US-Justizministerium erhebt Anklage gegen Apple
+2413 : Bundesrat - Gegner und Befürworter von Cannabis-Legalisierung werben vor morgiger Abstimmung noch einmal für ihre Positionen
+2414 : Mittelmeer - Behörden in Italien setzen erneut Rettungsschiff fest
+2415 : Energiekonferenz - EU-Staaten werben in Brüssel für Atomenergie
+2416 : NS-Verbrechen im KZ Buchenwald - Kriminalbiologe bestätigt: Lampenschirm wurde aus Menschenhaut gefertigt
+2417 : Aus für Adidas - DFB wird ab 2027 von Nike ausgestattet
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kulturnachrichten with 21000 objectId
+20592 : Barbi Marković gewinnt Belletristik-Preis der Leipziger Buchmesse
+20593 : Afghanistan: Geraubte Antiken für den Whirlpool
+20594 : Dedecius-Preis für deutsch-polnische Übersetzer vergeben
+20595 : Leony singt den offiziellen EM-Song
+20596 : Buchmesse zeichnet Kinder- und Jugendbücher aus
+20597 : Gericht genehmigt Kirchenabriss trotz Denkmalschutz
+20598 : Rote Badehose von David Hasselhoff im Museum
+20599 : Kinder lesen nicht weniger als früher
+20600 : Der Bayerischer Kabarettpreis geht an Florian Schroeder
+20601 : Damien Hirst soll Skulpturen falsch datiert haben
+20602 : Leipziger Buchmesse mit Festakt eröffnet
+20603 : Die Leipziger Buchmesse unterstützt den Auftritt der Ukraine
+20604 : Der US-amerikanische Schauspieler M. Emmet Walsh ist tot
+20605 : Bundestags-Abgeordnete stellen Berlinale-Förderung infrage
+20606 : Der International Ibsen Award geht an die Argentinierin Lola Arias
+
+
+Menu: the Title is Deutschlandfunk Nova - Update with 45000 objectId
+43812 : Biometrie, Atomkraft, Bahnbilanz
+43813 : Bodentruppen, Elektroschrott, Tiktok-Politik
+43814 : Terrorverdacht, Bürgergeld, Merkmethoden
+43815 : Opposition in Russland, Linksextremismus, Paketstationen
+43816 : Anti-Putin-Aktivistin, Klimaziele, Haustiere
+43817 : Taurus, Fast Fashion, Tiktok
+43818 : Pro-ukrainische Russen, KI-Gesetz, Klimagerechtigkeit
+43819 : Flugsicherheit, Wehrpflicht, Junge Alternative
+43820 : Ramadan, Oscars, Taurus
+43821 : Frauenrechte, Bahnstreik, Biden
+43822 : Weltraumbatterien, Streik, Make-Up
+43823 : Israel, Streik, Donald Trump
+43824 : RAF-Terroristen, US-Präsidentschaftswahl, Rente
+43825 : Bahnstreik, TikTok, Frühling
+43826 : Putin, Schalttag, NSU
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Deutschlandfunk - Politik with 6000 objectId
+4748 : Schuldenbremse - Warum Sachsen-Anhalt eine Reform benötigt
+4749 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+4750 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+4751 : Krankenhausreform - Großer Wurf oder großer Murks?
+4752 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+4753 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+4754 : Ampelstreit und Bauernproteste - Tierschutz droht zu scheitern
+4755 : Deutscher Wald - Genutzt, aber auch geschützt?
+4756 : Zivilschutz an Schulen - Sollen unsere Kinder den Kriegsfall üben?
+4757 : Krankenhausreform - Warum es den Kliniken so schlecht geht
+4758 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+4759 : Politikberater Lange - Warum die Ukraine zu langsam mit Waffen beliefert wird
+4760 : Tagebuch aus Gaza - Ein Blick ins Grauen
+4761 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+4762 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+
+
+Menu: the Title is Deutschlandfunk Kultur - Musik with 27000 objectId
+26583 : Roberto Blanco - Nie die Heiterkeit verlieren
+26584 : Eindrücke vom La Maestra - Wettbewerb 2024 in Paris - Dirigentinnen gesucht!
+26585 : Sonntagsrätsel Ausgabe Nr. 2956 - Wer hat‘s – vor einer halben Ewigkeit – aufgeschrieben?
+26586 : Nachruf Aribert Reimann - Der Herrscher der Klangballen
+26587 : US-Wahl 2024 - Keine Songs für diesen Wahlkampf
+26588 : Pariser Organisation "Musique et Spoliations" - Raubgut Musikinstrumente im Zweiten Weltkrieg
+26589 : Super Tuesday - Das Potenzial von Musikern, den US-Wahlkampf zu beeinflussen
+26590 : Beyoncé - Sprung auf Platz 1 der US-Country-Charts
+26591 : Rapper Ben Salomo - "Die hebräische Sprache erreicht mich in den Tiefen meines Herzens"
+26592 : Eurovision - Ist Israels Titel zu politisch?
+26593 : Biopic "One Love" - Drei entscheidende Jahre für das Leben von Bob Marley
+26594 : Mozarts "Zauberflöte" - Libretto-Neuausrichtung mit Sprengkraft
+26595 : Pop-Journalismus - Kritiker: Einstellung von "Vice" Deutschland kam mit Ansage
+26596 : Wiener Festwochen - Milo Rau sagt Konzert von Stardirigent Teodor Currentzis ab
+26597 : Konzertwelt - Japanischer Dirigent Seiji Ozawa gestorben
+
+
+Menu: the Title is Deutschlandfunk - Wirtschaft, Umwelt und Verbraucher with 7500 objectId
+6813 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+6814 : Krankenhausreform - Großer Wurf oder großer Murks?
+6815 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+6816 : E-Auto-Fabrik - Tesla in Grünheide – Segen oder Fluch?
+6817 : Klimaziele 2030 - Kommentar: Der Klimakrise nicht vollends ausgeliefert
+6818 : Umwelt- und Menschenrechte - Wirkt das Lieferkettengesetz?
+6819 : Tarifstreit - Wie Bahn und GDL wieder zusammenfinden könnten
+6820 : Glyphosat - Krebsgefahr vom Acker oder Segen für die Landwirtschaft?
+6821 : Schienenverkehr - GDL und Deutsche Bahn: Eskalation eines Konflikts
+6822 : Kommentar zum Bahnstreik - Weselskys Streik torpediert die Verkehrswende
+6823 : WTO-Konferenz in Abu Dhabi - WTO-Gipfel endet ohne Einigung in wichtigen Fragen
+6824 : Fachkräftemangel - Warum Deutschland Migranten braucht
+6825 : Flüchtlinge aus der Ukraine - Integration mit Hindernissen
+6826 : Containerschifffahrt - Wie Reedereien den Lauf der Weltwirtschaft bestimmen
+6827 : Stress statt Innovation - Warum ein Teil der Mitte Probleme mit dem Wandel hat
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Deutschlandfunk - Kultur with 10500 objectId
+9340 : „Anzeigenhauptmeister“ - Zwischen Medienhype und Cybermobbing  
+9341 : Pieter Bruegel - Ein Spiegel für den Betrachter?
+9342 : Kommentar zum Gendern in Bayern - Formaljuristisch ist das Verbot ordentlich definiert
+9343 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+9344 : Literatur - Buchverlage wirtschaften weiter im Krisenmodus
+9345 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+9346 : Judenhass - Kurt Münzer: "Jude ans Kreuz!"
+9347 : Christa Wolf - Eine gesamtdeutsche Schriftstellerin
+9348 : Urtyp des Faschisten - Thomas Mann: "Der Zauberberg"
+9349 : Gesangslehrerin Judith Kamphues - "Das gemeinsame Singen zaubert ein Lächeln ins Gesicht"
+9350 : Weimarer Republik - Wie die Kinderliteratur den Faschismus erahnte
+9351 : Mordende Freikorps - Hermynia Zur Mühlen: "Die weiße Pest"
+9352 : Friedensplädoyer - Bruno Frank: "Politische Novelle"
+9353 : Aachener Dom - Frühjahrsputz für den 900 Jahre alten Barbarossaleuchter
+9354 : Zukunft der Kirchen - Frankreichs Bischöfe machen Inventur
+
+
+Menu: the Title is Deutschlandfunk Kulturnachrichten with 21000 objectId
+20592 : Barbi Marković gewinnt Belletristik-Preis der Leipziger Buchmesse
+20593 : Afghanistan: Geraubte Antiken für den Whirlpool
+20594 : Dedecius-Preis für deutsch-polnische Übersetzer vergeben
+20595 : Leony singt den offiziellen EM-Song
+20596 : Buchmesse zeichnet Kinder- und Jugendbücher aus
+20597 : Gericht genehmigt Kirchenabriss trotz Denkmalschutz
+20598 : Rote Badehose von David Hasselhoff im Museum
+20599 : Kinder lesen nicht weniger als früher
+20600 : Der Bayerischer Kabarettpreis geht an Florian Schroeder
+20601 : Damien Hirst soll Skulpturen falsch datiert haben
+20602 : Leipziger Buchmesse mit Festakt eröffnet
+20603 : Die Leipziger Buchmesse unterstützt den Auftritt der Ukraine
+20604 : Der US-amerikanische Schauspieler M. Emmet Walsh ist tot
+20605 : Bundestags-Abgeordnete stellen Berlinale-Förderung infrage
+20606 : Der International Ibsen Award geht an die Argentinierin Lola Arias
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk - Europa with 12000 objectId
+10793 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+10794 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+10795 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+10796 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+10797 : Deutsche Ukrainehilfe - Waffen liefern, Waffenruhe debattieren?
+10798 : Vor dem EU-Gipfel - Scholz: "Ukraine solange unterstützen wie erforderlich"
+10799 : Ukrainische Exporte - Warum Polen EU-Zollabgaben für die Ukraine fordert
+10800 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+10801 : Beschwerdehefte - Was aus Frankreichs Versprechen für Bürgerbeteiligung wurde
+10802 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+10803 : Flucht und Migration - Warum die EU Migrationsabkommen abschließt
+10804 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+10805 : Der Tag - EU-Milliarden für Ägyptens Herrscher
+10806 : Humanitäre Hilfe - Warum es weniger Geld für mehr Bedürftige gibt
+10807 : Nach Wahlen - Ex-Botschafter erkennt Zeichen für ein besseres Russland
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk Kultur - Literatur with 25500 objectId
+24665 : Rezensionen - Die Bücher des Monats
+24666 : Auszeichnung für „Minihorror" - Barbi Marković erhält Preis der Leipziger Buchmesse 2024
+24667 : Preis der Leipziger Buchmesse - Barbi Marković gewinnt mit absurden Monstern
+24668 : Leipziger Buchmesse - Was eine Buchmesse in schwierigen Zeiten leisten kann
+24669 : Leipziger Buchmesse - Die Höhepunkte der Frühlingsschau der Buchbranche
+24670 : Leipziger Buchmesse - Kanzlerrede, Preisverleihung und Proteste
+24671 : März 2024 - Buchtipps zur Leipziger Buchmesse
+24672 : Preis der Leipziger Buchmesse - Diese Romane können gewinnen
+24673 : Lakonisch trifft 54books - Die glamouröse Zukunft der Literatur!
+24674 : Preis der Leipziger Buchmesse 2024 - Die Liste der Nominierten überrascht
+
+
+Menu: the Title is Deutschlandfunk - Politik with 6000 objectId
+4748 : Schuldenbremse - Warum Sachsen-Anhalt eine Reform benötigt
+4749 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+4750 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+4751 : Krankenhausreform - Großer Wurf oder großer Murks?
+4752 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+4753 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+4754 : Ampelstreit und Bauernproteste - Tierschutz droht zu scheitern
+4755 : Deutscher Wald - Genutzt, aber auch geschützt?
+4756 : Zivilschutz an Schulen - Sollen unsere Kinder den Kriegsfall üben?
+4757 : Krankenhausreform - Warum es den Kliniken so schlecht geht
+4758 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+4759 : Politikberater Lange - Warum die Ukraine zu langsam mit Waffen beliefert wird
+4760 : Tagebuch aus Gaza - Ein Blick ins Grauen
+4761 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+4762 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+
+
+Menu: the Title is Deutschlandfunk Nova - HÃ¶rsaal with 42000 objectId
+41745 : Rechtsextremismus - Brandanschläge und Asyldebatte in den 1990ern
+41746 : Degrowth - Muss eine Wirtschaft immer wachsen?
+41747 : Sprachgeschichte - Die deutsche Sprache wandelt sich ständig
+41748 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 1)
+41749 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 2)
+41750 : NS Verbrechen - Bremen als Drehkreuz der Todesmärsche
+41751 : Rechtswissenschaft - Wie die AfD die Schulen verändern könnte
+41752 : Soziologie - So ticken die Babyboomer
+41753 : Kognitionsforschung - Über den Zusammenhang von Sprache und Denken
+41754 : Nahostkrieg - Israel, Gaza und das humanitäre Völkerrecht
+41755 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 1)
+41756 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 2)
+41757 : Zwei Jahre nach dem Überfall - Russlands Krieg gegen die Ukraine
+41758 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 1)
+41759 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 2)
+
+
+Menu: the Title is Deutschlandfunk Kultur - HÃ¶rspiel und Feature with 30000 objectId
+29576 : Aus der Reihe: Feature-Antenne - Die Stimme spricht zum Unbewussten
+29577 : Die Scheune
+29578 : Anorexie - Gefährliche Freundschaften: Im Hungern nicht allein
+29579 : Japanischer Noir-Krimi: Die Kunst des Stehlens - Der Dieb
+29580 : Lob der Lücke - Zwischen-Raum
+29581 : Ein Bauhaus-Konzeptalbum - AUDIO.SPACE.MACHINE
+29582 : Wenn Töchterseelen zerbrechen - Teufelsmütter
+29583 : Nachhaltige Klangkunst mit Alltagsgegenständen - IRL
+29584 : Hörspiel: Machtverhältnisse in der Fürsorgearbeit - Der Assistent
+29585 : Serie übers Erwachsenwerden - Abi 21 (3/3)
+29586 : Hörspiel nach John Alec Baker - Der Wanderfalke
+29587 : Entführt im Auftrag des Vatikans - Die Affäre Finaly
+29588 : Krimi-Hörspiel: Professor van Dusen | Folge 41 - Professor van Dusen trifft Kaiser Wilhelm
+29589 : Eine Bedienungsanleitung - "Solange sie können vorwärtz und abwärtz"
+29590 : Hörspiel über die Verfolgung der Sinti im NS - Keine Namen, niemand
+
+
+Menu: the Title is Deutschlandfunk - Sport with 15000 objectId
+14002 : DFB-Vizepräsidentin - „Chance auf Frauen-WM 2027 in Deutschland steht bei 50:50“
+14003 : Debatte um deutsche Bewerbung - Die Frage nach dem Vermächtnis Olympischer Spiele
+14004 : Debatte um Eishockey-Investor - Kölner Haie zwischen Moral und finanzieller Abhängigkeit
+14005 : Olympische Spiele - IOC und Russland: Noch viele offene Fragen
+14006 : Skiflug-Weltcup der Frauen - Skispringerin Schmid: "Fühlt sich nochmal cooler an"
+14007 : Nordische Kombination - Bundestrainer ziehen unterschiedliche Bilanz
+14008 : Sieg gegen Österreich - DHB-Team für Olympia qualifiziert: „Ein bisschen souverän“
+14009 : Nach Protesten in Belarus - Oppositionelle Sportler auch im Exil weiter unter Druck
+14010 : Krieg in Gaza - Israels Sport gerät unter Druck
+14011 : Konflikt im Wintersport - DSV-Sportchef Maier: FIS-Präsident Eliasch hat "keine Ahnung"
+14012 : Staatsdoping in der DDR - Wie geht es weiter mit der Entschädigung für Dopingopfer?
+14013 : Doping im Sport - Was die "Enhanced Games" aus medizinischer Sicht gefährlich macht
+14014 : "Hall of Fame" des Sports - Historiker: Deutscher Sport blendet NS-Vergangenheit aus
+14015 : Eintracht Gladau - Fußballmannschaft mit Rechtsextremen darf weiterspielen
+14016 : Kritik an Entwicklungsplan - Landessportbünde bleiben Bewegungsgipfel fern
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+
+
+Menu: the Title is Deutschlandfunk - Wirtschaft, Umwelt und Verbraucher with 7500 objectId
+6813 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+6814 : Krankenhausreform - Großer Wurf oder großer Murks?
+6815 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+6816 : E-Auto-Fabrik - Tesla in Grünheide – Segen oder Fluch?
+6817 : Klimaziele 2030 - Kommentar: Der Klimakrise nicht vollends ausgeliefert
+6818 : Umwelt- und Menschenrechte - Wirkt das Lieferkettengesetz?
+6819 : Tarifstreit - Wie Bahn und GDL wieder zusammenfinden könnten
+6820 : Glyphosat - Krebsgefahr vom Acker oder Segen für die Landwirtschaft?
+6821 : Schienenverkehr - GDL und Deutsche Bahn: Eskalation eines Konflikts
+6822 : Kommentar zum Bahnstreik - Weselskys Streik torpediert die Verkehrswende
+6823 : WTO-Konferenz in Abu Dhabi - WTO-Gipfel endet ohne Einigung in wichtigen Fragen
+6824 : Fachkräftemangel - Warum Deutschland Migranten braucht
+6825 : Flüchtlinge aus der Ukraine - Integration mit Hindernissen
+6826 : Containerschifffahrt - Wie Reedereien den Lauf der Weltwirtschaft bestimmen
+6827 : Stress statt Innovation - Warum ein Teil der Mitte Probleme mit dem Wandel hat
+
+
+Menu: the Title is Deutschlandfunk Nova - History with 40500 objectId
+40151 : Französische Revolution - Der Code Civil
+40152 : IAA 1934 - Geburt des VW-Käfers
+40153 : Toleranter Eroberer - Kyros der Große
+40154 : Siebzigster Geburtstag von Recep Tayyip Erdogan
+40155 : Jahrtausendhochwasser 1784
+40156 : Sowjetunion - der Abzug aus Afghanistan
+40157 : Social-Media-Geschichte - Gefällt mir? 20 Jahre Facebook
+40158 : Der Tod Karls des Großen
+40159 : Bedeutende Herrscherinnen - Queen Victoria
+40160 : Sowjetunion - Lenins Tod
+40161 : Nordische Mythologie - Die "Edda" als Ursprung germanischer Göttersagen
+40162 : Aus "Landlords Game" wird Monopoly
+40163 : Nachkriegsdeutschland - Das Kabarett der "Insulaner"
+40164 : Katholische Kirche - Das rätselhafte Petrusgrab im Petersdom
+40165 : DDR - Die Gründung der "Jungen Pioniere"
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Nova - Film with 33000 objectId
+32875 : Hape Kerkeling zu Gast: "Ich hadere oft mit meinem Erfolg"
+32876 : Auftakt des Kafka-Filmjahres 2024 - "Die Herrlichkeit des Lebens"
+32877 : Das Signal: Neue Netflixserie mit Peri Baumeister und Florian David Fitz
+32878 : Oscar-Kandidat "The Zone of Interest" - Der Horrorsound des Nazi-Regimes
+32879 : Berlinale 24 - Deutsche Filme herausragend
+32880 : Skandalfilm: Warum "Schock" ein gelungenes Kino-Regie-Debüt ist
+32881 : All of Us Strangers: Regisseur Andrew Haigh über Queersein und den neuen Film
+32882 : Karoline Herfurth und Tom Schilling - Intensive Intimität, perfekt einstudiert
+32883 : ARD-Serie "2 Minuten - 24/7": Elternsein nonstop
+32884 : Maximilian Mundt und Anna-Lena Schwing: Neue Stoffe :bitte günstig und schnell
+32885 : Film 15 Jahre - Fortsetzung von Vier Minuten
+32886 : Regisseur Taika Waititi - "Wir haben den tollsten Job der Welt"
+32887 : Lost and Found 2023 - Wo ihr verpasste Serien und Filme findet
+32888 : Film "Girl You Know It's True" - Milli Vanilli: Die Wahrheit übers Lügen
+32889 : "Falling Into Place" von Aylin Tezel: "Ich wusste nicht, wie stark ich bin"
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Liebe with 34500 objectId
+33792 : Gewalt in Beziehungen - Darum gibt es kaum Anzeigen
+33793 : Abtreibungsrecht in der Verfassung - ist Frankreich ein Vorbild für Deutschland?
+33794 : Freundschaft plus - Warum körperliche Nähe dazu gehören kann
+33795 : Geld abdrücken als Vorliebe - Was hinter Findom steckt
+33796 : Sorry, leider falsche Partei - Wie Liebe und Politik zusammenhängen
+33797 : Beziehungstipps vom Chatbot - Geht das überhaupt?
+33798 : Offene Beziehung - Warum sexuelle Freiheit auch nicht immer einfach ist
+33799 : Bisexualität - Warum mehr Verständnis wichtig ist
+33800 : Trennung - Wie wir eine Beziehung gut beenden
+33801 : Fernbeziehung - Wie Liebe auch auf Distanz funktionieren kann
+33802 : 116 016 - Hilfe bei Gewalt gegen Frauen rund um die Uhr
+33803 : Sex auf G - Was hinter Chemsexpartys steckt
+33804 : Best Of 2023: Vom Po, Pornosucht und Polyamorie
+33805 : Getrennt wohnen - Warum immer weniger Paare zusammen leben
+33806 : Online-Dating - Warum es sich lohnt, Dating-Gewohnheiten zu ändern
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Medien with 37500 objectId
+36755 : Zwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & FacebookZwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & Facebook
+36756 : Wir starten die Was mit Medien ExplorerWir starten die Was mit Medien Explorer
+36757 : Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?
+36758 : Warum ist digitale Resilienz mehr als ein Buzzword?Warum ist digitale Resilienz mehr als ein Buzzword?
+36759 : Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus?Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus, Sara Schurmann?
+36760 : Welche Rolle spielen Fake News kurz vor der Bundestagswahl?Welche Rolle spielen Fakes kurz vor der Bundestagswahl, Valerie Scholz?
+36761 : Wird Bild Live das deutsche Fox News?Wird Bild Live das deutsche Fox News?
+36762 : Ein Jahr Medien Insider (Teil 2)Ein Jahr Medien Insider (Teil 2)
+36763 : Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?
+36764 : Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?
+36765 : 5 Trends zum digitalen Nachrichten-Konsum5 Trends über digitalen Nachrichten-Konsum
+36766 : Gute Werbung, schlechte WerbungGute Werbung, schlechte Werbung
+36767 : Wie verändert sich die Podcast-Welt?Wie verändert sich die Podcast-Szene?
+36768 : Was können wir von der BILD im Wahlkampf erwarten?Was können wir von der BILD im Wahlkampf erwarten?
+36769 : Podcast-Update: Was war, was kommtPodcast-Update: Was war, was kommt
+36770 : Was steckt hinter Facebook News, Guido Bülow?Was steckt hinter Facebook News, Guido Bülow?
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Seewetter with 15006 objectId
+15321 : Warnungen
+15322 : Seewetterlage
+15323 : Vorhersage
+15324 : Weitere Aussichten
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Deutschlandfunk - Politik with 6000 objectId
+4748 : Schuldenbremse - Warum Sachsen-Anhalt eine Reform benötigt
+4749 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+4750 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+4751 : Krankenhausreform - Großer Wurf oder großer Murks?
+4752 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+4753 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+4754 : Ampelstreit und Bauernproteste - Tierschutz droht zu scheitern
+4755 : Deutscher Wald - Genutzt, aber auch geschützt?
+4756 : Zivilschutz an Schulen - Sollen unsere Kinder den Kriegsfall üben?
+4757 : Krankenhausreform - Warum es den Kliniken so schlecht geht
+4758 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+4759 : Politikberater Lange - Warum die Ukraine zu langsam mit Waffen beliefert wird
+4760 : Tagebuch aus Gaza - Ein Blick ins Grauen
+4761 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+4762 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Talk with 36000 objectId
+34549 : Deep Talk - Sven und Rahel sagen Tschüss
+34550 : Sanaz Azimipour, hat das iranische Regime Angst vor der Protestbewegung?
+34551 : Stefan Koldehoff, macht Kunst Dich glücklich?
+34552 : Hannah Meul, wie fühlt es sich an, mit zwei Fingern in der Wand zu hängen?
+34553 : Johannes Hillje, ist die AfD normal geworden?
+34554 : Alexander Tiesenhausen, wird Liebeskummer ernst genug genommen?
+34555 : Marcel Sebastian, wie entscheiden wir, ob wir Tiere streicheln oder schlachten?
+34556 : Hebamme Tobi, warum sind auch Männer gute Hebammen?
+34557 : Veronique Kouchev, wie fühlt sich Asperger-Autismus für Dich an?
+34558 : "Ronen Steinke, warum brauchen wir keinen Verfassungsschutz?"
+34559 : Stephan Orth, warum soll man noch nach England reisen?
+34560 : Hannah Emde, warum ist Artenschutz so wichtig für unsere Gesundheit?
+34561 : Lisanne Richter, warum ist Catcalling kein Kompliment?
+34562 : "Chris Rock Jackson, wie hat Breakdance dir geholfen?"
+34563 : Carsten Schermuly, als wie gefährlich empfinden Mitarbeitende New Work?
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Medien with 37500 objectId
+36755 : Zwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & FacebookZwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & Facebook
+36756 : Wir starten die Was mit Medien ExplorerWir starten die Was mit Medien Explorer
+36757 : Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?
+36758 : Warum ist digitale Resilienz mehr als ein Buzzword?Warum ist digitale Resilienz mehr als ein Buzzword?
+36759 : Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus?Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus, Sara Schurmann?
+36760 : Welche Rolle spielen Fake News kurz vor der Bundestagswahl?Welche Rolle spielen Fakes kurz vor der Bundestagswahl, Valerie Scholz?
+36761 : Wird Bild Live das deutsche Fox News?Wird Bild Live das deutsche Fox News?
+36762 : Ein Jahr Medien Insider (Teil 2)Ein Jahr Medien Insider (Teil 2)
+36763 : Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?
+36764 : Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?
+36765 : 5 Trends zum digitalen Nachrichten-Konsum5 Trends über digitalen Nachrichten-Konsum
+36766 : Gute Werbung, schlechte WerbungGute Werbung, schlechte Werbung
+36767 : Wie verändert sich die Podcast-Welt?Wie verändert sich die Podcast-Szene?
+36768 : Was können wir von der BILD im Wahlkampf erwarten?Was können wir von der BILD im Wahlkampf erwarten?
+36769 : Podcast-Update: Was war, was kommtPodcast-Update: Was war, was kommt
+36770 : Was steckt hinter Facebook News, Guido Bülow?Was steckt hinter Facebook News, Guido Bülow?
+
+
+Menu: the Title is Deutschlandfunk Kulturnachrichten with 21000 objectId
+20592 : Barbi Marković gewinnt Belletristik-Preis der Leipziger Buchmesse
+20593 : Afghanistan: Geraubte Antiken für den Whirlpool
+20594 : Dedecius-Preis für deutsch-polnische Übersetzer vergeben
+20595 : Leony singt den offiziellen EM-Song
+20596 : Buchmesse zeichnet Kinder- und Jugendbücher aus
+20597 : Gericht genehmigt Kirchenabriss trotz Denkmalschutz
+20598 : Rote Badehose von David Hasselhoff im Museum
+20599 : Kinder lesen nicht weniger als früher
+20600 : Der Bayerischer Kabarettpreis geht an Florian Schroeder
+20601 : Damien Hirst soll Skulpturen falsch datiert haben
+20602 : Leipziger Buchmesse mit Festakt eröffnet
+20603 : Die Leipziger Buchmesse unterstützt den Auftritt der Ukraine
+20604 : Der US-amerikanische Schauspieler M. Emmet Walsh ist tot
+20605 : Bundestags-Abgeordnete stellen Berlinale-Förderung infrage
+20606 : Der International Ibsen Award geht an die Argentinierin Lola Arias
+
+
+Menu: the Title is Deutschlandfunk Nova - Update with 45000 objectId
+43812 : Biometrie, Atomkraft, Bahnbilanz
+43813 : Bodentruppen, Elektroschrott, Tiktok-Politik
+43814 : Terrorverdacht, Bürgergeld, Merkmethoden
+43815 : Opposition in Russland, Linksextremismus, Paketstationen
+43816 : Anti-Putin-Aktivistin, Klimaziele, Haustiere
+43817 : Taurus, Fast Fashion, Tiktok
+43818 : Pro-ukrainische Russen, KI-Gesetz, Klimagerechtigkeit
+43819 : Flugsicherheit, Wehrpflicht, Junge Alternative
+43820 : Ramadan, Oscars, Taurus
+43821 : Frauenrechte, Bahnstreik, Biden
+43822 : Weltraumbatterien, Streik, Make-Up
+43823 : Israel, Streik, Donald Trump
+43824 : RAF-Terroristen, US-Präsidentschaftswahl, Rente
+43825 : Bahnstreik, TikTok, Frühling
+43826 : Putin, Schalttag, NSU
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Musik with 27000 objectId
+26583 : Roberto Blanco - Nie die Heiterkeit verlieren
+26584 : Eindrücke vom La Maestra - Wettbewerb 2024 in Paris - Dirigentinnen gesucht!
+26585 : Sonntagsrätsel Ausgabe Nr. 2956 - Wer hat‘s – vor einer halben Ewigkeit – aufgeschrieben?
+26586 : Nachruf Aribert Reimann - Der Herrscher der Klangballen
+26587 : US-Wahl 2024 - Keine Songs für diesen Wahlkampf
+26588 : Pariser Organisation "Musique et Spoliations" - Raubgut Musikinstrumente im Zweiten Weltkrieg
+26589 : Super Tuesday - Das Potenzial von Musikern, den US-Wahlkampf zu beeinflussen
+26590 : Beyoncé - Sprung auf Platz 1 der US-Country-Charts
+26591 : Rapper Ben Salomo - "Die hebräische Sprache erreicht mich in den Tiefen meines Herzens"
+26592 : Eurovision - Ist Israels Titel zu politisch?
+26593 : Biopic "One Love" - Drei entscheidende Jahre für das Leben von Bob Marley
+26594 : Mozarts "Zauberflöte" - Libretto-Neuausrichtung mit Sprengkraft
+26595 : Pop-Journalismus - Kritiker: Einstellung von "Vice" Deutschland kam mit Ansage
+26596 : Wiener Festwochen - Milo Rau sagt Konzert von Stardirigent Teodor Currentzis ab
+26597 : Konzertwelt - Japanischer Dirigent Seiji Ozawa gestorben
+
+
+Menu: the Title is Deutschlandfunk - Kultur with 10500 objectId
+9340 : „Anzeigenhauptmeister“ - Zwischen Medienhype und Cybermobbing  
+9341 : Pieter Bruegel - Ein Spiegel für den Betrachter?
+9342 : Kommentar zum Gendern in Bayern - Formaljuristisch ist das Verbot ordentlich definiert
+9343 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+9344 : Literatur - Buchverlage wirtschaften weiter im Krisenmodus
+9345 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+9346 : Judenhass - Kurt Münzer: "Jude ans Kreuz!"
+9347 : Christa Wolf - Eine gesamtdeutsche Schriftstellerin
+9348 : Urtyp des Faschisten - Thomas Mann: "Der Zauberberg"
+9349 : Gesangslehrerin Judith Kamphues - "Das gemeinsame Singen zaubert ein Lächeln ins Gesicht"
+9350 : Weimarer Republik - Wie die Kinderliteratur den Faschismus erahnte
+9351 : Mordende Freikorps - Hermynia Zur Mühlen: "Die weiße Pest"
+9352 : Friedensplädoyer - Bruno Frank: "Politische Novelle"
+9353 : Aachener Dom - Frühjahrsputz für den 900 Jahre alten Barbarossaleuchter
+9354 : Zukunft der Kirchen - Frankreichs Bischöfe machen Inventur
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk Nova - HÃ¶rsaal with 42000 objectId
+41745 : Rechtsextremismus - Brandanschläge und Asyldebatte in den 1990ern
+41746 : Degrowth - Muss eine Wirtschaft immer wachsen?
+41747 : Sprachgeschichte - Die deutsche Sprache wandelt sich ständig
+41748 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 1)
+41749 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 2)
+41750 : NS Verbrechen - Bremen als Drehkreuz der Todesmärsche
+41751 : Rechtswissenschaft - Wie die AfD die Schulen verändern könnte
+41752 : Soziologie - So ticken die Babyboomer
+41753 : Kognitionsforschung - Über den Zusammenhang von Sprache und Denken
+41754 : Nahostkrieg - Israel, Gaza und das humanitäre Völkerrecht
+41755 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 1)
+41756 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 2)
+41757 : Zwei Jahre nach dem Überfall - Russlands Krieg gegen die Ukraine
+41758 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 1)
+41759 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 2)
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Liebe with 34500 objectId
+33792 : Gewalt in Beziehungen - Darum gibt es kaum Anzeigen
+33793 : Abtreibungsrecht in der Verfassung - ist Frankreich ein Vorbild für Deutschland?
+33794 : Freundschaft plus - Warum körperliche Nähe dazu gehören kann
+33795 : Geld abdrücken als Vorliebe - Was hinter Findom steckt
+33796 : Sorry, leider falsche Partei - Wie Liebe und Politik zusammenhängen
+33797 : Beziehungstipps vom Chatbot - Geht das überhaupt?
+33798 : Offene Beziehung - Warum sexuelle Freiheit auch nicht immer einfach ist
+33799 : Bisexualität - Warum mehr Verständnis wichtig ist
+33800 : Trennung - Wie wir eine Beziehung gut beenden
+33801 : Fernbeziehung - Wie Liebe auch auf Distanz funktionieren kann
+33802 : 116 016 - Hilfe bei Gewalt gegen Frauen rund um die Uhr
+33803 : Sex auf G - Was hinter Chemsexpartys steckt
+33804 : Best Of 2023: Vom Po, Pornosucht und Polyamorie
+33805 : Getrennt wohnen - Warum immer weniger Paare zusammen leben
+33806 : Online-Dating - Warum es sich lohnt, Dating-Gewohnheiten zu ändern
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk - Gesellschaft with 13500 objectId
+12357 : Endometriose - Wie die chronische Erkrankung den Alltag von Frauen erschwert
+12358 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+12359 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+12360 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+12361 : Deutscher Wald - Genutzt, aber auch geschützt?
+12362 : Tagebuch aus Gaza - Ein Blick ins Grauen
+12363 : Schulstraßen - Wie Kinder sicherer durch den Verkehr kommen
+12364 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+12365 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+12366 : Martin Sellner - Rechtsextremist darf nicht mehr einreisen
+12367 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+12368 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+12369 : Sexuelle Belästigung - Niedersachsen will "Catcalling" härter bestrafen
+12370 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+12371 : Organspende - Initiative "Leben Spenden" plädiert für Widerspruchslösung
+
+
+Menu: the Title is Deutschlandfunk Kultur - Kultur with 22500 objectId
+21310 : Golden Records der NASA - Was für ein Menschenbild haben Außerirdische?
+21311 : Evke Rulffes: "Die Erfindung der Hausfrau" - Eine schleichende Entmündigung
+21312 : "Herr Puntila" in Berlin - Die Volksbühne auf der Bühne der Volksbühne
+21313 : 100. Todestag von Fernand Khnopff - Die Kunst des Rätselns
+21314 : Prachtband über Vögel - Schönheit, Glanz und Prunk
+21315 : Til Schweigers neuer Film - Geschmacklos und durchgeknallt
+21316 : Prostitutions-Ausstellung "Gesichtslos" - 20 Euro für einmal Sex
+21317 : "TV Total"-Comeback - Retro-Fernsehen als Gefühlsanker für die Ü40
+21318 : Preisgekröntes Hörspiel - türken, feuer
+21319 : Neu im Kino: "Lieber Thomas" - Die unaufhörliche Suche des Thomas Brasch
+21320 : Toxische Männlichkeit und Computerspiele - Panische Angst vor dem Machtverlust
+21321 : Kabarettist Ursus Wehrli - "Ich habe Paul Klee statistisch geordnet"
+21322 : "Hyperland" in der ZDF-Mediathek - Dystopie der Bewertungsgesellschaft
+21323 : Architekturstreit in Potsdam - Turmbau zu Babelsberg
+21324 : Rückgabe kolonialer Raubkunst - Folgt auf die Restitution die Absolution?
+
+
+Menu: the Title is Deutschlandfunk - Europa with 12000 objectId
+10793 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+10794 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+10795 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+10796 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+10797 : Deutsche Ukrainehilfe - Waffen liefern, Waffenruhe debattieren?
+10798 : Vor dem EU-Gipfel - Scholz: "Ukraine solange unterstützen wie erforderlich"
+10799 : Ukrainische Exporte - Warum Polen EU-Zollabgaben für die Ukraine fordert
+10800 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+10801 : Beschwerdehefte - Was aus Frankreichs Versprechen für Bürgerbeteiligung wurde
+10802 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+10803 : Flucht und Migration - Warum die EU Migrationsabkommen abschließt
+10804 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+10805 : Der Tag - EU-Milliarden für Ägyptens Herrscher
+10806 : Humanitäre Hilfe - Warum es weniger Geld für mehr Bedürftige gibt
+10807 : Nach Wahlen - Ex-Botschafter erkennt Zeichen für ein besseres Russland
+
+
+Menu: the Title is Deutschlandfunk Kultur - Literatur with 25500 objectId
+24665 : Rezensionen - Die Bücher des Monats
+24666 : Auszeichnung für „Minihorror" - Barbi Marković erhält Preis der Leipziger Buchmesse 2024
+24667 : Preis der Leipziger Buchmesse - Barbi Marković gewinnt mit absurden Monstern
+24668 : Leipziger Buchmesse - Was eine Buchmesse in schwierigen Zeiten leisten kann
+24669 : Leipziger Buchmesse - Die Höhepunkte der Frühlingsschau der Buchbranche
+24670 : Leipziger Buchmesse - Kanzlerrede, Preisverleihung und Proteste
+24671 : März 2024 - Buchtipps zur Leipziger Buchmesse
+24672 : Preis der Leipziger Buchmesse - Diese Romane können gewinnen
+24673 : Lakonisch trifft 54books - Die glamouröse Zukunft der Literatur!
+24674 : Preis der Leipziger Buchmesse 2024 - Die Liste der Nominierten überrascht
+
+
+Menu: the Title is Deutschlandfunk - Wissen with 9000 objectId
+8952 : Atomenergie - Was taugen die Reaktoren der nächsten Generation?
+8953 : Ulugh Beg - Der Herrscher der Astronomie und von Samarkand
+8954 : "Das Feature" empfiehlt - Podcast "Deep Science - Wer rettet die Erde?"
+8955 : Meteorologie - Warum Wettervorhersagen mal zutreffen - und mal nicht
+8956 : B. F. Skinner - Der Mann, der die Psychologie von der Couch ins Labor holte
+8957 : Transportkapsel - Der kleine Weltraumgipfel und das kühne ESA-Ziel
+8958 : WMO-Bericht - Klimaforscher: Deutschland muss bei CO2-Reduktion vorangehen
+8959 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+8960 : Zecken - Virologe: "In ganz Deutschland kann man sich mit FSME infizieren"
+8961 : Frühlingsanfang - Die Jahreszeiten der gekippten Erde
+8962 : Europa - Sichere Rohstoffversorgung durch Recycling?
+8963 : Sri Lanka - Gescheiterte Biowende sorgt für kalten Entzug
+8964 : Justus Georg Westphal - Der vergessene Astronom und sein verschwundener Komet
+8965 : Markus Scheumann - Viermal die Fünf – Jubiläum für die Sternzeit-Stimme
+8966 : AI Act der EU - Fesseln für die künstliche Intelligenz
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Seewetter with 15006 objectId
+15321 : Warnungen
+15322 : Seewetterlage
+15323 : Vorhersage
+15324 : Weitere Aussichten
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk Kultur - Literatur with 25500 objectId
+24665 : Rezensionen - Die Bücher des Monats
+24666 : Auszeichnung für „Minihorror" - Barbi Marković erhält Preis der Leipziger Buchmesse 2024
+24667 : Preis der Leipziger Buchmesse - Barbi Marković gewinnt mit absurden Monstern
+24668 : Leipziger Buchmesse - Was eine Buchmesse in schwierigen Zeiten leisten kann
+24669 : Leipziger Buchmesse - Die Höhepunkte der Frühlingsschau der Buchbranche
+24670 : Leipziger Buchmesse - Kanzlerrede, Preisverleihung und Proteste
+24671 : März 2024 - Buchtipps zur Leipziger Buchmesse
+24672 : Preis der Leipziger Buchmesse - Diese Romane können gewinnen
+24673 : Lakonisch trifft 54books - Die glamouröse Zukunft der Literatur!
+24674 : Preis der Leipziger Buchmesse 2024 - Die Liste der Nominierten überrascht
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Deutschlandfunk - Politik with 6000 objectId
+4748 : Schuldenbremse - Warum Sachsen-Anhalt eine Reform benötigt
+4749 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+4750 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+4751 : Krankenhausreform - Großer Wurf oder großer Murks?
+4752 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+4753 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+4754 : Ampelstreit und Bauernproteste - Tierschutz droht zu scheitern
+4755 : Deutscher Wald - Genutzt, aber auch geschützt?
+4756 : Zivilschutz an Schulen - Sollen unsere Kinder den Kriegsfall üben?
+4757 : Krankenhausreform - Warum es den Kliniken so schlecht geht
+4758 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+4759 : Politikberater Lange - Warum die Ukraine zu langsam mit Waffen beliefert wird
+4760 : Tagebuch aus Gaza - Ein Blick ins Grauen
+4761 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+4762 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+Hamburg-Moorfleet 410.4 km 66.7 °  (1.0m) (1,000000)
+Hamburg/Heinrich-Hertz-Turm 404.4 km 65.6 °  (24.0m) (24,000000)
+
+
+Menu: the Title is Deutschlandfunk - Sport with 15000 objectId
+14002 : DFB-Vizepräsidentin - „Chance auf Frauen-WM 2027 in Deutschland steht bei 50:50“
+14003 : Debatte um deutsche Bewerbung - Die Frage nach dem Vermächtnis Olympischer Spiele
+14004 : Debatte um Eishockey-Investor - Kölner Haie zwischen Moral und finanzieller Abhängigkeit
+14005 : Olympische Spiele - IOC und Russland: Noch viele offene Fragen
+14006 : Skiflug-Weltcup der Frauen - Skispringerin Schmid: "Fühlt sich nochmal cooler an"
+14007 : Nordische Kombination - Bundestrainer ziehen unterschiedliche Bilanz
+14008 : Sieg gegen Österreich - DHB-Team für Olympia qualifiziert: „Ein bisschen souverän“
+14009 : Nach Protesten in Belarus - Oppositionelle Sportler auch im Exil weiter unter Druck
+14010 : Krieg in Gaza - Israels Sport gerät unter Druck
+14011 : Konflikt im Wintersport - DSV-Sportchef Maier: FIS-Präsident Eliasch hat "keine Ahnung"
+14012 : Staatsdoping in der DDR - Wie geht es weiter mit der Entschädigung für Dopingopfer?
+14013 : Doping im Sport - Was die "Enhanced Games" aus medizinischer Sicht gefährlich macht
+14014 : "Hall of Fame" des Sports - Historiker: Deutscher Sport blendet NS-Vergangenheit aus
+14015 : Eintracht Gladau - Fußballmannschaft mit Rechtsextremen darf weiterspielen
+14016 : Kritik an Entwicklungsplan - Landessportbünde bleiben Bewegungsgipfel fern
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Deutschlandfunk - Wirtschaft, Umwelt und Verbraucher with 7500 objectId
+6813 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+6814 : Krankenhausreform - Großer Wurf oder großer Murks?
+6815 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+6816 : E-Auto-Fabrik - Tesla in Grünheide – Segen oder Fluch?
+6817 : Klimaziele 2030 - Kommentar: Der Klimakrise nicht vollends ausgeliefert
+6818 : Umwelt- und Menschenrechte - Wirkt das Lieferkettengesetz?
+6819 : Tarifstreit - Wie Bahn und GDL wieder zusammenfinden könnten
+6820 : Glyphosat - Krebsgefahr vom Acker oder Segen für die Landwirtschaft?
+6821 : Schienenverkehr - GDL und Deutsche Bahn: Eskalation eines Konflikts
+6822 : Kommentar zum Bahnstreik - Weselskys Streik torpediert die Verkehrswende
+6823 : WTO-Konferenz in Abu Dhabi - WTO-Gipfel endet ohne Einigung in wichtigen Fragen
+6824 : Fachkräftemangel - Warum Deutschland Migranten braucht
+6825 : Flüchtlinge aus der Ukraine - Integration mit Hindernissen
+6826 : Containerschifffahrt - Wie Reedereien den Lauf der Weltwirtschaft bestimmen
+6827 : Stress statt Innovation - Warum ein Teil der Mitte Probleme mit dem Wandel hat
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Deutschlandfunk - Europa with 12000 objectId
+10793 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+10794 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+10795 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+10796 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+10797 : Deutsche Ukrainehilfe - Waffen liefern, Waffenruhe debattieren?
+10798 : Vor dem EU-Gipfel - Scholz: "Ukraine solange unterstützen wie erforderlich"
+10799 : Ukrainische Exporte - Warum Polen EU-Zollabgaben für die Ukraine fordert
+10800 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+10801 : Beschwerdehefte - Was aus Frankreichs Versprechen für Bürgerbeteiligung wurde
+10802 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+10803 : Flucht und Migration - Warum die EU Migrationsabkommen abschließt
+10804 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+10805 : Der Tag - EU-Milliarden für Ägyptens Herrscher
+10806 : Humanitäre Hilfe - Warum es weniger Geld für mehr Bedürftige gibt
+10807 : Nach Wahlen - Ex-Botschafter erkennt Zeichen für ein besseres Russland
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Seewetter with 15006 objectId
+15321 : Warnungen
+15322 : Seewetterlage
+15323 : Vorhersage
+15324 : Weitere Aussichten
+
+
+Menu: the Title is Deutschlandfunk - Wissen with 9000 objectId
+8952 : Atomenergie - Was taugen die Reaktoren der nächsten Generation?
+8953 : Ulugh Beg - Der Herrscher der Astronomie und von Samarkand
+8954 : "Das Feature" empfiehlt - Podcast "Deep Science - Wer rettet die Erde?"
+8955 : Meteorologie - Warum Wettervorhersagen mal zutreffen - und mal nicht
+8956 : B. F. Skinner - Der Mann, der die Psychologie von der Couch ins Labor holte
+8957 : Transportkapsel - Der kleine Weltraumgipfel und das kühne ESA-Ziel
+8958 : WMO-Bericht - Klimaforscher: Deutschland muss bei CO2-Reduktion vorangehen
+8959 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+8960 : Zecken - Virologe: "In ganz Deutschland kann man sich mit FSME infizieren"
+8961 : Frühlingsanfang - Die Jahreszeiten der gekippten Erde
+8962 : Europa - Sichere Rohstoffversorgung durch Recycling?
+8963 : Sri Lanka - Gescheiterte Biowende sorgt für kalten Entzug
+8964 : Justus Georg Westphal - Der vergessene Astronom und sein verschwundener Komet
+8965 : Markus Scheumann - Viermal die Fünf – Jubiläum für die Sternzeit-Stimme
+8966 : AI Act der EU - Fesseln für die künstliche Intelligenz
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Seewetter with 15006 objectId
+15321 : Warnungen
+15322 : Seewetterlage
+15323 : Vorhersage
+15324 : Weitere Aussichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Kultur with 22500 objectId
+21310 : Golden Records der NASA - Was für ein Menschenbild haben Außerirdische?
+21311 : Evke Rulffes: "Die Erfindung der Hausfrau" - Eine schleichende Entmündigung
+21312 : "Herr Puntila" in Berlin - Die Volksbühne auf der Bühne der Volksbühne
+21313 : 100. Todestag von Fernand Khnopff - Die Kunst des Rätselns
+21314 : Prachtband über Vögel - Schönheit, Glanz und Prunk
+21315 : Til Schweigers neuer Film - Geschmacklos und durchgeknallt
+21316 : Prostitutions-Ausstellung "Gesichtslos" - 20 Euro für einmal Sex
+21317 : "TV Total"-Comeback - Retro-Fernsehen als Gefühlsanker für die Ü40
+21318 : Preisgekröntes Hörspiel - türken, feuer
+21319 : Neu im Kino: "Lieber Thomas" - Die unaufhörliche Suche des Thomas Brasch
+21320 : Toxische Männlichkeit und Computerspiele - Panische Angst vor dem Machtverlust
+21321 : Kabarettist Ursus Wehrli - "Ich habe Paul Klee statistisch geordnet"
+21322 : "Hyperland" in der ZDF-Mediathek - Dystopie der Bewertungsgesellschaft
+21323 : Architekturstreit in Potsdam - Turmbau zu Babelsberg
+21324 : Rückgabe kolonialer Raubkunst - Folgt auf die Restitution die Absolution?
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+
+
+Menu: the Title is Deutschlandfunk Nova - Update with 45000 objectId
+43812 : Biometrie, Atomkraft, Bahnbilanz
+43813 : Bodentruppen, Elektroschrott, Tiktok-Politik
+43814 : Terrorverdacht, Bürgergeld, Merkmethoden
+43815 : Opposition in Russland, Linksextremismus, Paketstationen
+43816 : Anti-Putin-Aktivistin, Klimaziele, Haustiere
+43817 : Taurus, Fast Fashion, Tiktok
+43818 : Pro-ukrainische Russen, KI-Gesetz, Klimagerechtigkeit
+43819 : Flugsicherheit, Wehrpflicht, Junge Alternative
+43820 : Ramadan, Oscars, Taurus
+43821 : Frauenrechte, Bahnstreik, Biden
+43822 : Weltraumbatterien, Streik, Make-Up
+43823 : Israel, Streik, Donald Trump
+43824 : RAF-Terroristen, US-Präsidentschaftswahl, Rente
+43825 : Bahnstreik, TikTok, Frühling
+43826 : Putin, Schalttag, NSU
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Kultur with 22500 objectId
+21310 : Golden Records der NASA - Was für ein Menschenbild haben Außerirdische?
+21311 : Evke Rulffes: "Die Erfindung der Hausfrau" - Eine schleichende Entmündigung
+21312 : "Herr Puntila" in Berlin - Die Volksbühne auf der Bühne der Volksbühne
+21313 : 100. Todestag von Fernand Khnopff - Die Kunst des Rätselns
+21314 : Prachtband über Vögel - Schönheit, Glanz und Prunk
+21315 : Til Schweigers neuer Film - Geschmacklos und durchgeknallt
+21316 : Prostitutions-Ausstellung "Gesichtslos" - 20 Euro für einmal Sex
+21317 : "TV Total"-Comeback - Retro-Fernsehen als Gefühlsanker für die Ü40
+21318 : Preisgekröntes Hörspiel - türken, feuer
+21319 : Neu im Kino: "Lieber Thomas" - Die unaufhörliche Suche des Thomas Brasch
+21320 : Toxische Männlichkeit und Computerspiele - Panische Angst vor dem Machtverlust
+21321 : Kabarettist Ursus Wehrli - "Ich habe Paul Klee statistisch geordnet"
+21322 : "Hyperland" in der ZDF-Mediathek - Dystopie der Bewertungsgesellschaft
+21323 : Architekturstreit in Potsdam - Turmbau zu Babelsberg
+21324 : Rückgabe kolonialer Raubkunst - Folgt auf die Restitution die Absolution?
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Medien with 37500 objectId
+36755 : Zwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & FacebookZwischen Facebook-Files & Metaversum — ein Meta-Blick auf Journalismus & Facebook
+36756 : Wir starten die Was mit Medien ExplorerWir starten die Was mit Medien Explorer
+36757 : Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?Wie produziert die Audio Alliance Podcasts für RTL, Gruner & Jahr & Co.?
+36758 : Warum ist digitale Resilienz mehr als ein Buzzword?Warum ist digitale Resilienz mehr als ein Buzzword?
+36759 : Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus?Wie sieht gute Klima-Berichterstattung im Jahr 2021 aus, Sara Schurmann?
+36760 : Welche Rolle spielen Fake News kurz vor der Bundestagswahl?Welche Rolle spielen Fakes kurz vor der Bundestagswahl, Valerie Scholz?
+36761 : Wird Bild Live das deutsche Fox News?Wird Bild Live das deutsche Fox News?
+36762 : Ein Jahr Medien Insider (Teil 2)Ein Jahr Medien Insider (Teil 2)
+36763 : Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?Wie habt ihr Krautreporter neu erfunden, Leon Fryszer?
+36764 : Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?Wie hat Radio Wuppertal die Hochwassernacht erlebt, Georg Rose?
+36765 : 5 Trends zum digitalen Nachrichten-Konsum5 Trends über digitalen Nachrichten-Konsum
+36766 : Gute Werbung, schlechte WerbungGute Werbung, schlechte Werbung
+36767 : Wie verändert sich die Podcast-Welt?Wie verändert sich die Podcast-Szene?
+36768 : Was können wir von der BILD im Wahlkampf erwarten?Was können wir von der BILD im Wahlkampf erwarten?
+36769 : Podcast-Update: Was war, was kommtPodcast-Update: Was war, was kommt
+36770 : Was steckt hinter Facebook News, Guido Bülow?Was steckt hinter Facebook News, Guido Bülow?
+
+
+Menu: the Title is Deutschlandfunk - Wissen with 9000 objectId
+8952 : Atomenergie - Was taugen die Reaktoren der nächsten Generation?
+8953 : Ulugh Beg - Der Herrscher der Astronomie und von Samarkand
+8954 : "Das Feature" empfiehlt - Podcast "Deep Science - Wer rettet die Erde?"
+8955 : Meteorologie - Warum Wettervorhersagen mal zutreffen - und mal nicht
+8956 : B. F. Skinner - Der Mann, der die Psychologie von der Couch ins Labor holte
+8957 : Transportkapsel - Der kleine Weltraumgipfel und das kühne ESA-Ziel
+8958 : WMO-Bericht - Klimaforscher: Deutschland muss bei CO2-Reduktion vorangehen
+8959 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+8960 : Zecken - Virologe: "In ganz Deutschland kann man sich mit FSME infizieren"
+8961 : Frühlingsanfang - Die Jahreszeiten der gekippten Erde
+8962 : Europa - Sichere Rohstoffversorgung durch Recycling?
+8963 : Sri Lanka - Gescheiterte Biowende sorgt für kalten Entzug
+8964 : Justus Georg Westphal - Der vergessene Astronom und sein verschwundener Komet
+8965 : Markus Scheumann - Viermal die Fünf – Jubiläum für die Sternzeit-Stimme
+8966 : AI Act der EU - Fesseln für die künstliche Intelligenz
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Deutschlandfunk - Wirtschaft, Umwelt und Verbraucher with 7500 objectId
+6813 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+6814 : Krankenhausreform - Großer Wurf oder großer Murks?
+6815 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+6816 : E-Auto-Fabrik - Tesla in Grünheide – Segen oder Fluch?
+6817 : Klimaziele 2030 - Kommentar: Der Klimakrise nicht vollends ausgeliefert
+6818 : Umwelt- und Menschenrechte - Wirkt das Lieferkettengesetz?
+6819 : Tarifstreit - Wie Bahn und GDL wieder zusammenfinden könnten
+6820 : Glyphosat - Krebsgefahr vom Acker oder Segen für die Landwirtschaft?
+6821 : Schienenverkehr - GDL und Deutsche Bahn: Eskalation eines Konflikts
+6822 : Kommentar zum Bahnstreik - Weselskys Streik torpediert die Verkehrswende
+6823 : WTO-Konferenz in Abu Dhabi - WTO-Gipfel endet ohne Einigung in wichtigen Fragen
+6824 : Fachkräftemangel - Warum Deutschland Migranten braucht
+6825 : Flüchtlinge aus der Ukraine - Integration mit Hindernissen
+6826 : Containerschifffahrt - Wie Reedereien den Lauf der Weltwirtschaft bestimmen
+6827 : Stress statt Innovation - Warum ein Teil der Mitte Probleme mit dem Wandel hat
+
+
+Menu: the Title is Deutschlandfunk - Gesellschaft with 13500 objectId
+12357 : Endometriose - Wie die chronische Erkrankung den Alltag von Frauen erschwert
+12358 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+12359 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+12360 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+12361 : Deutscher Wald - Genutzt, aber auch geschützt?
+12362 : Tagebuch aus Gaza - Ein Blick ins Grauen
+12363 : Schulstraßen - Wie Kinder sicherer durch den Verkehr kommen
+12364 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+12365 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+12366 : Martin Sellner - Rechtsextremist darf nicht mehr einreisen
+12367 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+12368 : Organspenderegister - Mediziner: "Es gibt keine obere Altersgrenze für die Organspende"
+12369 : Sexuelle Belästigung - Niedersachsen will "Catcalling" härter bestrafen
+12370 : Sozialpolitik - Wie es mit dem Bürgergeld weitergeht
+12371 : Organspende - Initiative "Leben Spenden" plädiert für Widerspruchslösung
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Deutschlandfunk Kultur - Musik with 27000 objectId
+26583 : Roberto Blanco - Nie die Heiterkeit verlieren
+26584 : Eindrücke vom La Maestra - Wettbewerb 2024 in Paris - Dirigentinnen gesucht!
+26585 : Sonntagsrätsel Ausgabe Nr. 2956 - Wer hat‘s – vor einer halben Ewigkeit – aufgeschrieben?
+26586 : Nachruf Aribert Reimann - Der Herrscher der Klangballen
+26587 : US-Wahl 2024 - Keine Songs für diesen Wahlkampf
+26588 : Pariser Organisation "Musique et Spoliations" - Raubgut Musikinstrumente im Zweiten Weltkrieg
+26589 : Super Tuesday - Das Potenzial von Musikern, den US-Wahlkampf zu beeinflussen
+26590 : Beyoncé - Sprung auf Platz 1 der US-Country-Charts
+26591 : Rapper Ben Salomo - "Die hebräische Sprache erreicht mich in den Tiefen meines Herzens"
+26592 : Eurovision - Ist Israels Titel zu politisch?
+26593 : Biopic "One Love" - Drei entscheidende Jahre für das Leben von Bob Marley
+26594 : Mozarts "Zauberflöte" - Libretto-Neuausrichtung mit Sprengkraft
+26595 : Pop-Journalismus - Kritiker: Einstellung von "Vice" Deutschland kam mit Ansage
+26596 : Wiener Festwochen - Milo Rau sagt Konzert von Stardirigent Teodor Currentzis ab
+26597 : Konzertwelt - Japanischer Dirigent Seiji Ozawa gestorben
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk - Sport with 15000 objectId
+14002 : DFB-Vizepräsidentin - „Chance auf Frauen-WM 2027 in Deutschland steht bei 50:50“
+14003 : Debatte um deutsche Bewerbung - Die Frage nach dem Vermächtnis Olympischer Spiele
+14004 : Debatte um Eishockey-Investor - Kölner Haie zwischen Moral und finanzieller Abhängigkeit
+14005 : Olympische Spiele - IOC und Russland: Noch viele offene Fragen
+14006 : Skiflug-Weltcup der Frauen - Skispringerin Schmid: "Fühlt sich nochmal cooler an"
+14007 : Nordische Kombination - Bundestrainer ziehen unterschiedliche Bilanz
+14008 : Sieg gegen Österreich - DHB-Team für Olympia qualifiziert: „Ein bisschen souverän“
+14009 : Nach Protesten in Belarus - Oppositionelle Sportler auch im Exil weiter unter Druck
+14010 : Krieg in Gaza - Israels Sport gerät unter Druck
+14011 : Konflikt im Wintersport - DSV-Sportchef Maier: FIS-Präsident Eliasch hat "keine Ahnung"
+14012 : Staatsdoping in der DDR - Wie geht es weiter mit der Entschädigung für Dopingopfer?
+14013 : Doping im Sport - Was die "Enhanced Games" aus medizinischer Sicht gefährlich macht
+14014 : "Hall of Fame" des Sports - Historiker: Deutscher Sport blendet NS-Vergangenheit aus
+14015 : Eintracht Gladau - Fußballmannschaft mit Rechtsextremen darf weiterspielen
+14016 : Kritik an Entwicklungsplan - Landessportbünde bleiben Bewegungsgipfel fern
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk - Europa with 12000 objectId
+10793 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+10794 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+10795 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+10796 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+10797 : Deutsche Ukrainehilfe - Waffen liefern, Waffenruhe debattieren?
+10798 : Vor dem EU-Gipfel - Scholz: "Ukraine solange unterstützen wie erforderlich"
+10799 : Ukrainische Exporte - Warum Polen EU-Zollabgaben für die Ukraine fordert
+10800 : Dänemark - Auch Frauen werden künftig für Grundwehrdienst eingezogen
+10801 : Beschwerdehefte - Was aus Frankreichs Versprechen für Bürgerbeteiligung wurde
+10802 : Der Tag - Einfrieren des Ukraine-Kriegs: Was bezweckt Rolf Mützenich?
+10803 : Flucht und Migration - Warum die EU Migrationsabkommen abschließt
+10804 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+10805 : Der Tag - EU-Milliarden für Ägyptens Herrscher
+10806 : Humanitäre Hilfe - Warum es weniger Geld für mehr Bedürftige gibt
+10807 : Nach Wahlen - Ex-Botschafter erkennt Zeichen für ein besseres Russland
+
+
+Menu: the Title is Deutschlandfunk - Kultur with 10500 objectId
+9340 : „Anzeigenhauptmeister“ - Zwischen Medienhype und Cybermobbing  
+9341 : Pieter Bruegel - Ein Spiegel für den Betrachter?
+9342 : Kommentar zum Gendern in Bayern - Formaljuristisch ist das Verbot ordentlich definiert
+9343 : Staatsrechtler Möllers - Antisemitismusklauseln: Rechtens, aber nicht ratsam
+9344 : Literatur - Buchverlage wirtschaften weiter im Krisenmodus
+9345 : Ulbricht-Biografie - Warum der DDR-Diktator nicht zur Witzfigur taugt
+9346 : Judenhass - Kurt Münzer: "Jude ans Kreuz!"
+9347 : Christa Wolf - Eine gesamtdeutsche Schriftstellerin
+9348 : Urtyp des Faschisten - Thomas Mann: "Der Zauberberg"
+9349 : Gesangslehrerin Judith Kamphues - "Das gemeinsame Singen zaubert ein Lächeln ins Gesicht"
+9350 : Weimarer Republik - Wie die Kinderliteratur den Faschismus erahnte
+9351 : Mordende Freikorps - Hermynia Zur Mühlen: "Die weiße Pest"
+9352 : Friedensplädoyer - Bruno Frank: "Politische Novelle"
+9353 : Aachener Dom - Frühjahrsputz für den 900 Jahre alten Barbarossaleuchter
+9354 : Zukunft der Kirchen - Frankreichs Bischöfe machen Inventur
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk Nova - Eine Stunde Talk with 36000 objectId
+34549 : Deep Talk - Sven und Rahel sagen Tschüss
+34550 : Sanaz Azimipour, hat das iranische Regime Angst vor der Protestbewegung?
+34551 : Stefan Koldehoff, macht Kunst Dich glücklich?
+34552 : Hannah Meul, wie fühlt es sich an, mit zwei Fingern in der Wand zu hängen?
+34553 : Johannes Hillje, ist die AfD normal geworden?
+34554 : Alexander Tiesenhausen, wird Liebeskummer ernst genug genommen?
+34555 : Marcel Sebastian, wie entscheiden wir, ob wir Tiere streicheln oder schlachten?
+34556 : Hebamme Tobi, warum sind auch Männer gute Hebammen?
+34557 : Veronique Kouchev, wie fühlt sich Asperger-Autismus für Dich an?
+34558 : "Ronen Steinke, warum brauchen wir keinen Verfassungsschutz?"
+34559 : Stephan Orth, warum soll man noch nach England reisen?
+34560 : Hannah Emde, warum ist Artenschutz so wichtig für unsere Gesundheit?
+34561 : Lisanne Richter, warum ist Catcalling kein Kompliment?
+34562 : "Chris Rock Jackson, wie hat Breakdance dir geholfen?"
+34563 : Carsten Schermuly, als wie gefährlich empfinden Mitarbeitende New Work?
+
+
+Menu: the Title is Deutschlandfunk Nova - Einhundert with 39000 objectId
+38707 : In eigener Sache: Die Einhundert macht eine Pause
+38708 : Au-pair - Bettys Traum wird zum Alptraum
+38709 : Identität - Alissa traut sich endlich jüdisch zu sein
+38710 : Spätabtreibung - Lea steht vor der schwersten Entscheidung ihres Lebens (Teil 1)
+38711 : Spätabtreibung - Lea steht vor der schwersten Entscheidung ihres Lebens (Teil 2)
+38712 : Trauerrednerin: Nach dem Tod der Oma geht Jennifer neue Wege
+38713 : Queere Identität: Alex bricht mit seinem Vater, um er selbst zu sein
+38714 : Flucht - Iryna ist in der Ukraine ein Star, in Berlin muss sie neu anfangen
+38715 : Alleinerziehend - Sarah ist überfordert vom Wunschkind (Teil 1)
+38716 : Alleinerziehend - Sarah ist überfordert vom Wunschkind (Teil 2)
+38717 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 1)
+38718 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 2)
+38719 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 3)
+38720 : Profimusikerin - Für Josephine zählt nur das Cello, bis sie den Unfall hat (Teil 4)
+38721 : Eurodance - Lori Glori will ihre Stimme von DJ Bobo zurück (Teil 1)
+
+
+Menu: the Title is Deutschlandfunk Nova - History with 40500 objectId
+40151 : Französische Revolution - Der Code Civil
+40152 : IAA 1934 - Geburt des VW-Käfers
+40153 : Toleranter Eroberer - Kyros der Große
+40154 : Siebzigster Geburtstag von Recep Tayyip Erdogan
+40155 : Jahrtausendhochwasser 1784
+40156 : Sowjetunion - der Abzug aus Afghanistan
+40157 : Social-Media-Geschichte - Gefällt mir? 20 Jahre Facebook
+40158 : Der Tod Karls des Großen
+40159 : Bedeutende Herrscherinnen - Queen Victoria
+40160 : Sowjetunion - Lenins Tod
+40161 : Nordische Mythologie - Die "Edda" als Ursprung germanischer Göttersagen
+40162 : Aus "Landlords Game" wird Monopoly
+40163 : Nachkriegsdeutschland - Das Kabarett der "Insulaner"
+40164 : Katholische Kirche - Das rätselhafte Petrusgrab im Petersdom
+40165 : DDR - Die Gründung der "Jungen Pioniere"
+
+
+Menu: the Title is Deutschlandfunk Nova - HÃ¶rsaal with 42000 objectId
+41745 : Rechtsextremismus - Brandanschläge und Asyldebatte in den 1990ern
+41746 : Degrowth - Muss eine Wirtschaft immer wachsen?
+41747 : Sprachgeschichte - Die deutsche Sprache wandelt sich ständig
+41748 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 1)
+41749 : "Lügenpresse" - Fake News im 17. Jahrhundert (Teil 2)
+41750 : NS Verbrechen - Bremen als Drehkreuz der Todesmärsche
+41751 : Rechtswissenschaft - Wie die AfD die Schulen verändern könnte
+41752 : Soziologie - So ticken die Babyboomer
+41753 : Kognitionsforschung - Über den Zusammenhang von Sprache und Denken
+41754 : Nahostkrieg - Israel, Gaza und das humanitäre Völkerrecht
+41755 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 1)
+41756 : Russlands Krieg - Was das Völkerstrafrecht kann und was nicht (Teil 2)
+41757 : Zwei Jahre nach dem Überfall - Russlands Krieg gegen die Ukraine
+41758 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 1)
+41759 : Innere Uhr - Die Geschichte der Vermessung unseres Schlafs (Teil 2)
+
+
+Menu: the Title is Deutschlandfunk Kultur - Kultur with 22500 objectId
+21310 : Golden Records der NASA - Was für ein Menschenbild haben Außerirdische?
+21311 : Evke Rulffes: "Die Erfindung der Hausfrau" - Eine schleichende Entmündigung
+21312 : "Herr Puntila" in Berlin - Die Volksbühne auf der Bühne der Volksbühne
+21313 : 100. Todestag von Fernand Khnopff - Die Kunst des Rätselns
+21314 : Prachtband über Vögel - Schönheit, Glanz und Prunk
+21315 : Til Schweigers neuer Film - Geschmacklos und durchgeknallt
+21316 : Prostitutions-Ausstellung "Gesichtslos" - 20 Euro für einmal Sex
+21317 : "TV Total"-Comeback - Retro-Fernsehen als Gefühlsanker für die Ü40
+21318 : Preisgekröntes Hörspiel - türken, feuer
+21319 : Neu im Kino: "Lieber Thomas" - Die unaufhörliche Suche des Thomas Brasch
+21320 : Toxische Männlichkeit und Computerspiele - Panische Angst vor dem Machtverlust
+21321 : Kabarettist Ursus Wehrli - "Ich habe Paul Klee statistisch geordnet"
+21322 : "Hyperland" in der ZDF-Mediathek - Dystopie der Bewertungsgesellschaft
+21323 : Architekturstreit in Potsdam - Turmbau zu Babelsberg
+21324 : Rückgabe kolonialer Raubkunst - Folgt auf die Restitution die Absolution?
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Deutschlandfunk Nova - Update with 45000 objectId
+43812 : Biometrie, Atomkraft, Bahnbilanz
+43813 : Bodentruppen, Elektroschrott, Tiktok-Politik
+43814 : Terrorverdacht, Bürgergeld, Merkmethoden
+43815 : Opposition in Russland, Linksextremismus, Paketstationen
+43816 : Anti-Putin-Aktivistin, Klimaziele, Haustiere
+43817 : Taurus, Fast Fashion, Tiktok
+43818 : Pro-ukrainische Russen, KI-Gesetz, Klimagerechtigkeit
+43819 : Flugsicherheit, Wehrpflicht, Junge Alternative
+43820 : Ramadan, Oscars, Taurus
+43821 : Frauenrechte, Bahnstreik, Biden
+43822 : Weltraumbatterien, Streik, Make-Up
+43823 : Israel, Streik, Donald Trump
+43824 : RAF-Terroristen, US-Präsidentschaftswahl, Rente
+43825 : Bahnstreik, TikTok, Frühling
+43826 : Putin, Schalttag, NSU
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Seewetter with 15006 objectId
+15321 : Warnungen
+15322 : Seewetterlage
+15323 : Vorhersage
+15324 : Weitere Aussichten
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Deutschlandfunk - Die Nachrichten with 3000 objectId
+2403 : Gipfel in Brüssel - EU beschließt Beitrittsverhandlungen mit Bosnien-Herzegowina
+2404 : Rede beim EU-Gipfel - Selenskyj drängt auf rasche Nutzung russischer Vermögenswerte
+2405 : Nahost-Krieg - Blinken warnt erneut vor israelischer Bodenoffensive auf die Stadt Rafah
+2406 : Bundestag - Mandat für Mittelmeer-Einsatz "Sea Guardian" verlängert
+2407 : Leipziger Buchmesse - Bundespräsident Steinmeier ruft zu Zusammenhalt und Tatkraft auf
+2408 : Irland - Harris Favorit für Amt des Regierungschefs
+2409 : Katalonien - Puigdemont bestätigt geplante Rückkehr für Teilnahme an Regional-Wahlen
+2410 : Warnung vor Missbrauch - UNO-Vollversammlung billigt erste Resolution zu Künstlicher Intelligenz
+2411 : Handelsabkommen mit Kanada - Französischer Senat stimmt gegen Ceta
+2412 : Wettbewerbsverstöße - US-Justizministerium erhebt Anklage gegen Apple
+2413 : Bundesrat - Gegner und Befürworter von Cannabis-Legalisierung werben vor morgiger Abstimmung noch einmal für ihre Positionen
+2414 : Mittelmeer - Behörden in Italien setzen erneut Rettungsschiff fest
+2415 : Energiekonferenz - EU-Staaten werben in Brüssel für Atomenergie
+2416 : NS-Verbrechen im KZ Buchenwald - Kriminalbiologe bestätigt: Lampenschirm wurde aus Menschenhaut gefertigt
+2417 : Aus für Adidas - DFB wird ab 2027 von Nike ausgestattet
+
+
+Menu: the Title is Deutschlandfunk Nova with 8 objectId
+33000 : Eine Stunde Film
+34500 : Eine Stunde Liebe
+36000 : Eine Stunde Talk
+37500 : Eine Stunde was mit Medien
+39000 : Einhundert
+40500 : Eine Stunde History
+42000 : Hörsaal
+45000 : Update
+9 : Kontakt
+10 : Impressum
+
+
+Menu: the Title is Deutschlandfunk - Politik with 6000 objectId
+4748 : Schuldenbremse - Warum Sachsen-Anhalt eine Reform benötigt
+4749 : Kommentar zur Bahn-Bilanz - Für Fatalismus ist es zu früh
+4750 : Der Tag - Klimageld: Geht’s doch ganz einfach?
+4751 : Krankenhausreform - Großer Wurf oder großer Murks?
+4752 : Streit um staatliche Förderung - Das Demokratiefördergesetz liegt auf Eis
+4753 : Behinderte - Neues Gesetz soll Inklusion auf dem Arbeitsmarkt erleichtern
+4754 : Ampelstreit und Bauernproteste - Tierschutz droht zu scheitern
+4755 : Deutscher Wald - Genutzt, aber auch geschützt?
+4756 : Zivilschutz an Schulen - Sollen unsere Kinder den Kriegsfall üben?
+4757 : Krankenhausreform - Warum es den Kliniken so schlecht geht
+4758 : Bosnien-Herzegowina - Hoher Repräsentant spricht sich für EU-Beitritt aus
+4759 : Politikberater Lange - Warum die Ukraine zu langsam mit Waffen beliefert wird
+4760 : Tagebuch aus Gaza - Ein Blick ins Grauen
+4761 : EU-Gipfel in Brüssel - Viele Themen liegen auf dem Tisch
+4762 : EU-Agrarzölle - Warum die Importe aus der Ukraine nicht das Problem sind
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Service with 11 objectId
+12 : Service-Rufnummern
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk - Die Presseschau with 4500 objectId
+4485 : 21. März 2024 - Die internationale Presseschau
+4486 : 20. März 2024 - Die internationale Presseschau
+4487 : 19. März 2024 - Die internationale Presseschau
+4488 : 18. März 2024 - Die internationale Presseschau
+4489 : 16. März 2024 - Die internationale Presseschau
+4490 : 15. März 2024 - Die internationale Presseschau
+4491 : 14. März 2024 - Die internationale Presseschau
+4492 : 13. März 2024 - Die internationale Presseschau
+4493 : 12. März 2024 - Die internationale Presseschau
+4494 : 11. März 2024 - Die internationale Presseschau
+
+
+RootBobect: The title is Deutschlandradio Journaline Service
+Deutschlandfunk
+Deutschlandfunk Kultur
+Deutschlandfunk Nova
+Service
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk with 19500 objectId
+18367 : 23:00 Nachrichten
+18368 : 23:10 Das war der Tag
+18369 : 23:53 Presseschau
+18370 : 23:57 National- und Europahymne
+18371 : 00:00 Nachrichten
+18372 : 00:05 Deutschlandfunk Radionacht
+18373 : 00:05 Fazit
+18374 : 01:00 Nachrichten
+18375 : 01:05 Kalenderblatt
+18376 : 01:10 Hintergrund
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Nova with 46500 objectId
+46240 : 23:00 Nachrichten
+46241 : 00:00 Deutschlandfunk Nova
+46242 : 06:00 Nachrichten
+46243 : 06:30 Deutschlandfunk Nova
+46244 : 06:30 Nachrichten
+46245 : 07:00 Nachrichten
+46246 : 07:30 Nachrichten
+46247 : 08:00 Nachrichten
+46248 : 08:30 Nachrichten
+46249 : 09:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk with 2 objectId
+3000 : Nachrichten
+4500 : Presseschau
+6000 : Politik
+7500 : Wirtschaft
+9000 : Wissen
+10500 : Kultur
+12000 : Europa
+13500 : Gesellschaft
+15000 : Sport
+19500 : Programmvorschau
+3 : Kontakt
+4 : Impressum
+
+
+Menu: the Title is Deutschlandfunk Kultur - Literatur with 25500 objectId
+24665 : Rezensionen - Die Bücher des Monats
+24666 : Auszeichnung für „Minihorror" - Barbi Marković erhält Preis der Leipziger Buchmesse 2024
+24667 : Preis der Leipziger Buchmesse - Barbi Marković gewinnt mit absurden Monstern
+24668 : Leipziger Buchmesse - Was eine Buchmesse in schwierigen Zeiten leisten kann
+24669 : Leipziger Buchmesse - Die Höhepunkte der Frühlingsschau der Buchbranche
+24670 : Leipziger Buchmesse - Kanzlerrede, Preisverleihung und Proteste
+24671 : März 2024 - Buchtipps zur Leipziger Buchmesse
+24672 : Preis der Leipziger Buchmesse - Diese Romane können gewinnen
+24673 : Lakonisch trifft 54books - Die glamouröse Zukunft der Literatur!
+24674 : Preis der Leipziger Buchmesse 2024 - Die Liste der Nominierten überrascht
+
+
+Menu: the Title is Programmvorschau für Deutschlandfunk Kultur with 31500 objectId
+30620 : 23:00 Nachrichten
+30621 : 23:05 Fazit
+30622 : 23:30 Kulturnachrichten
+30623 : 23:50 Kulturpresseschau
+30624 : 00:00 Nachrichten
+30625 : 00:05 Klangkunst
+30626 : 01:00 Nachrichten
+30627 : 01:05 Tonart
+30628 : 02:00 Nachrichten
+30629 : 03:00 Nachrichten
+
+
+Menu: the Title is Deutschlandfunk Kultur - Politik und Zeitgeschehen with 24000 objectId
+23709 : Tuntenhaus Berlin - Queeres Wahrzeichen in Gefahr
+23710 : Energiewende - Baden-Württemberg setzt verstärkt auf Biogas
+23711 : Erweiterung des Grundgesetzes - Fundamentale Rechte für Tiere und Pflanzen
+23712 : Tierrechte - Die Natur als gleichberechtigte Akteurin
+23713 : Landwirtschaft - Gesundheit der Tiere spielt im Gesetz keine Rolle
+23714 : Eingefrorene Vermögen - Warum russisches Geld für ukrainische Waffen keine gute Idee ist
+23715 : Russische Nachwuchs-Musiker - Jedes Talent muss seine Kunst zeigen dürfen
+23716 : Propaganda in russischen und ukrainischen Songs - Musik für die eigenen Zwecke
+23717 : Unterstützung für Proteste im Iran - "Jedes Zeichen der Solidarität wird dankbar entgegengenommen"
+23718 : Protestsongs im Iran - Musik gegen das Mullah-Regime
+
+
+Menu: the Title is Wetter with 16500 objectId
+16392 : Kurzvorhersage
+16393 : Wetterlage
+16394 : Vorhersage
+16395 : Weitere Aussichten
+15006 : Seewetter
+
+
+Menu: the Title is Deutschlandfunk Kultur - Wissenschaft with 28500 objectId
+27390 : KZ Buchenwald - Mit Wissenschaft gegen rechte Fake News
+27391 : Gesundheit - Was Geräusche in unserem Körper verraten
+27392 : Musik, bei der man wegdämmert - Voll zum Einschlafen der Sound!
+27393 : Seeed-Konzerte als Forschungsobjekt - Nachhaltigkeit in der Konzertarena
+27394 : Letzte Generation - Autor: Neue Strategie lenkt Fokus auf die Missstände
+27395 : Deutsches Historisches Museum - Regenbogenflagge ist für viele bedeutsam
+27396 : Kulturkampf gegen "Wokeness" - Wie Florida Unis und Schulen zensiert (Podcast)
+27397 : Neue Raumanzüge der NASA - Bereit für minus 400 Grad Fahrenheit (Podcast)
+27398 : HKW-Chefkurator Bonaventure Ndikung - Ein Haus für 190 Nationen
+27399 : Textproduktion mit KI ChatGPT - Wo geht's hier zum Sinn? (Podcast)
+
+
+Menu: the Title is Deutschlandfunk Kultur with 5 objectId
+21000 : Kulturnachrichten
+22500 : Kultur
+24000 : Politik und Zeitgeschehen
+25500 : Literatur
+27000 : Musik
+28500 : Wissenschaft
+30000 : Hörspiel und Feature
+31500 : Programmvorschau
+6 : Kontakt
+7 : Impressum
+going to close the dataStreamer
+accept failed: Ongeldig argument
+going to close the clockstreamer
+accept failed: Ongeldig argument
+.. end the radio silences
+back in main program
+radioInterface is deleted
+dumpfile /home/jan/.qt-dab-schedule.ini is opened good
+dumpFile will be closed

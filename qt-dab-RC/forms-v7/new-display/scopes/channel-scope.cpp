@@ -99,11 +99,12 @@ QString	colorString	= "black";
 	delete		grid;
 }
 
-void	channelScope::display		(const double *X_axis,
-	                                 const double *amplitudeValues,
-	                                 const double *phaseValues,
+void	channelScope::display		(const floatQwt *X_axis,
+	                                 const floatQwt *amplitudeValues,
+	                                 const floatQwt *phaseValues,
 	                                 int Amp) {
-double ampVals [displaySize];
+auto *ampVals	= dynVec (floatQwt, displaySize);
+//double ampVals [displaySize];
 	(void)Amp;
 	float Max	= 0;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,

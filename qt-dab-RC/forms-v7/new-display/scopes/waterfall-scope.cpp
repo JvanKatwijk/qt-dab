@@ -85,12 +85,12 @@
 void	waterfallScope::cleanUp () {
 	for (int i = 0; i < rasterSize; i ++)
 	   for (int j = 0; j < displaySize; j ++)
-	      plotData [i * displaySize + j] = (double)i / rasterSize;
+	      plotData [i * displaySize + j] = (floatQwt)i / rasterSize;
 }
 
-void    waterfallScope::display (const double *X_axis,
-	                         const double *Y1_value,
-	                         double  amp,
+void    waterfallScope::display (const floatQwt *X_axis,
+	                         const floatQwt *Y1_value,
+	                         floatQwt  amp,
 	                         int32_t marker) {
 int     orig    = (int)(X_axis [0]);
 int     width   = (int)(X_axis [displaySize - 1] - orig);
@@ -102,15 +102,13 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
  *      the loops. Note that source and destination overlap
  *      and we therefore use memmove rather than memcpy
  */
-	memmove (&plotData [0],
-	         &plotData [displaySize],
-	         (rasterSize - 1) * displaySize * sizeof (double));
+	for (int i = 0; i < (rasterSize - 1) * displaySize; i ++)
+	   plotData [i] = plotData [displaySize + i];
 /*
  *      ... and insert the new line
  */
-	memcpy (&plotData [(rasterSize - 1) * displaySize],
-	        &Y1_value [0],
-	        displaySize * sizeof (double));
+	for (int i = 0; i < displaySize; i ++)
+	   plotData [(rasterSize - 1) * displaySize + i] = Y1_value [i];
 
 	invalidateCache ();
 	WaterfallData = new spectrogramData (plotData,

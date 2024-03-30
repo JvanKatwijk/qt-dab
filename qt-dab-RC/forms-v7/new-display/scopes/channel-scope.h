@@ -25,7 +25,7 @@
 
 #include        "dab-constants.h"
 #include	<QObject>
-#include	<qwt.h>
+#include	"qwt-2.h"
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>
@@ -50,8 +50,8 @@ public:
 	                         int,
 	                         QSettings *);
 		~channelScope	();
-	void	display		(const double *, 
-	                         const double *, const double *, int);
+	void	display		(const floatQwt *, 
+	                         const floatQwt *, const floatQwt *, int);
 
 private:
 

@@ -37,6 +37,13 @@
 #include	"header-test.h"
 //
 
+#include <stdio.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include "Python.h"
+#include "numpy/arrayobject.h"
+
+
+
 class	Client:public QDialog, public Ui_widget {
 Q_OBJECT
 public:
@@ -68,5 +75,4 @@ private:
 	uint8_t		frameType;
 	int16_t		dataIndex;
 };
-
 

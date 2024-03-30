@@ -153,7 +153,7 @@ static int displayPointer = 0;
 	if (displayPointer == 0) {
 	   memmove (&(Y_Buffer. data () [VIEWBUFFER_SIZE]),
 	                   &(Y_Buffer. data () [0]),
-	                   (plotLength - VIEWBUFFER_SIZE) * sizeof (double));
+	                   (plotLength - VIEWBUFFER_SIZE) * sizeof (floatQwt));
 	   for (int i = 0; i < VIEWBUFFER_SIZE; i ++)
 	      Y_Buffer [i] = displayBuffer [i];
 	   if (snrDumpFile. load () != nullptr)
@@ -165,7 +165,7 @@ static int displayPointer = 0;
 void	snrViewer::add_snr	(float sig, float noise) {
 float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
 	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
-	                               (plotLength - 1) * sizeof (double));
+	                               (plotLength - 1) * sizeof (floatQwt));
 	Y_Buffer [0]	= snr;
 	if (snrDumpFile. load () != nullptr)
 	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());

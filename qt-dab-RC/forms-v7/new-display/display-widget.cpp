@@ -167,10 +167,10 @@ int	displayWidget::get_tab		() {
 void	displayWidget::show_spectrum	(std::vector<Complex> &v,
 	                                                   int freq) {
 int	l	= v. size ();
-double	X_axis [512];
-double  Y_value [512];
+floatQwt  X_axis [512];
+floatQwt  Y_value [512];
 
-static double avg [4 * 512];
+static floatQwt avg [4 * 512];
 	if (currentTab != SHOW_SPECTRUM)
 	   return;
 
@@ -229,8 +229,8 @@ void	displayWidget::show_correlation	(const std::vector<float> &v, int T_g,
 
 	if (v. size () < 512)
 	   return;
-	double X_axis [512];
-	double Y_value [512];
+	floatQwt X_axis [512];
+	floatQwt Y_value [512];
 	float	MMax	= 0;
 	for (int i = v. size () / 2 - 256;
 	                       i < (int)( v. size ()) / 2 + 256; i ++) {
@@ -256,8 +256,8 @@ void	displayWidget::show_null	(Complex  *v, int amount) {
 	for (int i = 0; i < 512; i ++)
 	   v [i] = (v [2 * i] + v [2 * i + 1]) / (DABFLOAT)2.0;
 	nullScope_p	-> display (v, amount);
-	double X_axis [512];
-	double Y_value [512];
+	floatQwt X_axis [512];
+	floatQwt Y_value [512];
 	float	MMax	= 0;
 	for (int i = 0; i < 512; i ++) {
 	   X_axis [i] = 256 + i;
@@ -275,10 +275,10 @@ void	displayWidget::show_null	(Complex  *v, int amount) {
 //	we take an FFT, do some averaging and display
 void	displayWidget::show_tii	(std::vector<Complex> v, int freq) {
 int	l	= v. size ();
-double	X_axis [512];
-double  Y_value [512];
+floatQwt	X_axis [512];
+floatQwt  Y_value [512];
 
-static double avg [4 * 512];
+static floatQwt avg [4 * 512];
 	if (currentTab != SHOW_TII)
 	   return;
 
@@ -306,11 +306,11 @@ static double avg [4 * 512];
 }
 
 void	displayWidget::show_channel	(const std::vector<Complex> Values) {
-double	amplitudeValues	[NR_TAPS];
-double	phaseValues	[NR_TAPS];
-double	X_axis		[NR_TAPS];
-double	waterfall_X	[512];
-double	waterfall_Y	[512];
+floatQwt	amplitudeValues	[NR_TAPS];
+floatQwt	phaseValues	[NR_TAPS];
+floatQwt	X_axis		[NR_TAPS];
+floatQwt	waterfall_X	[512];
+floatQwt	waterfall_Y	[512];
 
 int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
@@ -342,8 +342,8 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 }
 
 void	displayWidget::show_stdDev	(const std::vector<float> stdDevVector) {
-double X_axis [512];
-double Y_value [512];
+floatQwt X_axis [512];
+floatQwt Y_value [512];
 
 	if (currentTab != SHOW_STDDEV)
 	   return;

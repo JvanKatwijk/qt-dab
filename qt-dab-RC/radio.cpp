@@ -237,7 +237,8 @@ QString h;
 //	we have the configuration handler and the ensemble handler,
 //	connect some signals directly
 	configHandler_p		-> set_connections ();
-	configHandler_p	-> setDeviceList (chooseDevice. getDeviceList ());
+	configHandler_p		-> setDeviceList (chooseDevice.
+	                                            getDeviceList ());
 	connect (configHandler_p, SIGNAL (frameClosed ()),
 	         this, SLOT (handle_configFrame_closed ()));
 	connect (configHandler_p, SIGNAL (handle_fontSelect ()),
@@ -1187,7 +1188,7 @@ void	RadioInterface::TerminateProcess () {
 	the_ensembleHandler	-> hide ();
 //	delete	the_ensembleHandler;
 	configHandler_p	-> hide ();
-//	delete	configHandler_p;
+	delete	configHandler_p;
 	techWindow_p	-> hide ();
 	delete techWindow_p;
 	if (contentTable_p != nullptr) {
@@ -1264,25 +1265,25 @@ void	RadioInterface::updateTimeDisplay() {
 	   }
 	}
 
-	if (error_report && (numberofSeconds % 10) == 0) {
-	   int	totalFrames;
-	   int	goodFrames;
-	   int	badFrames;
-	   my_ofdmHandler	-> get_frameQuality (&totalFrames,
-	                                             &goodFrames,
-	                                             &badFrames);
-	   fprintf (stderr, "total %d, good %d bad %d ficRatio %f\n",
-	                     totalFrames, goodFrames, badFrames,
-	                                            total_ficError * 100.0 / total_fics);
-	   total_ficError	= 0;
-	   total_fics		= 0;
-	   if (configHandler_p -> currentStream () != "") {
-	      if (soundOut_p -> hasMissed ()) {
-	         int xxx = soundOut_p  -> missed();
-	         fprintf (stderr, "missed %d\n", xxx);
-	      }
-	   }
-	}
+//	if (error_report && (numberofSeconds % 10) == 0) {
+//	   int	totalFrames;
+//	   int	goodFrames;
+//	   int	badFrames;
+//	   my_ofdmHandler	-> get_frameQuality (&totalFrames,
+//	                                             &goodFrames,
+//	                                             &badFrames);
+//	   fprintf (stderr, "total %d, good %d bad %d ficRatio %f\n",
+//	                     totalFrames, goodFrames, badFrames,
+//	                                            total_ficError * 100.0 / total_fics);
+//	   total_ficError	= 0;
+//	   total_fics		= 0;
+//	   if (configHandler_p -> currentStream () != "") {
+//	      if (soundOut_p -> hasMissed ()) {
+//	         int xxx = soundOut_p  -> missed();
+//	         fprintf (stderr, "missed %d\n", xxx);
+//	      }
+//	   }
+//	}
 }
 //
 //	precondition: everything is quiet

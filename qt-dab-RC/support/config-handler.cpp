@@ -284,8 +284,12 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
-	connect (upload_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_upload_selector	(int)));
+	int upload = dabSettings -> value ("UPLOAD_ENABLRD", 0). toInt ();
+	if (upload != 0)
+	   connect (upload_selector, SIGNAL (stateChanged (int)),
+	            this, SLOT (handle_upload_selector	(int)));
+	else
+	   upload_selector -> setEnabled (false);
 	connect (logger_selector, SIGNAL (stateChanged (int)),
 	         myRadioInterface, SLOT (handle_LoggerButton (int)));
 //	the epg2xmlSelector is just polled, no need to react on an event

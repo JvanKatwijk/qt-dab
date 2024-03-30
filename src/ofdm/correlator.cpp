@@ -33,7 +33,6 @@
   *	The class inherits from the phaseTable.
   */
 
-
 	correlator::correlator (RadioInterface *mr,
 	                        processParams	*p):
 	                             phaseTable (p -> dabMode),

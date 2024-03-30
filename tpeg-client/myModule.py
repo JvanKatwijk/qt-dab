@@ -4,7 +4,7 @@ import openlr
 def PrintArray (a):
     test= base64.b64encode (a)
     try:
-        test = openlr. binary_decode (test, is_base64=False)
+        test = openlr. binary_decode (test, is_base64=True)
         print (test)
     except NotImplementedError:
        print (f"Version Error")

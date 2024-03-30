@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015
+ *    Copyright (C) 2017 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -28,7 +28,7 @@
 #include	"dabdatagroupdecoder.h"
 #include	<QByteArray>
 
-
+class	NML;
 class	journaline_dataHandler:public virtual_dataHandler {
 public:
 	journaline_dataHandler();
@@ -38,5 +38,8 @@ void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
 	DAB_DATAGROUP_DECODER_t theDecoder;
 	DAB_DATAGROUP_DECODER_data	myCallBack;
+	void		init_dataBase	();
+	void		destroy_dataBase ();
+	void		add_to_dataBase (NML * NMLelement);
 };
 

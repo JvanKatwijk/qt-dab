@@ -96,9 +96,11 @@ void	correlationScope::display	(const std::vector<float> &v,
 	                                 int T_g,
 	                                 int amount,
 	                                 int sliderValue) {
-double X_axis [amount];
-double Y_value [amount];
-double Max	= -200;
+auto *X_axis	= dynVec (floatQwt, amount);
+auto *Y_value	= dynVec (floatQwt, amount);
+//double X_axis [amount];
+//double Y_value [amount];
+floatQwt Max	= -200;
 int	teller	= 0;
 int	input	= v. size ();
 
@@ -115,7 +117,7 @@ int	input	= v. size ();
 	}
 
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
+				         (floatQwt)X_axis [0],
 				         X_axis [amount - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,

@@ -24,7 +24,7 @@
 
 #include        "dab-constants.h"
 #include	<QObject>
-#include	<qwt.h>
+#include	"qwt-2.h"
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>

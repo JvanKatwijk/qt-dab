@@ -87,8 +87,10 @@ QString	colorString	= "black";
 void	devScope::display	(std::vector<float> V) {
 float	max	= 0;
 float	min	= 100;
-double X_axis [V. size ()];
-double Y_values [V. size ()];
+auto	*X_axis	= dynVec (floatQwt, V. size ());
+auto	*Y_values	= dynVec (floatQwt, V. size ());
+//double X_axis [V. size ()];
+//double Y_values [V. size ()];
 int	VSize	= V. size ();
 
 	for (int i = 0; i < VSize; i ++) {
@@ -101,8 +103,8 @@ int	VSize	= V. size ();
 	}
 
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
-				         (double)X_axis [VSize - 1]);
+				         (floatQwt)X_axis [0],
+				         (floatQwt)X_axis [VSize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         -20, 20);

@@ -24,6 +24,7 @@
 #pragma once
 
 #include	<QObject>
+#include	"qwt-2.h"
 #include        <qwt_plot_spectrogram.h>
 #include        "spectrogramdata.h"
 #include	<cstdint>
@@ -37,8 +38,8 @@ Q_OBJECT
 public:
 		waterfallScope	(QwtPlot *, int, int);
 		~waterfallScope	();
-	void	display		(const double *, const  double *,
-	                         double, int32_t);
+	void	display		(const floatQwt *, const floatQwt *,
+	                         floatQwt, int32_t);
 	void	cleanUp		();
 private:
 	QwtPlot		*plotgrid;

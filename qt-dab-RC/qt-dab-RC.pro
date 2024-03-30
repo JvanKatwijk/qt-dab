@@ -44,6 +44,7 @@ DEFINES		+= __THREADED_BACKEND__
 #DEFINES	+= __EPG_TRACE__  
 DEPENDPATH += . \
 	      ./support \
+	      ./forms-v7 \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -84,6 +85,7 @@ DEPENDPATH += . \
 
 INCLUDEPATH += . \
 	       ./support \
+	      ./forms-v7 \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -124,6 +126,7 @@ HEADERS += ./radio.h \
 	   ./support/ensemble-handler.h \
 	   ./support/config-handler.h \
 	   ./support/audiosystem-selector.h \
+	   ./forms-v7/qwt-2.h \
 	   ./forms-v7/new-display/display-widget.h \
 	   ./forms-v7/new-display/scopes/spectrum-scope.h \
 	   ./forms-v7/new-display/scopes/correlation-scope.h \

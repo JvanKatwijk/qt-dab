@@ -25,7 +25,7 @@
 
 #include        "dab-constants.h"
 #include	<QObject>
-#include	<qwt.h>
+#include	"qwt-2.h"
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>
@@ -50,7 +50,7 @@ public:
 	                         int,
 	                         QSettings *);
 		~spectrumScope	();
-	void	display		(double *, double *, int, int);
+	void	display		(floatQwt *, floatQwt *, int, int);
 	void	set_bitDepth	(int);
 
 private:

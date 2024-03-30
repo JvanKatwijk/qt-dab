@@ -112,13 +112,13 @@ bool	brush;
 	delete		grid;
 }
 
-void	spectrumScope::display		(double *X_axis,
-	                                 double *Y_value,
+void	spectrumScope::display		(floatQwt *X_axis,
+	                                 floatQwt *Y_value,
 	                                 int freq, int Amp) {
 	(void)freq;
 	float Max	= Amp / 100.0 * (-get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
+				         (floatQwt)X_axis [0],
 				         X_axis [displaySize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,

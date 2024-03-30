@@ -29,7 +29,7 @@
 #include	<QFrame>
 #include	<QObject>
 
-#include	<qwt.h>
+#include	"qwt-2.h"
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>
@@ -64,7 +64,7 @@ private:
 	QwtPlotGrid	grid;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	double		displayBuffer [512];
+	floatQwt	displayBuffer [512];
 	Complex		*spectrumBuffer;
 	DABFLOAT	Window [4 * 512];
 	fftHandler	fft;
@@ -73,7 +73,8 @@ private:
 	QColor		gridColor;
 	QColor		curveColor;
 	bool		brush;
-	void		ViewSpectrum	(double *, double *, double, int);
+	void		ViewSpectrum	(floatQwt *, floatQwt *,
+	                                             floatQwt, int);
 	float		get_db 		(float);
 	int32_t		normalizer;
 private slots:

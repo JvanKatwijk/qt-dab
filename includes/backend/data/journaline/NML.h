@@ -365,10 +365,12 @@ public:
                          const NML::RawNewsObject_t & rno,
                          const char *error_msg);
 
-private:
-    static NMLFactory *_instance;
     NMLFactory();
     ~NMLFactory();
+private:
+    static NMLFactory *_instance;
+//    NMLFactory();
+//    ~NMLFactory();
     NMLFactory & operator=(const NMLFactory &);
     NMLFactory(const NMLFactory &);
     unsigned char* getNextSection( const unsigned char*& p, unsigned short& plen, unsigned short& reslen );
