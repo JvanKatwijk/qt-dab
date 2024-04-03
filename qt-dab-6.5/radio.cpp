@@ -367,6 +367,9 @@ QString h;
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, SIGNAL (timeout ()),
 	         this, SLOT (epgTimer_timeOut ()));
+	pauzeTimer. setSingleShot (true);
+        connect (&pauzeTimer, SIGNAL (timeout ()),
+                 this, SLOT (show_pauzeSlide ()));
 
 	my_timeTable		= new timeTableHandler (this);
 	my_timeTable		-> hide ();
@@ -3296,6 +3299,7 @@ void	RadioInterface::http_terminate	() {
 void	RadioInterface::displaySlide	(const QPixmap &p) {
 int w   = 360;
 int h   = 2 * w / 3;
+	pauzeTimer. stop ();
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	pictureLabel ->
 	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
@@ -3304,17 +3308,13 @@ int h   = 2 * w / 3;
 
 void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
-static int teller	= 0;
-static const char *slideNames [] =	
-   {":res/pauze-slide-1.png",
-	":res/pauze-slide-2.png",
-	":res/pauze-slide-3.png",
-	":res/pauze-slide-4.png",
-	":res/pauze-slide-5.png"};
-	teller = (teller + 1) % 5;
-	QString slideName	= slideNames [teller];
-	if (p. load (slideName, "png"))
-	   displaySlide (p);
+QString slideName       = ":res/pauze-slide-%1.png";
+        pauzeTimer. stop ();
+        int nr          = rand () % 10;
+        slideName       = slideName. arg (nr + 1);
+        if (p. load (slideName, "png"))
+           displaySlide (p);
+	pauzeTimer. start (1 * 60 * 1000);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -3435,11 +3435,13 @@ Complex inBuffer [amount];
 	      newDisplay. show_null (inBuffer, amount);
 }
 
-void	RadioInterface::show_tii	(int mainId, int subId) {
+void	RadioInterface::show_tii	(int tiiValue, int index) {
 QString	country	= "";
 bool	tiiChange	= false;
 cacheElement	*theTransmitter	= nullptr;
-
+int	mainId	= tiiValue >> 8;
+int	subId	= tiiValue & 0xFF;
+	(void)index;
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
 	   return;
 

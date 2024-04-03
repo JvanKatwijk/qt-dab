@@ -13,6 +13,7 @@ win32 {
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
+
 unix {
 QMAKE_CXXFLAGS	+=  -ffast-math -flto
 QMAKE_CFLAGS	+=  -ffast-math -flto

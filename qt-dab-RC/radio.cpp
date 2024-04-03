@@ -109,6 +109,12 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 #endif
 
 static inline
+QString ids_to_string (int mainId, int subId) {
+	return  "(" + QString::number (mainId) + ","
+                    + QString::number (subId)  + ")";
+}
+
+static inline
 QStringList splitter (const QString &s) {
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
@@ -154,6 +160,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        my_scanListHandler (this,
 	                                                        scanListFile),
 	                                        chooseDevice (Si),
+	                                        dxDisplay (nullptr),
 	                                        scanMonitor (this, Si, freqExtension) {
 int16_t k;
 QString h;
@@ -171,6 +178,12 @@ QString h;
 	contentTable_p		= nullptr;
 	scanTable_p		= nullptr;
 	mapHandler		= nullptr;
+	dxDisplay. setWindowTitle ("Transmitters received");
+	dxDisplayText		= new QLabel ();
+	QVBoxLayout	*LV	= new QVBoxLayout ();
+	LV	-> addWidget (dxDisplayText);
+	dxDisplay. setLayout (LV);
+	dxDisplay. hide ();
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
 	globals. spectrumBuffer	= &spectrumBuffer;
@@ -233,12 +246,12 @@ QString h;
 	configHandler_p		= new configHandler (this, dabSettings_p);
 	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile);
-
 //	we have the configuration handler and the ensemble handler,
 //	connect some signals directly
 	configHandler_p		-> set_connections ();
 	configHandler_p		-> setDeviceList (chooseDevice.
 	                                            getDeviceList ());
+	
 	connect (configHandler_p, SIGNAL (frameClosed ()),
 	         this, SLOT (handle_configFrame_closed ()));
 	connect (configHandler_p, SIGNAL (handle_fontSelect ()),
@@ -322,6 +335,7 @@ QString h;
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
 	int latency	= dabSettings_p -> value ("latency", 5). toInt();
+	soundOut_p		= nullptr;
 #ifdef	TCP_STREAMER
 	soundOut_p		= new tcpStreamer	(20040);
 	techWindow_p		-> hide		();
@@ -591,7 +605,7 @@ void	RadioInterface::doStart	() {
 
 	if (dabSettings_p -> value (DEVICE_WIDGET_VISIBLE, 0).  toInt () != 0)
 	   inputDevice_p -> setVisibility (true);
-//
+
 //	Just to be sure we disconnect here.
 //	It would have been helpful to have a function
 //	testing whether or not a connection exists, we need a kind
@@ -738,11 +752,17 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	                          channel. channelName  + ";" +
 	                          QString::number (channel. tunedFrequency) + ";" +
 	                          hextoString (channel. Eid) + " " + ";" +
-	                          transmitter_coordinates -> text () + " " + ";" +
+	                          ids_to_string (channel. mainId,
+	                                         channel. subId)  + " " + ";" +
 	                          theTime  + ";" +
 	                          SNR  + ";" +
-	                          QString::number (channel. nrServices) + ";" + "\n";
-//	                          distanceLabel -> text () + "\n";
+	                          QString::number (channel. nrServices) + ";" + 
+	                          channel. transmitterName + ";" +
+                                  QString::number (channel. distance, 'f', 1) + " km "
+                                  + QString::number (channel. corner, 'f', 1)
+                                  + QString::fromLatin1 (" \xb0 ")
+                                  + " (" + QString::number (channel. height, 'f', 1) +  "ml)" + "\n";;
+
 
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
@@ -1159,6 +1179,7 @@ void	RadioInterface::TerminateProcess () {
 	   usleep (1000);
 	hideButtons	();
 
+	dxDisplay. hide ();
 	store_widget_position (dabSettings_p, this, "mainWidget");
 	newDisplay. hide ();
 //
@@ -2181,8 +2202,8 @@ void	RadioInterface::cleanScreen	() {
 	techWindow_p			-> cleanUp ();
 	setStereo	(false);
 	distanceLabel			-> setText ("");
+	dxDisplayText			-> setText ("");
 	transmitter_country		-> setText ("");
-	transmitter_coordinates		-> setText ("");
 	newDisplay. ficError_display	-> setValue (0);
 }
 
@@ -2257,6 +2278,7 @@ int	tunedFrequency	=
 	if (channel. realChannel)
 	   dabSettings_p	-> setValue (CHANNEL_NAME, theChannel);
 	distanceLabel		-> setText ("");
+	dxDisplayText		-> setText ("");
 	newDisplay. show_transmitters (channel. transmitters);
 	bool localTransmitters =
 	             configHandler_p -> localTransmitterSelector_active ();
@@ -2669,11 +2691,18 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 	                      channel. channelName + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
 	                      hextoString (channel. Eid) + " " + ";" +
-	                      transmitter_coordinates -> text () + " " + ";" +
+	                      ids_to_string (channel. mainId,
+	                                     channel. subId) + " " + ";" +
 	                      utcTime  + ";" +
 	                      SNR  + ";" +
 	                      QString::number (channel. nrServices) + ";" +
-	                      distanceLabel -> text ();
+	                      channel. transmitterName + ";" +
+                              QString::number (channel. distance, 'f', 1) + " km " +
+                              QString::number (channel. corner, 'f', 1) +
+                              QString::fromLatin1 (" \xb0 ") +
+                              " (" + QString::number (channel. height, 'f', 1) +  "m)"
+	                      + "\n";
+
 	QStringList s = my_ofdmHandler -> basicPrint ();
 	scanTable_p -> addLine (headLine);
 	scanTable_p -> addLine ("\n;\n");
@@ -2698,11 +2727,16 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
 	                      hextoString (channel. Eid) + ";" +
-	                      transmitter_coordinates -> text () + ";" +
+	                      ids_to_string (channel. mainId,
+	                                     channel. subId) + ";" +
 	                      utcTime + ";" +
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) + ";" +
-	                      distanceLabel -> text ();
+	                      channel. transmitterName + ";" +
+                              QString::number (channel. distance, 'f', 1) + " km "
+                              + QString::number (channel. corner, 'f', 1)
+                              + QString::fromLatin1 (" \xb0 ")
+                              + " (" + QString::number (channel. height, 'f', 1) +  "ml)" + "\n";
 
 	scanTable_p -> addLine (headLine);
 	scanTable_p	-> show ();
@@ -3467,7 +3501,7 @@ std::vector<float> inBuffer (s);
 	      newDisplay. show_correlation (inBuffer, g, r, channel. distance);
 	}
 }
-	      
+
 void	RadioInterface::show_null		(int amount) {
 Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	nullBuffer. getDataFromBuffer (inBuffer, amount);
@@ -3476,44 +3510,24 @@ Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	      newDisplay. show_null (inBuffer, amount);
 }
 
-void	RadioInterface::show_tii	(int mainId, int subId) {
+void	RadioInterface::show_tii	(int tiiValue, int index) {
 QString	country	= "";
 bool	tiiChange	= false;
-cacheElement	*theTransmitter	= nullptr;
+int	mainId	= tiiValue >> 8;
+int	subId	= tiiValue & 0xFF;
+cacheElement	theTransmitter;
 
+	bool dxMode	= configHandler_p -> get_dxSelector ();
+
+	if (!dxMode)
+	   channel. transmitters. resize (0);
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
 	   return;
 
-	{  bool inList = false;
-	   for (int i = 0; i < channel. transmitters. size () / 2; i ++)
-	      if ((channel. transmitters. at (2 * i) == mainId) &&
-	          (channel. transmitters. at (2 * i + 1) == subId))
-	         inList = true;
-	   if (!inList) {
-	      channel. transmitters. push_back (mainId);
-	      channel. transmitters. push_back (subId);
-	   }
-	}
+	if (my_ofdmHandler -> get_ecc () == 0) 
+	   return;
 
-	if ((mainId != channel. mainId) ||
-	    (subId != channel. subId)) {
-	   tiiChange = true;
-	   channel. mainId	= mainId;
-	   channel. subId	= subId;
-
-	   QString a = "(" + tiiNumber (mainId) + " " +
-	                                    tiiNumber (subId) + ")";
-
-	   transmitter_coordinates -> setAlignment (Qt::AlignRight);
-	   transmitter_coordinates -> setText (a);
-	}
-//
-//	display the transmitters on the scope widget
-	if (!(newDisplay. isHidden () &&
-	               (newDisplay. get_tab () == SHOW_TII))) 
-	   newDisplay. show_transmitters (channel. transmitters);
-
-	if (!channel. has_ecc && (my_ofdmHandler -> get_ecc () != 0)) {
+	if (!channel. has_ecc) {
 	   channel. ecc_byte	= my_ofdmHandler -> get_ecc ();
 	   country		= find_ITU_code (channel. ecc_byte,
 	                                         (channel. Eid >> 12) &0xF);
@@ -3521,7 +3535,7 @@ cacheElement	*theTransmitter	= nullptr;
 	   channel. transmitterName = "";
 	}
 
-	if ((country != "") && (country != channel. countryName)) {
+	if (country != channel. countryName) {
 	   transmitter_country	-> setText (country);
 	   channel. countryName	= country;
 	}
@@ -3532,68 +3546,130 @@ cacheElement	*theTransmitter	= nullptr;
 	if (!tiiProcessor. has_tiiFile ())
 	   return;
 
-	if ((!tiiChange) && (channel. transmitterName != ""))
-	   return;
+	bool inList = false;
+	for (int i = 0; i < channel. transmitters. size (); i ++) {
+	   if (channel. transmitters. at (i). tiiValue == tiiValue) {
+	      inList = true;
+	      theTransmitter	= channel. transmitters [i]. theTransmitter;
+	   }
+	}
 
-	theTransmitter =
+	if (!inList) {
+	   cacheElement * tr =
 	      tiiProcessor. get_transmitter (channel. realChannel?
 	                                         channel. channelName :
 	                                         "any",
 	                                     channel. Eid,
-	                                     mainId, subId);
-	if (theTransmitter == nullptr) 
-	   return;
+	                                     tiiValue >> 8, tiiValue & 0xFF);
+	   if (tr == nullptr)
+	      return;
+	   if ((tr -> mainId == 0) || (tr -> subId == 0))
+	      return;
+	   theTransmitter = *tr;
 
-	channel. targetPos. latitude	= theTransmitter -> latitude;
-	channel. targetPos. longitude	= theTransmitter -> longitude;
-	if ( (channel. targetPos. latitude == 0) ||
-	    (channel. targetPos. longitude == 0)) {
-	   return;
+	   transmitterDesc t = {tiiValue, false, theTransmitter};
+	   channel. transmitters. push_back (t);
 	}
-	
-	QString theName 	= theTransmitter -> transmitterName;
-	channel. transmitterName 	= theName;
-	float power		= theTransmitter -> power;
-	float height		= theTransmitter -> height;
+
+	if (index == 0) {
+	   for (int i = 0; i < channel. transmitters. size (); i ++)
+	      channel. transmitters. at (i). isStrongest = false;
+	   for (auto &t : channel. transmitters)
+	      if (t. tiiValue == tiiValue)
+	         t. isStrongest = true;
+	}
+
+//	display the transmitters on the scope widget
+	if (!(newDisplay. isHidden () &&
+	               (newDisplay. get_tab () == SHOW_TII))) 
+	   newDisplay. show_transmitters (channel. transmitters);
+//
+//	and recompute distances etc etc
+	if (!dxMode) {
+	   QFont f ("Arial", 9);
+	   distanceLabel ->  setFont (f);
+	}
+	else {
+	   QFont f ("Arial", 12);
+	   dxDisplayText -> setFont (f);
+	}
+	QString labelText;
+	for (auto &theTr : channel. transmitters) {
+	   position thePosition;
+	   thePosition. latitude	= theTr. theTransmitter. latitude;
+	   thePosition. longitude	= theTr. theTransmitter. longitude;
+
+	   if (theTr. isStrongest) {
+	      channel. targetPos. latitude	= thePosition. latitude;
+	      channel. targetPos. longitude	= thePosition. longitude;
+	      channel. transmitterName		=
+	                 theTr. theTransmitter. transmitterName;
+	      channel. mainId			= theTr. tiiValue >> 8;
+	      channel. subId			= theTr. tiiValue & 0xFF;
+	   }
+
+	   QString theName 	= theTr. theTransmitter. transmitterName;
+	   float power		= theTr. theTransmitter. power;
+	   float height		= theTr. theTransmitter. height;
 
 //      if positions are known, we can compute distance and corner
-	channel. distance = distance	(channel. targetPos, localPos);
-	channel. corner	  = corner	(channel. targetPos, localPos);
-	QString labelText = theName + " " +
-	                    QString::number (channel. distance, 'f', 1) + " km " +
-	                    QString::number (channel. corner, 'f', 1) + 
-	                    QString::fromLatin1 (" \xb0 ") + 
-	                    " (" +
-	                    QString::number (height, 'f', 1) +  "m)";
-	fprintf (stderr, "%s (%f)\n", labelText. toUtf8 (). data (), height);
-	QFont f ("Arial", 9);
-	distanceLabel		->  setFont (f);
-	distanceLabel		-> setText (labelText);
+	   float theDistance	= distance	(thePosition, localPos);
+	   float theCorner	= corner	(thePosition, localPos);
+
+	   if (theTr. isStrongest) {
+	      channel. distance	= theDistance;
+	      channel. corner	= theCorner;
+	      channel. height	= height;
+	   }
+	int tiiValue_local	= theTr. tiiValue;
+	   if (labelText != "")
+	      labelText += "\n";
+	   labelText += "(" + QString::number (tiiValue_local >> 8) + ","
+	                    + QString::number (tiiValue_local & 0xFF) + ") "
+	                    + theName + " " 
+	                    + QString::number (theDistance, 'f', 1) + " km " 
+	                    + QString::number (theCorner, 'f', 1) 
+	                    + QString::fromLatin1 (" \xb0 ") 
+	                    + " (" + QString::number (height, 'f', 1) +  "m)";
+	   if (dxMode && theTr. isStrongest)
+	      labelText += "  <<<<<<";
+
 //	see if we have a map
-	if (mapHandler == nullptr) 
-	   return;
+	   if (mapHandler == nullptr) 
+	      continue;
 
-	uint8_t key	= MAP_NORM_TRANS;	// default value
-	bool localTransmitters	=
+	   uint8_t key	= MAP_NORM_TRANS;	// default value
+	   bool localTransmitters	=
 	            configHandler_p -> localTransmitterSelector_active ();
-	if ((!localTransmitters) && (channel. distance > maxDistance)) { 
-	   maxDistance = channel. distance;
-	   key = MAP_MAX_TRANS;
-	}
+	   if ((!localTransmitters) && (theDistance > maxDistance)) { 
+	      maxDistance = theDistance;
+	      key = MAP_MAX_TRANS;
+	   }
 //
-	QDateTime theTime = 
+	   QDateTime theTime = 
 	   configHandler_p -> utcSelector_active () ?
-	                  QDateTime::currentDateTimeUtc () :
-	                  QDateTime::currentDateTime ();
+	                              QDateTime::currentDateTimeUtc () :
+	                              QDateTime::currentDateTime ();
 
-	mapHandler -> putData (key,
-	                       channel. targetPos, 
-	                       channel. transmitterName,
-	                       channel. channelName,
-	                       theTime. toString (Qt::TextDate),
-	                       channel. mainId * 100 + channel. subId,
-	                       channel. distance,
-	                       channel. corner, power, height);
+	   mapHandler -> putData (key,
+	                          thePosition, 
+	                          theTr. theTransmitter. transmitterName,
+	                          channel. channelName,
+	                          theTime. toString (Qt::TextDate),
+	                          tiiValue,
+	                          theDistance,
+	                          theCorner, power, height);
+	}
+	if (dxMode) {
+	   dxDisplayText -> setText (labelText);
+	   dxDisplay. show ();
+	   distanceLabel	-> setText ("");
+	}
+	else {
+	   dxDisplay. hide ();
+	   dxDisplayText	-> setText ("");
+	   distanceLabel	-> setText (labelText);
+	}
 }
 
 void	RadioInterface::showIQ			(int amount) {
@@ -3840,5 +3916,23 @@ void	RadioInterface::handle_snrLabel	() {
 	   QString SNR	= "SNR " + QString::number (channel. snr);
 	   dynamicLabel	-> setText (SNR);
 	}
+}
+
+void	RadioInterface::handle_correlationSelector	(int d) {
+	(void)d;
+	bool b =  configHandler_p -> get_correlationSelector ();
+	dabSettings_p -> setValue ("correlationOrder", b ? 1 : 0);
+	if (my_ofdmHandler != nullptr)
+	   my_ofdmHandler -> set_correlationOrder (b);
+}
+
+void	RadioInterface::handle_dxSelector		(int d) {
+	(void)d;
+	bool b = configHandler_p -> get_dxSelector ();
+	dabSettings_p -> setValue ("dxMode", b ? 1 : 0);
+	if (my_ofdmHandler != nullptr)
+	   my_ofdmHandler -> set_dxMode (b);
+	if (b)
+	   distanceLabel -> setText ("");
 }
 

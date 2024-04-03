@@ -34,8 +34,11 @@
 static inline
 int64_t         getMyTime() {
 struct timeval  tv;
-
+#ifdef	__MINGW32__
+	mingw_gettimeofday (&tv, nullptr);
+#else
 	gettimeofday (&tv, nullptr);
+#endif
 	return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
 }
 

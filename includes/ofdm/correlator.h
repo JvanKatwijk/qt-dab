@@ -43,7 +43,8 @@ public:
 			correlator 		(RadioInterface *,
 	                                         processParams *);
 			~correlator		();
-	int32_t		findIndex		(std::vector<Complex>, int);
+	int32_t		findIndex		(std::vector<Complex>,
+	                                         bool,  int);
 //	This one is used in the ofdm decoder
 private:
 	dabParams	params;

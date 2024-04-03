@@ -1747,13 +1747,15 @@ void	RadioInterface::show_tii_spectrum	() {
 	my_tiiViewer. showSpectrum (1);
 }
 
-void	RadioInterface::show_tii	(int mainId, int subId) {
+void	RadioInterface::show_tii	(int tiiValue, int index) {
 QString a = "Est: ";
 bool	found	= false;
 QString	country	= "";
 bool	tiiChange	= false;
+int	mainId	= tiiValue >> 8;
+int	subId	= tiiValue & 0xFF;
 cacheElement    *theTransmitter = nullptr;
-
+	(void)index;
 
 	if (mainId == 0xFF) 
 	   return;

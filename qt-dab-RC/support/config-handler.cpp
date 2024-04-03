@@ -125,7 +125,6 @@ static struct {
 //
 //	fourth row of checkboxes
 //	dcRemoval	not connected yet
-
 	b = dabSettings -> value (LOCAL_TRANSMITTERS_SETTING,
 	                                           0). toInt () == 1;
 	this -> localTransmitterSelector -> setChecked (b);
@@ -139,7 +138,13 @@ static struct {
 
 	b = dabSettings -> value (TRANSMITTER_NAMES_SETTING, 0). toInt () == 1;
 	this -> saveTransmittersSelector -> setChecked (b);
-//
+
+	b = dabSettings -> value ("correlationOrder", 0). toInt () != 0;
+	this	-> correlationSelector -> setChecked (b);
+
+	b = dabSettings	-> value ("dxMode", 0). toInt () != 0;
+	this	-> dxSelector -> setChecked (b);
+
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
@@ -195,7 +200,6 @@ void	configHandler::reconnectDevices () {
 }
 	
 void	configHandler::set_connections () {
-
 	connect (audioSelectButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_audioSelectButton ()));
 	connect (this, SIGNAL (selectDecoder (int)),
@@ -332,6 +336,11 @@ void	configHandler::set_connections () {
 	         this, SLOT (handle_localTransmitterSelector  (int)));
 //
 //	botton row
+	connect (correlationSelector, SIGNAL (stateChanged (int)),
+	         myRadioInterface, SLOT (handle_correlationSelector (int)));
+	connect (dxSelector, SIGNAL (stateChanged (int)),
+	         myRadioInterface, SLOT (handle_dxSelector (int)));
+
 	connect (decoderSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_decoderSelector (const QString &)));
 }
@@ -833,4 +842,13 @@ void	configHandler::handle_audioSelectButton	() {
 audiosystemSelector the_selector (dabSettings);
 	(void)the_selector. QDialog::exec ();
 }
+
+bool	configHandler::get_correlationSelector () {
+	return correlationSelector -> isChecked ();
+}
+
+bool	configHandler::get_dxSelector () {
+	return dxSelector -> isChecked ();
+}
+
 

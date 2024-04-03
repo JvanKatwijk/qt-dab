@@ -35,11 +35,11 @@ public:
 	~journaline_dataHandler();
 void	add_mscDatagroup	(std::vector<uint8_t>);
 //void	add_mscDatagroup	(QByteArray &);
+void	add_to_dataBase		(NML *);
 private:
 	DAB_DATAGROUP_DECODER_t theDecoder;
 	DAB_DATAGROUP_DECODER_data	myCallBack;
 	void		init_dataBase	();
 	void		destroy_dataBase ();
-	void		add_to_dataBase (NML * NMLelement);
 };
 

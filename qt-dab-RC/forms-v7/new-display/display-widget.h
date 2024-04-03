@@ -30,6 +30,7 @@
 #include	<QByteArray>
 #include	"fft-handler.h"
 #include	"super-frame.h"
+#include	"cacheElement.h"
 #include	"ui_scopewidget.h"
 
 #define	SHOW_SPECTRUM		0
@@ -76,7 +77,7 @@ public:
 	void	showFrequency	(int);
 
 	void	show_cpuLoad	(float);
-	void	show_transmitters	(QByteArray &);
+	void	show_transmitters	(std::vector<transmitterDesc> &);
 
 	void	show_dcOffset	(float);
 	void	set_dcRemoval	(bool);

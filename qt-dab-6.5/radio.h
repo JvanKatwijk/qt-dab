@@ -297,6 +297,7 @@ private:
 	epgDecoder		epgProcessor;
 	QString			epgPath;
 	QTimer			epgTimer;
+	QTimer			pauzeTimer;
 	QString			path_for_pictures;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_

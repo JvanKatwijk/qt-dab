@@ -187,11 +187,12 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
 
-uint16_t	TII_Detector::processNULL () {
+std::vector<int16_t>	TII_Detector::processNULL (bool dxMode) {
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
 float	C_table		[GROUPSIZE];		  // contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
+std::vector<int16_t> theResult;
 
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
@@ -205,15 +206,16 @@ float	avgTable	[NUM_GROUPS];
 //	may differ, we compute an average for each of the
 //	NUM_GROUPS GROUPSIZE - value groups. 
 
-	memset (avgTable, 0, NUM_GROUPS * sizeof (float));
+	while (true) {
+	   memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 
-	for (int i = 0; i < NUM_GROUPS; i ++) {
-	   avgTable [i] = 0;
-	   for (int j = 0; j < GROUPSIZE; j ++) 
-	      avgTable [i] += hulpTable [i * GROUPSIZE + j];
+	   for (int i = 0; i < NUM_GROUPS; i ++) {
+	      avgTable [i] = 0;
+	      for (int j = 0; j < GROUPSIZE; j ++) 
+	         avgTable [i] += hulpTable [i * GROUPSIZE + j];
 
-	   avgTable [i] /= GROUPSIZE;
-	}
+	      avgTable [i] /= GROUPSIZE;
+	   }
 //
 //	Determining the offset is then easy, look at the corresponding
 //	elements in the NUM_GROUPS sections and mark the highest ones.
@@ -228,80 +230,97 @@ float	avgTable	[NUM_GROUPS];
 //	alternatively, we could take the "minValue" as reference
 //	and "raise" the threshold. However, that might be
 //	too  much for 8-bit incoming values
-	memset (D_table, 0, GROUPSIZE * sizeof (int));
-	memset (C_table, 0, GROUPSIZE * sizeof (float));
+	   memset (D_table, 0, GROUPSIZE * sizeof (int));
+	   memset (C_table, 0, GROUPSIZE * sizeof (float));
 //
 //	We only use the C and D table to locate the start offset
-	for (int i = 0; i < GROUPSIZE; i ++) {
-	   for (int j = 0; j < NUM_GROUPS; j ++) {
-	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
-	         C_table [i] += hulpTable [j * GROUPSIZE + i];
-	         D_table [i] ++;
+	   for (int i = 0; i < GROUPSIZE; i ++) {
+	      for (int j = 0; j < NUM_GROUPS; j ++) {
+	         if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
+	            C_table [i] += hulpTable [j * GROUPSIZE + i];
+	            D_table [i] ++;
+	         }
 	      }
 	   }
-	}
 
 //	we extract from this result the highest values that
 //	meet the constraint of 4 values being sufficiently high
-	float	maxTable	= 0;
-	int	maxIndex	= -1;
+	   float	maxTable	= 0;
+	   int		maxIndex	= -1;
 	
-	for (int j = 0; j < GROUPSIZE; j ++) {
-	   if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
-	      maxTable = C_table [j];
-	      maxIndex = j;
-	      break;
+	   for (int j = 0; j < GROUPSIZE; j ++) {
+	      if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
+	         maxTable = C_table [j];
+	         maxIndex = j;
+	         break;
+	      }
 	   }
-	}
 //
-	if (maxIndex < 0)
-	   return 0;
+	   if (maxIndex < 0)
+	      return theResult;
 
 //	The - almost - final step is then to figure out which
 //	group contributed most, obviously only where maxIndex  > 0
 //	we start with collecting the values of the correct
 //	elements of the NUM_GROUPS groups
 
-	float x [NUM_GROUPS];
-	for (int i = 0; i < NUM_GROUPS; i ++) 
-	   x [i] = hulpTable [maxIndex + GROUPSIZE * i];
+	   float x [NUM_GROUPS];
+	   for (int i = 0; i < NUM_GROUPS; i ++) 
+	      x [i] = hulpTable [maxIndex + GROUPSIZE * i];
 
 //	find the best match
-	int finInd = -1;
-	if (detectMode_new) {
-	   float mm = 0;
-	   for (int k = 0; k < (int)(sizeof (table)); k ++) {
-	      float val = 0;
-	      for (int l = 0; l < NUM_GROUPS; l ++)
-	         if ((table [k] & bits [l]) != 0)
-	            val += x [l];
-	      if  (val > mm) {
-	         mm = val;
-	         finInd = k;
-	      }
-	   }
-	}
-	else {		// detectMode_new is false
-////	we extract the four max values as bits
-	   uint16_t pattern	= 0;
-	   for (int i = 0; i < 4; i ++) {
-	      float mmax	= 0;
-	      int ind		= -1;
-	      for (int k = 0; k < NUM_GROUPS; k ++) {
-	         if (x [k] > mmax) {
-	            mmax = x [k];
-	            ind  = k;
+	   int finInd = -1;
+	   if (detectMode_new) {
+	      float mm = 0;
+	      for (int k = 0; k < (int)(sizeof (table)); k ++) {
+	         float val = 0;
+	         for (int l = 0; l < NUM_GROUPS; l ++)
+	            if ((table [k] & bits [l]) != 0)
+	               val += x [l];
+	         if  (val > mm) {
+	            mm = val;
+	            finInd = k;
 	         }
 	      }
-	      if (ind != -1) {
-	         x [ind] = 0;
-	         pattern |= bits [ind];
+	      if (finInd != -1) {
+	         theResult. push_back (maxIndex + 256 * finInd);
+	         for (int i = 0; i < 8; i ++) {
+	            if (table [finInd] & bits [i]) {
+	               int index = maxIndex + i * 24;
+	               hulpTable [index] = 0;
+	            }
+	         }
 	      }
 	   }
-	   finInd = invTable [pattern];
-//	   fprintf (stderr, "MaxIndex %d, bitPatterm %x\n", maxIndex, pattern);
+	   else {		// detectMode_new is false
+////	we extract the four max values as bits
+	      uint16_t pattern	= 0;
+	      for (int i = 0; i < 4; i ++) {
+	         float mmax	= 0;
+	         int ind	= -1;
+	         for (int k = 0; k < NUM_GROUPS; k ++) {
+	            if (x [k] > mmax) {
+	               mmax = x [k];
+	               ind  = k;
+	            }
+	         }
+	         if (ind != -1) {
+	            x [ind] = 0;
+	            pattern |= bits [ind];
+	         }
+	      }
+	      finInd = invTable [pattern];
+	      for (int i = 0; i < 8; i ++) {
+	         if (pattern & bits [i]) {
+	            int index = maxIndex + i * 24;
+	             hulpTable [index] = 0;
+	         }
+	      }
+	      theResult. push_back (maxIndex + finInd * 256);
+	   }
+	   if (!dxMode)
+	      break;
 	}
-
-	return  maxIndex + finInd * 256;
+	return theResult;
 }
 

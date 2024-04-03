@@ -36,7 +36,7 @@ public:
 	void		reset		();
 	void		setMode		(bool);
 	void		addBuffer	(std::vector<Complex>);
-	uint16_t	processNULL	();
+	std::vector<int16_t>	processNULL	(bool);
 
 private:
 	dabParams	params;

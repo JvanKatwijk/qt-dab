@@ -104,6 +104,8 @@ public:
 	void		handle_iqSelector	();
 	void		set_dcRemoval		(bool);
 	void		handle_decoderSelector	(int);
+	void		set_correlationOrder	(bool);
+	void		set_dxMode		(bool);
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;
@@ -148,6 +150,8 @@ private:
 	bool			correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
 	bool			isEvenFrame	(int16_t, dabParams *);
+	bool			correlationOrder;
+	bool			dxMode;
 virtual	void			run		();
 signals:
 	void		set_synced		(bool);

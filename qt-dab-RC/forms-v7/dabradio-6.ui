@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>655</width>
-    <height>275</height>
+    <height>279</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>269</width>
-             <height>77</height>
+             <height>81</height>
             </rect>
            </property>
           </widget>
@@ -374,18 +374,6 @@
          </property>
          <property name="text">
           <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="transmitter_coordinates">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>TII</string>
          </property>
         </widget>
        </item>

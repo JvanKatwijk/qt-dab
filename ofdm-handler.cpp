@@ -82,6 +82,10 @@
 
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
+	this	-> correlationOrder	= 
+	         dabSettings -> value ("correlationOrder", 0) . toInt () != 0;
+	this	-> dxMode		=
+	         dabSettings -> value ("dxMode", 0) . toInt () != 0;
 
 	this	-> eti_on		= false;
 	ofdmBuffer. resize (2 * T_s);
@@ -221,7 +225,9 @@ int	snrCount	= 0;
 
 	         theReader. get_samples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset, false);
-	         startIndex = myCorrelator. findIndex (ofdmBuffer, threshold);
+	         startIndex = myCorrelator. findIndex (ofdmBuffer,
+	                                               correlationOrder,
+	                                               threshold);
 
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
@@ -261,7 +267,8 @@ int	snrCount	= 0;
 	         }
 
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
-	                                              3 * threshold);
+	                                               correlationOrder,
+	                                               3 * threshold);
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
 	               set_sync_lost();
@@ -431,11 +438,10 @@ int	snrCount	= 0;
 	               tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
 	                                                          T_u);
 	               show_tii_spectrum ();
-	               uint16_t res = theTIIDetector. processNULL ();
-	               if (res != 0) {
-	                  uint8_t mainId	= res >> 8;
-	                  uint8_t subId	= res & 0xFF;
-	                  show_tii (mainId, subId);
+	               std::vector<int16_t> resVec =
+	                              theTIIDetector. processNULL (dxMode);
+	               for (int i = 0; i < resVec. size (); i ++) {
+	                  show_tii (resVec [i], i);
 	               }
 	               tii_counter = 0;
 	               theTIIDetector. reset();
@@ -648,5 +654,13 @@ void	ofdmHandler::set_dcRemoval (bool b) {
 
 void	ofdmHandler::handle_decoderSelector	(int d) {
 	theOfdmDecoder. handle_decoderSelector (d);
+}
+
+void	ofdmHandler::set_correlationOrder	(bool b) {
+	correlationOrder = b;
+}
+
+void	ofdmHandler::set_dxMode		(bool b) {
+	dxMode	= b;
 }
 

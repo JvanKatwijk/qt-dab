@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml multimedia
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 win32 {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math
@@ -219,7 +219,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/support/skin-handler.h \
 	   ../includes/support/mapport.h \
-	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
@@ -347,7 +346,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/support/skin-handler.cpp \
 	   ../src/support/mapport.cpp \
-	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
@@ -494,10 +492,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.5V3
-	CONFIG		+= dabstick-win-v3
-#	TARGET		= qt-dab32-6.5
-#	CONFIG		+= dabstick-win-v4
+#	TARGET		= qt-dab32-6.5V3
+#	CONFIG		+= dabstick-win-v3
+	TARGET		= qt-dab32-6.5
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
@@ -544,7 +542,7 @@ CONFIG		+= faad
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of soud out
-#CONFIG		+= qt-audio
+CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
 DEFINES	+= __DUMP_SNR__		# for experiments only
@@ -821,10 +819,10 @@ tcp-streamer	{
 qt-audio	{
 	DEFINES		+= QT_AUDIO
 	QT		+= multimedia 
-	HEADERS		+= ../includes/output/Qt-audio.h \
-	                   ../includes/output/Qt-audiodevice.h
-	SOURCES		+= ../src/output/Qt-audio.cpp \
-	                   ../src/output/Qt-audiodevice.cpp
+	HEADERS         += ../includes/output/Qt-audio.h \
+                           ../includes/output/Qt-audiodevice.h
+        SOURCES         += ../src/output/Qt-audio.cpp \
+                           ../src/output/Qt-audiodevice.cpp
 }
 
 datastreamer	{

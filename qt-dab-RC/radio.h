@@ -145,8 +145,6 @@ public:
 	int		serviceCount;	// from FIC or nothing
 	int		nrServices;	// measured
 	QString		ensembleName;
-	uint8_t		mainId;
-	uint8_t		subId;
 	std::vector<dabService> backgroundServices;
 	dabService	currentService;
 	uint32_t	Eid;
@@ -156,10 +154,14 @@ public:
 	QString		countryName;
 	int		nrTransmitters;
 	int		snr;
-	QByteArray	transmitters;
+	std::vector<transmitterDesc>	transmitters;
+//	QByteArray	transmitters;
+	uint8_t		mainId;
+	uint8_t		subId;
 	position	targetPos;
 	float		distance;
 	float		corner;
+	float		height;
 	bool		audioActive;
 
 	void	cleanChannel () {
@@ -229,9 +231,11 @@ private:
 
 	scanListHandler		my_scanListHandler;
 	deviceChooser		chooseDevice;
+	QFrame			dxDisplay;
 	scanHandler		scanMonitor;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
+	QLabel			*dxDisplayText;
 //
 //	end of variables that are initalized
 
@@ -391,6 +395,8 @@ signals:
 	void			select_ensemble_fontColor	();
 
 public slots:
+	void			handle_correlationSelector	(int);
+	void			handle_dxSelector	(int);
 	void			show_dcOffset		(float);
 	void			startScanning		();
 	void			stopScanning		();

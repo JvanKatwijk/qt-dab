@@ -219,7 +219,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/support/skin-handler.h \
 	   ../includes/support/mapport.h \
-	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
@@ -348,7 +347,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/support/skin-handler.cpp \
 	   ../src/support/mapport.cpp \
-	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
@@ -440,8 +438,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -894,7 +892,7 @@ fdk-aac {
 
 preCompiled {
         win32 {
-        LIBS            += /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll
+#        LIBS            += /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll
         }
         unix {
         LIBS            += -lcurl

@@ -2,8 +2,7 @@
 
 -------------------------------------------------------------------
 
-![6.1](/qt-dab-logo.png?raw=true)
-![6.1](/DABplus_Logo_Colour_sRGB.png?raw=true)
+![6.1](/front-picture.png?raw=true)
 
 -------------------------------------------------------------------
 -------------------------------------------------------------------------
@@ -15,17 +14,42 @@
 Recent changes
 ------------------------------------------------------------------------
 
-In the current version - 6.X - has two (sub)systems for the sound handling are
-included and can be selected. Next to the portaudio interface that
-was the default, the sound interface provides by Qt is rewritten and
-made into the default. A selection will be applied in the
+The development version, Qt-DAB-6.X, contains a few goodies that will
+be incorporated in the "stable" version to come.
+First of all, - 6.X - has two (sub)systems for the sound handling are
+included. Next to the portaudio interface that was the default
+for a long time, the sound interface provided by Qt itself is interfaces.
+The Qt based version is now the default, A selection will be applied in the
 next program invocation.
 If the Qt-audio interface is selected, a volume slider is shown on
 the main widget.
 
+Second, as known, most DAN ensembles are transmitted by more than a single
+transmitter. All transmitters in a so-called Single Frequency Network
+transmit the same ensemble. However, each transmitter adds a little
+data with which the transmitter can be identified.  In my
+neighbourhoodm there are - for a few ensembles - four transmitters
+within 20 Km.
+The Qt0DAB-6.X version now attempts to identify all transmitetrs that are 
+transmitting the same signal. For that purpose, the notion of "dx mode"
+is introduced in Qt-DAB. Selecting the "dx mode" (with a checkbox on the
+configuration widget) causes the software to display all transmitters
+the identification of which could be extracted from the signal
+
+![6.X](/transmitter.png?raw=true)
+
+If the dx mode is NOT selected, the transmitter's name and distance
+are - as always - shown on the botton line in the main widget.
+
+While Qt-DAB-6.X is still "under development", its sources can be
+found in the subdirectory "Qt-DAB-RC"
+
 ------------------------------------------------------------------------
 About Qt-DAB-6.5
 -------------------------------------------------------------------------
+
+Qt-DAB-6.5 is the stable version of Qt-DAB, i.e. a version with
+a windows installer (actually, there are two) and a Linux x64 AppImage.
 
 ![6.5](/Qt_DAB-6.5-1.png?raw=true)
 ![6.4](/Qt_DAB-6.5-2.png?raw=true)

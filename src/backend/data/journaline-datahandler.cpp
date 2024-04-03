@@ -26,6 +26,7 @@
 #include	<sys/time.h>
 #include	"newsobject.h"
 #include	"NML.h"
+
 static
 void my_callBack (
     const DAB_DATAGROUP_DECODER_msc_datagroup_header_t *header,
@@ -35,7 +36,7 @@ void my_callBack (
 	struct timeval theTime;
 	gettimeofday (&theTime, NULL);
 	(void) header;
-	unsigned char buffer [4092];
+	unsigned char buffer [4096];
 	(void) arg;
 	long unsigned int nmlSize	= 0;
 	NML::RawNewsObject_t theBuffer;
@@ -48,7 +49,7 @@ void my_callBack (
 	RemoveNMLEscapeSequences theRemover;
 	NMLFactory xxx;
 	NML *ttt = xxx.CreateNML (theBuffer, &theRemover);
-//	add_to_dataBase (ttt);
+//	static_cast <journaline_dataHandler *>(arg) -> add_to_dataBase (ttt);
 	delete ttt;
 }
 
@@ -84,32 +85,34 @@ void	journaline_dataHandler::destroy_dataBase	() {
 
 void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 
-//	if (ttt -> isRootObject ()) {
-//	   fprintf (stderr, "\n\nRoot: the Title is %s with %d objectId\n",
-//                      ttt -> GetTitle (). c_str (),
-//                      ttt -> GetObjectId ());
-//           std::vector<NML::Item_t> theItems = ttt -> GetItems ();
-//           for (auto &theItem : theItems)
-//              fprintf (stderr, "%d : %s\n", theItem. link_id,
-//                                            theItem. text. c_str());
-//	}
-//	else
-//	if (ttt -> isMenu ()) {
-//	   fprintf (stderr, "\n\nMenu: the Title is %s with %d objectId\n",
-//	              ttt -> GetTitle (). c_str (),
-//	              ttt -> GetObjectId ());
-//	   std::vector<NML::Item_t> theItems = ttt -> GetItems ();
-//	   for (auto &theItem : theItems)
-//	      fprintf (stderr, "%d : %s\n", theItem. link_id,
-//	                                    theItem. text. c_str());
-//	}
-//	else {
-//	   std::vector<NML::Item_t> theItems = ttt -> GetItems ();
-//	   fprintf (stderr, "Text or List Object %d\n",
-//	                                    ttt -> GetObjectId ());
-//            for (auto &theItem : theItems)
-//               fprintf (stderr, "%d : %s\n", theItem. link_id,
-//                                          theItem. text. c_str());
-//	}
+	switch (NMLelement -> GetObjectType ()) {
+	   case NML::INVALID:
+	      return;
+	   case NML::MENU: {
+	      fprintf (stderr, "Menu %d %d %s\n",
+	                           NMLelement -> GetObjectId (),
+	                           NMLelement -> GetNrOfItems (),
+	                           NMLelement -> GetTitle(). c_str ());
+	      std::vector<NML::Item_t> theItems =
+	                           NMLelement -> GetItems ();
+	      for (auto &item: theItems) 
+	         fprintf (stderr, "%d %d %s\n", item. link_id,
+	                                        item. link_id_available,
+	                                        item. text. c_str ());
+	      fprintf (stderr, "<<<<<<<<<<<<<<<<<<<\n\n");
+	      }
+	      break;
+	   case NML::PLAIN:
+	      break;
+	   case NML::LIST:
+	      fprintf (stderr, "List %d with %d items\n",
+	                         NMLelement -> GetObjectId (),
+	                         NMLelement -> GetNrOfItems ());
+	      break;
+	   default:
+	      fprintf (stderr, "SOMETHING ELSE\n");
+	      break;
+	}
 }
+
 

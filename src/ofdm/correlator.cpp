@@ -80,7 +80,9 @@ float	Phi_k;
   *	we believe that that indicates the first sample we were
   *	looking for.
   */
-int32_t	correlator::findIndex (std::vector <Complex> v, int threshold ) {
+
+int32_t	correlator::findIndex (std::vector <Complex> v,
+	                       bool firstFound, int threshold ) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
@@ -130,23 +132,26 @@ const	int SEARCH_OFFSET = T_g / 2;
 	   }
 	}
 
-	for (int i = 0; i < indices. size (); i ++) {
-	   if (T_g - 20 <= indices. at (i) && indices. at (i) <= T_g + 20) {
-	      std::vector<int> temp;
-	      temp. push_back (indices. at (i));
-	      for (int j = 0; j < i; j ++)
-	         temp. push_back (indices. at (j));
-	      for (int j = i + 1; j < indices. size (); j ++)
-	         temp. push_back (indices. at (j));
-	      indices. resize (0);
-	      for (int i = 0; i < (int)(temp. size ()); i ++)
-	         indices. push_back (temp. at (i));
-	      break;
-	   }
-	}
-
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);
+	}
+
+	if (!firstFound) {
+	   for (int i = 0; i < indices. size (); i ++) {
+	      if (T_g - 30 <= indices. at (i) &&
+	                    indices. at (i) <= T_g + 30) {
+	         std::vector<int> temp;
+	         temp. push_back (indices. at (i));
+	         for (int j = 0; j < i; j ++)
+	            temp. push_back (indices. at (j));
+	         for (int j = i + 1; j < indices. size (); j ++)
+	            temp. push_back (indices. at (j));
+	         indices. resize (0);
+	         for (int i = 0; i < (int)(temp. size ()); i ++)
+	            indices. push_back (temp. at (i));
+	         break;
+	      }
+	   }
 	}
 
 	if (response != nullptr) {
@@ -156,7 +161,8 @@ const	int SEARCH_OFFSET = T_g / 2;
 	      displayCounter	= 0;
 	   }
 	}
-	
+	if (firstFound)
+	   return indices [0];
 	return maxIndex;
 }
 

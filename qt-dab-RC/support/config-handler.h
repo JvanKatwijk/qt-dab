@@ -84,6 +84,9 @@ public:
 	QString	currentStream		();
 
 	void	enable_loadLib		();
+	bool	get_correlationSelector	();
+	bool	get_dxSelector		();
+
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;

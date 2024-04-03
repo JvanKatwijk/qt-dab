@@ -43,3 +43,10 @@ typedef struct {
 	float		height;
 } cacheElement;
 
+
+struct transmitterDesc {
+	int	tiiValue;
+	bool	isStrongest;
+	cacheElement theTransmitter;
+};
+
