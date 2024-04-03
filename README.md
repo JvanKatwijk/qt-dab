@@ -36,7 +36,7 @@ is introduced in Qt-DAB. Selecting the "dx mode" (with a checkbox on the
 configuration widget) causes the software to display all transmitters
 the identification of which could be extracted from the signal
 
-![6.X](/transmitter.png?raw=true)
+![6.X](/transmitters.png?raw=true)
 
 If the dx mode is NOT selected, the transmitter's name and distance
 are - as always - shown on the botton line in the main widget.
