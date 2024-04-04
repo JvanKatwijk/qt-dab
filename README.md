@@ -14,25 +14,36 @@
 Recent changes
 ------------------------------------------------------------------------
 
-The development version, Qt-DAB-6.X, contains a few goodies that will
+In the development version, Qt-DAB-6.X,  a few errors that still could 
+occur in Version 6.5. were corrected.
+Furthermore, Qt-DAB-6.X contains a few goodies that will
 be incorporated in the "stable" version to come.
-First of all, - 6.X - has two (sub)systems for the sound handling are
-included. Next to the portaudio interface that was the default
-for a long time, the sound interface provided by Qt itself is interfaces.
-The Qt based version is now the default, A selection will be applied in the
-next program invocation.
-If the Qt-audio interface is selected, a volume slider is shown on
+
+First of, one of the problems with the implemented sound handler was
+that sound did not always work after restarting the program with a
+saved - and therefore selected - audiostream.
+6.X - has now  two (sub)systems for the sound handling.
+Next to the portaudio interface that was the default
+for a long time, the sound interface is provided by Qt itself.
+If the katter audio interface is selected, a **volume slider** is shown on
 the main widget.
 
-Second, as known, most DAN ensembles are transmitted by more than a single
-transmitter. All transmitters in a so-called Single Frequency Network
+As known, most DAB ensembles are transmitted by more than a single
+transmitter. All transmitters in a so-called **Single Frequency Network**
 transmit the same ensemble. However, each transmitter adds a little
-data with which the transmitter can be identified.  In my
-neighbourhoodm there are - for a few ensembles - four transmitters
-within 20 Km.
-The Qt0DAB-6.X version now attempts to identify all transmitetrs that are 
-transmitting the same signal. For that purpose, the notion of "dx mode"
-is introduced in Qt-DAB. Selecting the "dx mode" (with a checkbox on the
+data with which the transmitter can be identified.
+Other than with e.g. FM or AM, where receiving signal at the same time
+from different transmitters, transmitting the same audio is hardly enjoyable,
+with digital modes, the software is able to select data from
+the strongest signal.  In my neighbourhoodm there are - for a few ensembles
+- four transmitters within 20 Km.
+
+New is that while Qt-DAB decodes data from the strongest signal,
+Qt-DAB-6.X has a special **mode**, dxMode, in which it
+tries to identify **all ** transmitetrs that are 
+transmitting the same signal. The TII decoding was adapted for this purpose.
+
+Selecting the "dx mode" (with a checkbox on the
 configuration widget) causes the software to display all transmitters
 the identification of which could be extracted from the signal
 

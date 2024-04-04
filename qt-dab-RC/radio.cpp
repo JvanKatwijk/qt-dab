@@ -160,7 +160,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        my_scanListHandler (this,
 	                                                        scanListFile),
 	                                        chooseDevice (Si),
-	                                        dxDisplay (nullptr),
+	                                        my_dxDisplay (this, Si),
 	                                        scanMonitor (this, Si, freqExtension) {
 int16_t k;
 QString h;
@@ -178,12 +178,7 @@ QString h;
 	contentTable_p		= nullptr;
 	scanTable_p		= nullptr;
 	mapHandler		= nullptr;
-	dxDisplay. setWindowTitle ("Transmitters received");
-	dxDisplayText		= new QLabel ();
-	QVBoxLayout	*LV	= new QVBoxLayout ();
-	LV	-> addWidget (dxDisplayText);
-	dxDisplay. setLayout (LV);
-	dxDisplay. hide ();
+	my_dxDisplay. hide ();
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
 	globals. spectrumBuffer	= &spectrumBuffer;
@@ -1179,7 +1174,7 @@ void	RadioInterface::TerminateProcess () {
 	   usleep (1000);
 	hideButtons	();
 
-	dxDisplay. hide ();
+	my_dxDisplay. hide ();
 	store_widget_position (dabSettings_p, this, "mainWidget");
 	newDisplay. hide ();
 //
@@ -2202,7 +2197,7 @@ void	RadioInterface::cleanScreen	() {
 	techWindow_p			-> cleanUp ();
 	setStereo	(false);
 	distanceLabel			-> setText ("");
-	dxDisplayText			-> setText ("");
+	my_dxDisplay. cleanUp ();
 	transmitter_country		-> setText ("");
 	newDisplay. ficError_display	-> setValue (0);
 }
@@ -2278,7 +2273,7 @@ int	tunedFrequency	=
 	if (channel. realChannel)
 	   dabSettings_p	-> setValue (CHANNEL_NAME, theChannel);
 	distanceLabel		-> setText ("");
-	dxDisplayText		-> setText ("");
+	my_dxDisplay. cleanUp ();
 	newDisplay. show_transmitters (channel. transmitters);
 	bool localTransmitters =
 	             configHandler_p -> localTransmitterSelector_active ();
@@ -3590,10 +3585,11 @@ cacheElement	theTransmitter;
 	   distanceLabel ->  setFont (f);
 	}
 	else {
-	   QFont f ("Arial", 12);
-	   dxDisplayText -> setFont (f);
+	   my_dxDisplay. cleanUp ();
+	   my_dxDisplay. show ();
 	}
 	QString labelText;
+	int teller = 0;
 	for (auto &theTr : channel. transmitters) {
 	   position thePosition;
 	   thePosition. latitude	= theTr. theTransmitter. latitude;
@@ -3621,18 +3617,19 @@ cacheElement	theTransmitter;
 	      channel. corner	= theCorner;
 	      channel. height	= height;
 	   }
-	int tiiValue_local	= theTr. tiiValue;
-	   if (labelText != "")
-	      labelText += "\n";
-	   labelText += "(" + QString::number (tiiValue_local >> 8) + ","
+	   int tiiValue_local	= theTr. tiiValue;
+	   labelText = "(" + QString::number (tiiValue_local >> 8) + ","
 	                    + QString::number (tiiValue_local & 0xFF) + ") "
-	                    + theName + " " 
+	                    + theName + " ";
+	   QString text2 =  " "
 	                    + QString::number (theDistance, 'f', 1) + " km " 
 	                    + QString::number (theCorner, 'f', 1) 
 	                    + QString::fromLatin1 (" \xb0 ") 
 	                    + " (" + QString::number (height, 'f', 1) +  "m)";
-	   if (dxMode && theTr. isStrongest)
-	      labelText += "  <<<<<<";
+	   if (dxMode) 
+	      my_dxDisplay. addRow (labelText, text2,  theTr. isStrongest);
+	   else 
+	      distanceLabel	-> setText (labelText + text2);
 
 //	see if we have a map
 	   if (mapHandler == nullptr) 
@@ -3659,16 +3656,6 @@ cacheElement	theTransmitter;
 	                          tiiValue,
 	                          theDistance,
 	                          theCorner, power, height);
-	}
-	if (dxMode) {
-	   dxDisplayText -> setText (labelText);
-	   dxDisplay. show ();
-	   distanceLabel	-> setText ("");
-	}
-	else {
-	   dxDisplay. hide ();
-	   dxDisplayText	-> setText ("");
-	   distanceLabel	-> setText (labelText);
 	}
 }
 
@@ -3930,6 +3917,8 @@ void	RadioInterface::handle_dxSelector		(int d) {
 	(void)d;
 	bool b = configHandler_p -> get_dxSelector ();
 	dabSettings_p -> setValue ("dxMode", b ? 1 : 0);
+	if (!b)
+	   my_dxDisplay. hide ();
 	if (my_ofdmHandler != nullptr)
 	   my_ofdmHandler -> set_dxMode (b);
 	if (b)

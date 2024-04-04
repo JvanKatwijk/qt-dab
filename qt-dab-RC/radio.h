@@ -44,6 +44,7 @@
 #include	"scanlist-handler.h"
 #include	"dl-cache.h"
 #include	"content-table.h"
+#include	"dxDisplay.h"
 #include	<memory>
 #include	<mutex>
 #ifdef	DATA_STREAMER
@@ -231,7 +232,7 @@ private:
 
 	scanListHandler		my_scanListHandler;
 	deviceChooser		chooseDevice;
-	QFrame			dxDisplay;
+	dxDisplay		my_dxDisplay;
 	scanHandler		scanMonitor;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;

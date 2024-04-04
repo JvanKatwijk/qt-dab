@@ -225,6 +225,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./support/ensemble-handler.h
 	     ./support/config-handler.h
 	     ./support/audiosystem-selector.h
+	     ./support/dxDisplay.h
 	     ./forms-v7/new-display/display-widget.h 
              ./forms-v7/new-display/scopes/correlation-scope.h 
              ./forms-67/new-display/scopes/spectrum-scope.h 
@@ -361,6 +362,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./support/ensemble-handler.cpp 
              ./support/config-handler.cpp 
              ./support/audiosystem-selector.cpp 
+	     ./support/dxDisplay.cpp
 	     ./forms-v7/new-display/display-widget.cpp 
              ./forms-v7/new-display/scopes/spectrum-scope.cpp 
              ./forms-v7/new-display/scopes/correlation-scope.cpp 
@@ -481,6 +483,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./support/ensemble-handler.h 
              ./support/config-handler.h 
 	     ./support/audiosystem-selector.h
+	     ./support/dxDisplay.h
 	     ./forms-v7/new-display/display-widget.h 
              ./forms-v7/new-display/scopes/correlation-scope.h 
              ./forms-v7/new-display/scopes/spectrum-scope.h 

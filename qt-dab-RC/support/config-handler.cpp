@@ -288,7 +288,7 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
-	int upload = dabSettings -> value ("UPLOAD_ENABLRD", 0). toInt ();
+	int upload = dabSettings -> value ("UPLOAD_ENABLED", 0). toInt ();
 	if (upload != 0)
 	   connect (upload_selector, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_upload_selector	(int)));
