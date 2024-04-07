@@ -151,7 +151,6 @@ public:
 	uint32_t	Eid;
 	bool		has_ecc;
 	uint8_t		ecc_byte;
-	QString		transmitterName;
 	QString		countryName;
 	int		nrTransmitters;
 	int		snr;
@@ -160,9 +159,10 @@ public:
 	uint8_t		mainId;
 	uint8_t		subId;
 	position	targetPos;
+	QString		transmitterName;
+	float		height;
 	float		distance;
 	float		corner;
-	float		height;
 	bool		audioActive;
 
 	void	cleanChannel () {
@@ -175,11 +175,13 @@ public:
 	transmitters. resize (0);
 	countryName	= "";
 	targetPos	= position {0, 0};
-	mainId		= 0;
-	subId		= 0;
+	mainId		= -1;
+	subId		= -1;
+	transmitterName	= "";
 	Eid		= 0;
 	has_ecc		= false;
 	snr		= 0;
+	height		= -1;
 	distance	= -1;
 	audioActive	= false;
 	currentService. valid		= false;
@@ -360,6 +362,8 @@ private:
 	void			startService		(dabService &);
 	void			localSelect		(const QString &s);
 	void			scheduleSelect		(const QString &s);
+
+	QString			build_headLine		();
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 

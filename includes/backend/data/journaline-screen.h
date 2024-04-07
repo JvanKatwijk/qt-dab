@@ -23,32 +23,45 @@
  */
 #pragma once
 
-#include	"dab-constants.h"
-#include	"virtual-datahandler.h"
-#include	"dabdatagroupdecoder.h"
-#include	"journaline-screen.h"
-#include	<vector>
+#include	<QObject>
+#include	<QFrame>
+#include	<QPushButton>
+#include	<QLabel>
+#include	<QListView>
 #include	"NML.h"
+#include	<QModelIndex>
+#include	<QStandardItemModel>
 
-//typedef struct {
-//	int key;
-//	NML::News_t *element;
-//} tableElement;
+typedef struct {
+	int key;
+	NML::News_t *element;
+} tableElement;
 
-class	NML;
-class	journaline_dataHandler:public virtual_dataHandler {
+class	journalineScreen: public QObject {
+Q_OBJECT
 public:
-	journaline_dataHandler();
-	~journaline_dataHandler();
-void	add_mscDatagroup	(std::vector<uint8_t>);
-void	add_to_dataBase		(NML *);
+
+		journalineScreen	(std::vector<tableElement> &table);
+		~journalineScreen	();
+	void	displayElement		(NML::News_t &element);
+	void	display_Menu		(NML::News_t &element);
+	void	display_Plain		(NML::News_t &element);
+	void	display_List		(NML::News_t &element);
+
 private:
-	journalineScreen	theScreen;
-	DAB_DATAGROUP_DECODER_t theDecoder;
-	DAB_DATAGROUP_DECODER_data	myCallBack;
-	void		init_dataBase	();
-	void		destroy_dataBase ();
-	int		findIndex	(int);
-	std::vector<tableElement> table;
+	std::vector<tableElement> *table;
+	tableElement		currentElement;
+	std::vector<int>	pathVector;
+
+	QFrame		myFrame;
+	QPushButton	*resetButton;
+	QPushButton	*upButton;
+	QLabel		*mainText;
+	QListView	*subContent;
+	QStandardItemModel      model;
+private slots:
+	void	handle_resetButton	();
+	void	handle_upButton		();
+	void	select_sub		(QModelIndex ind);
 };
 

@@ -736,36 +736,14 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	   contentTable_p = nullptr;
 	   return;
 	}
-	QString theTime;
-	QString SNR	= "SNR " + QString::number (channel. snr);
-	if (configHandler_p	-> utcSelector_active ())
-	   theTime	= convertTime (UTC);
-	else
-	   theTime	= convertTime (localTime);
-
-	QString header		= channel. ensembleName + ";" +
-	                          channel. channelName  + ";" +
-	                          QString::number (channel. tunedFrequency) + ";" +
-	                          hextoString (channel. Eid) + " " + ";" +
-	                          ids_to_string (channel. mainId,
-	                                         channel. subId)  + " " + ";" +
-	                          theTime  + ";" +
-	                          SNR  + ";" +
-	                          QString::number (channel. nrServices) + ";" + 
-	                          channel. transmitterName + ";" +
-                                  QString::number (channel. distance, 'f', 1) + " km "
-                                  + QString::number (channel. corner, 'f', 1)
-                                  + QString::fromLatin1 (" \xb0 ")
-                                  + " (" + QString::number (channel. height, 'f', 1) +  "ml)" + "\n";;
-
-
+	QString headLine = build_headLine ();
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
 	                                            my_ofdmHandler -> scanWidth ());
 	connect (contentTable_p, SIGNAL (goService (const QString &)),
 	         this, SLOT (handle_contentSelector (const QString &)));
 
-	contentTable_p		-> addLine (header);
+	contentTable_p		-> addLine (headLine);
 //	contentTable_p		-> addLine ("\n");
 	for (auto &ss : s)
 	   contentTable_p -> addLine (ss);
@@ -2197,7 +2175,6 @@ void	RadioInterface::cleanScreen	() {
 	techWindow_p			-> cleanUp ();
 	setStereo	(false);
 	distanceLabel			-> setText ("");
-	my_dxDisplay. cleanUp ();
 	transmitter_country		-> setText ("");
 	newDisplay. ficError_display	-> setValue (0);
 }
@@ -2330,6 +2307,7 @@ void	RadioInterface::stopChannel	() {
 	   ficDumpPointer = nullptr;
 	}
 	my_ofdmHandler		-> stop ();
+	my_dxDisplay. cleanUp ();
 	usleep (1000);
 	techWindow_p	-> cleanUp ();
 
@@ -2670,34 +2648,54 @@ void	RadioInterface::next_for_scan_continuous () {
 }
 
 ////////////////////////////////////////////////////////////////////////////
-	
-void	RadioInterface::show_for_single_scan () {
+QString RadioInterface::build_headLine () {
 QString SNR 		= "SNR " + QString::number (channel. snr);
+QString	tii;
+QString	theName;
+QString theDistance;
+QString	theCorner;
+QString	theHeight;
 
 	if (my_ofdmHandler == nullptr) {	// cannot happen
 	   fprintf (stderr, "Expert error 26\n");
-	   return;
+	   return "";
 	}
 
+	if (channel. mainId != -1) {
+	   tii		= ids_to_string (channel. mainId,
+	                                     channel. subId) + ";" ;
+	   theName	= channel. transmitterName + ";";
+	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
+	   theCorner	= QString::number (channel. corner, 'f', 1)
+                              + QString::fromLatin1 (" \xb0 ");
+	   theHeight	= " (" + QString::number (channel. height, 'f', 1) +  "m)" + "\n";
+	}
+	else {
+	   tii		= "?,?;";
+	   theName 	= ";";
+	   theDistance	= "unknown";
+	   theCorner	= "";
+	   theHeight	= "\n";
+	}
+	
+	   
 	QString utcTime	= convertTime (UTC. year, UTC.month,
 	                               UTC. day, UTC. hour, 
 	                               UTC. minute);
 	QString headLine = channel. ensembleName + ";" +
-	                      channel. channelName + ";" +
+	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
-	                      hextoString (channel. Eid) + " " + ";" +
-	                      ids_to_string (channel. mainId,
-	                                     channel. subId) + " " + ";" +
-	                      utcTime  + ";" +
-	                      SNR  + ";" +
-	                      QString::number (channel. nrServices) + ";" +
-	                      channel. transmitterName + ";" +
-                              QString::number (channel. distance, 'f', 1) + " km " +
-                              QString::number (channel. corner, 'f', 1) +
-                              QString::fromLatin1 (" \xb0 ") +
-                              " (" + QString::number (channel. height, 'f', 1) +  "m)"
-	                      + "\n";
+	                      hextoString (channel. Eid) + ";" +
+	                      tii +
+	                      utcTime + ";" +
+	                      SNR + ";" +
+	                      QString::number (channel. nrServices) +";" +
+	                      theName + theDistance + theCorner + theHeight;
+	return headLine;
+}
 
+void	RadioInterface::show_for_single_scan () {
+QString	headLine = build_headLine ();
 	QStringList s = my_ofdmHandler -> basicPrint ();
 	scanTable_p -> addLine (headLine);
 	scanTable_p -> addLine ("\n;\n");
@@ -2708,31 +2706,7 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 }
 
 void	RadioInterface::show_for_continuous () {
-QString SNR 		= "SNR " + QString::number (channel. snr);
-
-	if (my_ofdmHandler == nullptr) {	// cannot happen
-	   fprintf (stderr, "Expert error 26\n");
-	   return;
-	}
-
-	QString utcTime	= convertTime (UTC. year, UTC.month,
-	                               UTC. day, UTC. hour, 
-	                               UTC. minute);
-	QString headLine = channel. ensembleName + ";" +
-	                      channel. channelName  + ";" +
-	                      QString::number (channel. tunedFrequency) + ";" +
-	                      hextoString (channel. Eid) + ";" +
-	                      ids_to_string (channel. mainId,
-	                                     channel. subId) + ";" +
-	                      utcTime + ";" +
-	                      SNR + ";" +
-	                      QString::number (channel. nrServices) + ";" +
-	                      channel. transmitterName + ";" +
-                              QString::number (channel. distance, 'f', 1) + " km "
-                              + QString::number (channel. corner, 'f', 1)
-                              + QString::fromLatin1 (" \xb0 ")
-                              + " (" + QString::number (channel. height, 'f', 1) +  "ml)" + "\n";
-
+QString headLine	= build_headLine ();
 	scanTable_p -> addLine (headLine);
 	scanTable_p	-> show ();
 }

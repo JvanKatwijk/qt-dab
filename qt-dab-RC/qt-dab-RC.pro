@@ -184,6 +184,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/mot/mot-object.h \
 	   ../includes/backend/data/mot/mot-dir.h \
 	   ../includes/backend/data/journaline-datahandler.h \
+	   ../includes/backend/data/journaline-screen.h \
 	   ../includes/backend/data/journaline/dabdatagroupdecoder.h \
 	   ../includes/backend/data/journaline/crc_8_16.h \
 	   ../includes/backend/data/journaline/log.h \
@@ -318,6 +319,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/mot/mot-object.cpp \
 	   ../src/backend/data/mot/mot-dir.cpp \
 	   ../src/backend/data/journaline-datahandler.cpp \
+	   ../src/backend/data/journaline-screen.cpp \
 	   ../src/backend/data/journaline/crc_8_16.c \
 	   ../src/backend/data/journaline/log.c \
 	   ../src/backend/data/journaline/newssvcdec_impl.cpp \
@@ -495,10 +497,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.XV3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.X
-	CONFIG		+= dabstick-win-v4
+	TARGET		= qt-dab32-6.XV3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.X
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

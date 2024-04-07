@@ -111,7 +111,7 @@ uint8_t table [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
-
+#define	MIN_TERM	3
 		TII_Detector::TII_Detector (uint8_t dabMode,
 	                                    int16_t depth):
 	                                      params (dabMode),
@@ -236,7 +236,7 @@ std::vector<int16_t> theResult;
 //	We only use the C and D table to locate the start offset
 	   for (int i = 0; i < GROUPSIZE; i ++) {
 	      for (int j = 0; j < NUM_GROUPS; j ++) {
-	         if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
+	         if (hulpTable [j * GROUPSIZE + i] > MIN_TERM * avgTable [j]) {
 	            C_table [i] += hulpTable [j * GROUPSIZE + i];
 	            D_table [i] ++;
 	         }

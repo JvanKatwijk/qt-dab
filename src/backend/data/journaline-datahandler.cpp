@@ -1,4 +1,5 @@
-# /*
+#
+/*
  *    Copyright (C) 2015 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
@@ -22,7 +23,7 @@
 #include	"journaline-datahandler.h"
 #include	"dabdatagroupdecoder.h"
 #include	"bit-extractors.h"
-
+#include	"journaline-screen.h"
 #include	<sys/time.h>
 #include	"newsobject.h"
 #include	"NML.h"
@@ -53,7 +54,8 @@ void my_callBack (
 	delete ttt;
 }
 
-	journaline_dataHandler::journaline_dataHandler() {
+	journaline_dataHandler::journaline_dataHandler():
+	                                  theScreen (table){
 	theDecoder	= DAB_DATAGROUP_DECODER_createDec (my_callBack, this);
 	init_dataBase ();
 }
@@ -78,9 +80,15 @@ int32_t	res;
 }
 
 void	journaline_dataHandler::init_dataBase 	() {
+	destroy_dataBase ();
+	table. resize (0);
 }
 
 void	journaline_dataHandler::destroy_dataBase	() {
+	fprintf (stderr, "Table has %d elements\n",
+	                          table. size ());
+	for (int i = 0; i < table. size (); i ++)
+	   delete table [i]. element;
 }
 
 void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
@@ -89,30 +97,45 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	   case NML::INVALID:
 	      return;
 	   case NML::MENU: {
-	      fprintf (stderr, "Menu %d %d %s\n",
-	                           NMLelement -> GetObjectId (),
-	                           NMLelement -> GetNrOfItems (),
-	                           NMLelement -> GetTitle(). c_str ());
-	      std::vector<NML::Item_t> theItems =
-	                           NMLelement -> GetItems ();
-	      for (auto &item: theItems) 
-	         fprintf (stderr, "%d %d %s\n", item. link_id,
-	                                        item. link_id_available,
-	                                        item. text. c_str ());
-	      fprintf (stderr, "<<<<<<<<<<<<<<<<<<<\n\n");
-	      }
-	      break;
 	   case NML::PLAIN:
-	      break;
 	   case NML::LIST:
-	      fprintf (stderr, "List %d with %d items\n",
-	                         NMLelement -> GetObjectId (),
-	                         NMLelement -> GetNrOfItems ());
-	      break;
+	      NML::News_t  *x	= new NML::News_t;
+	      x -> object_id 	= NMLelement	-> GetObjectId ();
+	      x -> object_type	= NMLelement	-> GetObjectType ();
+	      x -> static_flag	= NMLelement	-> isStatic ();
+	      x -> revision_index = NMLelement	-> GetRevisionIndex ();
+	      x -> extended_header = NMLelement	-> GetExtendedHeader ();
+	      x -> title	= NMLelement	-> GetTitle ();
+	      x -> item		= NMLelement	-> GetItems ();
+	      int index_oldElement = findIndex (x -> object_id);
+	      if (index_oldElement >= 0) {
+	         NML::News_t *p = table [index_oldElement]. element;
+	         if (p -> revision_index >= x ->revision_index) {
+	            delete x;
+	            break;
+	         }
+	         else {
+	            delete p;
+	            table [index_oldElement]. element = x;
+	            break;
+	         }
+	      }
+	      tableElement temp;
+	      temp. key	= x -> object_id;
+	      temp. element	 = x;
+	      table. push_back (temp);
+	   }
+	   break;
 	   default:
 	      fprintf (stderr, "SOMETHING ELSE\n");
 	      break;
 	}
 }
 
+int	journaline_dataHandler::findIndex (int key) {
+	for (int i = 0; i < table. size (); i ++)
+	   if (table [i]. key == key)
+	      return i;
+	return -1;
+}
 

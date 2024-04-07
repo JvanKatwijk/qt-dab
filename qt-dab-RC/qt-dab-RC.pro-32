@@ -13,6 +13,7 @@ win32 {
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
+
 unix {
 QMAKE_CXXFLAGS	+=  -ffast-math -flto
 QMAKE_CFLAGS	+=  -ffast-math -flto
@@ -44,6 +45,7 @@ DEFINES		+= __THREADED_BACKEND__
 #DEFINES	+= __EPG_TRACE__  
 DEPENDPATH += . \
 	      ./support \
+	      ./forms-v7 \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -84,6 +86,7 @@ DEPENDPATH += . \
 
 INCLUDEPATH += . \
 	       ./support \
+	      ./forms-v7 \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -124,6 +127,8 @@ HEADERS += ./radio.h \
 	   ./support/ensemble-handler.h \
 	   ./support/config-handler.h \
 	   ./support/audiosystem-selector.h \
+	   ./support/dxDisplay.h \
+	   ./forms-v7/qwt-2.h \
 	   ./forms-v7/new-display/display-widget.h \
 	   ./forms-v7/new-display/scopes/spectrum-scope.h \
 	   ./forms-v7/new-display/scopes/correlation-scope.h \
@@ -265,6 +270,7 @@ SOURCES += ./main.cpp \
 	   ./support/ensemble-handler.cpp \
 	   ./support/config-handler.cpp \
 	   ./support/audiosystem-selector.cpp \
+	   ./support/dxDisplay.cpp \
 	   ./forms-v7/new-display/display-widget.cpp \
            ./forms-v7/new-display/scopes/correlation-scope.cpp \
            ./forms-v7/new-display/scopes/spectrum-scope.cpp \
@@ -413,8 +419,8 @@ INCLUDEPATH	+= /usr/local/include
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-CONFIG		+= double
-#CONFIG		+= single
+#CONFIG		+= double
+CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -438,7 +444,7 @@ CONFIG		+= fdk-aac
 CONFIG		+= preCompiled
 #CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
+CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
 
@@ -489,10 +495,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.XV3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.X
-	CONFIG		+= dabstick-win-v4
+	TARGET		= qt-dab32-6.XV3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.X
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
@@ -924,11 +930,9 @@ mapserver {
 
 double	{
 	DEFINES		+= __WITH_DOUBLES__
-	DEFINES		+= __FFTW3__
 	LIBS		+= -lfftw3
 }
 
 single	{
-	DEFINES		+= __FFTW3__
 	LIBS		+= -lfftw3f
 }

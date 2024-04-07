@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml 
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 CONFIG		+= release
 win32 {
@@ -45,6 +45,7 @@ DEFINES		+=  __THREADED_BACKEND__
 
 DEPENDPATH += . \
 	      ./support \
+	      ./forms-v7/ \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -85,6 +86,7 @@ DEPENDPATH += . \
 
 INCLUDEPATH += . \
 	       ./support \
+	      ./forms-v7/ \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -125,6 +127,8 @@ HEADERS += ./radio.h \
 	   ./support/ensemble-handler.h \
            ./support/config-handler.h \
 	   ./support/audiosystem-selector.h \
+	   ./support/dxDisplay.h \
+	   ./forms-v7/qwt-2.h \
 	   ./forms-v7/new-display/display-widget.h \
 	   ./forms-v7/new-display/scopes/spectrum-scope.h \
 	   ./forms-v7/new-display/scopes/correlation-scope.h \
@@ -265,6 +269,7 @@ SOURCES += ./main.cpp \
 	   ./support/ensemble-handler.cpp \
 	   ./support/config-handler.cpp \
            ./support/audiosystem-selector.cpp \
+           ./support/dxDisplay.cpp \
 	   ./forms-v7/new-display/display-widget.cpp \
            ./forms-v7/new-display/scopes/correlation-scope.cpp \
            ./forms-v7/new-display/scopes/spectrum-scope.cpp \
