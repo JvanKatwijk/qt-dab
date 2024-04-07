@@ -274,6 +274,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/ip-datahandler.h
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
+	     ../includes/backend/data/journaline-scree.h
 	     ../includes/backend/data/journaline/dabdatagroupdecoder.h
 	     ../includes/backend/data/journaline/crc_8_16.h
 	     ../includes/backend/data/journaline/log.h
@@ -404,6 +405,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/audio/mp2processor.cpp
 	     ../src/backend/data/ip-datahandler.cpp
 	     ../src/backend/data/journaline-datahandler.cpp
+	     ../src/backend/data/journaline-screen.cpp
 	     ../src/backend/data/journaline/crc_8_16.c
 	     ../src/backend/data/journaline/log.c
 	     ../src/backend/data/journaline/newssvcdec_impl.cpp
@@ -514,6 +516,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/ip-datahandler.h
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
+	     ../includes/backend/data/journaline-screen.h
              ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h

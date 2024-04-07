@@ -92,7 +92,6 @@ void	journaline_dataHandler::destroy_dataBase	() {
 }
 
 void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
-
 	switch (NMLelement -> GetObjectType ()) {
 	   case NML::INVALID:
 	      return;
@@ -110,7 +109,9 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	      int index_oldElement = findIndex (x -> object_id);
 	      if (index_oldElement >= 0) {
 	         NML::News_t *p = table [index_oldElement]. element;
-	         if (p -> revision_index >= x ->revision_index) {
+	         if (true) {
+	            fprintf (stderr, "rewrite %d\n", x -> object_id);
+//	         if (p -> revision_index >= x ->revision_index) {
 	            delete x;
 	            break;
 	         }

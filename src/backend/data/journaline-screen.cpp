@@ -62,8 +62,8 @@
 
 void	journalineScreen::handle_resetButton	() {
 	pathVector. resize (0);
-	fprintf (stderr, "Tablesize %d\n", (*table). size ());
-	for (int i = 0; i < (*table). size (); i ++) {
+	fprintf (stderr, "Tablesize %d\n", (int)((*table). size ()));
+	for (int i = 0; i < (int)((*table). size ()); i ++) {
 	   if ((*table) [i]. key == 0) {
 	      displayElement (*((*table) [i].element));
 	      pathVector. push_back (0);
@@ -72,11 +72,18 @@ void	journalineScreen::handle_resetButton	() {
 }
 
 void	journalineScreen::handle_upButton	() {
+	if (pathVector. size () == 1) 
+	   return;
+	pathVector. pop_back ();
+	int index	= pathVector. back ();
+	displayElement (*((*table) [index].element));
 }
 
 void	journalineScreen::select_sub (QModelIndex ind) {
 	fprintf (stderr, "We vinden element %d\n", ind. row ());
 	int currentElement = pathVector. back ();
+	if ((*table)[currentElement].element -> object_type == NML::PLAIN)
+	   return;
 	NML::News_t *temp	= (*table) [currentElement]. element;
 	int next	= temp	-> item [ind. row ()]. link_id;
 	fprintf (stderr, "De linkid is %d\n", next);
@@ -112,7 +119,7 @@ void	journalineScreen::display_Menu (NML::News_t &element) {
 	std::string t = element. title;
 	mainText	-> setText (QString::fromStdString (t));
 	model. clear ();
-	for (int i = 0; i < element. item. size (); i ++)  {
+	for (int i = 0; i < (int)(element. item. size ()); i ++)  {
 	   NML::Item_t *item = &(element. item [i]);
 	   model. appendRow (new QStandardItem (QString::fromStdString (item -> text)));
 	}
@@ -121,6 +128,11 @@ void	journalineScreen::display_Menu (NML::News_t &element) {
 }
 
 void	journalineScreen::display_Plain (NML::News_t &element) {
+	std::string t = element. title;
+	mainText	-> setText (QString::fromStdString (t));
+	model. clear ();
+	NML::Item_t *item = &(element. item [0]);
+	model. appendRow (new QStandardItem (QString::fromStdString (item -> text)));
 }
 
 void	journalineScreen::display_List (NML::News_t &element) {
