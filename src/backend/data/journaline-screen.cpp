@@ -82,8 +82,10 @@ void	journalineScreen::handle_upButton	() {
 void	journalineScreen::select_sub (QModelIndex ind) {
 	fprintf (stderr, "We vinden element %d\n", ind. row ());
 	int currentElement = pathVector. back ();
-	if ((*table)[currentElement].element -> object_type == NML::PLAIN)
-	   return;
+	fprintf (stderr, "Current element type %d\n",
+	                (*table)[currentElement]. element -> object_type);
+//	if ((*table)[currentElement].element -> object_type == NML::PLAIN)
+//	   return;
 	NML::News_t *temp	= (*table) [currentElement]. element;
 	int next	= temp	-> item [ind. row ()]. link_id;
 	fprintf (stderr, "De linkid is %d\n", next);

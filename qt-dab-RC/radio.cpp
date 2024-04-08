@@ -2661,23 +2661,26 @@ QString	theHeight;
 	   return "";
 	}
 
-	if (channel. mainId != -1) {
+	if (channel. mainId != -1) 
 	   tii		= ids_to_string (channel. mainId,
 	                                     channel. subId) + ";" ;
+	else
+	   tii		= "?,?;";
+	if (channel. transmitterName == "")
 	   theName	= channel. transmitterName + ";";
+	else
+	   theName 	= ";";
+	if (channel. distance == -1) {
 	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
 	   theCorner	= QString::number (channel. corner, 'f', 1)
                               + QString::fromLatin1 (" \xb0 ");
 	   theHeight	= " (" + QString::number (channel. height, 'f', 1) +  "m)" + "\n";
 	}
 	else {
-	   tii		= "?,?;";
-	   theName 	= ";";
 	   theDistance	= "unknown";
 	   theCorner	= "";
 	   theHeight	= "\n";
 	}
-	
 	   
 	QString utcTime	= convertTime (UTC. year, UTC.month,
 	                               UTC. day, UTC. hour, 

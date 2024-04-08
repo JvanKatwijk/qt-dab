@@ -109,17 +109,11 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	      int index_oldElement = findIndex (x -> object_id);
 	      if (index_oldElement >= 0) {
 	         NML::News_t *p = table [index_oldElement]. element;
-	         if (true) {
-	            fprintf (stderr, "rewrite %d\n", x -> object_id);
-//	         if (p -> revision_index >= x ->revision_index) {
-	            delete x;
-	            break;
-	         }
-	         else {
-	            delete p;
-	            table [index_oldElement]. element = x;
-	            break;
-	         }
+	         delete p;
+	         table [index_oldElement]. element = x;
+	         if (x -> object_id == 0)
+	            fprintf (stderr, "Root rewrite\n");
+	         break;
 	      }
 	      tableElement temp;
 	      temp. key	= x -> object_id;
