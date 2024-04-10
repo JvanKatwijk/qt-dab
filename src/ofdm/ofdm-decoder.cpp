@@ -62,12 +62,12 @@ float Length	= jan_abs (V);
 	                                    conjVector (params. get_T_u ()),
 	                                    fft_buffer (params. get_T_u ()) {
 	(void)bitDepth;
-	connect (this, SIGNAL (showIQ (int)),
-	         myRadioInterface, SLOT (showIQ (int)));
-	connect (this, SIGNAL (show_quality (float, float, float)),
-	         myRadioInterface, SLOT (show_quality (float, float, float)));
-	connect (this, SIGNAL (show_stdDev (int)),
-	         myRadioInterface, SLOT (show_stdDev (int)));
+	connect (this, &ofdmDecoder::showIQ,
+	         myRadioInterface, &RadioInterface::showIQ);
+	connect (this, &ofdmDecoder::show_quality,
+	         myRadioInterface, &RadioInterface::show_quality);
+	connect (this, &ofdmDecoder::show_stdDev,
+	         myRadioInterface, &RadioInterface::show_stdDev);
 //
 	this	-> T_s			= params. get_T_s	();
 	this	-> T_u			= params. get_T_u	();

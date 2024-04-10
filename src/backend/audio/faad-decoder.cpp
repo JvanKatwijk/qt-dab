@@ -24,35 +24,37 @@
 #include        "neaacdec.h"
 #include        "radio.h"
 
-        faadDecoder::faadDecoder        (RadioInterface *mr,
-                                         RingBuffer<std::complex<int16_t>> *buffer) {
-        this    -> audioBuffer  = buffer;
-        aacCap          = NeAACDecGetCapabilities();
-        aacHandle       = NeAACDecOpen();
-        aacConf         = NeAACDecGetCurrentConfiguration (aacHandle);
-        aacInitialized  = false;
-        baudRate        = 48000;
-        connect (this, SIGNAL (newAudio (int, int, bool, bool)),
-                 mr, SLOT (newAudio (int, int, bool, bool)));
+	faadDecoder::faadDecoder        (RadioInterface *mr,
+	                                 RingBuffer<std::complex<int16_t>> *buffer) {
+	this    -> audioBuffer  = buffer;
+	aacCap          = NeAACDecGetCapabilities();
+	aacHandle       = NeAACDecOpen();
+	aacConf         = NeAACDecGetCurrentConfiguration (aacHandle);
+	aacInitialized  = false;
+	baudRate        = 48000;
+	connect (this, &faadDecoder::newAudio,
+	         mr, &RadioInterface::newAudio);
+//	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
+//	          mr, SLOT (newAudio (int, int, bool, bool)));
 }
 
-        faadDecoder::~faadDecoder	() {
-        NeAACDecClose   (aacHandle);
+	faadDecoder::~faadDecoder	() {
+	NeAACDecClose   (aacHandle);
 }
 
 int get_aac_channel_configuration (int16_t m_mpeg_surround_config,
-                                   uint8_t aacChannelMode) {
+	                           uint8_t aacChannelMode) {
 
-        switch(m_mpeg_surround_config) {
-           case 0:     // no surround
-              return aacChannelMode ? 2 : 1;
-           case 1:     // 5.1
-              return 6;
-           case 2:     // 7.1
-              return 7;
-           default:
-              return -1;
-        }
+	switch(m_mpeg_surround_config) {
+	   case 0:     // no surround
+	      return aacChannelMode ? 2 : 1;
+	   case 1:     // 5.1
+	      return 6;
+	   case 2:     // 7.1
+	      return 7;
+	   default:
+	      return -1;
+	}
 }
 
 bool    faadDecoder::initialize (stream_parms	*sp) {
@@ -75,71 +77,71 @@ uint8_t channels;
  * support AudioObjectType 29 (PS)
  */
 
-        int core_sr_index =
-               sp -> dacRate ? (sp -> sbrFlag ? 6 : 3) :
-                               (sp -> sbrFlag ? 8 : 5);   // 24/48/16/32 kHz
-        int core_ch_config =
+	int core_sr_index =
+	       sp -> dacRate ? (sp -> sbrFlag ? 6 : 3) :
+	                       (sp -> sbrFlag ? 8 : 5);   // 24/48/16/32 kHz
+	int core_ch_config =
 	           get_aac_channel_configuration (sp -> mpegSurround,
-                                                  sp ->aacChannelMode);
-        if (core_ch_config == -1) {
-           printf ("Unrecognized mpeg surround config (ignored): %d\n",
-                                               sp -> mpegSurround);
-           return false;
-        }
+	                                          sp ->aacChannelMode);
+	if (core_ch_config == -1) {
+	   printf ("Unrecognized mpeg surround config (ignored): %d\n",
+	                                       sp -> mpegSurround);
+	   return false;
+	}
 
-        uint8_t asc[2];
-        asc [0] = 0b00010 << 3 | core_sr_index >> 1;
+	uint8_t asc[2];
+	asc [0] = 0b00010 << 3 | core_sr_index >> 1;
 	asc [1] = (core_sr_index & 0x01) << 7 | core_ch_config << 3 | 0b100;
 	long int init_result = NeAACDecInit2 (aacHandle,
-                                              asc,
-                                              sizeof (asc),
-                                              &sample_rate,
-                                              &channels);
-        if (init_result != 0) {
+	                                      asc,
+	                                      sizeof (asc),
+	                                      &sample_rate,
+	                                      &channels);
+	if (init_result != 0) {
 /*      If some error initializing occured, skip the file */
-           printf ("Error initializing decoder library: %s\n",
-                                 NeAACDecGetErrorMessage (-init_result));
-           NeAACDecClose (aacHandle);
-           return false;
-        }
-        return true;
+	   printf ("Error initializing decoder library: %s\n",
+	                         NeAACDecGetErrorMessage (-init_result));
+	   NeAACDecClose (aacHandle);
+	   return false;
+	}
+	return true;
 }
 
 int16_t faadDecoder::MP42PCM (stream_parms *sp,
-                              uint8_t	buffer [],
-                              int16_t   bufferLength) {
+	                      uint8_t	buffer [],
+	                      int16_t   bufferLength) {
 int16_t samples;
 long unsigned int       sampleRate;
 int16_t *outBuffer;
 NeAACDecFrameInfo       hInfo;
 uint8_t channels;
 
-        if (!aacInitialized) {
-           if (!initialize (sp))
-              return 0;
-           aacInitialized = true;
-        }
-
-        outBuffer = (int16_t *)NeAACDecDecode (aacHandle,
-                                               &hInfo, buffer, bufferLength);
-        sampleRate      = hInfo. samplerate;
-
-        samples         = hInfo. samples;
-        if ((sampleRate == 24000) ||
-            (sampleRate == 32000) ||
-            (sampleRate == 48000) ||
-            (sampleRate !=  (long unsigned)baudRate))
-              baudRate = sampleRate;
-
-
-        channels        = hInfo. channels;
-        if (hInfo. error != 0) {
-           fprintf (stderr, "Warning: %s\n",
-                       faacDecGetErrorMessage (hInfo. error));
-           return -1;
+	if (!aacInitialized) {
+	   if (!initialize (sp))
+	      return 0;
+	   aacInitialized = true;
 	}
 
-        if (channels == 2) {
+	outBuffer = (int16_t *)NeAACDecDecode (aacHandle,
+	                                       &hInfo, buffer, bufferLength);
+	sampleRate      = hInfo. samplerate;
+
+	samples         = hInfo. samples;
+	if ((sampleRate == 24000) ||
+	    (sampleRate == 32000) ||
+	    (sampleRate == 48000) ||
+	    (sampleRate !=  (long unsigned)baudRate))
+	      baudRate = sampleRate;
+
+
+	channels        = hInfo. channels;
+	if (hInfo. error != 0) {
+	   fprintf (stderr, "Warning: %s\n",
+	               faacDecGetErrorMessage (hInfo. error));
+	   return -1;
+	}
+
+	if (channels == 2) {
 	   for (int i = 0; i < samples / 2; i ++) {
 	      std::complex<int16_t> s =
 	                      std::complex<int16_t> (outBuffer [2 * i],
@@ -147,24 +149,24 @@ uint8_t channels;
 	      audioBuffer -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 10)
-              newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
+	      newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
 
-        }
-        else
-        if (channels == 1) {
-           for (int i = 0; i < samples; i ++) {
+	}
+	else
+	if (channels == 1) {
+	   for (int i = 0; i < samples; i ++) {
 	      std::complex<int16_t> s = 
 	                  std::complex<int16_t> (outBuffer [i],
 	                                         outBuffer [i]);
-              audioBuffer  -> putDataIntoBuffer (&s, 1);
+	      audioBuffer  -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
-              newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
+	      newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
 
-        }
-        else
-           fprintf (stderr, "Cannot handle these channels\n");
+	}
+	else
+	   fprintf (stderr, "Cannot handle these channels\n");
 
-        return channels; 
+	return channels; 
 }
 

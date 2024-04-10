@@ -42,8 +42,10 @@
 	handle			= aacDecoder_Open (TT_MP4_LOAS, 1);
 	if (handle == nullptr)
 	   return;
-	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
-	         mr, SLOT (newAudio (int, int, bool, bool)));
+	connect (this, &fdkAAC::newAudio, 
+	         mr, &RadioInterface::newAudio);
+//	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
+//	         mr, SLOT (newAudio (int, int, bool, bool)));
 	working			= true;
 }
 

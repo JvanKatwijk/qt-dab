@@ -242,12 +242,12 @@ int16_t *nPtr = &N [0][0];
 	myRadioInterface	= mr;
 	this	-> buffer	= buffer;
 	this	-> bitRate	= bitRate;
-	connect (this, SIGNAL (show_frameErrors (int)),
-	         mr, SLOT (show_frameErrors (int)));
-	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
-	         mr, SLOT (newAudio (int, int, bool, bool)));
-	connect (this, SIGNAL (isStereo (bool)),
-	         mr, SLOT (setStereo (bool)));
+	connect (this, &mp2Processor::show_frameErrors,
+	         mr, &RadioInterface::show_frameErrors);
+	connect (this, &mp2Processor::newAudio,
+	         mr, &RadioInterface::newAudio);
+	connect (this, &mp2Processor::isStereo,
+	         mr, &RadioInterface::setStereo);
 
 	Voffs		= 0;
 	baudRate	= 48000;	// default for DAB

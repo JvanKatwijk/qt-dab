@@ -56,20 +56,20 @@
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;
 	this	-> dump		= dump;
-	connect (this, SIGNAL (show_frameErrors (int)),
-	         mr, SLOT (show_frameErrors (int)));
-	connect (this, SIGNAL (show_rsErrors (int)),
-	         mr, SLOT (show_rsErrors (int)));
-	connect (this, SIGNAL (show_aacErrors (int)),
-	         mr, SLOT (show_aacErrors (int)));
-	connect (this, SIGNAL (isStereo (bool)),
-	         mr, SLOT (setStereo (bool)));
-	connect (this, SIGNAL (newFrame (int)),
-	         mr, SLOT (newFrame (int)));
-	connect (this, SIGNAL (show_rsCorrections (int, int)),
-	         mr, SLOT (show_rsCorrections (int, int)));
-	connect (this, SIGNAL (show_emptyLabel (const QString &)),
-	         mr, SLOT (show_label (const QString &)));
+	connect (this, &mp4Processor::show_frameErrors,
+	         mr, &RadioInterface::show_frameErrors);
+	connect (this, &mp4Processor::show_rsErrors,
+	         mr, &RadioInterface::show_rsErrors);
+	connect (this, &mp4Processor::show_aacErrors,
+	         mr, &RadioInterface::show_aacErrors);
+	connect (this, &mp4Processor::isStereo,
+	         mr, &RadioInterface::setStereo);
+	connect (this, &mp4Processor::newFrame,
+	         mr, &RadioInterface::newFrame);
+	connect (this, &mp4Processor::show_rsCorrections,
+	         mr, &RadioInterface::show_rsCorrections);
+	connect (this, &mp4Processor::show_emptyLabel,
+	         mr, &RadioInterface::show_label);
 #ifdef	__WITH_FDK_AAC__
 	aacDecoder		= new fdkAAC (mr, b);
 #else

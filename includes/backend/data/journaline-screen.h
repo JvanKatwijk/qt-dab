@@ -40,7 +40,6 @@ typedef struct {
 class	journalineScreen: public QObject {
 Q_OBJECT
 public:
-
 		journalineScreen	(std::vector<tableElement> &table);
 		~journalineScreen	();
 	void	displayElement		(NML::News_t &element);
@@ -59,6 +58,10 @@ private:
 	QLabel		*mainText;
 	QListView	*subContent;
 	QStandardItemModel      model;
+
+	int		findIndex	(int);
+public slots:
+	void		start		(int);
 private slots:
 	void	handle_resetButton	();
 	void	handle_upButton		();

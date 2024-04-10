@@ -32,10 +32,10 @@
 typedef struct {
 	QString		country;
 	QString		channel;
-	QString		 ensemble;
+	QString		ensemble;
 	uint16_t 	Eid;
-	uint8_t 	mainId;
-	uint8_t		subId;
+	int8_t		mainId;
+	int8_t		subId;
 	QString		transmitterName;
 	float		latitude;
 	float		longitude;
@@ -48,5 +48,7 @@ struct transmitterDesc {
 	int	tiiValue;
 	bool	isStrongest;
 	cacheElement theTransmitter;
+	float	distance;
+	float	corner;
 };
 

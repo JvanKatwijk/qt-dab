@@ -110,7 +110,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 
 static inline
 QString ids_to_string (int mainId, int subId) {
-	return  "(" + QString::number (mainId) + ","
+	return  "(" + QString::number (mainId) + "-"
                     + QString::number (subId)  + ")";
 }
 
@@ -246,20 +246,20 @@ QString h;
 	configHandler_p		-> set_connections ();
 	configHandler_p		-> setDeviceList (chooseDevice.
 	                                            getDeviceList ());
-	
-	connect (configHandler_p, SIGNAL (frameClosed ()),
-	         this, SLOT (handle_configFrame_closed ()));
-	connect (configHandler_p, SIGNAL (handle_fontSelect ()),
-	         the_ensembleHandler, SLOT (handle_fontSelect ()));
-	connect (configHandler_p, SIGNAL (handle_fontSizeSelect (int)),
-	         the_ensembleHandler, SLOT (handle_fontSizeSelect (int)));
-	connect (configHandler_p, SIGNAL (handle_fontColorSelect ()),
-	         the_ensembleHandler, SLOT (handle_fontColorSelect ()));
-	connect (configHandler_p, SIGNAL (set_serviceOrder (int)),
-	         the_ensembleHandler, SLOT (set_serviceOrder (int)));
 
-	connect (&newDisplay, SIGNAL (frameClosed ()),
-	         this, SLOT (handle_newDisplayFrame_closed ()));
+	connect (configHandler_p, &configHandler::frameClosed,
+	         this, &RadioInterface::handle_configFrame_closed);
+	connect (configHandler_p, &configHandler::handle_fontSelect,
+	         the_ensembleHandler, &ensembleHandler::handle_fontSelect);
+
+	connect (configHandler_p, &configHandler::handle_fontSizeSelect,
+	         the_ensembleHandler, &ensembleHandler::handle_fontSizeSelect);
+	connect (configHandler_p, &configHandler::handle_fontColorSelect,
+	         the_ensembleHandler,& ensembleHandler::handle_fontColorSelect);
+	connect (configHandler_p, &configHandler::set_serviceOrder,
+	         the_ensembleHandler, &ensembleHandler::set_serviceOrder);
+	connect (&newDisplay, &displayWidget::frameClosed,
+	         this, &RadioInterface::handle_newDisplayFrame_closed);
 #ifdef HAVE_RTLSDR_V3
 	SystemVersion	= QString ("X") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
@@ -271,16 +271,16 @@ QString h;
 
 	ensembleWidget -> setWidget (the_ensembleHandler);
 	connect (the_ensembleHandler,
-	              SIGNAL (selectService (const QString &,
-	                                             const QString &)),
-	         this, SLOT (localSelect (const QString &, const QString &)));
+	              &ensembleHandler::selectService,
+	         this, &RadioInterface::localSelect_SS);
 	connect (the_ensembleHandler,
-	             SIGNAL (start_background_task (const QString &)),
-	         this, SLOT (start_background_task (const QString &)));
+	               &ensembleHandler::start_background_task,
+	         this, &RadioInterface::start_background_task);
 	   
 	techWindow_p	= new techData (this, dabSettings_p, &theTechData);
-	connect (techWindow_p, SIGNAL (frameClosed ()),
-	         this, SLOT (handle_techFrame_closed ()));
+	
+	connect (techWindow_p, &techData::frameClosed,
+	         this, &RadioInterface::handle_techFrame_closed);
 
 	if (dabSettings_p -> value (NEW_DISPLAY_VISIBLE, 0). toInt () != 0)
 	   newDisplay. show ();
@@ -352,8 +352,10 @@ QString h;
 	          dabSettings_p -> value (QT_AUDIO_VOLUME, 50). toInt ();
 	      volumeSlider		-> setValue (volume);
 	      ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
-	      connect (volumeSlider, SIGNAL (valueChanged (int)),
-	               this, SLOT (setVolume (int)));
+	      connect (volumeSlider, &QSlider::valueChanged,
+	               this, &RadioInterface::setVolume);
+//	      connect (volumeSlider, SIGNAL (valueChanged (int)),
+//	               this, SLOT (setVolume (int)));
 	   } catch (...) {
 	      soundOut_p = nullptr;
 	   }
@@ -404,11 +406,8 @@ QString h;
 	epgPath		+= "Qt-DAB-files/";
 	epgPath		= dabSettings_p -> value ("epgPath", epgPath). toString ();
 	epgPath		= checkDir (epgPath);
-	connect (&epgProcessor,
-	         SIGNAL (set_epgData (int, int,
-	                              const QString &, const QString &)),
-	         this, SLOT (set_epgData (int, int,
-	                              const QString &, const QString &)));
+	connect (&epgProcessor, &epgDecoder::set_epgData,
+	         this, &RadioInterface::set_epgData);
 //	timer for autostart epg service
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, SIGNAL (timeout ()),
@@ -1164,8 +1163,6 @@ void	RadioInterface::TerminateProcess () {
 	fprintf (stderr, "going to close the clockstreamer\n");
 	delete	clockStreamer_p;
 #endif
-	if (mapHandler != nullptr)
-	   mapHandler ->  stop ();
 	displayTimer.	stop	();
 	channelTimer.	stop	();
 	presetTimer.	stop	();
@@ -1190,6 +1187,8 @@ void	RadioInterface::TerminateProcess () {
 	   contentTable_p -> hide ();
 	   delete contentTable_p;
 	}
+	if (mapHandler != nullptr)
+	   mapHandler ->  stop ();
 //	just save a few checkbox settings that are not
 
 	if (scanTable_p != nullptr) {
@@ -1509,12 +1508,12 @@ void	RadioInterface::setStereo	(bool b) {
 	stereoSetting = b;
 }
 
-static
-QString	tiiNumber (int n) {
-	if (n >= 10)
-	   return QString::number (n);
-	return QString ("0") + QString::number (n);
-}
+//static
+//QString	tiiNumber (int n) {
+//	if (n >= 10)
+//	   return QString::number (n);
+//	return QString ("0") + QString::number (n);
+//}
 
 void	RadioInterface::handle_detailButton	() {
 	if (!running. load ())
@@ -1859,7 +1858,7 @@ void	RadioInterface::stop_announcement (const QString &name, int subChId) {
 void	RadioInterface::handle_presetSelect (const QString &channel,
 	                                     const QString &service) {
 	if (!inputDevice_p -> isFileInput ())
-	   localSelect (service, channel);
+	   localSelect_SS (service, channel);
 	else
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Selection not possible"));
@@ -1877,7 +1876,7 @@ void	RadioInterface::handle_scanListSelect (const QString &s) {
 //
 //	selecting from a content description
 void	RadioInterface::handle_contentSelector (const QString &s) {
-	localSelect (s, channel. channelName);
+	localSelect_SS (s, channel. channelName);
 }
 //
 //	From a predefined schedule list, the service names most
@@ -1890,18 +1889,19 @@ QStringList list	= splitter (s);
 	fprintf (stderr, "we found %s %s\n",
 	                   list. at (1). toLatin1 (). data (),
 	                   list. at (0). toLatin1 (). data ());
-	localSelect (list. at (1), list. at (0));
+	localSelect_SS (list. at (1), list. at (0));
 }
 //
 void	RadioInterface::localSelect (const QString &s) {
 QStringList list 	= splitter (s);
 	if (list. length () != 2)
 	   return;
-	localSelect (list. at (1), list. at (0));
+	localSelect_SS (list. at (1), list. at (0));
 }
 
-void	RadioInterface::localSelect (const QString &service,
-	                             const QString &theChannel) {
+void	RadioInterface::localSelect_SS (const QString &service,
+	                                const QString &theChannel) {
+
 QString serviceName	= service;
 
 	if (my_ofdmHandler == nullptr)	// should not happen
@@ -2486,7 +2486,7 @@ void	RadioInterface::start_scan_continuous () {
 	new_channelIndex (k);
 	int switchDelay		=
 	             configHandler_p -> switchDelayValue ();
-	channelTimer. start (switchDelay);
+	channelTimer. start (2 * switchDelay);
 	startChannel    (channelSelector -> currentText ());
 }
 //
@@ -2643,7 +2643,7 @@ void	RadioInterface::next_for_scan_continuous () {
 
 	int switchDelay	= 
 	         configHandler_p -> switchDelayValue ();
-	channelTimer. start (switchDelay);
+	channelTimer. start (2 * switchDelay);
 	startChannel (channelSelector -> currentText ());
 }
 
@@ -2666,11 +2666,11 @@ QString	theHeight;
 	                                     channel. subId) + ";" ;
 	else
 	   tii		= "?,?;";
-	if (channel. transmitterName == "")
+	if (channel. transmitterName != "")
 	   theName	= channel. transmitterName + ";";
 	else
 	   theName 	= ";";
-	if (channel. distance == -1) {
+	if (channel. distance > 0) {
 	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
 	   theCorner	= QString::number (channel. corner, 'f', 1)
                               + QString::fromLatin1 (" \xb0 ");
@@ -2709,9 +2709,54 @@ QString	headLine = build_headLine ();
 }
 
 void	RadioInterface::show_for_continuous () {
-QString headLine	= build_headLine ();
+	QString headLine = build_headLine ();
 	scanTable_p -> addLine (headLine);
-	scanTable_p	-> show ();
+
+	for (auto &tr: channel. transmitters) {
+	   if (!tr. isStrongest) {
+	      QString line = build_cont_addLine (tr);
+	      if (line == "")
+	         continue;
+	      scanTable_p -> addLine (line);
+	   }
+	}
+	scanTable_p -> show ();
+}
+
+QString RadioInterface::build_cont_addLine (transmitterDesc &tr) {
+QString tii;
+QString theName;
+QString theDistance;
+QString theCorner;
+QString theHeight;
+
+	tii		= ids_to_string (tr. theTransmitter. mainId,
+	                                 tr. theTransmitter. subId) + ";" ;
+	if (tr. theTransmitter. transmitterName != "")
+	   theName	= tr. theTransmitter. transmitterName + ";";
+	else
+	   theName 	= ";";
+	
+	if (tr. distance > 0) {
+	   theDistance	= QString::number (tr. distance, 'f', 1) + " km ";
+	   theCorner	= QString::number (tr. corner, 'f', 1)
+                              + QString::fromLatin1 (" \xb0 ");
+	   theHeight	= " (" + QString::number (tr. theTransmitter. height, 'f', 1) +  "m)" + "\n";
+	}
+	else {
+	   theDistance	= "unknown";
+	   theCorner	= "?";
+	   theHeight	= "?";
+	}
+	return  QString (";") +
+	                 ";" +
+	                 ";" +
+	                 ";" +
+	                 tii +
+	                 ";" +
+	                 ";" +
+	                 ";" +
+	                  theName + theDistance + theCorner + theHeight;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -3484,10 +3529,9 @@ Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 
 void	RadioInterface::show_tii	(int tiiValue, int index) {
 QString	country	= "";
-bool	tiiChange	= false;
 int	mainId	= tiiValue >> 8;
-int	subId	= tiiValue & 0xFF;
 cacheElement	theTransmitter;
+bool listChanged = false;
 
 	bool dxMode	= configHandler_p -> get_dxSelector ();
 
@@ -3517,12 +3561,14 @@ cacheElement	theTransmitter;
 
 	if (!tiiProcessor. has_tiiFile ())
 	   return;
-
+//
+//	OK, here we really start
 	bool inList = false;
-	for (int i = 0; i < channel. transmitters. size (); i ++) {
+	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
 	   if (channel. transmitters. at (i). tiiValue == tiiValue) {
 	      inList = true;
 	      theTransmitter	= channel. transmitters [i]. theTransmitter;
+	      break;
 	   }
 	}
 
@@ -3537,18 +3583,30 @@ cacheElement	theTransmitter;
 	      return;
 	   if ((tr -> mainId == 0) || (tr -> subId == 0))
 	      return;
+
 	   theTransmitter = *tr;
-
-	   transmitterDesc t = {tiiValue, false, theTransmitter};
-	   channel. transmitters. push_back (t);
+	   transmitterDesc t = {tiiValue, false, theTransmitter, 0, 0};
+	   channel. transmitters. push_back (t);	
+//
+//	we know the list changed, and we retransmit it later on
+	   listChanged	= true;
 	}
-
+//
+//	Check which one is "strongest", 
 	if (index == 0) {
-	   for (int i = 0; i < channel. transmitters. size (); i ++)
+	   int currentMax = -1;
+	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
+	      if (channel.transmitters. at (i). isStrongest)
+	         currentMax = i;
 	      channel. transmitters. at (i). isStrongest = false;
-	   for (auto &t : channel. transmitters)
-	      if (t. tiiValue == tiiValue)
-	         t. isStrongest = true;
+	   }
+	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
+	      if (channel. transmitters. at (i). tiiValue == tiiValue) {
+	         channel. transmitters. at (i). isStrongest = true;
+	         if (i != currentMax)
+	            listChanged = true;
+	      }
+	   }
 	}
 
 //	display the transmitters on the scope widget
@@ -3562,11 +3620,17 @@ cacheElement	theTransmitter;
 	   distanceLabel ->  setFont (f);
 	}
 	else {
-	   my_dxDisplay. cleanUp ();
+	   if (listChanged)	// rewrite the list
+	      my_dxDisplay. cleanUp ();
 	   my_dxDisplay. show ();
 	}
+
+	if (!listChanged && dxMode)
+	   return;
+//
+//	The list was changed, so we rewrite the dxDisplay and 
+//	the map
 	QString labelText;
-	int teller = 0;
 	for (auto &theTr : channel. transmitters) {
 	   position thePosition;
 	   thePosition. latitude	= theTr. theTransmitter. latitude;
@@ -3586,12 +3650,12 @@ cacheElement	theTransmitter;
 	   float height		= theTr. theTransmitter. height;
 
 //      if positions are known, we can compute distance and corner
-	   float theDistance	= distance	(thePosition, localPos);
-	   float theCorner	= corner	(thePosition, localPos);
+	   theTr.  distance	= distance	(thePosition, localPos);
+	   theTr.  corner	= corner	(thePosition, localPos);
 
 	   if (theTr. isStrongest) {
-	      channel. distance	= theDistance;
-	      channel. corner	= theCorner;
+	      channel. distance	= theTr. distance;
+	      channel. corner	= theTr. corner;
 	      channel. height	= height;
 	   }
 	   int tiiValue_local	= theTr. tiiValue;
@@ -3599,8 +3663,8 @@ cacheElement	theTransmitter;
 	                    + QString::number (tiiValue_local & 0xFF) + ") "
 	                    + theName + " ";
 	   QString text2 =  " "
-	                    + QString::number (theDistance, 'f', 1) + " km " 
-	                    + QString::number (theCorner, 'f', 1) 
+	                    + QString::number (theTr. distance, 'f', 1) + " km " 
+	                    + QString::number (theTr. corner, 'f', 1) 
 	                    + QString::fromLatin1 (" \xb0 ") 
 	                    + " (" + QString::number (height, 'f', 1) +  "m)";
 	   if (dxMode) 
@@ -3615,8 +3679,8 @@ cacheElement	theTransmitter;
 	   uint8_t key	= MAP_NORM_TRANS;	// default value
 	   bool localTransmitters	=
 	            configHandler_p -> localTransmitterSelector_active ();
-	   if ((!localTransmitters) && (theDistance > maxDistance)) { 
-	      maxDistance = theDistance;
+	   if ((!localTransmitters) && (theTr. distance > maxDistance)) { 
+	      maxDistance = theTr. distance;
 	      key = MAP_MAX_TRANS;
 	   }
 //
@@ -3624,15 +3688,15 @@ cacheElement	theTransmitter;
 	   configHandler_p -> utcSelector_active () ?
 	                              QDateTime::currentDateTimeUtc () :
 	                              QDateTime::currentDateTime ();
-
+	   if (listChanged)
 	   mapHandler -> putData (key,
 	                          thePosition, 
 	                          theTr. theTransmitter. transmitterName,
 	                          channel. channelName,
 	                          theTime. toString (Qt::TextDate),
-	                          tiiValue,
-	                          theDistance,
-	                          theCorner, power, height);
+	                          theTr. tiiValue,
+	                          theTr. distance,
+	                          theTr. corner, power, height);
 	}
 }
 

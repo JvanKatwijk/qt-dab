@@ -35,6 +35,8 @@
 	upButton	= new QPushButton ("up");
 	mainText	= new QLabel ("");
 	subContent	= new QListView ();
+	subContent	-> setToolTip ("Features NewsService Journaline(R) decoder technology by\n * Fraunhofer IIS, Erlangen, Germany.\n * For more information visit http://www.iis.fhg.de/dab"
+);
 	QHBoxLayout *LH	= new QHBoxLayout ();
 	QVBoxLayout *LV	= new QVBoxLayout ();
 
@@ -62,11 +64,12 @@
 
 void	journalineScreen::handle_resetButton	() {
 	pathVector. resize (0);
-	fprintf (stderr, "Tablesize %d\n", (int)((*table). size ()));
+//	fprintf (stderr, "Tablesize %d\n", (int)((*table). size ()));
 	for (int i = 0; i < (int)((*table). size ()); i ++) {
 	   if ((*table) [i]. key == 0) {
 	      displayElement (*((*table) [i].element));
 	      pathVector. push_back (0);
+	      return;
 	   }
 	}
 }
@@ -75,33 +78,47 @@ void	journalineScreen::handle_upButton	() {
 	if (pathVector. size () == 1) 
 	   return;
 	pathVector. pop_back ();
-	int index	= pathVector. back ();
+	int index	= findIndex (pathVector. back ());
+	if (index < 0)
+	   return;
 	displayElement (*((*table) [index].element));
 }
 
 void	journalineScreen::select_sub (QModelIndex ind) {
-	fprintf (stderr, "We vinden element %d\n", ind. row ());
-	int currentElement = pathVector. back ();
-	fprintf (stderr, "Current element type %d\n",
-	                (*table)[currentElement]. element -> object_type);
-//	if ((*table)[currentElement].element -> object_type == NML::PLAIN)
-//	   return;
-	NML::News_t *temp	= (*table) [currentElement]. element;
-	int next	= temp	-> item [ind. row ()]. link_id;
-	fprintf (stderr, "De linkid is %d\n", next);
-	for (auto &tabEl: *table) {
-	   if (tabEl. key == next) {
-	      pathVector. push_back (next);
-	      displayElement (*(tabEl. element));
+//
+//	first, identify the current element
+	int t = pathVector. back ();
+	int currentIndex	= findIndex (t);
+	if (currentIndex < 0) {
+//	   fprintf (stderr, "Current element missing\n");
+	   return;
+	}
+	NML::News_t *currentElement	= (*table) [currentIndex]. element;
+//
+//	for sure, the PLAIN element does not have siblings
+	if (currentElement -> object_type == NML::PLAIN)
+	   return;
+	NML::Item_t item	= currentElement -> item [ind. row ()];
+	if (true) {
+//	if (item. link_id_available) {
+//	   fprintf (stderr, "link for element %d is %d\n",
+//	                               ind. row (), item. link_id);
+	   int ind = findIndex (item. link_id);
+	   if (ind < 0) {
+//	      fprintf (stderr, "Link %d not found\n", item. link_id);
 	      return;
 	   }
+	   NML::News_t *target = (*table) [ind]. element;
+	   displayElement (*target);
+	   pathVector. push_back (item. link_id);
 	}
-	fprintf (stderr, "No element for this link\n");
+//	else
+//	   fprintf (stderr, "No element for this link\n");
 }
 
 void	journalineScreen::displayElement (NML::News_t &element) {
-	fprintf (stderr, "Display een element met type %d\n",
-	                              element. object_type);
+//	fprintf (stderr, "Display een element met type %d\n",
+//	                              element. object_type);
 	switch (element. object_type) {
 	   case NML::MENU:
 	      display_Menu (element);
@@ -138,5 +155,25 @@ void	journalineScreen::display_Plain (NML::News_t &element) {
 }
 
 void	journalineScreen::display_List (NML::News_t &element) {
+	std::string t = element. title;
+	mainText	-> setText (QString::fromStdString (t));
+	model. clear ();
+	for (int i = 0; i < (int)(element. item. size ()); i ++)  {
+	   NML::Item_t *item = &(element. item [i]);
+	   model. appendRow (new QStandardItem (QString::fromStdString (item -> text)));
+	}
+	subContent	-> setModel (&model);
+}
+
+int	journalineScreen::findIndex	(int key) {
+	for (int i = 0; i < table -> size (); i ++)
+	   if ((*table) [i]. key == key)
+	      return i;
+	return -1;
+}
+
+void	journalineScreen::start		(int index) {
+	pathVector. push_back (0);
+	displayElement (*(*table) [index]. element);
 }
 

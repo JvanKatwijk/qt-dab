@@ -102,8 +102,10 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	   local ++;
 	}
 
-	connect (this, SIGNAL (show_ficSuccess (bool)),
-	         mr, SLOT (show_ficSuccess (bool)));
+	connect (this, &ficHandler::show_ficSuccess,
+	         mr, &RadioInterface::show_ficSuccess);
+//	connect (this, SIGNAL (show_ficSuccess (bool)),
+//	         mr, SLOT (show_ficSuccess (bool)));
 
 	ficPointer	= 0;
 	ficDumpPointer	= nullptr;

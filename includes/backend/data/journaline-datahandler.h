@@ -29,19 +29,15 @@
 #include	"journaline-screen.h"
 #include	<vector>
 #include	"NML.h"
+#include	<QObject>
 
-//typedef struct {
-//	int key;
-//	NML::News_t *element;
-//} tableElement;
-
-class	NML;
-class	journaline_dataHandler:public virtual_dataHandler {
+class	journaline_dataHandler: public virtual_dataHandler {
+Q_OBJECT
 public:
-	journaline_dataHandler();
-	~journaline_dataHandler();
-void	add_mscDatagroup	(std::vector<uint8_t>);
-void	add_to_dataBase		(NML *);
+		journaline_dataHandler();
+		~journaline_dataHandler();
+	void	add_mscDatagroup	(std::vector<uint8_t>);
+	void	add_to_dataBase		(NML *);
 private:
 	journalineScreen	theScreen;
 	DAB_DATAGROUP_DECODER_t theDecoder;
@@ -50,5 +46,7 @@ private:
 	void		destroy_dataBase ();
 	int		findIndex	(int);
 	std::vector<tableElement> table;
+signals:
+	void		start		(int);
 };
 

@@ -50,7 +50,7 @@ void my_callBack (
 	RemoveNMLEscapeSequences theRemover;
 	NMLFactory xxx;
 	NML *ttt = xxx.CreateNML (theBuffer, &theRemover);
-//	static_cast <journaline_dataHandler *>(arg) -> add_to_dataBase (ttt);
+	static_cast <journaline_dataHandler *>(arg) -> add_to_dataBase (ttt);
 	delete ttt;
 }
 
@@ -58,6 +58,9 @@ void my_callBack (
 	                                  theScreen (table){
 	theDecoder	= DAB_DATAGROUP_DECODER_createDec (my_callBack, this);
 	init_dataBase ();
+	connect (this, SIGNAL (start (int)),
+	         &theScreen, SLOT (start (int)));
+	         
 }
 
 	journaline_dataHandler::~journaline_dataHandler() {
@@ -85,8 +88,8 @@ void	journaline_dataHandler::init_dataBase 	() {
 }
 
 void	journaline_dataHandler::destroy_dataBase	() {
-	fprintf (stderr, "Table has %d elements\n",
-	                          table. size ());
+//	fprintf (stderr, "Table has %d elements\n",
+//	                          table. size ());
 	for (int i = 0; i < table. size (); i ++)
 	   delete table [i]. element;
 }
@@ -111,18 +114,20 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	         NML::News_t *p = table [index_oldElement]. element;
 	         delete p;
 	         table [index_oldElement]. element = x;
-	         if (x -> object_id == 0)
-	            fprintf (stderr, "Root rewrite\n");
 	         break;
 	      }
 	      tableElement temp;
 	      temp. key	= x -> object_id;
 	      temp. element	 = x;
 	      table. push_back (temp);
+	      if (x -> object_id == 0) {
+//	         theScreen. displayElement (*x);
+	         start (table. size () - 1);
+	      }
 	   }
 	   break;
 	   default:
-	      fprintf (stderr, "SOMETHING ELSE\n");
+//	      fprintf (stderr, "SOMETHING ELSE\n");
 	      break;
 	}
 }

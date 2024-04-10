@@ -156,8 +156,8 @@ public:
 	int		snr;
 	std::vector<transmitterDesc>	transmitters;
 //	QByteArray	transmitters;
-	uint8_t		mainId;
-	uint8_t		subId;
+	int8_t		mainId;
+	int8_t		subId;
 	position	targetPos;
 	QString		transmitterName;
 	float		height;
@@ -239,7 +239,7 @@ private:
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 	QLabel			*dxDisplayText;
-//
+
 //	end of variables that are initalized
 
 	dabService		checkPresets		();
@@ -364,6 +364,7 @@ private:
 	void			scheduleSelect		(const QString &s);
 
 	QString			build_headLine		();
+	QString			build_cont_addLine	(transmitterDesc &);
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 
@@ -428,7 +429,7 @@ public slots:
 	void			changeinConfiguration	();
 	void			newAudio		(int, int, bool, bool);
 //
-	void			localSelect		(const QString &,
+	void			localSelect_SS		(const QString &,
 	                                                 const QString &);
 	
 	void			setStereo		(bool);

@@ -40,22 +40,18 @@
 	myRadioInterface	= mr;
 	memset (dateTime, 0, sizeof (dateTime));
 
-	connect (this, SIGNAL (name_of_ensemble (int, const QString &)),
-	         myRadioInterface,
-	                    SLOT (name_of_ensemble (int, const QString &)));
-	connect (this, SIGNAL (clockTime (int, int, int, int, int,
-	                                               int, int, int, int)),
-	         myRadioInterface, SLOT (clockTime (int, int, int, int, int,
-	                                                int, int, int, int)));
-	connect (this, SIGNAL (changeinConfiguration ()),
-	         myRadioInterface, SLOT (changeinConfiguration ()));
-	connect (this, SIGNAL (start_announcement (const QString &, int, int)),
-	         myRadioInterface, SLOT (start_announcement (const QString &, int, int)));
-	connect (this, SIGNAL (stop_announcement (const QString &, int)),
-	         myRadioInterface, SLOT (stop_announcement (const QString &,
-	                                             int)));
-	connect (this, SIGNAL (nrServices (int)),
-	         myRadioInterface, SLOT (nrServices (int)));
+	connect (this, &fibDecoder::name_of_ensemble,
+	         myRadioInterface, &RadioInterface::name_of_ensemble);
+	connect (this, &fibDecoder::clockTime,
+	         myRadioInterface, &RadioInterface::clockTime);
+	connect (this, &fibDecoder::changeinConfiguration,
+	         myRadioInterface, &RadioInterface::changeinConfiguration);
+	connect (this, &fibDecoder::start_announcement,
+	         myRadioInterface, &RadioInterface::start_announcement);
+	connect (this, &fibDecoder::stop_announcement,
+	         myRadioInterface, &RadioInterface::stop_announcement);
+	connect (this, &fibDecoder::nrServices,
+	         myRadioInterface, &RadioInterface::nrServices);
 //
 //	Note that they may change "roles", 
 	currentConfig	= new dabConfig();
@@ -1424,17 +1420,15 @@ void	fibDecoder::connect_channel () {
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	ensemble	-> reset ();
-	connect (this, SIGNAL (add_to_ensemble (const QString &, int, int)),
-	         myRadioInterface, SLOT (add_to_ensemble (const QString &,
-	                                                          int, int)));
+	connect (this, &fibDecoder::add_to_ensemble,
+	         myRadioInterface, &RadioInterface::add_to_ensemble);
 	fibLocker. unlock();
 }
 
 void	fibDecoder::disconnect_channel () {
 	fibLocker. lock ();
-	disconnect (this, SIGNAL (add_to_ensemble (const QString &, int, int)),
-	         myRadioInterface, SLOT (add_to_ensemble (const QString &,
-	                                                        int, int)));
+	disconnect (this, &fibDecoder::add_to_ensemble,
+	            myRadioInterface, &RadioInterface::add_to_ensemble);
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	ensemble	-> reset ();
