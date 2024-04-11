@@ -38,10 +38,12 @@ with digital modes, the software is able to select data from
 the strongest signal.  In my neighbourhoodm there are - for a few ensembles
 - four transmitters within 20 Km.
 
-New is that while Qt-DAB decodes data from the strongest signal,
+New is that while Qt-DAB **decodes** data from the strongest signal,
 Qt-DAB-6.X has a special **mode**, dxMode, in which it
 tries to identify **all ** transmitetrs that are 
 transmitting the same signal. The TII decoding was adapted for this purpose.
+
+The most recent update shows all transmitters on the map.
 
 Selecting the "dx mode" (with a checkbox on the
 configuration widget) causes the software to display all transmitters
