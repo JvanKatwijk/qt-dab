@@ -5,9 +5,9 @@ mkdir -p ./appdir/usr/share/applications
 mkdir -p ./appdir/usr/share/icons/hicolor/128x128/apps/
 mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
 
-cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6.5Beta
-cp qt-dab-6.5Beta.desktop	appdir/usr/share/applications
-cp ../res/qt-dab-RC-256x256.png	appdir/qt-dab-6.5Beta.png
+cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6.X
+cp qt-dab-RC.desktop	appdir/usr/share/applications
+cp ../res/qt-dab-RC-256x256.png	appdir/qt-dab-RC.png
 cp ../res/qt-dab-RC-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/
 cp ../res/qt-dab-RC-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/
 
