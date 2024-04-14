@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2017
+ *    Copyright (C) 2015 .. 2024`
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,8 +33,8 @@
 	myRadioInterface	= mr;
 	this	-> dataBuffer	= dataBuffer;
 //	for the moment we assume appType 4
-	connect (this, SIGNAL (bytesOut (int, int)),
-	         myRadioInterface, SLOT (handle_tdcdata (int, int)));
+	connect (this, &tdc_dataHandler::bytesOut,
+	         myRadioInterface, &RadioInterface::handle_tdcdata);
 }
 
 	tdc_dataHandler::~tdc_dataHandler() {

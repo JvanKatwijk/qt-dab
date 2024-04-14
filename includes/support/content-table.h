@@ -63,7 +63,7 @@ private:
 	int16_t		addRow	();
 private slots:
 	void		selectService	(int, int);
-	void		dump		(int, int);
+	void		dump_local	(int, int);
 signals:
 	void		goService	(const QString &);
 };

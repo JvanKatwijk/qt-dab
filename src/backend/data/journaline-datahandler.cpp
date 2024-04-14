@@ -58,9 +58,8 @@ void my_callBack (
 	                                  theScreen (table){
 	theDecoder	= DAB_DATAGROUP_DECODER_createDec (my_callBack, this);
 	init_dataBase ();
-	connect (this, SIGNAL (start (int)),
-	         &theScreen, SLOT (start (int)));
-	         
+	connect (this, &journaline_dataHandler::start,
+	         &theScreen, &journalineScreen::start);
 }
 
 	journaline_dataHandler::~journaline_dataHandler() {

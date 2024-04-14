@@ -64,12 +64,12 @@
 	total		-> addWidget (acceptButton);
 	setLayout (total);
 
-	connect (latitude, SIGNAL (returnPressed ()),
-	         this, SLOT (set_latitude ()));
-	connect (longitude, SIGNAL (returnPressed ()),
-	         this, SLOT (set_longitude ()));
-	connect (acceptButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_acceptButton ()));
+	connect (latitude, &QLineEdit::returnPressed,
+	         this, &coordinates::set_latitude);
+	connect (longitude, &QLineEdit::returnPressed,
+	         this, &coordinates::set_longitude);
+	connect (acceptButton, &QPushButton::clicked,
+	         this, &coordinates::handle_acceptButton);
 	show ();
 	latitudeValue	= false;	
 	longitudeValue	= false;

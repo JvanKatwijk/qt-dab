@@ -108,17 +108,16 @@ mir_sdr_DeviceT devDesc [4];
 //	See if there are settings from previous incarnations
 //	and config stuff
 
-	connect (this, SIGNAL (signal_GRdBValue (int)),
-	         GRdBSelector, SLOT (setValue (int)));
-	connect (this, SIGNAL (signal_agcSetting (bool)),
-	         agcControl, SLOT (setChecked (bool)));
+	connect (this, &sdrplayHandler_v2::signal_GRdBValue,
+	         GRdBSelector, &QSpinBox::setValue);
+	connect (this, &sdrplayHandler_v2::signal_agcSetting,
+	         agcControl, &QCheckBox::setChecked);
 
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	int val		=
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt();
 	if (20 <= val && val <= 59)
 	  signal_GRdBValue (val);
-
 
 	ppmControl		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt());
@@ -197,8 +196,8 @@ mir_sdr_DeviceT devDesc [4];
 	      err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting antenna\n", err);
-	      connect (antennaSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (handle_antennaSelect (const QString &)));
+	      connect (antennaSelector, &QComboBox::textActivated,
+	            this, &sdrplayHandler_v2::handle_antennaSelect);
 	      lnaMax		= 8;
 	      break;
 	   case 3:	
@@ -210,8 +209,8 @@ mir_sdr_DeviceT devDesc [4];
 	      err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_1);
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting of rspDuo\n", err);
-	      connect (tunerSelector, SIGNAL (activated (const QString &)),
-	               this, SLOT (handle_tunerSelect (const QString &)));
+	      connect (tunerSelector, &QComboBox::textActivated,
+	               this, &sdrplayHandler_v2::handle_tunerSelect);
 	      lnaMax		= 9;
 	      break;
 	   default:
@@ -230,8 +229,8 @@ mir_sdr_DeviceT devDesc [4];
 	   val = lnaMax;
 //	fprintf (stderr, "val = %d, max = %d\n", val, lnaMax);
 	lnaGainSetting	-> setValue (val);
-	connect (this, SIGNAL (signal_lnaValue (int)),
-                 lnaGainSetting, SLOT (setValue (int)));
+	connect (this, &sdrplayHandler_v2::signal_lnaValue,
+                 lnaGainSetting, &QSpinBox::setValue);
 
 	val	= sdrplaySettings -> value ("biasT_selector", 0). toInt ();
 	if (val != 0) {
@@ -240,14 +239,14 @@ mir_sdr_DeviceT devDesc [4];
 	}
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
-	connect (debugControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_debugControl (int)));
-	connect (ppmControl, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_ppmControl (int)));
-	connect (dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_xmlDump ()));
-	connect (biasT_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_biasT_selector (int)));
+	connect (debugControl, &QCheckBox::stateChanged,
+	         this, &sdrplayHandler_v2::handle_debugControl);
+	connect (ppmControl, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &sdrplayHandler_v2::handle_ppmControl);
+	connect (dumpButton, &QPushButton::clicked,
+	         this, &sdrplayHandler_v2::handle_xmlDump);
+	connect (biasT_selector, &QCheckBox::stateChanged,
+	         this, &sdrplayHandler_v2::handle_biasT_selector);
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
 	xmlDumper	= nullptr;
@@ -428,12 +427,12 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
            fprintf (stderr, "error = %s\n",
                         errorCodes (err). toLatin1(). data());
 
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_agcControl (int)));
-	connect (GRdBSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_ifgainReduction (int)));
-	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_lnagainReduction (int)));
+	connect (agcControl, &QCheckBox::stateChanged,
+	         this, &sdrplayHandler_v2::handle_agcControl);
+	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &sdrplayHandler_v2::handle_ifgainReduction);
+	connect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &sdrplayHandler_v2::handle_lnagainReduction);
 	running. store (true);
 	return true;
 }
@@ -449,12 +448,12 @@ mir_sdr_ErrT err;
 	if (!running. load())
 	   return;
 	
-	disconnect (GRdBSelector, SIGNAL (valueChanged (int)),
-	            this, SLOT (handle_ifgainReduction (int)));
-	disconnect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	            this, SLOT (handle_lnagainReduction (int)));
-	disconnect (agcControl, SIGNAL (stateChanged (int)),
-	            this, SLOT (handle_agcControl (int)));
+	disconnect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
+	            this, &sdrplayHandler_v2::handle_ifgainReduction);
+	disconnect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
+	            this, &sdrplayHandler_v2::handle_lnagainReduction);
+	disconnect (agcControl, &QCheckBox::stateChanged,
+	            this, &sdrplayHandler_v2::handle_agcControl);
 	if (save_gainSettings)
 	   record_gainSettings	(lastFrequency / MHz (1));
 

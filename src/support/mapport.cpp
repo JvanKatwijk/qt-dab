@@ -39,8 +39,8 @@
 	total		-> addItem (layout);
 	total		-> addWidget (acceptButton);
 	setLayout (total);
-	connect (acceptButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_acceptButton ()));
+	connect (acceptButton, &QPushButton::clicked,
+	         this, &mapPortHandler::handle_acceptButton);
 	show ();
 }
 

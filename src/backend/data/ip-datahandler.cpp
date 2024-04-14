@@ -29,8 +29,8 @@
 	                                RingBuffer<uint8_t> *dataBuffer) {
 	this	-> dataBuffer		= dataBuffer;
 	this	-> handledPackets	= 0;
-	connect (this, SIGNAL (writeDatagram (int)),
-	         mr, SLOT (sendDatagram (int)));
+	connect (this, &ip_dataHandler::writeDatagram,
+	         mr, &RadioInterface::sendDatagram);
 }
 
 	ip_dataHandler::~ip_dataHandler () {

@@ -49,7 +49,7 @@ private:
 	void		add_MSC_element		(std::vector<uint8_t>);
 	void		build_MSC_segment	(std::vector<uint8_t>);
 	bool		pad_crc			(uint8_t *, int16_t);
-	QString		dynamicLabelText;
+	QByteArray	dynamicLabelText;
 	int16_t		charSet;
 	motObject	*currentSlide;
 	uint8_t		last_appType;

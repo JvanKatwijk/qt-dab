@@ -56,8 +56,8 @@ void	skiptableHandler::setup_skipTable	(dabFrequencies *theBand) {
            theTable. setItem (i, 1,
                            new QTableWidgetItem (QString ("+")));
         }
-	connect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
-	         this, SLOT (cellSelected (int, int)));
+	connect (&theTable, &QTableWidget::cellDoubleClicked,
+	         this, &skiptableHandler::cellSelected);
 }
 
 void	skiptableHandler::load_skipTable	(const QString &source) {

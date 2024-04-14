@@ -66,10 +66,10 @@
 	settings. batchSize		= 4096;
 	settings. sample_bits		= 16;
 //
-	connect (spyServer_connect, SIGNAL (clicked ()),
-	         this, SLOT (wantConnect ()));
-	connect (spyServer_gain, SIGNAL (valueChanged (int)),
-	         this, SLOT (setGain (int)));
+	connect (spyServer_connect, &QPushButton::clicked,
+	         this, &spyServer_client_8::wantConnect);
+	connect (spyServer_gain, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &spyServer_client_8::setGain);
 	theState	-> setText ("waiting to start");
 }
 
@@ -115,8 +115,8 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	Setting default IP address
 	hostLineEdit	-> show();
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (hostLineEdit, SIGNAL (returnPressed (void)),
-	         this, SLOT (setConnection (void)));
+	connect (hostLineEdit, &QLineEdit::returnPressed,
+	         this, &spyServer_client_8::setConnection);
 }
 
 //	if/when a return is pressed in the line edit,
@@ -142,8 +142,8 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 
-	connect (&checkTimer, SIGNAL (timeout ()),
-	         this, SLOT (handle_checkTimer ()));
+	connect (&checkTimer, &QTimer::timeout,
+	         this, &spyServer_client_8::handle_checkTimer);
 	checkTimer. start (2000);
 	timedOut	= false;
 	while (!onConnect. load () && !timedOut) 
@@ -156,8 +156,8 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 	checkTimer. stop ();	
-	disconnect (&checkTimer, SIGNAL (timeout ()),
-	            this, SLOT (handle_checkTimer ()));
+	disconnect (&checkTimer, &QTimer::timeout,
+	            this, &spyServer_client_8::handle_checkTimer);
 //	fprintf (stderr, "We kunnen echt beginnen\n");
 	theServer	-> connection_set ();
 
@@ -232,8 +232,8 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 
-	disconnect (spyServer_connect, SIGNAL (clicked ()),
-	            this, SLOT (wantConnect ()));
+	disconnect (spyServer_connect, &QPushButton::clicked,
+	            this, &spyServer_client_8::wantConnect);
 	fprintf (stderr, "The samplerate = %f\n",
 	                      (float)(theServer -> get_sample_rate ()));
 	theState	-> setText ("connected");

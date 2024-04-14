@@ -57,8 +57,8 @@
 	   this -> setHorizontalHeaderLabels (
 	                           QStringList () << tr ("service") <<
 	                                             tr ("fav"));
-	   connect (this, SIGNAL (cellClicked (int, int)),
-                    this, SLOT (click_on_service (int, int)));
+	   connect (this, &QTableWidget::cellClicked,
+	            this, &ensembleHandler::click_on_service);
 	   loadFavorites (favFile);
 	   handlePresets	= true;	// for now
 	   serviceOrder	= ensembleSettings -> value ("serviceOrder",

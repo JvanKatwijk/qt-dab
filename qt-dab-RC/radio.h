@@ -368,7 +368,7 @@ private:
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 
-	void			doStart			();
+	void			doStart_direct		();
 	void			save_MOTObject		(QByteArray &,
 	                                                 QString);
 
@@ -475,23 +475,28 @@ public slots:
 	void			handle_deviceFrame_closed ();
 	void			handle_newDisplayFrame_closed ();
 
+	void			doStart			(const QString &);
+	void			newDevice		(const QString &);
+	void			handle_scheduleButton	();
+	void			handle_devicewidgetButton	();
+	void			handle_resetButton	();
+	void			handle_dlTextButton		();
+	void			handle_snrButton	();
+	void			handle_sourcedumpButton	();
+	void			scheduler_timeOut	(const QString &);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			show_pauzeSlide		();
 	void			handle_timeTable	();
 	void			handle_contentButton	();
 	void			handle_detailButton	();
-	void			handle_resetButton	();
 	void			handle_scanButton	();
 	void			handle_etiHandler	();
 
-	void			handle_snrButton	();
 	void			handle_spectrumButton	();
-	void			handle_devicewidgetButton	();
 
 	void			handle_scanListButton	();
 	void			handle_presetButton	();
-	void			handle_sourcedumpButton	();
 	void			handle_framedumpButton	();
 	void			handle_audiodumpButton 	();
 	void			handle_prevServiceButton        ();
@@ -502,23 +507,18 @@ private slots:
 	void			handle_prevChannelButton	();
 
 	void			handle_muteButton		();
-	void			handle_dlTextButton		();
 
 	void			handle_scanListSelect	(const QString &);
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
 	void			channel_timeOut		();
 
-	void			doStart			(const QString &);
-	void			newDevice		(const QString &);
 	void			start_background_task	(const QString &);
 
 	void			setPresetService	();
 	void			muteButton_timeOut	();
-	void			scheduler_timeOut	(const QString &);
 
 	void			handle_configButton	();
-	void			handle_scheduleButton	();
 	void			handle_httpButton	();
 	void			setVolume		(int);
 	void			handle_snrLabel		();

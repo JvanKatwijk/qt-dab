@@ -62,16 +62,16 @@
 	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
 //
-	connect (tcp_connect, SIGNAL (clicked ()),
-	         this, SLOT (wantConnect ()));
-	connect (tcp_disconnect, SIGNAL (clicked ()),
-	         this, SLOT (setDisconnect ()));
-	connect (tcp_gain, SIGNAL (valueChanged (int)),
-	         this, SLOT (sendGain (int)));
-	connect (tcp_ppm, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_fCorrection (int)));
-	connect (khzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_Offset (int)));
+	connect (tcp_connect, &QPushButton::clicked,
+	         this, &rtl_tcp_client::wantConnect);
+	connect (tcp_disconnect, &QPushButton::clicked,
+	         this, &rtl_tcp_client::setDisconnect);
+	connect (tcp_gain, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &rtl_tcp_client::sendGain);
+	connect (tcp_ppm, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &rtl_tcp_client::set_fCorrection);
+	connect (khzOffset, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &rtl_tcp_client::set_Offset);
 	theState	-> setText ("waiting to start");
 }
 
@@ -120,8 +120,8 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	Setting default IP address
 	hostLineEdit	-> show();
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (hostLineEdit, SIGNAL (returnPressed (void)),
-	         this, SLOT (setConnection (void)));
+	connect (hostLineEdit, &QLineEdit::returnPressed,
+	         this, &rtl_tcp_client::setConnection);
 }
 
 //	if/when a return is pressed in the line edit,
@@ -133,8 +133,8 @@ QString s	= hostLineEdit -> text();
 QHostAddress theAddress	= QHostAddress (s);
 
 	serverAddress	= QHostAddress (s);
-	disconnect (hostLineEdit, SIGNAL (returnPressed (void)),
-	            this, SLOT (setConnection (void)));
+	disconnect (hostLineEdit, &QLineEdit::returnPressed,
+	            this, &rtl_tcp_client::setConnection);
 	toServer. connectToHost (serverAddress, basePort);
 	if (!toServer. waitForConnected (2000)) {
 	   QMessageBox::warning (&myFrame, tr ("sdr"),
@@ -160,16 +160,16 @@ bool	rtl_tcp_client::restartReader	(int32_t freq) {
 	lastFrequency	= freq;
 //	here the command to set the frequency
 	sendVFO (freq);
-	connect (&toServer, SIGNAL (readyRead (void)),
-	         this, SLOT (readData (void)));
+	connect (&toServer, &QTcpSocket::readyRead,
+	         this, &rtl_tcp_client::readData);
 	return true;
 }
 
 void	rtl_tcp_client::stopReader() {
 	if (!connected)
 	   return;
-	disconnect (&toServer, SIGNAL (readyRead (void)),
-	            this, SLOT (readData (void)));
+	disconnect (&toServer, &QTcpSocket::readyRead,
+	            this, &rtl_tcp_client::readData);
 }
 //
 //

@@ -48,14 +48,15 @@
 	myFrame. setWindowTitle ("Journaline");
 	myFrame. setLayout (LV);
 
-	connect (resetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_resetButton ()));
-	connect (upButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_upButton ()));
-	connect (subContent, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (select_sub (QModelIndex)));
-
+	connect (resetButton, &QPushButton::clicked,	
+	         this, &journalineScreen::handle_resetButton);
+	connect (upButton, &QPushButton::clicked,	
+	         this, &journalineScreen::handle_upButton);
+	connect (subContent, &QListView::clicked,
+	         this, &journalineScreen::select_sub);
+#ifdef	__USE_JOURNALINE__
 	myFrame. show ();
+#endif
 }
 
 	journalineScreen::~journalineScreen () {
@@ -75,7 +76,7 @@ void	journalineScreen::handle_resetButton	() {
 }
 
 void	journalineScreen::handle_upButton	() {
-	if (pathVector. size () == 1) 
+	if (pathVector. size () < 2) 
 	   return;
 	pathVector. pop_back ();
 	int index	= findIndex (pathVector. back ());

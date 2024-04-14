@@ -175,6 +175,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/mot/mot-object.h \
 	   ../includes/backend/data/mot/mot-dir.h \
 	   ../includes/backend/data/journaline-datahandler.h \
+	   ../includes/backend/data/journaline-screen.h \
 	   ../includes/backend/data/journaline/dabdatagroupdecoder.h \
 	   ../includes/backend/data/journaline/crc_8_16.h \
 	   ../includes/backend/data/journaline/log.h \
@@ -301,6 +302,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/mot/mot-object.cpp \
 	   ../src/backend/data/mot/mot-dir.cpp \
 	   ../src/backend/data/journaline-datahandler.cpp \
+	   ../src/backend/data/journaline-screen.cpp \
 	   ../src/backend/data/journaline/crc_8_16.c \
 	   ../src/backend/data/journaline/log.c \
 	   ../src/backend/data/journaline/newssvcdec_impl.cpp \
@@ -414,7 +416,7 @@ CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
-CONFIG		+= airspy
+CONFIG		+= airspy-2
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
@@ -487,7 +489,7 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 	CONFIG		+= mapserver
 	CONFIG		+= extio
-	CONFIG		+= airspy
+	CONFIG		+= airspy-2
 	CONFIG		+= rtl_tcp
 	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
@@ -635,6 +637,18 @@ airspy {
 	FORMS		+= ../qt-devices/airspy-handler/airspy-widget.ui
 }
 
+airspy-2 {
+	DEFINES		+= HAVE_AIRSPY_2
+	DEPENDPATH	+= ../qt-devices/airspy-2 
+	INCLUDEPATH	+= ../qt-devices/airspy-2 \
+	                   ../qt-devices/airspy-2/libairspy
+	HEADERS		+= ../qt-devices/airspy-2/airspy-2.h \
+	                   ../qt-devices/airspy-2/airspyselect.h \
+	                   ../qt-devices/airspy-2/libairspy/airspy.h
+	SOURCES		+= ../qt-devices/airspy-2/airspy-2.cpp \
+	                   ../qt-devices/airspy-2/airspyselect.cpp
+	FORMS		+= ../qt-devices/airspy-2/airspy-widget.ui
+}
 #	extio dependencies, windows only
 #
 extio {

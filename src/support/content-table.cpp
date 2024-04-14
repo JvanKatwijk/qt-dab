@@ -59,10 +59,10 @@
         contentWidget	-> setHorizontalHeaderLabels (
 	                          QStringList () << tr ("current ensemble"));
 
-	connect (contentWidget, SIGNAL (cellClicked (int, int)),
-	         this, SLOT (selectService (int, int)));
-	connect (contentWidget, SIGNAL (cellDoubleClicked (int, int)),
-                 this, SLOT (dump (int, int)));
+	connect (contentWidget, &QTableWidget::cellClicked,
+	         this, &contentTable::selectService);
+	connect (contentWidget, &QTableWidget::cellDoubleClicked,
+                 this, &contentTable::dump_local);
 
 	addRow ();	// for the ensemble name
 }
@@ -114,7 +114,7 @@ QTableWidgetItem* theItem = contentWidget  -> item (row, 0);
 	goService (theService);
 }
 
-void	contentTable::dump	(int row, int column) {
+void	contentTable::dump_local (int row, int column) {
 findfileNames filenameFinder (dabSettings);
 FILE	*dumpFile 	= filenameFinder. findContentDump_fileName (channel);
 

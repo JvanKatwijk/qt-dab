@@ -354,8 +354,6 @@ QString h;
 	      ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
-//	      connect (volumeSlider, SIGNAL (valueChanged (int)),
-//	               this, SLOT (setVolume (int)));
 	   } catch (...) {
 	      soundOut_p = nullptr;
 	   }
@@ -410,18 +408,17 @@ QString h;
 	         this, &RadioInterface::set_epgData);
 //	timer for autostart epg service
 	epgTimer. setSingleShot (true);
-	connect (&epgTimer, SIGNAL (timeout ()),
-	         this, SLOT (epgTimer_timeOut ()));
+	connect (&epgTimer, &QTimer::timeout,
+	         this, &RadioInterface::epgTimer_timeOut);
 	pauzeTimer. setSingleShot (true);
-	connect (&pauzeTimer, SIGNAL (timeout ()),
-	         this, SLOT (show_pauzeSlide ()));
+	connect (&pauzeTimer, &QTimer::timeout,
+	         this, &RadioInterface::show_pauzeSlide);
 
 	my_timeTable		= new timeTableHandler (this);
 	my_timeTable		-> hide ();
 
-	connect (&my_scanListHandler,
-	               SIGNAL (handle_scanListSelect (const QString &)),
-	          this, SLOT (handle_scanListSelect (const QString &)));
+	connect (&my_scanListHandler, &scanListHandler::handle_scanListSelect,
+	         this, &RadioInterface::handle_scanListSelect);
 
 //	extract the channelnames and fill the combobox
 	QStringList res = scanMonitor. getChannelNames ();
@@ -444,39 +441,38 @@ QString h;
 	previous_total_time	= 0; 
 
 //	Connect the buttons for the color_settings
-	connect	(scanButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_scanButton ()));
-	connect (scanListButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_scanListButton ()));
-	connect (presetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_presetButton ()));
-	connect (configButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_configButton ()));
-	connect (httpButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_httpButton ()));
-	connect (prevServiceButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_prevServiceButton ()));
-	connect (nextServiceButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_nextServiceButton ()));
-
-	connect (spectrumButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_spectrumButton ()));
+	connect	(scanButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_scanButton);
+	connect (scanListButton, &newPushButton::rightClicked,
+	         this, &RadioInterface::color_scanListButton);
+	connect (presetButton, &newPushButton::rightClicked,
+	         this, &RadioInterface::color_presetButton);
+	connect (configButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_configButton);
+	connect (httpButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_httpButton);
+	connect (prevServiceButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_prevServiceButton);
+	connect (nextServiceButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_nextServiceButton);
+	connect (spectrumButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_spectrumButton);
 //
 //	
-	connect (techWindow_p, SIGNAL (handle_timeTable ()),
-	         this, SLOT (handle_timeTable ()));
-	connect (&newDisplay, SIGNAL (mouseClick ()),
-	         this, SLOT (handle_iqSelector ()));
+	connect (techWindow_p, &techData::handle_timeTable,
+	         this, &RadioInterface::handle_timeTable);
+	connect (&newDisplay, &displayWidget::mouseClick,
+	         this, &RadioInterface::handle_iqSelector);
 //	display the version
 
 	version		= "Qt-DAB-6." + SystemVersion;
-	connect (aboutLabel, SIGNAL (clicked ()),
-	         this, SLOT (handle_aboutLabel ()));
+	connect (aboutLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_aboutLabel);
 
-	connect (soundLabel, SIGNAL (clicked ()),
-	         this, SLOT (handle_muteButton ()));
-	connect (snrLabel, SIGNAL (clicked ()),
-	         this, SLOT (handle_snrLabel ()));
+	connect (soundLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_muteButton);
+	connect (snrLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_snrLabel);
 
 	if (tiiProcessor. has_tiiFile ())
 	   configHandler_p -> enable_loadLib ();
@@ -491,21 +487,21 @@ QString h;
 //	The displaytimer is there to show the number of
 //	seconds running and handle - if available - the tii data
 	displayTimer. setInterval (1000);
-	connect (&displayTimer, SIGNAL (timeout ()),
-	         this, SLOT (updateTimeDisplay ()));
+	connect (&displayTimer, &QTimer::timeout,
+	         this, &RadioInterface::updateTimeDisplay);
 	displayTimer. start (1000);
 	numberofSeconds		= 0;
 
 //	timer for scanning
 	channelTimer. setSingleShot (true);
 	channelTimer. setInterval (10000);
-	connect (&channelTimer, SIGNAL (timeout ()),
-	         this, SLOT (channel_timeOut ()));
+	connect (&channelTimer, &QTimer::timeout,
+	         this, &RadioInterface::channel_timeOut);
 //
 //	presetTimer
 	presetTimer. setSingleShot (true);
-	connect (&presetTimer, SIGNAL (timeout ()),
-	         this, SLOT (setPresetService ()));
+	connect (&presetTimer, &QTimer::timeout,
+	         this, &RadioInterface::setPresetService);
 //
 //	timer for muting
 	muteTimer. setSingleShot (true);
@@ -529,8 +525,8 @@ QString h;
 	   configHandler_p	-> show ();
 	}
 
-	connect (configButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_configButton ()));
+	connect (configButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_configButton);
 
 	if (dabSettings_p -> value (SNR_WIDGET_VISIBLE, 0). toInt () != 0)
 	   my_snrViewer. show ();
@@ -550,7 +546,7 @@ QString h;
 //	we wait until one is selected
 	connectGUI ();
 	if (inputDevice_p != nullptr) {
-	   doStart ();
+	   doStart_direct ();
 	   qApp	-> installEventFilter (this);
 	   return;
 	}
@@ -574,14 +570,14 @@ void	RadioInterface::doStart (const QString &dev) {
 	if (inputDevice_p == nullptr) {
 	   return;
 	}
-	doStart ();
+	doStart_direct ();
 }
 //
 //	we (re)start a device, if it happens to be a regular
 //	device, check for a preset name
-void	RadioInterface::doStart	() {
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (handle_channelSelector (const QString &)));
+void	RadioInterface::doStart_direct	() {
+	disconnect (channelSelector, &QComboBox::textActivated,
+	            this, &RadioInterface::handle_channelSelector);
 	nextService	= checkPresets ();
 	if (nextService. valid) {
 	   int k = channelSelector -> findText (nextService. channel);
@@ -607,8 +603,8 @@ void	RadioInterface::doStart	() {
 	configHandler_p -> disconnectDevices ();
 	configHandler_p	-> reconnectDevices ();
 	
-	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (handle_channelSelector (const QString &)));
+	connect (channelSelector, &QComboBox::textActivated,
+	         this, &RadioInterface::handle_channelSelector);
 
 	if (configHandler_p -> tii_detector_active ())
 	   my_ofdmHandler -> set_tiiDetectorMode (true);
@@ -720,8 +716,8 @@ QString s;
 //	... and is we are not scanning, clicking the ensembleName
 //	has effect
 	if (!scanMonitor. active ())
-	   connect (ensembleId, SIGNAL (clicked ()),
-	            this, SLOT (handle_contentButton ()));
+	   connect (ensembleId, &clickablelabel::clicked,
+	            this, &RadioInterface::handle_contentButton);
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -739,8 +735,8 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
 	                                            my_ofdmHandler -> scanWidth ());
-	connect (contentTable_p, SIGNAL (goService (const QString &)),
-	         this, SLOT (handle_contentSelector (const QString &)));
+	connect (contentTable_p, &contentTable::goService,
+	         this, &RadioInterface::handle_contentSelector);
 
 	contentTable_p		-> addLine (headLine);
 //	contentTable_p		-> addLine ("\n");
@@ -1292,8 +1288,8 @@ deviceHandler	*inputDevice = chooseDevice. createDevice  (s, version);
 	else 
 	   hideButtons ();
 	the_ensembleHandler -> setMode (channel. realChannel);
-	connect (inputDevice, SIGNAL (frameClosed ()),
-	         this, SLOT (handle_deviceFrame_closed ()));
+	connect (inputDevice, &deviceHandler::frameClosed,
+	         this, &RadioInterface::handle_deviceFrame_closed);
 	dabSettings_p	-> setValue (SELECTED_DEVICE, s);
 	if (dabSettings_p -> value (DEVICE_WIDGET_VISIBLE, 1). toInt () != 0)
 	   inputDevice -> setVisibility (true);
@@ -1324,7 +1320,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice_p = new deviceHandler ();
 	   return;		// nothing will happen
 	}
-	doStart();		// will set running
+	doStart_direct ();		// will set running
 }
 
 static
@@ -1706,42 +1702,40 @@ void	RadioInterface::handle_scanListButton    () {
 //	a device is operational
 void	RadioInterface::connectGUI	() {
 //	connections from the main widget
-	connect (prevServiceButton, SIGNAL (clicked ()), 
-	         this, SLOT (handle_prevServiceButton ()));
-	connect (nextServiceButton, SIGNAL (clicked ()), 
-	         this, SLOT (handle_nextServiceButton ()));
+	connect (prevServiceButton, &QPushButton::clicked, 
+	         this, &RadioInterface::handle_prevServiceButton);
+	connect (nextServiceButton, &QPushButton::clicked, 
+	         this, &RadioInterface::handle_nextServiceButton);
 
 //	channelButton handled elsewhere
-	connect	(prevChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_prevChannelButton ()));
-	connect (nextChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_nextChannelButton ()));
+	connect	(prevChannelButton, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_prevChannelButton);
+	connect (nextChannelButton, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_nextChannelButton);
 
-	connect (scanListButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanListButton ()));
+	connect (scanListButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_scanListButton);
 	               
-	connect (presetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_presetButton ()));
+	connect (presetButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_presetButton);
 
-	connect (spectrumButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_spectrumButton ()));
-	connect (serviceLabel, SIGNAL (clicked ()),
-	         this, SLOT (handle_labelColor ()));
-	connect (serviceButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_detailButton ()));
+	connect (spectrumButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_spectrumButton);
+	connect (serviceLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_labelColor);
+	connect (serviceButton, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_detailButton);
 //
-	connect (httpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_httpButton ()));
-//	connect (ensembleId, SIGNAL (clicked ()),
-//	         this, SLOT (handle_contentButton ()));
-	connect (scanButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanButton ()));
+	connect (httpButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_httpButton);
+	connect (scanButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_scanButton);
 //
 //	and for the techWindow
-	connect (techWindow_p, SIGNAL (handle_audioDumping ()),
-	         this, SLOT (handle_audiodumpButton ()));
-	connect (techWindow_p, SIGNAL (handle_frameDumping ()),
-	         this, SLOT (handle_framedumpButton ()));
+	connect (techWindow_p, &techData::handle_audioDumping,
+	         this, &RadioInterface::handle_audiodumpButton);
+	connect (techWindow_p, &techData::handle_frameDumping,
+	         this, &RadioInterface::handle_framedumpButton);
 }
 
 void	RadioInterface::disconnectGUI () {
@@ -2276,8 +2270,8 @@ void	RadioInterface::stopChannel	() {
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
 	inputDevice_p		-> stopReader ();
-	disconnect (ensembleId, SIGNAL (clicked ()),
-	            this, SLOT (handle_contentButton ()));
+	disconnect (ensembleId, &clickablelabel::clicked,
+	            this, &RadioInterface::handle_contentButton);
 	ensembleId	-> setText ("");
 	stop_sourcedumping	();
 	stop_etiHandler	();	// if any
@@ -2398,8 +2392,8 @@ void	RadioInterface::startScanning	() {
 	                               tr ("Scanning not useful with file input"));
 
 	epgTimer. stop ();
-	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	         this, SLOT (no_signal_found ()));
+	connect (my_ofdmHandler, &ofdmHandler::no_signal_found,
+	         this, &RadioInterface::no_signal_found);
 
 	if (scanMonitor. scan_to_data ())
 	   start_scan_to_data ();
@@ -2496,8 +2490,8 @@ void	RadioInterface::start_scan_continuous () {
 //	3. on device selection
 //	4. on handling a reset
 void	RadioInterface::stopScanning	() {
-	disconnect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	            this, SLOT (no_signal_found ()));
+	disconnect (my_ofdmHandler, &ofdmHandler::no_signal_found,
+	            this, &RadioInterface::no_signal_found);
 	if (!scanMonitor. active ())
 	   return;
 	presetButton	-> setText ("favorites");
@@ -2770,8 +2764,8 @@ void	RadioInterface::handle_muteButton	() {
 	if (!channel. audioActive)
 	   return;
 	set_soundLabel (false);
-	connect (&muteTimer, SIGNAL (timeout ()),
-	         this, SLOT (muteButton_timeOut ()));
+	connect (&muteTimer, &QTimer::timeout,
+	         this, &RadioInterface::muteButton_timeOut);
 	muteDelay	= configHandler_p -> muteValue ();
 	muteDelay	*= 60;	// seconds
 	muteTimer. start (1000);
@@ -2787,8 +2781,8 @@ void	RadioInterface::muteButton_timeOut	() {
 	   return;
 	}
 	else {
-	   disconnect (&muteTimer, SIGNAL (timeout ()),
-	               this, SLOT (muteButton_timeOut ()));
+	   disconnect (&muteTimer, &QTimer::timeout,
+	               this, &RadioInterface::muteButton_timeOut);
 	   stillMuting	-> hide ();
 	   if (channel. audioActive)
 	      set_soundLabel (true);
@@ -2800,8 +2794,8 @@ void	RadioInterface::stop_muting		() {
 	   return;
 	set_soundLabel (true);
 	muteTimer. stop ();
-	disconnect (&muteTimer, SIGNAL (timeout ()),
-	               this, SLOT (muteButton_timeOut ()));
+	disconnect (&muteTimer, &QTimer::timeout,
+	               this, &RadioInterface::muteButton_timeOut);
 	stillMuting	-> hide ();
 }
 //
@@ -3460,10 +3454,10 @@ bool setting	= configHandler_p -> eti_active ();
 
 	if (setting) {
 	   stopScanning ();	
-	   disconnect (scanButton, SIGNAL (clicked ()),
-	               this, SLOT (handle_scanButton ()));
-	   connect (scanButton, SIGNAL (clicked ()),
-	            this, SLOT (handle_etiHandler ()));
+	   disconnect (scanButton, &QPushButton::clicked,
+	               this, &RadioInterface::handle_scanButton);
+	   connect (scanButton, &QPushButton::clicked,
+	            this, &RadioInterface::handle_etiHandler);
 	   scanButton	-> setText ("eti");
 	   if (!inputDevice_p -> isFileInput ())// restore the button' visibility
 	      scanButton -> show ();
@@ -3472,10 +3466,10 @@ bool setting	= configHandler_p -> eti_active ();
 //	otherwise, disconnect the eti handling and reconnect scan
 //	be careful, an ETI session may be going on
 	stop_etiHandler ();		// just in case
-	disconnect (scanButton, SIGNAL (clicked ()),
-	            this, SLOT (handle_etiHandler ()));
-	connect (scanButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanButton ()));
+	disconnect (scanButton, &QPushButton::clicked,
+	            this, &RadioInterface::handle_etiHandler);
+	connect (scanButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_scanButton);
 	scanButton      -> setText ("scan");
 	if (inputDevice_p -> isFileInput ())	// hide the button now
 	   scanButton -> hide ();

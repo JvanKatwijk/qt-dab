@@ -134,20 +134,20 @@ std::string errorMessage (int errorCode) {
            biasT_selector -> setChecked (true);
 	
 //	and be prepared for future changes in the settings
-	connect (GRdBSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ifgainReduction (int)));
-	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_lnagainReduction (int)));
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
-	connect (ppmControl, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ppmControl (int)));
-	connect (dumpButton, SIGNAL (clicked ()),
-                 this, SLOT (set_xmlDump ()));
-	connect (biasT_selector, SIGNAL (stateChanged (int)),	
-	         this, SLOT (set_biasT (int)));
-	connect (this, SIGNAL (overload_state_changed (bool)),
-	         this, SLOT (report_overload_state (bool)));
+	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &sdrplayHandler_v3::set_ifgainReduction);
+	connect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &sdrplayHandler_v3::set_lnagainReduction);
+	connect (agcControl, &QCheckBox::stateChanged,
+	         this, &sdrplayHandler_v3::set_agcControl);
+	connect (ppmControl, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &sdrplayHandler_v3::set_ppmControl);
+	connect (dumpButton, &QPushButton::clicked,
+                 this, &sdrplayHandler_v3::set_xmlDump);
+	connect (biasT_selector, &QCheckBox::stateChanged,	
+	         this, &sdrplayHandler_v3::set_biasT);
+	connect (this, &sdrplayHandler_v3::overload_state_changed,
+	         this, &sdrplayHandler_v3::report_overload_state);
 
 	lastFrequency	= MHz (220);
 	theGain		= -1;
@@ -357,8 +357,8 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 	int k	= antennaSelector -> findText (setting);
 	if (k >= 0) 
 	   antennaSelector -> setCurrentIndex (k);
-	connect (antennaSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (set_selectAntenna (const QString &)));
+	connect (antennaSelector, &QComboBox::textActivated,
+	         this, &sdrplayHandler_v3::set_selectAntenna);
 	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
 }
 
@@ -518,10 +518,10 @@ uint32_t                ndev;
 
 	chosenDevice		= nullptr;
 
-	connect (this, SIGNAL (set_serial_signal (const QString &)),
-	         this, SLOT (set_serial (const QString &)));
-	connect (this, SIGNAL (set_apiVersion_signal (float)),
-	         this, SLOT (set_apiVersion (float)));
+	connect (this, &sdrplayHandler_v3::set_serial_signal,
+	         this, &sdrplayHandler_v3::set_serial);
+	connect (this, &sdrplayHandler_v3::set_apiVersion_signal,
+	         this, &sdrplayHandler_v3::set_apiVersion);
 
 	denominator		= 2048;		// default
 	nrBits			= 12;		// default

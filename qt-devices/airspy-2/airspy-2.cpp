@@ -66,7 +66,7 @@ uint32_t samplerateCount;
 //	gain setting, restoring the settings is a tedious task
 	int tab	= airspySettings -> value (TAB_SETTINGS, 2). toInt ();
 	airspySettings	-> endGroup ();
-        tabWidget -> setCurrentIndex (tab);
+        tabWidget	-> setCurrentIndex (tab);
 	restore_gainSliders  (200, tab);
 
 	device			= nullptr;
@@ -177,30 +177,30 @@ uint32_t samplerateCount;
 	inp			= 0;
 //
 	restore_gainSettings (tab);
-	connect (linearitySlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_linearity (int)));
-	connect (sensitivitySlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_sensitivity (int)));
-	connect (lnaSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_lna_gain (int)));
-	connect (vgaSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_vga_gain (int)));
-	connect (mixerSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_mixer_gain (int)));
-	connect (lnaButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_lna_agc (int)));
-	connect (mixerButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_mixer_agc (int)));
-	connect (biasButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_rf_bias (int)));
-	connect (tabWidget, SIGNAL (currentChanged (int)),
-	         this, SLOT (switch_tab (int)));
-	connect (dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (set_xmlDump ()));
-	connect (this, SIGNAL (new_tabSetting (int)),
-	         tabWidget, SLOT (setCurrentIndex (int)));
-	connect (convQuality_setter, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_convQuality (int)));
+	connect (linearitySlider, &QSlider::valueChanged,
+	         this, &airspy_2::set_linearity);
+	connect (sensitivitySlider, &QSlider::valueChanged,
+	         this, &airspy_2::set_sensitivity);
+	connect (lnaSlider, &QSlider::valueChanged,
+	         this, &airspy_2::set_lna_gain);
+	connect (vgaSlider, &QSlider::valueChanged,
+	         this, &airspy_2::set_vga_gain);
+	connect (mixerSlider, &QSlider::valueChanged,
+	         this, &airspy_2::set_mixer_gain);
+	connect (lnaButton, &QCheckBox::stateChanged,
+	         this, &airspy_2::set_lna_agc);
+	connect (mixerButton, &QCheckBox::stateChanged,
+	         this, &airspy_2::set_mixer_agc);
+	connect (biasButton, &QCheckBox::stateChanged,
+	         this, &airspy_2::set_rf_bias);
+	connect (tabWidget, &QTabWidget::currentChanged,
+	         this, &airspy_2::switch_tab);
+	connect (dumpButton, &QPushButton::clicked,
+	         this, &airspy_2::set_xmlDump);
+	connect (this, &airspy_2::new_tabSetting,
+	         tabWidget, &QTabWidget::setCurrentIndex);
+	connect (convQuality_setter, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &airspy_2::handle_convQuality);
 //
 	displaySerial	-> setText (getSerial());
 	running. store (false);
@@ -736,66 +736,66 @@ QString key	= QString::number (freq) + "-" + QString::number (tab);
 	QStringList list = gainValues. split (":");
 	switch (tab) {
 	   case 0:
-	      disconnect (sensitivitySlider, SIGNAL (valueChanged (int)),
-	                  this, SLOT (set_sensitivity (int)));
+	      disconnect (sensitivitySlider, &QSlider::valueChanged,
+	                  this, &airspy_2::set_sensitivity);
 	      sensitivitySlider -> setValue (list. at (0). toInt ());
-	      connect (sensitivitySlider, SIGNAL (valueChanged (int)),
-	               this, SLOT (set_sensitivity (int)));
+	      connect (sensitivitySlider, &QSlider::valueChanged,
+	               this, &airspy_2::set_sensitivity);
 	      lna	= list. at (1). toInt ();
 	      mixer	= list. at (2). toInt ();
 	      bias	= list. at (3). toInt ();
 	      break;
 	   case 1:
-	      disconnect (linearitySlider, SIGNAL (valueChanged (int)),
-	                  this, SLOT (set_linearity (int)));
+	      disconnect (linearitySlider, &QSlider::valueChanged,
+	                  this, &airspy_2::set_linearity);
 	      linearitySlider -> setValue (list. at (0). toInt ());
-	      connect (linearitySlider, SIGNAL (valueChanged (int)),
-	               this, SLOT (set_linearity (int)));
+	      connect (linearitySlider, &QSlider::valueChanged,
+	               this, &airspy_2::set_linearity);
 	      lna	= list. at (1). toInt ();
 	      mixer	= list. at (2). toInt ();
 	      bias	= list. at (3). toInt ();
 	      break;
 
 	   default:	// classic view
-	      disconnect (vgaSlider, SIGNAL (valueChanged (int)),
-	                  this, SLOT (set_vga_gain (int)));
-	      disconnect (mixerSlider, SIGNAL (valueChanged (int)),
-	                  this, SLOT (set_mixer_gain (int)));
-	      disconnect (lnaSlider, SIGNAL (valueChanged (int)),
-	                  this, SLOT (set_lna_gain (int)));
+	      disconnect (vgaSlider, &QSlider::valueChanged,
+	                  this, &airspy_2::set_vga_gain);
+	      disconnect (mixerSlider, &QSlider::valueChanged,
+	                  this, &airspy_2::set_mixer_gain);
+	      disconnect (lnaSlider, &QSlider::valueChanged,
+	                  this, &airspy_2::set_lna_gain);
 	      vgaSlider		-> setValue (list. at (0). toInt ());
 	      mixerSlider	-> setValue (list. at (1). toInt ());
 	      lnaSlider		-> setValue (list. at (2). toInt ());
-	      connect (vgaSlider, SIGNAL (valueChanged (int)),
-	               this, SLOT (set_vga_gain (int)));
-	      connect (mixerSlider, SIGNAL (valueChanged (int)),
-	               this, SLOT (set_mixer_gain (int)));
-	      connect (lnaSlider, SIGNAL (valueChanged (int)),
-	               this, SLOT (set_lna_gain (int)));
+	      connect (vgaSlider, &QSlider::valueChanged,
+	               this, &airspy_2::set_vga_gain);
+	      connect (mixerSlider, &QSlider::valueChanged,
+	               this, &airspy_2::set_mixer_gain);
+	      connect (lnaSlider, &QSlider::valueChanged,
+	               this, &airspy_2::set_lna_gain);
 	      lna	= list. at (3). toInt ();
 	      mixer	= list. at (4). toInt ();
 	      bias	= list. at (5). toInt ();
 	}
 //
 //	Now the agc settings
-	disconnect (lnaButton, SIGNAL (stateChanged (int)),
-	            this, SLOT (set_lna_agc (int)));
-	disconnect (mixerButton, SIGNAL (stateChanged (int)),
-	            this, SLOT (set_mixer_agc (int)));
-	disconnect (biasButton, SIGNAL (stateChanged (int)),
-	            this, SLOT (set_rf_bias (int)));
+	disconnect (lnaButton, &QCheckBox::stateChanged,
+	            this, &airspy_2::set_lna_agc);
+	disconnect (mixerButton, &QCheckBox::stateChanged,
+	            this, &airspy_2::set_mixer_agc);
+	disconnect (biasButton, &QCheckBox::stateChanged,
+	            this, &airspy_2::set_rf_bias);
 	if (lna != 0)
 	   lnaButton	-> setChecked (true);
 	if (mixer != 0)
 	   mixerButton	-> setChecked (true);
 	if (bias != 0)
 	   biasButton	-> setChecked (true);
-	connect (lnaButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_lna_agc (int)));
-	connect (mixerButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_mixer_agc (int)));
-	connect (biasButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_rf_bias (int)));
+	connect (lnaButton, &QCheckBox::stateChanged,
+	         this, &airspy_2::set_lna_agc);
+	connect (mixerButton, &QCheckBox::stateChanged,
+	         this, &airspy_2::set_mixer_agc);
+	connect (biasButton, &QCheckBox::stateChanged,
+	         this, &airspy_2::set_rf_bias);
 }
 
 void	airspy_2::restore_gainSettings	(int tab) {

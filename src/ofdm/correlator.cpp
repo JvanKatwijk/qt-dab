@@ -64,8 +64,6 @@ float	Phi_k;
 	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
 	}
 
-//	connect (this, SIGNAL (show_correlation (int, int, QVector<int>)),
-//	         mr,   SLOT   (show_correlation (int, int, QVector<int>)));
 	connect (this, &correlator::show_correlation,
 	         mr, &RadioInterface::show_correlation);
 }

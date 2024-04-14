@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2017
+ *    Copyright (C) 2015 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -41,10 +41,8 @@ uint16_t	rawContentType = 0;
 	this	-> dirElement		= dirElement;
 	this	-> backgroundFlag	= backgroundFlag;
 
-	connect (this, SIGNAL (handle_motObject (QByteArray, QString,
-	                                         int, bool, bool)),
-	         mr,   SLOT   (handle_motObject (QByteArray, QString,
-	                                         int, bool, bool)));
+	connect (this, &motObject::handle_motObject,
+	         mr, &RadioInterface::handle_motObject);
 	this	-> transportId		= transportId;
 	this	-> numofSegments	= -1;
 	this	-> segmentSize		= -1;

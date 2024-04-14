@@ -216,27 +216,27 @@ char	manufac [256], product [256], serial [256];
 	set_ppmCorrection	(ppm_correction -> value());
 
 //	and attach the buttons/sliders to the actions
-	connect (gainControl, SIGNAL (activated (const QString &)),
-	         this, SLOT (set_ExternalGain (const QString &)));
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_autogain (int)));
-	connect (ppm_correction, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ppmCorrection  (int)));
-	connect (xml_dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (set_xmlDump ()));
-	connect (iq_dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (set_iqDump ()));
-	connect (biasControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_biasControl (int)));
-	connect (filterSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_filter (int)));
+	connect (gainControl, &QComboBox::textActivated,
+	         this, &rtlsdrHandler_v3::set_ExternalGain);
+	connect (agcControl, &QCheckBox::stateChanged,
+	         this, &rtlsdrHandler_v3::set_autogain);
+	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &rtlsdrHandler_v3::set_ppmCorrection);
+	connect (xml_dumpButton, &QPushButton::clicked,
+	         this, &rtlsdrHandler_v3::set_xmlDump);
+	connect (iq_dumpButton, &QPushButton::clicked,
+	         this, &rtlsdrHandler_v3::set_iqDump);
+	connect (biasControl, &QCheckBox::stateChanged,
+	         this, &rtlsdrHandler_v3::set_biasControl);
+	connect (filterSelector, &QCheckBox::stateChanged,
+	         this, &rtlsdrHandler_v3::set_filter);
 	xmlDumper       = nullptr;
 //
 //	and for saving/restoring the gain setting:
-	connect (this, SIGNAL (new_gainIndex (int)),
-	         gainControl, SLOT (setCurrentIndex (int)));
-	connect (this, SIGNAL (new_agcSetting (bool)),
-	         agcControl, SLOT (setChecked (bool)));
+	connect (this, &rtlsdrHandler_v3::new_gainIndex,
+	         gainControl, &QComboBox::setCurrentIndex);
+	connect (this, &rtlsdrHandler_v3::new_agcSetting,
+	         agcControl, QCheckBox::setChecked);
 	iqDumper	= nullptr;
 	iq_dumping. store (false);
 	xml_dumping. store (false);

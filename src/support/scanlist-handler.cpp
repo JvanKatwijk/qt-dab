@@ -37,8 +37,8 @@
 	scanList. clear ();
 	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
-	connect (this, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectElement (QModelIndex)));
+	connect (this, &QListView::clicked,
+	         this, &scanListHandler::selectElement);
 
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly)) 

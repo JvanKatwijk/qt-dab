@@ -47,12 +47,24 @@ The most recent update shows all transmitters on the map.
 
 Selecting the "dx mode" (with a checkbox on the
 configuration widget) causes the software to display all transmitters
-the identification of which could be extracted from the signal
+the identification of which could be extracted from the signal.
 
 ![6.X](/transmitters.png?raw=true)
 
-If the dx mode is NOT selected, the transmitter's name and distance
+Usng a simple whip with an SDRplay device, the software identifies
+5 transmitters from which I receive data.
+
+If the dxMode is NOT selected, the transmitter's name and distance
 are - as always - shown on the botton line in the main widget.
+
+**Very experimental** is the **journaline decoder**. journaline is a kind
+of *teletext on DAB*, which is - as far as I can see - mostly transmitted
+through data subservices.
+However, since journaline is NOT transmitted in the region where I live,
+I have to use a (very) few recordings for testing.
+So, correct functioning is NOT guaranteed.
+
+![6.X](/journaline.png?raw=true)
 
 While Qt-DAB-6.X is still "under development", its sources can be
 found in the subdirectory "Qt-DAB-RC"

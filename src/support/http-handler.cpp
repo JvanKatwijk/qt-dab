@@ -64,8 +64,8 @@
 #endif
 	this	-> running. store (false);
 
-	connect (this, SIGNAL (terminating ()),
-	     parent, SLOT (http_terminate ()));
+	connect (this, &httpHandler::terminating,
+	     parent, &RadioInterface::http_terminate);
 	saveFile	= fopen (saveName. toUtf8 (). data (), "w");
 	if (saveFile != nullptr) {
 	   fprintf (saveFile, "Home location; %f; %f\n\n", 
@@ -210,8 +210,8 @@ std::string	ctype;
 	      int hdrlen = strlen (hdr);
 ///	      fprintf (stderr, "reply header %s \n", hdr);
 	      if (jsonUpdate) {
-	         fprintf (stderr, "Json update requested\n");
-	         fprintf (stderr, "%s\n", content. c_str ());
+//	         fprintf (stderr, "Json update requested\n");
+//	         fprintf (stderr, "%s\n", content. c_str ());
 	      }
 //	and send the reply
 	      if (write (ClientSocket, hdr, hdrlen) != hdrlen ||
@@ -556,14 +556,14 @@ void	httpHandler::putData	(uint8_t	type,
 	locker. lock ();
 	transmitterList. push_back (t);
 	locker. unlock ();
-	fprintf (stderr, "Vectorsize %d\n", transmitterList. size ());
+//	fprintf (stderr, "Vectorsize %d\n", transmitterList. size ());
 
 	for (int i = 0; i < (int)(transmitterVector. size ()); i ++) {
 	   if ((transmitterVector. at (i). transmitterName == transmitterName) &&
 	       (transmitterVector. at (i). channelName == channelName)) {
-	      fprintf (stderr, "%s %s is er al\n",
-	                            transmitterName. toLatin1 (). data (),
-	                            channelName. toLatin1 (). data ());
+//	      fprintf (stderr, "%s %s is er al\n",
+//	                            transmitterName. toLatin1 (). data (),
+//	                            channelName. toLatin1 (). data ());
 	      return;
 	   }
 	}

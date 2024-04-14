@@ -89,20 +89,20 @@
         thermoLeft		-> setAlarmEnabled (true);
         thermoRight		-> setAlarmEnabled(true);
 
-	connect (&myFrame, SIGNAL (frameClosed ()),
-	         this, SIGNAL (frameClosed ()));
-	connect (framedumpButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_framedumpButton ()));
-        connect (audiodumpButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_audiodumpButton ())); 
+	connect (&myFrame, &superFrame::frameClosed,
+	         this,  &techData::frameClosed);
+	connect (framedumpButton, &smallPushButton::rightClicked,
+                 this, &techData::color_framedumpButton);
+        connect (audiodumpButton, &smallPushButton::rightClicked,
+                 this, &techData::color_audiodumpButton); 
 
-	connect	(framedumpButton, SIGNAL (clicked ()),
-	         this, SIGNAL (handle_frameDumping ()));
-	connect (audiodumpButton, SIGNAL (clicked ()),
-	         this, SIGNAL (handle_audioDumping ()));
+	connect	(framedumpButton, &QPushButton::clicked,
+	         this, &techData::handle_frameDumping);
+	connect (audiodumpButton, &QPushButton::clicked,
+	         this, &techData::handle_audioDumping);
 
-	connect (timeTable_button, SIGNAL (clicked ()),
-	         this, SIGNAL (handle_timeTable ()));
+	connect (timeTable_button, &QPushButton::clicked,
+	         this, &techData::handle_timeTable);
 }
 
 		techData::~techData	() {

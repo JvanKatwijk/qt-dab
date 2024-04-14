@@ -143,18 +143,18 @@
 	handle_ppmCorrection (ppm_correction	-> value());
 
 //	and be prepared for future changes in the settings
-	connect (lnaGainSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_LNAGain (int)));
-	connect (vgaGainSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_VGAGain (int)));
-	connect (biasT_button, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_biasT (int)));
-	connect (AmpEnableButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_Ampli (int)));
-	connect (ppm_correction, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_ppmCorrection  (int)));
-	connect (dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_xmlDump ()));
+	connect (lnaGainSlider, &QSlider::valueChanged,
+	         this, &hackrfHandler::handle_LNAGain);
+	connect (vgaGainSlider, &QSlider::valueChanged,
+	         this, &hackrfHandler::handle_VGAGain);
+	connect (biasT_button, &QCheckBox::stateChanged,
+	         this, &hackrfHandler::handle_biasT);
+	connect (AmpEnableButton, &QCheckBox::stateChanged,
+	         this, &hackrfHandler::handle_Ampli);
+	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &hackrfHandler::handle_ppmCorrection);
+	connect (dumpButton, &QPushButton::clicked,
+	         this, &hackrfHandler::handle_xmlDump);
 
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
@@ -165,18 +165,18 @@
 	   usb_board_id_display ->
 	                setText (this -> hackrf_usb_board_id_name (board_id));
 	}
-	connect (this, SIGNAL (signal_antEnable (bool)),
-	         biasT_button, SLOT (setChecked (bool)));
-	connect (this, SIGNAL (signal_ampEnable (bool)),
-	         biasT_button, SLOT (setChecked (bool)));
-	connect (this, SIGNAL (signal_vgaValue (int)),
-		 vgaGainSlider, SLOT (setValue (int)));
-	connect (this, SIGNAL (signal_vgaValue (int)),
-		 vgagainDisplay, SLOT (display (int)));
-	connect (this, SIGNAL (signal_lnaValue (int)),
-	         lnaGainSlider, SLOT (setValue (int)));
-	connect (this, SIGNAL (signal_lnaValue (int)),
-	         lnagainDisplay, SLOT (display (int)));
+	connect (this, &hackrfHandler::signal_antEnable,
+	         biasT_button, &QCheckBox::setChecked);
+	connect (this, &hackrfHandler::signal_ampEnable,
+	         biasT_button, &QCheckBox::setChecked);
+	connect (this, &hackrfHandler::signal_vgaValue,
+		 vgaGainSlider, &QSlider::setValue);
+	connect (this, &hackrfHandler::signal_vgaValue,
+		 vgagainDisplay, qOverload<int>(&QLCDNumber::display));
+	connect (this, &hackrfHandler::signal_lnaValue,
+	         lnaGainSlider, &QSlider::setValue);
+	connect (this, &hackrfHandler::signal_lnaValue,
+	         lnagainDisplay, qOverload<int>(&QLCDNumber::display));
 	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);

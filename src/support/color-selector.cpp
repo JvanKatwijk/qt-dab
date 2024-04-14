@@ -47,8 +47,8 @@
 	          "gray" << "darkGray";
 	colorList. setStringList (colors);
 	selectorDisplay	-> setModel (&colorList);
-	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (select_color (QModelIndex)));
+	connect (selectorDisplay, &QListView::clicked,
+	         this, &colorSelector::select_color);
 	selectedItem	= -1;
 }
 

@@ -33,6 +33,8 @@ RESOURCES	+= resources.qrc
 TRANSLATIONS = ../i18n/de_DE.ts
 DEFINES		+= __HAS_CHANNEL__
 #DEFINES	+= __ESTIMATOR__
+#DEFINES	+= "SIGNAL=FOUT"
+DEFINES		+= __USE_JOURNALINE__
 #
 #       For more parallel processing, uncomment the following
 #       defines
@@ -431,7 +433,7 @@ CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
-#CONFIG		+= hackrf
+CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx

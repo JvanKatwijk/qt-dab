@@ -42,8 +42,8 @@
 	servicesDisplay	-> setModel (&serviceList);
 	servicesDisplay	-> adjustSize();
 	adjustSize();
-	connect (servicesDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectService (QModelIndex)));
+	connect (servicesDisplay, &QListView::clicked,
+	         this, &audiosystemSelector::selectService);
 }
 
 	audiosystemSelector::~audiosystemSelector () {

@@ -68,8 +68,8 @@ static struct {
 	this -> setupUi (&myFrame);
 	set_position_and_size (settings, &myFrame, CONFIG_HANDLER);
 	hide ();
-	connect (&myFrame, SIGNAL (frameClosed ()),
-	         this, SIGNAL (frameClosed ()));
+	connect (&myFrame, &superFrame::frameClosed,
+	         this, &configHandler::frameClosed);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
 	int x = dabSettings -> value (MUTE_TIME_SETTING, 10). toInt ();
@@ -183,166 +183,164 @@ bool	configHandler::findDevice (const QString &dev) {
 }
 
 void	configHandler::connectDevices	() {
-	connect (deviceSelector, SIGNAL (activated (const QString &)),
-	         myRadioInterface, SLOT (doStart (const QString &)));
+	connect (deviceSelector, &QComboBox::textActivated,
+	         myRadioInterface, &RadioInterface::doStart);
 }
 
 void	configHandler::disconnectDevices () {
-	disconnect (deviceSelector, SIGNAL (activated (const QString &)),
-	            myRadioInterface, SLOT (doStart (const QString &)));
-	disconnect (deviceSelector, SIGNAL (activated (const QString &)),
-	            myRadioInterface, SLOT (newDevice (const QString &)));
+	disconnect (deviceSelector, &QComboBox::textActivated,
+	            myRadioInterface, &RadioInterface::doStart);
+	disconnect (deviceSelector, &QComboBox::textActivated,
+	            myRadioInterface, &RadioInterface::newDevice);
 }
 
 void	configHandler::reconnectDevices () {
-	connect (deviceSelector, SIGNAL (activated (const QString &)),
-	         myRadioInterface, SLOT (newDevice (const QString &)));
+	connect (deviceSelector, &QComboBox::textActivated,
+	         myRadioInterface, &RadioInterface::newDevice);
 }
 	
 void	configHandler::set_connections () {
-	connect (audioSelectButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_audioSelectButton ()));
-	connect (this, SIGNAL (selectDecoder (int)),
-	         myRadioInterface, SLOT (selectDecoder (int)));
-	connect (this, SIGNAL (set_transmitters_local (bool)),
-	         myRadioInterface, SLOT (set_transmitters_local (bool)));
-	connect (this, SIGNAL (set_tii_detectorMode (bool)),
-	         myRadioInterface, SLOT (set_tii_detectorMode (bool)));
-	connect (this, SIGNAL (set_dcRemoval (bool)),
-	         myRadioInterface, SLOT (handle_dcRemovalSelector (bool)));
+	connect (audioSelectButton, &smallPushButton::clicked,
+	         this, &configHandler::handle_audioSelectButton);
+	connect (this, &configHandler::selectDecoder,
+	         myRadioInterface, &RadioInterface::selectDecoder);
+	connect (this, &configHandler::set_transmitters_local,
+	         myRadioInterface, &RadioInterface::set_transmitters_local);
+	connect (this, &configHandler::set_tii_detectorMode,
+	         myRadioInterface, &RadioInterface::set_tii_detectorMode);
+	connect (this, &configHandler::set_dcRemoval,
+	         myRadioInterface, &RadioInterface::handle_dcRemovalSelector);
 
-	connect (audioSelectButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_audioSelectButton ()));
-	connect (fontButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_fontButton ()));
-	connect (fontColorButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_fontColorButton ()));
-	connect (devicewidgetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_devicewidgetButton ()));
-	connect (portSelector, SIGNAL (rightClicked ()),
-	         this, SLOT (color_portSelector ()));
-	connect (dlTextButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_dlTextButton ()));
-	connect (resetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_resetButton ()));
-	connect (scheduleButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_resetButton ()));
-	connect (snrButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_snrButton ()));
-	connect (set_coordinatesButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_set_coordinatesButton ()));
-	connect (loadTableButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_loadTableButton ()));
-	connect (dumpButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_sourcedumpButton ()));
-	connect (skinButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_skinButton ()));
+	connect (audioSelectButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_audioSelectButton);
+	connect (fontButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_fontButton);
+	connect (fontColorButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_fontColorButton );
+	connect (devicewidgetButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_devicewidgetButton);
+	connect (portSelector, &smallPushButton::rightClicked,
+	         this, &configHandler::color_portSelector);
+	connect (dlTextButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_dlTextButton);
+	connect (resetButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_resetButton);
+	connect (scheduleButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_resetButton);
+	connect (snrButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_snrButton);
+	connect (set_coordinatesButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_set_coordinatesButton);
+	connect (loadTableButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_loadTableButton);
+	connect (dumpButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_sourcedumpButton);
+	connect (skinButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_skinButton);
 //
 //	real handlers
-	connect (scheduleButton, SIGNAL (clicked ()),
-                 myRadioInterface, SLOT (handle_scheduleButton ()));
-	connect (muteTimeSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_muteTimeSetting (int)));
-	connect (switchDelaySetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_switchDelaySetting (int)));
-	connect (orderAlfabetical, SIGNAL (clicked ()),
-	         this, SLOT (handle_orderAlfabetical ()));
-	connect (orderServiceIds, SIGNAL (clicked ()),
-	         this, SLOT (handle_orderServiceIds ()));
-
-	connect (ordersubChannelIds, SIGNAL (clicked ()),
-	         this, SLOT (handle_ordersubChannelIds ()));
+	connect (scheduleButton, &QPushButton::clicked,
+                 myRadioInterface, &RadioInterface::handle_scheduleButton);
+	connect (muteTimeSetting, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_muteTimeSetting);
+	connect (switchDelaySetting, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_switchDelaySetting);
+	connect (orderAlfabetical, &QRadioButton::clicked,
+	         this, &configHandler::handle_orderAlfabetical);
+	connect (orderServiceIds, &QRadioButton::clicked,
+	         this, &configHandler::handle_orderServiceIds);
+	connect (ordersubChannelIds, &QRadioButton::clicked,
+	         this, &configHandler::handle_ordersubChannelIds);
 //
-	connect (fontButton, SIGNAL (clicked ()),
-	         this, SIGNAL (handle_fontSelect ()));
-	connect (fontColorButton, SIGNAL (clicked ()),
-	         this, SIGNAL (handle_fontColorSelect ()));
-	connect (fontSizeSelector, SIGNAL (valueChanged (int)),
-	         this, SIGNAL (handle_fontSizeSelect (int)));
+	connect (fontButton, &QPushButton::clicked,
+	         this,  &configHandler::handle_fontSelect);
+	connect (fontColorButton, &QPushButton::clicked,
+	         this, &configHandler::handle_fontColorSelect);
+	connect (fontSizeSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_fontSizeSelect);
 //
 //	Now the two rows with buttons
 //
-	connect (devicewidgetButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_devicewidgetButton ()));
-	connect (portSelector, SIGNAL (clicked ()),
-	         this, SLOT (handle_portSelector ()));
-	connect (dlTextButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_dlTextButton ()));
-	connect (resetButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_resetButton ()));
+	connect (devicewidgetButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_devicewidgetButton);
+	connect (portSelector, &QPushButton::clicked,
+	         this, &configHandler::handle_portSelector);
+	connect (dlTextButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_dlTextButton);
+	connect (resetButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_resetButton);
 //
 //	second row
-	connect (snrButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_snrButton ()));
-	connect (set_coordinatesButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_set_coordinatesButton ()));
-	connect (loadTableButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_loadTable ()));
+	connect (snrButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_snrButton);
+	connect (set_coordinatesButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_set_coordinatesButton );
+	connect (loadTableButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_loadTable);
 //
 //	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
-	connect (dumpButton, SIGNAL (clicked ()),
-	         myRadioInterface, SLOT (handle_sourcedumpButton ()));
-	connect (skinButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_skinSelector ()));
+	connect (dumpButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_sourcedumpButton);
+	connect (skinButton, &QPushButton::clicked,
+	         this, &configHandler::handle_skinSelector);
 //
 //	Now the checkboxes
 //	top line
 	int upload = dabSettings -> value ("UPLOAD_ENABLED", 0). toInt ();
 	if (upload != 0)
-	   connect (upload_selector, SIGNAL (stateChanged (int)),
-	            this, SLOT (handle_upload_selector	(int)));
+	   connect (upload_selector, &QCheckBox::stateChanged,
+	            this, &configHandler::handle_upload_selector);
 	else
 	   upload_selector -> setEnabled (false);
-	connect (logger_selector, SIGNAL (stateChanged (int)),
-	         myRadioInterface, SLOT (handle_LoggerButton (int)));
+	connect (logger_selector, &QCheckBox::stateChanged,
+	         myRadioInterface, &RadioInterface::handle_LoggerButton);
 //	the epg2xmlSelector is just polled, no need to react on an event
 
 //	second line
-	connect (new_tiiMode_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_tii_detectorMode (int)));
+	connect (new_tiiMode_selector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_tii_detectorMode);
 
-	connect (utc_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_utc_selector (int)));
+	connect (utc_selector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_utc_selector);
 
-	connect (onTop, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_onTop (int)));
+	connect (onTop, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_onTop);
 //
 //	third line
 //	here we expect the close without asking
-	connect (epg_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_epgSelector (int)));
-	connect (localBrowserSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_localBrowser      (int)));
+	connect (epg_selector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_epgSelector);
+	connect (localBrowserSelector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_localBrowser);
 //
 //	fourth line
-	connect (dcRemovalSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_dcRemovalSelector (int)));
+	connect (dcRemovalSelector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_dcRemovalSelector);
 //	
-	connect (etiActivated_selector, SIGNAL (stateChanged (int)),
-	         myRadioInterface, SLOT (handle_eti_activeSelector (int)));
+	connect (etiActivated_selector, &QCheckBox::stateChanged,
+	         myRadioInterface, &RadioInterface::handle_eti_activeSelector);
 //
-	connect (saveTransmittersSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveTransmittersSelector (int)));
+	connect (saveTransmittersSelector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_saveTransmittersSelector);
 //
 //	fifh line
-	connect (clearScan_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_clearScan_Selector (int)));
+	connect (clearScan_selector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_clearScan_Selector);
 
-	connect (saveSlides, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveSlides (int)));
+	connect (saveSlides, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_saveSlides);
 //
-	connect (localTransmitterSelector, SIGNAL (stateChanged (int)),	
-	         this, SLOT (handle_localTransmitterSelector  (int)));
+	connect (localTransmitterSelector, &QCheckBox::stateChanged,	
+	         this, &configHandler::handle_localTransmitterSelector);
 //
 //	botton row
-	connect (correlationSelector, SIGNAL (stateChanged (int)),
-	         myRadioInterface, SLOT (handle_correlationSelector (int)));
-	connect (dxSelector, SIGNAL (stateChanged (int)),
-	         myRadioInterface, SLOT (handle_dxSelector (int)));
-
-	connect (decoderSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (handle_decoderSelector (const QString &)));
+	connect (dxSelector, &QCheckBox::stateChanged,
+	         myRadioInterface, &RadioInterface::handle_dxSelector);
+	connect (correlationSelector, &QCheckBox::stateChanged,
+	         myRadioInterface, &RadioInterface::handle_correlationSelector);
+	connect (decoderSelector, &QComboBox::textActivated,
+	         this, &configHandler::handle_decoderSelector);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -799,8 +797,8 @@ int k	=streamoutSelector -> findText (s);
 }
 
 void	configHandler::connect_streamTable	() {
-	connect (streamoutSelector, SIGNAL (activated (int)),
-	         myRadioInterface, SLOT (set_streamSelector (int)));
+	connect (streamoutSelector, qOverload<int>(&QComboBox::activated),
+	         myRadioInterface, &RadioInterface::set_streamSelector);
 }
 
 QString	configHandler::currentStream		() {

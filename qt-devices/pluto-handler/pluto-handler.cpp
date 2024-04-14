@@ -328,21 +328,21 @@ int	ret;
 
 	iio_buffer_set_blocking_mode (rxbuf, true);
 //	and be prepared for future changes in the settings
-	connect (gainControl, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_gainControl (int)));
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
-	connect (debugButton, SIGNAL (clicked ()),
-	         this, SLOT (toggle_debugButton ()));
-	connect (dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (set_xmlDump ()));
-	connect (filterButton, SIGNAL (clicked ()),
-	         this, SLOT (set_filter ()));
+	connect (gainControl, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &plutoHandler::set_gainControl);
+	connect (agcControl, &QCheckBox::stateChanged,
+	         this, &plutoHandler::set_agcControl);
+	connect (debugButton, &QPushButton::clicked,
+	         this, &plutoHandler::toggle_debugButton);
+	connect (dumpButton, &QPushButton::clicked,
+	         this, &plutoHandler::set_xmlDump);
+	connect (filterButton, &QPushButton::clicked,
+	         this, &plutoHandler::set_filter);
 
-	connect (this, SIGNAL (new_gainValue (int)),
-	         gainControl, SLOT (setValue (int)));
-	connect (this, SIGNAL (new_agcValue (bool)),
-	         agcControl, SLOT (setChecked (bool)));
+	connect (this, &plutoHandler::new_gainValue,
+	         gainControl, &QSpinBox::setValue);
+	connect (this, &plutoHandler::new_agcValue,
+	         agcControl, &QCheckBox::setChecked);
 //	set up for interpolator
 	float	denominator	= float (DAB_RATE) / DIVIDER;
         float inVal		= float (PLUTO_RATE) / DIVIDER;
@@ -412,11 +412,11 @@ struct iio_channel *chn;
 	      return;
 	   }
 	   
-	   disconnect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
+	   disconnect (agcControl, &QCheckBox::stateChanged,
+	         this, &plutoHandler::set_agcControl);
 	   agcControl -> setChecked (false);
-	   connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
+	   connect (agcControl, &QCheckBox::stateChanged,
+	         this, &plutoHandler::set_agcControl);
 	}
 
 	ret = iio_channel_attr_write_longlong (chn, "hardwaregain", newGain);

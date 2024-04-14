@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -22,7 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #include	<cstdio>
 #include	<QVBoxLayout>
@@ -44,8 +40,8 @@
 	Devices = QStringList();
 	deviceList. setStringList (Devices);
 	selectorDisplay	-> setModel (&deviceList);
-	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (select_rsp (QModelIndex)));
+	connect (selectorDisplay, &QListView::clicked,
+	         this, &sdrplaySelect::select_rsp);
 	selectedItem	= -1;
 }
 

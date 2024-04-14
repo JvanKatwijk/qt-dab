@@ -81,8 +81,8 @@
 	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
 	fprintf (stderr, "nrElements = %d\n",
 	             theDescriptor -> blockList [0].nrElements);
-	connect (continuousButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_continuousButton ()));
+	connect (continuousButton, &QPushButton::clicked,
+	         this, &xml_fileReader::handle_continuousButton);
 	running. store (false);
 }
 

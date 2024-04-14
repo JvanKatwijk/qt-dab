@@ -54,14 +54,14 @@ QString  weekdays [7];
 	myWidget. setWidget(tableWidget);
 	tableWidget 	-> setHorizontalHeaderLabels (
 	            QStringList () << tr ("service name     ") << tr ("day") << tr ("time"));
-	connect (tableWidget, SIGNAL (cellDoubleClicked (int, int)),
-	         this, SLOT (removeRow (int, int)));
+	connect (tableWidget, &QTableWidget::cellDoubleClicked,
+	         this, &Scheduler::removeRow);
 	wakeupTimer. setSingleShot (true);
 	wakeupTimer. setInterval   (1000000);
-	connect (&wakeupTimer, SIGNAL (timeout ()),
-	         this, SLOT (handle_timeOut ()));
-	connect (this, SIGNAL (timeOut (const QString &)),
-	         mr, SLOT (scheduler_timeOut (const QString &)));
+	connect (&wakeupTimer, &QTimer::timeout,
+	         this, &Scheduler::handle_timeOut);
+	connect (this, &Scheduler::timeOut,
+	         mr, &RadioInterface::scheduler_timeOut);
 	this	-> wakeupTime = 365 * MINUTES_PER_DAY;
 	for (int i = 1; i <= 7; i ++)
 //	   weekdays [i - 1] = QDate::shortDayName (i);

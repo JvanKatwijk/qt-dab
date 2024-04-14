@@ -166,23 +166,23 @@ QString scanmodeText (int e) {
 	scanMode	=
 	             s -> value ("scanMode", SINGLE_SCAN). toInt ();
 	scanModeSelector	-> setCurrentIndex (scanMode);
-	connect (startKnop, SIGNAL (clicked ()),
-	         this, SLOT (handle_startKnop ()));
-	connect (stopKnop, SIGNAL (clicked ()),
-	         this, SLOT (handle_stopKnop ()));
-	connect (scanModeSelector, SIGNAL (currentIndexChanged (int)),
-	         this, SLOT (handle_scanMode (int)));
+	connect (startKnop, &QPushButton::clicked,
+	         this, &scanHandler::handle_startKnop);
+	connect (stopKnop, &QPushButton::clicked,
+	         this, &scanHandler::handle_stopKnop);
+	connect (scanModeSelector, qOverload<int>(&QComboBox::currentIndexChanged),
+	         this, &scanHandler::handle_scanMode);
 	if (!no_skipTables) {
-	   connect (defaultLoad, SIGNAL (clicked ()),
-	            this, SLOT (handle_defaultLoad ()));
-	   connect (defaultStore, SIGNAL (clicked ()),
-	            this, SLOT (handle_defaultStore ()));
-	   connect (loadKnop, SIGNAL (clicked ()),
-	            this, SLOT (handle_loadKnop ()));
-	   connect (storeKnop, SIGNAL (clicked ()),
-	            this, SLOT (handle_storeKnop ()));
-	   connect (showKnop, SIGNAL (clicked ()),
-	            this, SLOT (handle_showKnop ()));
+	   connect (defaultLoad, &QPushButton::clicked,
+	            this, &scanHandler::handle_defaultLoad);
+	   connect (defaultStore, &QPushButton::clicked,
+	            this, &scanHandler::handle_defaultStore);
+	   connect (loadKnop, &QPushButton::clicked,
+	            this, &scanHandler::handle_loadKnop);
+	   connect (storeKnop, &QPushButton::clicked,
+	            this, &scanHandler::handle_storeKnop);
+	   connect (showKnop, &QPushButton::clicked,
+	            this, &scanHandler::handle_showKnop);
 	}
 	header << "channel" << "ensemble" << "nrServices";
         contentWidget	-> setHorizontalHeaderLabels (header);
@@ -192,10 +192,10 @@ QString scanmodeText (int e) {
 	skipFile	= "";
 	scanning. store (false);
 //
-	connect (this, SIGNAL (startScanning ()),
-	         theRadio, SLOT (startScanning ()));
-	connect (this, SIGNAL (stopScanning ()),
-	         theRadio, SLOT (stopScanning ()));
+	connect (this, &scanHandler::startScanning,
+	         theRadio, &RadioInterface::startScanning);
+	connect (this, &scanHandler::stopScanning,
+	         theRadio, &RadioInterface::stopScanning);
 }
 
 	scanHandler::~scanHandler () {

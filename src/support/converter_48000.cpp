@@ -35,8 +35,8 @@
         this    -> peakLevelSampleMax   = 48000 / repetitionCounter; 
         this    -> absPeakLeft          = 0.0f;
         this    -> absPeakRight         = 0.0f;
-	connect (this, SIGNAL (showPeakLevel (float, float)),
-	         mr, SLOT (showPeakLevel (float, float)));
+	connect (this, &converter_48000::showPeakLevel,
+	         mr, &RadioInterface::showPeakLevel);
 }
 
 	converter_48000::~converter_48000 () {

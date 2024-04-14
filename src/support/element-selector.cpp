@@ -66,8 +66,8 @@ QDate workingDate	= currentDate;
 	setWindowTitle (tr("time select"));
 	setLayout (layOut);
 
-	connect (&readyBox, SIGNAL (stateChanged (int)),
-	         this, SLOT (collectData ()));
+	connect (&readyBox, &QCheckBox::stateChanged,
+	         this, &elementSelector::collectData);
 }
 
 	elementSelector::~elementSelector () {

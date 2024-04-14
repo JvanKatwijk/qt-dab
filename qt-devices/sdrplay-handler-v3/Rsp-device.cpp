@@ -42,11 +42,10 @@ sdrplay_api_ErrT        err;
 	this	-> GRdB		= GRdB;
 	this	-> biasT	= biasT;
 
-	connect (this, SIGNAL (set_lnabounds_signal (int, int)),
-                 parent, SLOT (set_lnabounds (int, int)));
-	connect (this, SIGNAL (show_lnaGain (int)),
-	         parent, SLOT (show_lnaGain (int)));
-
+	connect (this, &Rsp_device::set_lnabounds_signal,
+                 parent, &sdrplayHandler_v3::set_lnabounds);
+	connect (this, &Rsp_device::show_lnaGain,
+	         parent, &sdrplayHandler_v3::show_lnaGain);
 
 	err = parent -> sdrplay_api_GetDeviceParams (chosenDevice -> dev,
 	                                             &deviceParams);

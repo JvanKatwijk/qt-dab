@@ -49,10 +49,10 @@
 	is_connected. store (true);
 	cleanRecords ();
 	testTimer	= new QTimer ();
-	connect (testTimer, SIGNAL (timeout ()),
-	           this, SLOT (no_deviceInfo ()));
-	connect (this, SIGNAL (data_ready ()),
-	           parent, SLOT (data_ready ()));
+	connect (testTimer, &QTimer::timeout,
+	           this, &spyHandler_8::no_deviceInfo);
+	connect (this, &spyHandler_8::data_ready,
+	           parent, &spyServer_client_8::data_ready);
 	start ();
 	testTimer	-> start (10000);
 }

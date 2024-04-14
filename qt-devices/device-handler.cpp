@@ -27,8 +27,8 @@
 	                        myFrame (nullptr) {
 	lastFrequency	= 100000;
 	theGain		= 50;
-	connect (&myFrame, SIGNAL (frameClosed ()),
-                 this, SIGNAL (frameClosed ())); 
+	connect (&myFrame, &superFrame::frameClosed,
+                 this, &deviceHandler::frameClosed); 
 }
 
 	deviceHandler::~deviceHandler	() {

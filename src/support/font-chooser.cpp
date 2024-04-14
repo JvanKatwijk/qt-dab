@@ -36,8 +36,8 @@
 
 	theFonts	= QStringList ();
 	selectorDisplay	-> setModel (&fontList);
-	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (select_font (QModelIndex)));
+	connect (selectorDisplay, &QListView::clicked,
+	         this, &fontChooser::select_font);
 	selectedItem	= -1;
 }
 

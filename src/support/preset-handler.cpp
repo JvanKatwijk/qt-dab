@@ -39,8 +39,8 @@
 	presetList. clear ();
 	displayList. setStringList (presetList);
 	this	-> setModel (&displayList);
-	connect (this, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectElement (QModelIndex)));
+	connect (this, &QListView::clicked,
+	         this, &presetHandler::selectElement);
 
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly)) 

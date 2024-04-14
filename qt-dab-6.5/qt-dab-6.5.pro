@@ -178,6 +178,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/mot/mot-object.h \
 	   ../includes/backend/data/mot/mot-dir.h \
 	   ../includes/backend/data/journaline-datahandler.h \
+	   ../includes/backend/data/journaline-screen.h \
 	   ../includes/backend/data/journaline/dabdatagroupdecoder.h \
 	   ../includes/backend/data/journaline/crc_8_16.h \
 	   ../includes/backend/data/journaline/log.h \
@@ -312,6 +313,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/mot/mot-object.cpp \
 	   ../src/backend/data/mot/mot-dir.cpp \
 	   ../src/backend/data/journaline-datahandler.cpp \
+	   ../src/backend/data/journaline-screen.cpp \
 	   ../src/backend/data/journaline/crc_8_16.c \
 	   ../src/backend/data/journaline/log.c \
 	   ../src/backend/data/journaline/newssvcdec_impl.cpp \
@@ -439,7 +441,7 @@ CONFIG		+= spyServer-8
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment

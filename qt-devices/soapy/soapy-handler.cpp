@@ -127,14 +127,14 @@ void	soapyHandler::createDevice (const QString &deviceString) {
 	                                              (int)currentGain);
 	}
 	gainSelector -> setValue ((int)currentGain);
-	connect (gainSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (setGain (int)));
+	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &soapyHandler::setGain);
 
 	hasAgc	= SoapySDRDevice_hasGainMode (m_device, SOAPY_SDR_RX, 0);
 	if (hasAgc) 
 	   SoapySDRDevice_setGainMode (m_device, SOAPY_SDR_RX, 0, false); 
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (setAgc (int)));
+	connect (agcControl, &QCheckBox::stateChanged,
+	         this, &soapyHandler::setAgc);
 
 
 	SoapySDRRange *ranges =

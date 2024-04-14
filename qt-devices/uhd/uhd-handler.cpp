@@ -156,10 +156,10 @@ std::vector<std::string> antList;
 	setExternalGain		(externalGain -> value ());
 	handle_ant_selector	(antennaSelect->currentText());
 
-	connect (externalGain, SIGNAL (valueChanged (int)),
-	         this, SLOT (setExternalGain (int)));
-	connect (antennaSelect, SIGNAL (activated (const QString &)),
-	         this, SLOT (slot_handle_ant_selector (const QString &)));
+	connect (externalGain, qOverload<int>(QSpinBox::valueChanged),
+	         this, &uhdHandler:: setExternalGain);
+	connect (antennaSelect, &QComboBox::textActivated,
+	         this, &uhdHandler::handle_ant_selector);
 }
 
 	uhdHandler::~uhdHandler () {

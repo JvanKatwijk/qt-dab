@@ -37,8 +37,8 @@
 	services = QStringList();
 	serviceList. setStringList (services);
 	servicesDisplay	-> setModel (&serviceList);
-	connect (servicesDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectService (QModelIndex)));
+	connect (servicesDisplay, &QListView::clicked,
+	         this, &scheduleSelector::selectService);
 	selectedItem	= -1;
 }
 

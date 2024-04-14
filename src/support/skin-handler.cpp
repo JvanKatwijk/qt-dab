@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -45,8 +45,8 @@
 
 	skinList. setStringList (skins);
 	selectorDisplay	-> setModel (&skinList);
-	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (select_skin (QModelIndex)));
+	connect (selectorDisplay, &QListView::clicked,
+	         this, &skinHandler::select_skin);
 	selectedItem	= -1;
 }
 

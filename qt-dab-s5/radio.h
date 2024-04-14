@@ -428,6 +428,7 @@ public slots:
 	void			show_channel		(int);
 
 	void			show_stdDev		(int);
+	void			scheduler_timeOut	(const QString &);
 
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -469,7 +470,6 @@ private slots:
 	void			setPresetService	();
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
-	void			scheduler_timeOut	(const QString &);
 	void			handle_dlTextButton     ();
 
 	void			handle_configButton	();

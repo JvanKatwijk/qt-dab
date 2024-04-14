@@ -478,6 +478,7 @@ public slots:
 	void			handle_deviceFrame_closed ();
 	void			handle_newDisplayFrame_closed ();
 
+	void			scheduler_timeOut	(const QString &);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_timeTable	();
@@ -517,7 +518,6 @@ private slots:
 
 	void			setPresetService	();
 	void			muteButton_timeOut	();
-	void			scheduler_timeOut	(const QString &);
 
 	void			handle_configButton	();
 	void			handle_scheduleButton	();

@@ -76,8 +76,8 @@ struct timeval tv;
 	convBuffer. resize (convBufferSize + 1);
 	nrElements	= fd -> blockList [0]. nrElements;
 
-	connect (this, SIGNAL (setProgress (int, int)),
-	         parent, SLOT (setProgress (int, int)));
+	connect (this, &xml_Reader::setProgress,
+	         parent, &xml_fileReader::setProgress);
 
 	fprintf (stderr, "reader task wordt gestart\n");
 	start ();

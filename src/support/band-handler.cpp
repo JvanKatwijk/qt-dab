@@ -232,8 +232,8 @@ void	bandHandler::saveSettings () {
 //	when setup_skipList is called, we start with blacklisting all entries
 //
 void	bandHandler::setup_skipList (const QString &fileName) {
-	disconnect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
-	            this, SLOT (cellSelected (int, int)));
+	disconnect (&theTable, &QTableWidget::cellDoubleClicked,
+	            this, &bandHandler::cellSelected);
 	for (int i = 0; selectedBand [i]. fKHz > 0; i ++) {
 	   selectedBand [i]. skip = false;
 	   theTable. item (i, 1) -> setText ("+");
@@ -245,8 +245,8 @@ void	bandHandler::setup_skipList (const QString &fileName) {
 	else
 	   file_skipList (fileName);
 
-	connect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
-	         this, SLOT (cellSelected (int, int)));
+	connect (&theTable, &QTableWidget::cellDoubleClicked,
+	         this, &bandHandler::cellSelected);
 }
 //
 //	default setting in the ini file!!

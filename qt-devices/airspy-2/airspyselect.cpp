@@ -44,8 +44,8 @@
 	Devices = QStringList();
 	deviceList. setStringList (Devices);
 	selectorDisplay	-> setModel (&deviceList);
-	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (select_airspy (QModelIndex)));
+	connect (selectorDisplay, &QListView::clicked,
+	         this, &airspySelect::select_airspy);
 	selectedItem	= -1;
 }
 

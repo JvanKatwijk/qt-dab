@@ -273,6 +273,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/ip-datahandler.h
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
+	     ../includes/backend/data/journaline-screen.h
 	     ../includes/backend/data/journaline/dabdatagroupdecoder.h
 	     ../includes/backend/data/journaline/crc_8_16.h
 	     ../includes/backend/data/journaline/log.h
@@ -400,6 +401,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/audio/mp2processor.cpp
 	     ../src/backend/data/ip-datahandler.cpp
 	     ../src/backend/data/journaline-datahandler.cpp
+	     ../src/backend/data/journaline-screen.cpp
 	     ../src/backend/data/journaline/crc_8_16.c
 	     ../src/backend/data/journaline/log.c
 	     ../src/backend/data/journaline/newssvcdec_impl.cpp
@@ -508,6 +510,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/ip-datahandler.h
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
+	     ../includes/backend/data/journaline-screen.h
              ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
@@ -703,34 +706,34 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ../qt-devices/airspy-handler/airspy-widget.ui
+	        ../qt-devices/airspy-2/airspy-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/airspy-handler/airspy-handler.h
-	        ../qt-devices/airspy-handler/airspyselect.h
+	        ../qt-devices/airspy-2/airspy-2.h
+	        ../qt-devices/airspy-2/airspyselect.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/airspy-handler
-	     ../qt-devices/airspy-handler/libairspy
+	     ../qt-devices/airspy-2
+	     ../qt-devices/airspy-2/libairspy
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/airspy-handler/airspy-handler.h
-	        ../qt-devices/airspy-handler/airspyselect.h
-	        ../qt-devices/airspy-handler/libairspy/airspy.h
+	        ../qt-devices/airspy-2/airspy-2.h
+	        ../qt-devices/airspy-2/airspyselect.h
+	        ../qt-devices/airspy-2/libairspy/airspy.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/airspy-handler/airspy-handler.cpp
-	        ../qt-devices/airspy-handler/airspyselect.cpp
+	        ../qt-devices/airspy-2/airspy-2.cpp
+	        ../qt-devices/airspy-2/airspyselect.cpp
 	   )
 
-	   add_definitions (-DHAVE_AIRSPY)
+	   add_definitions (-DHAVE_AIRSPY_2)
 	endif (AIRSPY)
 
 	if (HACKRF)
