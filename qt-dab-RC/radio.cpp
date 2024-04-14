@@ -474,10 +474,10 @@ QString h;
 	connect (snrLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_snrLabel);
 
-	if (tiiProcessor. has_tiiFile ())
+//	if (tiiProcessor. has_tiiFile ())
 	   configHandler_p -> enable_loadLib ();
-	else
-	   httpButton	-> setEnabled (false);
+//	else
+//	   httpButton	-> setEnabled (false);
 
 	channel. etiActive	= false;
 
@@ -507,7 +507,7 @@ QString h;
 	muteTimer. setSingleShot (true);
 	set_Colors ();
 //
-//	do we habe a known device from previous invocations?
+//	do we have a known device from previous invocations?
 	inputDevice_p	= nullptr;
 	h               =
 	           dabSettings_p -> value (SELECTED_DEVICE,
@@ -3617,6 +3617,7 @@ bool listChanged = false;
 	   if (listChanged)	// rewrite the list
 	      my_dxDisplay. cleanUp ();
 	   my_dxDisplay. show ();
+	   my_dxDisplay. setChannel (channel. channelName);
 	}
 
 	if (!listChanged && dxMode)

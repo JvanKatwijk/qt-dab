@@ -50,7 +50,7 @@
 	set_position_and_size (dabSettings, &myFrame, TECHDATA_SETTING);
 
 	formLayout -> setLabelAlignment (Qt::AlignLeft);
-	myFrame. setWindowFlag (Qt::Tool, true);
+//	myFrame. setWindowFlag (Qt::Tool, true);
 	myFrame. hide ();
 	timeTable_button	-> setEnabled (false);
 	the_audioDisplay	= new audioDisplay (mr, audio, dabSettings);

@@ -53,10 +53,15 @@
 	delete	myWidget;
 }
 
+void	dxDisplay::setChannel (const QString &channel) {
+	myWidget -> setWindowTitle (channel);
+}
+
 void	dxDisplay::cleanUp	() {
 	int16_t	rows	= tableWidget -> rowCount ();
 	for (int row = rows; row >= 0; row --)
 	   tableWidget -> removeRow (row);
+	myWidget -> setWindowTitle ("dx display");
 }
 
 int	dxDisplay::nrRows	() {
