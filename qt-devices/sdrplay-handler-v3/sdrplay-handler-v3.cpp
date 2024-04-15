@@ -357,7 +357,8 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 	int k	= antennaSelector -> findText (setting);
 	if (k >= 0) 
 	   antennaSelector -> setCurrentIndex (k);
-	connect (antennaSelector, &QComboBox::textActivated,
+	connect (antennaSelector,
+	         qOverload<const QString &>(&QComboBox::activated),
 	         this, &sdrplayHandler_v3::set_selectAntenna);
 	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
 }

@@ -33,7 +33,7 @@
 	tableWidget 	= new QTableWidget (0, 3);
 	tableWidget	-> setColumnWidth (0, 60);
 	tableWidget	-> setColumnWidth (1, 200);
-	tableWidget	-> setColumnWidth (2, 200);
+	tableWidget	-> setColumnWidth (2, 240);
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 	headerView	-> resizeSection (0, 50);

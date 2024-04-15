@@ -35,15 +35,16 @@ data with which the transmitter can be identified.
 Other than with e.g. FM or AM, where receiving signal at the same time
 from different transmitters, transmitting the same audio is hardly enjoyable,
 with digital modes, the software is able to select data from
-the strongest signal.  In my neighbourhoodm there are - for a few ensembles
-- four transmitters within 20 Km.
+the strongest signal.  In my neighbourhoodm there are (for a couple of
+ensembles) four transmitters within 20 Km as shown on the table below.
 
-New is that while Qt-DAB **decodes** data from the strongest signal,
+**New** is that while Qt-DAB **decodes** data from the strongest signal,
 Qt-DAB-6.X has a special **mode**, dxMode, in which it
-tries to identify **all ** transmitetrs that are 
-transmitting the same signal. The TII decoding was adapted for this purpose.
-
-The most recent update shows all transmitters on the map.
+tries to identify  as much as possible transmitters that are 
+transmitting the same signal.
+The TII decoding was adapted for this purpose.
+All transmitters detected will be shown on the map if the map handler
+is activated.
 
 Selecting the "dx mode" (with a checkbox on the
 configuration widget) causes the software to display all transmitters
@@ -51,11 +52,16 @@ the identification of which could be extracted from the signal.
 
 ![6.X](/transmitters.png?raw=true)
 
-Usng a simple whip with an SDRplay device, the software identifies
-5 transmitters from which I receive data.
+The table shows (column 1) which transmitter delivers the strongest signal.
 
 If the dxMode is NOT selected, the transmitter's name and distance
 are - as always - shown on the botton line in the main widget.
+
+In some cases, when the correlation results of the two are app the same,
+the oftware switches (too) frequently between two transmitters,
+detrimental for the detection of transmitters with lower power arrivals.
+To stabilize the result of thecorrelation process, a selector ("corr") is
+added to the configuration and control widget.
 
 **Very experimental** is the **journaline decoder**. journaline is a kind
 of *teletext on DAB*, which is - as far as I can see - mostly transmitted
@@ -145,8 +151,8 @@ and can be built, using the same set of sources as the current one.
 A development version, named Qt-BAB-6X,  can be found
 in the "qt-dab-RC" directory.
 
-Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are
-- as usual -available. 
+Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are,
+as usual, available. 
 
 Thanks to Richard Huber, **Qt-DAB** can be compiled on the Mac.
 
@@ -392,11 +398,11 @@ is available that contains a complete script for Ubuntu type Linux versions.
 The basis steps for generating an executable are straightforward,
 It is strongly advised to use qmake/make for the compilation process,
 the **qt-dab-6.X.pro** file contains (much) more configuration options
-than the **CMakeLists.txt" file does.
+than the **CMakeLists.txt** file does.
 
 Note that the scheme presented below applied to "bullseye" on the RPI,
 i.e. a Linux variant. While for Debian derived distributions (e.g. Ubuntu)
-this scheme probably works more or less directly, for other distributions
+this scheme probably works more or less directly, For other distributions
 names of the library packahes may be different. Note that in all cases, 
 the development versions are required.
 
@@ -406,6 +412,10 @@ Step 1
 -----------------------------------------------------------------
 
 - :information_source:  In the qt-dab sourcetree, the sources for 6.5 are in the subdirectory `qt-dab-6.5` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
+
+- :informaation_source: Qt-DAB uses - as the name suggests - the Qt framework,
+for the time being still the version 5, it uses further
+the Qwt library and the gcc compiler suite.
 
 For compiling and installing Qt-DAB on an old RPI3 (64 bits bullseye),
 I load the required libraries as given below:
@@ -422,6 +432,9 @@ I load the required libraries as given below:
  *   sudo apt-get install libsamplerate0-dev libqwt-qt5-dev qtmultimedia5-dev
  *   sudo apt-get install qtbase5-dev libqt5svg5-dev
  *   sudo apt-get install libfdk-aac-dev
+
+If libfdk-aac cannot be found, change the configuration to load fibfaad (and
+obviously, install libfaad).
 
 If you want to use a physical device - e.g. a DABstick, an SDRplay, or an AIRspy
 you need to install the driver libraries for these devices as well.
@@ -441,6 +454,11 @@ of the following ones:
 :information_source: Note that for including "soapy" in the configuration, soapy  software should have been installed. Be aware that the current
 version is developed on an Fedora box, the soapy library used does not seem compatible with the soapy library on Ubuntu.
 
+:information_source: Devices like SDRplay, AIRspy, RTLSDR, Lime, and
+HackRf can be included in the configuration even if no support library
+is installed. Qt-DAB tries to read in the required library functions
+when the device is selected in run time.
+
 :information_source: chose 'CONGIG+=NO_SSE' if you  NOT are compiling on/for an
 X86_64 based system.
 
@@ -448,8 +466,8 @@ One may choose between 'CONFIG += single' or 'CONFIG += double'. In the latter
 case, all computations in the "front end" are done with double precision
 arithmetic.
 
-Note that by default a choice is made for `CONFIG += tiiLib` (see step 4),
-the alternative opyion 'CONFIG+=preCompiled' will **NOT** work since it requires
+Note that your choice should be `CONFIG += tiiLib` (see step 4),
+the alternative option 'CONFIG+=preCompiled' will **NOT** work since it requires
 sources not available under an open source license. However, the built-in
 libraries allow access to a preconfigured database (see step 4).
 

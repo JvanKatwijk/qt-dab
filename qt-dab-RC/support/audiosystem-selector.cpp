@@ -24,7 +24,8 @@
 #include	<cstdio>
 #include	<QVBoxLayout>
 #include	<QSettings>
-//
+#include	"settingNames.h"
+
 	audiosystemSelector::audiosystemSelector (QSettings *s) {
 	this		-> dabSettings	= s;
 	toptext		= new QLabel (this);
@@ -37,7 +38,7 @@
 	setLayout (layOut);
 
 	services = QStringList();
-	services << "portaudio" << "QT_AUDIO";
+	services << S_PORT_AUDIO << S_QT_AUDIO;
 	serviceList. setStringList (services);
 	servicesDisplay	-> setModel (&serviceList);
 	servicesDisplay	-> adjustSize();
@@ -52,7 +53,7 @@
 void	audiosystemSelector::selectService (QModelIndex ind) {
 QString select	= ind. data (Qt::DisplayRole). toString ();
 	fprintf (stderr, "selected system %s\n", select. toLatin1 (). data ());
-	dabSettings	-> setValue ("soundHandler", select);
+	dabSettings	-> setValue (S_SOUND_HANDLER, select);
 	QDialog::done (ind. row ());
 }
 

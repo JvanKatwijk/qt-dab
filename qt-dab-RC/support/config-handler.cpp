@@ -139,10 +139,10 @@ static struct {
 	b = dabSettings -> value (TRANSMITTER_NAMES_SETTING, 0). toInt () == 1;
 	this -> saveTransmittersSelector -> setChecked (b);
 
-	b = dabSettings -> value ("correlationOrder", 0). toInt () != 0;
+	b = dabSettings -> value (S_CORRELATION_ORDER, 0). toInt () != 0;
 	this	-> correlationSelector -> setChecked (b);
 
-	b = dabSettings	-> value ("dxMode", 0). toInt () != 0;
+	b = dabSettings	-> value (S_DX_MODE, 0). toInt () != 0;
 	this	-> dxSelector -> setChecked (b);
 
 #ifndef	__MSC_THREAD__
@@ -183,19 +183,23 @@ bool	configHandler::findDevice (const QString &dev) {
 }
 
 void	configHandler::connectDevices	() {
-	connect (deviceSelector, &QComboBox::textActivated,
+	connect (deviceSelector,
+	         qOverload<const QString &>(&QComboBox::activated),
 	         myRadioInterface, &RadioInterface::doStart);
 }
 
 void	configHandler::disconnectDevices () {
-	disconnect (deviceSelector, &QComboBox::textActivated,
+	disconnect (deviceSelector,
+	            qOverload<const QString &>(&QComboBox::activated),
 	            myRadioInterface, &RadioInterface::doStart);
-	disconnect (deviceSelector, &QComboBox::textActivated,
+	disconnect (deviceSelector,
+	            qOverload<const QString &>(&QComboBox::activated),
 	            myRadioInterface, &RadioInterface::newDevice);
 }
 
 void	configHandler::reconnectDevices () {
-	connect (deviceSelector, &QComboBox::textActivated,
+	connect (deviceSelector,
+	         qOverload<const QString &>(&QComboBox::activated),
 	         myRadioInterface, &RadioInterface::newDevice);
 }
 	
@@ -339,7 +343,8 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::handle_dxSelector);
 	connect (correlationSelector, &QCheckBox::stateChanged,
 	         myRadioInterface, &RadioInterface::handle_correlationSelector);
-	connect (decoderSelector, &QComboBox::textActivated,
+	connect (decoderSelector,
+	         qOverload<const QString &>(&QComboBox::activated),
 	         this, &configHandler::handle_decoderSelector);
 }
 

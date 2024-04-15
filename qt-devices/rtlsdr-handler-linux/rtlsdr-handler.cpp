@@ -240,7 +240,8 @@ char	manufac [256], product [256], serial [256];
 	set_ppmCorrection	(ppm_correction -> value());
 
 //	and attach the buttons/sliders to the actions
-	connect (gainControl, &QComboBox::textActivated,
+	connect (gainControl,
+	         qOverload<const QString &>(&QComboBox::activated),
 	         this, &rtlsdrHandler::set_ExternalGain);
 	connect (agcControl, &QCheckBox::stateChanged,
 	         this, &rtlsdrHandler::set_autogain);

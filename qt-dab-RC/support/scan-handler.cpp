@@ -120,7 +120,7 @@ QString scanmodeText (int e) {
 	   no_skipTables	= true;
 	else {
 	   QString t       =
-                dabSettings -> value ("dabBand", "VHF Band III"). toString();   
+                dabSettings -> value (S_DABBAND, "VHF Band III"). toString();   
            selectedBand         = t == "VHF Band III" ? frequencies_1 :
 	                                                frequencies_2;
 	   no_skipTables	= t != "VHF Band III";
@@ -164,7 +164,7 @@ QString scanmodeText (int e) {
 	scanModeSelector -> addItem ("until data");
 	scanModeSelector -> addItem ("continuous");
 	scanMode	=
-	             s -> value ("scanMode", SINGLE_SCAN). toInt ();
+	             s -> value (S_SCAN_MODE, SINGLE_SCAN). toInt ();
 	scanModeSelector	-> setCurrentIndex (scanMode);
 	connect (startKnop, &QPushButton::clicked,
 	         this, &scanHandler::handle_startKnop);
@@ -320,7 +320,7 @@ void	scanHandler::handle_stopKnop () {
 
 void	scanHandler::handle_scanMode (int index) {
 	scanMode	= index;
-	dabSettings	-> setValue ("scanMode", scanMode);
+	dabSettings	-> setValue (S_SCAN_MODE, scanMode);
 }
 
 void	scanHandler::handle_showKnop	() {
@@ -338,7 +338,6 @@ void	scanHandler::handle_defaultLoad	() {
 void	scanHandler::handle_defaultStore () {
 	skipTable. save_skipTable ("");
 }
-
 
 void	scanHandler::handle_loadKnop	() {
 	skipFile  = QFileDialog::getOpenFileName (nullptr,

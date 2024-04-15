@@ -55,3 +55,18 @@
 
 #define	SAVEDIR_XML		"saveDir_xmlDump"
 
+
+#define	S_SOUND_HANDLER		"soundHandler"
+#define	S_PORT_AUDIO		"portaudio"
+#define	S_QT_AUDIO		"QT_AUDIO"
+
+#define	S_MAIN_WIDGET		"mainWidget"
+
+#define	S_PICTURES_PATH		"picturesPath"
+#define	S_FILE_PATH		"filePath"
+#define	S_EPG_PATH		"epgPath"
+#define	S_CORRELATION_ORDER	"correlationOrder"
+#define	S_DX_MODE		"dxMode"
+
+#define	S_DABBAND		"dabBand"
+#define	S_SCAN_MODE		"scanMode"

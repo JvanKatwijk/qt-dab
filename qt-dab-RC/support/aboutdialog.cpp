@@ -21,10 +21,9 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
-#include <QDesktopServices>
-#include "aboutdialog.h"
-#include "ui_aboutdialog.h"
+#include	<QDesktopServices>
+#include	"aboutdialog.h"
+#include	"ui_aboutdialog.h"
 #include	"dab-constants.h"
 
 	AboutDialog::AboutDialog(QWidget *parent) :
@@ -46,20 +45,21 @@
 
 	ui -> libraries -> setText (tr("Qt-DAB uses following libraries (and greatly acknowledges the copyright):")+
                            "<ul>"
+	                   "<li>The excellent Qwt library (version 6.2) by Uwe Rathmann</li>"
                            "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>"
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solonon</a> by Phil Karn, KA9Q</li>"
                            "<li><a href=\"https://github.com/libsndfile\">libsndfile</a> by Erik de Castro Lopo</li>"
                            "<li><a href=\"https://github.io/libsamplerate\">libsndfile</a> by Erik de Castro Lopo</li>"
                            "<li><a href=\"www.portaudio.com/\">Portaudio</a> by Ross Bencina, Phil Burke and many others</li>"
                            "<li>An MP2 decoder by Martin J Fiedler (martin.fiedler@gmx.net)</li>"
-#if __WITH_FDK_AAC__
+	                  "<li>\"NewsService Journaline(R) Decoder\", CopyRight (c) 2003, 2001-2014 Fraunhofer IID, Erlangen, Germany</li>"
+#ifdef __WITH_FDK_AAC__
                            "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft "
                            "zur Förderung der angewandten Forschung e.V.</li>"
 #else
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
 #endif
-
-                           "</ul>");
+				   "</ul>");
 //	ui -> configuration -> setTextInteractionFlags (Qt::TextBrowserInteraction);
 	ui -> configuration -> setOpenExternalLinks(true);
 	ui -> configuration -> setText (tr("Qt-DAB is configured with:")+

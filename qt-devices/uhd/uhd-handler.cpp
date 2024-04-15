@@ -158,7 +158,8 @@ std::vector<std::string> antList;
 
 	connect (externalGain, qOverload<int>(QSpinBox::valueChanged),
 	         this, &uhdHandler:: setExternalGain);
-	connect (antennaSelect, &QComboBox::textActivated,
+	connect (antennaSelect,
+	         qOverload<const QString &>(&QComboBox::activated),
 	         this, &uhdHandler::handle_ant_selector);
 }
 

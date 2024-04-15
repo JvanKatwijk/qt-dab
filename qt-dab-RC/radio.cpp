@@ -237,7 +237,7 @@ QString h;
 	}
 
 //	put the widgets in the right place and create the workers
-	set_position_and_size	(dabSettings_p, this, "mainWidget");
+	set_position_and_size	(dabSettings_p, this, S_MAIN_WIDGET);
 	configHandler_p		= new configHandler (this, dabSettings_p);
 	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile);
@@ -337,10 +337,10 @@ QString h;
 #else
 	QStringList streams;
 	QString	temp;
-	QString s = dabSettings_p -> value ("soundHandler", "portaudio").
+	QString s = dabSettings_p -> value (S_SOUND_HANDLER, S_PORT_AUDIO).
 	                                                       toString ();
 //
-	if (s != "portaudio") {
+	if (s != S_PORT_AUDIO) {
 	   try {
 	      soundOut_p	= new Qt_Audio (dabSettings_p);
 	      streams		= ((Qt_Audio *)soundOut_p) -> streams ();
@@ -388,12 +388,12 @@ QString h;
 	path_for_pictures	= checkDir (QDir::homePath ());
 #endif
 	path_for_pictures	+= "Qt-DAB-files/";
-	path_for_pictures	= dabSettings_p -> value ("picturesPath",
+	path_for_pictures	= dabSettings_p -> value (S_PICTURES_PATH,
 	                                       path_for_pictures). toString ();
 	path_for_pictures	= checkDir (path_for_pictures);
 	if (path_for_files != "")
 	   path_for_files = checkDir (path_for_files);
-	path_for_files		= dabSettings_p -> value ("filePath", 
+	path_for_files		= dabSettings_p -> value (S_FILE_PATH, 
 	                                       path_for_pictures). toString ();
 //
 #ifndef	__MINGW32__
@@ -402,7 +402,8 @@ QString h;
 	epgPath		= checkDir (QDir::homePath ());
 #endif
 	epgPath		+= "Qt-DAB-files/";
-	epgPath		= dabSettings_p -> value ("epgPath", epgPath). toString ();
+	epgPath		= dabSettings_p -> value (S_EPG_PATH,
+	                                           epgPath). toString ();
 	epgPath		= checkDir (epgPath);
 	connect (&epgProcessor, &epgDecoder::set_epgData,
 	         this, &RadioInterface::set_epgData);
@@ -576,7 +577,8 @@ void	RadioInterface::doStart (const QString &dev) {
 //	we (re)start a device, if it happens to be a regular
 //	device, check for a preset name
 void	RadioInterface::doStart_direct	() {
-	disconnect (channelSelector, &QComboBox::textActivated,
+	disconnect (channelSelector,
+	            qOverload<const QString &> (&QComboBox::activated),
 	            this, &RadioInterface::handle_channelSelector);
 	nextService	= checkPresets ();
 	if (nextService. valid) {
@@ -603,7 +605,8 @@ void	RadioInterface::doStart_direct	() {
 	configHandler_p -> disconnectDevices ();
 	configHandler_p	-> reconnectDevices ();
 	
-	connect (channelSelector, &QComboBox::textActivated,
+	connect (channelSelector,
+	         qOverload<const QString &> (&QComboBox::activated),
 	         this, &RadioInterface::handle_channelSelector);
 
 	if (configHandler_p -> tii_detector_active ())
@@ -1148,7 +1151,7 @@ void	RadioInterface::TerminateProcess () {
 	hideButtons	();
 
 	my_dxDisplay. hide ();
-	store_widget_position (dabSettings_p, this, "mainWidget");
+	store_widget_position (dabSettings_p, this, S_MAIN_WIDGET);
 	newDisplay. hide ();
 //
 #ifdef	DATA_STREAMER
@@ -3614,7 +3617,7 @@ bool listChanged = false;
 	   distanceLabel ->  setFont (f);
 	}
 	else {
-	   if (listChanged)	// rewrite the list
+	   if (listChanged)	// adapt the list and display
 	      my_dxDisplay. cleanUp ();
 	   my_dxDisplay. show ();
 	   my_dxDisplay. setChannel (channel. channelName);
@@ -3661,7 +3664,10 @@ bool listChanged = false;
 	                    + QString::number (theTr. distance, 'f', 1) + " km " 
 	                    + QString::number (theTr. corner, 'f', 1) 
 	                    + QString::fromLatin1 (" \xb0 ") 
-	                    + " (" + QString::number (height, 'f', 1) +  "m)";
+	                    + " (" + QString::number (height, 'f', 1) +  "m)"
+	                    + "  " + QString::number (power, 'f', 1) + "kW";
+	   
+
 	   if (dxMode) 
 	      my_dxDisplay. addRow (labelText, text2,  theTr. isStrongest);
 	   else 
@@ -3944,7 +3950,7 @@ void	RadioInterface::handle_snrLabel	() {
 void	RadioInterface::handle_correlationSelector	(int d) {
 	(void)d;
 	bool b =  configHandler_p -> get_correlationSelector ();
-	dabSettings_p -> setValue ("correlationOrder", b ? 1 : 0);
+	dabSettings_p -> setValue (S_CORRELATION_ORDER, b ? 1 : 0);
 	if (my_ofdmHandler != nullptr)
 	   my_ofdmHandler -> set_correlationOrder (b);
 }
@@ -3952,7 +3958,7 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 void	RadioInterface::handle_dxSelector		(int d) {
 	(void)d;
 	bool b = configHandler_p -> get_dxSelector ();
-	dabSettings_p -> setValue ("dxMode", b ? 1 : 0);
+	dabSettings_p -> setValue (S_DX_MODE, b ? 1 : 0);
 	if (!b)
 	   my_dxDisplay. hide ();
 	if (my_ofdmHandler != nullptr)
