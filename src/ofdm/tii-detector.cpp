@@ -111,7 +111,7 @@ uint8_t table [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
-#define	MIN_TERM	3
+#define	MIN_TERM	4
 		TII_Detector::TII_Detector (uint8_t dabMode,
 	                                    int16_t depth):
 	                                      params (dabMode),

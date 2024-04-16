@@ -3363,7 +3363,7 @@ void	RadioInterface::handle_httpButton	() {
 	                                 browserAddress,
 	                                 localPos,
 	                                 mapFile,
-	                                 configHandler_p -> localBrowserSelector_active ());
+	                                 configHandler_p -> localBrowserSelector_active (), dabSettings_p);
 	   maxDistance = -1;
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
@@ -3965,5 +3965,12 @@ void	RadioInterface::handle_dxSelector		(int d) {
 	   my_ofdmHandler -> set_dxMode (b);
 	if (b)
 	   distanceLabel -> setText ("");
+}
+
+void	RadioInterface::channelSignal (const QString &channel) {
+	fprintf (stderr, "we gaan channelen naar %s\n",
+	                                 channel. toLatin1 (). data ());
+	stopChannel ();
+	startChannel (channel);
 }
 

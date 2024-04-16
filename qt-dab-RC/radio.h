@@ -401,6 +401,7 @@ signals:
 	void			select_ensemble_fontColor	();
 
 public slots:
+	void			channelSignal		(const QString &);
 	void			handle_correlationSelector	(int);
 	void			handle_dxSelector	(int);
 	void			show_dcOffset		(float);

@@ -51,7 +51,8 @@
 	                          const QString &browserAddress,
 	                          position	 homeAddress,
 	                          const QString &saveName,
-	                          bool autoBrowser_off) {
+	                          bool autoBrowser_off,
+	                          QSettings	*settings) {
 	this	-> parent	= parent;
 	this	-> mapPort	= mapPort;
 	QString temp		= browserAddress + ":" + mapPort;
@@ -62,6 +63,7 @@
 #else
 	this	-> browserAddress	= temp. toStdString ();
 #endif
+	dabSettings			= settings;
 	this	-> running. store (false);
 
 	connect (this, &httpHandler::terminating,
@@ -117,6 +119,8 @@ struct sockaddr_in svr_addr, cli_addr;
 std::string	content;
 std::string	ctype;
 
+	connect (this, &httpHandler::setChannel,
+	         parent, &RadioInterface::channelSignal);
 	running. store (true);
 	socklen_t sin_len = sizeof (cli_addr);
 	ListenSocket = socket (AF_INET, SOCK_STREAM, 0);
@@ -180,6 +184,7 @@ std::string	ctype;
 
 //	Select the content to send, we have just two so far:
 //	 "/" -> Our google map application.
+//	"/channelSelector::XX for a channel select
 //	 "/data.json" -> Our ajax request to update planes. */
 	      bool jsonUpdate	= false;
 	      if (strstr (url, "/data.json")) {
@@ -188,6 +193,14 @@ std::string	ctype;
 	            ctype	= "application/json;charset=utf-8";
 	            jsonUpdate	= true;
 	         }
+	      }
+	      else 
+	      if (strstr (url, "/channelSelector::")) {
+	         std::string channel = strstr (url, "::");
+	         std::size_t pos = channel. find ("::");
+	         channel = channel. substr (pos + 2);
+	         setChannel (QString::fromStdString (channel));
+//	         continue;	
 	      }
 	      else {
 	         content	= theMap (homeAddress);
@@ -408,9 +421,12 @@ int	cc;
 int teller	= 0;
 int params	= 0;
 
-
+	
+	int mapChoice	= dabSettings == nullptr ? 0 :
+	                   dabSettings -> value ("mapChoice", 0). toInt ();
 	// read map file from resource file
-	QFile file (":res/qt-map.html");
+	QFile file (mapChoice == 0 ? ":res/qt-map.html" :
+	                                  ":res/qt-map-6X.html");
 	if (file. open (QFile::ReadOnly)) {
 	   QByteArray record_data (1, 0);
 	   QDataStream in (&file);

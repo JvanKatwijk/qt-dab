@@ -31,6 +31,7 @@
 #include	<complex>
 #include	<mutex>
 #include	<QString>
+#include	<QSettings>
 #include	"tii-mapper.h"
 class	RadioInterface;
 
@@ -55,7 +56,8 @@ public:
 	                         const QString &browserAddress,
 	                         position	address,
 	                         const QString &saveName,
-	                         bool	autoBrowse);
+	                         bool	autoBrowse,
+	                         QSettings	*setings = nullptr);
 		~httpHandler	();
 	void	start		();
 	void	stop		();
@@ -72,6 +74,7 @@ public:
 	                         float power,
 	                         float height);
 private:
+	QSettings		*dabSettings;
 	FILE			*saveFile;
 	QString			*saveName;
 	RadioInterface		*parent;
@@ -93,5 +96,6 @@ private:
 	bool		autoBrowser_off;
 signals:
 	void		terminating	();
+	void		setChannel	(const QString &);
 };
 
