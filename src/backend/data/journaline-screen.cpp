@@ -54,9 +54,9 @@
 	         this, &journalineScreen::handle_upButton);
 	connect (subContent, &QListView::clicked,
 	         this, &journalineScreen::select_sub);
-#ifdef	__USE_JOURNALINE__
+//#ifdef	__USE_JOURNALINE__
 	myFrame. show ();
-#endif
+//#endif
 }
 
 	journalineScreen::~journalineScreen () {

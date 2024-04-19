@@ -424,6 +424,9 @@ int params	= 0;
 	
 	int mapChoice	= dabSettings == nullptr ? 0 :
 	                   dabSettings -> value ("mapChoice", 0). toInt ();
+#ifdef	__TRACE__
+	fprintf (stderr, "We found for mapChoice %d\n", mapChoice);
+#endif 
 	// read map file from resource file
 	QFile file (mapChoice == 0 ? ":res/qt-map.html" :
 	                                  ":res/qt-map-6X.html");

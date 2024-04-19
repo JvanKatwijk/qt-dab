@@ -242,6 +242,7 @@ private:
 
 //	end of variables that are initalized
 
+	bool			autoStart_http		();
 	dabService		checkPresets		();
 	int			int_configValue		(const QString &, int);
 

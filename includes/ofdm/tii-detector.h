@@ -28,10 +28,11 @@
 #include	<complex>
 #include	<vector>
 #include	"fft-handler.h"
+class	QSettings;
 
 class	TII_Detector {
 public:
-			TII_Detector	(uint8_t dabMode, int16_t);
+			TII_Detector	(uint8_t dabMode, QSettings *, int16_t);
 			~TII_Detector	();
 	void		reset		();
 	void		setMode		(bool);
@@ -39,6 +40,7 @@ public:
 	std::vector<int16_t>	processNULL	(bool);
 
 private:
+	QSettings	*dabSettings;
 	dabParams	params;
 	int16_t		T_u;
 	int16_t		carriers;

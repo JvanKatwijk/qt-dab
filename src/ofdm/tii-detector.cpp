@@ -25,7 +25,7 @@
 #include	<cstdio>
 #include	<cinttypes>
 #include	<cstring>
-//
+#include	<QSettings>
 
 #ifndef M_PI
 # define M_PI           3.14159265358979323846  /* pi */
@@ -111,15 +111,15 @@ uint8_t table [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
-#define	MIN_TERM	4
 		TII_Detector::TII_Detector (uint8_t dabMode,
+	                                    QSettings	*dabSettings,
 	                                    int16_t depth):
 	                                      params (dabMode),
 	                                      T_u (params. get_T_u ()),
 	                                      carriers (params. get_carriers ()),
 	                                      my_fftHandler (params. get_T_u (),
 	                                                    false) {
-
+	this	-> dabSettings	= dabSettings;
 	this	-> depth	= depth;
 	theBuffer. resize	(T_u);
 	window. resize 		(T_u);
@@ -130,6 +130,7 @@ uint8_t table [] = {
 	for (int i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
 	detectMode_new	= false;
+	
 }
 
 		TII_Detector::~TII_Detector () {
@@ -194,6 +195,8 @@ int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
 std::vector<int16_t> theResult;
 
+	int tiiThreshold	
+	            = dabSettings	-> value ("tii-threashold", 4). toInt ();
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
@@ -236,7 +239,7 @@ std::vector<int16_t> theResult;
 //	We only use the C and D table to locate the start offset
 	   for (int i = 0; i < GROUPSIZE; i ++) {
 	      for (int j = 0; j < NUM_GROUPS; j ++) {
-	         if (hulpTable [j * GROUPSIZE + i] > MIN_TERM * avgTable [j]) {
+	         if (hulpTable [j * GROUPSIZE + i] > tiiThreshold * avgTable [j]) {
 	            C_table [i] += hulpTable [j * GROUPSIZE + i];
 	            D_table [i] ++;
 	         }

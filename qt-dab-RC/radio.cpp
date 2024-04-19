@@ -620,6 +620,21 @@ void	RadioInterface::doStart_direct	() {
 //	after the preset timer signals, the service will be started
 	}
 	startChannel (channelSelector -> currentText ());
+	int auto_http	= dabSettings_p -> value ("auto_http", 0). toInt ();
+#ifdef	__TRACE__
+	fprintf (stderr, "auto_http = %d\n", auto_http);
+#endif
+	if ((auto_http != 0) && (localPos. latitude != 0)) {
+#ifdef	__TRACE__
+	   fprintf (stderr, "Going to work on autostart http\n");
+#endif
+	   bool succ = autoStart_http ();
+#ifdef	__TRACE__
+	   fprintf (stderr, "autostart ? %d\n", succ? 1 : 0);
+#endif
+	   if (succ)
+	      httpButton	-> setText ("http-on");
+	} 
 	running. store (true);
 }
 
@@ -2964,23 +2979,18 @@ QColor	color;
 ///////////////////////////////////////////////////////////////////////////
 //	Handling schedule
 
+static
+char	*scheduleList[] = {"nothing", "exit", "framedump", "dltext", "ficDump"};
+
 void	RadioInterface::handle_scheduleButton	() {
 QStringList candidates;
 scheduleSelector theSelector;
 QString		scheduleService;
 
-	theSelector. addtoList ("nothing");
-	theSelector. addtoList ("exit");
-	theSelector. addtoList ("framedump");
-	theSelector. addtoList ("audiodump");
-	theSelector. addtoList ("dlText");
-	theSelector. addtoList ("ficDump");
-	candidates	+= "nothing";
-	candidates	+= "exit";
-	candidates	+= "framedump";
-	candidates	+= "audiodump";
-	candidates	+= "dlText";
-	candidates	+= "ficDump";
+	for (int i = 0; i < 5; i ++) {
+	   theSelector. addtoList (QString (scheduleList [i]));
+	   candidates += QString (scheduleList [i]);
+	}
 
 	QStringList selectables	= the_ensembleHandler -> getSelectables ();
 	for (auto &candidate: selectables) {
@@ -3335,7 +3345,30 @@ QString theTime;
 	              theTime. toUtf8 (). data (),
 	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
 }
-//
+
+bool	RadioInterface::autoStart_http () {
+	if (localPos. latitude == 0) 
+	   return false;
+	if (mapHandler != nullptr)  
+	   return false;
+	QString browserAddress	=
+	            dabSettings_p -> value (BROWSER_ADDRESS,
+	                                    "http://localhost"). toString ();
+	QString mapPort		=
+	            dabSettings_p -> value (MAP_PORT_SETTING,
+	                                             8080). toString ();
+
+	mapHandler = new httpHandler (this,
+	                              mapPort,
+	                              browserAddress,
+	                              localPos,
+	                              "",
+	                              configHandler_p -> localBrowserSelector_active (), dabSettings_p);
+	maxDistance = -1;
+	return mapHandler != nullptr;
+}
+
+
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
 	if (localPos. latitude == 0) {
@@ -3532,6 +3565,7 @@ bool listChanged = false;
 
 	bool dxMode	= configHandler_p -> get_dxSelector ();
 
+//	fprintf (stderr, "entered show_tii with values %d %d\n", tiiValue, index);
 	if (!dxMode)
 	   channel. transmitters. resize (0);
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
@@ -3558,7 +3592,8 @@ bool listChanged = false;
 
 	if (!tiiProcessor. has_tiiFile ())
 	   return;
-//
+
+//	fprintf (stderr, "Passed tests for %d %d\n", tiiValue, index);
 //	OK, here we really start
 	bool inList = false;
 	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
@@ -3772,7 +3807,7 @@ void	RadioInterface::show_rsCorrections	(int c, int ec) {
 	   techWindow_p -> show_rsCorrections (c, ec);
 }
 //
-//	called from the DAB processor
+//	called from the ofdm handler
 void	RadioInterface::show_clock_error	(int d) {
 	if (!running. load ())
 	   return;
@@ -3819,15 +3854,11 @@ void    RadioInterface::handle_presetButton     () {
 	}
 	mode = mode == SHOW_ENSEMBLE ? SHOW_PRESETS : SHOW_ENSEMBLE;
 	the_ensembleHandler -> set_showMode (mode);
-	if (mode == SHOW_ENSEMBLE)
-	   presetButton -> setText ("favorites");
-	else
-	   presetButton -> setText ("ensemble");
+	presetButton -> setText (mode == SHOW_ENSEMBLE ? "favorites" : "ensemble");
 }     
 
 void	RadioInterface::set_soundLabel  (bool f) {
 QPixmap p;
-
 	if (f) 
 	    p. load (":res/volume_on.png", "png");
 	else
@@ -3968,8 +3999,6 @@ void	RadioInterface::handle_dxSelector		(int d) {
 }
 
 void	RadioInterface::channelSignal (const QString &channel) {
-	fprintf (stderr, "we gaan channelen naar %s\n",
-	                                 channel. toLatin1 (). data ());
 	stopChannel ();
 	startChannel (channel);
 }

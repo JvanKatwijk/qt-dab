@@ -55,8 +55,15 @@ std::vector<cacheElement> res;
 
 	res. resize (0);
 	FILE	*f	= fopen (s. toUtf8 (). data (), "r+b");
+#ifdef	__TRACE__
+	if (f == nullptr)
+	   fprintf (stderr, "Cannot open %s\n", s. toUtf8 (). data ());
+#endif
 	if (f == nullptr) 
 	   return res;
+#ifdef	__TRACE__
+	fprintf (stderr, "File %s is opened\n", s. toUtf8 (). data ());
+#endif
 	int	count = 0; 
 	char	buffer [1024];
 	std::vector<QString> columnVector;
