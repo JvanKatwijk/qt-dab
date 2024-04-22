@@ -830,8 +830,7 @@ QString realName;
 	         objectName = "epg file";
 	      objectName  = epgPath + objectName;
 
-	      {
-	         QString temp = objectName;
+	      {  QString temp = objectName;
 	         temp = temp. left (temp. lastIndexOf (QChar ('/')));
 	         if (!QDir (temp). exists ())
 	            QDir (). mkpath (temp);	
@@ -962,7 +961,7 @@ const char *type;
 //
 //	sendDatagram is triggered by the ip handler,
 void	RadioInterface::sendDatagram	(int length) {
-uint8_t localBuffer [length];
+uint8_t *localBuffer = dynVec (uint8_t, length);
 
 	if (dataBuffer. GetRingBufferReadAvailable() < length) {
 	   fprintf (stderr, "Something went wrong\n");
@@ -983,7 +982,7 @@ uint8_t localBuffer [length];
 //	tdcData is triggered by the backend.
 void	RadioInterface::handle_tdcdata (int frametype, int length) {
 #ifdef DATA_STREAMER
-uint8_t localBuffer [length + 8];
+uint8_t *localBuffer = dynVec (uint8_t, length + 8);
 #endif
 	(void)frametype;
 	if (!running. load())
@@ -1271,26 +1270,6 @@ void	RadioInterface::updateTimeDisplay() {
 	      techWindow_p -> showMissed (xxx);
 	   }
 	}
-
-//	if (error_report && (numberofSeconds % 10) == 0) {
-//	   int	totalFrames;
-//	   int	goodFrames;
-//	   int	badFrames;
-//	   my_ofdmHandler	-> get_frameQuality (&totalFrames,
-//	                                             &goodFrames,
-//	                                             &badFrames);
-//	   fprintf (stderr, "total %d, good %d bad %d ficRatio %f\n",
-//	                     totalFrames, goodFrames, badFrames,
-//	                                            total_ficError * 100.0 / total_fics);
-//	   total_ficError	= 0;
-//	   total_fics		= 0;
-//	   if (configHandler_p -> currentStream () != "") {
-//	      if (soundOut_p -> hasMissed ()) {
-//	         int xxx = soundOut_p  -> missed();
-//	         fprintf (stderr, "missed %d\n", xxx);
-//	      }
-//	   }
-//	}
 }
 //
 //	precondition: everything is quiet
@@ -1559,9 +1538,6 @@ void	RadioInterface::hideButtons		() {
 
 void	RadioInterface::set_sync_lost	() {
 }
-
-//
-////////////////////////////////////////////////////////////////////////
 //
 //	dump handling
 //
@@ -1859,12 +1835,9 @@ void	RadioInterface::stop_announcement (const QString &name, int subChId) {
 	   }
 	}
 }
-
-////////////////////////////////////////////////////////////////////////
 //
 //	selection, either direct, from presets,  from scanlist or schedule
 ////////////////////////////////////////////////////////////////////////
-
 //
 //	selecting from the preset list
 void	RadioInterface::handle_presetSelect (const QString &channel,
@@ -1969,8 +1942,6 @@ QString serviceName	= service;
 	presetTimer. start (switchDelay);
 	startChannel    (channelSelector -> currentText ());
 }
-
-////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////
 
@@ -2200,12 +2171,9 @@ void	RadioInterface::handle_prevServiceButton        () {
 void	RadioInterface::handle_nextServiceButton        () {
 	the_ensembleHandler -> selectNextService ();
 }
-
-////////////////////////////////////////////////////////////////////////////
 //
 //	The user(s)
 ///////////////////////////////////////////////////////////////////////////
-//
 //	setPresetService () is called after a time out to 
 //	actually start the service that we were waiting for
 //	Assumption is that the channel is set, and the servicename
@@ -2241,8 +2209,6 @@ void	RadioInterface::setPresetService () {
 	nextService. valid = false;
 	startService (s);
 }
-
-///////////////////////////////////////////////////////////////////////////
 //
 //	Channel basics
 ///////////////////////////////////////////////////////////////////////////
@@ -2338,7 +2304,6 @@ void	RadioInterface::stopChannel	() {
 	set_synced	(false);
 	cleanScreen	();
 }
-
 //
 //	next- and previous channel buttons
 /////////////////////////////////////////////////////////////////////////
@@ -2385,8 +2350,6 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 }
 //
 //	scanning
-/////////////////////////////////////////////////////////////////////////
-//
 //	The scan function covers three scan strategies. In order to make things
 //	manageable, we implement the streams  in different functions and procedures
 void	RadioInterface::handle_scanButton () {
@@ -2951,11 +2914,9 @@ void	RadioInterface::color_httpButton	() 	{
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
-QColor	baseColor;
-QColor	textColor;
-QColor	color;
+QColor	baseColor, textColor;
 
-	color = QColorDialog::getColor (baseColor, nullptr, "baseColor");
+	QColor color = QColorDialog::getColor (baseColor, nullptr, "baseColor");
 	if (!color. isValid ())
 	   return;
 	baseColor	= color;
@@ -3136,7 +3097,6 @@ int	epgWidth;
 
 //----------------------------------------------------------------------
 //
-
 void	RadioInterface::scheduled_dlTextDumping () {
 	if (dlTextFile != nullptr) {
 	   fclose (dlTextFile);

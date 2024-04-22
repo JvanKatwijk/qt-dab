@@ -98,6 +98,7 @@ void	httpHandler::start	() {
 	                                   nullptr, nullptr, SW_SHOWNORMAL);
 #else
 	std::string x = "xdg-open " + browserAddress;
+	fprintf (stderr, "we gaan voor %s\n", x. c_str ());
 	(void)system (x. c_str ());
 #endif
 }
@@ -124,6 +125,7 @@ std::string	ctype;
 	running. store (true);
 	socklen_t sin_len = sizeof (cli_addr);
 	ListenSocket = socket (AF_INET, SOCK_STREAM, 0);
+	fprintf (stderr, "Listensocket = %d\n", ListenSocket);
 	if (ListenSocket < 0) {
 	   running. store (false);
 	   terminating ();
@@ -156,6 +158,7 @@ std::string	ctype;
 	      usleep (2000000);
 	      continue;
 	   }
+	   fprintf (stderr, "We are in business\n");
 //
 //	someone needs us, let us see what (s)he wants
 	   while (running. load ()) {

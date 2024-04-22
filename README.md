@@ -72,8 +72,15 @@ So, correct functioning is NOT guaranteed.
 
 ![6.X](/journaline.png?raw=true)
 
-While Qt-DAB-6.X is still "under development", its sources can be
-found in the subdirectory "Qt-DAB-RC"
+Qt-DAB-6.X seems reasonably stable, that is why - based on the latest sources -
+the three installers for Windows and the AppImage for x64 Linux were 
+re-created. Furthermore, the documentation is upgraded to describe the
+Qt-DAB-6.X version
+
+The manual contains now a (more or less) up-to-date version of a "build"
+description. Documentation (i.e. the "manual") can be found in the docs
+section of this repository and a copy is available in the releases
+section.
 
 ------------------------------------------------------------------------
 About Qt-DAB-6.5
