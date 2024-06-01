@@ -28,7 +28,7 @@
 #include	<QStringList>
 #include	<vector>
 
-class	deviceChooser {
+class	deviceChooser final {
 public:
 			deviceChooser	(QSettings *);
 			~deviceChooser	();

@@ -46,7 +46,7 @@
 
 class	RadioInterface;
 
-class	mp4Processor : public QObject, public frameProcessor {
+class	mp4Processor final : public QObject, public frameProcessor {
 Q_OBJECT
 public:
 			mp4Processor	(RadioInterface *,

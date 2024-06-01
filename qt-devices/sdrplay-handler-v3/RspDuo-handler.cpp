@@ -38,10 +38,11 @@
 	                                           agcMode,
 	                                           lnaState,
 	                                           GRdB, biasT) {
-	set_antenna (antennaValue);
+//	set_antenna (antennaValue);
 	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
+
 	set_lnabounds_signal	(0, lna_upperBound);
 	show_lnaGain (get_lnaGain (lnaState, freq));
 
@@ -82,6 +83,7 @@ int	band	= bankFor_rspDuo (freq);
 bool	RspDuo_handler::restart (int freq) {
 sdrplay_api_ErrT        err;
 
+	
 	chParams -> tunerParams. rfFreq. rfHz = (float)freq;
 	err =parent ->  sdrplay_api_Update (chosenDevice -> dev,
 	                                    chosenDevice -> tuner,

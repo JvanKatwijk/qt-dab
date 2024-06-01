@@ -51,7 +51,7 @@ struct quantizer_spec {
 
 class	RadioInterface;
 
-class	mp2Processor: public QObject, public frameProcessor {
+class	mp2Processor final: public QObject, public frameProcessor {
 Q_OBJECT
 public:
 			mp2Processor	(RadioInterface *,

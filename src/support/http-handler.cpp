@@ -75,6 +75,8 @@
 	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power, height\n\n");
 	}
 
+	connect (this, &httpHandler::setChannel,
+	         parent, &RadioInterface::channelSignal);
 	transmitterVector. resize (0);
 	start ();
 }
@@ -120,8 +122,6 @@ struct sockaddr_in svr_addr, cli_addr;
 std::string	content;
 std::string	ctype;
 
-	connect (this, &httpHandler::setChannel,
-	         parent, &RadioInterface::channelSignal);
 	running. store (true);
 	socklen_t sin_len = sizeof (cli_addr);
 	ListenSocket = socket (AF_INET, SOCK_STREAM, 0);
@@ -335,7 +335,7 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	      if (xx == 0) {
 	         if (!running. load ()) {
 	            closesocket (ClientSocket);
-	            closesocket(ListenSocket);
+	            closesocket (ListenSocket);
 	            WSACleanup ();
 	            terminating ();
 	            return;
@@ -372,6 +372,14 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	            jsonUpdate	= true;
 //	            fprintf (stderr, "%s will be sent\n", content. c_str ());
 	         }
+	      }
+	      else 
+	      if (strstr (url, "/channelSelector::")) {
+	         std::string channel = strstr (url, "::");
+	         std::size_t pos = channel. find ("::");
+	         channel = channel. substr (pos + 2);
+	         setChannel (QString::fromStdString (channel));
+//	         continue;	
 	      }
 	      else {
 	         content	= theMap (homeAddress);

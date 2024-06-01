@@ -34,7 +34,7 @@ class	RadioInterface;
 class	virtual_dataHandler;
 class	packetdata;
 
-class	dataProcessor:public QObject, public frameProcessor {
+class	dataProcessor final :public QObject, public frameProcessor {
 Q_OBJECT
 public:
 	dataProcessor	(RadioInterface *mr,

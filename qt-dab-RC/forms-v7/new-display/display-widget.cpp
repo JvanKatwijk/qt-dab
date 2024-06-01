@@ -399,9 +399,8 @@ void	displayWidget:: show_quality (float q, float timeOffset,
 void	displayWidget::show_corrector (int coarseOffset, float fineOffset) {
 	if (myFrame. isHidden ())
 	   return;
-
-	coarse_correctorDisplay	-> display (coarseOffset);
-	fine_correctorDisplay	-> display (fineOffset);
+	coarse_correctorDisplay	-> display (coarseOffset + fineOffset);
+//	fine_correctorDisplay	-> display (fineOffset);
 }
 
 	

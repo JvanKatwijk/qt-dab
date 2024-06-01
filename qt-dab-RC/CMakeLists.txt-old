@@ -1,48 +1,44 @@
 cmake_minimum_required( VERSION 3.21 )
-
-# set CMAKE_BUILD_TYPE to "Release" if not defined (like call from command line)
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Set build type to Release if not specified" FORCE)
-endif()
-
-include(${CMAKE_CURRENT_LIST_DIR}/cmake/Modules/CMakeFunctions.cmake)
-
-project(Qt-DAB VERSION 6)
 set (objectName qt-dab-6.X)
-set (objectName "Qt-DAB")
-set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTORCC ON)
+#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -g -fsanitize=address")
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -fsanitize=address")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
+set(CMAKE_AUTORCC ON)
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "/usr/local/bin" CACHE PATH "default install path" FORCE )
 endif()
+#set (CMAKE_INSTALL_PREFIX /usr/local/bin)
 
-add_definitions(-DAPP_NAME="${objectName}")
-add_definitions(-DPRJ_NAME="${PROJECT_NAME}")
-add_definitions(-DPRJ_VERS="${PROJECT_VERSION}")
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    # regarding using QWT < 6.2.0 (6.1.4) to avoid many deprecated massages (only suppressed on release versions)
-    add_definitions(-DQT_NO_DEPRECATED_WARNINGS)
-endif()
+#	modify if you want
+#	Note that since there are always problems with the rtlsdr interface
+#	under Windows we split the rtlsdr interface into two versions
+#	one for Linux and one for Window
 
 if(MINGW)
 	add_definitions ( -municode)
+#else (MINGW)
+#	add_definitions (-DSSE_AVAILABLE)
 endif()
 
-add_definitions (-D__HAS_CHANNEL__)
-add_definitions (-D__FFTW3__)
+#essential defines, for compatibility with older versions
+add_definitions (-D__FFTW3__ -D__HAS_CHANNEL__)
 
-# handle GIT hash
-get_git_commit_hash() # returns GIT_COMMIT_HASH
-print(GIT_COMMIT_HASH)
-if (GIT_COMMIT_HASH)
-    add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
-else ()
-    add_definitions("-DGITHASH=\"(unknown)\"")
+IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../.git" AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../.git")
+   execute_process (
+      COMMAND git rev-parse --short HEAD
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_COMMIT_HASH
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+   )
 endif ()
+
+if(GIT_COMMIT_HASH)
+   add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
+else ()
+   add_definitions ("-DGITHASH=\"       \"")
+endif()
 
 
 ########################################################################
@@ -50,6 +46,7 @@ endif ()
 ########################################################################
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
+   message(STATUS "Build type not specified: defaulting to release.")
 endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 
@@ -58,11 +55,13 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 ######################################################################
 #
-#	if you want the audio output sent over the internet:
+#Select ONE of the following options
+set (USE_PORTAUDIO ON)
 set (TCP_STREAMER OFF)
 
 #####################################################################
 #
+
 # select one or more devices (set to ON)
 # Note that since there are problems with the rtlsdr interface under Windows we split the rtlsdr interface
 # into two versions one for Linux and one for Window
@@ -77,19 +76,14 @@ option(PLUTO OFF)
 option(SOAPY OFF)
 option(SPY_SERVER_8 OFF)
 option(SPY_SERVER_16 OFF)
-option(UHD OFF) 		# untested
+option(UHD OFF) 
 option(RTL_TCP OFF)      
 
-# additional options
-option(USE_LTO "Set -flto flag" ON)  
-# special release version flags
-if (USE_LTO)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto")
-endif ()
 
+# additional options
 option(FDK_AAC ON)
 option(DATA_STREAMER OFF)
-option(VITERBI_SSE ON)
+option(VITERBI_SSE OFF)
 option(VITERBI_NEON OFF)
 
 
@@ -118,10 +112,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	  ${Qt5Xml_INCLUDE_DIRS}
 	)
 
-	search_for_library (QWT Qwt)
-	search_for_library (ZLIB zlib)
-	search_for_library( LIBSNDFILE sndfile)
-	search_for_library (LIBSAMPLERATE samplerate)
+	find_package(Qwt)
+	if (NOT QWT_FOUND)
+	   message(FATAL_ERROR "please install qwt library")
+	endif ()
+	include_directories ( ${QWT_INCLUDE_DIRS})
+	list(APPEND extraLibs ${QWT_LIBRARIES})
 
 	find_package(FFTW3f)
         if (NOT FFTW3F_FOUND)
@@ -129,6 +125,43 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
         endif ()
 	include_directories ( ${FFTW_INCLUDE_DIRS})
         list(APPEND extraLibs ${FFTW3F_LIBRARIES})
+
+
+	pkg_check_modules (ZLIB zlib)
+	if (ZLIB_FOUND)
+	   list  (APPEND extraLibs ${ZLIB_LDFLAGS})
+	else ()
+           find_package(zlib)
+	   if (NOT ZLIB_FOUND)
+               message(FATAL_ERROR "please install libz")
+           endif ()
+	   list(APPEND extraLibs ${ZLIB_LIBRARY})
+	endif ()
+	include_directories (${ZLIB_INCLUDE_DIRS})
+
+	pkg_check_modules (LIBSNDFILE sndfile)
+	if (LIBSNDFILE_FOUND)
+	   list (APPEND extraLibs ${LIBSNDFILE_LDFLAGS})
+	else ()
+           find_package(LibSndFile)
+           if (NOT LIBSNDFILE_FOUND)
+              message(FATAL_ERROR "please install libsndfile")
+           endif ()
+           list(APPEND extraLibs ${LIBSNDFILE_LIBRARY})
+	endif ()
+	include_directories (${LIBSNDFILE_LIBRARY})
+
+	pkg_check_modules (LIBSAMPLERATE samplerate)
+	if (LIBSAMPLERATE_FOUND)
+	   list (APPEND extraLibs ${LIBSAMPLERATE_LDFLAGS})
+	else ()
+           find_package(LibSampleRate)
+           if (NOT LIBSAMPLERATE_FOUND)
+              message(FATAL_ERROR "please install libsamplerate")
+           endif ()
+           list(APPEND extraLibs ${LIBSAMPLERATE_LIBRARY})
+	endif ()
+	include_directories (${LIBSAMPLERATE_INCLUDE_DIRS})
 
 	if (NOT APPLE)
 	   find_library (PTHREADS pthread)
@@ -172,10 +205,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/output
 	           ../includes/scopes-qwt6
 	           ../qt-devices
-#	           ../qt-devices/filereaders/
-#	           ../qt-devices/filereaders/rawfiles-new
-#	           ../qt-devices/filereaders/wavfiles-new
-#	           ../qt-devices/filereaders/xml-filereader
+	           ../qt-devices/filereaders/
+	           ../qt-devices/filereaders/rawfiles-new
+	           ../qt-devices/filereaders/wavfiles-new
+	           ../qt-devices/filereaders/xml-filereader
 	           ../eti-handler
 	           /usr/include/
 	)
@@ -303,8 +336,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ../includes/support/buttons/smallspinbox.h 
 	     ../includes/scopes-qwt6/spectrogramdata.h
 	     ../qt-devices/device-handler.h
+	     ../qt-devices/device-chooser.h
 	     ../qt-devices/device-exceptions.h
-	     ../qt-devicces/xml-filewriter.h
+	     ../qt-devices/xml-filewriter.h
+	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
+	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
+	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
+	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
+	     ../qt-devices/filereaders/xml-filereader/element-reader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-descriptor.h
 	)
 
 	set (${objectName}_SRCS
@@ -419,7 +461,16 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/buttons/smallspinbox.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp 
+	     ../qt-devices/device-handler.cpp
+	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
+	     ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp
+	     ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp
+	     ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp
+	     ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp
+	     ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp
+	     ../qt-devices/filereaders/xml-filereader/xml-reader.cpp
+	     ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp
 	)
 
 	set (${objectName}_MOCS
@@ -427,22 +478,22 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./support/super-frame.h
 	     ./support/techdata.h
 	     ./support/clickable-label.h 
-	     ./support/icon-label.h 
-	     ./support/scan-handler.h 
-	     ./support/skiptable-handler.h 
-	     ./support/aboutdialog.h 
-	     ./support/ensemble-handler.h 
-	     ./support/config-handler.h 
+             ./support/icon-label.h 
+             ./support/scan-handler.h 
+             ./support/skiptable-handler.h 
+             ./support/aboutdialog.h 
+             ./support/ensemble-handler.h 
+             ./support/config-handler.h 
 	     ./support/audiosystem-selector.h
 	     ./support/dxDisplay.h
 	     ./forms-v7/new-display/display-widget.h 
-	     ./forms-v7/new-display/scopes/correlation-scope.h 
-	     ./forms-v7/new-display/scopes/spectrum-scope.h 
-	     ./forms-v7/new-display/scopes/null-scope.h 
-	     ./forms-v7/new-display/scopes/channel-scope.h 
-	     ./forms-v7/new-display/scopes/dev-scope.h 
-	     ./forms-v7/new-display/scopes/waterfall-scope.h 
-	     ./forms-v7/new-display/scopes/iqdisplay.h 
+             ./forms-v7/new-display/scopes/correlation-scope.h 
+             ./forms-v7/new-display/scopes/spectrum-scope.h 
+             ./forms-v7/new-display/scopes/null-scope.h 
+             ./forms-v7/new-display/scopes/channel-scope.h 
+             ./forms-v7/new-display/scopes/dev-scope.h 
+             ./forms-v7/new-display/scopes/waterfall-scope.h 
+             ./forms-v7/new-display/scopes/iqdisplay.h 
  	     ./forms-v7/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../includes/ofdm/sample-reader.h
@@ -466,9 +517,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/journaline-screen.h
-	     ../includes/backend/data/epg-2/epg-decoder.h
+             ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
+	     ../qt-devices/device-handler.h
 	     ../includes/support/converter_48000.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
@@ -491,12 +543,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/audio-display.h
-#	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
-#	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
-#	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
-#	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
-#	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
-#	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
+	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
+	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
+	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
+	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
 	)
 
 	set (${objectName}_UIS
@@ -590,6 +642,354 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   )
 	endif (VITERBI_NEON)
 
+##########################################################################
+#	The devices
+#
+	if (SDRPLAY_V2)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ../qt-devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h
+	        ../qt-devices/sdrplay-handler-v2/sdrplayselect.h
+	   )
+
+	   include_directories (
+	     ../qt-devices/sdrplay-handler-v2
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h
+	        ../qt-devices/sdrplay-handler-v2/sdrplayselect.h
+	        ../qt-devices/sdrplay-handler-v2/mirsdrapi-rsp.h
+           )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp
+	        ../qt-devices/sdrplay-handler-v2/sdrplayselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_SDRPLAY_V2)
+	endif (SDRPLAY_V2)
+
+	if (SDRPLAY_V3)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h 
+	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
+	        ../qt-devices/sdrplay-handler-v3/RspI-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
+	   )
+
+	   include_directories (
+	     ../qt-devices/sdrplay-handler-v3
+	     ../qt-devices/sdrplay-handler-v3/include
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h
+	        ../qt-devices/sdrplay-handler-v3/include/sdrplay_api.h
+	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
+	        ../qt-devices/sdrplay-handler-v3/RspI-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
+           )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
+                ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
+	   )
+
+	 add_definitions (-DHAVE_SDRPLAY_V3)
+	endif (SDRPLAY)
+
+	if (AIRSPY)
+#           find_package(LibAIRSPY)
+#           if (NOT LIBAIRSPY_FOUND)
+#               message(FATAL_ERROR "please install airspy library")
+#           endif ()
+#	   ## include_directories (${AIRSPYLIB_INCLUDE_DIR})
+
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ../qt-devices/airspy-2/airspy-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/airspy-2/airspy-2.h
+	        ../qt-devices/airspy-2/airspyselect.h
+	   )
+
+	   include_directories (
+	     ../qt-devices/airspy-2
+	     ../qt-devices/airspy-2/libairspy
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/airspy-2/airspy-2.h
+	        ../qt-devices/airspy-2/airspyselect.h
+	        ../qt-devices/airspy-2/libairspy/airspy.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/airspy-2/airspy-2.cpp
+	        ../qt-devices/airspy-2/airspyselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_AIRSPY_2)
+	endif (AIRSPY)
+
+	if (HACKRF)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ../qt-devices/hackrf-handler/hackrf-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/hackrf-handler/hackrf-handler.h
+	   )
+
+	   include_directories (
+	     ../qt-devices/hackrf-handler
+	     ../qt-devices/hackrf-handler/libhackrf
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/hackrf-handler/hackrf-handler.h
+	        ../qt-devices/hackrf-handler/libhackrf/hackrf.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/hackrf-handler/hackrf-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_HACKRF)
+	endif (HACKRF)
+#
+	if (PLUTO)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ../qt-devices/pluto-handler/pluto-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/pluto-handler/pluto-handler.h
+	   )
+
+	   include_directories (
+	     ../qt-devices/pluto-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/pluto-handler/pluto-handler.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/pluto-handler/pluto-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_PLUTO)
+	endif (PLUTO)
+#
+	if (LIMESDR)
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/lime-handler/lime-handler.h
+	        ../qt-devices/lime-handler/lime-widget.h
+	   )
+
+	   include_directories (
+	     ../qt-devices/lime-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/lime-handler/lime-handler.h
+	        ../qt-devices/lime-handler/lime-widget.h
+	        ../qt-devices/lime-handler/LimeSuite.h
+	        ../qt-devices/lime-handler/LMS7002M_parameters.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/lime-handler/lime-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_LIME)
+	endif (LIMESDR)
+
+	if (RTLSDR_LINUX)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	   )
+
+	   include_directories (
+	        ../qt-devices/rtlsdr-handler-linux/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr_export.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_RTLSDR)
+	endif()
+
+	if (SOAPY)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/soapy/soapy-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/soapy/soapy-handler.h
+	        ../qt-devices/soapy/soapy-converter.h
+	   )
+
+	   include_directories (
+	        ../qt-devices/soapy/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/soapy/soapy-handler.h
+	        ../qt-devices/soapy/soapy-converter.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/soapy/soapy-handler.cpp
+	        ../qt-devices/soapy/soapy-converter.cpp
+	   )
+
+	   set (LIBSOAPY "-lSoapy -lm")
+	   list(APPEND extraLibs ${LIBSOAPY})
+	   add_definitions (-DHAVE_SOAPY)
+	endif()
+
+	if (SPY_SERVER_8)
+	   include_directories (
+	        ../qt-devices/spy-server-8/
+	   )
+
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/spy-server-8/spyserver-widget-8.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/spy-server-8/spyserver-client-8.h
+	        ../qt-devices/spy-server-8/spy-handler-8.h
+	        ../qt-devices/spy-server-8/tcp-client-8.h
+	   )
+
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/spy-server-8/spyserver-client-8.h
+	        ../qt-devices/spy-server-8/spy-handler-8.h
+	        ../qt-devices/spy-server-8/tcp-client-8.h
+	        ../qt-devices/spy-server-8/spyserver-protocol.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/spy-server-8/spyserver-client-8.cpp
+	        ../qt-devices/spy-server-8/spy-handler-8.cpp
+	        ../qt-devices/spy-server-8/tcp-client-8.cpp
+	   )
+
+	   add_definitions (-DHAVE_SOAPY_8)
+	endif()
+
+	if (SPY_SERVER_16)
+	   include_directories (
+	        ../qt-devices/spy-server-16/
+	   )
+
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/spy-server-16/spyserver-widget-16.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/spy-server-16/spyserver-client-16.h
+	        ../qt-devices/spy-server-16/spy-handler-16.h
+	        ../qt-devices/spy-server-16/tcp-client-16.h
+	   )
+
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/spy-server-16/spyserver-client-16.h
+	        ../qt-devices/spy-server-16/spy-handler-16.h
+	        ../qt-devices/spy-server-16/tcp-client-16.h
+	        ../qt-devices/spy-server-16/spyserver-protocol.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/spy-server-16/spyserver-client-16.cpp
+	        ../qt-devices/spy-server-16/spy-handler-16.cpp
+	        ../qt-devices/spy-server-16/tcp-client-16.cpp
+	   )
+
+	   add_definitions (-DHAVE_SOAPY_16)
+	endif()
+
+#
 	if (TCP_STREAMER)
 	   add_definitions (-DTCP_STREAMER)
 	   find_package (Qt5Network REQUIRED)
@@ -608,6 +1008,37 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   )
 	endif (TCP_STREAMER)
 
+	if (RTL_TCP)
+	   find_package (Qt5Network REQUIRED)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ../qt-devices/rtl_tcp/rtl_tcp-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   include_directories (
+	      ../qt-devices/rtl_tcp
+	      ${Qt5Network_INCLUDE_DIRS}
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/rtl_tcp/rtl_tcp_client.cpp
+	   )
+
+	   set (RTLTCP_lib Qt5::Network)
+	   add_definitions (-DHAVE_RTL_TCP)
+	endif (RTL_TCP)
+
 	if (DATA_STREAMER)
 	   include_directories (
 	      ../server-thread
@@ -625,7 +1056,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   add_definitions (-DDATA_STREAMER)
 	endif (DATA_STREAMER)
 
-	if (NOT TCP_STREAMER)
+	if (USE_PORTAUDIO)
 	   add_definitions (-DQT_AUDIO)
            find_package(Portaudio)
            if (NOT PORTAUDIO_FOUND)
@@ -653,7 +1084,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	      ../src/output/audiosink.cpp
 	     ../src/output/Qt-audio.cpp
 	   )
-	endif (NOT TCP_STREAMER)
+	endif (USE_PORTAUDIO)
 
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
 	             ../qt-devices/filereaders/filereader-widget.ui)
@@ -680,19 +1111,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	)
 
 	target_link_libraries (${objectName}
-	                       PRIVATE
 	                       Qt5::Widgets
 	                       Qt5::Network
 	                       Qt5::Xml
-	                       Qt5::Multimedia
 	                       ${RTLTCP_lib}
 	                       ${extraLibs}
 	                       ${FAAD_LIBRARIES}
 	                       ${CMAKE_DL_LIBS}
 	)
-
-	add_subdirectory (../qt-devices /tmp)
-	target_link_libraries (${objectName} PRIVATE ${objectName}_devices)
+	if (USE_PORTAUDIO)
+	   target_link_libraries (${objectName} Qt5::Multimedia)
+	endif (QT_AUDIO)
 
 	INSTALL (TARGETS ${objectName} DESTINATION  ${CMAKE_INSTALL_PREFIX})
 #	INSTALL (TARGETS ${objectName} DESTINATION ./linux-bin)

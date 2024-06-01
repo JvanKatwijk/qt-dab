@@ -210,32 +210,32 @@ protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
 	FILE			*dlTextFile;
-	RingBuffer<Complex>	spectrumBuffer;
-	RingBuffer<Complex>	iqBuffer;
-	RingBuffer<Complex>	tiiBuffer;
-	RingBuffer<Complex>	nullBuffer;
-	RingBuffer<Complex>	channelBuffer;
-	RingBuffer<float>	snrBuffer;
-	RingBuffer<float>	responseBuffer;
-	RingBuffer<uint8_t>	frameBuffer;
-	RingBuffer<uint8_t>	dataBuffer;
-	RingBuffer<std::complex<int16_t>>	audioBuffer;
+	RingBuffer<Complex>	theSpectrumBuffer;
+	RingBuffer<Complex>	theIQBuffer;
+	RingBuffer<Complex>	theTIIBuffer;
+	RingBuffer<Complex>	theNULLBuffer;
+	RingBuffer<Complex>	theChannelBuffer;
+	RingBuffer<float>	theSNRBuffer;
+	RingBuffer<float>	theResponseBuffer;
+	RingBuffer<uint8_t>	theFrameBuffer;
+	RingBuffer<uint8_t>	theDataBuffer;
+	RingBuffer<std::complex<int16_t>>	theAudioBuffer;
 	RingBuffer<float>	stdDevBuffer;
 
-	displayWidget		newDisplay;
-	snrViewer		my_snrViewer;
-	QFrame			dataDisplay;
-	dlCache			the_dlCache;
-	tiiMapper		tiiProcessor;
-	findfileNames		filenameFinder;
+	displayWidget		theNewDisplay;
+	snrViewer		theSNRViewer;
+//	QFrame			theDataDisplay;
+	dlCache			theDLCache;
+	tiiMapper		theTIIProcessor;
+	findfileNames		theFilenameFinder;
 	Scheduler		theScheduler;
 	RingBuffer<std::complex<int16_t>>	theTechData;
-	converter_48000		audioConverter;
+	converter_48000		theAudioConverter;
 
-	scanListHandler		my_scanListHandler;
-	deviceChooser		chooseDevice;
-	dxDisplay		my_dxDisplay;
-	scanHandler		scanMonitor;
+	scanListHandler		theScanlistHandler;
+	deviceChooser		theDeviceChoser;
+	dxDisplay		theDXDisplay;
+	scanHandler		theSCANHandler;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 	QLabel			*dxDisplayText;
@@ -273,14 +273,14 @@ private:
 	deviceHandler		*inputDevice_p;
 //
 //	for the peaklevel indicator
-        float			peakLeftDamped;
-        float			peakRightDamped;
+//	float			peakLeftDamped;
+//	float			peakRightDamped;
 
 	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut_p;
 #endif
-	ofdmHandler		*my_ofdmHandler;
+	ofdmHandler		*theOFDMHandler;
 	audioPlayer		*soundOut_p;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer_p;

@@ -99,9 +99,9 @@
 #define	ELAD_S1_DEVICE		0217
 #endif
 
-#include	"rawfiles.h"
-#include	"wavfiles.h"
 #include	"xml-filereader.h"
+#include	"wavfiles.h"
+#include	"rawfiles.h"
 //
 //	Some devices are always configured
 //

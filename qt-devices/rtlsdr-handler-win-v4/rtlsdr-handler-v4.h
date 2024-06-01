@@ -44,7 +44,8 @@ class	xml_fileWriter;
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler_v4: public deviceHandler, public  Ui_dabstickWidget {
+class	rtlsdrHandler_v4 final:
+	               public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
 			rtlsdrHandler_v4	(QSettings *, const QString &);

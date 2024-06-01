@@ -212,15 +212,16 @@ DABFLOAT Alpha = 0.05f;
 	            arg (Complex (abs (real (r1)),  abs (imag (r1))));
 	   DABFLOAT phaseOffset	= M_PI_4 - fftPhase;
 	   offsetVector [index] = 
-	             compute_avg (offsetVector [index], phaseOffset, Alpha);
-//
+	           compute_avg (offsetVector [index], phaseOffset, Alpha);
+
+	   float phaseErr	= offsetVector [index] - fftPhase;
 	   amplitudeLevel [index]	= 
 	            compute_avg ( amplitudeLevel [index], ab1, Alpha);
-	   carrierCenters [i] =
+	   carrierCenters [index] =
 	            Complex (
-	                    compute_avg (real (carrierCenters [i]),
+	                    compute_avg (real (carrierCenters [index]),
 	                                         abs (real (r1)), Alpha),
-	                    compute_avg (imag (carrierCenters [i]),
+	                    compute_avg (imag (carrierCenters [index]),
 	                                         abs (imag (r1)), Alpha));
 	   switch (decoder) {
 	      case FAST_DECODER:
@@ -245,7 +246,6 @@ DABFLOAT Alpha = 0.05f;
 	      }
 
 	      case ALT2_DECODER:
-//
 //	here we look at the error of the sample wrt a filtered "centerpoint"
 //	and give the X and Y the error as penalty
 //	works actually as best of the three
@@ -284,9 +284,10 @@ DABFLOAT Alpha = 0.05f;
 	              fft_buffer [(T_u - carriers / 2 - 1 + j) % T_u] / maxAmp;
 	      }
 	      else {
-	         for (int j = 1; j < carriers; j ++)
+	         for (int j = 1; j < carriers; j ++) {
 	            displayVector [j] =
 	                      conjVector [T_u / 2 - carriers / 2 + j] / maxAmp; 
+	         }
 	      }
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 

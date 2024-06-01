@@ -46,6 +46,7 @@
 #define SDRPLAY_RSPduo_ 3
 #define SDRPLAY_RSPdx_  4
 #define SDRPLAY_RSP1B_  6
+#define SDRPLAY_RSPdxR2_  7
 
 #define	SDRPLAY_SETTINGS	"sdrplaySettings_v3"
 #define	SDRPLAY_IFGRDB		"sdrplay-ifgrdb"
@@ -338,7 +339,7 @@ void	sdrplayHandler_v3::set_xmlDump () {
 //	showing data
 ////////////////////////////////////////////////////////////////////////
 int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
-	if ((sdrDevice == SDRPLAY_RSPdx_) || (sdrDevice == SDRPLAY_RSPduo_)) {
+	if ((sdrDevice == SDRPLAY_RSPdx_) || (sdrDevice == SDRPLAY_RSPdxR2_)) {
 	   antennaSelector      -> addItem ("Antenna B");
 	   antennaSelector      -> addItem ("Antenna C");
            antennaSelector	-> show ();
@@ -596,6 +597,8 @@ uint32_t                ndev;
 
 	fprintf (stderr, "%d devices detected\n", ndev);
 	chosenDevice	= &devs [0];
+	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
+	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
 	err	= sdrplay_api_SelectDevice (chosenDevice);
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "sdrplay_api_SelectDevice failed %s\n",
@@ -619,10 +622,12 @@ uint32_t                ndev;
 	   int antennaValue;
 	   switch (hwVersion) {
 	      case SDRPLAY_RSPdx_ :
-	         antennaValue = set_antennaSelect (SDRPLAY_RSPdx_);
+	      case SDRPLAY_RSPdxR2_ :
+	         antennaValue = set_antennaSelect (hwVersion);
 	         nrBits		= 14;
 	         denominator	= 4096;
-	         deviceModel	= "RSPDx";
+	         deviceModel	=  hwVersion == SDRPLAY_RSPdx_?
+	            	                     "RSPDx" : "RSPDxR2";
 	         theRsp	= new RspDx_handler (this,
 	                                     chosenDevice,
 	                                     inputRate,
@@ -681,19 +686,18 @@ uint32_t                ndev;
 	         break;
 
 	      case SDRPLAY_RSPduo_ :
-	         antennaValue = set_antennaSelect (SDRPLAY_RSPdx_);
 	         nrBits		= 14;
 	         denominator	= 4096;
 	         deviceModel	= "RSP-Duo";
 	         theRsp	= new RspDuo_handler (this,
-	                                     chosenDevice,
-	                                     inputRate,
-	                                     KHz (14070),
-	                                     agcMode,
-	                                     lnaState,
-	                                     GRdBValue,
-	                                     antennaValue,
-	                                     biasT);
+	                                      chosenDevice,
+	                                      inputRate,
+	                                      KHz (14070),
+	                                      agcMode,
+	                                      lnaState,
+	                                      GRdBValue,
+	                                      antennaValue,
+	                                      biasT);
 	         break;
 
 	      default:
