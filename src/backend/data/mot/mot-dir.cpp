@@ -42,14 +42,15 @@
 	this	-> dirSize	= dirSize;
 	this	-> numObjects	= objects;
 	this	-> dir_segmentSize	= segmentSize;
-//	   fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
-//	                             transportId, dirSize, objects, segmentSize);
+	   fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
+	                             transportId, dirSize, objects, segmentSize);
 	dir_segments. resize (dirSize);
 	motComponents. resize (objects);
 	for (int i = 0; i < objects; i ++) {
 	   motComponents [i]. inUse = false;
 	   motComponents [i]. motSlide	= nullptr;
 	}
+	dir_segments. resize (segmentSize);
 	memcpy (&dir_segments [0], segment, segmentSize);
 	marked [0] = true;
 	if (segmentSize >= dirSize)

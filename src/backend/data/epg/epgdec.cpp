@@ -462,11 +462,38 @@ std::stringstream out;
 	return out. str();
 }
 
+ 
+static
+uint8_t bitTable [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01}; 
+
+static
+int	getBit (const _BYTE *v, int bitnr) {
+int bytenr      = bitnr / 8;
+ 
+        bitnr   = bitnr % 8;
+        return (v [bytenr] & bitTable [bitnr]) != 0 ? 1 : 0;
+}
+
+static
+int	makeInt (const _BYTE *p, int size) {
+int res = 0;
+	for (int i = 0; i < size; i ++) {
+	   res <<= 1;
+	   res |= getBit (p, i);
+	}
+	return res;
+}
+
 static
 std::string	decode_sid (const _BYTE* p) {
 std::stringstream out;
+int SidFlag	= getBit (p, 3);
 
-	out << std::hex << int(p[0]) << '.' << int(p[1]) << '.' << int(p[2]);
+	out << std::hex << makeInt (&(p [0]), 16) << '.' <<
+	                   makeInt (&(p [2]), 16) << '.' <<
+	                   makeInt (&(p [4]), 16) << '.' <<
+	                   (SidFlag != 0 ? makeInt (&(p [6]), 16) : 0);
+//	out << std::hex << int(p[0]) << '.' << int(((int16_t *)p)[1]) << '.' << int(((int16_t *)p)[2]);
 	return out. str();
 }
 

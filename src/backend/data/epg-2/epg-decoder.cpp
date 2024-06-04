@@ -62,7 +62,7 @@ int	epgDecoder::process_epg	(uint8_t *v, int e_length,
 uint8_t	tag	= v [0];
 int length	= v [1];
 int	index	= 0;
-
+progDesc p;
 #ifdef	__EPG_TRACE__
 	fprintf (stderr, "epg module is starting to process input for %x\n",SId);
 #endif
@@ -142,7 +142,7 @@ int	index	= 0;
 	         break;
 
 	      case 0x28:	// process_service
-	         index = process_service (v, index);
+	         index = process_service (v, index, &p);
 	         break;
 
 	      case 0x80:	// version
@@ -507,7 +507,7 @@ int length	= v [index + 1];
 #endif
 	   switch (v [index]) {
 	      case 0x25:	// serviceScope
-	         index	= process_serviceScope (v, index);
+	         index	= process_serviceScope (v, index, p);
 	         break;
 
 	      case 0x80:	// start time
@@ -528,7 +528,8 @@ int length	= v [index + 1];
 	return endPoint;
 }
 
-int	epgDecoder::process_serviceScope (uint8_t *v, int index) {
+int	epgDecoder::process_serviceScope (uint8_t *v, int index,
+	                                       progDesc *p) {
 int length	= v [index + 1];
 
 	if (length == 0XFE) {
@@ -543,20 +544,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+	int oldIndex;
 #ifdef	__EPG_TRACE__
+	oldIndex = index;
 	fprintf (stderr, "in process_servicescope with length %d\n", length);
 #endif
 	int endPoint	= index + length;
 //
 //	Untested function
-
 	while (index < endPoint) {
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
 	   switch (v [index]) {
 	      case 0x80:	// id
-	         index	= process_476 (v, index);
+	         index	= process_476_p (v, index, &p -> ident);
 	         break;
 
 	      default:
@@ -619,7 +621,7 @@ int length	= v [index + 1];
 
 int	epgDecoder::process_ensemble (uint8_t *v, int index) {
 int length	= v [index + 1];
-
+progDesc p;
 	if (length == 0XFE) {
 	   length = (v [index + 2] << 8) | v [index + 3];
 	   index += 4;
@@ -667,7 +669,7 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x28:	// service
-	         index	= process_service (v, index);
+	         index	= process_service (v, index, &p);
 	         break;
 
 	      case 0x80:	// id
@@ -685,7 +687,8 @@ int length	= v [index + 1];
 	return endPoint;
 }
 
-int	epgDecoder::process_service (uint8_t *v, int index) {
+int	epgDecoder::process_service (uint8_t *v, int index,
+	                                   progDesc *p) {
 int length	= v [index + 1];
 
 	if (length == 0XFE) {
@@ -735,7 +738,7 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x29:	// bearer
-	         index	= process_bearer (v, index);
+	         index	= process_bearer (v, index, p);
 	         break;
 
 	      case 0x31:	// radiodns
@@ -797,7 +800,8 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x29:	// bearer
-	         index	= process_bearer (v, index);
+	      case 0x2D:	// bearer
+	         index	= process_bearer (v, index, p);
 	         break;
 
 	      case 0x2F:	// relativeTime
@@ -815,7 +819,7 @@ int length	= v [index + 1];
 	return endPoint;
 }
 
-int	epgDecoder::process_bearer (uint8_t *v, int index) {
+int	epgDecoder::process_bearer (uint8_t *v, int index, progDesc *p) {
 int length	= v [index + 1];
 
 	if (length == 0XFE) {
@@ -841,13 +845,14 @@ int length	= v [index + 1];
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "Encountering node %x\n", v [index]);
 #endif
+	
 	   switch (v [index]) {
 	      case 0x32:	// geolocation
 	         index	= process_geoLocation (v, index);
 	         break;
 
 	      case 0x80:	// id
-	         index	= process_476 (v, index);
+	         index	= process_476_p (v, index, &p -> bearer);
 	         break;
 
 	      case 0x82:	// url
@@ -1027,7 +1032,7 @@ int length	= v [index + 1];
 
 int	epgDecoder::process_onDemand (uint8_t *v, int index) {
 int length	= v [index + 1];
-
+progDesc p;
 	if (length == 0XFE) {
 	   length = (v [index + 2] << 8) | v [index + 3];
 	   index += 4;
@@ -1051,7 +1056,7 @@ int length	= v [index + 1];
 #endif
 	   switch (v [index]) {
 	      case 0x29:	// bearer
-	         index	= process_bearer (v, index);
+	         index	= process_bearer (v, index, &p);
 	         break;
 
 	      case 0x37:	// presentation time
@@ -2106,18 +2111,47 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-	return index + length;
+//	return index + length;
 	uint8_t ensFlag = getBit (v, 8 * index + 1);
 	uint8_t sidFlag = getBit (v, 8 * index + 3);
+	
+	if (sidFlag == 0)
+	   fprintf (stderr, "SId = %X\n", getBits (v, 8 * index + 32, 16));
+	else 	// sidFlag == 1
+	   fprintf (stderr, "SId = %X\n", getBits (v, 8 * index + 32, 32));
+	return index + length;
+}
 
-        if (ensFlag == 1) {
-           if (sidFlag == 0)
-              fprintf (stderr, "SId = %X\n", getBits (v, 8 * index + 32, 16));
+int	epgDecoder::process_476_p	(uint8_t *v, int index, QString *s) {
+int length	= v [index + 1];
+
+	if (length == 0XFE) {
+	   length = (v [index + 2] << 8) | v [index + 3];
+	   index += 4;
 	}
 	else
-        if (ensFlag == 0)
-           if (sidFlag == 0)
-              fprintf (stderr, "SId = %X\n", getBits (v, 8 * index + 8, 16));
+	if (length == 0XFF) {
+	   length = (v [index + 2] << 16) | (v [index + 3] << 8) | v [index + 4];
+	   index += 5;
+	}
+	else
+	   index += 2;
+
+//	fprintf (stderr, "section 476 with length %d\n", length);
+//	return index + length;
+	uint8_t ensFlag = getBit (v, 8 * index + 1);	// not used anymore
+	uint8_t sidFlag = getBit (v, 8 * index + 3);
+
+	uint16_t res;
+	uint16_t res1	= getBits (v, 8 * index, 16);
+	uint16_t res2	= getBits (v, 8 * index + 16, 16);
+	uint32_t res3	= getBits (v, 8 * index + 32, 16);
+//	fprintf (stderr, "%X %X %X\n", res1, res2, res3);
+	*s = QString::number (res1, 16) + "." +
+	               QString::number (res2, 16) + "." +
+	               QString::number (res3, 16) + "." +
+	               (sidFlag != 0 ? QString::number (getBits (v, 8 * index + 48, 16), 16) : "0");
+//	fprintf (stderr, "%s", (*s). toLatin1 (). data ());
 	return index + length;
 }
 
@@ -2173,7 +2207,7 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int numbers = (v [index] << 8) | v [index + 1];
-	fprintf (stderr, "Version %d\n", numbers);
+//	fprintf (stderr, "Version %d\n", numbers);
 	return index + length;
 }
 

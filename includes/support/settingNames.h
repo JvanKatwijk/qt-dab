@@ -57,7 +57,7 @@
 
 
 #define	S_SOUND_HANDLER		"soundHandler"
-#define	S_PORT_AUDIO		"portaudio"
+#define	S_PORT_AUDIO		"PORTAUDIO"
 #define	S_QT_AUDIO		"QT_AUDIO"
 
 #define	S_MAIN_WIDGET		"mainWidget"

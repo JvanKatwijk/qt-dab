@@ -33,6 +33,7 @@
 class progDesc {
 public:
 	QString		ident;
+	QString		bearer;
 	QString		shortName;
 	QString		mediumName;
 	QString		longName;
@@ -59,7 +60,6 @@ public:
 class	epgDecoder: public QObject {
 Q_OBJECT
 public:
-
 		epgDecoder	();
 		~epgDecoder	();
 
@@ -77,12 +77,12 @@ private:
 	int	process_schedule	(uint8_t *v, int index);
 	int	process_program		(uint8_t *v, int index, progDesc *);
 	int	process_scope		(uint8_t *v, int index, progDesc *);
-	int	process_serviceScope	(uint8_t *v, int index);
+	int	process_serviceScope	(uint8_t *v, int index, progDesc *);
 	int	process_mediaDescription (uint8_t *v, int index, progDesc *);
 	int	process_ensemble	(uint8_t *v, int index);
-	int	process_service		(uint8_t *v, int index);
+	int	process_service		(uint8_t *v, int index, progDesc *);
 	int	process_location	(uint8_t *v, int index, progDesc *);
-	int	process_bearer		(uint8_t *v, int index);
+	int	process_bearer		(uint8_t *v, int index, progDesc *);
 	int	process_geoLocation	(uint8_t *v, int index);
 	int	process_programmeEvent	(uint8_t *v, int index);
 	int	process_onDemand	(uint8_t *v, int index);
@@ -114,6 +114,7 @@ private:
 	int	process_473		(uint8_t *v, int index);
 	int	process_474		(uint8_t *v, int index, int *);
 	int	process_475		(uint8_t *v, int index);
+	int	process_476_p		(uint8_t *v, int index, QString *);
 	int	process_476		(uint8_t *v, int index);
 	int	process_481		(uint8_t *v, int index);
 	int	process_482		(uint8_t *v, int index);
