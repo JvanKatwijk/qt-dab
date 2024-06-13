@@ -167,7 +167,6 @@ int32_t	i;
 	         if (theDirectory != nullptr)
 	            if (theDirectory -> get_transportId () == transportId)
 	               break;	// already existing
-
 	         if (theDirectory != nullptr)	// an old one, replace it
 	            delete theDirectory;
 
@@ -192,6 +191,7 @@ int32_t	i;
 	                                            backgroundFlag);
 	      }
 	      else {
+	         fprintf (stderr, "Creating directory segment %X\n", transportId);
 	         if ((theDirectory == nullptr) || 
 	                (theDirectory -> get_transportId() != transportId))
 	            break;

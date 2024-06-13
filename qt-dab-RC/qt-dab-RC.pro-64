@@ -512,6 +512,7 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
 	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 	LIBS		+= -lportaudio
+	LIBS		+= -lstdc++
 #
 	INCLUDEPATH	+= /usr/local/include
 	LIBS		+= -lportaudio

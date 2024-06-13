@@ -41,7 +41,7 @@ typedef struct {
 	QString transmitterName;
 	QString channelName;
 	QString	dateTime;
-	int	ttiId;
+	int	tiiValue;
 	int	distance;
 	int	azimuth;
 	float	power;

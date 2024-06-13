@@ -510,13 +510,14 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d, \"height\":%d}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d, \"height\":%d}",
 	       t [0]. type,
 	       dotNumber (t [0]. coords. latitude). c_str (),
 	       dotNumber (t [0]. coords. longitude). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
 	       t [0]. channelName. toUtf8 (). data (),
 	       t [0]. dateTime. toUtf8 (). data (),
+	       t [0]. tiiValue,
 	       t [0]. distance,
 	       t [0]. azimuth,
 	       (int)(t [0]. power * 100),
@@ -542,7 +543,7 @@ void	httpHandler::putData	(uint8_t type, position target) {
 	t. transmitterName	= "";
 	t. channelName		= "";
 	t. dateTime		= "";
-	t. ttiId		= 0;
+	t. tiiValue		= 0;
 	t. distance		= 0;
 	t. azimuth		= 0;
 	t. power		= 0;
@@ -560,7 +561,7 @@ void	httpHandler::putData	(uint8_t	type,
 	                         QString	transmitterName,
 	                         QString	channelName,
 	                         QString	dateTime,
-	                         int		ttiId,
+	                         int		tiiValue,
 	                         int		distance,
 	                         int		azimuth,
 	                         float		power,
@@ -577,7 +578,7 @@ void	httpHandler::putData	(uint8_t	type,
 	t. transmitterName	= transmitterName;
 	t. channelName		= channelName;
 	t. dateTime		= dateTime;
-	t. ttiId		= ttiId;
+	t. tiiValue		= tiiValue;
 	t. distance		= distance;
 	t. azimuth		= azimuth;
 	t. power		= power;
@@ -605,7 +606,7 @@ void	httpHandler::putData	(uint8_t	type,
 	                      target. latitude, target. longitude,
 	                      transmitterName. toUtf8 (). data (),
 	                      t. dateTime. toUtf8 (). data (),
-	                      ttiId / 100, ttiId % 100,
+	                      tiiValue / 100, tiiValue % 100,
 	                      distance, azimuth, power, height);
 	   transmitterVector. push_back (t);
 	}

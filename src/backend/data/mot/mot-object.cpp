@@ -98,6 +98,8 @@ uint16_t	rawContentType = 0;
                        for (i = 0; i < length - 1; i ++)
                           name. append (segment [pointer + i + 1]);
                        }
+//	               fprintf (stderr, "Found MOT object name %s\n",
+//	                                       name. toLatin1 (). data ());
                        pointer += length;
 	               break;
 
@@ -121,7 +123,7 @@ uint16_t	rawContentType = 0;
               }
 	}
 
-//	fprintf (stderr, "creating mot object %x\n", transportId);
+//	fprintf (stderr, "creating mot object %x %d\n", transportId, lastFlag);
 }
 
 	motObject::~motObject () {
@@ -142,14 +144,14 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           bool		lastFlag) {
 int32_t i;
 
-//	fprintf (stderr, "adding segment %d (size %d)\n", segmentNumber,
-//	                                                  segmentSize);
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
 
 	if (motMap. find (segmentNumber) != motMap. end())
 	   return;
 
+//	fprintf (stderr, "adding segment %d to %d (last ? %d)\n",
+//	                    segmentNumber, transportId, lastFlag);
 //      Note that the last segment may have a different size
         if (!lastFlag && (this -> segmentSize == -1))
            this -> segmentSize = segmentSize;
@@ -182,10 +184,11 @@ QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
 //	fprintf (stderr,
-//	"Handling complete %s, type %d\n", name. toLatin1 (). data (),
+//	"Handling complete %X %s, type %d\n",
+//	                  transportId, name. toLatin1 (). data (),
 //	                                                  (int)contentType);
 	if (name == "")
-	   name = QString::number (get_transportId ());
+	   name = QString::number (get_transportId (), 16);
 	handle_motObject (result, name, (int)contentType,
 	                            dirElement, backgroundFlag);
 }
