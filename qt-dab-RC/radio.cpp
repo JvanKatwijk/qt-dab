@@ -3675,14 +3675,15 @@ bool listChanged = false;
 	                              QDateTime::currentDateTimeUtc () :
 	                              QDateTime::currentDateTime ();
 	   if (listChanged)
-	   mapHandler -> putData (key,
-	                          thePosition, 
-	                          theTr. theTransmitter. transmitterName,
-	                          channel. channelName,
-	                          theTime. toString (Qt::TextDate),
-	                          theTr. tiiValue,
-	                          theTr. distance,
-	                          theTr. corner, power, height);
+	      mapHandler -> putData (key,
+	                             thePosition, 
+	                             theTr. theTransmitter. transmitterName,
+	                             channel. channelName,
+	                             theTime. toString (Qt::TextDate),
+	                             theTr. tiiValue,
+	                             channel. snr,
+	                             theTr. distance,
+	                             theTr. corner, power, height);
 	}
 }
 

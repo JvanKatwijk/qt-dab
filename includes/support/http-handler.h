@@ -42,6 +42,7 @@ typedef struct {
 	QString channelName;
 	QString	dateTime;
 	int	tiiValue;
+	int	snr;
 	int	distance;
 	int	azimuth;
 	float	power;
@@ -65,14 +66,15 @@ public:
 	void	putData		(uint8_t, position);
 	void	putData		(uint8_t	type,
 	                         position	target,
-	                         QString transmittername,
-	                         QString channelName,
-	                         QString dateTime,
-	                         int ttiId,
-	                         int distance,
-	                         int azimuth,
-	                         float power,
-	                         float height);
+	                         QString	transmittername,
+	                         QString	channelName,
+	                         QString	dateTime,
+	                         int 		ttiValue,
+	                         int		snr,
+	                         int 		distance,
+	                         int 		azimuth,
+	                         float 		power,
+	                         float 		height);
 private:
 	QSettings		*dabSettings;
 	FILE			*saveFile;

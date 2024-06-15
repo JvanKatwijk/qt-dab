@@ -479,6 +479,7 @@ public slots:
 	void			handle_newDisplayFrame_closed ();
 
 	void			scheduler_timeOut	(const QString &);
+	void			channelSignal		(const QString &);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_timeTable	();

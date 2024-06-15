@@ -191,7 +191,7 @@ int32_t	i;
 	                                            backgroundFlag);
 	      }
 	      else {
-	         fprintf (stderr, "Creating directory segment %X\n", transportId);
+//	         fprintf (stderr, "Creating directory segment %X\n", transportId);
 	         if ((theDirectory == nullptr) || 
 	                (theDirectory -> get_transportId() != transportId))
 	            break;
@@ -204,7 +204,7 @@ int32_t	i;
 	      break;
 
 	   default:
-	      fprintf (stderr, "mot groupType %d\n", groupType);
+//	      fprintf (stderr, "mot groupType %d\n", groupType);
 	      return;
 	}
 }

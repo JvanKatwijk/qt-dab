@@ -433,14 +433,8 @@ int teller	= 0;
 int params	= 0;
 
 	
-	int mapChoice	= dabSettings == nullptr ? 0 :
-	                   dabSettings -> value ("mapChoice", 0). toInt ();
-#ifdef	__TRACE__
-	fprintf (stderr, "We found for mapChoice %d\n", mapChoice);
-#endif 
-	// read map file from resource file
-	QFile file (mapChoice == 0 ? ":res/qt-map.html" :
-	                                  ":res/qt-map-6X.html");
+// read map file from resource file
+	QFile file (":res/qt-map-6X.html");
 	if (file. open (QFile::ReadOnly)) {
 	   QByteArray record_data (1, 0);
 	   QDataStream in (&file);
@@ -510,7 +504,7 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d, \"height\":%d}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d, \"height\":%d}",
 	       t [0]. type,
 	       dotNumber (t [0]. coords. latitude). c_str (),
 	       dotNumber (t [0]. coords. longitude). c_str (),
@@ -518,6 +512,7 @@ QString Jsontxt;
 	       t [0]. channelName. toUtf8 (). data (),
 	       t [0]. dateTime. toUtf8 (). data (),
 	       t [0]. tiiValue,
+	       t [0]. snr,
 	       t [0]. distance,
 	       t [0]. azimuth,
 	       (int)(t [0]. power * 100),
@@ -544,6 +539,7 @@ void	httpHandler::putData	(uint8_t type, position target) {
 	t. channelName		= "";
 	t. dateTime		= "";
 	t. tiiValue		= 0;
+	t. snr			= 0;
 	t. distance		= 0;
 	t. azimuth		= 0;
 	t. power		= 0;
@@ -562,6 +558,7 @@ void	httpHandler::putData	(uint8_t	type,
 	                         QString	channelName,
 	                         QString	dateTime,
 	                         int		tiiValue,
+	                         int		snr,
 	                         int		distance,
 	                         int		azimuth,
 	                         float		power,
@@ -579,6 +576,7 @@ void	httpHandler::putData	(uint8_t	type,
 	t. channelName		= channelName;
 	t. dateTime		= dateTime;
 	t. tiiValue		= tiiValue;
+	t. snr			= snr,
 	t. distance		= distance;
 	t. azimuth		= azimuth;
 	t. power		= power;

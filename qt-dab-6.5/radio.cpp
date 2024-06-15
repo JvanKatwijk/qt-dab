@@ -3553,6 +3553,7 @@ int	subId	= tiiValue & 0xFF;
 	                       channel. channelName,
 	                       theTime. toString (Qt::TextDate),
 	                       channel. mainId * 100 + channel. subId,
+	                       channel. snr,
 	                       channel. distance,
 	                       channel. corner, power, height);
 }
@@ -3783,5 +3784,9 @@ void	RadioInterface::handle_deviceFrame_closed () {
 void	RadioInterface::handle_newDisplayFrame_closed () {
 	fprintf (stderr, "ook newDisplay clodes\n");
 	dabSettings_p -> setValue (NEW_DISPLAY_VISIBLE, 0);
+}
+
+void	RadioInterface::channelSignal		(const QString &s) {
+	(void)s;
 }
 
