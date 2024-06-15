@@ -25,6 +25,7 @@
  */
 #include	"mot-object.h"
 #include	"radio.h"
+#include	<algorithm>
 
 	   motObject::motObject (RadioInterface *mr,
 	                         bool		dirElement,
@@ -64,8 +65,8 @@ uint16_t	rawContentType = 0;
 //	                  headerSize, bodySize, b, transportId,
 //	                  segmentSize, lastFlag);
 //	we are actually only interested in the name, if any
-
-        while ((uint16_t)pointer < headerSize) {
+        while ((uint16_t)pointer < std::min ((int)headerSize, (int)segmentSize)) {
+//	   fprintf (stderr, "%d %d %d\n", pointer, headerSize, segmentSize);
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
            uint16_t     length;
