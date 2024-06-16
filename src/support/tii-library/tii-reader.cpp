@@ -54,6 +54,7 @@ std::vector<cacheElement> res;
 	}
 
 	res. resize (0);
+	Rflag =  s. endsWith ("/.txdata.tii");
 	FILE	*f	= fopen (s. toUtf8 (). data (), "r+b");
 #ifdef	__TRACE__
 	if (f == nullptr)
@@ -61,14 +62,17 @@ std::vector<cacheElement> res;
 #endif
 	if (f == nullptr) 
 	   return res;
+	if (!Rflag)
+	   fprintf (stderr, "YOU OPENED A NON STANDARD TII DATABASE\n");
 #ifdef	__TRACE__
 	fprintf (stderr, "File %s is opened\n", s. toUtf8 (). data ());
 #endif
 	int	count = 0; 
 	char	buffer [1024];
 	std::vector<QString> columnVector;
-	int	shift	= fgetc (f);
-//	this	-> shift	= fgetc (f);
+	int	shift	= 0;
+	if (Rflag)
+	   shift	= fgetc (f);
 	while (eread  (buffer, 1024, f, shift) != nullptr) {
 	   cacheElement ed;
 	   if (feof (f))
@@ -128,14 +132,16 @@ char	*bufferP;
 	if (fgets (buffer, amount, f) == nullptr)
 	   return nullptr;
 	bufferP	= buffer;
-	while (*bufferP != 0) {
-	   if (shift != 0xAA)
-	      *bufferP -= shift;
-	   else
-	      *bufferP ^= 0xAA;
-	   bufferP ++;
+	if (Rflag) {
+	   while (*bufferP != 0) {
+	      if (shift != 0xAA)
+	         *bufferP -= shift;
+	      else
+	         *bufferP ^= 0xAA;
+	      bufferP ++;
+	   }
+	   *bufferP = 0;
 	}
-	*bufferP = 0;
 	return buffer;
 }
 

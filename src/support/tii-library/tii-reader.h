@@ -50,5 +50,6 @@ private:
 	uint8_t	get_mainId	(const QString &);
 	uint8_t	get_subId	(const QString &);
 	FILE	*curl_f;
+	bool	Rflag;
 };
 
