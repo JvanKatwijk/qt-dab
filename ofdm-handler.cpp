@@ -522,7 +522,7 @@ void	ofdmHandler::data_for_audioservice	(const QString &s,
 }
 
 void	ofdmHandler::data_for_packetservice	(const QString &s,
-	                                         packetdata *pd,
+	                                         packetdata &pd,
 	                                         int16_t compnr) {
 	theFicHandler. data_for_packetservice (s, pd, compnr);
 }

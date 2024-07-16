@@ -1050,7 +1050,7 @@ void	RadioInterface::changeinConfiguration () {
 	      }
 	      else {
 	         packetdata pd;
-	         my_ofdmHandler -> data_for_packetservice (ss, &pd, 0);
+	         my_ofdmHandler -> data_for_packetservice (ss, pd, 0);
 	         my_ofdmHandler -> 
 	                   set_dataChannel (pd, &dataBuffer, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId     = pd. subchId;
@@ -1979,7 +1979,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
 	         my_ofdmHandler -> data_for_packetservice (s. serviceName,
-	                                                        &pd, i);
+	                                                        pd, i);
 	         if (pd. defined) {
 	            my_ofdmHandler -> stop_service (pd. subchId, FORE_GROUND);
 	            break;
@@ -2036,7 +2036,7 @@ QString serviceName	= s. serviceName;
 	}
 	else {
 	   packetdata pd;
-	   my_ofdmHandler -> data_for_packetservice (serviceName, &pd, 0);
+	   my_ofdmHandler -> data_for_packetservice (serviceName, pd, 0);
 	   if (pd. defined) {
 	      channel. currentService. valid		= true;
 	      channel. currentService. is_audio		= false;
@@ -2058,7 +2058,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	                                            nullptr, FORE_GROUND);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
-	   my_ofdmHandler -> data_for_packetservice (ad. serviceName, &pd, i);
+	   my_ofdmHandler -> data_for_packetservice (ad. serviceName, pd, i);
 	   if (pd. defined) {
 	      my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
@@ -2082,7 +2082,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 void	RadioInterface::startPacketservice (const QString &s) {
 packetdata pd;
 
-	my_ofdmHandler -> data_for_packetservice (s, &pd, 0);
+	my_ofdmHandler -> data_for_packetservice (s, pd, 0);
 	if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
 	   QMessageBox::warning (this, tr ("sdr"),
@@ -2977,7 +2977,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
 	for (auto serv : epgList) {
 	   packetdata pd;
-	   my_ofdmHandler -> data_for_packetservice (serv, &pd, 0);
+	   my_ofdmHandler -> data_for_packetservice (serv, pd, 0);
 	   if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
 	      continue;

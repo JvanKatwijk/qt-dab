@@ -403,7 +403,8 @@ QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
 	if (xmlDumper == nullptr)
 	   return false;
-	
+
+	fprintf (stderr, "lastFrequency = %d\n", lastFrequency);
 	xmlWriter	= new xml_fileWriter (xmlDumper,
 	                                      nrBits,
 	                                      "int16",

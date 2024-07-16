@@ -67,5 +67,6 @@ private:
 	FILE		*xmlFile;
 	QString		byteOrder;
 	int		nrElements;
+	QString		timeString;
 };
 

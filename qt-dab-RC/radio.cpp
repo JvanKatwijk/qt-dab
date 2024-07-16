@@ -766,7 +766,7 @@ QStringList s	= theOFDMHandler -> basicPrint ();
 	}
 }
 
-QString	RadioInterface::checkDir (const QString s) {
+QString	RadioInterface::checkDir (const QString &s) {
 QString	dir = s;
 
 	if (!dir. endsWith (QChar ('/')))
@@ -1079,7 +1079,7 @@ void	RadioInterface::changeinConfiguration () {
 	      }
 	      else {
 	         packetdata pd;
-	         theOFDMHandler -> data_for_packetservice (ss, &pd, 0);
+	         theOFDMHandler -> data_for_packetservice (ss, pd, 0);
 	         theOFDMHandler -> 
 	                   set_dataChannel (pd, &theDataBuffer, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId     = pd. subchId;
@@ -1968,7 +1968,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
 	         theOFDMHandler -> data_for_packetservice (s. serviceName,
-	                                                        &pd, i);
+	                                                        pd, i);
 	         if (pd. defined) {
 	            theOFDMHandler -> stop_service (pd. subchId, FORE_GROUND);
 	            break;
@@ -2019,7 +2019,7 @@ QString serviceName	= s. serviceName;
 	}
 	else {
 	   packetdata pd;
-	   theOFDMHandler -> data_for_packetservice (serviceName, &pd, 0);
+	   theOFDMHandler -> data_for_packetservice (serviceName, pd, 0);
 	   if (pd. defined) {
 	      channel. currentService. valid	= true;
 	      channel. currentService. is_audio	= false;
@@ -2044,7 +2044,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
 	for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
-	   theOFDMHandler -> data_for_packetservice (ad. serviceName, &pd, i);
+	   theOFDMHandler -> data_for_packetservice (ad. serviceName, pd, i);
 	   if (pd. defined) {
 	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
@@ -2067,7 +2067,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 void	RadioInterface::startPacketservice (const QString &s) {
 packetdata pd;
 
-	theOFDMHandler -> data_for_packetservice (s, &pd, 0);
+	theOFDMHandler -> data_for_packetservice (s, pd, 0);
 	if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
 	   QMessageBox::warning (this, tr ("sdr"),
@@ -2089,7 +2089,7 @@ packetdata pd;
 	                     channel. currentService. serviceName. toLatin1 (). data (), nrComps);
 	for (int i = 1; i < nrComps; i ++) {
 	   packetdata lpd;
-	   theOFDMHandler -> data_for_packetservice (pd. serviceName, &lpd, i);
+	   theOFDMHandler -> data_for_packetservice (pd. serviceName, lpd, i);
 	   if (lpd. defined) {
 	      theOFDMHandler -> set_dataChannel (lpd, &theDataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
@@ -3032,7 +3032,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
 	for (auto serv : epgList) {
 	   packetdata pd;
-	   theOFDMHandler -> data_for_packetservice (serv, &pd, 0);
+	   theOFDMHandler -> data_for_packetservice (serv, pd, 0);
 	   if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
 	      continue;

@@ -75,7 +75,7 @@ public:
         void		data_for_audioservice	(const QString &,
 	                                             audiodata &);
         void		data_for_packetservice	(const QString &,
-	                                             packetdata *, int16_t);
+	                                             packetdata &, int16_t);
 	int		get_nrComps		(uint32_t);
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();

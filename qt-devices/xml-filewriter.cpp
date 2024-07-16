@@ -57,6 +57,7 @@ uint8_t t	= 0;
 	else
 	   byteOrder	= "MSB";
 	nrElements	= 0;
+	timeString	= QDateTime::currentDateTimeUtc ().toString ("yyyy-MM-dd hh:mm:ss");
 }
 
 	xml_fileWriter::~xml_fileWriter	() {
@@ -80,13 +81,14 @@ QString	topLine = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 static int16_t buffer_int16 [BLOCK_SIZE];
 static int bufferP_int16	= 0;
 void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
-	nrElements	+= 2 * count;
+//	nrElements	+= 2 * count;
 	for (int i = 0; i < count; i ++) {
 	   buffer_int16 [bufferP_int16 ++] = real (data [i]);
 	   buffer_int16 [bufferP_int16 ++] = imag (data [i]);
 	   if (bufferP_int16 >= BLOCK_SIZE) {
 	      fwrite (buffer_int16, sizeof (int16_t), BLOCK_SIZE, xmlFile);
 	      bufferP_int16 = 0;
+	      nrElements += BLOCK_SIZE;
 	   }
 	}
 }
@@ -94,13 +96,14 @@ void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
 static uint8_t buffer_uint8 [BLOCK_SIZE];
 static int bufferP_uint8	= 0;
 void	xml_fileWriter::add	(std::complex<uint8_t> * data, int count) {
-	nrElements	+= 2 * count;
+//	nrElements	+= 2 * count;
 	for (int i = 0; i < count; i ++) {
 	   buffer_uint8 [bufferP_uint8 ++] = real (data [i]);
 	   buffer_uint8 [bufferP_uint8 ++] = imag (data [i]);
 	   if (bufferP_uint8 >= BLOCK_SIZE) {
 	      fwrite (buffer_uint8, sizeof (uint8_t), BLOCK_SIZE, xmlFile);
 	      bufferP_uint8 = 0;
+	      nrElements += BLOCK_SIZE;
 	   }
 	}
 }
@@ -108,13 +111,14 @@ void	xml_fileWriter::add	(std::complex<uint8_t> * data, int count) {
 static int8_t buffer_int8 [BLOCK_SIZE];
 static int bufferP_int8	= 0;
 void	xml_fileWriter::add	(std::complex<int8_t> * data, int count) {
-	nrElements	+= 2 * count;
+//	nrElements	+= 2 * count;
 	for (int i = 0; i < count; i ++) {
 	   buffer_int8 [bufferP_int8 ++] = real (data [i]);
 	   buffer_int8 [bufferP_int8 ++] = imag (data [i]);
 	   if (bufferP_int8 >= BLOCK_SIZE) {
 	      fwrite (buffer_int8, sizeof (int8_t), BLOCK_SIZE, xmlFile);
 	      bufferP_int8 = 0;
+	      nrElements += BLOCK_SIZE;
 	   }
 	}
 }
@@ -122,11 +126,6 @@ void	xml_fileWriter::add	(std::complex<int8_t> * data, int count) {
 QString	xml_fileWriter::create_xmltree () {
 QDomDocument theTree;
 QDomElement root	= theTree. createElement ("SDR");
-
-	time_t rawtime;
-	struct tm *timeinfo;
-	time (&rawtime);
-	timeinfo	= localtime (&rawtime);
 
 	theTree. appendChild (root);
 	QDomElement theRecorder = theTree. createElement ("Recorder");
@@ -139,10 +138,8 @@ QDomElement root	= theTree. createElement ("SDR");
 	root. appendChild (theDevice);
 	QDomElement theTime = theTree. createElement ("Time");
 	theTime. setAttribute ("Unit", "UTC");
-	char help [256];
-	strcpy (help, asctime (timeinfo));
-	help [strlen (help)] = 0;	// get rid of \n
-	theTime. setAttribute ("Value", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"));
+	theTime. setAttribute ("Value", timeString);
+//	theTime. setAttribute ("Value", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"));
 	root. appendChild (theTime);
 	QDomElement theSample = theTree. createElement ("Sample");
 	QDomElement theRate   = theTree. createElement ("Samplerate");

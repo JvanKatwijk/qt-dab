@@ -49,7 +49,7 @@ public:
 
 	void		data_for_audioservice	(const QString &, audiodata &);
 	void		data_for_packetservice	(const QString &,
-	                                          packetdata *, int16_t);
+	                                          packetdata &, int16_t);
 	int		get_nrComps		(uint32_t);
 	std::vector<serviceId>	get_services	(int);
 

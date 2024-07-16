@@ -341,7 +341,7 @@ private:
 
 	void			start_etiHandler	();
 	void			stop_etiHandler		();
-	QString			checkDir		(const QString);
+	QString			checkDir		(const QString &);
 //
 	void			startAudioservice	(audiodata &);
 	void			startPacketservice	(const QString &);

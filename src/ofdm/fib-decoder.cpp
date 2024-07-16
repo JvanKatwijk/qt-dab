@@ -1507,10 +1507,10 @@ int	serviceIndex;
 }
 
 void	fibDecoder::data_for_packetservice (const QString &s,
-	                                    packetdata *pd, int16_t compNr) {
+	                                    packetdata &pd, int16_t compNr) {
 int     serviceIndex;
 
-	pd       -> defined      = false;
+	pd. defined      = false;
 	serviceIndex    = find_service (s);
 	if (serviceIndex == -1)
 	   return;
@@ -1536,36 +1536,26 @@ int     serviceIndex;
 	   return;
 	}
 
-	pd	-> serviceName	= s;
-	pd	-> shortName	= "";
-	pd	-> SId		= SId;
-	pd	-> SCIds		= 
+	pd. serviceName	= s;
+	pd. shortName	= "";
+	pd. SId		= SId;
+	pd. SCIds	= 
 	           currentConfig -> serviceComps [compIndex]. SCIds;
 	          
-	pd	-> subchId      = subchId;
-	pd	-> startAddr    =
-	                     currentConfig -> subChannels [subchId]. startAddr;
-	pd	-> shortForm    = 
-	                     currentConfig -> subChannels [subchId]. shortForm;
-	pd	-> protLevel    = 
-	                     currentConfig -> subChannels [subchId]. protLevel;
-	pd	-> length       = 
-	                     currentConfig -> subChannels [subchId]. Length;
-	pd	-> bitRate      = 
-	                     currentConfig -> subChannels [subchId]. bitRate;
-	pd	-> FEC_scheme   = 
-	                     currentConfig -> subChannels [subchId]. FEC_scheme;
-	pd	-> DSCTy        = 
-	                     currentConfig -> serviceComps [compIndex]. DSCTy;
-	pd	-> DGflag       = 
-	                     currentConfig -> serviceComps [compIndex]. DGflag;
-	pd	-> packetAddress = 
+	pd. subchId      = subchId;
+	pd. startAddr    = currentConfig -> subChannels [subchId]. startAddr;
+	pd. shortForm    = currentConfig -> subChannels [subchId]. shortForm;
+	pd. protLevel    = currentConfig -> subChannels [subchId]. protLevel;
+	pd. length       = currentConfig -> subChannels [subchId]. Length;
+	pd. bitRate      = currentConfig -> subChannels [subchId]. bitRate;
+	pd. FEC_scheme   = currentConfig -> subChannels [subchId]. FEC_scheme;
+	pd. DSCTy        = currentConfig -> serviceComps [compIndex]. DSCTy;
+	pd. DGflag       = currentConfig -> serviceComps [compIndex]. DGflag;
+	pd. packetAddress = 
 	                     currentConfig -> serviceComps [compIndex]. packetAddress;
-	pd	-> compnr       = 
-	                     currentConfig -> serviceComps [compIndex]. componentNr;
-	pd	-> appType      = 
-	                     currentConfig -> serviceComps [compIndex]. appType;
-	pd	-> defined      = true;
+	pd. compnr       = currentConfig -> serviceComps [compIndex]. componentNr;
+	pd. appType      = currentConfig -> serviceComps [compIndex]. appType;
+	pd. defined      = true;
 
 	fibLocker. unlock();
 }

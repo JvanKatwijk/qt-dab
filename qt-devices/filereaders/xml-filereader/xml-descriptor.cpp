@@ -202,12 +202,13 @@ int	zeroCount = 0;
 	               if (subChild. tagName () == "Frequency") {
 	                  QString Unit = subChild.
 	                                     attribute ("Unit", "Hz");
+
 	                  int Value = 
 	                      (subChild. attribute ("Value", "200")). toInt ();
 	                  int Frequency =
 	                       Unit == "Hz" ? Value :
-	                       ((Unit == "KHz") | (Unit == "Khz")) ? Value * 1000 :
-	                       Value * 1000000;
+	                       ((Unit == "KHz") || (Unit == "kHz")) ?
+	                           Value * 1000 : Value * 1000000;
 	                     add_freqtoBlock (currBlock, Frequency);
 	                }
 	                if (subChild. tagName () == "Modulation") {
