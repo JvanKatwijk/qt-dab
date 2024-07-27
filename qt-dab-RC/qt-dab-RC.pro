@@ -15,12 +15,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -78,7 +78,8 @@ DEPENDPATH += . \
 	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
-	      ../qt-devices/filereaders//rawfiles-new \
+	      ../qt-devices/filereaders/new-reader \
+	      ../qt-devices/filereaders/rawfiles-new \
 	      ../qt-devices/filereaders/wavfiles-new\
 	      ../qt-devices/filereaders/xml-filereader 
 	      
@@ -238,6 +239,10 @@ HEADERS += ./radio.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
+	   ../qt-devices/riffWriter.h \
+	   ../qt-devices/filereaders/new-reader/newfiles.h \
+	   ../qt-devices/filereaders/new-reader/new-reader.h \
+	   ../qt-devices/filereaders/new-reader/riff-reader.h \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
            ../qt-devices/filereaders/wavfiles-new/wavfiles.h \
@@ -366,8 +371,12 @@ SOURCES += ./main.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
+	   ../qt-devices/riffWriter.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
+           ../qt-devices/filereaders/new-reader/newfiles.cpp \
+           ../qt-devices/filereaders/new-reader/new-reader.cpp \
+           ../qt-devices/filereaders/new-reader/riff-reader.cpp \
            ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
            ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp \
@@ -496,10 +505,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.XV3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.X
-	CONFIG		+= dabstick-win-v4
+	TARGET		= qt-dab32-6.XV3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.X
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

@@ -24,6 +24,7 @@
 #include	"sample-reader.h"
 #include	"radio.h"
 
+#include	"riffWriter.h"
 static  inline
 int16_t valueFor (int16_t b) {
 int16_t res     = 1;
@@ -74,7 +75,7 @@ int	i;
 
 	bufferContent	= 0;
 	corrector	= 0;
-	dumpfilePointer. store (nullptr);
+//	dumpfilePointer. store (nullptr);
 	dumpIndex	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
 	connect (this, &sampleReader::show_spectrum,
@@ -132,13 +133,15 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	bufferContent	-= nrSamples;
 //
 //	if dumping is "on" dump
-	if (dumpfilePointer. load () != nullptr) {
+	if (sourceDumper. isActive ()) {
+//	if (dumpfilePointer. load () != nullptr) {
 	   for (int i = 0; i < nrSamples; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (buffer [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (buffer [i]) * dumpScale;
 	      if (++ dumpIndex >= DUMPSIZE / 2) {
-	         sf_writef_short (dumpfilePointer. load (),
-	                          dumpBuffer, dumpIndex);
+	         sourceDumper. write (dumpBuffer, dumpIndex);
+//	         sf_writef_short (dumpfilePointer. load (),
+//	                          dumpBuffer, dumpIndex);
 	         dumpIndex = 0;
 	      }
 	   }
@@ -186,12 +189,29 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	}
 }
 
-void	sampleReader::start_dumping (SNDFILE *f) {
-	dumpfilePointer. store (f);
+void	sampleReader::start_dumping (const QString &fileName, int freq) {
+SF_INFO sf_info;
+
+	sourceDumper. init (fileName, freq);
+//	sf_info         -> samplerate   = 48000;
+//        sf_info         -> channels     = 2;
+//        sf_info         -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+//
+//	SNDFILE *theFile        = sf_open (fileName. toUtf8(). data(),
+//                                           SFM_WRITE, sf_info);
+//        if (theFile == nullptr) {
+//           qDebug() << "Cannot open " << fileName. toUtf8(). data();
+//        }
+
+//	dumpfilePointer. store (theFile);
 }
 
 void	sampleReader::stop_dumping() {
-	dumpfilePointer. store (nullptr);
+//	if (dumpfilePointer != nullptr)
+//	   sf_close (rawDumper_p);
+
+	sourceDumper.close ();
+//	dumpfilePointer. store (nullptr);
 }
 
 void	sampleReader::set_dcRemoval	(bool b) {

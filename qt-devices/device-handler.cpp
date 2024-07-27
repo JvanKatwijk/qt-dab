@@ -76,3 +76,7 @@ bool	deviceHandler::isFileInput	() {
 	return false;
 }
 
+int	deviceHandler::getVFOFrequency	() {
+	return lastFrequency;
+}
+

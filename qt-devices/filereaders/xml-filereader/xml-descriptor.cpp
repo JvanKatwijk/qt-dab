@@ -35,6 +35,8 @@ void	xmlDescriptor::printDescriptor	() {
 	                              byteOrder. toLatin1 (). data ());
 	fprintf (stderr, "iqOrder	= %s\n",
 	                              iqOrder. toLatin1 (). data ());
+	fprintf (stderr, "deviceGain	= %d\n", deviceGain);
+	                               
 	fprintf (stderr, "nrBlocks	= %d (%d)\n",
 	                              nrBlocks,  (int)(blockList. size ()));
 	for (int i = 0; i < (int)blockList. size (); i ++)
@@ -107,6 +109,7 @@ int	zeroCount = 0;
 	byteOrder	= QString ("MSB");
 	iqOrder		="IQ";
 	uint8_t		theChar;
+	deviceGain	= -1;
 	while (zeroCount < 500) {
 	   theChar = fgetc (f);
 	   if (theChar == 0)
@@ -174,6 +177,12 @@ int	zeroCount = 0;
 	            } 
 	         }
 	      }
+	   }
+	   if (component. tagName () == "deviceGain") {
+	      QString SR = component. attribute ("Value", "-1");
+	      deviceGain	= SR. toInt ();
+	      fprintf (stderr, "The gain is %d (%s)\n",
+	                                    deviceGain, SR.toLatin1 (). data ());
 	   }
 	   if (component. tagName () == "Datablocks") {
 //	      QString Count = component.attribute ("Count", "3");

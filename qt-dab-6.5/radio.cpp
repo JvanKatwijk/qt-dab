@@ -391,7 +391,7 @@ QString h;
 	p. setColor (QPalette::Highlight, Qt::green);
 //
 	audioDumper_p		= nullptr;
-	rawDumper_p		= nullptr;
+	sourceDumping		= false;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
 	total_ficError		= 0;
@@ -3134,13 +3134,12 @@ dbLoader theLoader (dabSettings_p);
 }
 
 void	RadioInterface::stop_sourcedumping	() {
-	if (rawDumper_p == nullptr) 
+	if (sourceDumping) 
 	   return;
 
 	LOG ("source dump stops ", "");
 	my_ofdmHandler	-> stop_dumping();
-	sf_close (rawDumper_p);
-	rawDumper_p	= nullptr;
+	sourceDumping	= false;
 	configHandler_p	-> mark_dumpButton (false);
 }
 
@@ -3151,21 +3150,24 @@ QString channelName	= channel. channelName;
 	if (scanMonitor. active ())
 	   return;
 
-	rawDumper_p	=
+	QString rawDumpName	=
 	         filenameFinder. findRawDump_fileName (deviceName, channelName);
-	if (rawDumper_p == nullptr)
+	if (rawDumpName == nullptr)
 	   return;
 
 	LOG ("source dump starts ", channelName);
 	configHandler_p	-> mark_dumpButton (true);
-	my_ofdmHandler -> start_dumping (rawDumper_p);
+	my_ofdmHandler -> start_dumping (rawDumpName,
+	                                     channel. tunedFrequency);
+	sourceDumping = true;
+	
 }
 
 void	RadioInterface::handle_sourcedumpButton () {
 	if (!running. load () || scanMonitor. active ())
 	   return;
 
-	if (rawDumper_p != nullptr)
+	if (sourceDumping)
 	   stop_sourcedumping ();
 	else
 	   start_sourcedumping ();

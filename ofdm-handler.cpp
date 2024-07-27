@@ -598,8 +598,8 @@ bool    ofdmHandler::set_dataChannel (packetdata &d,
 	   return false;
 }
 
-void	ofdmHandler::start_dumping	(SNDFILE *f) {
-	theReader. start_dumping (f);
+void	ofdmHandler::start_dumping	(const QString &f, int freq) {
+	theReader. start_dumping (f, freq);
 }
 
 void	ofdmHandler::stop_dumping() {

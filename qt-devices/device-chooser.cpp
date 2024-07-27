@@ -101,6 +101,7 @@
 
 #include	"xml-filereader.h"
 #include	"wavfiles.h"
+#include	"/usr/shared/systems/qt-dab/qt-devices/filereaders/new-reader/newfiles.h"
 #include	"rawfiles.h"
 //
 //	Some devices are always configured
@@ -294,8 +295,10 @@ int	deviceNumber	= getDeviceIndex (s);
 	         case RAW_FILE_RAW:
 	         case RAW_FILE_IQ:
 	            return new rawFiles (fileName);
+//	         case WAV_FILE:
+//	            return new wavFiles (fileName);
 	         case WAV_FILE:
-	            return new wavFiles (fileName);
+	            return new newFiles (fileName);
 	         case XML_FILE:
 	            return new xml_fileReader (fileName);
 	         default:

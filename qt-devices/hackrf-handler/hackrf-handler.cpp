@@ -594,6 +594,7 @@ QString saveDir = hackrfSettings -> value (SAVEDIR_XML,
 	                                      "int8",
 	                                      2048000,
 	                                      lastFrequency,
+	                                      -1,
 	                                      "Hackrf",
 	                                      "--",
 	                                      recorderVersion);

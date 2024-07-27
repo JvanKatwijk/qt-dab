@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB 
+ *    This file is part of the Qt-DAB program
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,34 +20,34 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 #pragma once
-#include	<stdio.h>
-#include	<cstring>
-#include	<stdexcept>
 
-class	device_exception: public std::exception {
-private:
-	std::string message;
+#include	<QThread>
+#include	"riff-reader.h"
+#include	"dab-constants.h"
+#include	"ringbuffer.h"
+#include	<atomic>
+class	newFiles;
+
+class	newReader:public QThread {
+Q_OBJECT
 public:
-	device_exception (const std::string &s) {
-	   message = s;
-	}
-	const char * what () const noexcept override {
-	   return message. c_str ();
-	}
+			newReader	(newFiles *,
+	                                 riffReader *,
+	                                 RingBuffer<std::complex<float>> *); 
+			~newReader	();
+	void		startReader	();
+	void		stopReader	();
+private:
+virtual void		run		();
+	riffReader	*theReader;
+	RingBuffer<std::complex<float> >	*theBuffer;
+	uint64_t	period;
+	std::atomic<bool>	running;
+	newFiles	*parent;
+	int64_t		fileLength;
+signals:
+	void		setProgress	(int, float);
 };
 
-//class	rtl_tcp_exception : public std::exception {
-//private:
-//	std::string message;
-//public:
-//	rtl_tcp_exception (const std::string &s) {
-//           message      = s;
-//        }
-//
-//        const char *what  () const noexcept override {
-//           return message. c_str ();
-//        }
-//};
 

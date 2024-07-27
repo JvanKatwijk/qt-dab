@@ -430,7 +430,7 @@ QString h;
 	p. setColor (QPalette::Highlight, Qt::green);
 //
 	audioDumper_p		= nullptr;
-	rawDumper_p		= nullptr;
+	sourceDumping		= false;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
 	total_ficError		= 0;
@@ -617,6 +617,7 @@ void	RadioInterface::doStart_direct	() {
 	   presetTimer. start 		(switchDelay);
 //	after the preset timer signals, the service will be started
 	}
+
 	startChannel (channelSelector -> currentText ());
 	int auto_http	= dabSettings_p -> value ("auto_http", 0). toInt ();
 	if ((auto_http != 0) && (localPos. latitude != 0)) {
@@ -2213,6 +2214,22 @@ int	tunedFrequency	=
 	channel. cleanChannel ();
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;
+	if (inputDevice_p -> isFileInput ()) {
+	   channelSelector		-> setEnabled (false);
+	   int freq	= inputDevice_p -> getVFOFrequency ();
+	   QString realChannel = theSCANHandler. getChannel (freq);
+	   if (realChannel != "") {
+	      int k = channelSelector -> findText (realChannel);
+	      channelSelector -> setCurrentIndex (k);
+	      channel. channelName	= realChannel;
+	      channel. tunedFrequency	= freq;
+	      theNewDisplay. showFrequency (channel. tunedFrequency);
+	   }
+	   else {
+	      channel. channelName	= "";
+	      channel. tunedFrequency	= -1;
+	   }
+	}
 	channel. realChannel	= !inputDevice_p -> isFileInput ();
 	if (channel. realChannel)
 	   dabSettings_p	-> setValue (CHANNEL_NAME, theChannel);
@@ -3190,38 +3207,33 @@ dbLoader theLoader (dabSettings_p);
 }
 
 void	RadioInterface::stop_sourcedumping	() {
-	if (rawDumper_p == nullptr) 
-	   return;
-
 	LOG ("source dump stops ", "");
 	theOFDMHandler	-> stop_dumping();
-	sf_close (rawDumper_p);
-	rawDumper_p	= nullptr;
+	sourceDumping	= false;
 	configHandler_p	-> mark_dumpButton (false);
 }
 
 void	RadioInterface::start_sourcedumping () {
 QString deviceName	= inputDevice_p -> deviceName ();
 QString channelName	= channel. channelName;
-	
 	if (theSCANHandler. active ())
 	   return;
 
-	rawDumper_p	=
+	QString rawDumpName	=
 	         theFilenameFinder. findRawDump_fileName (deviceName, channelName);
-	if (rawDumper_p == nullptr)
+	if (rawDumpName == "")
 	   return;
 
 	LOG ("source dump starts ", channelName);
 	configHandler_p	-> mark_dumpButton (true);
-	theOFDMHandler -> start_dumping (rawDumper_p);
+	theOFDMHandler -> start_dumping (rawDumpName, channel. tunedFrequency);
+	sourceDumping = true;
 }
 
 void	RadioInterface::handle_sourcedumpButton () {
 	if (!running. load () || theSCANHandler. active ())
 	   return;
-
-	if (rawDumper_p != nullptr)
+	if (sourceDumping)
 	   stop_sourcedumping ();
 	else
 	   start_sourcedumping ();
@@ -3536,7 +3548,7 @@ bool listChanged = false;
 	   transmitter_country	-> setText (country);
 	   channel. countryName	= country;
 	}
-//
+
 	if ((localPos. latitude == 0) || (localPos. longitude == 0)) 
 	   return;
 

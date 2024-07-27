@@ -78,6 +78,7 @@ DEPENDPATH += . \
 	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
+	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/rawfiles-new \
 	      ../qt-devices/filereaders/wavfiles-new\
 	      ../qt-devices/filereaders/xml-filereader 
@@ -236,6 +237,10 @@ HEADERS += ./radio.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
+	   ../qt-devices/riffWriter.h \
+	   ../qt-devices/filereaders/new-reader/newfiles.h \
+	   ../qt-devices/filereaders/new-reader/new-reader.h \
+	   ../qt-devices/filereaders/new-reader/riff-reader.h \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
            ../qt-devices/filereaders/wavfiles-new/wavfiles.h \
@@ -364,6 +369,10 @@ SOURCES += ./main.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
+	   ../qt-devices/riffWriter.cpp \
+	   ../qt-devices/filereaders/new-reader/newfiles.cpp \
+           ../qt-devices/filereaders/new-reader/new-reader.cpp \
+           ../qt-devices/filereaders/new-reader/riff-reader.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
            ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \

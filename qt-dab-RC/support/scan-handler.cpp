@@ -441,6 +441,13 @@ QString	scanHandler::getNextChannel	(const QString &s) {
 	return selectedBand [currentChannel]. key;
 }
 
+QString	scanHandler::getChannel	(int frequency) {
+	for (int i = 0; selectedBand [i]. key != nullptr; i ++)
+	   if (selectedBand [i]. fKHz == frequency / 1000)
+	      return selectedBand [i]. key;
+	return "";
+}
+
 #ifndef	__MINGW32__
 dabFrequencies alternatives [128];
 dabFrequencies *scanHandler::load_extFile	(const QString &extFile) {

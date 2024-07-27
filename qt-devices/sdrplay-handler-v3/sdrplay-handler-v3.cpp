@@ -404,14 +404,15 @@ QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
 	if (xmlDumper == nullptr)
 	   return false;
 
-	fprintf (stderr, "lastFrequency = %d\n", lastFrequency);
+	fprintf (stderr, "Writing an xml file with gain %d\n", theGain);
 	xmlWriter	= new xml_fileWriter (xmlDumper,
 	                                      nrBits,
 	                                      "int16",
 	                                      2048000,
 	                                      lastFrequency,
+	                                      theGain,
 	                                      "SDRplay",
-	                                      "????",
+	                                      deviceModel,
 	                                      recorderVersion);
 	dumping. store (true);
 
@@ -485,9 +486,9 @@ void	EventCallback (sdrplay_api_EventT eventId,
                        void *cbContext) {
 sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 	(void)tuner;
-	p -> theGain	= params -> gainParams. currGain;
 	switch (eventId) {
 	   case sdrplay_api_GainChange:
+	      p -> theGain	= params -> gainParams. currGain;
 	      break;
 
 	   case sdrplay_api_PowerOverloadChange:

@@ -67,6 +67,7 @@ public:
 
 	QStringList	getChannelNames	();
 	int32_t		Frequency	(const QString &);
+	QString		getChannel	(int frequency);
 
 private:
 	skiptableHandler	skipTable;

@@ -36,6 +36,7 @@ public:
 	int		nrElements;
 	QString		typeofUnit;
 	int		frequency;
+	int		deviceGain;
 	QString		modType;
 };
 
@@ -44,6 +45,7 @@ public:
 		xml_fileWriter	(FILE *,
 	                         int,
 	                         QString,
+	                         int,
 	                         int,
 	                         int,
 	                         QString,
@@ -61,6 +63,7 @@ private:
 	int		sampleRate;
 	int		frequency;
 	QString		deviceName;
+	int		deviceGain;
 	QString		deviceModel;
 	QString		recorderVersion;
 	QString		create_xmltree		();

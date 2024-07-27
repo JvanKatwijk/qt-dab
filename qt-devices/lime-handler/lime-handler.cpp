@@ -535,12 +535,14 @@ QString saveDir = limeSettings -> value (SAVEDIR_XML,
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
 	if (xmlDumper == nullptr)
 	   return false;
-	
+	uint32_t	theGain;
+	LMS_GetGaindB (theDevice, LMS_CH_RX, 0, &theGain);
 	xmlWriter	= new xml_fileWriter (xmlDumper,
 	                                      bitDepth	(),
 	                                      "int16",
 	                                      2048000,
 	                                      lastFrequency,
+	                                      theGain,
 	                                      "lime",
 	                                      "1",
 	                                      recorderVersion);

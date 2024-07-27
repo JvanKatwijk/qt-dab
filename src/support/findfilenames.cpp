@@ -145,7 +145,7 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	return theFile;
 }
 
-SNDFILE *findfileNames::findRawDump_fileName (const QString &deviceName,
+QString findfileNames::findRawDump_fileName (const QString &deviceName,
 	                                       const QString &channelName) {
 QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	                                        QDir::homePath ()). toString ();
@@ -156,20 +156,8 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	if (fileName == "")
 	   return nullptr;
 
-	SF_INFO	sf_info;
-	sf_info. samplerate   = INPUT_RATE;
-	sf_info. channels     = 2;
-	sf_info. format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	SNDFILE *theFile	= sf_open (fileName. toUtf8 (). data(),
-	                                   SFM_WRITE, &sf_info);
-	if (theFile == nullptr) {
-	   fprintf (stderr, "foute boel\n");
-	   qDebug() << "cannot open " << fileName. toUtf8(). data();
-	   return nullptr;
-	}
-
 	save_dirName ("saveDir_rawDump", fileName);
-	return theFile;
+	return fileName;
 }
 
 FILE	*findfileNames::findScanDump_fileName		() {

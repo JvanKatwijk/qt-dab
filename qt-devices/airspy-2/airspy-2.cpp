@@ -658,6 +658,7 @@ QString saveDir = airspySettings -> value (SAVEDIR_XML,
 	                                      "int16",
 	                                      selectedRate,
 	                                      lastFrequency,
+	                                      -1,
 	                                      "AIRspy",
 	                                      "I",
 	                                      recorderVersion);

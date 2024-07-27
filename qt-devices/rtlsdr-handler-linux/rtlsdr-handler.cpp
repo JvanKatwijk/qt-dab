@@ -643,6 +643,7 @@ QString saveDir = rtlsdrSettings -> value (SAVEDIR_XML,
 	                                      "uint8",
 	                                      2048000,
 	                                      lastFrequency,
+	                                      rtlsdr_get_tuner_gain (theDevice),
 	                                      "rtlsdr",
 	                                      deviceModel,
 	                                      recorderVersion);

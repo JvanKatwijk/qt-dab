@@ -19,35 +19,35 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *	
  */
 
-#pragma once
+#ifndef	__RIFF_READER__
+#define	__RIFF_READER__
+
 #include	<stdio.h>
-#include	<cstring>
-#include	<stdexcept>
+#include	<complex>
+#include	<QString>
+#include        "device-exceptions.h"
 
-class	device_exception: public std::exception {
-private:
-	std::string message;
+class	riffReader {
 public:
-	device_exception (const std::string &s) {
-	   message = s;
-	}
-	const char * what () const noexcept override {
-	   return message. c_str ();
-	}
-};
+		riffReader	(const QString &);
+		~riffReader	();
+	void	reset		();
+	int	read		(std::complex<float> *, int);
+	int	elementCount	();
+	int	currentPos	();
 
-//class	rtl_tcp_exception : public std::exception {
-//private:
-//	std::string message;
-//public:
-//	rtl_tcp_exception (const std::string &s) {
-//           message      = s;
-//        }
-//
-//        const char *what  () const noexcept override {
-//           return message. c_str ();
-//        }
-//};
+	int	getVFOFrequency	();
+private:
+	FILE	*filePointer;
+	int	remainingElements;
+	int	nrElements;
+	uint16_t	blockAlign;
+	std::fpos_t	baseofData;
+	int	tunedFrequency;
+};
+#endif
 

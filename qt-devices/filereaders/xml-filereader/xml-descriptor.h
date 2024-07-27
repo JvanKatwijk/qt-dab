@@ -52,6 +52,7 @@ public:
 	int		sampleRate;
 	int		nrChannels;
 	int		bitsperChannel;
+	int		deviceGain;
 	QString		container;
 	QString		byteOrder;
 	QString		iqOrder;

@@ -34,6 +34,7 @@ struct kort_woord {
 	                                QString	container,
 	                                int	sampleRate,
 	                                int	frequency,	
+	                                int	deviceGain,
 	                                QString	deviceName,
 	                                QString	deviceModel,
 	                                QString	recorderVersion) {
@@ -44,6 +45,7 @@ uint8_t t	= 0;
 	this	-> sampleRate	= sampleRate;
 	this	-> frequency	= frequency;
 	this	-> deviceName	= deviceName;
+	this	-> deviceGain	= deviceGain;
 	this	-> deviceModel	= deviceModel;
 	this	-> recorderVersion	= recorderVersion;
 
@@ -132,6 +134,12 @@ QDomElement root	= theTree. createElement ("SDR");
 	theRecorder. setAttribute ("Name", "Qt-DAB");
 	theRecorder. setAttribute ("Version", recorderVersion);
 	root. appendChild (theRecorder);
+
+	QDomElement theDeviceGain	= theTree. createElement ("deviceGain");
+	theDeviceGain. setAttribute ("Value",
+	                              QString::number (this -> deviceGain));
+	root. appendChild (theDeviceGain);
+
 	QDomElement theDevice = theTree. createElement ("Device");
 	theDevice. setAttribute ("Name", deviceName);
 	theDevice. setAttribute ("Model", deviceModel);
@@ -174,6 +182,7 @@ QDomElement root	= theTree. createElement ("SDR");
 	theDataBlock. appendChild (theModulation);
 	theDataBlocks. appendChild (theDataBlock);
 	root. appendChild (theDataBlocks);
+
 
 	return theTree. toString ();
 }

@@ -34,6 +34,7 @@
 #include	<vector>
 #include	"device-handler.h"
 #include	"ringbuffer.h"
+#include	"riffWriter.h"
 //
 //      Note:
 //      It was found that enlarging the buffersize to e.g. 8192
@@ -55,10 +56,11 @@ public:
 	      void	get_samples	(std::vector<Complex> &v,
 	                                 int index,
 	                                 int32_t n, int32_t phase, bool saving);
-	      void	start_dumping	(SNDFILE *);
+	      void	start_dumping	(const QString &, int);
 	      void	stop_dumping();
 	      void	set_dcRemoval	(bool);
 private:
+	      riffWriter	sourceDumper;
 	      RadioInterface	*myRadioInterface;
 	      deviceHandler	*theRig;
 	      RingBuffer<Complex> *spectrumBuffer;
@@ -75,7 +77,7 @@ private:
 	      int16_t		dumpIndex;
 	      int16_t		dumpScale;
 	      int16_t		dumpBuffer [DUMPSIZE];
-	      std::atomic<SNDFILE *>	dumpfilePointer;
+//	      std::atomic<SNDFILE *>	dumpfilePointer;
 	      int		repetitionCounter;
 
 	      bool		dcRemoval;

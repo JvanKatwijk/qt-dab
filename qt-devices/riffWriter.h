@@ -22,32 +22,24 @@
  */
 
 #pragma once
+
+#include	<QString>
 #include	<stdio.h>
-#include	<cstring>
-#include	<stdexcept>
+#include	<stdint.h>
 
-class	device_exception: public std::exception {
-private:
-	std::string message;
+class riffWriter {
 public:
-	device_exception (const std::string &s) {
-	   message = s;
-	}
-	const char * what () const noexcept override {
-	   return message. c_str ();
-	}
+		riffWriter	();
+		~riffWriter	();
+	bool	init		(const QString &, int);
+	void	write		(int16_t *buff, int samples);
+	void	close		();
+	bool	isActive	();
+private:
+	FILE	*filePointer;
+	int	nrElements;
+	std::fpos_t	dataPos;
+	bool	isValid;
+	int	locationCounter;
 };
-
-//class	rtl_tcp_exception : public std::exception {
-//private:
-//	std::string message;
-//public:
-//	rtl_tcp_exception (const std::string &s) {
-//           message      = s;
-//        }
-//
-//        const char *what  () const noexcept override {
-//           return message. c_str ();
-//        }
-//};
 

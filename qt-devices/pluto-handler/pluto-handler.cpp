@@ -671,6 +671,7 @@ QString saveDir = plutoSettings -> value (SAVEDIR_XML,
 	                                      "int16",
 	                                      PLUTO_RATE,
 	                                      lastFrequency,
+	                                      gainControl -> value (),
 	                                      "pluto",
 	                                      "I",
 	                                      recorderVersion);

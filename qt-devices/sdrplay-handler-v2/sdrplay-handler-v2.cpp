@@ -940,12 +940,15 @@ QString	saveDir	= sdrplaySettings -> value (SAVEDIR_XML,
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
 	if (xmlDumper == nullptr)
 	   return false;
-	
+
+	mir_sdr_GainValuesT theGains;
+	my_mir_sdr_GetCurrentGain (&theGains);
 	xmlWriter	= new xml_fileWriter (xmlDumper,
 	                                      nrBits,
 	                                      "int16",
 	                                      2048000,
 	                                      lastFrequency,
+	                                      (int)(theGains. curr),
 	                                      "SDRplay",
 	                                      deviceModel,
 	                                      recorderVersion);

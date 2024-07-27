@@ -48,6 +48,7 @@ virtual		void	resetBuffer	();
 virtual		int16_t	bitDepth	() { return 10;}
 virtual		QString deviceName	();
 virtual		bool	isFileInput	();
+virtual		int32_t	getVFOFrequency	();
 //
 //	all derived classes are subject to visibility settings
 //	performed by these functions

@@ -305,7 +305,7 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	SNDFILE                 *rawDumper_p;
+	bool			sourceDumping;
 	SNDFILE                 *audioDumper_p;
 	void			set_Colors		();
 	void			set_channelButton	(int);

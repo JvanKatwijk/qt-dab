@@ -69,6 +69,12 @@
 	iqOrderLabel		-> setText (theDescriptor -> iqOrder);
 	byteOrderLabel		-> setText (theDescriptor -> byteOrder);
 	frequencyDisplay	-> display (theDescriptor -> blockList [0]. frequency / 1000.0);
+	deviceGainLabel		-> hide ();
+	if (theDescriptor -> deviceGain > 0) {
+	   deviceGainLabel	-> show ();
+	   deviceGainLabel	-> setText ("Gain used " +
+	                                       QString::number (theDescriptor -> deviceGain));
+	}
 	typeofUnitLabel		-> setText (theDescriptor -> blockList [0]. typeofUnit);
 	modulationtypeLabel	-> setText (theDescriptor -> blockList [0]. modType);
 

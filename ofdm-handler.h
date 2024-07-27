@@ -59,7 +59,7 @@ public:
 	void		start			();
 //	void		start			(int32_t);
 	void		stop			();
-	void		start_dumping		(SNDFILE *);
+	void		start_dumping		(const QString &, int);
 	void		stop_dumping		();
 	bool		start_etiGenerator	(const QString &);
 	void		stop_etiGenerator	();
