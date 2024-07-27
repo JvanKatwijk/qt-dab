@@ -13,11 +13,22 @@
 ------------------------------------------------------------------------
 Recent changes
 ------------------------------------------------------------------------
+changes july 2024
 
-In the development version, Qt-DAB-6.X,  a few errors that still could 
-occur in Version 6.5. were corrected.
-Furthermore, Qt-DAB-6.X contains a few goodies that will
-be incorporated in the "stable" version to come.
+Linux, on the Fedora box I m working on, was not able to deal with
+"wav" files with the samplerate required for DAB, very annoying.
+Another thing hat irritated me when running with input from recordings,
+was that the channel indicator remained at channel 5A, and the frequency
+indications were what they were when recording.
+To handle that, the "xml" and the "sdr" (i.e. "wav") format were extended,
+such that on saving a file, the frequency is stored in the file.
+Rather than using the libsnd library for the sdr files, a writer and reader
+were written and included in the sources,
+and the 6.X software is modified to recognize the frequency data.
+
+The updated "sdr" and "xml" formats remain compatible with the previous formats.
+
+changes april/may 2024
 
 First of, one of the problems with the implemented sound handler was
 that sound did not always work after restarting the program with a
