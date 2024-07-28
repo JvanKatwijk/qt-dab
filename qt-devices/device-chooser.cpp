@@ -101,7 +101,7 @@
 
 #include	"xml-filereader.h"
 //#include	"wavfiles.h"
-#include	"/usr/shared/systems/qt-dab/qt-devices/filereaders/new-reader/newfiles.h"
+#include	"newfiles.h"
 #include	"rawfiles.h"
 //
 //	Some devices are always configured

@@ -80,7 +80,6 @@ DEPENDPATH += . \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/rawfiles-new \
-#	      ../qt-devices/filereaders/wavfiles-new\
 	      ../qt-devices/filereaders/xml-filereader 
 	      
 
@@ -112,7 +111,7 @@ INCLUDEPATH += . \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
-#	      ../qt-devices/filereaders/wavfiles-new \
+	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/xml-filereader \
 
 # Input
