@@ -120,7 +120,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	search_for_library (QWT Qwt)
 	search_for_library (ZLIB zlib)
-#	search_for_library( LIBSNDFILE sndfile)
 	search_for_library (LIBSAMPLERATE samplerate)
 
 	find_package(FFTW3f)
@@ -669,7 +668,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	          ${QT_QTGUI_INCLUDE_DIR}
 	          ${PORTAUDIO_INCLUDE_DIRS}
 	          ${FAAD_INCLUDE_DIRS}
-	          ${SNDFILES_INCLUDE_DIRS}
 	)
 
 	QT5_WRAP_CPP (MOCS ${${objectName}_MOCS})

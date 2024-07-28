@@ -63,7 +63,9 @@ void	converter_48000::start_audioDump         (const QString &fileName) {
 }
 
 void	converter_48000::stop_audioDump          () {
+	locker. lock ();
 	theWriter. close ();
+	locker. unlock ();
 }
 
 //	scale up from 16 -> 48
@@ -81,7 +83,7 @@ int	teller = 0;
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
 	      
-	      dump (buffer, result);
+	      dump (V, result);
 	      eval (buffer, result);
 	      for (int j = 0; j < 2 * result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -107,7 +109,7 @@ int	teller	= 0;
 	            convert (Complex (real (V [i]) / 32767.0,
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
-	      dump (buffer, result);
+	      dump (V, result);
 	      eval (buffer, result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -133,7 +135,7 @@ int	teller	= 0;
 	            convert (Complex (real (V [i]) / 32767.0,
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
-	      dump (buffer, result);
+	      dump (V, result);
 	      eval (buffer, result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -155,18 +157,18 @@ Complex buffer [amount];
 	   out [2 * i] = real (buffer [i]);
 	   out [2 * i + 1] = imag (buffer [i]);
 	}
-	dump (buffer, amount);
+	dump (V, amount);
 	eval (buffer, amount);
 	return 2 * amount;
 }
 
-void	converter_48000::dump (Complex *buffer, int nrSamples) {
-	locker. lock();
+void	converter_48000::dump (std::complex<int16_t> *buffer, int nrSamples) {
 	int16_t lBuf [2 * nrSamples];
 	for (int i = 0; i < nrSamples; i ++) {
-	   lBuf [2 * i] 	= (int16_t)(real (buffer [i]) * 32768);
-	   lBuf [2 * i + 1]	= (int16_t)(imag (buffer [i]) * 32768);
+	   lBuf [2 * i] 	= real (buffer [i]);
+	   lBuf [2 * i + 1]	= imag (buffer [i]);
 	}
+	locker. lock();
 	theWriter. write (lBuf, nrSamples);
         locker. unlock ();
 }

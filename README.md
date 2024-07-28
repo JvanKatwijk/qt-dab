@@ -26,7 +26,8 @@ Rather than using the libsnd library for the sdr files, a writer and reader
 were written and included in the sources,
 and the 6.X software is modified to recognize the frequency data.
 
-The updated "sdr" and "xml" formats remain compatible with the previous formats.
+The updated "sdr" and "xml" formats remain compatible with the basic formats,
+and the software handles older recordings as usual.
 Generating an executable does not require the availability of libsnd anymore.
 
 changes april/may 2024
