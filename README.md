@@ -17,18 +17,21 @@ changes july 2024
 
 Linux, on the Fedora box I m working on, was not able to deal with
 "wav" files with the samplerate required for DAB, very annoying.
-Another thing hat irritated me when running with input from recordings,
-was that the channel indicator remained at channel 5A, and the frequency
-indications were what they were when recording.
+Another thing that irritated me, when running with input from recordings,
+the channel indicator remained at channel 5A, and the frequency
+indications were not what they were when recording.
 To handle that, the "xml" and the "sdr" (i.e. "wav") format were extended,
-such that on saving a file, the frequency is stored in the file.
-Rather than using the libsnd library for the sdr files, a writer and reader
+such that on saving a file, the frequency is stored in the file as attribute.
+Rather than using the libsnd library for the sdr files, a reader and writer
 were written and included in the sources,
-and the 6.X software is modified to recognize the frequency data.
+and the 6.X software is modified to recognize - and display - the
+channel and frequency data.
 
-The updated "sdr" and "xml" formats remain compatible with the basic formats,
-and the software handles older recordings as usual.
-Generating an executable does not require the availability of libsnd anymore.
+The updated "sdr" and "xml" formats remain compatible with the standard,
+and the software handles older recordings as usual, and
+"other" software will just ignore the extensions.
+The result is that generating an executable does not require the
+availability of libsnd anymore.
 
 changes april/may 2024
 
