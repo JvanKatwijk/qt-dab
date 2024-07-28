@@ -120,29 +120,18 @@ QString	fileName	= outputDialog (saveDir, service, ".aac", flag);
 	return theFile;
 }
 
-SNDFILE	*findfileNames::findAudioDump_fileName (const QString &service, 
+QString	findfileNames::findAudioDump_fileName (const QString &service, 
 	                                                      bool flag) {
-SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 QString theTime		= QDateTime::currentDateTime (). toString ();
 QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	                                 QDir::homePath ()).  toString ();
 
-	QString fileName = outputDialog (saveDir, service, ".aac", flag);
+	QString fileName = outputDialog (saveDir, service, ".wav", flag);
 	if (fileName == "")
 	   return nullptr;
-	sf_info		-> samplerate	= 48000;
-	sf_info		-> channels	= 2;
-	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
-	SNDFILE *theFile	= sf_open (fileName. toUtf8(). data(),
-	                                   SFM_WRITE, sf_info);
-	if (theFile == nullptr) {
-	   qDebug() << "Cannot open " << fileName. toUtf8(). data();
-	   return nullptr;
-	}
 
 	save_dirName ("saveDir_audioDump", fileName);
-	return theFile;
+	return fileName;
 }
 
 QString findfileNames::findRawDump_fileName (const QString &deviceName,

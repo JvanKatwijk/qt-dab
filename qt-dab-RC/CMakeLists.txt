@@ -120,7 +120,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	search_for_library (QWT Qwt)
 	search_for_library (ZLIB zlib)
-	search_for_library( LIBSNDFILE sndfile)
+#	search_for_library( LIBSNDFILE sndfile)
 	search_for_library (LIBSAMPLERATE samplerate)
 
 	find_package(FFTW3f)
@@ -265,6 +265,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/cacheElement.h 
 	     ../includes/support/settingNames.h 
 	     ../includes/support/fft-handler.h 
+	     ../includes/support/wavWriter.h 
 	     ../includes/support/converter_48000.h 
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
@@ -305,6 +306,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devicces/xml-filewriter.h
+	     ../qt-devicces/riffWriter.h
 	)
 
 	set (${objectName}_SRCS
@@ -383,6 +385,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/output/newconverter.cpp
 	     ../src/support/distances.cpp
 	     ../src/support/position-handler.cpp
+	     ../src/support/wavWriter.cpp
 	     ../src/support/converter_48000.cpp
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
@@ -420,6 +423,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/scopes-qwt6/spectrogramdata.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp 
 	     ../qt-devices/xml-filewriter.cpp
+	     ../qt-devices/riffWriter.cpp
 	)
 
 	set (${objectName}_MOCS

@@ -21,25 +21,24 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__RIFF_WRITER__
-#define	__RIFF_WRITER__
+#ifndef	__WAV_WRITER__
+#define	__WAV_WRITER__
 
 #include	<QString>
 #include	<stdio.h>
 #include	<stdint.h>
 
-class riffWriter {
+class wavWriter {
 public:
-		riffWriter	();
-		~riffWriter	();
-	bool	init		(const QString &, int);
-	void	write		(int16_t *buff, int samples);
+		wavWriter	();
+		~wavWriter	();
+	bool	init		(const QString &);
+	void	write		(const int16_t *, int);
 	void	close		();
 	bool	isActive	();
 private:
 	FILE	*filePointer;
 	int	nrElements;
-	std::fpos_t	dataPos;
 	bool	isValid;
 	int	locationCounter;
 };

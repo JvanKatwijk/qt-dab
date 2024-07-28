@@ -24,10 +24,10 @@
 #pragma once
 
 #include	<QObject>
+#include	"wavWriter.h"
 #include	"dab-constants.h"
 #include	<cstdio>
 #include	<samplerate.h>
-#include	<sndfile.h>
 #include	<mutex>
 #include	<QObject>
 #include	"newconverter.h"
@@ -44,7 +44,7 @@ public:
 	                                          int32_t, int, 
 	                                          std::vector<float> &);
 	                                           
-	void		start_audioDump		(SNDFILE *);
+	void		start_audioDump		(const QString &);
 	void		stop_audioDump		();
 private:
 	int		convert_16000		(std::complex<int16_t> *,
@@ -55,10 +55,10 @@ private:
 	                                         int, std::vector<float> &);
 	int		convert_48000		(std::complex<int16_t> *,
 	                                         int, std::vector<float> &);
+	wavWriter	theWriter;
 	newConverter	mapper_16;
 	newConverter	mapper_24;
 	newConverter	mapper_32;
-	SNDFILE		*filePointer;
 	std::mutex	locker;
 	void		dump			(Complex *, int);
 //

@@ -24,7 +24,6 @@
 #include	"sample-reader.h"
 #include	"radio.h"
 
-#include	"riffWriter.h"
 static  inline
 int16_t valueFor (int16_t b) {
 int16_t res     = 1;

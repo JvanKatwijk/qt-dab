@@ -13,7 +13,6 @@ set($(devicesLibName)_HDRS
         ${${devicesLibName}_HDRS}
         device-handler.h
         device-chooser.h
-	
 	filereaders/filereader-widget.h
         filereaders/xml-filereader/element-reader.h
         filereaders/xml-filereader/xml-filereader.h
@@ -21,8 +20,9 @@ set($(devicesLibName)_HDRS
         filereaders/xml-filereader/xml-descriptor.h
         filereaders/rawfiles-new/rawfiles.h
         filereaders/rawfiles-new/raw-reader.h
-        filereaders/wavfiles-new/wavfiles.h
-        filereaders/wavfiles-new/wav-reader.h
+        filereaders/new-reader/new-reader.h
+        filereaders/new-reader/newfiles.h
+        filereaders/new-reader/riff-reader.h
 )
 
 set(${devicesLibName}_SRCS
@@ -34,8 +34,9 @@ set(${devicesLibName}_SRCS
         filereaders/xml-filereader/xml-descriptor.cpp
         filereaders/rawfiles-new/rawfiles.cpp
         filereaders/rawfiles-new/raw-reader.cpp
-        filereaders/wavfiles-new/wavfiles.cpp
-        filereaders/wavfiles-new/wav-reader.cpp
+        filereaders/new-reader/new-reader.cpp
+        filereaders/new-reader/newfiles.cpp
+        filereaders/new-reader/riff-reader.cpp
 )
 
 include_directories(

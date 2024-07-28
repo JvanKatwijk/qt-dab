@@ -301,7 +301,7 @@ private:
 	int32_t			port;
 #endif
 	bool			sourceDumping;
-	SNDFILE                 *audioDumper_p;
+	bool			audioDumping;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 

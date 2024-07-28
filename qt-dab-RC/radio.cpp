@@ -429,7 +429,7 @@ QString h;
 	theNewDisplay. ficError_display	-> setPalette (p);
 	p. setColor (QPalette::Highlight, Qt::green);
 //
-	audioDumper_p		= nullptr;
+	audioDumping		= false;
 	sourceDumping		= false;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
@@ -1546,54 +1546,57 @@ void	RadioInterface::handle_audiodumpButton () {
 	if (!running. load () || theSCANHandler. active ())
 	   return;
 
-	if (audioDumper_p != nullptr) 
+	if (audioDumping) 
 	   stopAudiodumping ();	
 	else
 	   startAudiodumping ();
 }
 
 void	RadioInterface::stopAudiodumping	() {
-	if (audioDumper_p == nullptr)
+	if (!audioDumping)
 	   return;
 
 	LOG ("audiodump stops", "");
 	theAudioConverter. stop_audioDump ();
-	sf_close (audioDumper_p);
-	audioDumper_p	= nullptr;
+	audioDumping	= false;
 	techWindow_p	-> audiodumpButton_text ("audio dump", 10);
 }
 
 void	RadioInterface::startAudiodumping () {
-	audioDumper_p	=
+	if (audioDumping)	// should not happen
+	   return;
+
+	QString audioDumpName	=
 	      theFilenameFinder.
 	           findAudioDump_fileName  (channel. currentService. serviceName, true);
-	if (audioDumper_p == nullptr)
+	if (audioDumpName == "")
 	   return;
 
 	LOG ("audiodump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
-	theAudioConverter. start_audioDump (audioDumper_p);
+	theAudioConverter. start_audioDump (audioDumpName);
+	audioDumping	= true;
 }
 
 void	RadioInterface::scheduled_audioDumping () {
-	if (audioDumper_p != nullptr) {
+	if (audioDumping) {
 	   theAudioConverter. stop_audioDump	();
-	   sf_close (audioDumper_p);
-	   audioDumper_p	= nullptr;
+	   audioDumping		= false;
 	   LOG ("scheduled audio dump stops ", serviceLabel -> text ());
 	   techWindow_p	-> audiodumpButton_text ("audio dump", 10);
 	   return;
 	}
 
-	audioDumper_p	=
+	QString audioDumpName	=
 	      theFilenameFinder.
 	            findAudioDump_fileName  (serviceLabel -> text (), false);
-	if (audioDumper_p == nullptr)
+	if (audioDumpName == "")
 	   return;
 
 	LOG ("scheduled audio dump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
-	theAudioConverter. start_audioDump (audioDumper_p);
+	theAudioConverter. start_audioDump (audioDumpName);
+	audioDumping		= true;
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -1954,7 +1957,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   channel. currentService. frameDumper = nullptr;
 	}
 
-	if (audioDumper_p != nullptr) {
+	if (audioDumping) {
 	   stopAudiodumping ();
 	}
 

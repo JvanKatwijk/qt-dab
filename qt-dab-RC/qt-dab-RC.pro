@@ -80,7 +80,7 @@ DEPENDPATH += . \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/rawfiles-new \
-	      ../qt-devices/filereaders/wavfiles-new\
+#	      ../qt-devices/filereaders/wavfiles-new\
 	      ../qt-devices/filereaders/xml-filereader 
 	      
 
@@ -112,7 +112,7 @@ INCLUDEPATH += . \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
-	      ../qt-devices/filereaders/wavfiles-new \
+#	      ../qt-devices/filereaders/wavfiles-new \
 	      ../qt-devices/filereaders/xml-filereader \
 
 # Input
@@ -202,13 +202,13 @@ HEADERS += ./radio.h \
 	   ../includes/support/cacheElement.h \
 	   ../includes/support/settingnames.h \
 	   ../includes/support/fft-handler.h \
+	   ../includes/support/wavWriter.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
-#	   ../includes/support/band-handler.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
@@ -245,8 +245,8 @@ HEADERS += ./radio.h \
 	   ../qt-devices/filereaders/new-reader/riff-reader.h \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
-           ../qt-devices/filereaders/wavfiles-new/wavfiles.h \
-           ../qt-devices/filereaders/wavfiles-new/wav-reader.h \
+#	   ../qt-devices/filereaders/wavfiles-new/wavfiles.h \
+#	   ../qt-devices/filereaders/wavfiles-new/wav-reader.h \
 	   ../qt-devices/filereaders/xml-filereader/element-reader.h \
 	   ../qt-devices/filereaders/xml-filereader/xml-filereader.h \
 	   ../qt-devices/filereaders/xml-filereader/xml-reader.h \
@@ -337,12 +337,12 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/position-handler.cpp \
+	   ../src/support/wavWriter.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 	   ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
-#	   ../src/support/band-handler.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
@@ -377,8 +377,8 @@ SOURCES += ./main.cpp \
            ../qt-devices/filereaders/new-reader/newfiles.cpp \
            ../qt-devices/filereaders/new-reader/new-reader.cpp \
            ../qt-devices/filereaders/new-reader/riff-reader.cpp \
-           ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
-           ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
+#	   ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
+#	   ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-reader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp 
@@ -405,7 +405,7 @@ mac {
 }
 
 CONFIG		+= link_pkgconfig
-PKGCONFIG	+= sndfile
+#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
@@ -414,7 +414,7 @@ LIBS      	+= -ldl
 }
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
-PKGCONFIG	+= sndfile
+#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
@@ -534,7 +534,7 @@ isEmpty(GITHASHSTRING) {
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lportaudio
-LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
+#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
 LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
 LIBS		+= -lwinpthread

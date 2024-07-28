@@ -22,11 +22,7 @@
  */
 
 //
-//	The RIFF writer writes the input samples into a "wav" file
-//	with the samplerate of 2048000, as 16 bit int's, and a "chunk"
-//	(chunk Id "freq") is added that contains the frequency
-#include	"riffWriter.h"
-
+#include	"wavWriter.h"
 static
 const char	* riff	= "RIFF";
 static
@@ -34,18 +30,15 @@ const char	* wave	= "WAVE";
 static
 const char	* fmt	= "fmt ";
 static
-const char	* aux1	= "freq";
-static
 const char	* data	= "data";
 
-	riffWriter::riffWriter	() {
+	wavWriter::wavWriter	() {
 	isValid = false;
 }
 
-	riffWriter::~riffWriter	() {}
+	wavWriter::~wavWriter	() {}
 
-bool	riffWriter::init	(const QString &fileName, 
-	                                 const int frequency) {
+bool	wavWriter::init		(const QString &fileName) {
 	isValid			= false;
 	filePointer		= fopen (fileName. toUtf8 (). data (), "wb");
 	if (filePointer == nullptr)
@@ -71,7 +64,7 @@ bool	riffWriter::init	(const QString &fileName,
 	uint16_t	nrChannels	= 2;
 	fwrite (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	locationCounter		+= 2;
-	uint32_t	samplingRate	= 2048000;
+	uint32_t	samplingRate	= 48000;
 	fwrite (&samplingRate, 1, sizeof (uint32_t), filePointer);
 	locationCounter		+= 4;
 	uint32_t	bytesperSecond	= 4 * samplingRate;
@@ -84,15 +77,6 @@ bool	riffWriter::init	(const QString &fileName,
 	fwrite (&bitsperSample, 1, sizeof (uint16_t), filePointer);
 	locationCounter		+= 2;
 //
-//	the "freq" chunk
-	fwrite (aux1, 1, 4, filePointer);
-	locationCounter		+= 4;
-	int freqLen	= sizeof (int32_t);
-	fwrite (&freqLen, 1, 4, filePointer);
-	locationCounter		+= 4;
-	fwrite (&frequency, 1, 4, filePointer);
-	locationCounter		+= 4;
-//
 //	start of the "data" chunk
 	fwrite (data, 1, 4, filePointer);
 	locationCounter		+= 4;
@@ -102,7 +86,7 @@ bool	riffWriter::init	(const QString &fileName,
 	return true;
 }
 
-void	riffWriter::close	() {
+void	wavWriter::close	() {
 	if (!isValid)
 	   return;
 	isValid		= false;
@@ -124,14 +108,15 @@ void	riffWriter::close	() {
 	fclose (filePointer);
 }
 
-void	riffWriter::write (int16_t *buff, int samples) {
+void	wavWriter::write (const int16_t *buf, int samples) {
 	if (!isValid)
 	   return;
-	fwrite (buff, 2 * sizeof (int16_t), samples, filePointer);
+
+	fwrite (buf, 2 * sizeof (int16_t), samples, filePointer);
 	nrElements	+= samples;
 }
 
-bool	riffWriter::isActive	() {
+bool	wavWriter::isActive	() {
 	return isValid;
 }
 

@@ -29,7 +29,7 @@
 	                                mapper_16 (16000, 48000, 2 * 1600),
 	                                mapper_24 (24000, 48000, 2 * 2400),
 	                                mapper_32 (32000, 48000, 2 * 3200) {
-	this	-> filePointer		= nullptr;
+	                              
 	this    -> peakLevelCurSampleCnt        = 0;
 	repetitionCounter		= 8;
         this    -> peakLevelSampleMax   = 48000 / repetitionCounter; 
@@ -58,16 +58,12 @@ int	converter_48000::convert (std::complex<int16_t> *V,
 	}
 }
 
-void	converter_48000::start_audioDump         (SNDFILE *f) {
-	locker. lock ();
-	filePointer	= f;
-	locker. unlock ();
+void	converter_48000::start_audioDump         (const QString &fileName) {
+	theWriter. init (fileName);
 }
 
 void	converter_48000::stop_audioDump          () {
-	locker. lock ();
-	filePointer	= nullptr;
-	locker. unlock ();
+	theWriter. close ();
 }
 
 //	scale up from 16 -> 48
@@ -164,11 +160,15 @@ Complex buffer [amount];
 	return 2 * amount;
 }
 
-void	converter_48000::dump (Complex *buffer, int size) {
+void	converter_48000::dump (Complex *buffer, int nrSamples) {
 	locker. lock();
-        if (filePointer != nullptr)
-           sf_writef_float (filePointer, (float *)buffer, size);
-        locker. unlock();
+	int16_t lBuf [2 * nrSamples];
+	for (int i = 0; i < nrSamples; i ++) {
+	   lBuf [2 * i] 	= (int16_t)(real (buffer [i]) * 32768);
+	   lBuf [2 * i + 1]	= (int16_t)(imag (buffer [i]) * 32768);
+	}
+	theWriter. write (lBuf, nrSamples);
+        locker. unlock ();
 }
 
 void	converter_48000::eval (Complex *buffer, int amount) {

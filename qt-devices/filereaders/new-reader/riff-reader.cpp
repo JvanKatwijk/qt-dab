@@ -154,7 +154,7 @@ int	riffReader::elementCount	() {
 }
 
 int	riffReader::currentPos		() {
-	return remainingElements;
+	return nrElements - remainingElements;
 }
 
 int	riffReader::getVFOFrequency	() {

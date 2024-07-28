@@ -42,12 +42,12 @@ struct timeval  tv;
 	this	-> theReader	= theReader;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= theReader -> elementCount ();
-	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
+//	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
 	theReader	-> reset ();
 	period          = (32768 * 1000) / (2048);  // full IQś read
-	fprintf (stderr, "Period = %ld\n", period);
+//	fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
-	start();
+	start ();
 }
 
 	newReader::~newReader	() {
@@ -55,7 +55,7 @@ struct timeval  tv;
 }
 
 void	newReader::stopReader	() {
-	if (running. load()) {
+	if (running. load ()) {
 	   running. store (false);
 	   while (isRunning())
 	      usleep (200);
@@ -77,7 +77,7 @@ std::complex<float> bi [bufferSize];
 	nextStop	= getMyTime();
 	try {
 	   while (running. load()) {
-	      while (theBuffer -> WriteSpace() < bufferSize) {
+	      while (theBuffer -> WriteSpace () < bufferSize) {
 	         if (!running. load())
 	            throw (33);
 	         usleep (100);

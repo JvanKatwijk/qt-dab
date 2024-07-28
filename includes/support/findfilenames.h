@@ -40,7 +40,7 @@ public:
 		~findfileNames			();
 	FILE	*findContentDump_fileName	(const QString &channel);
 	FILE	*findFrameDump_fileName		(const QString &service, bool);
-	SNDFILE	*findAudioDump_fileName		(const QString &service, bool);
+	QString	findAudioDump_fileName		(const QString &service, bool);
 	QString findRawDump_fileName		(const QString &deviceName,
 	                                       	 const QString &channelName);
 	FILE	*findScanDump_fileName		();

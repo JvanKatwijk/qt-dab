@@ -41,7 +41,7 @@
 #include	"config-handler.h"
 #include	"ofdm-handler.h"
 #include	"rawfiles.h"
-#include	"wavfiles.h"
+#include	"newfiles.h"
 #include	"xml-filereader.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
@@ -390,7 +390,7 @@ QString h;
 	newDisplay. ficError_display	-> setPalette (p);
 	p. setColor (QPalette::Highlight, Qt::green);
 //
-	audioDumper_p		= nullptr;
+	audioDumping		= false;
 	sourceDumping		= false;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
@@ -1543,54 +1543,57 @@ void	RadioInterface::handle_audiodumpButton () {
 	if (!running. load () || scanMonitor. active ())
 	   return;
 
-	if (audioDumper_p != nullptr) 
+	if (audioDumping) 
 	   stopAudiodumping ();	
 	else
 	   startAudiodumping ();
 }
 
 void	RadioInterface::stopAudiodumping	() {
-	if (audioDumper_p == nullptr)
+	if (!audioDumping)
 	   return;
 
 	LOG ("audiodump stops", "");
 	audioConverter. stop_audioDump ();
-	sf_close (audioDumper_p);
-	audioDumper_p	= nullptr;
+	audioDumping	= false;
 	techWindow_p	-> audiodumpButton_text ("audio dump", 10);
 }
 
 void	RadioInterface::startAudiodumping () {
-	audioDumper_p	=
+	if (audioDumping)	// should not happen
+	   return;
+	
+	QString audioDumpName	=
 	      filenameFinder.
 	           findAudioDump_fileName  (channel. currentService. serviceName, true);
-	if (audioDumper_p == nullptr)
+	if (audioDumpName == "")
 	   return;
 
 	LOG ("audiodump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
-	audioConverter. start_audioDump (audioDumper_p);
+	audioConverter. start_audioDump (audioDumpName);
+	audioDumping	= true;
 }
 
 void	RadioInterface::scheduled_audioDumping () {
-	if (audioDumper_p != nullptr) {
+	if (audioDumping) {
 	   audioConverter. stop_audioDump	();
-	   sf_close (audioDumper_p);
-	   audioDumper_p	= nullptr;
+	   audioDumping		= false;
 	   LOG ("scheduled audio dump stops ", serviceLabel -> text ());
 	   techWindow_p	-> audiodumpButton_text ("audio dump", 10);
 	   return;
 	}
 
-	audioDumper_p	=
+	QString	audioDumpName	=
 	      filenameFinder.
 	            findAudioDump_fileName  (serviceLabel -> text (), false);
-	if (audioDumper_p == nullptr)
+	if (audioDumpName == "")
 	   return;
 
 	LOG ("scheduled audio dump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
-	audioConverter. start_audioDump (audioDumper_p);
+	audioConverter. start_audioDump (audioDumpName);
+	audioDumping	= true;
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -1964,7 +1967,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   channel. currentService. frameDumper = nullptr;
 	}
 
-	if (audioDumper_p != nullptr) {
+	if (audioDumping) {
 	   stopAudiodumping ();
 	}
 

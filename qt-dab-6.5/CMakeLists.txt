@@ -140,18 +140,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	endif ()
 	include_directories (${ZLIB_INCLUDE_DIRS})
 
-	pkg_check_modules (LIBSNDFILE sndfile)
-	if (LIBSNDFILE_FOUND)
-	   list (APPEND extraLibs ${LIBSNDFILE_LDFLAGS})
-	else ()
-           find_package(LibSndFile)
-           if (NOT LIBSNDFILE_FOUND)
-              message(FATAL_ERROR "please install libsndfile")
-           endif ()
-           list(APPEND extraLibs ${LIBSNDFILE_LIBRARY})
-	endif ()
-	include_directories (${LIBSNDFILE_LIBRARY})
-
 	pkg_check_modules (LIBSAMPLERATE samplerate)
 	if (LIBSAMPLERATE_FOUND)
 	   list (APPEND extraLibs ${LIBSAMPLERATE_LDFLAGS})
@@ -208,7 +196,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../qt-devices
 	           ../qt-devices/filereaders/
 	           ../qt-devices/filereaders/rawfiles-new
-	           ../qt-devices/filereaders/wavfiles-new
+	           ../qt-devices/filereaders/new-reader
 	           ../qt-devices/filereaders/xml-filereader
 	           ../eti-handler
 	           /usr/include/
@@ -297,6 +285,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/cacheElement.h 
 	     ../includes/support/settingNames.h 
 	     ../includes/support/fft-handler.h 
+	     ../includes/support/wavWriter.h 
 	     ../includes/support/converter_48000.h 
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
@@ -337,10 +326,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../qt-devices/device-chooser.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devices/xml-filewriter.h
+	     ../qt-devices/riffWriter.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
 	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
-	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
-	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
+	     ../qt-devices/filereaders/new-reader/newfiles.h
+	     ../qt-devices/filereaders/new-reader/new-reader.h
+	     ../qt-devices/filereaders/new-reader/riff-reader.h
 	     ../qt-devices/filereaders/xml-filereader/element-reader.h
 	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
 	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
@@ -421,6 +412,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/output/newconverter.cpp
 	     ../src/support/distances.cpp
 	     ../src/support/position-handler.cpp
+	     ../src/support/wavWriter.cpp
 	     ../src/support/converter_48000.cpp
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
@@ -460,10 +452,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../qt-devices/device-handler.cpp
 	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
+	     ../qt-devices/riffWriter.cpp
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp
 	     ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp
-	     ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp
-	     ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp
+	     ../qt-devices/filereaders/new-reader/newfiles.cpp
+	     ../qt-devices/filereaders/new-reader/new-reader.cpp
+	     ../qt-devices/filereaders/new-reader/riff-reader.cpp
 	     ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp
 	     ../qt-devices/filereaders/xml-filereader/xml-reader.cpp
 	     ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp
@@ -539,8 +533,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
 	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
-	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
-	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
+	     ../qt-devices/filereaders/new-reader/newfiles.h
+	     ../qt-devices/filereaders/new-reader/new-reader.h
+	     ../qt-devices/filereaders/new-reader/riff-reader.h
 	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
 	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
 	)

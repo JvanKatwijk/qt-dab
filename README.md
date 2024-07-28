@@ -27,6 +27,7 @@ were written and included in the sources,
 and the 6.X software is modified to recognize the frequency data.
 
 The updated "sdr" and "xml" formats remain compatible with the previous formats.
+Generating an executable does not require the availability of libsnd anymore.
 
 changes april/may 2024
 
