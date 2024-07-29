@@ -110,7 +110,7 @@ INCLUDEPATH += . \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
-	      ../qt-devices/filereaders/xml-filereader 
+	      ../qt-devices/filereaders/xml-filereader \
 	      ../qt-devices/filereaders/new-reader 
 
 # Input

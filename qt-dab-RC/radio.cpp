@@ -3210,6 +3210,8 @@ dbLoader theLoader (dabSettings_p);
 }
 
 void	RadioInterface::stop_sourcedumping	() {
+	if (!sourceDumping)
+	   return;
 	LOG ("source dump stops ", "");
 	theOFDMHandler	-> stop_dumping();
 	sourceDumping	= false;

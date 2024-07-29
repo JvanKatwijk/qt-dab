@@ -15,12 +15,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -31,14 +31,11 @@ RC_ICONS	=  qt-dab-RC.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
-DEFINES		+= __HAS_CHANNEL__
 #
 #       For more parallel processing, uncomment the following
 #       defines
 #DEFINES	+= __MSC_THREAD__
 DEFINES		+= __THREADED_BACKEND__
-
-#DEFINES	+= _UPLOAD_SCAN_RESULT_
 
 #For showing trace output
 #DEFINES	+= __EPG_TRACE__  
@@ -244,8 +241,6 @@ HEADERS += ./radio.h \
 	   ../qt-devices/filereaders/new-reader/riff-reader.h \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
-#	   ../qt-devices/filereaders/wavfiles-new/wavfiles.h \
-#	   ../qt-devices/filereaders/wavfiles-new/wav-reader.h \
 	   ../qt-devices/filereaders/xml-filereader/element-reader.h \
 	   ../qt-devices/filereaders/xml-filereader/xml-filereader.h \
 	   ../qt-devices/filereaders/xml-filereader/xml-reader.h \
@@ -504,10 +499,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.XV3
-	CONFIG		+= dabstick-win-v3
-#	TARGET		= qt-dab32-6.X
-#	CONFIG		+= dabstick-win-v4
+#	TARGET		= qt-dab32-6.XV3
+#	CONFIG		+= dabstick-win-v3
+	TARGET		= qt-dab32-6.X
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

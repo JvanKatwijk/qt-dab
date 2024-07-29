@@ -29,9 +29,7 @@
 #include	"timesyncer.h"
 #include	"freqsyncer.h"
 #include	"ringbuffer.h"
-#ifdef	__HAS_CHANNEL__
 #include	"estimator.h"
-#endif
 #include	"correlator.h"
 //
 /**
@@ -168,9 +166,7 @@ void	ofdmHandler::run	() {
 int32_t		startIndex;
 timeSyncer	myTimeSyncer (&theReader);
 freqSyncer	myFreqSyncer (radioInterface_p, p);
-#ifdef	__HAS_CHANNEL__
 estimator	myEstimator  (radioInterface_p, p);
-#endif
 correlator	myCorrelator (radioInterface_p, p);
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
@@ -208,9 +204,9 @@ int	snrCount	= 0;
 	         theTIIDetector. reset ();
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
-	            inSync	= true;
-	            set_synced (true);
-	            break;			// yes, we are ready
+	               inSync	= true;
+	               set_synced (true);
+	               break;			// yes, we are ready
 
 	            case NO_DIP_FOUND:
 	               if (++ attempts >= 8) {
@@ -302,7 +298,6 @@ int	snrCount	= 0;
 	                              ofdmBufferIndex,
 	                              T_u - ofdmBufferIndex,
 	                              coarseOffset + fineOffset, true);
-#ifdef	__HAS_CHANNEL__
 	      static int abc = 0;
 	      if (radioInterface_p -> channelOn ()) {
 	         if (++abc > 10) { 
@@ -316,7 +311,6 @@ int	snrCount	= 0;
 	            abc = 0;
 	         }
 	      }
-#endif
 	      sampleCount	+= T_u;
 	      theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__

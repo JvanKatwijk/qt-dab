@@ -90,6 +90,11 @@ char header [5];
 	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
 
 	fread (&blockAlign, 1, 2, filePointer);
+	if (blockAlign != 4) {
+	   QString val =
+                   QString ("File '%1' is no valid SDR file").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
 	fprintf (stderr, "blockAlign %d\n", blockAlign);
 	fsetpos (filePointer, &pos);
 	fseek (filePointer, segmentSize, SEEK_CUR);
