@@ -15,12 +15,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -499,10 +499,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.XV3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.X
-	CONFIG		+= dabstick-win-v4
+	TARGET		= qt-dab32-6.XV3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.X
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
