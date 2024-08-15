@@ -19,12 +19,9 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *	
  */
 
-#ifndef	__RIFF_READER__
-#define	__RIFF_READER__
+#pragma once
 
 #include	<stdio.h>
 #include	<complex>
@@ -49,5 +46,3 @@ private:
 	std::fpos_t	baseofData;
 	int	tunedFrequency;
 };
-#endif
-

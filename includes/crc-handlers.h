@@ -66,7 +66,8 @@ uint16_t	crc;
 uint16_t	genpoly		= 0x1021;
 
 	for (i = 0; i < len; i ++) {
-	   int16_t data = msg [i] << 8;
+	   uint16_t xx = msg [i];
+	   int16_t data = xx << 8;
 	   for (j = 8; j > 0; j--) {
 	      if ((data ^ accumulator) & 0x8000)
 	         accumulator = ((accumulator << 1) ^ genpoly) & 0xFFFF;

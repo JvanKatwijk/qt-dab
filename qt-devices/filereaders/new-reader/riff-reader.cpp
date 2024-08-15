@@ -46,7 +46,7 @@ char header [5];
         }
 	
         fread (&segmentSize, 1, 4, filePointer);
-	fprintf (stderr, "Size of RIFF %d\n", segmentSize);
+//	fprintf (stderr, "Size of RIFF %d\n", segmentSize);
 //
 //	We expect a "WAVE" header, enclosing an "fmt " header
 	fread (header, 1, 4, filePointer);
@@ -77,7 +77,7 @@ char header [5];
 	fread (&formatTag, 1, sizeof (uint16_t), filePointer);
 	fread (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	fread (&samplingRate, 1, 4, filePointer);
-	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
+//	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
 	if ((formatTag != 01) ||
 	    (nrChannels != 02) || (samplingRate != 2048000)) {
 	   QString val =
@@ -87,7 +87,7 @@ char header [5];
 
 	uint32_t bytesperSecond;
 	fread (&bytesperSecond, 1, 4, filePointer);
-	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
+//	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
 
 	fread (&blockAlign, 1, 2, filePointer);
 	if (blockAlign != 4) {
@@ -95,20 +95,20 @@ char header [5];
                    QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
         }
-	fprintf (stderr, "blockAlign %d\n", blockAlign);
+//	fprintf (stderr, "blockAlign %d\n", blockAlign);
 	fsetpos (filePointer, &pos);
 	fseek (filePointer, segmentSize, SEEK_CUR);
 
 	fread (header, 1, 4, filePointer);
 	while (QString (header) != "data") {
 	   fread (&segmentSize, 1, 4, filePointer);
-	   fprintf (stderr, "we read %s (%d)\n", header, segmentSize);
+//	   fprintf (stderr, "we read %s (%d)\n", header, segmentSize);
 	   if (QString (header) == "freq")
 	      fread (&tunedFrequency, 1, 4, filePointer);
 	   else
 	      fseek (filePointer, segmentSize, SEEK_CUR);
 	   fread (header, 1, 4, filePointer);
-	   fprintf (stderr, "Now we read %s\n", header);
+//	   fprintf (stderr, "Now we read %s\n", header);
 	   if (feof (filePointer)) {
 	      QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -123,10 +123,10 @@ char header [5];
         }
 
 	fread (&nrElements, 1, 4, filePointer);
-	fprintf (stderr, "nrbytes in data %d\n", nrElements);
+//	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements /= blockAlign;
 	remainingElements	= nrElements;
-	fprintf (stderr, "nrElements %d\n", nrElements);
+//	fprintf (stderr, "nrElements %d\n", nrElements);
 	std::fgetpos (filePointer, &baseofData);
 }
 

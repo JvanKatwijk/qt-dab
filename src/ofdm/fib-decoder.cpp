@@ -298,6 +298,7 @@ static	int table_2 [] = {27, 21, 18, 15};
 	(void)OE_bit; (void)PD_bit;
 	subChannel. startAddr	= startAdr;
 	subChannel. inUse	= true;
+	subChannel. Length	= 0;
 
 	if (getBits_1 (d, bitOffset + 16) == 0) {	// short form
 	   tabelIndex = getBits_6 (d, bitOffset + 18);

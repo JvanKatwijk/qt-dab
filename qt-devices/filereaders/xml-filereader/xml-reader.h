@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef	__XML_READER_H
-#define	__XML_READER_H
+#pragma once
 
 #include	<QThread>
 #include	<QMessageBox>
@@ -81,5 +80,3 @@ private:
 signals:
 	void		setProgress		(int, int);
 };
-
-#endif

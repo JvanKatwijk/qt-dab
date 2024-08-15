@@ -22,8 +22,7 @@
  *
  */
 
-#ifndef	__XML_DESCRIPTOR__
-#define	__XML_DESCRIPTOR__
+#pragma once
 
 #include <QtXml>
 
@@ -74,4 +73,3 @@ public:
 	void		add_modtoBlock (int blockno, QString modType);
 };
 
-#endif

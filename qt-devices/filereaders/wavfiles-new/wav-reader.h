@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__WAV_READER__
-#define	__WAV_READER__
+#pragma once
 
 #include	<QThread>
 #include	<sndfile.h>
@@ -50,6 +49,4 @@ virtual void		run		();
 signals:
 	void		setProgress	(int, float);
 };
-
-#endif
 

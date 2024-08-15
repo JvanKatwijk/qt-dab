@@ -1237,7 +1237,7 @@ void	RadioInterface::updateTimeDisplay() {
 	               + QString::number (numberMinutes) + " min";
 	runtimeDisplay	-> setText (text);
 	if ((numberofSeconds % 2) == 0) {
-	   size_t idle_time, total_time;
+	   size_t idle_time	= 0, total_time;
 	   get_cpu_times (idle_time, total_time);
 	   const float idle_time_delta =
 	                 static_cast<float>(idle_time - previous_idle_time);
@@ -3401,11 +3401,11 @@ void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
 QString slideName	= ":res/pauze-slide-%1.png";
 	pauzeTimer. stop ();
-	int nr		= rand () % 10;
-	slideName	= slideName. arg (nr + 1);
+	int nr		= rand () % 11;
+	slideName	= slideName. arg (nr);
 	if (p. load (slideName, "png"))
 	   displaySlide (p);
-	pauzeTimer. start (1 * 60 * 1000);
+	pauzeTimer. start (1 * 30 * 1000);
 }
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti

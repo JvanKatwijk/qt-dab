@@ -659,7 +659,7 @@ uint32_t                ndev;
 	      case SDRPLAY_RSP1B_ :
 	         nrBits		= 14;
 	         denominator	= 4096;
-	         deviceModel	= hwVersion == SDRPLAY_RSP1A_ ? "RSO-1A" :
+	         deviceModel	= hwVersion == SDRPLAY_RSP1A_ ? "RSP-1A" :
 	                                                        "RSP-1B";
 	         theRsp	= new Rsp1A_handler (this,
 	                                     chosenDevice,

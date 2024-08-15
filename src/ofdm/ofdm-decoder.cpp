@@ -273,9 +273,9 @@ DABFLOAT Alpha = 0.05f;
 	   if (++cnt > repetitionCounter) {
 	      DABFLOAT maxAmp = 0;
 	      for (int j = -carriers / 2; j < carriers / 2; j ++)
-	      if (j != 0)
-	         if (jan_abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)
-	            maxAmp = jan_abs (fft_buffer [(T_u + j) % T_u]);
+	         if (j != 0)
+	            if (jan_abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)
+	               maxAmp = jan_abs (fft_buffer [(T_u + j) % T_u]);
 	      Complex displayVector [carriers];
 
 	      if (iqSelector == SHOW_RAW) {

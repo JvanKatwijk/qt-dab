@@ -133,14 +133,11 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 //
 //	if dumping is "on" dump
 	if (sourceDumper. isActive ()) {
-//	if (dumpfilePointer. load () != nullptr) {
 	   for (int i = 0; i < nrSamples; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (buffer [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (buffer [i]) * dumpScale;
 	      if (++ dumpIndex >= DUMPSIZE / 2) {
 	         sourceDumper. write (dumpBuffer, dumpIndex);
-//	         sf_writef_short (dumpfilePointer. load (),
-//	                          dumpBuffer, dumpIndex);
 	         dumpIndex = 0;
 	      }
 	   }

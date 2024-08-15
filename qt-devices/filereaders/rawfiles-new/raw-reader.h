@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__RAW_READER__
-#define	__RAW_READER__
+#pragma once
 
 #include	<QThread>
 #include	"dab-constants.h"
@@ -49,6 +48,4 @@ virtual void		run();
 signals:
 	void		setProgress	(int, float);
 };
-
-#endif
 

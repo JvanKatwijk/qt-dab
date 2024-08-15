@@ -216,8 +216,10 @@ bool	audioSink::hasMissed	() {
 }
 
 int32_t	audioSink::missed	() {
-	if (totalSamples == 0)
+	if (totalSamples == 0) {
 	   fprintf (stderr, "HELP\n");
+	   return 0;
+	}
 int32_t	h	= 100 - (theMissed * 100) / totalSamples;
 	theMissed	= 0;
 	totalSamples	= 1;

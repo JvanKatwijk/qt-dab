@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__RIFF_WRITER__
-#define	__RIFF_WRITER__
+#pragma once
 
 #include	<QString>
 #include	<stdio.h>
@@ -44,4 +43,3 @@ private:
 	int	locationCounter;
 };
 
-#endif

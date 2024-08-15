@@ -689,9 +689,10 @@ std::complex<int16_t> dumpBuf [CONV_SIZE + 1];
 	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
-	            localBuf [j]	= cmul (convBuffer [inpBase + 1],
-	                                                          inpRatio) +
-	                             cmul (convBuffer [inpBase], 1 - inpRatio);
+	            localBuf [j]	= std::complex<float> (
+	                                   convBuffer [inpBase + 1] / inpRatio,
+	                                   convBuffer [inpBase],
+	                                                 (float)(1 - inpRatio));
 	         }
 	         _I_Buffer. putDataIntoBuffer (localBuf,
 	                                        DAB_RATE / DIVIDER);

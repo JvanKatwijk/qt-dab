@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__NEW_FILES__
-#define	__NEW_FILES__
+#pragma once
 
 #include	<QObject>
 #include	<QString>
@@ -57,4 +56,3 @@ private:
 public slots:
 	void		setProgress	(int, float);
 };
-#endif
