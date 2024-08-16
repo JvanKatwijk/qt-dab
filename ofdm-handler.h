@@ -34,7 +34,6 @@
 #include	<QSettings>
 #include	<vector>
 #include	<cstdint>
-#include	<sndfile.h>
 #include	"sample-reader.h"
 #include	"fic-handler.h"
 #include	"msc-handler.h"

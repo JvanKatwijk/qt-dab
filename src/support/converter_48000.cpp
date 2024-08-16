@@ -83,7 +83,7 @@ int	teller = 0;
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
 	      
-	      dump (V, result);
+	      dump (buffer, result);
 	      eval (buffer, result);
 	      for (int j = 0; j < 2 * result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -109,7 +109,7 @@ int	teller	= 0;
 	            convert (Complex (real (V [i]) / 32767.0,
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
-	      dump (V, result);
+	      dump (buffer, result);
 	      eval (buffer, result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -135,7 +135,7 @@ int	teller	= 0;
 	            convert (Complex (real (V [i]) / 32767.0,
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
-	      dump (V, result);
+	      dump (buffer, result);
 	      eval (buffer, result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -162,7 +162,24 @@ Complex buffer [amount];
 	return 2 * amount;
 }
 
-void	converter_48000::dump (std::complex<int16_t> *buffer, int nrSamples) {
+void	converter_48000::dump (const Complex *buffer, int nrSamples) {
+	if (!theWriter. isActive ())
+           return;
+        int16_t lBuf [2 * nrSamples];
+        for (int i = 0; i < nrSamples; i ++) {
+           lBuf [2 * i]         = real (buffer [i]) * 32768;
+           lBuf [2 * i + 1]     = imag (buffer [i]) * 32768;
+        }
+        locker. lock();
+        theWriter. write (lBuf, nrSamples);
+        locker. unlock ();
+}
+
+
+void	converter_48000::dump (const std::complex<int16_t> *buffer,
+	                                          int nrSamples) {
+	if (!theWriter. isActive ())
+	   return;
 	int16_t lBuf [2 * nrSamples];
 	for (int i = 0; i < nrSamples; i ++) {
 	   lBuf [2 * i] 	= real (buffer [i]);

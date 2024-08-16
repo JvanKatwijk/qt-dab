@@ -189,7 +189,6 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
@@ -326,7 +325,6 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \

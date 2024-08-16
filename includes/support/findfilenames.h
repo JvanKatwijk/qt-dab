@@ -31,7 +31,7 @@
 #include	<QFileDialog>
 #include	<QMessageBox>
 #include	<stdio.h>
-#include	<sndfile.h>
+//#include	<sndfile.h>
 
 class	findfileNames {
 	QSettings	*dabSettings;

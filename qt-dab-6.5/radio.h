@@ -36,7 +36,6 @@
 #include	<QByteArray>
 #include	<QLabel>
 #include	<QTimer>
-#include	<sndfile.h>
 #include	"ui_dabradio-6.h"
 #include	"ringbuffer.h"
 #include	"process-params.h"

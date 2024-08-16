@@ -60,7 +60,8 @@ private:
 	newConverter	mapper_24;
 	newConverter	mapper_32;
 	std::mutex	locker;
-	void		dump			(std::complex<int16_t> *, int);
+	void		dump			(const Complex *, int);
+	void		dump			(const std::complex<int16_t> *, int);
 //
 //	For thermo
 	void		evaluatePeakLevel	(const Complex);

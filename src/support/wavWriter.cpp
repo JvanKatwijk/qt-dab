@@ -39,6 +39,7 @@ const char	* data	= "data";
 
 	wavWriter::wavWriter	() {
 	isValid = false;
+	filePointer	= nullptr;
 }
 
 	wavWriter::~wavWriter	() {}

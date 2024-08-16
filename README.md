@@ -24,23 +24,12 @@ now when selecting SDRplay-v3
 
 changes july 2024
 
-Linux, on the Fedora box I m working on, was not able to deal with
-"wav" files with the samplerate required for DAB, very annoying.
-Another thing that irritated me, when running with input from recordings,
-the channel indicator remained at channel 5A, and the frequency
-indications were not what they were when recording.
-To handle that, the "xml" and the "sdr" (i.e. "wav") format were extended,
-such that on saving a file, the frequency is stored in the file as attribute.
-Rather than using the libsnd library for the sdr files, a reader and writer
-were written and included in the sources,
-and the 6.X software is modified to recognize - and display - the
-channel and frequency data.
+Writing a separate simple "wav" reader and writer, since the snd lib on
+Fedora does not support samplerates needed for DAB.
 
-The updated "sdr" and "xml" formats remain compatible with the standard,
-and the software handles older recordings as usual, and
-"other" software will just ignore the extensions.
-The result is that generating an executable does not require the
-availability of libsnd anymore.
+Adding saving the selected frequency on ".sdr" files, such that
+for those files and xml files the frequency in the DAB software is
+set to it was at recording time.
 
 changes april/may 2024
 
