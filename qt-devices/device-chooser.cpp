@@ -315,38 +315,54 @@ int	deviceNumber	= getDeviceIndex (s);
 }
 
 QString	 deviceChooser::getFileName	(uint8_t &fileType) {
-QString selected_type;
 QString TYPE_UFF	= "uff-xml (*.uff)";
 QString TYPE_XML	= "uff-xml (*.xml)";
 QString TYPE_SDR	= "sdr-wav (*.sdr)";
 QString TYPE_RAW	= "raw (*.raw)";
 QString TYPE_IQ		= "IQ-RAW (*.iq)";
 
+	dabSettings	-> beginGroup ("Filetypes");
+	QString	lastDir		= dabSettings	-> value ("lastFileDir",
+	                                             QDir::homePath ()). toString ();
+	QString selectedType	= dabSettings	-> value ("lastFileType",
+	                                                   ""). toString ();
+	dabSettings	-> endGroup ();
+
 QString fileName =
 	       QFileDialog::getOpenFileName (nullptr,
                                              "Open file ...",
-	                                     QDir::homePath (),
+	                                     lastDir,
                                              TYPE_UFF + ";;" +
                                              TYPE_XML + ";;" +
 	                                     TYPE_SDR + ";;" +
 	                                     TYPE_RAW + ";;" +
 	                                     TYPE_IQ,
-                                             &selected_type,
+                                             &selectedType,
 	                                     QFileDialog::DontUseNativeDialog);
 	
-	if (fileName == "")
+	if (fileName == "") {
+	   dabSettings	-> endGroup ();
 	   return "";		// note typeFound unset
-
-	if ((selected_type == TYPE_XML) || (selected_type == TYPE_UFF))
+	}
+	
+	dabSettings	-> beginGroup ("Filetypes");
+	dabSettings	-> setValue ("lastFileType", selectedType);
+	QString dumper  = QDir::fromNativeSeparators (fileName);
+        int x           = dumper. lastIndexOf ("/");
+        QString saveDir = dumper. remove (x, dumper. count () - x);
+        dabSettings     -> setValue ("lastFileDir", saveDir);
+	dabSettings	-> endGroup ();
+	
+	if ((selectedType == TYPE_XML) || (selectedType == TYPE_UFF))
 	  fileType	= XML_FILE;
 	else
-	if (selected_type == TYPE_SDR)
+	if (selectedType == TYPE_SDR)
 	   fileType	= WAV_FILE;
 	else
-	if (selected_type == TYPE_RAW)
+	if (selectedType == TYPE_RAW)
 	   fileType	= RAW_FILE_RAW;
 	else
-	if (selected_type == TYPE_IQ)
+	if (selectedType == TYPE_IQ)
 	   fileType	= RAW_FILE_IQ;
 	else
 	   fileType	= 0;

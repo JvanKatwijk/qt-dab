@@ -48,7 +48,6 @@
 	                   "<li>The excellent Qwt library (version 6.2) by Uwe Rathmann</li>"
                            "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>"
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solonon</a> by Phil Karn, KA9Q</li>"
-                           "<li><a href=\"https://github.com/libsndfile\">libsndfile</a> by Erik de Castro Lopo</li>"
                            "<li><a href=\"https://github.io/libsamplerate\">libsndfile</a> by Erik de Castro Lopo</li>"
                            "<li><a href=\"www.portaudio.com/\">Portaudio</a> by Ross Bencina, Phil Burke and many others</li>"
                            "<li>An MP2 decoder by Martin J Fiedler (martin.fiedler@gmx.net)</li>"

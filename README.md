@@ -13,6 +13,15 @@
 ------------------------------------------------------------------------
 Recent changes
 ------------------------------------------------------------------------
+changes august 2024
+
+I work a lot (testing and developing) using file input. The file selector
+now "remembers" the file type and the path used, and will set the 
+selection widget accordingly
+
+SDRplay has added the RSP1B and the RSPSx-II, these devices are supported
+now when selecting SDRplay-v3
+
 changes july 2024
 
 Linux, on the Fedora box I m working on, was not able to deal with
