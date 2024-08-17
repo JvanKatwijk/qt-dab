@@ -57,30 +57,30 @@ include_directories(
 	if (SDRPLAY_V2)
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
-	        ../qt-devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
+	        ./sdrplay-handler-v2/sdrplay-widget-v2.ui
 	   )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h
-	        ../qt-devices/sdrplay-handler-v2/sdrplayselect.h
+	        ./drplay-handler-v2/sdrplay-handler-v2.h
+	        ./sdrplay-handler-v2/sdrplayselect.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/sdrplay-handler-v2
+	     ./sdrplay-handler-v2
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h
-	        ../qt-devices/sdrplay-handler-v2/sdrplayselect.h
-	        ../qt-devices/sdrplay-handler-v2/mirsdrapi-rsp.h
+	        ./sdrplay-handler-v2/sdrplay-handler-v2.h
+	        ./sdrplay-handler-v2/sdrplayselect.h
+	        ./sdrplay-handler-v2/mirsdrapi-rsp.h
            )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp
-	        ../qt-devices/sdrplay-handler-v2/sdrplayselect.cpp
+	        ./sdrplay-handler-v2/sdrplay-handler-v2.cpp
+	        ./sdrplay-handler-v2/sdrplayselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_SDRPLAY_V2)
@@ -89,48 +89,48 @@ include_directories(
 	if (SDRPLAY_V3)
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
-	        ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	        ./sdrplay-handler-v3/sdrplay-widget-v3.ui
 	   )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
-	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h 
-	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
-	        ../qt-devices/sdrplay-handler-v3/RspI-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
+	        ./sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ./sdrplay-handler-v3/sdrplay-commands.h 
+	        ./sdrplay-handler-v3/Rsp-device.h 
+	        ./sdrplay-handler-v3/RspI-handler.h 
+	        ./sdrplay-handler-v3/Rsp1A-handler.h 
+	        ./sdrplay-handler-v3/RspII-handler.h 
+	        ./sdrplay-handler-v3/RspDuo-handler.h 
+	        ./sdrplay-handler-v3/RspDx-handler.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/sdrplay-handler-v3
-	     ../qt-devices/sdrplay-handler-v3/include
+	     ./sdrplay-handler-v3
+	     ./sdrplay-handler-v3/include
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
-	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h
-	        ../qt-devices/sdrplay-handler-v3/include/sdrplay_api.h
-	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
-	        ../qt-devices/sdrplay-handler-v3/RspI-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
-	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
+	        ./sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ./sdrplay-handler-v3/sdrplay-commands.h
+	        ./sdrplay-handler-v3/include/sdrplay_api.h
+	        ./sdrplay-handler-v3/Rsp-device.h 
+	        ./sdrplay-handler-v3/RspI-handler.h 
+	        ./sdrplay-handler-v3/Rsp1A-handler.h 
+	        ./sdrplay-handler-v3/RspII-handler.h 
+	        ./sdrplay-handler-v3/RspDuo-handler.h 
+	        ./sdrplay-handler-v3/RspDx-handler.h
            )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
-                ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp 
-	        ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp 
-	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp 
-	        ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp 
-	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp 
-	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
+	        ./sdrplay-handler-v3/sdrplay-handler-v3.cpp
+                ./sdrplay-handler-v3/Rsp-device.cpp 
+	        ./sdrplay-handler-v3/RspI-handler.cpp 
+	        ./sdrplay-handler-v3/Rsp1A-handler.cpp 
+	        ./sdrplay-handler-v3/RspII-handler.cpp 
+	        ./sdrplay-handler-v3/RspDuo-handler.cpp 
+	        ./sdrplay-handler-v3/RspDx-handler.cpp 
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY_V3)
@@ -145,31 +145,31 @@ include_directories(
 
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
-	        ../qt-devices/airspy-2/airspy-widget.ui
+	        ./airspy-2/airspy-widget.ui
 	   )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/airspy-2/airspy-2.h
-	        ../qt-devices/airspy-2/airspyselect.h
+	        ./airspy-2/airspy-2.h
+	        ./airspy-2/airspyselect.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/airspy-2
-	     ../qt-devices/airspy-2/libairspy
+	     ./airspy-2
+	     ./airspy-2/libairspy
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/airspy-2/airspy-2.h
-	        ../qt-devices/airspy-2/airspyselect.h
-	        ../qt-devices/airspy-2/libairspy/airspy.h
+	        ./airspy-2/airspy-2.h
+	        ./airspy-2/airspyselect.h
+	        ./airspy-2/libairspy/airspy.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/airspy-2/airspy-2.cpp
-	        ../qt-devices/airspy-2/airspyselect.cpp
+	        ./airspy-2/airspy-2.cpp
+	        ./airspy-2/airspyselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY_2)
@@ -178,28 +178,28 @@ include_directories(
 	if (HACKRF)
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
-	        ../qt-devices/hackrf-handler/hackrf-widget.ui
+	        ./hackrf-handler/hackrf-widget.ui
 	   )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/hackrf-handler/hackrf-handler.h
+	        ./hackrf-handler/hackrf-handler.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/hackrf-handler
-	     ../qt-devices/hackrf-handler/libhackrf
+	     ./hackrf-handler
+	     ./hackrf-handler/libhackrf
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/hackrf-handler/hackrf-handler.h
-	        ../qt-devices/hackrf-handler/libhackrf/hackrf.h
+	        ./hackrf-handler/hackrf-handler.h
+	        ./hackrf-handler/libhackrf/hackrf.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/hackrf-handler/hackrf-handler.cpp
+	        ./hackrf-handler/hackrf-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_HACKRF)
@@ -208,26 +208,26 @@ include_directories(
 	if (PLUTO)
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
-	        ../qt-devices/pluto-handler/pluto-widget.ui
+	        ./pluto-handler/pluto-widget.ui
 	   )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/pluto-handler/pluto-handler.h
+	        ./pluto-handler/pluto-handler.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/pluto-handler
+	     ./pluto-handler
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/pluto-handler/pluto-handler.h
+	        ./pluto-handler/pluto-handler.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/pluto-handler/pluto-handler.cpp
+	        ./pluto-handler/pluto-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_PLUTO)
@@ -236,25 +236,25 @@ include_directories(
 	if (LIMESDR)
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/lime-handler/lime-handler.h
-	        ../qt-devices/lime-handler/lime-widget.h
+	        ./lime-handler/lime-handler.h
+	        ./lime-handler/lime-widget.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/lime-handler
+	     ./lime-handler
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/lime-handler/lime-handler.h
-	        ../qt-devices/lime-handler/lime-widget.h
-	        ../qt-devices/lime-handler/LimeSuite.h
-	        ../qt-devices/lime-handler/LMS7002M_parameters.h
+	        ./lime-handler/lime-handler.h
+	        ./lime-handler/lime-widget.h
+	        ./lime-handler/LimeSuite.h
+	        ./lime-handler/LMS7002M_parameters.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/lime-handler/lime-handler.cpp
+	        ./lime-handler/lime-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_LIME)
@@ -263,31 +263,31 @@ include_directories(
 	if (RTLSDR_LINUX)
 	   set (${devicesLibName}_UIS
                 ${${devicesLibName}_UIS}
-                ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+                ./rtlsdr-handler-linux/rtlsdr-widget.ui
            )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	        ./rtlsdr-handler-linux/rtl-dongleselect.h
+	        ./rtlsdr-handler-linux/rtlsdr-handler.h
 	   )
 
 	   include_directories (
-	        ../qt-devices/rtlsdr-handler-linux/
+	        ./rtlsdr-handler-linux/
 	   )
 
 	   set (${devicesLibName}_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr_export.h
+	        ./rtlsdr-handler-linux/rtlsdr-handler.h
+	        ./rtlsdr-handler-linux/rtl-dongleselect.h
+	        ./rtlsdr-handler-linux/rtl-sdr.h
+	        ./rtlsdr-handler-linux/rtl-sdr_export.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	        ./rtlsdr-handler-linux/rtlsdr-handler.cpp
+	        ./rtlsdr-handler-linux/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)
@@ -296,29 +296,29 @@ include_directories(
 	if (SOAPY)
 	   set (${devicesLibName}_UIS
                 ${${devicesLibName}_UIS}
-                ../qt-devices/soapy/soapy-widget.ui
+                ./soapy/soapy-widget.ui
            )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/soapy/soapy-handler.h
-	        ../qt-devices/soapy/soapy-converter.h
+	        ./soapy/soapy-handler.h
+	        ./soapy/soapy-converter.h
 	   )
 
 	   include_directories (
-	        ../qt-devices/soapy/
+	        ./soapy/
 	   )
 
 	   set (${devicesLibName}_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/soapy/soapy-handler.h
-	        ../qt-devices/soapy/soapy-converter.h
+	        ./soapy/soapy-handler.h
+	        ./soapy/soapy-converter.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/soapy/soapy-handler.cpp
-	        ../qt-devices/soapy/soapy-converter.cpp
+	        ./soapy/soapy-handler.cpp
+	        ./soapy/soapy-converter.cpp
 	   )
 
 	   set (LIBSOAPY "-lSoapy -lm")
@@ -328,35 +328,35 @@ include_directories(
 
 	if (SPY_SERVER_8)
 	   include_directories (
-	        ../qt-devices/spy-server-8/
+	        ./spy-server-8/
 	   )
 
 	   set (${devicesLibName}_UIS
                 ${${devicesLibName}_UIS}
-                ../qt-devices/spy-server-8/spyserver-widget-8.ui
+                ./spy-server-8/spyserver-widget-8.ui
            )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/spy-server-8/spyserver-client-8.h
-	        ../qt-devices/spy-server-8/spy-handler-8.h
-	        ../qt-devices/spy-server-8/tcp-client-8.h
+	        ./spy-server-8/spyserver-client-8.h
+	        ./spy-server-8/spy-handler-8.h
+	        ./spy-server-8/tcp-client-8.h
 	   )
 
 
 	   set (${devicesLibName}_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/spy-server-8/spyserver-client-8.h
-	        ../qt-devices/spy-server-8/spy-handler-8.h
-	        ../qt-devices/spy-server-8/tcp-client-8.h
-	        ../qt-devices/spy-server-8/spyserver-protocol.h
+	        ./spy-server-8/spyserver-client-8.h
+	        ./spy-server-8/spy-handler-8.h
+	        ./spy-server-8/tcp-client-8.h
+	        ./spy-server-8/spyserver-protocol.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/spy-server-8/spyserver-client-8.cpp
-	        ../qt-devices/spy-server-8/spy-handler-8.cpp
-	        ../qt-devices/spy-server-8/tcp-client-8.cpp
+	        ./spy-server-8/spyserver-client-8.cpp
+	        ./spy-server-8/spy-handler-8.cpp
+	        ./spy-server-8/tcp-client-8.cpp
 	   )
 
 	   add_definitions (-DHAVE_SOAPY_8)
@@ -364,35 +364,35 @@ include_directories(
 
 	if (SPY_SERVER_16)
 	   include_directories (
-	        ../qt-devices/spy-server-16/
+	        ./spy-server-16/
 	   )
 
 	   set (${devicesLibName}_UIS
                 ${${devicesLibName}_UIS}
-                ../qt-devices/spy-server-16/spyserver-widget-16.ui
+                ./spy-server-16/spyserver-widget-16.ui
            )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/spy-server-16/spyserver-client-16.h
-	        ../qt-devices/spy-server-16/spy-handler-16.h
-	        ../qt-devices/spy-server-16/tcp-client-16.h
+	        ./spy-server-16/spyserver-client-16.h
+	        ./spy-server-16/spy-handler-16.h
+	        ./spy-server-16/tcp-client-16.h
 	   )
 
 
 	   set (${devicesLibName}_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/spy-server-16/spyserver-client-16.h
-	        ../qt-devices/spy-server-16/spy-handler-16.h
-	        ../qt-devices/spy-server-16/tcp-client-16.h
-	        ../qt-devices/spy-server-16/spyserver-protocol.h
+	        ./spy-server-16/spyserver-client-16.h
+	        ./spy-server-16/spy-handler-16.h
+	        ./spy-server-16/tcp-client-16.h
+	        ./spy-server-16/spyserver-protocol.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/spy-server-16/spyserver-client-16.cpp
-	        ../qt-devices/spy-server-16/spy-handler-16.cpp
-	        ../qt-devices/spy-server-16/tcp-client-16.cpp
+	        ./spy-server-16/spyserver-client-16.cpp
+	        ./spy-server-16/spy-handler-16.cpp
+	        ./spy-server-16/tcp-client-16.cpp
 	   )
 
 	   add_definitions (-DHAVE_SOAPY_16)
@@ -403,27 +403,27 @@ include_directories(
 	   find_package (Qt5Network REQUIRED)
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
-	        ../qt-devices/rtl_tcp/rtl_tcp-widget.ui
+	        ./rtl_tcp/rtl_tcp-widget.ui
 	   )
 
 	   set (${devicesLibName}_MOCS
 	        ${${devicesLibName}_MOCS}
-	        ../qt-devices/rtl_tcp/rtl_tcp_client.h
+	        ./rtl_tcp/rtl_tcp_client.h
 	   )
 
 	   include_directories (
-	      ../qt-devices/rtl_tcp
+	      ./rtl_tcp
 	      ${Qt5Network_INCLUDE_DIRS}
 	   )
 
 	   set ($(devicesLibName)_HDRS
 	        ${${devicesLibName}_HDRS}
-	        ../qt-devices/rtl_tcp/rtl_tcp_client.h
+	        ./rtl_tcp/rtl_tcp_client.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
-	        ../qt-devices/rtl_tcp/rtl_tcp_client.cpp
+	        ./rtl_tcp/rtl_tcp_client.cpp
 	   )
 
 	   set (RTLTCP_lib Qt5::Network)

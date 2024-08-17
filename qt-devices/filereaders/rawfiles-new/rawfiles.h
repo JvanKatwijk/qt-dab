@@ -20,7 +20,9 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#pragma once
+
+#ifndef	__RAWFILES__
+#define	__RAWFILES__
 
 #include	<QFrame>
 #include	<QObject>
@@ -58,4 +60,6 @@ private:
 public slots:
 	void		setProgress	(int, float);
 };
+
+#endif
 

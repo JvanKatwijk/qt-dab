@@ -15,6 +15,10 @@ Recent changes
 ------------------------------------------------------------------------
 changes august 2024
 
+Fixed CMakeLists.txt
+
+Fixed potentail error in xml-reader
+
 I work a lot (testing and developing) using file input. The file selector
 now "remembers" the file type and the path used, and will set the 
 selection widget accordingly

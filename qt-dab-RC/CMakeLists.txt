@@ -171,10 +171,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/output
 	           ../includes/scopes-qwt6
 	           ../qt-devices
-#	           ../qt-devices/filereaders/
-#	           ../qt-devices/filereaders/rawfiles-new
-#	           ../qt-devices/filereaders/wavfiles-new
-#	           ../qt-devices/filereaders/xml-filereader
+	           ../qt-devices/filereaders/
+	           ../qt-devices/filereaders/new-reader
+	           ../qt-devices/filereaders/rawfiles-new
+	           ../qt-devices/filereaders/xml-filereader
 	           ../eti-handler
 	           /usr/include/
 	)
@@ -332,7 +332,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/waterfall-scope.cpp 
              ./forms-v7/new-display/scopes/iqdisplay.cpp 
 	     ./forms-v7/new-display/scopes/audio-display.cpp
-	     ./forms-v7/new-display/scopes/audio-display.cpp 
 	     ./forms-v7/snr-viewer/snr-viewer.cpp
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
@@ -446,6 +445,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./forms-v7/new-display/scopes/dev-scope.h 
 	     ./forms-v7/new-display/scopes/waterfall-scope.h 
 	     ./forms-v7/new-display/scopes/iqdisplay.h 
+	     ./forms-v7/new-display/scopes/audio-display.h
  	     ./forms-v7/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../includes/ofdm/sample-reader.h
@@ -493,13 +493,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
-	     ../includes/scopes-qwt6/audio-display.h
-#	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
-#	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
-#	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
-#	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
-#	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
-#	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
 	)
 
 	set (${objectName}_UIS

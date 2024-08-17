@@ -74,7 +74,6 @@ int	i;
 
 	bufferContent	= 0;
 	corrector	= 0;
-//	dumpfilePointer. store (nullptr);
 	dumpIndex	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
 	connect (this, &sampleReader::show_spectrum,
@@ -186,28 +185,11 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 }
 
 void	sampleReader::start_dumping (const QString &fileName, int freq) {
-SF_INFO sf_info;
-
 	sourceDumper. init (fileName, freq);
-//	sf_info         -> samplerate   = 48000;
-//        sf_info         -> channels     = 2;
-//        sf_info         -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-//
-//	SNDFILE *theFile        = sf_open (fileName. toUtf8(). data(),
-//                                           SFM_WRITE, sf_info);
-//        if (theFile == nullptr) {
-//           qDebug() << "Cannot open " << fileName. toUtf8(). data();
-//        }
-
-//	dumpfilePointer. store (theFile);
 }
 
 void	sampleReader::stop_dumping() {
-//	if (dumpfilePointer != nullptr)
-//	   sf_close (rawDumper_p);
-
 	sourceDumper.close ();
-//	dumpfilePointer. store (nullptr);
 }
 
 void	sampleReader::set_dcRemoval	(bool b) {
