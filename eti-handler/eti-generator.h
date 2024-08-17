@@ -1,4 +1,4 @@
-
+#
 /*
  * ## Copyright
  *
@@ -36,8 +36,8 @@
  * 	eti generator
  */
 
-#ifndef	__ETI_GENERATOR_H
-#define	__ETI_GENERATOR_H
+#pragma once
+
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<stdio.h>
@@ -98,6 +98,5 @@ private:
 	void		postProcess		(uint8_t *, int32_t);
 };
 
-#endif
 
 

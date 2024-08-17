@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__XML_FILEREADER__
-#define	__XML_FILEREADER__
+#pragma once
 
 #include	<QObject>
 #include	<QString>
@@ -63,4 +62,3 @@ public slots:
 	void			handle_continuousButton ();
 };
 
-#endif
