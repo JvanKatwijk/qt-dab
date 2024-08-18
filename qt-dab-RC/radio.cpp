@@ -2010,7 +2010,8 @@ QString serviceName	= s. serviceName;
 	   if (theOFDMHandler -> has_timeTable (ad. SId))
 	      techWindow_p -> show_timetableButton (true);
 	   startAudioservice (ad);
-//
+	   techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
+
 //	Only presets for real input devices
 	   if (!inputDevice_p -> isFileInput ()) {
 	      QString s = channel. channelName + ":" + serviceName;

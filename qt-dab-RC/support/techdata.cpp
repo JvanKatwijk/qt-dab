@@ -380,3 +380,20 @@ void	techData::showPeakLevel (const float iPeakLeft,
         thermoLeft		-> setValue (peakLeftDamped);
         thermoRight		-> setValue (peakRightDamped);
 }
+
+void	techData::is_DAB_plus	(bool b) {
+	if (b) {	// yes it is DAB+
+	   rsErrorLabel		-> show ();
+	   aacErrorLabel	-> show ();
+	   rsError_display	-> show ();
+	   aacError_display	-> show ();
+	}
+	else {
+	   rsErrorLabel		-> hide ();
+	   aacErrorLabel	-> hide ();
+	   rsError_display	-> hide ();
+	   aacError_display	-> hide ();
+	}
+}
+
+	

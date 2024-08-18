@@ -4,4 +4,4 @@ Exec=qt-dab-6.X
 Icon=qt-dab-RC
 Type=Application
 Categories=AudioVideo;
-Comment=A DAB/DAB+ decoder using Qt and C++
+Comment=Probably the most extended DAB decoder

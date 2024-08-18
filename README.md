@@ -15,6 +15,9 @@ Recent changes
 ------------------------------------------------------------------------
 changes august 2024
 
+When selecting a (classic) DAB service, the RS and AAV quality indicators
+are hidden.
+
 Fixed CMakeLists.txt
 
 Fixed potentail error in xml-reader
@@ -449,22 +452,29 @@ I load the required libraries as given below:
  *   sudo apt-get install git cmake
  *   sudo apt-get install qt5-qmake build-essential g++
  *   sudo apt-get install pkg-config
- *   sudo apt-get install libsndfile1-dev
  *   sudo apt-get install libfftw3-dev portaudio19-dev 
  *   sudo apt-get install zlib1g-dev 
  *   sudo apt-get install libusb-1.0-0-dev mesa-common-dev
  *   sudo apt-get install libgl1-mesa-dev libqt5opengl5-dev
  *   sudo apt-get install libsamplerate0-dev libqwt-qt5-dev qtmultimedia5-dev
  *   sudo apt-get install qtbase5-dev libqt5svg5-dev
- *   sudo apt-get install libfdk-aac-dev
+ *   sudo apt-get install libfdk-aac-dev libcurl4-openssl-dev
 
 If libfdk-aac cannot be found, change the configuration to load fibfaad (and
 obviously, install libfaad).
+
+ *   sudo apt-get install libfaad-dev
 
 If you want to use a physical device - e.g. a DABstick, an SDRplay, or an AIRspy
 you need to install the driver libraries for these devices as well.
 For most common devices repositories of common Linux distributions contain
 a driver library.
+Note that the rtlsdr driver in e.g. Ubuntu repositories needs the
+kernel module to be blacklisted, see e.g.
+ * https://www.reddit.com/r/RTLSDR/wiki/blacklist_dvb_usb_rtl28xxu/
+
+Ubuntu (and probably others as well) contain a driver library for the Airspy
+that works fine (at least for me)
 
 for SDRplay devices one should download the - proprietary - driver software
 from the SDRplay site. For the AIRspy the bullseye repository provides a
@@ -491,7 +501,7 @@ One may choose between 'CONFIG += single' or 'CONFIG += double'. In the latter
 case, all computations in the "front end" are done with double precision
 arithmetic.
 
-Note that your choice should be `CONFIG += tiiLib` (see step 4),
+Note that your choice **SHOULD** be `CONFIG += tiiLib` (see step 4),
 the alternative option 'CONFIG+=preCompiled' will **NOT** work since it requires
 sources not available under an open source license. However, the built-in
 libraries allow access to a preconfigured database (see step 4).

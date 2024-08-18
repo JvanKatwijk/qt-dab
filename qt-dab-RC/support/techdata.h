@@ -49,6 +49,8 @@ public:
 	void	hide			();
 	bool	isHidden		();
 	void	showPeakLevel		(float, float);
+
+	void	is_DAB_plus		(bool);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
