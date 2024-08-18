@@ -13,6 +13,16 @@
 ------------------------------------------------------------------------
 Recent changes
 ------------------------------------------------------------------------
+
+Note:
+It seems that the AppImage (built under U20) does not handle all 
+recordings well.
+
+Both a version built under U20 and one under U24 show (for some
+recordings) different (less good) behaviour that the version on
+my development Fedora Vox.
+I am looking into it
+
 changes august 2024
 
 When selecting a (classic) DAB service, the RS and AAV quality indicators

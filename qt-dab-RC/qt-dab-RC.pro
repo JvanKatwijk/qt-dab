@@ -34,7 +34,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #
 #       For more parallel processing, uncomment the following
 #       defines
-DEFINES	+= __MSC_THREAD__
+#DEFINES	+= __MSC_THREAD__
 DEFINES		+= __THREADED_BACKEND__
 
 #For showing trace output
@@ -399,6 +399,7 @@ mac {
 }
 
 CONFIG		+= link_pkgconfig
+#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
@@ -407,6 +408,7 @@ LIBS      	+= -ldl
 }
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
+#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
@@ -443,8 +445,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -526,6 +528,7 @@ isEmpty(GITHASHSTRING) {
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lportaudio
+#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
 LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
 LIBS		+= -lwinpthread
