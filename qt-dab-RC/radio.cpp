@@ -353,6 +353,7 @@ QString h;
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
 	   } catch (...) {
+	      fprintf (stderr, "QT_AUDIO does not find streams\n");
 	      soundOut_p = nullptr;
 	   }
 	}
@@ -2270,6 +2271,7 @@ void	RadioInterface::stopChannel	() {
 	stop_sourcedumping	();
 	stop_etiHandler	();	// if any
 	LOG ("channel stops ", channel. channelName);
+	transmitter_country	-> setText ("");
 //
 //	first, stop services in fore and background
 	if (channel. currentService. valid)
@@ -3533,7 +3535,6 @@ bool listChanged = false;
 
 	bool dxMode	= configHandler_p -> get_dxSelector ();
 
-//	fprintf (stderr, "entered show_tii with values %d %d\n", tiiValue, index);
 	if (!dxMode)
 	   channel. transmitters. resize (0);
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
@@ -3547,13 +3548,15 @@ bool listChanged = false;
 	   country		= find_ITU_code (channel. ecc_byte,
 	                                         (channel. Eid >> 12) &0xF);
 	   channel. has_ecc	= true;
+	   channel. countryName	= country;
 	   channel. transmitterName = "";
+	   transmitter_country	-> setText (country);
 	}
 
-	if (country != channel. countryName) {
-	   transmitter_country	-> setText (country);
-	   channel. countryName	= country;
-	}
+//	if (country != channel. countryName) {
+//	   transmitter_country	-> setText (country);
+//	   channel. countryName	= country;
+//	}
 
 	if ((localPos. latitude == 0) || (localPos. longitude == 0)) 
 	   return;
@@ -3561,7 +3564,6 @@ bool listChanged = false;
 	if (!theTIIProcessor. has_tiiFile ())
 	   return;
 
-//	fprintf (stderr, "Passed tests for %d %d\n", tiiValue, index);
 //	OK, here we really start
 	bool inList = false;
 	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {

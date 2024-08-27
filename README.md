@@ -23,6 +23,9 @@ recordings) different (less good) behaviour that the version on
 my development Fedora Vox.
 I am looking into it
 
+The newly written riff reader was updated, some int32's should be int64 (for
+large files)
+
 changes august 2024
 
 When selecting a (classic) DAB service, the RS and AAV quality indicators

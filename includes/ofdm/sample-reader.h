@@ -28,7 +28,6 @@
  */
 #include	"dab-constants.h"
 #include	<QObject>
-#include	<sndfile.h>
 #include	<cstdint>
 #include	<atomic>
 #include	<vector>

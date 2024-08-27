@@ -40,8 +40,8 @@ public:
 	int	getVFOFrequency	();
 private:
 	FILE	*filePointer;
-	int	remainingElements;
-	int	nrElements;
+	uint64_t	remainingElements;
+	uint64_t	nrElements;
 	uint16_t	blockAlign;
 	std::fpos_t	baseofData;
 	int	tunedFrequency;

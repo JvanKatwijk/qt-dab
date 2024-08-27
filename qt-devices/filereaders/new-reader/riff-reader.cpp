@@ -47,7 +47,7 @@ char header [5];
 	
         fread (&segmentSize, 1, 4, filePointer);
 //	fprintf (stderr, "Size of RIFF %d\n", segmentSize);
-//
+
 //	We expect a "WAVE" header, enclosing an "fmt " header
 	fread (header, 1, 4, filePointer);
 //	fprintf (stderr, "Header -> %s\n", header);
@@ -58,7 +58,7 @@ char header [5];
         }
 
 	fread (header, 1, 4, filePointer);
-	fprintf (stderr, "Header = %s\n", header);
+//	fprintf (stderr, "Header = %s\n", header);
 	if (QString (header) != "fmt ") {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);

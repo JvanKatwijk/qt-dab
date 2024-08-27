@@ -26,7 +26,6 @@
 #include	<QObject>
 #include	<QString>
 #include	<QFrame>
-#include	<sndfile.h>
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"device-handler.h"
