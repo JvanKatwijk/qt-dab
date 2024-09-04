@@ -1679,6 +1679,9 @@ void	RadioInterface::handle_scanListButton    () {
 	if (!running. load ())
 	   return;
 
+	if (inputDevice_p -> isFileInput ())
+	   return;
+
 	if (theScanlistHandler. isHidden ())
 	   theScanlistHandler. show ();
 	else
@@ -2214,7 +2217,7 @@ void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theSCANHandler. Frequency (theChannel);
 	LOG ("channel starts ", theChannel);
-	theNewDisplay. showFrequency (tunedFrequency);
+	theNewDisplay. showFrequency (theChannel, tunedFrequency);
 	inputDevice_p		-> restartReader (tunedFrequency);
 
 	channel. cleanChannel ();
@@ -2230,7 +2233,8 @@ int	tunedFrequency	=
 	      channelSelector -> setCurrentIndex (k);
 	      channel. channelName	= realChannel;
 	      channel. tunedFrequency	= freq;
-	      theNewDisplay. showFrequency (channel. tunedFrequency);
+	      theNewDisplay. showFrequency (realChannel,
+	                                    channel. tunedFrequency);
 	   }
 	   else {
 	      channel. channelName	= "";

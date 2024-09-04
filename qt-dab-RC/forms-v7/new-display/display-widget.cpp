@@ -422,13 +422,14 @@ void	displayWidget::show_clock_err	(int e) {
 	   clock_errorDisplay -> display (e);
 }
 
-void	displayWidget::showFrequency (int freq) {
+void	displayWidget::showFrequency (const QString &channel, int freq) {
 	freq	/= 1000;
 	QString p1	= QString::number ((int)((freq) / 1000));
 	QString p2	= QString::number ((freq) % 1000);
 	if (freq % 1000 < 100)
 	   p2 = "0" + p2;
 	frequencyDisplay	-> display (p1 + '.' + p2);
+	channelDisplay		-> setText (channel);
 }
 
 void	displayWidget::show_cpuLoad	(float use) {

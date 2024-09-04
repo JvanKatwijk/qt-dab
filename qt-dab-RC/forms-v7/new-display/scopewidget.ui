@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>677</width>
-    <height>451</height>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -338,25 +338,9 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QLCDNumber" name="frequencyDisplay">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The frequency of the selected channel.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <property name="digitCount">
-            <number>7</number>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>MHz</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -377,7 +361,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="1" column="1">
-        <widget class="QLCDNumber" name="fine_correctorDisplay">
+        <widget class="QLCDNumber" name="coarse_correctorDisplay">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fine frequency correction, computed from the phase difference between the cyclic prefix and the corresponding elements in the ofdm symbol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -404,12 +388,15 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLCDNumber" name="coarse_correctorDisplay">
+        <widget class="QLCDNumber" name="frequencyDisplay">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Coarse frequency correction, The software computed an estimate of the frequency offset by lokking at phasedifferences in the samples in the time domain. Based on the difference found a correction factor is applied to the input stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="digitCount">
+          <number>7</number>
          </property>
          <property name="segmentStyle">
           <enum>QLCDNumber::Flat</enum>
@@ -468,9 +455,9 @@
         </widget>
        </item>
        <item row="0" column="0">
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="channelDisplay">
          <property name="text">
-          <string>coarse corr.</string>
+          <string>Channel</string>
          </property>
         </widget>
        </item>
@@ -484,7 +471,7 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_8">
          <property name="text">
-          <string>fine corr</string>
+          <string>correction</string>
          </property>
         </widget>
        </item>

@@ -74,7 +74,7 @@ public:
 	void	show_snr	(float);
 	void	show_correction	(int);
 	void	show_clock_err	(int);
-	void	showFrequency	(int);
+	void	showFrequency	(const QString &, int);
 
 	void	show_cpuLoad	(float);
 	void	show_transmitters	(std::vector<transmitterDesc> &);
