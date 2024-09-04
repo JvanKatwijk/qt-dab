@@ -14,5 +14,10 @@ c.	No attempts will be made to hand the library - regardless the form -
 d.	Use of this library is restricted to use with the Qt-DAB program
 
 
+Note that libtii-lib.so can be used with Qt-DAB-6.5 and 6.X pnly
+The rpi lib is NOT updated yet
+
+
+
 
 

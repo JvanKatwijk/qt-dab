@@ -712,6 +712,7 @@ QString s;
 
 	ensembleId	-> setText (v + QString ("(") + hextoString (id) + QString (")"));
 
+	transmitter_country	-> setText (channel. countryName);
 	channel. ensembleName	= v;
 	channel. Eid		= id;
 //
@@ -2219,6 +2220,7 @@ int	tunedFrequency	=
 	channel. cleanChannel ();
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;
+	channel. countryName	= "";
 	if (inputDevice_p -> isFileInput ()) {
 	   channelSelector		-> setEnabled (false);
 	   int freq	= inputDevice_p -> getVFOFrequency ();

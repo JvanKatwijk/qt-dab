@@ -230,7 +230,7 @@ void	configHandler::set_connections () {
 	connect (resetButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_resetButton);
 	connect (scheduleButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_resetButton);
+	         this, &configHandler::color_scheduleButton);
 	connect (snrButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_snrButton);
 	connect (set_coordinatesButton, &smallPushButton::rightClicked,

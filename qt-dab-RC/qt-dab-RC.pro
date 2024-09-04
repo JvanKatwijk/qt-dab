@@ -445,8 +445,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -499,10 +499,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.XV3
-	CONFIG		+= dabstick-win-v3
-#	TARGET		= qt-dab32-6.X
-#	CONFIG		+= dabstick-win-v4
+#	TARGET		= qt-dab32-6.XV3
+#	CONFIG		+= dabstick-win-v3
+	TARGET		= qt-dab32-6.X
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

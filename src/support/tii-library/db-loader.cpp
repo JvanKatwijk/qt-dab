@@ -47,8 +47,10 @@
 //	try to get a handle
 	phandle		= new QLibrary (path);
 	phandle		-> load ();
-	if (!phandle -> isLoaded ())	
+	if (!phandle -> isLoaded ()) {
+	   fprintf (stderr, "Cannot load %s\n", LIB_NAME);
 	   return;
+	}
 
 	load_db_L	= (load_db_P) phandle -> resolve ("load_db");
 	delete phandle;
