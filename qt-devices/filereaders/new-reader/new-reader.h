@@ -46,7 +46,7 @@ virtual void		run		();
 	uint64_t	period;
 	std::atomic<bool>	running;
 	newFiles	*parent;
-	int64_t		fileLength;
+	uint64_t	fileLength;
 signals:
 	void		setProgress	(int, float);
 };

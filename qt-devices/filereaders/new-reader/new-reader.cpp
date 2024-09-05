@@ -84,7 +84,7 @@ std::complex<float> bi [bufferSize];
 	      }
 
 	      if (++teller >= 20) {
-	         int xx = theReader -> currentPos ();
+	         int64_t xx = theReader -> currentPos ();
 	         float progress = (float)xx / fileLength;
 	         setProgress ((int)(progress * 100), (float)xx / 2048000);
 	         teller = 0;
