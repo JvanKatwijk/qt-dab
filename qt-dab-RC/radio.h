@@ -353,8 +353,8 @@ private:
 
 	void			start_sourcedumping	();
 	void			stop_sourcedumping	();
-	void			startFramedumping      ();
-	void			stopFramedumping       ();
+	void			startFramedumping	();
+	void			stopFramedumping	();
 	void			scheduled_frameDumping	(const QString &);
 	void			startChannel		(const QString &);
 	void			stopChannel		();
@@ -427,7 +427,8 @@ public slots:
 	                                                 int, bool, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
-	void			changeinConfiguration	();
+	void			changeinConfiguration	(const QStringList &,
+	                                                 const QStringList &);
 	void			newAudio		(int, int, bool, bool);
 //
 	void			localSelect_SS		(const QString &,
@@ -485,6 +486,9 @@ public slots:
 	void			handle_snrButton	();
 	void			handle_sourcedumpButton	();
 	void			scheduler_timeOut	(const QString &);
+	void			show_changeLabel (const QStringList notInOld,
+                                          	  const QStringList notInNew);
+ 
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			show_pauzeSlide		();

@@ -13,18 +13,19 @@
 ------------------------------------------------------------------------
 Recent changes
 ------------------------------------------------------------------------
+Changes september
 
-Note:
-It seems that the AppImage (built under U20) does not handle all 
-recordings well.
+Handling packets is extended to be able to deal with FEC settings, i.e.
+packets protected with Reed Solomon error repair
 
-Both a version built under U20 and one under U24 show (for some
-recordings) different (less good) behaviour that the version on
-my development Fedora Vox.
-I am looking into it
+As known configuration changes may occur. The 6.X version now
+prints the changes (i.e. what services are deleted, what services are new)
+on the console where the program was started
 
 The newly written riff reader was updated, some int32's should be int64 (for
 large files)
+
+Note that these changes are not yet implemented in the windows installers.
 
 changes august 2024
 

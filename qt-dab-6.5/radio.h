@@ -428,7 +428,8 @@ public slots:
 	                                                 int, bool, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
-	void			changeinConfiguration	();
+	void			changeinConfiguration	(const QStringList &,
+	                                                 const QStringList &);
 	void			newAudio		(int, int, bool, bool);
 //
 	void			localSelect		(const QString &,

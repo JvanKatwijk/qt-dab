@@ -105,6 +105,7 @@ int16_t	i;
 	      return;
 	   }
 
+//	   fprintf (stderr, "frametype %d\n", frametypeIndicator);
 	   if (frametypeIndicator == 0) 
 	      offset = handleFrame_type_0 (data, offset + 7 * 8, length);
 	   else

@@ -122,11 +122,12 @@ char header [5];
            throw device_exception (val. toStdString ());
         }
 
-	fread (&nrElements, 1, 4, filePointer);
+	int xxx;
+	fread (&xxx, 1, 4, filePointer);
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
-	nrElements /= blockAlign;
+	nrElements = xxx / blockAlign;
 	remainingElements	= nrElements;
-//	fprintf (stderr, "nrElements %d\n", nrElements);
+	fprintf (stderr, "nrElements %lld\n", nrElements);
 	std::fgetpos (filePointer, &baseofData);
 }
 
@@ -154,11 +155,11 @@ int16_t lBuf [2 * nrSamples];
 	return nrSamples;
 }
 
-int	riffReader::elementCount	() {
+uint64_t	riffReader::elementCount	() {
 	return nrElements;
 }
 
-int	riffReader::currentPos		() {
+uint64_t	riffReader::currentPos		() {
 	return nrElements - remainingElements;
 }
 

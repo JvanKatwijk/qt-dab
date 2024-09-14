@@ -34,8 +34,8 @@ public:
 		~riffReader	();
 	void	reset		();
 	int	read		(std::complex<float> *, int);
-	int	elementCount	();
-	int	currentPos	();
+	uint64_t	elementCount	();
+	uint64_t	currentPos	();
 
 	int	getVFOFrequency	();
 private:

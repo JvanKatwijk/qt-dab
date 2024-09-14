@@ -971,7 +971,10 @@ uint8_t localBuffer [length + 8];
   *	Response to a signal, so we presume that the signaling body exists
   *	signal may be pending though
   */
-void	RadioInterface::changeinConfiguration () {
+void	RadioInterface::changeinConfiguration (const QStringList &notInOld,
+	                                       const QStringList &notInNew) {
+	(void)notInOld;
+	(void)notInNew;
 	if (!running. load () || my_ofdmHandler == nullptr)
 	   return;
 	dabService s;

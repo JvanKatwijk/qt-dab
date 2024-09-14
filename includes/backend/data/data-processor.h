@@ -29,6 +29,7 @@
 #include	<QObject>
 #include	"frame-processor.h"
 #include	"ringbuffer.h"
+#include	"reed-solomon.h"
 
 class	RadioInterface;
 class	virtual_dataHandler;
@@ -42,7 +43,7 @@ public:
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 bool backendFlag);
 	~dataProcessor	();
-void	addtoFrame	(const std::vector<uint8_t>);
+void	addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;
@@ -55,12 +56,31 @@ private:
 	int16_t		expectedIndex;
 	std::vector<uint8_t>	series;
 	uint8_t		packetState;
+	int16_t		fillPointer;
+	std::vector<uint8_t> AppVector;
+	std::vector<uint8_t> FECVector;
+	bool		FEC_table [9];
+	reedSolomon my_rsDecoder;
+
 	int32_t		streamAddress;		// int since we init with -1
 //
 //	result handlers
 	void		handleTDCAsyncstream 	(const uint8_t *, int32_t);
-	void		handlePackets		(const uint8_t *, int32_t);
-	void		handlePacket		(const uint8_t *);
+	void		handlePackets		(uint8_t *, int16_t);
+	void		handlePacket		(uint8_t *vec);
+
+	void		handleRSPacket		(uint8_t *);
+	void		registerFEC		(uint8_t *, int);
+	void		clear_FECtable		();
+	bool		FEC_complete		();
+	void		handle_RSpackets	(std::vector<uint8_t> &);
+	void		handle_RSpacket		(uint8_t *, int16_t);
+	int		addPacket		(uint8_t *, 
+	                                         std::vector<uint8_t> &, int);
+
+	void		processRS		(std::vector<uint8_t> &appdata,
+                                  	         const std::vector<uint8_t> &RSdata);
+
 	virtual_dataHandler *my_dataHandler;
 //
 signals:

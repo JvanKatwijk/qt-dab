@@ -1007,9 +1007,11 @@ uint8_t *localBuffer = dynVec (uint8_t, length + 8);
   *	Response to a signal, so we presume that the signaling body exists
   *	signal may be pending though
   */
-void	RadioInterface::changeinConfiguration () {
+void	RadioInterface::changeinConfiguration (const QStringList &notInOld,
+	                                       const QStringList &notInNew) {
 	if (!running. load () || theOFDMHandler == nullptr)
 	   return;
+	
 	dabService s;
 	if (channel. currentService. valid) {
 	   s = channel. currentService;
@@ -1053,6 +1055,7 @@ void	RadioInterface::changeinConfiguration () {
 	      return;
 	   }
 //
+	show_changeLabel (notInOld, notInNew);
 //	The service is gone, it may be the subservice of another one
 	   s. SCIds = 0;
 	   s. serviceName =
@@ -3978,5 +3981,20 @@ void	RadioInterface::handle_dxSelector		(int d) {
 void	RadioInterface::channelSignal (const QString &channel) {
 	stopChannel ();
 	startChannel (channel);
+}
+
+void	RadioInterface::show_changeLabel (const QStringList notInOld,
+	                                  const QStringList notInNew) {
+	fprintf (stderr, "A change in configuration occurred\n");
+	if (notInOld. size () > 0) {
+	   fprintf (stderr, "New service:\n");
+	   for (auto s: notInOld) 
+	      fprintf (stderr, "\t%s\n", s. toUtf8 (). data ());
+	}
+	if (notInNew. size () > 0) {
+	   fprintf (stderr, "removed service:\n");
+	   for (auto s: notInNew)
+	      fprintf (stderr, "\t%s\n", s. toUtf8 (). data ());
+	}
 }
 

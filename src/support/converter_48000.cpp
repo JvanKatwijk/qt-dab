@@ -75,7 +75,7 @@ int	converter_48000::convert_16000	(std::complex<int16_t> *V,
 	                                 std::vector<float> &out) {
 Complex buffer [mapper_16. getOutputsize ()];
 int	teller = 0;
-	out. resize (2 * mapper_16. getOutputsize ());
+	out. resize (0);
 	for (int i = 0; i < amount; i ++) {
 	   int	result;
 	   if (mapper_16.
@@ -85,7 +85,8 @@ int	teller = 0;
 	      
 	      dump (buffer, result);
 	      eval (buffer, result);
-	      for (int j = 0; j < 2 * result; j ++) {
+	      out. resize (out. size () + 2 * result);
+	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
 	         out [teller ++] = imag (buffer [j]);
 	      }

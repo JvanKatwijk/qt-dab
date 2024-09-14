@@ -52,7 +52,6 @@ public:
 	                                          packetdata &, int16_t);
 	int		get_nrComps		(uint32_t);
 	std::vector<serviceId>	get_services	(int);
-
 	QString		find_service		(uint32_t, int);
 	void		get_parameters		(const QString &,
 	                                           uint32_t *, int *);
@@ -198,7 +197,8 @@ signals:
 	void		name_of_ensemble	(int, const QString &);
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);
-	void		changeinConfiguration	();
+	void		changeinConfiguration	(const QStringList &,
+	                                         const QStringList &);
 	void		start_announcement	(const QString &, int, int);
 	void		stop_announcement	(const QString &, int);
 	void		nrServices		(int);

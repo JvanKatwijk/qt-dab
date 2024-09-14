@@ -1,4 +1,3 @@
-
 /*
  *    Copyright (C) 2018 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -222,6 +221,20 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	}
 }
 
+static inline
+bool	alsoIn (std::vector<serviceId> &List, serviceId el) {
+	for (auto theId : List) {
+	   if ((el. name == theId. name) && (el. SId == theId. SId))
+	      return true;
+	}
+	return false;
+}
+
+static inline
+QString	makeString (serviceId el) {
+	return el. name + "(" + QString::number (el. SId, 16) + ")";
+}
+
 //	Ensemble information, 6.4.1
 //	FIG0/0 indicated a change in channel organization
 //	The info is MCI
@@ -250,12 +263,22 @@ static	uint8_t prevChangeFlag	= 0;
 
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
 	   fprintf (stderr, "handling change\n");
+	   std::vector<serviceId> oldS = get_services (ID_BASED);
 	   dabConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;
+	   std::vector<serviceId> newS = get_services (ID_BASED);
 	   nextConfig	->  reset ();
 	   cleanupServiceList ();
-	   emit changeinConfiguration ();
+	   QStringList notInOld;
+	   QStringList notInNew;
+	   for (auto theId: oldS) 
+	      if (!alsoIn (newS, theId))
+	         notInNew << makeString (theId);
+	   for (auto theId: newS) 
+	      if (!alsoIn (oldS, theId))
+	         notInOld << makeString (theId);
+	   emit changeinConfiguration (notInOld, notInNew);
 	}
 
 	prevChangeFlag	= changeFlag;
