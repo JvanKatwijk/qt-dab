@@ -238,6 +238,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/audio/bitWriter.h
 	     ../includes/backend/audio/mp2processor.h
 	     ../includes/backend/data/ip-datahandler.h
+	     ../includes/backend/data/adv-datahandler.h
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/journaline-screen.h
@@ -362,6 +363,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/audio/bitWriter.cpp
 	     ../src/backend/audio/mp2processor.cpp
 	     ../src/backend/data/ip-datahandler.cpp
+	     ../src/backend/data/adv-datahandler.cpp
 	     ../src/backend/data/journaline-datahandler.cpp
 	     ../src/backend/data/journaline-screen.cpp
 	     ../src/backend/data/journaline/crc_8_16.c
@@ -466,6 +468,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/mot/mot-object.h
 	     ../includes/backend/data/mot/mot-dir.h
 	     ../includes/backend/data/ip-datahandler.h
+	     ../includes/backend/data/adv-datahandler.h
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/journaline-screen.h

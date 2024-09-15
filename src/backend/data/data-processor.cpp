@@ -30,36 +30,11 @@
 #include	"mot-handler.h"
 #include	"journaline-datahandler.h"
 #include	"tdc-datahandler.h"
+#include	"adv-datahandler.h"
 
 //	\class dataProcessor
-//	The main function of this class is to assemble the 
+//	The main function of this class is to ASSEMBLE the 
 //	MSCdatagroups and dispatch to the appropriate handler
-//	11-bit from HandleFIG0Extension13, see ETSI TS 101 756 table 16
-//	AppType -> https://www.etsi.org/deliver/etsi_ts/101700_101799/101756/02.02.01_60/ts_101756v020201p.pdf
-/*char *getUserApplicationType (int16_t appType) {
-	char *buffer = (char *)malloc(30);
-        switch (appType) {
-           case 1:     return "Dynamic labels (X-PAD only)";
-           case 2:     return "MOT Slide Show";		// ETSI TS 101 499
-           case 3:     return "MOT Broadcast Web Site";
-           case 4:     return "TPEG";			// ETSI TS 103 551
-           case 5:     return "DGPS";
-           case 6:     return "TMC";
-           case 7:     return "SPI, was EPG";		// ETSI TS 102 818
-           case 8:     return "DAB Java";
-           case 9:     return "DMB";			// ETSI TS 102 428
-           case 0x00a: return "IPDC services";
-           case 0x00b: return "Voice applications";
-           case 0x00c: return "Middleware";
-           case 0x00d: return "Filecasting";		// ETSI TS 102 979
-           case 0x44a: return "Journaline";
-           default:
-	       sprintf(buffer, "(0x%04x)", appType);;
-	       return buffer;
-        }
-        return "";
-} */
-
 #define	RSDIMS	12
 #define	FRAMESIZE 188
 //	fragmentsize == Length * CUSize
@@ -94,11 +69,20 @@
 	      if (appType == 0x44a)
 	         my_dataHandler	= new journaline_dataHandler();
 	      else
+	      if (appType == 1500)
+	         my_dataHandler = new adv_dataHandler (mr, dataBuffer, appType);
+	      else
+	      if (appType == 4)
 	         my_dataHandler	= new tdc_dataHandler (mr, dataBuffer, appType);
+	      else {
+	         fprintf (stderr, "DSCTy 5 with appType %d not supported\n",
+	                                                           appType);
+	         my_dataHandler	= new virtual_dataHandler();
+	      }
 	      break;
 
 	   case 44:
-	      fprintf (stderr, "going to install gournaline\n");
+	      fprintf (stderr, "going to install journaline\n");
 	      my_dataHandler	= new journaline_dataHandler();
 	      break;
 
@@ -157,9 +141,10 @@ static int expected_cntidx = 0;
 static bool assembling		= false;
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
-	   fprintf (stderr, "crc fails\n");
+//	   fprintf (stderr, "crc fails %d\n", Length);
 	   return;
 	}
+//	fprintf (stderr, "packet crc OK %d\n", Length);
 
 //	Continuity index:
 	uint8_t cntIdx	= getBits (vec, 2, 2);
@@ -172,11 +157,15 @@ static bool assembling		= false;
 	if (udlen == 0)
 	   return;
 
-//	if (cntIdx != expected_cntidx) {
-//	   expected_cntidx = 0;
-//	   return;
-//	}
-//	expected_cntidx = (cntIdx + 1) % 4;
+	if (paddr != packetAddress)
+	   return;
+	if (cntIdx != expected_cntidx) {
+//	   fprintf (stderr, "packet cntIdx %d expected %d address %d\n",
+//	                                cntIdx, expected_cntidx, paddr);
+	   expected_cntidx = 0;
+	   return;
+	}
+	expected_cntidx = (cntIdx + 1) % 4;
 
 	switch (flflg) {
 	   case 2:  // First data group packet
@@ -184,7 +173,6 @@ static bool assembling		= false;
 	      for (uint16_t i = 0; i < udlen * 8; i ++)
 	         series [i] = vec [3 * 8 + i];
 	      assembling	= true;
-//	fprintf (stderr, "start assembling\n");
 	      return;
 
 	   case 0:    // Intermediate data group packet
@@ -213,17 +201,25 @@ static bool assembling		= false;
 	         for (int i = 0; i < udlen * 8; i ++)
 	            series [currentLength + i] = vec [3 * 8 + i];
 	         assembling = false;
-//	      fprintf (stderr, "to datahandler\n");
+//
+//	Note, we are sending the UNPROCESSED mscdatagroup to the
+//	appropriate handler
 	         my_dataHandler	-> add_mscDatagroup (series);
 	         series. resize (0);
 	      }
 	      return;
 
 	      case 3: { // Single packet, mostly padding
-	         if (paddr == 2) {
-	            }
+	         series. resize (udlen * 8);
+	         for (uint8_t i = 0; i < udlen * 8; i ++)
+	            series [i] = vec [3 * 8 + i];
+	         my_dataHandler -> add_mscDatagroup (series);
+	         series. resize (0);
               }
-	      break;
+	      return;
+
+	      default:	// cannot happen
+	         return;
 	   }
 }
 //

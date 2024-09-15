@@ -73,7 +73,7 @@ int16_t	i;
 	   }
 	   if (offset + 16 >= size)
 	      return;
-
+	fprintf (stderr, "syncword\n");
 //	we have a syncword
 //	   uint16_t syncword	= getBits (data, offset,      16);
 	   int16_t length	= getBits (data, offset + 16, 16);
@@ -105,7 +105,7 @@ int16_t	i;
 	      return;
 	   }
 
-//	   fprintf (stderr, "frametype %d\n", frametypeIndicator);
+	   fprintf (stderr, "frametype %d\n", frametypeIndicator);
 	   if (frametypeIndicator == 0) 
 	      offset = handleFrame_type_0 (data, offset + 7 * 8, length);
 	   else
