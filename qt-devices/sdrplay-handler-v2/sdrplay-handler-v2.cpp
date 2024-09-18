@@ -150,13 +150,13 @@ mir_sdr_DeviceT devDesc [4];
 	if (numofDevs > 1) {
            sdrplaySelect sdrplaySelector;
            for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
-#ifndef	__MINGW32__
-              sdrplaySelector.
-                   addtoList (devDesc [deviceIndex]. DevNm);
-#else
-              sdrplaySelector.
-                   addtoList (devDesc [deviceIndex]. SerNo);
-#endif
+//#ifndef	__MINGW32__
+//	      sdrplaySelector.
+//	             addtoList (devDesc [deviceIndex]. DevNm);
+//#else
+	       sdrplaySelector.
+	             addtoList (devDesc [deviceIndex]. SerNo);
+//#endif
            }
            deviceIndex = sdrplaySelector. QDialog::exec();
         }

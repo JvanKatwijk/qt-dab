@@ -34,7 +34,8 @@
 
 //	\class dataProcessor
 //	The main function of this class is to ASSEMBLE the 
-//	MSCdatagroups and dispatch to the appropriate handler
+//	MSCdatagroups from the incoming packets
+//	 and dispatch to the appropriate handler
 #define	RSDIMS	12
 #define	FRAMESIZE 188
 //	fragmentsize == Length * CUSize
@@ -96,7 +97,7 @@
 	   
 	}
 
-	packetState	= 0;
+	assembling	= false;
 }
 
 	dataProcessor::~dataProcessor() {
@@ -138,7 +139,6 @@ uint8_t *data = dataL;
 
 void	dataProcessor::handlePacket (uint8_t *vec) {
 static int expected_cntidx = 0;
-static bool assembling		= false;
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
 //	   fprintf (stderr, "crc fails %d\n", Length);

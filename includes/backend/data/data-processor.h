@@ -55,8 +55,8 @@ private:
 	RingBuffer<uint8_t>* dataBuffer;
 	int16_t		expectedIndex;
 	std::vector<uint8_t>	series;
-	uint8_t		packetState;
 	int16_t		fillPointer;
+	bool		assembling;
 	std::vector<uint8_t> AppVector;
 	std::vector<uint8_t> FECVector;
 	bool		FEC_table [9];

@@ -56,6 +56,7 @@ QString s (v);
 	selectorDisplay	-> setModel (&deviceList);
 	selectorDisplay	-> adjustSize();
 	adjustSize();
+	fprintf (stderr, "adding %s\n", v);
 }
 
 void	sdrplaySelect::select_rsp (QModelIndex s) {

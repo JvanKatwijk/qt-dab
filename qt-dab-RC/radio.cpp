@@ -2118,10 +2118,10 @@ packetdata pd;
 	      break;
 	   case 5:
 	      fprintf (stderr, "selected apptype %d\n", pd. appType);
-	      show_label (QString ("Transp. Channel not implemented"));
+	      show_label (QString ("Transp. Channel partially implemented"));
 	      break;
 	   case 60:
-	      show_label (QString ("MOT partially implemented"));
+	      show_label (QString ("MOT"));
 	      break;
 	   case 59: {
 #ifdef	_SEND_DATAGRAM_
@@ -3590,6 +3590,14 @@ bool listChanged = false;
 	                                         "any",
 	                                     channel. Eid,
 	                                     tiiValue >> 8, tiiValue & 0xFF);
+	   if (tr == nullptr) {
+	      QString labelText = 
+	                 QString ("%1 %2 detected but not identified\n").
+	                             arg (uint8_t (tiiValue >> 8))
+	                            .arg (uint8_t ( tiiValue & 0xFF));
+	      distanceLabel	-> setText (labelText);
+	      return;
+	   }
 	   if (tr == nullptr)
 	      return;
 	   if ((tr -> mainId == 0) || (tr -> subId == 0))

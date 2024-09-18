@@ -1227,8 +1227,6 @@ int	firstFree = -1;
 	}
 
 	QString serviceName = ensemble -> services [serviceIndex]. serviceLabel;
-//	fprintf (stderr, "For service %s we bind component %d SCId %d\n",
-//	            serviceName. toLatin1 (). data (), compnr, SCId);
 
 	for (i = 0; i < 64; i ++) {
 	   if (!base -> serviceComps [i]. inUse) {
@@ -1241,6 +1239,8 @@ int	firstFree = -1;
 	       (base -> serviceComps [i]. componentNr == compnr))
 	      return;
 	}
+//	fprintf (stderr, "For service %s we bind component %d SCId %d %d\n",
+//	            serviceName. toLatin1 (). data (), compnr, SCId, firstFree);
 
 	if (!base -> serviceComps [firstFree]. inUse) {
 	   base -> serviceComps [firstFree]. inUse		= true;
@@ -1543,7 +1543,6 @@ int     serviceIndex;
 	
 	int	SId	= ensemble -> services [serviceIndex]. SId;
 	int compIndex	= findServiceComponent (currentConfig, SId, compNr);
-
 	        
 	if ((compIndex == -1) ||
 	            (currentConfig -> serviceComps [compIndex]. TMid != 3)) {
@@ -1554,6 +1553,8 @@ int     serviceIndex;
 	int subchId	=
 	           currentConfig -> serviceComps [compIndex]. subchannelId;
 
+	fprintf (stderr, "%s has subchId %d compIndex %d\n",
+	                         s. toLatin1 (). data (), subchId, compIndex);
 	if ((subchId == -1) ||
 	           !currentConfig -> subChannels [subchId]. inUse) {
 	   fibLocker. unlock ();

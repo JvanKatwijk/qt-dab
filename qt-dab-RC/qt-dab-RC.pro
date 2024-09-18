@@ -78,6 +78,7 @@ DEPENDPATH += . \
 	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/rawfiles-new \
 	      ../qt-devices/filereaders/xml-filereader 
+	
 	      
 
 INCLUDEPATH += . \
@@ -109,7 +110,7 @@ INCLUDEPATH += . \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
 	      ../qt-devices/filereaders/new-reader \
-	      ../qt-devices/filereaders/xml-filereader \
+	      ../qt-devices/filereaders/xml-filereader 
 
 # Input
 HEADERS += ./radio.h \
@@ -607,9 +608,9 @@ sdrplay-v2 {
 	DEFINES		+= HAVE_SDRPLAY_V2
 	DEPENDPATH	+= ../qt-devices/sdrplay-handler-v2
 	INCLUDEPATH	+= ../qt-devices/sdrplay-handler-v2
-	HEADERS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h \
+	HEADERS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
 	                   ../qt-devices/sdrplay-handler-v2/sdrplayselect.h 
-	SOURCES		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \
+	SOURCES		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 
 	                   ../qt-devices/sdrplay-handler-v2/sdrplayselect.cpp 
 	FORMS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }

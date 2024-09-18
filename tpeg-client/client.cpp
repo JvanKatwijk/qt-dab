@@ -39,7 +39,7 @@
 
 PyObject *pName, *pModule, *pFunc, *pArgs;
 
-wchar_t	*modulePath	= L"/tmp";
+//wchar_t	*modulePath	= "L/tmp";
 
 #define swap(a) (((a) << 8) | ((a) >> 8))
 
@@ -82,7 +82,6 @@ uint16_t        genpoly         = 0x1021;
 }
 
 	Client::Client (QWidget *parent):QDialog (parent) {
-int16_t	i;
 	setupUi (this);
 	connected	= false;
 	connect (connectButton, SIGNAL (clicked ()),
@@ -107,7 +106,8 @@ int16_t	i;
 	   fprintf (stderr, "Cannot lod openlr module]n");
 	   throw (20);
 	}
-	PySys_SetPath (modulePath);
+//	PySys_SetPath (modulePath);
+	PySys_SetPath (L"/tmp");
         pName = PyUnicode_FromString ("myModule");
 	if (pName == nullptr) {
 	   fprintf (stderr, "pName fout\n");

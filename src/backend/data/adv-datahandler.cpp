@@ -25,6 +25,10 @@
 #include	"crc-handlers.h"
 #include	"bit-extractors.h"
 
+//
+//	The adv data handler is meant to be for processing PPP type data,
+//	the format is unknown to me, so I leave it here to
+//	assembling the MSC datagroup
 	adv_dataHandler::adv_dataHandler (RadioInterface *mr,
 	                                  RingBuffer<uint8_t> *dataBuffer,
 	                                  int appType) {
@@ -73,8 +77,19 @@ uint16_t segmentNumber	= 0;
 	}
 
 	int dataLength	= msc. size () / 8 - 2 - next / 8;
-	fprintf (stderr, "%d datalength %d\n",
-	         cntIdx, msc. size () / 8 - 2 - next / 8);
+//	fprintf (stderr, "%d datalength %d\n",
+//	         cntIdx, msc. size () / 8 - 2 - next / 8);
+	uint8_t x0, x1, x2;
+	x0	= getBits (data, next + 8 * 0, 8);	
+	x1	= getBits (data, next + 8 * 1, 8);	
+	x2	= getBits (data, next + 8 * 2, 8);	
+	if (x0 == 0xd3 && x1 == 0) {
+	   for (int i = 0; i < 25; i ++) {
+	      uint8_t xx = getBits (data, next + 8 * i, 8);
+	      fprintf (stderr, "%x%x ", xx >> 4, xx & 0xF);
+	   }
+	   fprintf (stderr, "\n");
+	}
 	//
 	//	the data can be found at next / 8 
 	//	and is still one bit per byte, ;ength

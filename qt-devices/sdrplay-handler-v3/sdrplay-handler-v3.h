@@ -32,6 +32,7 @@
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"device-handler.h"
+#include	"sdrplayselect.h"
 #include	"ui_sdrplay-widget-v3.h"
 #include	<sdrplay_api.h>
 
@@ -50,7 +51,8 @@ class	sdrplayHandler_v3 final:
 	           public deviceHandler, public Ui_sdrplayWidget_v3 {
 Q_OBJECT
 public:
-			sdrplayHandler_v3	(QSettings *, const QString &);
+			sdrplayHandler_v3	(QSettings *,
+	                                         const QString &);
 			~sdrplayHandler_v3	();
 //	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();

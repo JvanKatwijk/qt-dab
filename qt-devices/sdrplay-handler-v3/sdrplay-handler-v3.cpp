@@ -516,7 +516,7 @@ void	sdrplayHandler_v3::run		() {
 sdrplay_api_ErrT        err;
 sdrplay_api_DeviceT     devs [6];
 uint32_t                ndev;
-
+int	deviceIndex	= 0;
         threadRuns. store (false);
 	receiverRuns. store (false);
 
@@ -597,8 +597,8 @@ uint32_t                ndev;
 	   goto unlockDevice_closeAPI;
 	}
 
-	fprintf (stderr, "%d devices detected\n", ndev);
-	chosenDevice	= &devs [0];
+	deviceIndex	= 0;
+	chosenDevice	= &devs [deviceIndex];
 	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
 	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
 	err	= sdrplay_api_SelectDevice (chosenDevice);
@@ -617,8 +617,8 @@ uint32_t                ndev;
 //	we have a device, unlock
 	sdrplay_api_UnlockDeviceApi ();
 //
-	serial		= devs [0]. SerNo;
-	hwVersion	= devs [0]. hwVer;
+	serial		= devs [deviceIndex]. SerNo;
+	hwVersion	= devs [deviceIndex]. hwVer;
 //
 	try {
 	   int antennaValue;
