@@ -67,7 +67,9 @@ std::vector<cacheElement> res;
 #ifdef	__TRACE__
 	fprintf (stderr, "File %s is opened\n", s. toUtf8 (). data ());
 #endif
-	int	count = 0; 
+	cacheElement ed;
+	res. push_back (ed);	// the dummy one
+	int	count = 1; 
 	char	buffer [1024];
 	std::vector<QString> columnVector;
 	int	shift	= 0;
@@ -81,6 +83,7 @@ std::vector<cacheElement> res;
 	   int columns = readColumns (columnVector, buffer, NR_COLUMNS);
 	   if (columns < NR_COLUMNS)
 	      continue;
+	   ed. valid		= true;
 	   ed. country		= columnVector [COUNTRY]. trimmed ();
 	   ed. Eid		= get_Eid (columnVector [EID]);
 	   ed. mainId		= get_mainId (columnVector [TII]);

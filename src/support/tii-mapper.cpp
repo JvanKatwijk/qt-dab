@@ -58,7 +58,7 @@ cacheElement *tiiMapper::
 		get_transmitter (const QString &channel,
 	                         uint16_t Eid, 
 	                         uint8_t mainId, uint8_t subId) {
-	for (int i = 0; i < (int)(theCache. size ()); i ++) {
+	for (int i = 1; i < (int)(theCache. size ()); i ++) {
 	   if (((channel == "any") ||
 	        (channel ==  theCache [i]. channel)) &&
 	        (theCache [i]. Eid == Eid) &&
@@ -67,7 +67,7 @@ cacheElement *tiiMapper::
 	      return &theCache [i];
 	   }
 	}
-	return nullptr;
+	return &theCache [0];
 }
 
 void	tiiMapper::set_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {

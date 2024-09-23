@@ -382,6 +382,16 @@ QString h;
 #endif
 
 #ifndef	__MINGW32__
+	path_for_tiiFile	= checkDir (QDir::tempPath ());
+#else
+	path_for_tiiFile	= checkDir (QDir::homePath ());
+#endif
+	path_for_tiiFile	= dabSettings_p -> value (S_TII_PATH,
+	                                       path_for_tiiFile). toString ();
+	path_for_tiiFile	= checkDir (path_for_tiiFile);
+	path_for_tiiFile	+= "/tii-files.txt";
+	
+#ifndef	__MINGW32__
 	path_for_pictures	= checkDir (QDir::tempPath ());
 #else
 	path_for_pictures	= checkDir (QDir::homePath ());
@@ -3546,6 +3556,7 @@ bool listChanged = false;
 
 	if (!dxMode)
 	   channel. transmitters. resize (0);
+
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
 	   return;
 
@@ -3562,11 +3573,6 @@ bool listChanged = false;
 	   transmitter_country	-> setText (country);
 	}
 
-//	if (country != channel. countryName) {
-//	   transmitter_country	-> setText (country);
-//	   channel. countryName	= country;
-//	}
-
 	if ((localPos. latitude == 0) || (localPos. longitude == 0)) 
 	   return;
 
@@ -3574,40 +3580,57 @@ bool listChanged = false;
 	   return;
 
 //	OK, here we really start
-	bool inList = false;
-	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	   if (channel. transmitters. at (i). tiiValue == tiiValue) {
-	      inList = true;
-	      theTransmitter	= channel. transmitters [i]. theTransmitter;
-	      break;
-	   }
-	}
-
-	if (!inList) {
-	   cacheElement * tr =
+//	first we check whether the item is already in the list, however
+//	if it is but was not found in the database and now it is,
+//	replace the item
+	bool inList	= false;
+	cacheElement * tr =
 	      theTIIProcessor. get_transmitter (channel. realChannel?
 	                                         channel. channelName :
 	                                         "any",
 	                                     channel. Eid,
 	                                     tiiValue >> 8, tiiValue & 0xFF);
-	   if (tr == nullptr) {
-	      QString labelText = 
-	                 QString ("%1 %2 detected but not identified\n").
-	                             arg (uint8_t (tiiValue >> 8))
-	                            .arg (uint8_t ( tiiValue & 0xFF));
-	      distanceLabel	-> setText (labelText);
-	      return;
+	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
+	   cacheElement t2 =
+	           channel. transmitters. at (i). theTransmitter;
+	   if ((channel. transmitters. at (i). tiiValue == tiiValue)) {
+	      if (!t2. valid && tr -> valid) {
+	         channel. transmitters. erase (channel. transmitters. begin () + i);
+	         i -= 1;
+//	         fprintf (stderr, "removing an element\n");
+	      }
+	      else {
+	         inList = true;
+	         break;
+	      }
 	   }
-	   if (tr == nullptr)
-	      return;
-	   if ((tr -> mainId == 0) || (tr -> subId == 0))
-	      return;
-
+	}
+//
+//	If the item is not yet in the list add it and - in dxMode
+//	add the data to the log
+	if (!inList) {
 	   theTransmitter = *tr;
+	   theTransmitter. mainId	= tiiValue >> 8;
+	   theTransmitter. subId	= tiiValue & 0xFF;
+	   theTransmitter. channel	= channel. channelName;
 	   transmitterDesc t = {tiiValue, false, theTransmitter, 0, 0};
 	   channel. transmitters. push_back (t);	
-//
-//	we know the list changed, and we retransmit it later on
+	   if (dxMode) {
+	      FILE *tiiFile	=
+	                 fopen (QString (path_for_tiiFile).
+	                                    toStdString (). c_str (), "a");
+	      if (tiiFile != nullptr) {
+	         QDateTime theTime;
+	         QString tod = theTime. currentDateTime (). toString ();
+	         fprintf (tiiFile , "%s -> %s %s %d %d %s\n",
+	                            tod. toLatin1 (). data (),
+	                            channel.  countryName. toLatin1 (). data (),
+	                            channel. channelName. toLatin1 (). data (),
+	                            tiiValue >> 8, tiiValue & 0xFF,
+	                            theTransmitter. transmitterName. toLatin1 (). data ());
+	         fclose (tiiFile);
+	      }
+	   }
 	   listChanged	= true;
 	}
 //
@@ -3656,7 +3679,7 @@ bool listChanged = false;
 	   thePosition. latitude	= theTr. theTransmitter. latitude;
 	   thePosition. longitude	= theTr. theTransmitter. longitude;
 
-	   if (theTr. isStrongest) {
+	   if (theTr. theTransmitter. valid && theTr. isStrongest) {
 	      channel. targetPos. latitude	= thePosition. latitude;
 	      channel. targetPos. longitude	= thePosition. longitude;
 	      channel. transmitterName		=
@@ -3680,9 +3703,14 @@ bool listChanged = false;
 	   }
 	   int tiiValue_local	= theTr. tiiValue;
 	   labelText = "(" + QString::number (tiiValue_local >> 8) + ","
-	                    + QString::number (tiiValue_local & 0xFF) + ") "
-	                    + theName + " ";
-	   QString text2 =  " "
+	                    + QString::number (tiiValue_local & 0xFF) + ") ";
+	   if (theTr. theTransmitter. valid)
+	      labelText += theName;
+	   else
+	      labelText += "Not in database";
+	   QString text2	= "";
+	   if (theTr. theTransmitter. valid)
+	             text2  =  " "
 	                    + QString::number (theTr. distance, 'f', 1) + " km " 
 	                    + QString::number (theTr. corner, 'f', 1) 
 	                    + QString::fromLatin1 (" \xb0 ") 
@@ -3711,7 +3739,7 @@ bool listChanged = false;
 	   configHandler_p -> utcSelector_active () ?
 	                              QDateTime::currentDateTimeUtc () :
 	                              QDateTime::currentDateTime ();
-	   if (listChanged)
+	   if (listChanged && theTr. theTransmitter. valid)
 	      mapHandler -> putData (key,
 	                             thePosition, 
 	                             theTr. theTransmitter. transmitterName,

@@ -15,6 +15,9 @@ Recent changes
 ------------------------------------------------------------------------
 Changes september
 
+Showing tii values when no database entry is found. Be aware that
+there may be false positives in the list then
+
 Handling packets is extended to be able to deal with FEC settings, i.e.
 packets protected with Reed Solomon error repair
 

@@ -341,8 +341,7 @@ QString fileName =
 	                                     QFileDialog::DontUseNativeDialog);
 	
 	if (fileName == "") {
-	   dabSettings	-> endGroup ();
-	   return "";		// note typeFound unset
+	   return "";		// cancelled
 	}
 	
 	dabSettings	-> beginGroup ("Filetypes");

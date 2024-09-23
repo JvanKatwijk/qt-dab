@@ -29,7 +29,9 @@
 #include	<string>
 #include	<QString>
 
-typedef struct {
+class cacheElement {
+public:
+	bool		valid;
 	QString		country;
 	QString		channel;
 	QString		ensemble;
@@ -41,7 +43,22 @@ typedef struct {
 	float		longitude;
 	float		power;
 	float		height;
-} cacheElement;
+	cacheElement	() {
+	   valid = false;
+	   country		= "not known";
+	   channel		= "";
+	   ensemble		= "";
+	   Eid			= 0;
+	   mainId		= -1;
+	   subId		= -1;
+	   transmitterName	= "not in database";
+	   latitude		= 0;
+	   longitude		= 0;
+	   power		= 0;
+	   height		= 0;
+	}
+	~cacheElement	()	{}
+};
 
 
 struct transmitterDesc {
