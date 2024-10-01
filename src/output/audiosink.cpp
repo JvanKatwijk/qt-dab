@@ -272,14 +272,14 @@ int32_t	audioSink::cardRate() {
 }
 
 bool	audioSink::setupChannels (QComboBox *streamOutSelector) {
-uint16_t	ocnt	= 1;
+uint16_t	ocnt	= 0;
 uint16_t	i;
 
 	for (i = 0; i <  numofDevices; i ++) {
 	   const QString so = 
 	             outputChannelwithRate (i, 48000);
 	   qDebug ("Investigating Device %d\n", i);
-
+	
 	   if (so != QString ("")) {
 	      streamOutSelector -> insertItem (ocnt, so, QVariant (i));
 	      outTable [ocnt] = i;

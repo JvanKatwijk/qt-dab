@@ -42,7 +42,7 @@ void	Qt_Audio::initialize_deviceList () {
 	                QAudioDeviceInfo::defaultOutputDevice ();
 	theList. push_back (defaultDeviceInfo);
 	for (auto &deviceInfo:
-	       QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+	       QAudioDeviceInfo::availableDevices (QAudio::AudioOutput)) {
 	   if (deviceInfo != defaultDeviceInfo) {
 	      theList. push_back (deviceInfo);
 	   }
@@ -102,7 +102,7 @@ void	Qt_Audio::initializeAudio(const QAudioDeviceInfo &deviceInfo) {
 	   m_audioOutput. reset (new QAudioOutput (audioFormat));
 	   if (m_audioOutput -> error () == QAudio::NoError) {
 	      isInitialized. store (true);
-//	      fprintf (stderr, "Initialization wens OK\n");
+//	      fprintf (stderr, "Initialization went OK\n");
 	   }
 //	   else
 //	     fprintf (stderr, "Audio device gives error\n");
