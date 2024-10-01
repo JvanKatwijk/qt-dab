@@ -386,10 +386,11 @@ QString h;
 #else
 	path_for_tiiFile	= checkDir (QDir::homePath ());
 #endif
+	path_for_tiiFile	+= "Qt-DAB-files/";
 	path_for_tiiFile	= dabSettings_p -> value (S_TII_PATH,
 	                                       path_for_tiiFile). toString ();
 	path_for_tiiFile	= checkDir (path_for_tiiFile);
-	path_for_tiiFile	+= "/tii-files.txt";
+	path_for_tiiFile	+= "tii-files.txt";
 	
 #ifndef	__MINGW32__
 	path_for_pictures	= checkDir (QDir::tempPath ());

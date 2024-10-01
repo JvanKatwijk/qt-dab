@@ -180,6 +180,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/virtual-datahandler.h \
 	   ../includes/backend/data/tdc-datahandler.h \
 	   ../includes/backend/data/ip-datahandler.h \
+	   ../includes/backend/data/adv-datahandler.h \
 	   ../includes/backend/data/mot/mot-handler.h \
 	   ../includes/backend/data/mot/mot-object.h \
 	   ../includes/backend/data/mot/mot-dir.h \
@@ -317,6 +318,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/data-processor.cpp \
 	   ../src/backend/data/tdc-datahandler.cpp \
 	   ../src/backend/data/ip-datahandler.cpp \
+	   ../src/backend/data/adv-datahandler.cpp \
 	   ../src/backend/data/mot/mot-handler.cpp \
 	   ../src/backend/data/mot/mot-object.cpp \
 	   ../src/backend/data/mot/mot-dir.cpp \

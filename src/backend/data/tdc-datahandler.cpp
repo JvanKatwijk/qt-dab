@@ -109,8 +109,12 @@ int16_t	i;
 	   if (frametypeIndicator == 0) 
 	      offset = handleFrame_type_0 (data, offset + 7 * 8, length);
 	   else
-	   if (frametypeIndicator == 1)
-	      offset = handleFrame_type_1 (data, offset + 7 * 8, length);
+	   if (frametypeIndicator == 1) {
+	      if (8 * length + offset + 7 * 8 < m. size ())
+	         offset = handleFrame_type_1 (data, offset + 7 * 8, length);
+	      else
+	         offset  += length;
+	   }
 	   else
 	      return;	// failure
 	}
@@ -141,7 +145,7 @@ uint8_t	*buffer = (uint8_t *) alloca (length * sizeof (uint8_t));
 int	lOffset;
 int	llengths = length - 4;
 #if 0
-	fprintf (stderr, " frametype 1  (length %d) met %d %d %d\n", length,
+	fprintf (stderr, " frametype 1  (length %d) met offset %d %d %d %d\n", length, offset,
 	                             getBits (data, offset,      8),
 	                             getBits (data, offset + 8,  8),
 	                             getBits (data, offset + 16, 8));

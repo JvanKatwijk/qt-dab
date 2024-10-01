@@ -53,7 +53,7 @@
 	this	-> FEC_scheme		= pd -> FEC_scheme;
 	this	-> dataBuffer		= dataBuffer;
 
-	AppVector. resize (RSDIMS * FRAMESIZE);
+	AppVector. resize (RSDIMS * FRAMESIZE + 48);
 	FECVector. resize (9 * 22);
 	for (int i = 0; i < 9; i ++)
 	   FEC_table [i] = false;
@@ -228,26 +228,24 @@ static int expected_cntidx = 0;
 void	dataProcessor::handleRSPacket (uint8_t  *vec) {
 int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
-
-	if ((pLength == 24) && (address == 1022)) {
-	   if (fillPointer < RSDIMS * FRAMESIZE) {
-	      fillPointer = 0;
-	      return;
-	   }
+//
+//	we differentiate between the "data" packets and the "RS" packets
+//
+//	the "order" is first RSDIMS * FRAMESIZE packet elements
+//	with data, bext 9 * 22 bytes RS data
+	if ((pLength == 24) && (address == 1022)) {	// RS packet
 	   uint8_t counter = getBits (vec, 2, 4);
 	   registerFEC (vec, counter);
 	   if (FEC_complete ()) {
 	      processRS (AppVector, FECVector);
 	      handle_RSpackets (AppVector);
+	      clear_FECtable ();
 	      fillPointer = 0;
 	   }
 	}
 	else {
-	   if (fillPointer >= RSDIMS * FRAMESIZE)
-	      return;
+//	addPacket checks the size and sets fillPointer to 0 id erroneous
 	   fillPointer = addPacket (vec, AppVector, fillPointer);
-	   if (fillPointer >= RSDIMS * FRAMESIZE)
-	      clear_FECtable ();
 	}
 }
 
@@ -258,13 +256,17 @@ void	dataProcessor::clear_FECtable () {
 //
 //	addPacket basically packs the sequence of bits into a sequence
 //	of bytes, for processing by the RS decoder
+//	of course, we check for overflow
 int	dataProcessor::addPacket (uint8_t *vec,
 	                          std::vector<uint8_t> &theBuffer,
 	                          int fillPointer) {
 	int16_t	packetLength	= (getBits_2 (vec, 0) + 1) * 24;
-
-	if (fillPointer + packetLength > RSDIMS * FRAMESIZE)
-	   fprintf (stderr, " no match %d %d\n", fillPointer, packetLength);
+//
+//	Assert theBuffer. size () == RSDIMS * FRAMESIZE
+	if (fillPointer + packetLength > theBuffer. size ()) {
+	   clear_FECtable ();
+	   return 0;
+	}
 	for (int i = 0; i < packetLength; i ++) {
 	   uint8_t temp = 0;
 	   for (int j = 0; j < 8; j ++)
@@ -323,7 +325,6 @@ bool	dataProcessor::FEC_complete () {
 	      return false;
 	return true;
 }
-//
 //
 //	Really no idea what to do here
 void	dataProcessor::handleTDCAsyncstream (const uint8_t *data,
