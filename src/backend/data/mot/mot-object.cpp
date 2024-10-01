@@ -97,7 +97,7 @@ uint16_t	rawContentType = 0;
 	            case 12: {
                        int16_t i;
                        for (i = 0; i < length - 1; i ++)
-                          name. append (QCHar (segment [pointer + i + 1]));
+                          name. append (QChar (segment [pointer + i + 1]));
                        }
 //	               fprintf (stderr, "Found MOT object name %s\n",
 //	                                       name. toLatin1 (). data ());
