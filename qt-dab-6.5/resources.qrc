@@ -21,8 +21,8 @@
 	<file>../res/Adaptic.qss</file>
 	<file>../res/Combinear.qss</file>
 	<file>../res/Diffnes.qss</file>
-	<file>../res/qt-dab-6-128x128.png</file>
-	<file>../res/qt-dab-6-256x256.png</file>
+	<file>../res/qt-dab-6.5-128x128.png</file>
+	<file>../res/qt-dab-6.5-256x256.png</file>
 	<file>../res/volume_off.png</file>
         <file>../res/volume_on.png</file>
         <file>../res/signal0.png</file>

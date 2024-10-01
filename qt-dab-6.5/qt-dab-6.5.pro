@@ -81,7 +81,6 @@ DEPENDPATH += . \
 	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/rawfiles-new \
 	      ../qt-devices/filereaders/xml-filereader 
-	      
 
 INCLUDEPATH += . \
 	       ./support \
