@@ -25,6 +25,7 @@
 #include	"Qt-audio.h"
 #include	<QSettings>
 #include	"settingNames.h"
+//#include	<QMediaFormat>
 
 	Qt_Audio::Qt_Audio (QSettings *settings):
 	                 tempBuffer (8 * 32768) { 
@@ -33,18 +34,38 @@
 	working. store		(false);
 	isInitialized. store	(false);
 	newDeviceIndex		= -1;
+//
+//	allDevices		= new QMediaDevices (nullptr);
+//	deviceList	 	= allDevices -> audioOutputs ();
+//	for (auto &deviceInfo : deviceList)
+//	      theList. push_back (deviceInfo. description (),
+//	                          QVariant:: fromValue (deviceInfo));
 	initialize_deviceList	();
 	initializeAudio (QAudioDeviceInfo::defaultOutputDevice());
 }
 
 void	Qt_Audio::initialize_deviceList () {	
+	QAudioFormat audioFormat;
+	audioFormat. setSampleRate      (outputRate);
+        audioFormat. setChannelCount    (2);
+        audioFormat. setSampleSize      (sizeof (float) * 8);
+        audioFormat. setCodec           ("audio/pcm");
+        audioFormat. setByteOrder       (QAudioFormat::LittleEndian);
+        audioFormat. setSampleType      (QAudioFormat::Float);
+
 	const QAudioDeviceInfo &defaultDeviceInfo =
 	                QAudioDeviceInfo::defaultOutputDevice ();
-	theList. push_back (defaultDeviceInfo);
+	if (!defaultDeviceInfo. isFormatSupported (audioFormat))
+	   fprintf (stderr, "Default device does not support 48000\n");
+	else {
+	   fprintf (stderr, "Default device does support 48000\n");
+	   theList. push_back (defaultDeviceInfo);
+	}
 	for (auto &deviceInfo:
 	       QAudioDeviceInfo::availableDevices (QAudio::AudioOutput)) {
 	   if (deviceInfo != defaultDeviceInfo) {
-	      theList. push_back (deviceInfo);
+	      if (deviceInfo. isFormatSupported (audioFormat))
+	         theList. push_back (deviceInfo);
 	   }
 	}
 
@@ -53,8 +74,7 @@ void	Qt_Audio::initialize_deviceList () {
            fprintf (stderr, "%s\n",  listEl. deviceName (). toLatin1 (). data ());;
 
 	fprintf (stderr, "Length of deviceList %d\n",  theList. size ());
-	if ((defaultDeviceInfo. deviceName () == "") &&
-	    (theList. size () < 2))
+	if (theList. size () == 0)
 	   throw (22);
 }
 
@@ -68,8 +88,8 @@ QStringList nameList;
 	return nameList;
 }
 //
-//	Note that AudioBase functions have - if needed - the rate
-//	converted.  This functions overrides the one in AudioBase
+//	Note that - by convention - all audio samples here
+//	are in a rate 48000
 void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	if (!working. load ())
 	   return;
@@ -133,7 +153,6 @@ void	Qt_Audio::restart	() {
 	   fprintf (stderr, "restart gaat niet door\n");
 	int vol		= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
 	m_audioOutput	-> setVolume ((float)vol / 100);
-	
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index) {

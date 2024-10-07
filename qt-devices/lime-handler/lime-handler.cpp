@@ -133,7 +133,6 @@ lms_info_str_t limedevices [10];
 	int k       = antennaList -> findText (antenne);
         if (k != -1) 
            antennaList -> setCurrentIndex (k);
-	
 	connect (antennaList, qOverload<int>(&QComboBox::activated),
 	         this, &limeHandler::setAntenna);
 

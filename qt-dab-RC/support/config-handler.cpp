@@ -184,22 +184,38 @@ bool	configHandler::findDevice (const QString &dev) {
 
 void	configHandler::connectDevices	() {
 	connect (deviceSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	         &QComboBox::textActivated,
+#else
 	         qOverload<const QString &>(&QComboBox::activated),
+#endif
 	         myRadioInterface, &RadioInterface::doStart);
 }
 
 void	configHandler::disconnectDevices () {
 	disconnect (deviceSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	            qOverload<const QString &>(&QComboBox::textActivated),
+#else
 	            qOverload<const QString &>(&QComboBox::activated),
+#endif
 	            myRadioInterface, &RadioInterface::doStart);
 	disconnect (deviceSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	            qOverload<const QString &>(&QComboBox::textActivated),
+#else
 	            qOverload<const QString &>(&QComboBox::activated),
+#endif
 	            myRadioInterface, &RadioInterface::newDevice);
 }
 
 void	configHandler::reconnectDevices () {
 	connect (deviceSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	         qOverload<const QString &>(&QComboBox::textActivated),
+#else
 	         qOverload<const QString &>(&QComboBox::activated),
+#endif
 	         myRadioInterface, &RadioInterface::newDevice);
 }
 	
@@ -344,7 +360,11 @@ void	configHandler::set_connections () {
 	connect (correlationSelector, &QCheckBox::stateChanged,
 	         myRadioInterface, &RadioInterface::handle_correlationSelector);
 	connect (decoderSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	         &QComboBox::textActivated,
+#else
 	         qOverload<const QString &>(&QComboBox::activated),
+#endif
 	         this, &configHandler::handle_decoderSelector);
 }
 

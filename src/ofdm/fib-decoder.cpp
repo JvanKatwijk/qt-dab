@@ -1260,11 +1260,11 @@ int	firstFree = -1;
 
 static inline
 bool	match (QString s1, QString s2) {
-	if ((s1. length () != 16) || (s2. length () != 16)) 
+//	if ((s1. length () != 16) || (s2. length () != 16)) 
 //	   fprintf (stderr, "%s %d %s %d\n",
 //	               s1. toLatin1 (). data (), s1. length (),
 //	               s2. toLatin1 (). data (), s2. length ());
-	return s1 == s2;
+	return s1. trimmed () == s2. trimmed ();
 }
 //
 int	fibDecoder::find_service	(const QString &s) {

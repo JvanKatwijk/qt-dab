@@ -359,7 +359,11 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 	if (k >= 0) 
 	   antennaSelector -> setCurrentIndex (k);
 	connect (antennaSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	         &QComboBox::textActivated,
+#else
 	         qOverload<const QString &>(&QComboBox::activated),
+#endif
 	         this, &sdrplayHandler_v3::set_selectAntenna);
 	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
 }
@@ -418,7 +422,7 @@ QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
 
 	QString dumper	= QDir::fromNativeSeparators (fileName);
 	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
+	saveDir		= dumper. remove (x, dumper. size () - x);
         sdrplaySettings -> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }

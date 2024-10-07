@@ -72,7 +72,6 @@ QString	serial;
 	deviceNameLabel	->  setText (deviceString);
 	serialNumber	->  setText (serial);
 	createDevice (deviceString);
-
 }
 
 	soapyHandler::~soapyHandler	() {

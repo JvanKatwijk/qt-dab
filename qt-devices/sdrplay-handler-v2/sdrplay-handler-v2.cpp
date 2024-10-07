@@ -197,7 +197,11 @@ mir_sdr_DeviceT devDesc [4];
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting antenna\n", err);
 	      connect (antennaSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	                        &QComboBox::textActivated,
+#else
 	            qOverload<const QString &>(&QComboBox::activated),
+#endif
 	            this, &sdrplayHandler_v2::handle_antennaSelect);
 	      lnaMax		= 8;
 	      break;
@@ -211,7 +215,11 @@ mir_sdr_DeviceT devDesc [4];
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting of rspDuo\n", err);
 	      connect (tunerSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	               &QComboBox::textActivated,
+#else
 	               qOverload<const QString &>(&QComboBox::activated),
+#endif
 	               this, &sdrplayHandler_v2::handle_tunerSelect);
 	      lnaMax		= 9;
 	      break;

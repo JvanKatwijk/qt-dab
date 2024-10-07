@@ -590,7 +590,11 @@ void	RadioInterface::doStart (const QString &dev) {
 //	device, check for a preset name
 void	RadioInterface::doStart_direct	() {
 	disconnect (channelSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	            qOverload<const QString &> (&QComboBox::textActivated),
+#else
 	            qOverload<const QString &> (&QComboBox::activated),
+#endif
 	            this, &RadioInterface::handle_channelSelector);
 	nextService	= checkPresets ();
 	if (nextService. valid) {
@@ -618,7 +622,11 @@ void	RadioInterface::doStart_direct	() {
 	configHandler_p	-> reconnectDevices ();
 	
 	connect (channelSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	         qOverload<const QString &> (&QComboBox::textActivated),
+#else
 	         qOverload<const QString &> (&QComboBox::activated),
+#endif
 	         this, &RadioInterface::handle_channelSelector);
 
 	if (configHandler_p -> tii_detector_active ())

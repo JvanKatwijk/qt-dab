@@ -217,7 +217,11 @@ char	manufac [256], product [256], serial [256];
 
 //	and attach the buttons/sliders to the actions
 	connect (gainControl,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	         qOverload<const QString &>(&QComboBox::activated),
+#else
+	         qOverload<const QString &>(&QComboBox::activated),
+#endif
 	         this, &rtlsdrHandler_v4::set_ExternalGain);
 	connect (agcControl, &QCheckBox::stateChanged,
 	         this, &rtlsdrHandler_v4::set_autogain);

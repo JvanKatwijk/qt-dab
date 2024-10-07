@@ -290,11 +290,11 @@ uint16_t	i;
 	}
 
 	qDebug() << "added items to combobox";
-	return ocnt > 1;
+	return ocnt > 0;
 }
 
 QStringList	audioSink::streams () {
-uint16_t	ocnt	= 1;
+uint16_t	ocnt	= 0;
 QStringList res;
 
 	for (int i = 0; i <  numofDevices; i ++) {

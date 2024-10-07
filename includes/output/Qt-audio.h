@@ -33,7 +33,7 @@
 #include	<vector>
 #include	<atomic>
 #include	"ringbuffer.h"
-
+//#include	<QMediaDevices>
 class		QSettings;
 
 class	Qt_Audio: public audioPlayer {
