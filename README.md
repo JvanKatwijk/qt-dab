@@ -17,7 +17,6 @@ Qt-DAB-6.X is the stable version of Qt-DAB, i.e. a version with
 a windows installer (actually, there are three) and a Linux x64 AppImage.
 
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
-![6.4](/Qt_DAB-6.X-2.png?raw=true)
 
 Table of Contents
 =================================================================
@@ -101,7 +100,7 @@ Not implemented:
 Widgets and scopes
 =======================================================================
 
-![6.2](/Qt_DAB-6.X-1.png)
+![6.2](/Qt_DAB-6.X-2.png)
 
 The full GUI for Qt-DAB 6.X shows 4 (four) larger widgets and - depending
 on the settings - a few smaller ones.
