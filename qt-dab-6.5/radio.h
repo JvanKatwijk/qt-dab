@@ -309,7 +309,6 @@ private:
 	void			set_Colors		();
 	void			set_channelButton	(int);
 
-	void			show_pauzeSlide	();
 	void			displaySlide	(const QPixmap &);
 	QTimer			displayTimer;
 	QTimer			channelTimer;
@@ -523,6 +522,8 @@ private slots:
 	void			handle_configButton	();
 	void			handle_scheduleButton	();
 	void			handle_httpButton	();
+
+	void			show_pauzeSlide	();
 
 //
 //	color handlers

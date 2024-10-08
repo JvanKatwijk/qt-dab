@@ -25,6 +25,7 @@
 #include	"aboutdialog.h"
 #include	"ui_aboutdialog.h"
 #include	"dab-constants.h"
+#include	<QDateTime>
 
 	AboutDialog::AboutDialog(QWidget *parent) :
 	                                  QDialog(parent),
@@ -37,7 +38,8 @@
 	ui -> author 		-> setText(tr("Developed by")+" Jan van Katwijk (<a href=\"mailto:J.vanKatwijk@gmail.com\">J.vanKatwijk@gmail.com</a>)");
 	ui -> author		-> setTextInteractionFlags (Qt::TextBrowserInteraction);
 	ui -> version		-> setText (QString("Version-6.%1").arg ("6.X"));
-	ui -> buildInfo ->	setText (QString ("Built on") + QString (__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH));
+	QString theDate		= QDateTime::currentDateTime (). toString ();
+	ui -> buildInfo ->	setText (QString ("Built on") + theDate + QString (", Commit ") + QString (GITHASH));
 	ui -> sourceLocation	-> setText ("Sources are at <a href=\"https://github.com/JvanKatwijk/qt-dab\">github> </a>");
 	ui -> sourceLocation	-> setOpenExternalLinks(true);
 	ui -> qtVersion		-> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));

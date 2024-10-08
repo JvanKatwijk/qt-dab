@@ -1,19 +1,18 @@
-# Qt-DAB-6 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-6.X
 
 -------------------------------------------------------------------
 
 ![6.1](/front-picture.png?raw=true)
 
--------------------------------------------------------------------
 -------------------------------------------------------------------------
-
-**Qt-DAB-6.X is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 ------------------------------------------------------------------------
 About Qt-DAB-6.X
 -------------------------------------------------------------------------
 
-Qt-DAB-6.X is the stable version of Qt-DAB, i.e. a version with
+**Qt-DAB is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
+
+*Qt-DAB-6.X* is the stable version of Qt-DAB, i.e. a version with
 a windows installer (actually, there are three) and a Linux x64 AppImage.
 
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
@@ -38,20 +37,19 @@ Table of Contents
 Introduction
 =================================================================
 
-**Qt-DAB-6.X** is the stable version of Qt-DAB.
-Qt-DAB a rich implementation of a DAB decoder for use
-on Linux and Windows based PCs, including some ARM based boards,
-such as the Raspberry PI 2 and up.
-Qt-DAB can be used with a variety of SDR devices, including DABsticks, all models of the SDRplay, Airspy etc.
+Qt-DAB is designed to be used  with a variety of SDR devices,
+a clean interface allows support for a variety of devices, including
+DABsticks, all models of the SDRplay, Airspy etc.
 
 Precompiled versions of Qt-DAB-6.X for Linux-x64 (AppImage)
 and Windows (installers for
 Windows) are, as usual, available. 
 
-The full GUI when running Qt-DAB-6.X contains 4+ widgets, one of them, the
-main widget - with sufficient controls to select channels and service(s) -
-is always visible. The main widget contains selector
-for controlling the visibility of other widgets.
+Qt-DAB is GUI driven, 
+the full GUI shows 4+ widgets, one of them, the
+*main widget* - one with sufficient controls to select channels and service(s) -
+is always visible. This main widget also contains selector
+for controlling the visibility of (the) other widgets.
 
 Qt-DAB is being developed under Fedora, and cross compiled -
 using the excellent Mingw64 toolset - for Windows.
@@ -61,38 +59,36 @@ Features
 =================================================================
 
   * Qt-DAB supports input device:
-   	- SDR DAB sticks (RTL2838U or similar), 
-  	- All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSP DxII), with separate entries for the v2 and v3 library 
+   	- SDR DAB sticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick, 
+  	- All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSP DxII), with separate entries for the v2 and v3 library,
 	- HACKRF One, 
   	- Airspy, including Airspy mini,
 	- LimeSDR, 
 	- Adalm Pluto,
 	- **untested** UHD (anyone wants to help testing?)
-	- Soapy, a renewed soapy interface driver is even able to map other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000);
+	- Soapy, a renewed soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000);
 	- ExtIO (experimental, Windows only),
-	- input from a spyServer,
+	- input from a spyServer, with a 8 bit and a 16 bit version,
 	- input from rtl_tcp servers.
   * Always supported input from files:
    	- prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
   * Qr-DAB supports *Favorites* for easy switching of programs in different ensembles (see section *Favorites*),
   * Qt-DAB supports  DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and AAC-LC) decoding
-  * Qt-DAB supports the MOT SlideShow (SLS)  and Dynamic Label (DLS) with the possibility of saving slides and  dynamic Label text (the latter by right clicking with the mouse, or saving *all* dynamic label texts  - augmented with channel and time info - in a file),
+  * Qt-DAB supports MOT SlideShow (SLS) with the possibility of saving the slides,  Dynamic Label (DLS) with the possibility of saving the  dynamic Label text (the latter by right clicking with the mouse, or saving *all* dynamic label texts  - augmented with channel and time info - in a file),
   * Qt-DAB supports automatic reconfiguration of services,
   * Qt-DAB provides different views on the DAB input signal (spectrum, correlation, channel, etc),
-  * Qt-DAB provides detailed information (including strength and spectrum views) on the  selected  audio service,
-  * Qt-DAB recognizes and interprets  *TII* (Transmitter Identification Information) data),
-  *  Qt-DAB-6.X shows - if the received signal is from multiple transmitters - *all* detectable transmitters and displays the transmitters on a map,
+  * Qt-DAB provides detailed information (including strength and spectrum views) on the audio  in audio services service,
+  * Qt-DAB recognizes and interprets  *TII* (Transmitter Identification Information) data) of - if the received signal is from multiple transmitters - *all* detectable transmitters and displays the transmitters on a map,
   * Qt-DAB supports *dumping* of the input data of the DAB channel (Warning: produces large raw files!) into `.sdr` files or `.xml` file formats and playing them again later (see section on xml format),
-  * Qt-DAB supports *saving audio*, either as uncompressed ".wav" files (samplerate 48000, two channels) or saving *aac* frames from DAB+ services for processing by e.g. VLC),
-  * Qt-DAB supports saving the ensemble content description and advanced scanning possibilities,
-  * Qt-DAB supports generating ip output: when configured the ip data - if selected - is sent to a specified ip address (default: 127.0.0.1:8888),
+  * Qt-DAB supports *saving audio*, either as uncompressed ".wav" files (samplerate 48000, two channels) or saving *aac* frames from DAB+ services for processing by e.g. VLC,
+  * Qt-DAB supports saving the ensemble content description and provides advanced scanning possibilities,
+  * Qt-DAB supports handling ip output from data packets: when configured the ip data - if selected - is sent to a specified ip address (default: 127.0.0.1:8888),
   * Qt-DAB supports sending *TPEG output* - when configured - as datagrams to port 8888;
   *  Qt-DAB supports (automatic) *EPG* detection and building up a time table,
-  * Qt-DAB-6.X supports decoding and displaying  *journaline* when transmitted
-as subservice,
-  * Qt-DAB offers *Scheduling* of some operations on services for up to 7 days;
-  * Qt-DAB allows *background services*. It is possible to run an arbitrary number of DAB+ audioservices (from the current ensemble) as background service with the output sent to a file.
-  * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user prvided file or obsolete modes (Mode II and Mode IV),
+  * Qt-DAB-6.X supports decoding and displaying  *journaline* when transmitted as subservice,
+  * Qt-DAB offers *scheduling* of some operations on services for up to 7 days;
+  * Qt-DAB allows running an arbitrary anmount of services as *background service*. (from the current ensemble) with the output sent to a file.
+  * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user prvided file and it supports obsolete modes (Mode II and Mode IV),
   *The Qt-DAB implementation provides a clean device interface, easy to add other devices.
 
 Not implemented:
@@ -443,7 +439,7 @@ Using user specified bands
 =================================================================
 
 While it is known that the DAB transmissions are now all in Band III, there are situations where it might is desirable to use other frequencies.
-Qt-DAB provides (Unix type builds only)  the opportunity to specify
+Qt-DAB provides (Unix.Linux builds only)  the opportunity to specify
 your own band.  Specify in a file a list of channels, e.g.
 
 	jan	227360
