@@ -432,8 +432,8 @@ for inclusion in the AppImage.
 - :information_source: Note that your choice **SHOULD** be *CONFIG += tiiLib*
  rather than *CONFIG += preCompiled* (see step 4), *CONFIG+=preCompiled* will **NOT** work since the required sources are **NOT** open source and not included in the source tree.
 
-:information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
-- 
+- :information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
+ 
 
 Step 3
 -----------------------------------------------------------------
