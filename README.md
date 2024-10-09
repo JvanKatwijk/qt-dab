@@ -68,7 +68,7 @@ Features
 	- LimeSDR, 
 	- Adalm Pluto,
 	- **untested** UHD (anyone wants to help testing?)
-	- Soapy, a renewed soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000);
+	- Soapy, a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000);
 	- ExtIO (experimental, Windows only),
 	- input from a spyServer, with a 8 bit and a 16 bit version,
 	- input from an rtl_tcp server.
@@ -109,7 +109,7 @@ The **mainWidget** (see picture) is the one widget that is always visible
 when the program is running, it  shows a list of services (either from the currently selected channel or from the favourites), and  it provides  all means for selecting a channel, selecting a service and controlling the visibility of the other 3 widgets.. 
 It will  further show the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
-* touching the *ensemble name* (NPO (8001 in the picture) makes the
+* touching the *ensemble name* (NPO (8001)in the picture) makes the
 *content table*, i.e. an overview of the content of the ensemble, visible (or if it is visible, touching will hide it);
  * touching the small icon left of the name of the selected service (here left
 of the bold text NPO Klassiek), will show (or hide) the *technical widget*,
@@ -162,7 +162,7 @@ if in the selected service mot data (usually slides or text) is detected.
 ![6.1](/spectrum-scope.png)
 
 The widget for the *spectrum scope* is equipped with a tab for selecting
-on of 6 views on the input signal.
+one of 6 views on the input signal.
 In the view shown, the spectrum of the incoming DAB signal is shown.
 One sees clearly that the bandwidth of the signal is
 app 1.5 MHz (1536 KHz to be precise). To the right, one
@@ -176,64 +176,56 @@ On the right hand side the widget shows some quality indicators of the DAB signa
 
 ![6.1](/spectrum-ideal.png)
 
-The ideal form of the spectrum - and the signal constellation as shown in the
-IQScope - is not seen often with real inputs.
+The ideal form of the spectrum and the signal constellation as shown in the
+picture above is not often seen with real inputs.
 
 ![6.1](/qt-dab-correlation.png)
 
 The *correlation* scope shows the correlation between the incoming signal and
-predefined  data, indicating what it should be.
+predefined  data, i.e. the data as what it should be.
 *Correlation* is used in identifying the precise start of the
 (relevant) data of the frame in the input sample stream.
 The picture shows more more peaks, i.e. the signal from
 more than one transmitter is received. 
-Since the incoming samplerate is known, and - in this case - the distance
+Since the samplerate is known, and - in this case - the distance
 of the receiver to the transmitter of the strongest signal is known,
- estimated for (relative) distances can be computed.
+ estimates for (relative) distances can be computed.
 
 ![6.1](/qt-dab-null-period.png)
 
-A DAB signal is received as a sequences of smples, and can be thought to
-be built up from frames, rach frame consisting of 199608 consecutive samples.
-The first app 2500 samples of such a frame do not carry a signal,
-the NULL period.
+A DAB signal is received as a sequence of samples, and can be thought to
+be built up from frames, each frame consisting of 199608 consecutive samples.
+The first app. 2500 samples of a frame do not carry a signal, the NULL period.
 The *NULL scope* shows the samples in the transition from the NULL period to
-the first data block of a DAB frame.
+the first samples *with* data of a DAB frame.
 
 ![6.1](/qt-dab-tii-data.png)
 
-In reality the NULL period is not completely empty, it contains an encoding
-of the TII data. The *TII scope* shows the spectrum of the data in the NULL
+In reality the NULL period is not completely without signal, it contains an encoding of the TII data. The *TII scope* shows the spectrum of the data in the NULL
 period.
 This TII data - when decoded leading to 2 digit numbers-  is used to
-identify the transmitter of the signal received, the data can be mapped upon a name and location of the transmitter.
-If the home position is known, the distance to the transmitter is computed.
+identify the transmitter of the signal received, these numbers can be mapped upon a name and location of the transmitter.
 
 ![6.1](/qt-dab-channel.png)
 
 The *channel scope* shows the *channel response* on the transmitted data, i.e.
-the deformation of the transmitted signal as received.
-The picture shows the *cyan colored line*,
-i.e. the channel response on the amplitude,
-and the *red line*, i.e.  the channel effects on the phase of
-the samples.
+the deformation of the transmitted signal as received.  The picture shows the *cyan colored line*, i.e. the channel response on the amplitude, and the *red line*, i.e.  the channel effects on the phase of the samples.
 
 ![6.1](/qt-dab-stddev.png)
 
 The *deviation scope* shows the mean deviation of the carriers
 in the decoded signal, ideally their phase is (a multiple of) 90
-degrees. The phases are mapped upon (soft) bits.
+degrees. The phases are mapped upon (soft) bits, the larger the deviations,
+the less reliable these soft bits are.
 The Y-axis is in Hz.
 
 ![8.1](/configuration-and-control.png)
 
-The *configuration and control* widget contains  check boxes and
+The *configuration and control* widget contains  checkboxes, spinboxes and
 buttons with which the configuration of the decoding process can be
 influenced.
 
-At starting up Qt-DAB for the (very) first time, obviously no device
-is selected yet, the widget is made visible 
-to allow selection of an input device (the combobox at the bottom line right).
+At starting up Qt-DAB-6.X for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
 
 For a detailed description of all selectors, see the manual.
 
@@ -242,15 +234,14 @@ Scan control
 
 ![6.1](/scan-widget.png?raw=true)
 
-A separate widget - visibility under control of the *scan* button on the
-main widget - provides the control on scanning.
-Qt-DAB provides different scanning modes, with single scannning and
-continuous scanning.
+A separate widget - visible under control of the *scan* button on the
+main widget - provides full control on scanning. Qt-DAB provides different scanning modes, with single scannning and continuous scanning.
 
+To allow skipping over given channels when scanning, Qt-DAB supports the notion of a *skiptable*, in which channels to be skipped can be marked.
 The *show* button controls the visibility of the *skiptable*, skiptables
 can be loaded and stored in either the ".ini" file (use the "...default" buttons, or can be kept as xml file on a user defined place (the other load/store buttons).
 
-The small table at the bottom of the widget is just for convenience, on scanning it will display the number of services found in the channels visited.
+The small table at the bottom of the widget is just for convenience, on scanning it displays the channel name, the ensemble name encountered and the number of services detected in the ensemble.
 
 A note on showing a map
 =======================================================================
@@ -262,26 +253,24 @@ when touched, a small webserver starts that can show
 the position(s) of the transmitter(s) received on the map. 
 Note that two preconditions have to be met:
  * a "home" location has to be known (see the button *coordinates*);
- * a database has to be installed (see the button *load table*)
+ * a database has to be installed (see the button *load table*)l
 
-Adding the receiver coordinates is simple, touch the button *coordinates*
-on the *configuration and control* widget and a small widget appears where the
-latitude and longitude can be entered.
+Adding the receiver coordinates to Qt-DAB is simple, touch the button *coordinates* on the *configuration and control* widget and a small widget appears where the latitude and longitude can be entered.
 
 :information_source: When running a precompiled version of Qt-DAB
 (i.e. an AppImage or a Windows installer from this repository),
 installing the database is simple, just touch the button labeled "load table".
 In other cases, install the database first.
 
-By default, on starting the webserver, the "standard" browser on the
-system is invoked, listening to port 8080.
-The *configuration and control* widget contains a selector for switching
-this off, so that one might choose his/hers own browser.
+The webrowser will listen to port 8080. By default, the "standard" browser
+on the system is selected. The *configuration and control* widget
+contains a selector for switching this off, so that one might choose
+one's own browser.
 
 Documentation
 =================================================================
 
-An extensive *user's guide* - in PDF format - for the 6.X version can be found in the "docs" section of the source tree. The documentation contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
+An extensive *user's guide* - in PDF format - for the 6.X version can be found in the "docs" directory in the repository. The documentation contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
 
 ![Qt-DAB documentation](/qt-dab-6-manual.png?raw=true)
 
@@ -292,7 +281,9 @@ For Windows an  *installer* can be found in the releases section of this reposit
  * https://github.com/JvanKatwijk/qt-dab/releases.
 The installer will install the executable as well as required libraries.
 
-:information_source: Note that the device libraries for the SDRplay devices and the Adalm Pluto device library are not included in the installer, they require = if used - a separate installation.
+:information_source: The releases section contains 3 Windows installers. One for a 64 bit version, and 2 for a 32 bit version. The 2 versions for 32 bit differ in theit support for RTLSDR type devices. It seems that the support library for the V4 versions of the RTLSDR dongle are rather deaf when used with a V3 dongle.  The V3 version therefore is equipped with an older version of the support library, and the other version with the library for the V4 version of the dongle.  The 64 bit version has support for the V4 stick.
+
+:information_source: Note that the device libraries for the SDRplay devices and the Adalm Pluto device library are **NOT** included in the installer, they require = if used - a separate installatio. See below for details.
 
 Installation on Linux-x64
 =================================================================
@@ -307,6 +298,8 @@ The appImage contains next to the executable Qt-DAB program, the required librar
 For using an SDRplay device one should download the - proprietary - driver software from the SDRplay site. Note that the "old" 2.13 library does not support
 the newer SDRPlay device model such as the SDRPlay 1B. the SDRplayDx
 and the SDRPlay Dx-II. Use the 3.XX library.
+All libraries can be found on the website of SDRplay
+ * www.sdrplay.com
 
 For using an AIRspy or a Hackrf device, the Ubuntu repository as well as the bullseye repository (for the RPI) provide a working library.
 
@@ -322,7 +315,7 @@ For using the LimeSDR device I went back to the sources and compiled the
 support library myself, see
  * "https://wiki.myriadrf.org/Lime_Suite".
 
-For using the Adalm Pluto I followed the instructions on
+For installing the support software for the Adalm Pluto I followed the instructions on
  * "https://wiki.analog.com/university/tools/pluto/users"
 
 Building an executable for Qt-DAB: a few notes
@@ -330,11 +323,11 @@ Building an executable for Qt-DAB: a few notes
 
 It is strongly advised to use qmake/make for the compilation process,
 the *qt-dab-RC.pro* file contains (much) more configuration options
-than the *CMakeLists.txt* file for use with cmake does.
+than the *CMakeLists.txt* file that is used with cmake.
 
-Note that the scheme presented below is applied to the Ubuntu 20 system
-on the PC, and the  "bullseye" system on the RPI.
-For other distributions )or later Ubuntu versions), names of library
+Note that the scheme presented below is applied when building the AppImage
+on Ubuntu 20, and were tested on the  "bullseye" system on the RPI. 
+For other distributions (or later Ubuntu versions), names of library
 packages may be different. Note that in all cases, the development versions (i.e. the versions with the include (".h") files) are required.
 
 For Windows the easiest approach is to install msys/mingw and follow the process as sketched (I use Mingw64 packages in Fedora to cross-compile).
@@ -347,8 +340,7 @@ Step 1
 The subdirectories contain a ".pro" file with configuration informtion for use with "qmake", and a *CMakeLists.txt* file with configuration information for use with cmake.
 
 - :information_source: Qt-DAB uses - as the name suggests - the Qt framework,
-for the time being still the version 5, it uses further
-the Qwt library and the gcc compiler suite.
+for the time being still the version 5, it uses further the Qwt (version 6.2) library and the gcc compiler suite.
 
 For compiling and installing Qt-DAB on Ubuntu 20, I load the required libraries as given below:
 
@@ -374,16 +366,16 @@ For compiling and installing Qt-DAB on Ubuntu 20, I load the required libraries 
  *   sudo apt-get install libqt5svg5-dev
  *   sudo apt-get install libcurl4-openssl-dev
 
+Installing cmake is optional, I used it for compiling fdk-aac and the rtlsdr library.
 
-Note that different versions of Ubuntu iuse a different name for  packages, esp. the qwt library
+Note that different versions of Ubuntu use a different name for  packages, esp. the qwt library
 
 A note on libfdk-aac and libfaad
 -------------------------------------------------------------------
 
 Since - esp. for lower bitrates - *libfdk-aac* is believed to
 outperform *libfaad* in HeAAC decoding, the default in the configuration
-file is set to *fdk-aac*.
-Installing the libfdk-aac from the repository is
+file is set to *fdk-aac*.  Installing the libfdk-aac from the repository is
  *   sudo apt-get install libfdk-aac-dev
 
 :information_source: While the libfdk-aac-dev package in both Fedora and Ubuntu 24 work fine, I had some problems with the package from the repository in  Ubuntu 20 and 22. For the AppImage, built on Ubuntu 20, a library version was created from the sources to be found as github repository:
@@ -416,15 +408,14 @@ the software will then use SSE instructions.
 :information_source: Choose between 'CONFIG += single' or 'CONFIG += double'. In the latter case, all computations in the "front end" are done with double precision arithmetic.
 
 :information_source: Devices like SDRplay, AIRspy, RTLSDR, Lime,
-HackRf and Adalm Pluto can be included in the configuration *even if no support library is installed*. (Note that including *Soapy* requires Soapy libraries to be installed, so this does not apply for Soapy. Qt-DAB is designed such that on selecting a device in runtime, the required functions from the device library are linked to.
+HackRf and Adalm Pluto can be included in the configuration *even if no support library is installed*. (Note that including *Soapy* requires Soapy libraries to be installed, so this does not apply for Soapy). Qt-DAB is designed such that on selecting a device in runtime, the required functions from the device library are linked in.
 
-:information_source: The Soapy library used in Ubuntu 20 (used for building the AppImage) seems incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *soapy* is **NOT** configured
+:information_source: The Soapy library used in Ubuntu 20 (used for building the AppImage) seems incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *Soapy* is **NOT** configured
 for inclusion in the AppImage.
 
-:information_source: Note that your choice **SHOULD** be `CONFIG += tiiLib`
-rather than `CONFIG += preCompiled' (see step 4), 'CONFIG+=preCompiled' will **NOT** work since the required sources are **NOT** open source.
+:information_source: Note that your choice **SHOULD** be `CONFIG += tiiLib` should be, rather than `CONFIG += preCompiled' (see step 4), 'CONFIG+=preCompiled' will **NOT** work since the required sources are **NOT** open source and not included in the source tree.
 
-:information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if found.
+:information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found.
 
 Step 3
 -----------------------------------------------------------------
@@ -437,9 +428,9 @@ required libraries can be found.
 Step 4
 -----------------------------------------------------------------
 
-The repository contains in the subdirectory `library' a shared library `libtii=lib.so' that - when installed in e.g. `/usr/local/lib' allows loading fresh instances of the database.
+The repository contains in the subdirectory `library' a shared library `libtii=lib.so' that - when installed in e.g. `/usr/local/lib'  - allows loading fresh instances of the database.
 
-Otherwise, unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` in the home directory (home folder). (The unpacked file contains a copy of the database for finding the transmitter's name and location.)
+Otherwise, unpack file `tiiFile.zip', and copy the resulting file `.txdata.tii` in the home directory (home folder). (The unpacked file contains a copy of the database for finding the transmitter's name and location.)
 
 If Qt-DAB does not `see' the database, it will just function without mapping TII data onto names and locations.
 
@@ -457,10 +448,10 @@ While it is known that the DAB transmissions are now all in Band III, there migh
 Qt-DAB provides (Unix/Linux builds only) the opportunity to specify
 your own band.  Specify in a file a list of channels, e.g.
 
-	jan	227360
-	twee	220352
-	drie	1294000
-	vier	252650
+	one	227360
+	two	220352
+	three	1294000
+	four	252650
 
 and pass the file on program start-up with the `-A` command line switch. The channel name is just any identifier, the channel frequency is given in kHz. Your SDR device obviously has to support the frequencies for these channels.
 
@@ -512,8 +503,10 @@ Copyright
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
-	Copyright of libraries used - all available under a GPL
-	or similar licence, is gratefully acknowledged.
+	Copyright of libraries used - Qt-DAB, qwt, fftw, portaudio,
+	libsndfile. libsamplerate, ;ibusb-1, libfaad, libfdk-aac,
+	- is gratefully acknowledged.
+	
 	The Qt-DAB software is made available under the GPL-2.0.
 	Qt-DAB is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
