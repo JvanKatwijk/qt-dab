@@ -325,20 +325,22 @@ QString h;
 	(void)clockPort;
 #endif
 
+	volumeSlider	-> hide ();
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
 	int latency	= dabSettings_p -> value ("latency", 5). toInt();
 	soundOut_p		= nullptr;
-#ifdef	TCP_STREAMER
-	soundOut_p		= new tcpStreamer	(20040);
-	techWindow_p		-> hide		();
-#else
+//
+//	If we do not have a TCP streamer, we go for one of the
+//	Portaudio and the Qt_audio alternatives.
+//	Default - and if Qt_Audio fails, we go for Portaudio
+#ifndef	TCP_STREAMER
 	QStringList streams;
 	QString	temp;
 	QString s = dabSettings_p -> value (S_SOUND_HANDLER, S_PORT_AUDIO).
 	                                                       toString ();
 //
-	if (s != S_PORT_AUDIO) {
+	if (s != S_PORT_AUDIO) {	// try Qt_Audio
 	   try {
 	      soundOut_p	= new Qt_Audio (dabSettings_p);
 	      streams		= ((Qt_Audio *)soundOut_p) -> streams ();
@@ -357,13 +359,15 @@ QString h;
 	      soundOut_p = nullptr;
 	   }
 	}
+//
+//	we end up here if selection was PORT_AUDIO or using Qt_Audio failed
+//	as it does on U20
 	if (soundOut_p == nullptr) {
 	   soundOut_p		= new audioSink		(latency);
 	   streams	= ((audioSink *)soundOut_p) -> streams ();
 	   temp		=
 	          dabSettings_p -> value (AUDIO_STREAM_NAME,
 	                                      "default"). toString ();
-	   volumeSlider	-> hide ();
 	}
 
 	if (streams. size () > 0) {
@@ -380,43 +384,35 @@ QString h;
 	   delete soundOut_p;
 	   soundOut_p = new audioPlayer ();
 	}
-	   
-#endif
-
-#ifndef	__MINGW32__
-	path_for_tiiFile	= checkDir (QDir::tempPath ());
 #else
-	path_for_tiiFile	= checkDir (QDir::homePath ());
+	soundOut_p		= new tcpStreamer	(20040);
+	techWindow_p		-> hide		();
 #endif
-	path_for_tiiFile	+= "Qt-DAB-files/";
-	path_for_tiiFile	= dabSettings_p -> value (S_TII_PATH,
-	                                       path_for_tiiFile). toString ();
-	path_for_tiiFile	= checkDir (path_for_tiiFile);
-	path_for_tiiFile	+= "tii-files.txt";
-	
-#ifndef	__MINGW32__
-	path_for_pictures	= checkDir (QDir::tempPath ());
-#else
-	path_for_pictures	= checkDir (QDir::homePath ());
-#endif
-	path_for_pictures	+= "Qt-DAB-files/";
-	path_for_pictures	= dabSettings_p -> value (S_PICTURES_PATH,
-	                                       path_for_pictures). toString ();
-	path_for_pictures	= checkDir (path_for_pictures);
-	if (path_for_files != "")
-	   path_for_files = checkDir (path_for_files);
-	path_for_files		= dabSettings_p -> value (S_FILE_PATH, 
-	                                       path_for_pictures). toString ();
 //
+//	some MOT, tetx and other data is stored in the Qt-DAB-files directory
+//	in home or tmp dir
+	QString tempPath;
 #ifndef	__MINGW32__
-	epgPath		= checkDir (QDir::tempPath ());
+	tempPath	= checkDir (QDir::tempPath ());
 #else
-	epgPath		= checkDir (QDir::homePath ());
+	tempPath	= checkDir (QDir::homePath ());
 #endif
-	epgPath		+= "Qt-DAB-files/";
-	epgPath		= dabSettings_p -> value (S_EPG_PATH,
-	                                           epgPath). toString ();
-	epgPath		= checkDir (epgPath);
+	tempPath	+= "Qt-DAB-files/";
+
+	path_for_tiiFile	= dabSettings_p -> value (S_TII_PATH,
+	                                       tempPath). toString ();
+	path_for_tiiFile	= checkDir (path_for_tiiFile);
+	
+	path_for_pictures	= dabSettings_p -> value (S_PICTURES_PATH,
+	                                       tempPath). toString ();
+	path_for_pictures	= checkDir (path_for_pictures)
+;
+	path_for_files		= dabSettings_p -> value (S_FILE_PATH, 
+	                                       tempPath). toString ();
+	epgPath			= dabSettings_p -> value (S_EPG_PATH,
+	                                           tempPath). toString ();
+	epgPath			= checkDir (epgPath);
+
 	connect (&epgProcessor, &epgDecoder::set_epgData,
 	         this, &RadioInterface::set_epgData);
 //	timer for autostart epg service
@@ -1020,9 +1016,10 @@ uint8_t *localBuffer = dynVec (uint8_t, length + 8);
 #endif
 }
 /**
-  *	If a change is detected, we have to restart the selected
-  *	service - if any. If the service is a secondary service,
-  *	it might be the case that we have to start the main service
+  *	If a "change in configuration" is detected, we have to
+  *	restart the selected service - if any.s
+  *	If the service is a secondary service, it might be the case
+  *	that we have to start the main service
   *	how do we find that?
   *
   *	Response to a signal, so we presume that the signaling body exists
@@ -3565,8 +3562,11 @@ bool listChanged = false;
 
 	bool dxMode	= configHandler_p -> get_dxSelector ();
 
-	if (!dxMode)
+	if (!dxMode) {
 	   channel. transmitters. resize (0);
+	   if (!theNewDisplay. isHidden ())
+	      theNewDisplay. hide ();
+	}
 
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
 	   return;
@@ -3616,6 +3616,7 @@ bool listChanged = false;
 	      }
 	   }
 	}
+
 //
 //	If the item is not yet in the list add it and - in dxMode
 //	add the data to the log
@@ -3627,8 +3628,11 @@ bool listChanged = false;
 	   transmitterDesc t = {tiiValue, false, theTransmitter, 0, 0};
 	   channel. transmitters. push_back (t);	
 	   if (dxMode) {
+	      if (theNewDisplay. isHidden () &&
+	          dabSettings_p -> value (NEW_DISPLAY_VISIBLE, 0). toInt ()!= 0)
+	         theNewDisplay. show ();
 	      FILE *tiiFile	=
-	                 fopen (QString (path_for_tiiFile).
+	                 fopen (QString (path_for_tiiFile + "tii-files.txt" ).
 	                                    toStdString (). c_str (), "a");
 	      if (tiiFile != nullptr) {
 	         QDateTime theTime;

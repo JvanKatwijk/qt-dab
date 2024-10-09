@@ -25,7 +25,7 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Scan control](#scan-control)
-* [Showing a map for TII](#a-note-on-showing-a-map)
+* [Displaying TII data](#displaying-TII-data)
 * [Documentation](#documentation)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
@@ -122,7 +122,7 @@ if no audio is generated, or if the signal is muted, the icon will show this;
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
  * touching *with the right hand mouse button* the text of the dynamic label (here Frederick Delius - Suite ...) shows a small menu to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
- * the button labeled *http* controls the http handler with which a map on which rhe transmitters will be shown;
+ * the button labeled *http* controls the http handler with which a map on which the transmitters will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
  * the button labeled *favourites* controls  whether the list of services
@@ -245,10 +245,28 @@ can be loaded and stored in either the ".ini" file (use the "...default" buttons
 
 The small table at the bottom of the widget is just for convenience, on scanning it displays the channel name, the ensemble name encountered and the number of services detected in the ensemble.
 
-A note on showing a map
+Displaying TII data
 =======================================================================
 
+As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses the *FMList* database to map the decoded TII data to name and location of the transmitter.
+
+As known, DAB transmissions are usually by an SFN (Single Frequency Network), where all transmitters transmit the same content on the same frequency.
+If the DX selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
+
+![6.X](/DX-map.png?raw=true)
+
+The picture shows that on channel 12C I can identify 5 transmitters.
+The left column in the widget shows the transmitter whose data is the data
+being processed.
+
+Qt-DAB-6.X will save the transmitters that are identified in a text file,
+in Windows the file in the Qt-DAB-files folder in the home folder, in Linux the dile will be stored in the Qt-DAB-files folder in the :/tmp" directory.
+Name of the file is *tii-files.txt*.
+
 ![6.1](/QTmap.png?raw=true)
+
+If the receiver's loction is known, distances to the transmitters can be
+computed, and the transmitters can be made visible on a map.
 
 Qt-DAB has - on the main widget -  a button labeled *http*,
 when touched, a small webserver starts that shows
@@ -257,17 +275,12 @@ Note that two preconditions have to be met:
  * a "home" location has to be known (see the button *coordinates*);
  * the TII database is installed (see the button *load table*)l
 
-Adding receiver coordinates to Qt-DAB is simple, touch the button *coordinates* on the *configuration and control* widget and a small widget appears where the latitude and longitude can be entered.
-
-:information_source: When running a precompiled version of Qt-DAB
-(i.e. an AppImage or a Windows installer from this repository),
-installing the database is simple, just touch the button labeled "load table".
-In other cases, install the database first.
-
 The webrowser will listen to port 8080. By default, the "standard" browser
 on the system is selected. The *configuration and control* widget
 contains a selector for switching this off, so that one might choose
 one's own browser.
+
+See the manual for entering the home position to Qt-DAB.
 
 Documentation
 =================================================================
@@ -338,8 +351,8 @@ Using an MS toolchain on Windows was for me not (yet?) successfull.
 Step 1
 -----------------------------------------------------------------
 
-- :information_source:  In the qt-dab sourcetree, the sources for 6.X are in the subdirectory `qt-dab-6.X` and for qt-dab-6.5 in the subdirectory `qt-dab-6` 
-The subdirectories contain a `.pro' file with configuration informtion for use with `qmake;, and a `CMakeLists.txt' file with configuration information for use with `cmake'.
+- :information_source:  In the repository, the sources for 6.X are in the subdirectory *qt-dab-6.X* and for qt-dab-6.5 in the subdirectory *qt-dab-6.5*. 
+The subdirectories contain a *.pro( file with configuration informtion for use with *qmake*, and a *CMakeLists.txt* file with configuration information for use with *cmake*.
 
 - :information_source: Qt-DAB uses - as the name suggests - the Qt framework,
 for the time being still the version 5, it uses further the Qwt (version 6.2) library and the gcc compiler suite.
@@ -380,7 +393,7 @@ outperform *libfaad* in HeAAC decoding, the default in the configuration
 file is set to *fdk-aac*.  Installing the *libfdk-aac* library from the repository is
  *   sudo apt-get install libfdk-aac-dev
 
-:information_source: While the *libfdk-aac-dev* package in both Fedora and Ubuntu 24 seems to work fine, I had some problems with the package from the repository in Ubuntu 20 and 22. For the AppImage, built on Ubuntu 20, a library version was created from the sources to be found as github repository:
+- :information_source: While the *libfdk-aac-dev* package in both Fedora and Ubuntu 24 seems to work fine, I had some problems with the package from the repository in Ubuntu 20 and 22. For the AppImage, built on Ubuntu 20, a library version was created from the sources to be found as github repository:
  * "https://github.com/mstorsjo/fdk-aac"
 
 The sources contain a *CMakeLists.txt* file, building and installing is straightforward).
@@ -405,21 +418,22 @@ Step 2
 While there are dozens of configuration options, take note
 of the following ones:
 
-:information_source: choose *CONFIG+=NO_SSE* if you  NOT are compiling on/for an X86_64 based system. If compiling on/for an x86_64 PC choose *CONFIG += PC*,
+- :information_source: choose *CONFIG+=NO_SSE* if you  NOT are compiling on/for an X86_64 based system. If compiling on/for an x86_64 PC choose *CONFIG += PC*,
 the software will then use SSE instructions to speed up some computations.
 
-:information_source: Choose between *CONFIG += single* or *CONFIG += double*. In the latter case, all computations in the "front end" are done with double precision arithmetic.
+- :information_source: Choose between *CONFIG += single* or *CONFIG += double*. In the latter case, all computations in the "front end" are done with double precision arithmetic.
 
-:information_source: Devices like SDRplay, AIRspy, RTLSDR, Lime,
+- :information_source: Devices like SDRplay, AIRspy, RTLSDR, Lime,
 HackRf and Adalm Pluto can be included in the configuration *even if no support library is installed*. (Note that including *Soapy* requires Soapy libraries to be installed, so this does not apply for Soapy). Qt-DAB is designed such that on selecting a device in runtime, the required functions from the device library are linked in.
 
-:information_source: The Soapy library used in Ubuntu 20 (used for building the AppImage) seems incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *Soapy* is **NOT** configured
+- :information_source: The Soapy library used in Ubuntu 20 (used for building the AppImage) seems incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *Soapy* is **NOT** configured
 for inclusion in the AppImage.
 
-:information_source: Note that your choice **SHOULD** be *CONFIG += tiiLib*
+- :information_source: Note that your choice **SHOULD** be *CONFIG += tiiLib*
  rather than *CONFIG += preCompiled* (see step 4), *CONFIG+=preCompiled* will **NOT** work since the required sources are **NOT** open source and not included in the source tree.
 
 :information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
+- 
 
 Step 3
 -----------------------------------------------------------------
