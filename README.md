@@ -106,50 +106,46 @@ The full GUI for Qt-DAB 6.X contains 4 (four) larger widgets  and - depending
 on the settings - a few smaller ones.
 
 The **mainWidget** (see picture) is the one widget that is always visible
-when the program is running, it  shows a list of services (either from the currently selected channel or from the favourites), and  it provides  all means for selecting a channel, selecting a service and controlliong the visibility of the other 3 widgets.. 
+when the program is running, it  shows a list of services (either from the currently selected channel or from the favourites), and  it provides  all means for selecting a channel, selecting a service and controlling the visibility of the other 3 widgets.. 
 It will  further show the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
-* touching the *ensemble name* (NPO (8001) in the picture) makes the
-content table, i.e. an overview of the content of the ensemble, visible
-(or if it is visible, touching will hide it);
+* touching the *ensemble name* (NPO (8001 in the picture) makes the
+*content table*, i.e. an overview of the content of the ensemble, visible (or if it is visible, touching will hide it);
  * touching the small icon left of the name of the selected service (here left
-of the bold text NPO Radio 5), will show (or hide) the technical widget,
+of the bold text NPO Klassiek), will show (or hide) the *technical widget*,
 a widget showing all technical details as well as strength indicators and 
 a spectrum of the audio of the selected service;
  * touching the icon showing a *speaker* controls muting the signal,
 if no audio is generated, or if the signal is muted, the icon will show this;
- * touching the copyright symbol shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
+ * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
  * touching *with the right hand mouse button* the text of the dynamic label (here Frederick Delius - Suite ...) shows a small menu to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map on which rhe transmitters will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
- * the button labeled *show controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
- * the button labeled *favorites* controls  whether the list of services
+ * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
+ * the button labeled *favourites* controls  whether the list of services
 from the currently selected channel of the list of favourites is shown,
  * the button labeled *scanlist* controls the visibility
 of the scan list, i.e the list of services seen at the most recent scan.
 
-(Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user.)
+(Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
 
 * The list of services is shown in one of two modes: either the services
 of the currently selected channel are shown, or the list of *favourites*
 is shown. Selecting a *service* (just clicking with the left
 mouse button on its name) is possible in both views.
-Of course when selecting a service in the list of favorites,
+Of course, when selecting a service in the list of favourites,
 it might take some time before the software has switched over to the
 appropriate channel, and has received sufficient information on
-the ensemble carried in that channel
-before being able to select the service in that channel.
+the ensemble carried in that channel before being able to select the service in that channel.
 
-The effect of clicking into the right hand column the services list
-depends on the viewmode.  In the *ensembleview* mode, clicking
-in the right column indicates **adding** the service to or
-**removing** it from the favorites. In the *favoritesview mode* it just means *removing* the element from the favorites.
+The effect of clicking into elements in the right hand column of the
+services list depends on the viewmode.  In the *ensemble view* mode, clicking in the right column indicates **adding** the service to or **removing** it from the favourites. In the *favourites view* mode it just means **removing** the element from the favourites.
 
 ![6.1](/technical-widget.png)
 
-The technical widget shows - as the name suggests - all technical details of
-the selected audio service. If the  audio of the service is also transmitted
+The technical widget shows - as the name suggests - some technical details of
+the  selected audio service. If the audio of the service is also transmitted
 on FM, the FM frequency - derived from additional data in the DAB data -
 is shown as well.
 
@@ -197,19 +193,20 @@ of the receiver to the transmitter of the strongest signal is known,
 
 ![6.1](/qt-dab-null-period.png)
 
-A DAB signal is built up from frames in the sequence of input samples, frames
-(each counting just less than 200000 samples) are separated by a
-small period of (almost) "no signal", the NULL period.
+A DAB signal is received as a sequences of smples, and can be thought to
+be built up from frames, rach frame consisting of 199608 consecutive samples.
+The first app 2500 samples of such a frame do not carry a signal,
+the NULL period.
 The *NULL scope* shows the samples in the transition from the NULL period to
 the first data block of a DAB frame.
 
 ![6.1](/qt-dab-tii-data.png)
 
-In reality the NULL period is not completely empty, it comtains an encoding
+In reality the NULL period is not completely empty, it contains an encoding
 of the TII data. The *TII scope* shows the spectrum of the data in the NULL
 period.
-Thos TII data - when decoded - identifies the transmitter of the
-signal received, it can be mapped upon a name and location of the transmitter.
+This TII data - when decoded leading to 2 digit numbers-  is used to
+identify the transmitter of the signal received, the data can be mapped upon a name and location of the transmitter.
 If the home position is known, the distance to the transmitter is computed.
 
 ![6.1](/qt-dab-channel.png)
