@@ -375,17 +375,17 @@ Note that different versions of Ubuntu use a different name for  packages, esp. 
 A note on libfdk-aac and libfaad
 -------------------------------------------------------------------
 
-Since - esp. for lower bitrates - `libfdk-aac' is believed to
-outperform `libfaad' in HeAAC decoding, the default in the configuration
-file is set to *fdk-aac*.  Installing the `libfdk-aac' libraru from the repository is
+Since - esp. for lower bitrates - *libfdk-aac* is believed to
+outperform *libfaad* in HeAAC decoding, the default in the configuration
+file is set to *fdk-aac*.  Installing the *libfdk-aac* library from the repository is
  *   sudo apt-get install libfdk-aac-dev
 
-:information_source: While the `libfdk-aac-dev' package in both Fedora and Ubuntu 24 seems to work fine, I had some problems with the package from the repository in Ubuntu 20 and 22. For the AppImage, built on Ubuntu 20, a library version was created from the sources to be found as github repository:
+:information_source: While the *libfdk-aac-dev* package in both Fedora and Ubuntu 24 seems to work fine, I had some problems with the package from the repository in Ubuntu 20 and 22. For the AppImage, built on Ubuntu 20, a library version was created from the sources to be found as github repository:
  * "https://github.com/mstorsjo/fdk-aac"
 
-The sources contain a `CMakeLists.txt' file, building and installing is straightforward).
+The sources contain a *CMakeLists.txt* file, building and installing is straightforward).
 
-Alternatively, one could configure for `libfaad', change the configuration to
+Alternatively, one could configure for *libfaad*, change the configuration to
  *  CONFIG	+= faad
  *  #CONFIG	+= fdk-aac
 and install the libfaad package
@@ -405,10 +405,10 @@ Step 2
 While there are dozens of configuration options, take note
 of the following ones:
 
-:information_source: choose 'CONFIG+=NO_SSE' if you  NOT are compiling on/for an X86_64 based system. If compiling on/for an x86_64 PC choose `CONFIG += PC',
-the software will then use SSE instructions.
+:information_source: choose *CONFIG+=NO_SSE* if you  NOT are compiling on/for an X86_64 based system. If compiling on/for an x86_64 PC choose *CONFIG += PC*,
+the software will then use SSE instructions to speed up some computations.
 
-:information_source: Choose between 'CONFIG += single' or 'CONFIG += double'. In the latter case, all computations in the "front end" are done with double precision arithmetic.
+:information_source: Choose between *CONFIG += single* or *CONFIG += double*. In the latter case, all computations in the "front end" are done with double precision arithmetic.
 
 :information_source: Devices like SDRplay, AIRspy, RTLSDR, Lime,
 HackRf and Adalm Pluto can be included in the configuration *even if no support library is installed*. (Note that including *Soapy* requires Soapy libraries to be installed, so this does not apply for Soapy). Qt-DAB is designed such that on selecting a device in runtime, the required functions from the device library are linked in.
@@ -416,27 +416,27 @@ HackRf and Adalm Pluto can be included in the configuration *even if no support 
 :information_source: The Soapy library used in Ubuntu 20 (used for building the AppImage) seems incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *Soapy* is **NOT** configured
 for inclusion in the AppImage.
 
-:information_source: Note that your choice **SHOULD** be `CONFIG += tiiLib'
- rather than `CONFIG += preCompiled' (see step 4), 'CONFIG+=preCompiled' will **NOT** work since the required sources are **NOT** open source and not included in the source tree.
+:information_source: Note that your choice **SHOULD** be *CONFIG += tiiLib*
+ rather than *CONFIG += preCompiled* (see step 4), *CONFIG+=preCompiled* will **NOT** work since the required sources are **NOT** open source and not included in the source tree.
 
-:information_source: Uncomment the line `DEFINES += __THREADED_BACKEND' if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
+:information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
 
 Step 3
 -----------------------------------------------------------------
 
-run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates a `Makefile` and then run `make`. Compiling may take some time.
-Use `make -j XX' for speeding up the build process, with XX the amount
+run *qmake* (variants of the name are *qt5-qmake*, *qmake-qt5*) which generates a *Makefile* and then run *make*. Compiling may take some time.
+Use *make -j XX* for speeding up the build process, with XX the amount
 of parallel threads used. Of course, qmake will complain if not all
 required libraries can be found.
 
 Step 4
 -----------------------------------------------------------------
 
-The repository contains in the subdirectory `library' a shared library `libtii-lib.so' that - when installed in e.g. `/usr/local/lib'  - loading fresh instances of the database is supported.
+The repository contains in the subdirectory *library* a shared library *libtii-lib.so* that - when installed in e.g. */usr/local/lib*  - supports loading fresh instances of the database.
 
-Otherwise, unpack file `tiiFile.zip', and copy the resulting file `.txdata.tii` in the home directory (home folder). (The unpacked file contains a copy of the database for finding the transmitter's name and location.) Identifying transmitters using TII data will work, but no database update can be performed.
+Otherwise, unpack the file *tiiFile.zip*, and copy the resulting file *.txdata.tii* to the home directory (home folder). (The unpacked file contains a copy of the database for finding the transmitter's name and location.) Identifying transmitters using TII data will work, but no database update can be performed.
 
-If Qt-DAB does not `see' the database, it will just function without mapping TII data onto names and locations.
+If Qt-DAB does not *see* the database, it will just function without mapping TII data onto names and locations.
 
 :information_source: Building a version on a fresh install of "bullseye" on the RPI gave a version that wouldn't run: The `Qt_PLUGIN_PATH` was not set. Setting it as given below solved - for me - the problem:
 
