@@ -431,7 +431,7 @@ required libraries can be found.
 Step 4
 -----------------------------------------------------------------
 
-The repository contains in the subdirectory `library' a shared library `libtii-lib.so' that - when installed in e.g. `/usr/local/lib'  - allows loading fresh instances of the database.
+The repository contains in the subdirectory `library' a shared library `libtii-lib.so' that - when installed in e.g. `/usr/local/lib'  - loading fresh instances of the database is supported.
 
 Otherwise, unpack file `tiiFile.zip', and copy the resulting file `.txdata.tii` in the home directory (home folder). (The unpacked file contains a copy of the database for finding the transmitter's name and location.) Identifying transmitters using TII data will work, but no database update can be performed.
 
