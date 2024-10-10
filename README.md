@@ -18,6 +18,8 @@ a Windows installer (actually, there are three) and a Linux x64 AppImage.
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
 ![6.5](/Qt_DAB-6.X-2.png?raw=true)
 
+![6.X](/qt-dab-xmlfiles.png?raw=true}
+
 Table of Contents
 =================================================================
 
