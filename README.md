@@ -18,7 +18,6 @@ a Windows installer (actually, there are three) and a Linux x64 AppImage.
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
 ![6.5](/Qt_DAB-6.X-2.png?raw=true)
 
-![6.X](/qt-dab-xmlfiles.png?raw=true}
 
 Table of Contents
 =================================================================
@@ -510,7 +509,7 @@ such an `.xml` file.
 
 While the current implementation for reading such files is limited to a single data block, the reader contains a *cont* button that, when touched while playing the data, will cause continuous playing of the data in the data block.
 
-![6.X](/qt-dab-xmlfiles.png?raw=true}
+![6.X](/qt-dab-xmlfiles.png?raw=true)
 
 The picture shows the reader when reading a file, generated from raw data emitted by the HackRF device.
 
