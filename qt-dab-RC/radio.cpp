@@ -393,6 +393,7 @@ QString h;
 	                                       path_for_tiiFile). toString ();
 	path_for_tiiFile	= checkDir (path_for_tiiFile);
 	path_for_tiiFile	+= "tii-files.txt";
+	fprintf (stderr, "Path for tii file %s\n", path_for_tiiFile. toLatin1 (). data ());
 	
 #ifndef	__MINGW32__
 	path_for_pictures	= checkDir (QDir::tempPath ());
