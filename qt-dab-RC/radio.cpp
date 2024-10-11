@@ -371,8 +371,8 @@ QString h;
 	}
 
 	if (streams. size () > 0) {
-	for (auto s: streams)
-	   fprintf (stderr, "%s\n", s. toLatin1 (). data ());
+	   for (auto s: streams)
+	      fprintf (stderr, "%s\n", s. toLatin1 (). data ());
 	   configHandler_p -> fill_streamTable (streams);
 	   configHandler_p -> show_streamSelector (true);
 	   k	= configHandler_p -> init_streamTable (temp);

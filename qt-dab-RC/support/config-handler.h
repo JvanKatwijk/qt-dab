@@ -136,6 +136,7 @@ private slots:
 	void	handle_saveSlides		(int);
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_saveTransmittersSelector	(int);
+	void	handle_tiiThreshold		(int);
 
 signals:
 	void	selectDecoder		(int);

@@ -11,9 +11,15 @@ About Qt-DAB-6.X
 -------------------------------------------------------------------------
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
+Qt-DAB is continuously under further development, **Qt-DAB-6.X** ,
+the stable version of Qt-DAB has - again some new features, not often seen
+elsewehere. A good quote indicating what I try to achieve in the continuous development of Qt-DAB software is:
 
-**Qt-DAB-6.X** is the stable version of Qt-DAB, i.e. a version with
-a Windows installer (actually, there are three) and a Linux x64 AppImage.
+ * *It is much easier to add features to reliable software, than it is to add reliability to featureful software.*
+
+Of course, as for previous versions, for *Qt-DAB-6.X* 
+a Windows installer (actually, there are three) and a Linux x64 AppImage
+are available.
 
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
 ![6.5](/Qt_DAB-6.X-2.png?raw=true)

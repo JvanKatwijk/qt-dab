@@ -113,7 +113,7 @@ uint8_t table [] = {
 
 		TII_Detector::TII_Detector (uint8_t dabMode,
 	                                    QSettings	*dabSettings,
-	                                    int16_t depth):
+	                                    int16_t	depth):
 	                                      params (dabMode),
 	                                      T_u (params. get_T_u ()),
 	                                      carriers (params. get_carriers ()),
@@ -139,7 +139,6 @@ uint8_t table [] = {
 void	TII_Detector::setMode	(bool b) {
 	detectMode_new = b;
 }
-
 
 void	TII_Detector::reset	() {
 	for (int i = 0; i < T_u; i ++)
@@ -195,8 +194,6 @@ int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
 std::vector<int16_t> theResult;
 
-	int tiiThreshold	
-	            = dabSettings	-> value ("tii-threashold", 4). toInt ();
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
@@ -209,6 +206,8 @@ std::vector<int16_t> theResult;
 //	may differ, we compute an average for each of the
 //	NUM_GROUPS GROUPSIZE - value groups. 
 
+	int tiiThreshold	=
+	                   dabSettings -> value ("tiiThreshold", 4). toInt ();
 	while (true) {
 	   memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 
@@ -253,6 +252,7 @@ std::vector<int16_t> theResult;
 	
 	   for (int j = 0; j < GROUPSIZE; j ++) {
 	      if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
+//	      if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
 	         maxTable = C_table [j];
 	         maxIndex = j;
 	         break;
