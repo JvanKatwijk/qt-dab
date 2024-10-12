@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -31,9 +31,8 @@
 
 //
 /**
-  *	\class mp4Processor is the main handler for the aac frames
-  *	the class proper processes input and extracts the aac frames
-  *	that are processed by the "faadDecoder" class
+  *	For interpreting the HeAAC frames we have the faad decoder
+  *	and the fdk-aac decoder`
   */
 	fdkAAC::fdkAAC (RadioInterface *mr,
                         RingBuffer<std::complex<int16_t>> *buffer) {
@@ -44,8 +43,6 @@
 	   return;
 	connect (this, &fdkAAC::newAudio, 
 	         mr, &RadioInterface::newAudio);
-//	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
-//	         mr, SLOT (newAudio (int, int, bool, bool)));
 	working			= true;
 }
 
@@ -108,8 +105,7 @@ int		output_size	= 8 * 2048;
         else
         if (info -> numChannels == 1) {
            int16_t buffer [2 * info -> frameSize];
-           int16_t i;
-           for (i = 0; i < info -> frameSize; i ++) {
+           for (uint16_t i = 0; i < info -> frameSize; i ++) {
               buffer [2 * i]	= ((int16_t *)bufp) [i];
               buffer [2 * i + 1] = bufp [2 * i];
            }
