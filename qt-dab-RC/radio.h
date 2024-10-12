@@ -528,7 +528,6 @@ private slots:
 	void			handle_httpButton	();
 	void			setVolume		(int);
 	void			handle_snrLabel		();
-
 //
 //	color handlers
 	void			handle_labelColor	();

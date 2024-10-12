@@ -151,6 +151,11 @@ static struct {
 #else
 	this -> decoderSelector -> setEnabled (false);
 #endif
+
+	int v = dabSettings -> value ("tiiThreshold", 4). toInt ();
+	this -> tiiThreshold_setter -> setValue (v);
+	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_tiiThreshold);
 	set_Colors ();
 }
 
@@ -874,4 +879,7 @@ bool	configHandler::get_dxSelector () {
 	return dxSelector -> isChecked ();
 }
 
+void	configHandler::handle_tiiThreshold	(int t) {
+	dabSettings -> setValue ("tiiThreshold", t);
+}
 
