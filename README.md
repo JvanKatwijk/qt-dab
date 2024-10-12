@@ -12,14 +12,15 @@ About Qt-DAB-6.X
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 Qt-DAB is continuously under further development, **Qt-DAB-6.X** ,
-the stable version of Qt-DAB has - again some new features, not often seen
+the stable version of Qt-DAB has - again - some new features, not often seen
 elsewehere. A good quote indicating what I try to achieve in the continuous development of Qt-DAB software is:
 
  * *It is much easier to add features to reliable software, than it is to add reliability to featureful software.*
 
-Of course, as for previous versions, for *Qt-DAB-6.X* 
-a Windows installer (actually, there are three) and a Linux x64 AppImage
-are available.
+Of course, as for previous versions, for *Qt-DAB-6.X* some predefined
+versions are available.
+For Windows  three installers are maintained, and a Linux x64 AppImage
+is available.
 
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
 ![6.5](/Qt_DAB-6.X-2.png?raw=true)
@@ -44,26 +45,26 @@ Table of Contents
 Introduction
 =================================================================
 
-*Qt-DAB* is designed to be used  with different SDR devices,
-a clean interface allows support for a variety of devices, including
-DABsticks, all models of the SDRplay, Airspy etc.
-
-Precompiled versions of Qt-DAB-6.X for Linux-x64 (AppImage)
-and Windows (installers for Windows) are, as usual, available. 
-For Windows, there are installers for the 32 bit version and an installer for
-the 64 bit version.
-
-*Qt-DAB* is GUI driven, 
-the full GUI shows 4+ widgets, one of them, the
-*main widget* - one with sufficient controls to select channels and service(s) -
-is always visible. This main widget also contains selector
-for controlling the visibility of (the) other widgets.
+*Qt-DAB* is designed to be used  with different SDR devices in mind.
+A simple and clean interface is used and Qt-DAB-6.X  has support for a
+DABsticks, all models of the SDRplay, Airspy, HackRF, LimeSDR, Adalm Pluto etc.
 
 *Qt-DAB* is being developed under Fedora, and cross compiled -
 using the excellent Mingw64 toolset - for Windows. Traditionally, AppImages
 are built under an older version of Ubuntu (right now Ubuntu 20, Ubuntu 22 is too new for an AppImage).
 
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
+
+Some precompiled versions of Qt-DAB-6.X  are available.
+For Linux-x64  the afore mentiined AppImage,
+for Windows, there are two installers for the 32 bit version and
+an installer for the 64 bit version.
+
+*Qt-DAB* is GUI driven, 
+the full GUI shows 4+ widgets, one of them, the
+*main widget* - one with sufficient controls to select channels and service(s) -
+is always visible. This main widget contains selector
+for controlling the visibility of (the) other widgets.
 
 Features
 =================================================================
@@ -254,12 +255,14 @@ Displaying TII data
 
 As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses a database to map the decoded TII data to name and location of the transmitter.
 
-As known, DAB transmissions are usually by an SFN (Single Frequency Network), where all transmitters transmit the same content on the same frequency.
-If the DX selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
+DAB transmissions are usually  transmitted by an SFN (Single Frequency Network), where all transmitters transmit the same content on the same frequency (each 
+with unique TII data).
+If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
 
 ![6.X](/DX-map.png?raw=true)
 
-The picture shows that in my environment, on channel 12C I can identify 5 transmitters in the received signal.
+The picture shows that in my environment, on channel 12C, the national network,
+I can identify 5 transmitters in the received signal.
 The left column in the widget shows the transmitter whose data is the data
 being processed.
 
@@ -517,7 +520,7 @@ While the current implementation for reading such files is limited to a single d
 
 ![6.X](/qt-dab-xmlfiles.png?raw=true)
 
-The picture shows the reader when reading a file, generated from raw data emitted by the HackRF device.
+The picture shows the reader when reading a file, generated from raw data emitted by an AIRspy device.
 
 Copyright
 =================================================================
@@ -530,8 +533,8 @@ Copyright
 	libsndfile. libsamplerate, ;ibusb-1, libfaad, libfdk-aac,
 	- is gratefully acknowledged.
 	
-	The Qt-DAB software is made available under the GPL-2.0.
-	Qt-DAB is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+	Qt-DAB is distributed under e GPL V2 library,  in the hope that
+	it will be useful, but WITHOUT ANY WARRANTY; without even the
+	implied warranty of MERCHANTABILITY or FITNESS FOR A
+	PARTICULAR PURPOSE.  See the GNU General Public License for
+	more details.

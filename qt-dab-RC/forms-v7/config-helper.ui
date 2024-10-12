@@ -114,6 +114,9 @@
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;tii threadhold. The tii threshold is used in the detection of tii values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false posivides.&lt;/p&gt;&lt;p&gt;Default value is 4.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
+         <property name="minimum">
+          <number>3</number>
+         </property>
          <property name="value">
           <number>4</number>
          </property>
@@ -527,6 +530,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QCheckBox" name="dxSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In DX mode the software tries to identify as much as possible transmitters of the SFN in the input stream. Furthermore, the TII values, with the transmitter's name if found, are written to a file in the Qt_DAB-files directory (folder if you like) in either the /tmp directory (Linux) or the home folder (Windows)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>DX</string>
        </property>
@@ -534,6 +540,9 @@
      </item>
      <item>
       <widget class="QCheckBox" name="correlationSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If two or more transmitters from which the data is received show the same strength in the correlation, the software might switch between the signal from these transmitters quite often. If the &amp;quot;corr&amp;quot; selector is set, the Qt_DAB uses the signal of the  nearest transmitter with a signal that meets the requirements.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>corr</string>
        </property>

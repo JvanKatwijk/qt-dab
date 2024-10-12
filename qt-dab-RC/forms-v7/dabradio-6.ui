@@ -35,6 +35,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="clickablelabel" name="ensembleId">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name of the ensemble in the currently selected channel. Touching the name shows a widget with a description of the ensemble content.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>ensemble</string>
             </property>
@@ -59,8 +62,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>269</width>
-             <height>81</height>
+             <width>267</width>
+             <height>99</height>
             </rect>
            </property>
           </widget>
@@ -153,6 +156,9 @@
        </item>
        <item>
         <widget class="QLabel" name="localTimeDisplay">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The local time. If you want UTC instead, set the utc selector on the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>local</string>
          </property>
@@ -160,6 +166,9 @@
        </item>
        <item>
         <widget class="QLabel" name="runtimeDisplay">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The run time is what the name suggests, the time the current instance of the software is running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>runtime</string>
          </property>
@@ -309,6 +318,9 @@
        </item>
        <item>
         <widget class="QSlider" name="volumeSlider">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Volume slider is part of the Qt_Audio audio subsystem.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
