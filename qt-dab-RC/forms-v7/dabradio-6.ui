@@ -152,6 +152,16 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
+        <widget class="clickablelabel" name="folder_shower">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon insrtructs the software to start a shell and run the explorer (or the Linux equivalent)  showing the folder/directory where Qt-DAB stores its files&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>files</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLCDNumber" name="stillMuting"/>
        </item>
        <item>
@@ -195,16 +205,6 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="clickablelabel" name="folder_shower">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon insrtructs the software to start a shell and run the explorer (or the Linux equivalent)  showing the folder/directory where Qt-DAB stores its files&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>files</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="clickablelabel" name="serviceButton">
          <property name="maximumSize">

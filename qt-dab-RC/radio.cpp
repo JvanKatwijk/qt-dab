@@ -4043,7 +4043,8 @@ void	RadioInterface::show_changeLabel (const QStringList notInOld,
 void	RadioInterface::handle_folderButton	() {
 	QString tempPath	= theFilenameFinder. basicPath ();
 #ifdef __MINGW32__
-        ShellExecute (nullptr, L"open", tempPath. c_str (),
+	LPCWSTR temp = (const wchar_t *)tempPath. utf16 ();
+        ShellExecute (nullptr, L"open", temp,
                                            nullptr, nullptr, SW_SHOWDEFAULT);
 #else
 	std::string x = "xdg-open " + tempPath. toStdString ();
