@@ -143,8 +143,6 @@ QTranslator	theTranslator;
 	          skin == "EasyCode"  ? ":res/EasyCode.qss":
 	          skin == "Diffnes"   ? ":res/Diffnes.qss" : "";
 
-	QString	logFile	= dabSettings -> value ("logFile", "logFile"). toString ();
-	bool	logMode	= dabSettings -> value ("logMode", 1). toInt () != 0;
 	QApplication a (argc, argv);
 	if (skin != "") {
 	   QFile file (skin);
@@ -165,8 +163,6 @@ QTranslator	theTranslator;
 	                                       presetFile,
 	                                       freqExtension,
 	                                       scheduleFile,
-	                                       logFile,
-	                                       logMode,
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,

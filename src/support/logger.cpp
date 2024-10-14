@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015, 2023
+ *    Copyright (C)  2015, 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -25,14 +25,13 @@
 #include	<QDateTime>
 #include	<QDir>
 
-	logger::logger (QSettings *s,
-	                const QString &fileName, bool logMode):
+	logger::logger (QSettings *s):
 	                                     fileNameFinder (s) {
 	this	-> logSettings	= s;
 	QString tempPath	= fileNameFinder. basicPath ();
 	tempPath		= s -> value ("logFile", tempPath). toString ();
 	this	-> logFileName	= tempPath + "logFile.txt";
-	this	-> logMode	= s -> value ("logMode", 0). toInt () != 0;
+	this	-> logMode	= s -> value ("logMode", 1). toInt () != 0;
 	if (logMode)
 	   logFile 	= fopen (logFileName. toLatin1 (). data (), "a");
 	else
@@ -48,13 +47,16 @@
 void	logger::logging_starts	() {
 	if (logFile != nullptr)		// cannot happen
 	   return;
-	logFile	= fopen (logFileName. toLatin1 (). data (), logMode ? "a" : "w");
+
+	this -> logSettings  -> setValue ("logMode", 1);
+	logFile	= fopen (logFileName. toLatin1 (). data (), "a");
 }
 
 void	logger::logging_stops	() {
 	if (logFile != nullptr)
 	   fclose (logFile);
 	logFile	= nullptr;
+	this -> logSettings -> setValue ("logMode", 0);
 }
 
 void	logger::log	(logType t) {

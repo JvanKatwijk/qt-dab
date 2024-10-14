@@ -38,7 +38,7 @@ public:
 	      LOG_HIDDEN_SERVICE_STARTS, 
 	      LOG_SCANNING_STARTS, LOG_SCANNING_STOPS,
 	      LOG_ETI_STARTS, LOG_ETI_STOPS};
-		logger	(QSettings *, const QString & fileName, bool mode);
+		logger	(QSettings *);
 		~logger	();
 	void	logging_starts	();
 	void	logging_stops	();

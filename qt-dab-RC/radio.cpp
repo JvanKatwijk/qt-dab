@@ -132,8 +132,6 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
-	                                const QString	&logFileName,
-	                                bool		logMode,
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
@@ -163,9 +161,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                                        scanListFile),
 	                                        theDeviceChoser (Si),
 	                                        theDXDisplay (this, Si),
-	                                        theLogger	(Si,
-	                                                         logFileName,
-	                                                         logMode),
+	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si, freqExtension) {
 int16_t k;
 QString h;
@@ -239,7 +235,15 @@ QString h;
 	      serviceButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	   else
 	      fprintf (stderr, "Loading details button failed\n");
+
+	   if (p. load (":res/folder_button.png", "png"))
+	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
+
+	connect (folder_shower, SIGNAL (clicked ()),
+	         this, SLOT (handle_folderButton ()));
+
+	
 
 //	put the widgets in the right place and create the workers
 	set_position_and_size	(dabSettings_p, this, S_MAIN_WIDGET);
@@ -409,6 +413,7 @@ QString h;
 	epgPath			= dabSettings_p -> value (S_EPG_PATH,
 	                                           tempPath). toString ();
 	epgPath			= checkDir (epgPath);
+
 
 	connect (&epgProcessor, &epgDecoder::set_epgData,
 	         this, &RadioInterface::set_epgData);
@@ -4033,5 +4038,17 @@ void	RadioInterface::show_changeLabel (const QStringList notInOld,
 	   for (auto s: notInNew)
 	      fprintf (stderr, "\t%s\n", s. toUtf8 (). data ());
 	}
+}
+
+void	RadioInterface::handle_folderButton	() {
+	QString tempPath	= theFilenameFinder. basicPath ();
+#ifdef __MINGW32__
+        ShellExecute (nullptr, L"open", tempPath. c_str (),
+                                           nullptr, nullptr, SW_SHOWDEFAULT);
+#else
+	std::string x = "xdg-open " + tempPath. toStdString ();
+        fprintf (stderr, "we gaan voor %s\n", x. c_str ());
+        (void)system (x. c_str ());
+#endif
 }
 

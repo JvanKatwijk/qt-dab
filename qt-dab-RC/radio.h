@@ -197,8 +197,6 @@ public:
 	                                 const QString	&,	//presets
 	                                 const QString	&,	//freqExt
 	                                 const QString	&,	//schedule
-	                                 const QString	&,	// log
-	                                 bool,			// log mode
 	                                 bool,			// errorreport
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
@@ -514,6 +512,7 @@ private slots:
 	void			handle_prevChannelButton	();
 
 	void			handle_muteButton		();
+	void			handle_folderButton		();
 
 	void			handle_scanListSelect	(const QString &);
 	void			TerminateProcess	();
