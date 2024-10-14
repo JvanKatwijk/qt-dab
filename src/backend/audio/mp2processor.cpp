@@ -1,3 +1,4 @@
+#
 /******************************************************************************
 ** kjmp2 -- a minimal MPEG-1/2 Audio Layer II decoder library                **
 ** version 1.1                                                               **

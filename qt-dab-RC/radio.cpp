@@ -132,6 +132,8 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
+	                                const QString	&logFileName,
+	                                bool		logMode,
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
@@ -161,6 +163,9 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                                        scanListFile),
 	                                        theDeviceChoser (Si),
 	                                        theDXDisplay (this, Si),
+	                                        theLogger	(Si,
+	                                                         logFileName,
+	                                                         logMode),
 	                                        theSCANHandler (this, Si, freqExtension) {
 int16_t k;
 QString h;
@@ -309,8 +314,6 @@ QString h;
 	localPos. longitude 		=
 	             dabSettings_p -> value (HOME_LONGITUDE, 0). toFloat ();
 
-	logFile			= nullptr;
-
 	techWindow_p 		-> hide ();	// until shown otherwise
 	stillMuting		-> hide ();
 
@@ -355,7 +358,7 @@ QString h;
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
 	   } catch (...) {
-	      fprintf (stderr, "QT_AUDIO does not find streams\n");
+//	      fprintf (stderr, "QT_AUDIO does not find streams\n");
 	      soundOut_p = nullptr;
 	   }
 	}
@@ -371,8 +374,8 @@ QString h;
 	}
 
 	if (streams. size () > 0) {
-	   for (auto s: streams)
-	      fprintf (stderr, "%s\n", s. toLatin1 (). data ());
+//	   for (auto s: streams)
+//	      fprintf (stderr, "%s\n", s. toLatin1 (). data ());
 	   configHandler_p -> fill_streamTable (streams);
 	   configHandler_p -> show_streamSelector (true);
 	   k	= configHandler_p -> init_streamTable (temp);
@@ -391,13 +394,7 @@ QString h;
 //
 //	some MOT, tetx and other data is stored in the Qt-DAB-files directory
 //	in home or tmp dir
-	QString tempPath;
-#ifndef	__MINGW32__
-	tempPath	= checkDir (QDir::tempPath ());
-#else
-	tempPath	= checkDir (QDir::homePath ());
-#endif
-	tempPath	+= "Qt-DAB-files/";
+	QString tempPath	= theFilenameFinder. basicPath ();
 
 	path_for_tiiFile	= dabSettings_p -> value (S_TII_PATH,
 	                                       tempPath). toString ();
@@ -600,7 +597,8 @@ void	RadioInterface::doStart_direct	() {
 	}
 	else
 	   channelSelector -> setCurrentIndex (0);
-
+	theLogger. log (logger::LOG_RADIO_STARTS, inputDevice_p -> deviceName (),
+	                                 channelSelector -> currentText ());
 	theOFDMHandler	= new ofdmHandler  (this,
 	                                    inputDevice_p, &globals, dabSettings_p);
 	channel. cleanChannel ();
@@ -1228,11 +1226,8 @@ void	RadioInterface::TerminateProcess () {
 	stop_sourcedumping	();
 	stopAudiodumping	();
 	theScheduler. hide	();
-	LOG ("terminating ", "");
+	theLogger. log (logger::LOG_RADIO_STOPS);
 	usleep (1000);		// pending signals
-	if (logFile != nullptr)
-	   fclose (logFile);
-	logFile	= nullptr;
 //	everything should be halted by now
 	dabSettings_p	-> sync ();
 	theSNRViewer. hide ();
@@ -1323,7 +1318,8 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   fprintf (stderr, "device is deleted\n");
 	}
 
-	LOG ("selecting ", deviceName);
+	theLogger. log (logger::LOG_NEWDEVICE, deviceName, 
+	                                channelSelector -> currentText ());
 	inputDevice_p		= create_device (deviceName);
 	fprintf (stderr, "na create_device met %s\n", deviceName. toLatin1 (). data ());
 	if (inputDevice_p == nullptr) {
@@ -1579,7 +1575,7 @@ void	RadioInterface::stopAudiodumping	() {
 	if (!audioDumping)
 	   return;
 
-	LOG ("audiodump stops", "");
+	theLogger. log (logger::LOG_AUDIODUMP_STOPS);
 	theAudioConverter. stop_audioDump ();
 	audioDumping	= false;
 	techWindow_p	-> audiodumpButton_text ("audio dump", 10);
@@ -1595,7 +1591,10 @@ void	RadioInterface::startAudiodumping () {
 	if (audioDumpName == "")
 	   return;
 
-	LOG ("audiodump starts ", serviceLabel -> text ());
+	theLogger. log (logger::LOG_AUDIODUMP_STARTS,
+	                        channelSelector -> currentText (),
+	                        channel. currentService. serviceName);
+	
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
 	theAudioConverter. start_audioDump (audioDumpName);
 	audioDumping	= true;
@@ -1605,7 +1604,6 @@ void	RadioInterface::scheduled_audioDumping () {
 	if (audioDumping) {
 	   theAudioConverter. stop_audioDump	();
 	   audioDumping		= false;
-	   LOG ("scheduled audio dump stops ", serviceLabel -> text ());
 	   techWindow_p	-> audiodumpButton_text ("audio dump", 10);
 	   return;
 	}
@@ -1616,7 +1614,6 @@ void	RadioInterface::scheduled_audioDumping () {
 	if (audioDumpName == "")
 	   return;
 
-	LOG ("scheduled audio dump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
 	theAudioConverter. start_audioDump (audioDumpName);
 	audioDumping		= true;
@@ -1636,6 +1633,7 @@ void	RadioInterface::stopFramedumping () {
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 
+	theLogger. log (logger::LOG_FRAMEDUMP_STOPS);
 	fclose (channel. currentService. frameDumper);
 	techWindow_p ->  framedumpButton_text ("frame dump", 10);
 	channel. currentService. frameDumper	= nullptr;
@@ -1647,6 +1645,9 @@ void	RadioInterface::startFramedumping () {
 	                                                              true);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
+	theLogger. log (logger::LOG_FRAMEDUMP_STARTS, 
+	                                         channel. channelName,
+	                                         channel. currentService. serviceName);
 	techWindow_p ->  framedumpButton_text ("recording", 12);
 }
 
@@ -2018,9 +2019,10 @@ QString serviceName	= s. serviceName;
 	channel. currentService		= s;
 	channel. currentService. frameDumper	= nullptr;
 	channel. currentService. valid	= false;
-	LOG ("start service ", serviceName. toUtf8 (). data ());
-	LOG ("service has SNR ", QString::number (channel. snr));
-//
+	theLogger. log (logger::LOG_NEW_SERVICE,
+	                             channelSelector -> currentText (),
+	                                         serviceName);
+
 //	mark the selected service in the service list
 //
 //	and display the servicename on the serviceLabel
@@ -2237,7 +2239,6 @@ void	RadioInterface::setPresetService () {
 void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theSCANHandler. Frequency (theChannel);
-	LOG ("channel starts ", theChannel);
 	theNewDisplay. showFrequency (theChannel, tunedFrequency);
 	inputDevice_p		-> restartReader (tunedFrequency);
 
@@ -2245,6 +2246,7 @@ int	tunedFrequency	=
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;
 	channel. countryName	= "";
+	theLogger. log (logger::LOG_NEW_CHANNEL, theChannel, channel. snr);
 	if (inputDevice_p -> isFileInput ()) {
 	   channelSelector		-> setEnabled (false);
 	   int freq	= inputDevice_p -> getVFOFrequency ();
@@ -2297,7 +2299,7 @@ void	RadioInterface::stopChannel	() {
 	ensembleId	-> setText ("");
 	stop_sourcedumping	();
 	stop_etiHandler	();	// if any
-	LOG ("channel stops ", channel. channelName);
+//	LOG channel exit
 	transmitter_country	-> setText ("");
 //
 //	first, stop services in fore and background
@@ -2351,7 +2353,7 @@ void	RadioInterface::handle_channelSelector (const QString &channel) {
 	if (!running. load ())
 	   return;
 
-	LOG ("select channel ", channel. toUtf8 (). data ());
+//	LOG select channel
 	presetTimer. stop ();
 	stopScanning	();
 	stopChannel	();
@@ -2429,7 +2431,7 @@ void	RadioInterface::start_scan_to_data () {
 //	on the skiplist or not
 	QString cs = theSCANHandler. getNextChannel (channelSelector -> currentText ());
 	int cc = channelSelector -> findText (cs);
-	LOG ("scanning starts with ", cs);
+//	LOG scanning starts
 	new_channelIndex (cc);
 //	theSCANHandler. addText (" scanning channel " +
 //	                            channelSelector -> currentText ());
@@ -2516,7 +2518,7 @@ void	RadioInterface::stopScanning	() {
 	   return;
 	presetButton	-> setText ("favorites");
 	presetButton	-> setEnabled (true);
-	LOG ("scanning stops ", "");
+//	LOG scanning stops
 	channelTimer. stop ();
 
 	if (theSCANHandler. scan_to_data ())
@@ -3087,7 +3089,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
 	      continue;
 	   if (pd. DSCTy == 60) {
-	      LOG ("hidden service started ", serv);
+//	LOG hidden service starts
 	      fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. toUtf8 (). data ());
 	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, BACK_GROUND);
@@ -3242,7 +3244,7 @@ dbLoader theLoader (dabSettings_p);
 void	RadioInterface::stop_sourcedumping	() {
 	if (!sourceDumping)
 	   return;
-	LOG ("source dump stops ", "");
+	theLogger. log (logger::LOG_SOURCEDUMP_STOPS);
 	theOFDMHandler	-> stop_dumping();
 	sourceDumping	= false;
 	configHandler_p	-> mark_dumpButton (false);
@@ -3259,7 +3261,8 @@ QString channelName	= channel. channelName;
 	if (rawDumpName == "")
 	   return;
 
-	LOG ("source dump starts ", channelName);
+	theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
+	                                     deviceName, channelName);
 	configHandler_p	-> mark_dumpButton (true);
 	theOFDMHandler -> start_dumping (rawDumpName, channel. tunedFrequency);
 	sourceDumping = true;
@@ -3277,18 +3280,12 @@ void	RadioInterface::handle_sourcedumpButton () {
 void	RadioInterface::handle_LoggerButton (int s) {
 	(void)s;
 	if (configHandler_p -> logger_active ()) {
-	   if (logFile != nullptr) {
-	      fprintf (stderr, "should not happen (logfile)\n");
-	      return;
-	   }
-	   logFile = theFilenameFinder. findLogFileName ();
-	   if (logFile != nullptr)
-	      LOG ("Log started with ", inputDevice_p -> deviceName ());
+	   theLogger. logging_starts ();
+	   dabSettings_p -> setValue ("logMode", 1);
 	}
-	else
-	if (logFile != nullptr) {
-	   fclose (logFile);
-	   logFile = nullptr;
+	else {
+	   theLogger. logging_stops ();
+	   dabSettings_p -> setValue ("logMode", 0);
 	}
 }
 
@@ -3326,21 +3323,6 @@ void	RadioInterface:: set_streamSelector (int k) {
 
 void	RadioInterface::nrServices	(int n) {
 	channel. serviceCount = n;
-}
-
-void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
-QString theTime;
-	if (logFile == nullptr)
-	   return;
-	if (configHandler_p -> utcSelector_active ())
-	   theTime  = convertTime (UTC. year, UTC. month, UTC. day,
-	                                  UTC. hour, UTC. minute);
-	else
-	   theTime = QDateTime::currentDateTime (). toString ();
-
-	fprintf (logFile, "at %s: %s %s\n",
-	              theTime. toUtf8 (). data (),
-	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
 }
 
 bool	RadioInterface::autoStart_http () {
@@ -3460,6 +3442,7 @@ void	RadioInterface::stop_etiHandler () {
 	if (!channel. etiActive) 
 	   return;
 
+	theLogger. log (logger::LOG_ETI_STOPS);
 	theOFDMHandler -> stop_etiGenerator ();
 	channel. etiActive = false;
 	scanButton	-> setText ("eti");
@@ -3473,7 +3456,10 @@ void	RadioInterface::start_etiHandler () {
 	                                find_eti_fileName (channel. ensembleName, channel. channelName);
 	if (etiFile == QString (""))
 	   return;
-	LOG ("etiHandler started", etiFile);
+
+	theLogger. log (logger::LOG_ETI_STARTS, 
+	                     inputDevice_p -> deviceName (),
+	                     channel. channelName);
 	channel. etiActive = theOFDMHandler -> start_etiGenerator (etiFile);
 	if (channel. etiActive) 
 	   scanButton -> setText ("eti runs");

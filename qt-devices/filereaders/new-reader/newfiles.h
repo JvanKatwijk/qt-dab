@@ -45,6 +45,7 @@ public:
 	void		stopReader	();
 	bool		isFileInput	();
 	int		getVFOFrequency	();
+	QString		deviceName	();
 private:
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;

@@ -35,7 +35,7 @@
 }
 
 bool	deviceHandler::restartReader	(int32_t freq) {
-	(void)freq;
+	lastFrequency	= freq;
 	return true;
 }
 

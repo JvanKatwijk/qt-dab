@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2017 .. 2018
+ *    Copyright (C) 2017 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -132,6 +132,7 @@ private:
 	int32_t			inputRate;
 	std::atomic<bool>	running;
 	QLibrary*		library_p;
+	QString			serialNumber;
 
 	FILE			*xmlDumper;
         xml_fileWriter		*xmlWriter;

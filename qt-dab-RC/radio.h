@@ -65,6 +65,7 @@
 #include	"tii-mapper.h"
 
 #include	"ensemble-handler.h"
+#include	"logger.h"
 
 class	QSettings;
 class	ofdmHandler;
@@ -192,11 +193,13 @@ class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 const QString	&,
-	                                 const QString	&,
-	                                 const QString	&,
-	                                 const QString	&,
-	                                 bool,
+	                                 const QString	&,	//scanlist
+	                                 const QString	&,	//presets
+	                                 const QString	&,	//freqExt
+	                                 const QString	&,	//schedule
+	                                 const QString	&,	// log
+	                                 bool,			// log mode
+	                                 bool,			// errorreport
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
 	                                 int,
@@ -234,6 +237,7 @@ private:
 	scanListHandler		theScanlistHandler;
 	deviceChooser		theDeviceChoser;
 	dxDisplay		theDXDisplay;
+	logger			theLogger;
 	scanHandler		theSCANHandler;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
@@ -255,12 +259,9 @@ private:
 	int			fmFrequency;
 	contentTable		*contentTable_p;
 	contentTable		*scanTable_p;
-	FILE			*logFile;
 	channelDescriptor	channel;
 	QDialog			*the_aboutLabel;
 	int			maxDistance;
-	void			LOG		(const QString &,
-	                                         const QString &);
 	bool			error_report;
 	techData		*techWindow_p;
 //	Ui_configWidget		configWidget;

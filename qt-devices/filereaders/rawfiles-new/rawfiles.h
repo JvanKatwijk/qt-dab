@@ -45,11 +45,11 @@ public:
 			rawFiles	(const QString &);
  	               ~rawFiles	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
-	uint8_t		myIdentity	();
 	int32_t		Samples		();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	bool		isFileInput	();
+	QString		deviceName	();
 private:
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;

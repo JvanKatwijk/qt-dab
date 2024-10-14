@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -52,6 +52,7 @@ public:
 	int32_t		Samples		();
 	int16_t		bitDepth	();
 	bool		isFileInput	();
+	QString		deviceName	();
 private slots:
 	void		sendGain	(int);
 	void		set_Offset	(int);

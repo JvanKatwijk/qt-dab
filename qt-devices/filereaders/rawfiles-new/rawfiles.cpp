@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -83,14 +83,14 @@ bool	rawFiles::restartReader	(int32_t freq) {
 	return true;
 }
 
-void	rawFiles::stopReader() {
+void	rawFiles::stopReader	() {
 	if (running. load()) {
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
 	      usleep (100);
 	   delete readerTask;
+	   running. store (false);
 	}
-	running. store (false);
 }
 
 //	size is in I/Q pairs, file contains 8 bits values
@@ -118,5 +118,10 @@ void	rawFiles::setProgress (int progress, float timelength) {
 
 bool	rawFiles::isFileInput	() {
 	return true;
+}
+
+QString	rawFiles::deviceName	() {
+QString res	= "raw file: " + fileName;
+	return res;
 }
 

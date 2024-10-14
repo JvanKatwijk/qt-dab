@@ -56,6 +56,8 @@ public:
 
 	void	connection_set		();
 	bool	isFileInput		();
+
+	QString	deviceName		();
 private:
 	RingBuffer<uint8_t>	inBuffer;
 	tcp_client_8		tcpHandler;

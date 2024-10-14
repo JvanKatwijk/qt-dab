@@ -47,8 +47,9 @@ public:
 	int32_t			Samples		();
 	bool			restartReader	(int32_t);
 	void			stopReader	();
-	int			getVFOFrequency	();
 	bool			isFileInput	();
+	int			getVFOFrequency	();
+	QString			deviceName	();
 private:
 	std::atomic<bool>	running;
 	QString			fileName;

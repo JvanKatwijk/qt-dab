@@ -29,7 +29,7 @@
 
 static inline
 bool    isValid (QChar c) {
-	return c. isLetter () || c. isDigit () || (c == '-');
+	return c. isLetter () || c. isDigit () || (c == '-') || (c == '/');
 }
 
 	findfileNames::findfileNames (QSettings *s):
@@ -55,13 +55,15 @@ QString suggestedFileName;
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
 
-	for (int i = 0; i < theTime. length (); i ++)
-	   if (!isValid (theTime. at (i)))
-	      theTime. replace (i, 1, '-');
 	suggestedFileName = saveDir + "Qt-DAB-" + channel +
 	                                          "-" + theTime + extension;
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i)))
+	      suggestedFileName. replace (i, 1, '-');
+	
 	suggestedFileName        = QDir::toNativeSeparators (suggestedFileName);
 
+	fprintf (stderr, "suggested filename %s\n", suggestedFileName. toLatin1 (). data ());
 	if (!flag)
 	   return suggestedFileName;
 	bool	useNativeFileDialog = true;
@@ -82,8 +84,8 @@ QString suggestedFileName;
 
 	                         
 FILE	*findfileNames::findContentDump_fileName (const QString &channel) {
-QString	saveDir		= dabSettings -> value (CONTENT_DIR,
-	                                        QDir::homePath ()). toString ();
+QString	saveDir		= dabSettings -> value (CONTENT_DIR, basicPath ()).
+	                                                           toString ();
 QString	fileName	= outputDialog (saveDir, channel, ".csv", true);
 
 	if (fileName == "")
@@ -103,8 +105,8 @@ QString	fileName	= outputDialog (saveDir, channel, ".csv", true);
 //
 FILE	*findfileNames::findFrameDump_fileName (const QString &service,
 	                                                      bool flag) {
-QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
-	                                QDir::homePath ()).  toString ();
+QString	saveDir	= dabSettings -> value ("saveDir_frameDump", basicPath ()).
+	                                                       toString ();
 QString	fileName	= outputDialog (saveDir, service, ".aac", flag);
 
 	if (fileName == "")
@@ -122,11 +124,12 @@ QString	fileName	= outputDialog (saveDir, service, ".aac", flag);
 
 QString	findfileNames::findAudioDump_fileName (const QString &service, 
 	                                                      bool flag) {
-QString theTime		= QDateTime::currentDateTime (). toString ();
-QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
-	                                 QDir::homePath ()).  toString ();
+QString	saveDir		= dabSettings -> value ("saveDir_audioDump",
+	                                       basicPath ()).  toString ();
 
+	fprintf (stderr, "savedir = %s\n", saveDir. toLatin1 (). data ());
 	QString fileName = outputDialog (saveDir, service, ".wav", flag);
+	
 	if (fileName == "")
 	   return nullptr;
 
@@ -137,7 +140,7 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 QString findfileNames::findRawDump_fileName (const QString &deviceName,
 	                                       const QString &channelName) {
 QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
-	                                        QDir::homePath ()). toString ();
+	                                        basicPath ()). toString ();
 	QString fileName =
 	              outputDialog (saveDir, 
 	                            QString (deviceName + "-" + channelName),
@@ -150,8 +153,8 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 }
 
 FILE	*findfileNames::findScanDump_fileName		() {
-QString   saveDir = dabSettings -> value (CONTENT_DIR,
-	                                        QDir::homePath ()). toString ();
+QString   saveDir = dabSettings -> value (CONTENT_DIR, basicPath ()).
+	                                                         toString ();
 
 	QString fileName	= outputDialog (saveDir,
 	                                        "Qt_DAB-scan",
@@ -164,8 +167,8 @@ QString   saveDir = dabSettings -> value (CONTENT_DIR,
 }
 
 FILE	*findfileNames::findSummary_fileName	() {
-QString   saveDir = dabSettings -> value (CONTENT_DIR,
-	                                        QDir::homePath ()). toString ();
+QString   saveDir = dabSettings -> value (CONTENT_DIR, basicPath ()).
+	                                                       toString ();
 
 	QString fileName = outputDialog (saveDir, 
 	                                 "Qt_DAB-summary",
@@ -177,8 +180,8 @@ QString   saveDir = dabSettings -> value (CONTENT_DIR,
 
 const
 QString	findfileNames::findskipFile_fileName	() {
-QString   saveDir = dabSettings -> value (CONTENT_DIR,
-	                                        QDir::homePath ()). toString ();
+QString   saveDir = dabSettings -> value (CONTENT_DIR, basicPath ()).
+	                                                    toString ();
 
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
@@ -201,8 +204,8 @@ QString   saveDir = dabSettings -> value (CONTENT_DIR,
 }
 
 QString findfileNames::finddlText_fileName	(bool flag) {
-QString   saveDir = dabSettings -> value (CONTENT_DIR,
-                                                QDir::homePath ()). toString ();
+QString   saveDir = dabSettings -> value (CONTENT_DIR, basicPath ()).
+                                                                toString ();
 
 	QString fileName	= outputDialog (saveDir, 
         	                                "Qt-DAB-dlText",
@@ -214,8 +217,8 @@ QString   saveDir = dabSettings -> value (CONTENT_DIR,
 }
 
 FILE	* findfileNames::findLogFileName	() {
-QString   saveDir = dabSettings -> value (CONTENT_DIR,
-                                                QDir::homePath ()). toString ();
+QString   saveDir = dabSettings -> value (CONTENT_DIR, basicPath ()).
+                                                 toString ();
 
 	QString fileName	= outputDialog (saveDir,
 	                                        "Qt_DAB-log",
@@ -227,8 +230,8 @@ QString   saveDir = dabSettings -> value (CONTENT_DIR,
 }
 
 FILE	* findfileNames::find_ficDump_file	(const QString &channel) {
-QString	saveDir = dabSettings -> value (CONTENT_DIR,
-                                              QDir::homePath ()). toString ();
+QString	saveDir = dabSettings -> value (CONTENT_DIR, basicPath ()).
+                                               toString ();
 	QString fileName = outputDialog (saveDir, channel, ".fic", true);
 	if (fileName == "")
 	   return nullptr;
@@ -236,20 +239,46 @@ QString	saveDir = dabSettings -> value (CONTENT_DIR,
 }
 
 QString	findfileNames::findMaps_fileName () {
-QString	saveDir		= dabSettings -> value (CONTENT_DIR,
-	                                        QDir::homePath ()). toString ();
+QString	saveDir		= dabSettings -> value (CONTENT_DIR, basicPath ()).
+	                                                     toString ();
 	return outputDialog (saveDir, "Qt_DAB-transmitters", ".csv", true);
 }
 
 QString	findfileNames::find_eti_fileName (const QString &ensemble,
 	                                  const QString &channelName) {
-QString	saveDir	 = dabSettings -> value (CONTENT_DIR,
-	                                   QDir::homePath ()). toString ();
+QString	saveDir	 = dabSettings -> value (CONTENT_DIR, basicPath ()).
+	                                                     toString ();
 QString theTime         = QDateTime::currentDateTime (). toString ();
 QString suggestedFileName;
 
 	return outputDialog (saveDir,
 	                     QString (ensemble + "-" + channelName),
 	                     ".eti", true);
+}
+
+QString	findfileNames::basicPath	() {
+#ifndef __MINGW32__
+        QString tempPath	= QDir::tempPath ();
+#else
+        QString tempPath	= QDir::homePath ();
+#endif
+	if (!tempPath. endsWith ('/'))
+	   tempPath		+= '/';
+        tempPath        +=  "Qt-DAB-files/";
+	tempPath	= checkDir (tempPath);
+
+	return QDir::fromNativeSeparators (tempPath);
+}
+
+QString	findfileNames::checkDir		(const QString &s) {
+QString dir = s;        
+
+        if (!dir. endsWith (QChar ('/')))
+           dir += QChar ('/');  
+        
+        if (QDir (dir). exists())
+           return dir;
+        QDir (). mkpath (dir);
+        return dir;
 }
 

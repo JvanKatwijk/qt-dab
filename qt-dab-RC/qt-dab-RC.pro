@@ -196,6 +196,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/logger.h \
 	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
 	   ../includes/support/settingnames.h \
@@ -333,6 +334,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/logger.cpp \
 	   ../src/support/position-handler.cpp \
 	   ../src/support/wavWriter.cpp \
 	   ../src/support/converter_48000.cpp \

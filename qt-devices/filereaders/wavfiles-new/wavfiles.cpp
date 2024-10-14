@@ -121,3 +121,8 @@ bool	wavFiles::isFileInput	() {
 	return true;
 }
 
+QString	wavFiles::deviceName	() {
+QString res	= QString (".wav file : ") + fileName;
+	return res;
+}
+

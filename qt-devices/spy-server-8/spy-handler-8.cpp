@@ -358,3 +358,7 @@ bool	spyHandler_8::isFileInput	() {
 	return true;
 }
 
+QString	spyHandler_8::deviceName	() {
+	return "spy-server-8Bits :";
+}
+

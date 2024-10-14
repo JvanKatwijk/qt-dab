@@ -96,7 +96,10 @@ static struct {
 
 //	first row of checkboxes
 //	unused element
-//	logger is set per process, not kept
+	x = dabSettings -> value ("logMode", 1). toInt ();
+	if (x != 0)
+	   this -> logger_selector -> setChecked (true);
+
 	x = dabSettings -> value (EPG2XML_SETTING, 0). toInt ();
 	if (x != 0)
 	   this -> epg2xmlSelector -> setChecked (true);

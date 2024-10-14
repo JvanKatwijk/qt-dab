@@ -368,7 +368,7 @@ std::complex<float> temp [4096];
 	return 0;
 }
 //
-const char *airspy_2::getSerial() {
+const char *airspy_2::getSerial () {
 airspy_read_partid_serialno_t read_partid_serialno;
 int result = my_airspy_board_partid_serialno_read (device,
 	                                          &read_partid_serialno);
@@ -608,7 +608,7 @@ int	airspy_2::getBufferSpace	() {
 }
 
 QString	airspy_2::deviceName	() {
-	return "AIRspy";
+	return QString ("AIRspy :") + QString (getSerial ());
 }
 
 void	airspy_2::set_xmlDump () {

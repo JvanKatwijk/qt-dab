@@ -107,9 +107,12 @@ int		output_size	= 8 * 2048;
            int16_t buffer [2 * info -> frameSize];
            for (uint16_t i = 0; i < info -> frameSize; i ++) {
               buffer [2 * i]	= ((int16_t *)bufp) [i];
-              buffer [2 * i + 1] = bufp [2 * i];
+//	      buffer [2 * i + 1] = bufp [2 * i];
+              buffer [2 * i + 1] = 0;
            }
-	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize);
+
+	   audioBuffer  -> putDataIntoBuffer ((std::complex<uint16_t> *)buffer,
+	                                              info -> frameSize);
 //	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)

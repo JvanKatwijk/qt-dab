@@ -31,10 +31,9 @@
 #include	<QString>
 #include	"tcp-client.h"
 #include	"spyserver-protocol.h"
-class	spyServer_client;
-#include	"spy-handler.h"
 #include	"ringbuffer.h"
 
+class	spyServer_client;
 class spyHandler:   public QThread {
 Q_OBJECT
 public:
@@ -56,6 +55,8 @@ public:
 
 	void	connection_set		();
 	bool	isFileInput		();
+
+	QString	deviceName		();
 private:
 	RingBuffer<uint8_t>	inBuffer;
 	tcp_client	tcpHandler;

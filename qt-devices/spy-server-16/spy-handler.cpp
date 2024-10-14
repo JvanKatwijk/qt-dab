@@ -370,3 +370,7 @@ bool	spyHandler::isFileInput		() {
 	return true;
 }
 
+QString	spyHandler::deviceName		() {
+	return "spy-server-16 bits :";
+}
+

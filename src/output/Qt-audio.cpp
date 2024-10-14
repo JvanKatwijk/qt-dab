@@ -69,11 +69,11 @@ void	Qt_Audio::initialize_deviceList () {
 	   }
 	}
 
-	fprintf (stderr, "The devicelist \n");
-	for (auto & listEl: theList)
-           fprintf (stderr, "%s\n",  listEl. deviceName (). toLatin1 (). data ());;
+//	fprintf (stderr, "The devicelist \n");
+//	for (auto & listEl: theList)
+//	   fprintf (stderr, "%s\n",  listEl. deviceName (). toLatin1 (). data ());;
 
-	fprintf (stderr, "Length of deviceList %d\n",  theList. size ());
+//	fprintf (stderr, "Length of deviceList %d\n",  theList. size ());
 	if (theList. size () == 0)
 	   throw (22);
 }

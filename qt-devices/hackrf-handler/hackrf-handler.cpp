@@ -159,6 +159,7 @@
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
+	   serialNumber	= serial;
 	   serial_number_display -> setText (serial);
 	   enum hackrf_usb_board_id board_id =
 	                 deviceList -> usb_board_ids [0];
@@ -384,7 +385,7 @@ int16_t	hackrfHandler::bitDepth() {
 }
 
 QString	hackrfHandler::deviceName	() {
-	return "hackRF";
+	return "hackRF " + serialNumber;;
 }
 
 bool	hackrfHandler::load_hackrfFunctions () {

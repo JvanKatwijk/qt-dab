@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2023
+ *    Copyright (C) 2013 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -168,5 +168,10 @@ void	xml_fileReader::handle_continuousButton () {
 
 bool	xml_fileReader::isFileInput	() {
 	return true;
+}
+
+QString	xml_fileReader::deviceName	() {
+QString res = QString ("xml-file : ") + fileName;
+	return res;
 }
 

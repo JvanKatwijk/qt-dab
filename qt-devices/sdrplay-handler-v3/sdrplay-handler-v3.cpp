@@ -238,7 +238,7 @@ int16_t	sdrplayHandler_v3::bitDepth	() {
 }
 
 QString	sdrplayHandler_v3::deviceName	() {
-	return deviceModel;
+	return deviceModel + ":" + serial;
 }
 
 ///////////////////////////////////////////////////////////////////////////

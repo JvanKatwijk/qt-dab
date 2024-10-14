@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -291,6 +291,9 @@ void	rtl_tcp_client::set_Offset	(int32_t o) {
 
 bool	rtl_tcp_client::isFileInput	() {
 	return false;
-	return true;
+}
+
+QString	rtl_tcp_client::deviceName	() {
+	return "rtl_tcp_client";
 }
 

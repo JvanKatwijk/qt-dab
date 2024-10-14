@@ -38,6 +38,7 @@ class	findfileNames {
 public:
 		findfileNames			(QSettings *);
 		~findfileNames			();
+	QString	basicPath			();
 	FILE	*findContentDump_fileName	(const QString &channel);
 	FILE	*findFrameDump_fileName		(const QString &service, bool);
 	QString	findAudioDump_fileName		(const QString &service, bool);
@@ -59,5 +60,7 @@ private:
 
 void	save_dirName				(const QString key,
 	                                         const QString path);
+private:
+QString	checkDir				(const QString &s);
 };
 
