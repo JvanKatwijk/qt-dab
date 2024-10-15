@@ -3555,8 +3555,8 @@ bool listChanged = false;
 
 	if (!dxMode) {
 	   channel. transmitters. resize (0);
-	   if (!theNewDisplay. isHidden ())
-	      theNewDisplay. hide ();
+	   if (!theDXDisplay. isHidden ())
+	      theDXDisplay. hide ();
 	}
 
 	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
@@ -3619,9 +3619,8 @@ bool listChanged = false;
 	   transmitterDesc t = {tiiValue, false, theTransmitter, 0, 0};
 	   channel. transmitters. push_back (t);	
 	   if (dxMode) {
-	      if (theNewDisplay. isHidden () &&
-	          dabSettings_p -> value (NEW_DISPLAY_VISIBLE, 0). toInt ()!= 0)
-	         theNewDisplay. show ();
+	      if (theDXDisplay. isHidden ())
+	         theDXDisplay. show ();
 	      FILE *tiiFile	=
 	                 fopen (QString (path_for_tiiFile + "tii-files.txt" ).
 	                                    toStdString (). c_str (), "a");
