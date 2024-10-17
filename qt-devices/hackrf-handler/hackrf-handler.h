@@ -134,7 +134,6 @@ private:
 	QLibrary*		library_p;
 	QString			serialNumber;
 
-	FILE			*xmlDumper;
         xml_fileWriter		*xmlWriter;
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;

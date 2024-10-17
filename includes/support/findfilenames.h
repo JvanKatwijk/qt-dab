@@ -52,6 +52,7 @@ const	QString	findskipFile_fileName		();
 	FILE	*find_ficDump_file		(const QString &);
 	QString findMaps_fileName		();
 	QString	find_eti_fileName		(const QString &, const QString &);
+	QString	find_xmlName			(const QString &, const QString &);
 private:
 	QString	outputDialog			(QString saveDir,
 	                                         const QString &channel,

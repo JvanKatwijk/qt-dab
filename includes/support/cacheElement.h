@@ -64,8 +64,10 @@ public:
 struct transmitterDesc {
 	int	tiiValue;
 	bool	isStrongest;
+	bool	isFurthest;
 	cacheElement theTransmitter;
 	float	distance;
 	float	corner;
+	
 };
 

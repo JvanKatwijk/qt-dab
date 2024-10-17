@@ -207,7 +207,7 @@ uint32_t samplerateCount;
 	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 	dumping. store (false);
-	xmlDumper	= nullptr;
+	xmlWriter	= nullptr;
 }
 
 	airspy_2::~airspy_2 () {
@@ -612,74 +612,46 @@ QString	airspy_2::deviceName	() {
 }
 
 void	airspy_2::set_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	if (xmlWriter == nullptr) {
+	   setup_xmlDump ();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
 	}
 }
 
-static inline
-bool	isValid (QChar c) {
-	return c. isLetterOrNumber () || (c == '-');
-}
-
 bool	airspy_2::setup_xmlDump () {
-QTime	theTime;
-QDate	theDate;
-QString saveDir = airspySettings -> value (SAVEDIR_XML,
-                                           QDir::homePath ()). toString ();
-        if ((saveDir != "") && (!saveDir. endsWith ("/")))
-           saveDir += "/";
-	QString channel		= airspySettings -> value ("channel", "xx").
-	                                                     toString ();
-        QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-	for (int i = 0; i < timeString. length (); i ++)
-	   if (!isValid (timeString. at (i)))
-	      timeString. replace (i, 1, "-");
-        QString suggestedFileName =
-                saveDir + "AIRspy" + "-" + channel + "-" + timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName + ".uff",
-	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-	
-	xmlWriter	= new xml_fileWriter (xmlDumper,
+QString channel		= airspySettings -> value ("channel", "xx").
+	                                                      toString ();
+	try {
+	   xmlWriter	= new xml_fileWriter (airspySettings,
+	                                      channel,
 	                                      12,
 	                                      "int16",
 	                                      selectedRate,
 	                                      lastFrequency,
 	                                      -1,
-	                                      "AIRspy",
-	                                      "I",
+	                                      "Airspy",
+	                                      getSerial (),
 	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
 	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-        saveDir		= dumper. remove (x, dumper. count () - x);
-        airspySettings	-> setValue ("saveDir_xmlDump", saveDir);
+	dumpButton	-> setText ("writing");
 	return true;
 }
 
 void	airspy_2::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
+	dumping. store (false);
+	dumpButton	-> setText ("Dump");
+	xmlWriter	= nullptr;
 }
 //
 //	gain settings are maintained on a per-channel and per tab base,

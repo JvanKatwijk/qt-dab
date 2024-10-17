@@ -200,8 +200,7 @@ private:
 	int16_t		nrBits;
 
 	int		lnaMax;
-	FILE		*xmlDumper;
-        xml_fileWriter	*xmlWriter;
+	xml_fileWriter	*xmlWriter;
         bool		setup_xmlDump		();
         void		close_xmlDump		();
 	std::atomic<bool> dumping;

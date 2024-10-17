@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2023
+ *    Copyright (C)  2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -254,6 +254,30 @@ QString suggestedFileName;
 	return outputDialog (saveDir,
 	                     QString (ensemble + "-" + channelName),
 	                     ".eti", true);
+}
+
+QString	findfileNames::find_xmlName	(const QString &deviceName,
+	                                 const QString &channel) {
+QString	saveDir	=  basicPath ();
+QDate	theDate;
+QTime	theTime;
+uint8_t t	= 0;
+	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
+	QString suggestedFilename	= 
+	                     saveDir + deviceName + "-" + channel + "-" + timeString;
+	for (int i = 0; i < suggestedFilename. length (); i ++)
+	   if (!isValid (suggestedFilename. at (i)))
+	      suggestedFilename. replace (i, 1, "-");
+	suggestedFilename	= QDir::toNativeSeparators (suggestedFilename);
+	QString fileName	=
+	          QFileDialog::getSaveFileName (nullptr,
+	                                        "save file ..",
+	                                        suggestedFilename + ".uff",
+	                                        "xml (*.uff)");
+	fileName	= QDir::toNativeSeparators (fileName);
+	if (fileName == "")
+	   fileName = suggestedFilename;
+	return fileName;
 }
 
 QString	findfileNames::basicPath	() {

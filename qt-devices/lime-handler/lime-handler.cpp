@@ -173,9 +173,9 @@ lms_info_str_t limedevices [10];
 	         gainSelector, &QSpinBox::setValue);
 	connect (filterSelector, &QCheckBox::stateChanged,
 	         this, &limeHandler::set_filter);
-	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
+	xmlWriter	= nullptr;
 }
 
 	limeHandler::~limeHandler() {
@@ -493,13 +493,11 @@ bool	limeHandler::load_limeFunctions() {
 }
 
 void	limeHandler::set_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	if (xmlWriter == nullptr) {
+	   setup_xmlDump ();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
 	}
 }
 
@@ -509,60 +507,37 @@ bool	isValid (QChar c) {
 }
 
 bool	limeHandler::setup_xmlDump () {
-QTime	theTime;
-QDate	theDate;
-QString saveDir = limeSettings -> value (SAVEDIR_XML,
-                                           QDir::homePath ()). toString ();
-        if ((saveDir != "") && (!saveDir. endsWith ("/")))
-           saveDir += "/";
-
-	QString channel		= limeSettings -> value ("channel", "xx").
+QString channel		= limeSettings -> value ("channel", "xx").
 	                                                      toString ();
-	QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-	for (int i = 0; i < timeString. length (); i ++)
-	if (!isValid (timeString. at (i)))
-	   timeString. replace (i, 1, '-');
-        QString suggestedFileName =
-                    saveDir + "limeSDR" + "-" + channel + "-" + timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName + ".uff",
-	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-	uint32_t	theGain;
-	LMS_GetGaindB (theDevice, LMS_CH_RX, 0, &theGain);
-	xmlWriter	= new xml_fileWriter (xmlDumper,
-	                                      bitDepth	(),
+	xmlWriter	= nullptr;
+	try {
+	   xmlWriter	= new xml_fileWriter (limeSettings,
+	                                      channel,
+	                                      bitDepth (),
 	                                      "int16",
 	                                      2048000,
 	                                      lastFrequency,
 	                                      theGain,
-	                                      "lime",
-	                                      "1",
+	                                      "LimeSDR",
+	                                      "???",
 	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
+	dumpButton	-> setText ("writing");
 	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	limeSettings -> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }
-
+	
 void	limeHandler::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
-	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
+	dumping. store (false);
+	dumpButton	-> setText ("Dump");
+	xmlWriter	= nullptr;
 }
 
 void	limeHandler::record_gainSettings	(int key) {

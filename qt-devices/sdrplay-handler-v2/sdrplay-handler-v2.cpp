@@ -259,9 +259,9 @@ mir_sdr_DeviceT devDesc [4];
 	         this, &sdrplayHandler_v2::handle_biasT_selector);
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
-	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
+	xmlWriter	= nullptr;
 }
 
 	sdrplayHandler_v2::~sdrplayHandler_v2() {
@@ -906,13 +906,11 @@ QString	sdrplayHandler_v2::errorCodes (mir_sdr_ErrT err) {
 }
 
 void	sdrplayHandler_v2::handle_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	if (xmlWriter == nullptr) {
+	   setup_xmlDump ();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
 	}
 }
 
@@ -922,36 +920,15 @@ bool	isValid (QChar c) {
 }
 
 bool	sdrplayHandler_v2::setup_xmlDump () {
-QTime	theTime;
-QDate	theDate;
-QString	saveDir	= sdrplaySettings -> value (SAVEDIR_XML,
-	                                    QDir::homePath ()). toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ("/")))
-	   saveDir += "/";
-
-	QString channel		= sdrplaySettings -> value ("channel", "xx").
-	                                                       toString ();
-	QString timeString      = theDate. currentDate (). toString () + "-" +
-	                           theTime. currentTime(). toString ();
-	for (int i = 0; i < timeString. length (); i ++)
-           if (!isValid (timeString. at (i)))
-              timeString. replace (i, 1, '-');
-	
-        QString suggestedFileName =
-                    saveDir + deviceModel + "-" + channel + "-" + timeString;
-
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName + ".uff",
-	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-
+QString channel		= sdrplaySettings -> value ("channel", "xx").
+	                                                      toString ();
+	xmlWriter	= nullptr;
 	mir_sdr_GainValuesT theGains;
-	my_mir_sdr_GetCurrentGain (&theGains);
-	xmlWriter	= new xml_fileWriter (xmlDumper,
+        my_mir_sdr_GetCurrentGain (&theGains);
+
+	try {
+	   xmlWriter	= new xml_fileWriter (sdrplaySettings,
+	                                      channel,
 	                                      nrBits,
 	                                      "int16",
 	                                      2048000,
@@ -960,24 +937,23 @@ QString	saveDir	= sdrplaySettings -> value (SAVEDIR_XML,
 	                                      "SDRplay",
 	                                      deviceModel,
 	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
 	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-        saveDir		= dumper. remove (x, dumper. count () - x);
-	sdrplaySettings	-> setValue ("saveDir_xmlDump", saveDir);
+	dumpButton	-> setText ("writing");
 	return true;
 }
-
+	
 void	sdrplayHandler_v2::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
+	dumpButton	-> setText ("Dump");
 	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
+	xmlWriter	= nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////

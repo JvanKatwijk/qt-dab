@@ -111,7 +111,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 static inline
 QString ids_to_string (int mainId, int subId) {
 	return  "(" + QString::number (mainId) + "-"
-                    + QString::number (subId)  + ")";
+	            + QString::number (subId)  + ")";
 }
 
 static inline
@@ -305,8 +305,8 @@ QString h;
 	serviceLabel	-> setFont (font);
 	programTypeLabel	-> setStyleSheet (labelStyle);
 	font      = ensembleId -> font ();
-        font. setPointSize (14);
-        ensembleId      -> setFont (font);
+	font. setPointSize (14);
+	ensembleId      -> setFont (font);
 
 	nextService. valid	= false;
 	channel. currentService. valid	= false;
@@ -2552,18 +2552,18 @@ void	RadioInterface::stop_scan_single () {
 	if (configHandler_p -> upload_selector_active ()) {
 	   try {
 	      uploader the_uploader;
-              QMessageBox::StandardButton reply =
-                      QMessageBox::question (this,
-                                             "upload content to fmlist.org?", "",
-                                      QMessageBox::Yes | QMessageBox::No);
-              if (reply == QMessageBox::Yes) {
+	      QMessageBox::StandardButton reply =
+	              QMessageBox::question (this,
+	                                     "upload content to fmlist.org?", "",
+	                              QMessageBox::Yes | QMessageBox::No);
+	      if (reply == QMessageBox::Yes) {
 	         the_uploader. loadUp ("Scan",
 	                               0,
 	                               "result table",
 	                               scanTable_p -> upload ());
 	      }
-           } catch (...) {}
-        }
+	   } catch (...) {}
+	}
 
 	FILE *scanDumper_p	= theSCANHandler. askFileName ();
 	if (scanDumper_p != nullptr) {
@@ -2694,7 +2694,7 @@ QString	theHeight;
 	if (channel. distance > 0) {
 	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
 	   theCorner	= QString::number (channel. corner, 'f', 1)
-                              + QString::fromLatin1 (" \xb0 ");
+	                      + QString::fromLatin1 (" \xb0 ");
 	   theHeight	= " (" + QString::number (channel. height, 'f', 1) +  "m)" + "\n";
 	}
 	else {
@@ -2761,7 +2761,7 @@ QString theHeight;
 	if (tr. distance > 0) {
 	   theDistance	= QString::number (tr. distance, 'f', 1) + " km ";
 	   theCorner	= QString::number (tr. corner, 'f', 1)
-                              + QString::fromLatin1 (" \xb0 ");
+	                      + QString::fromLatin1 (" \xb0 ");
 	   theHeight	= " (" + QString::number (tr. theTransmitter. height, 'f', 1) +  "m)" + "\n";
 	}
 	else {
@@ -3616,7 +3616,7 @@ bool listChanged = false;
 	   theTransmitter. mainId	= tiiValue >> 8;
 	   theTransmitter. subId	= tiiValue & 0xFF;
 	   theTransmitter. channel	= channel. channelName;
-	   transmitterDesc t = {tiiValue, false, theTransmitter, 0, 0};
+	   transmitterDesc t = {tiiValue, false, false, theTransmitter, 0, 0};
 	   channel. transmitters. push_back (t);	
 	   if (dxMode) {
 	      if (theDXDisplay. isHidden ())
@@ -3675,11 +3675,14 @@ bool listChanged = false;
 
 	if (!listChanged && dxMode)
 	   return;
-//
+
+	int	maxTrans	= -1;
 //	The list was changed, so we rewrite the dxDisplay and 
 //	the map
 	QString labelText;
 	for (auto &theTr : channel. transmitters) {
+	   if (!theTr. theTransmitter. valid)
+	      continue;
 	   position thePosition;
 	   thePosition. latitude	= theTr. theTransmitter. latitude;
 	   thePosition. longitude	= theTr. theTransmitter. longitude;
@@ -3693,6 +3696,8 @@ bool listChanged = false;
 	      channel. subId			= theTr. tiiValue & 0xFF;
 	   }
 
+	   theTr. isFurthest	= false;
+	
 	   QString theName 	= theTr. theTransmitter. transmitterName;
 	   float power		= theTr. theTransmitter. power;
 	   float height		= theTr. theTransmitter. height;
@@ -3705,6 +3710,11 @@ bool listChanged = false;
 	      channel. distance	= theTr. distance;
 	      channel. corner	= theTr. corner;
 	      channel. height	= height;
+	   }
+
+	   if (theTr. distance > maxDistance) {
+	      maxTrans	= theTr. tiiValue;
+	      maxDistance = theTr. distance;
 	   }
 	   int tiiValue_local	= theTr. tiiValue;
 	   labelText = "(" + QString::number (tiiValue_local >> 8) + ","
@@ -3727,16 +3737,20 @@ bool listChanged = false;
 	      theDXDisplay. addRow (labelText, text2,  theTr. isStrongest);
 	   else 
 	      distanceLabel	-> setText (labelText + text2);
-
+	}
+//	now handling the map
 //	see if we have a map
-	   if (mapHandler == nullptr) 
+	if ((mapHandler == nullptr) || !listChanged) 
+	      return;
+
+	for (auto &theTr : channel. transmitters) {
+	   if (!theTr. theTransmitter. valid)
 	      continue;
 
 	   uint8_t key	= MAP_NORM_TRANS;	// default value
 	   bool localTransmitters	=
 	            configHandler_p -> localTransmitterSelector_active ();
-	   if ((!localTransmitters) && (theTr. distance > maxDistance)) { 
-	      maxDistance = theTr. distance;
+	   if ((!localTransmitters) && (theTr. tiiValue  == maxTrans)) { 
 	      key = MAP_MAX_TRANS;
 	   }
 //
@@ -3744,16 +3758,22 @@ bool listChanged = false;
 	   configHandler_p -> utcSelector_active () ?
 	                              QDateTime::currentDateTimeUtc () :
 	                              QDateTime::currentDateTime ();
-	   if (listChanged && theTr. theTransmitter. valid)
-	      mapHandler -> putData (key,
-	                             thePosition, 
-	                             theTr. theTransmitter. transmitterName,
-	                             channel. channelName,
-	                             theTime. toString (Qt::TextDate),
-	                             theTr. tiiValue,
-	                             channel. snr,
-	                             theTr. distance,
-	                             theTr. corner, power, height);
+	   position thePosition; 
+	   thePosition. latitude        = theTr. theTransmitter. latitude;
+	   thePosition. longitude       = theTr. theTransmitter. longitude;
+ 
+
+	   mapHandler -> putData (key,
+	                          thePosition, 
+	                          theTr. theTransmitter. transmitterName,
+	                          channel. channelName,
+	                          theTime. toString (Qt::TextDate),
+	                          theTr. tiiValue,
+	                          channel. snr,
+	                          theTr. distance,
+	                          theTr. corner,
+	                          theTr. theTransmitter. power,
+	                          theTr. theTransmitter. height);
 	}
 }
 
@@ -4043,12 +4063,12 @@ void	RadioInterface::handle_folderButton	() {
 	QString tempPath	= theFilenameFinder. basicPath ();
 #ifdef __MINGW32__
 	LPCWSTR temp = (const wchar_t *)tempPath. utf16 ();
-        ShellExecute (nullptr, L"open", temp,
-                                           nullptr, nullptr, SW_SHOWDEFAULT);
+	ShellExecute (nullptr, L"open", temp,
+	                                   nullptr, nullptr, SW_SHOWDEFAULT);
 #else
 	std::string x = "xdg-open " + tempPath. toStdString ();
-        fprintf (stderr, "we gaan voor %s\n", x. c_str ());
-        (void)system (x. c_str ());
+	fprintf (stderr, "we gaan voor %s\n", x. c_str ());
+	(void)system (x. c_str ());
 #endif
 }
 
