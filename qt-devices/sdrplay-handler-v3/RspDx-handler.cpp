@@ -73,16 +73,16 @@ int	RSPdx_Table [6][29] = {
 
 int16_t RspDx_handler::bankFor_rspdx (int freq) {
 	if (freq < MHz (12))
-	   return 1;
+	   return 0;
 	if (freq < Mhz (60))
-	   return 2;
+	   return 1;
 	if (freq < MHz (250))
-	   return 3;
+	   return 2;
 	if (freq < MHz (420))
-	   return 4;
+	   return 3;
 	if (freq < MHz (1000))
-	   return 5;
-	return 6;
+	   return 4;
+	return 5;
 }
 
 int	RspDx_handler::lnaStates (int frequency) {

@@ -125,7 +125,6 @@ private:
         lms_stream_t    stream;
         void		run			();
 
-	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
         bool            setup_xmlDump           ();
         void            close_xmlDump           ();

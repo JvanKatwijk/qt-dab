@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,9 +24,12 @@
 #include <QtXml>
 
 #include	<QString>
+#include	<QSettings>
 #include	<stdint.h>
 #include	<stdio.h>
 #include	<complex>
+#include	"findfilenames.h"
+
 
 class Blocks	{
 public:
@@ -42,22 +45,23 @@ public:
 
 class xml_fileWriter {
 public:
-		xml_fileWriter	(FILE *,
+		xml_fileWriter	(QSettings	*,
+	                         const QString &,
 	                         int,
-	                         QString,
+	                         const QString &,
 	                         int,
 	                         int,
 	                         int,
-	                         QString,
-	                         QString,
-	                         QString);
-	                         
+	                         const QString &,
+	                         const QString &,
+	                         const QString &);
 			~xml_fileWriter		();
 	void		add			(std::complex<int16_t> *, int);
 	void		add			(std::complex<uint8_t> *, int);
 	void		add			(std::complex<int8_t> *, int);
 	void		computeHeader		();
 private:
+	findfileNames	filenameFinder;
 	int		nrBits;
 	QString		container;
 	int		sampleRate;

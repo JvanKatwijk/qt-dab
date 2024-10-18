@@ -353,8 +353,8 @@ int	ret;
         }
         convIndex       = 0;
 	dumping. store	(false);
-	xmlDumper	= nullptr;
 	running. store (false);
+	xmlWriter	= nullptr;
 	int enabled;
 //
 //	go for the filter
@@ -625,13 +625,11 @@ void	plutoHandler::toggle_debugButton	() {
 }
 
 void	plutoHandler::set_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	if (xmlWriter == nullptr) {
+	   setup_xmlDump ();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
 	}
 }
 
@@ -641,58 +639,37 @@ bool	isValid (QChar c) {
 }
 
 bool	plutoHandler::setup_xmlDump () {
-QTime	theTime;
-QDate	theDate;
-QString saveDir = plutoSettings -> value (SAVEDIR_XML,
-                                           QDir::homePath ()). toString ();
-        if ((saveDir != "") && (!saveDir. endsWith ("/")))
-           saveDir += "/";
-	QString channel		= plutoSettings -> value ("channel", "xx").
-	                                                     toString ();
-        QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-	for (int i = 0; i < timeString. length (); i ++)
-	   if (!isValid (timeString. at (i)))
-	      timeString. replace (i, 1, "-");
-        QString suggestedFileName =
-                saveDir + "pluto" + "-" + channel + "-" + timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName + ".uff",
-	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-	
-	xmlWriter	= new xml_fileWriter (xmlDumper,
+QString channel		= plutoSettings -> value ("channel", "xx").
+	                                                      toString ();
+	xmlWriter	= nullptr;
+	try {
+	   xmlWriter	= new xml_fileWriter (plutoSettings,
+	                                      channel,
 	                                      12,
 	                                      "int16",
 	                                      PLUTO_RATE,
 	                                      lastFrequency,
 	                                      gainControl -> value (),
-	                                      "pluto",
-	                                      "I",
+	                                      "Pluto",
+	                                      "xxx",
 	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
 	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-        saveDir		= dumper. remove (x, dumper. count () - x);
-        plutoSettings	-> setValue ("saveDir_xmlDump", saveDir);
+	dumpButton	-> setText ("writing");
 	return true;
 }
-
+	
 void	plutoHandler::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
-	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
+	xmlWriter	= nullptr;
+	dumping. store (false);
+	dumpButton	-> setText ("Dump");
 }
 
 void	plutoHandler::record_gainSettings (int freq) {

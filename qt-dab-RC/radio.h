@@ -304,7 +304,8 @@ private:
 	void			set_Colors		();
 	void			set_channelButton	(int);
 
-	void			displaySlide	(const QPixmap &);
+	void			displaySlide	(const QPixmap &,	
+	                                              const QString &t = "");
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;

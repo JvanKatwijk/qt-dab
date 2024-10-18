@@ -73,7 +73,6 @@ private:
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
-	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
         bool            setup_xmlDump		();
         void            close_xmlDump		();

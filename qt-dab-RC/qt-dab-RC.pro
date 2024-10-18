@@ -5,22 +5,22 @@
 ######################################################################
 
 TEMPLATE	= app
-QT		+= widgets xml multimedia
+QT		+= widgets xml 
 #CONFIG		+= console
 CONFIG		-= console
-QMAKE_CXXFLAGS	+= -std=c++14
+QMAKE_CXXFLAGS	+= -std=c++17
+CONFIG		+= release
 win32 {
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+QMAKE_CFLAGS	+=  -O4 -ffast-math
+QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
-
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -31,17 +31,21 @@ RC_ICONS	=  qt-dab-RC.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
+DEFINES		+= __HAS_CHANNEL__
 #
 #       For more parallel processing, uncomment the following
 #       defines
 #DEFINES	+= __MSC_THREAD__
-DEFINES		+= __THREADED_BACKEND__
+DEFINES		+=  __THREADED_BACKEND__
+
+#DEFINES	+= _UPLOAD_SCAN_RESULT_
 
 #For showing trace output
 #DEFINES	+= __EPG_TRACE__  
+
 DEPENDPATH += . \
 	      ./support \
-	      ./forms-v7 \
+	      ./forms-v7/ \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -74,16 +78,15 @@ DEPENDPATH += . \
 	      ../includes/support/buttons \
 	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
-	      ../qt-devices/filereaders/ \
-	      ../qt-devices/filereaders/new-reader \
+	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
+	      ../qt-devices/filereaders/new-reader \
 	      ../qt-devices/filereaders/xml-filereader 
-	
 	      
 
 INCLUDEPATH += . \
 	       ./support \
-	      ./forms-v7 \
+	      ./forms-v7/ \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
 	      ./forms-v7/snr-viewer \
@@ -122,7 +125,7 @@ HEADERS += ./radio.h \
 	   ./support/skiptable-handler.h \
 	   ./support/aboutdialog.h \
 	   ./support/ensemble-handler.h \
-	   ./support/config-handler.h \
+           ./support/config-handler.h \
 	   ./support/audiosystem-selector.h \
 	   ./support/dxDisplay.h \
 	   ./forms-v7/qwt-2.h \
@@ -198,8 +201,8 @@ HEADERS += ./radio.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/logger.h \
 	   ../includes/support/position-handler.h \
-	   ../includes/support/cacheElement.h \
-	   ../includes/support/settingnames.h \
+           ../includes/support/cacheElement.h \
+	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/wavWriter.h \
 	   ../includes/support/converter_48000.h \
@@ -240,8 +243,8 @@ HEADERS += ./radio.h \
 	   ../qt-devices/xml-filewriter.h \
 	   ../qt-devices/riffWriter.h \
 	   ../qt-devices/filereaders/new-reader/newfiles.h \
-	   ../qt-devices/filereaders/new-reader/new-reader.h \
-	   ../qt-devices/filereaders/new-reader/riff-reader.h \
+           ../qt-devices/filereaders/new-reader/new-reader.h \
+           ../qt-devices/filereaders/new-reader/riff-reader.h \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
 	   ../qt-devices/filereaders/xml-filereader/element-reader.h \
@@ -262,8 +265,8 @@ FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
-	   ./support/techdata.cpp \
 	   ./support/super-frame.cpp \
+	   ./support/techdata.cpp \
            ./support/clickable-label.cpp \
            ./support/icon-label.cpp \
 	   ./support/scan-handler.cpp \
@@ -271,8 +274,8 @@ SOURCES += ./main.cpp \
 	   ./support/aboutdialog.cpp \
 	   ./support/ensemble-handler.cpp \
 	   ./support/config-handler.cpp \
-	   ./support/audiosystem-selector.cpp \
-	   ./support/dxDisplay.cpp \
+           ./support/audiosystem-selector.cpp \
+           ./support/dxDisplay.cpp \
 	   ./forms-v7/new-display/display-widget.cpp \
            ./forms-v7/new-display/scopes/correlation-scope.cpp \
            ./forms-v7/new-display/scopes/spectrum-scope.cpp \
@@ -336,12 +339,13 @@ SOURCES += ./main.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/logger.cpp \
 	   ../src/support/position-handler.cpp \
-	   ../src/support/wavWriter.cpp \
-	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 	   ../src/support/fft-handler.cpp \
+	   ../src/support/wavWriter.cpp \
+	   ../src/support/converter_48000.cpp \
 	   ../src/support/dab-params.cpp \
+#	   ../src/support/band-handler.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
@@ -373,11 +377,9 @@ SOURCES += ./main.cpp \
 	   ../qt-devices/riffWriter.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
-           ../qt-devices/filereaders/new-reader/newfiles.cpp \
+	   ../qt-devices/filereaders/new-reader/newfiles.cpp \
            ../qt-devices/filereaders/new-reader/new-reader.cpp \
            ../qt-devices/filereaders/new-reader/riff-reader.cpp \
-#	   ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
-#	   ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-reader.cpp \
 	   ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp 
@@ -404,16 +406,13 @@ mac {
 }
 
 CONFIG		+= link_pkgconfig
-#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
 !mac {
 LIBS      	+= -ldl
 }
-PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
-#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
@@ -428,8 +427,8 @@ INCLUDEPATH	+= /usr/local/include
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-#CONFIG		+= double
-CONFIG		+= single
+CONFIG		+= double
+#CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -438,7 +437,7 @@ CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
-#CONFIG		+= hackrf
+CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
@@ -453,13 +452,13 @@ CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
-CONFIG		+= datastreamer
+#CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
-#otherwise, if you want to use the default, uncomment
+#otherwise, if you want to use the default qt way of sound out
 CONFIG		+= local-audio
 
 CONFIG		+= PC
@@ -483,84 +482,73 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-##for for 64 bit
-#	TARGET		= qt-dab64-6.5Beta
-#	DEFINES		+= __BITS64__
-#	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
-#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-#	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+#for for 64 bit
+	TARGET		= qt-dab64-6.X64
+	DEFINES		+= __BITS64__
+	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
+	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 ##	LIBS		+= -liio
-##	#CONFIG		+= extio
-#	CONFIG		+= airspy-2
-#	CONFIG		+= rtl_tcp
-#	CONFIG		+= dabstick
-#	CONFIG		+= sdrplay-v2
-#	CONFIG		+= pluto
-#	CONFIG		+= sdrplay-v3
-##	CONFIG		+= hackrf
-##	CONFIG		+= lime
-#	CONFIG		+= NO_SSE
-#	DEFINES		+= __THREADED_BACKEND
-#
-#for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.XV3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.X
-	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
-	CONFIG		+= spyServer-16
-	CONFIG		+= spyServer-8
-	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
-	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
-	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-	CONFIG		+= double
-	#CONFIG		+= single
-	CONFIG		+= mapserver
-	CONFIG		+= extio
+	CONFIG          += spyServer-16
+	CONFIG          += spyServer-8
 	CONFIG		+= rtl_tcp
+	CONFIG		+= dabstick-win64
 	CONFIG		+= sdrplay-v2
+	CONFIG		+= sdrplay
+	CONFIG		+= pluto
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-	CONFIG		+= pluto
-#	CONFIG		+= pluto-rxtx
-	CONFIG		+= NO_SSE
-	CONFIG		+= preCompiled
-#	CONFIG		+= tiiLib
+	DEFINES		+= __THREADED_BACKEND
+	INCLUDEPATH	+= ../../TII-CODES
+	HEADERS         += ../../TII-CODES/tii-reader.h
+        HEADERS         += ../../TII-CODES/db-loader.h
+        HEADERS         += ../../TII-CODES/uploader.h
+        SOURCES         += ../../TII-CODES/tii-reader.cpp
+        SOURCES         += ../../TII-CODES/db-loader.cpp
+        SOURCES         += ../../TII-CODES/uploader.cpp
+	
+	CONFIG		+= local-audio
+	CONFIG		+= double
+	#CONFIG		+= single
+	CONFIG		+= mapserver
+	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
+	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
+	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
+	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
+	LIBS		+= -lportaudio
+	LIBS		+= -lstdc++
 #
-#	end of 32/64 specifics
-INCLUDEPATH	+= /usr/local/include
-LIBS		+= -lportaudio
-#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
-LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
-LIBS		+= -lole32
-LIBS		+= -lwinpthread
-LIBS		+= -lwinmm
-LIBS 		+= -lstdc++
-LIBS		+= -lws2_32
-LIBS		+= -lusb-1.0
-LIBS		+= -lz
+	INCLUDEPATH	+= /usr/local/include
+	LIBS		+= -lportaudio
+	#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
+	#LIBS		+= -lole32
+	LIBS		+= -lwinpthread
+	LIBS		+= -lwinmm
+	LIBS 		+= -lstdc++
+	LIBS		+= -lws2_32
+	LIBS		+= -lusb-1.0
+	LIBS		+= -lz
 #correct this for the correct path to the qwt6 library on your system
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
-#LIBS		+= -lqwt
-LIBS		+= -lqwt-qt5
-CONFIG		+= faad
+	#LIBS		+= -lqwt
+	LIBS		+= -lqwt-qt5
+	CONFIG		+= faad
 #
 #very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
+#	CONFIG		+= datastreamer
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of soud out
-CONFIG		+= local-audio
 #comment both out if you just want to use the "normal" way
 
 DEFINES	+= __DUMP_SNR__		# for experiments only
 }
 
-###	dabstick
+#	dabstick
 #	Note: the windows version is bound to the dll, the
 #	linux version loads the function from the so
 dabstick-linux {
@@ -578,15 +566,27 @@ dabstick-win-v4 {
 	DEFINES		+= HAVE_RTLSDR_V4
 	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win-v4
 	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win-v4
-	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4
-	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4/x86
 	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
 	HEADERS		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.h \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
 	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
-	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x86/rtlsdr.dll
+#	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
+	LIBS		+= /usr/shared/drivers/rtlsdr-drivers-windows/x86/librtlsdr.dll
+}
+
+dabstick-win64 {
+	DEFINES		+= HAVE_RTLSDR_V4
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win-v4
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win-v4
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.h \
+	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.cpp \
+	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
+	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x64/rtlsdr.a
 }
 
 dabstick-win-v3 {
@@ -610,9 +610,9 @@ sdrplay-v2 {
 	DEFINES		+= HAVE_SDRPLAY_V2
 	DEPENDPATH	+= ../qt-devices/sdrplay-handler-v2
 	INCLUDEPATH	+= ../qt-devices/sdrplay-handler-v2
-	HEADERS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
+	HEADERS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h \
 	                   ../qt-devices/sdrplay-handler-v2/sdrplayselect.h 
-	SOURCES		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 
+	SOURCES		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \
 	                   ../qt-devices/sdrplay-handler-v2/sdrplayselect.cpp 
 	FORMS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }
@@ -693,7 +693,6 @@ airspy-2 {
 	                   ../qt-devices/airspy-2/airspyselect.cpp
 	FORMS		+= ../qt-devices/airspy-2/airspy-widget.ui
 }
-
 #	extio dependencies, windows only
 #
 extio {
@@ -830,15 +829,14 @@ tcp-streamer	{
 	SOURCES		+= ../src/output/tcp-streamer.cpp
 }
 
-local-audio {
-	PKGCONFIG	+= portaudio-2.0
-	DEFINES		+= QT_AUDIO
-	QT		+= multimedia 
-	HEADERS		+= ../includes/output/Qt-audio.h \
-	                   ../includes/output/audiosink.h 
-	SOURCES		+= ../src/output/Qt-audio.cpp \
-	                   ../src/output/audiosink.cpp 
-	LIBS		+= -lportaudio
+local-audio	{
+	PKGCONFIG       += portaudio-2.0
+        DEFINES         += QT_AUDIO
+        QT              += multimedia
+        HEADERS         += ../includes/output/Qt-audio.h \
+                           ../includes/output/audiosink.h
+        SOURCES         += ../src/output/Qt-audio.cpp \
+                           ../src/output/audiosink.cpp
 }
 
 datastreamer	{
@@ -887,8 +885,6 @@ PC	{
 }
 
 NO_SSE	{
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
 }
 
 faad	{
@@ -907,31 +903,34 @@ fdk-aac {
 }
 
 preCompiled {
-	win32 {
-	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
-	}
-	unix {
-	LIBS		+= -lcurl
-	}
-#	INCLUDEPATH	+= /home/jan/curl
-	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/tii-reader.h
-	HEADERS		+= ../../TII-CODES/db-loader.h
-	HEADERS		+= ../../TII-CODES/uploader.h
-	SOURCES		+= ../../TII-CODES/tii-reader.cpp
-	SOURCES		+= ../../TII-CODES/db-loader.cpp
-	SOURCES		+= ../../TII-CODES/uploader.cpp
+        win32 {
+        LIBS            += /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll
+        }
+        unix {
+        LIBS            += -lcurl
+        }
+#       INCLUDEPATH     += /home/jan/curl
+        INCLUDEPATH     += ../../TII-CODES
+        HEADERS         += ../../TII-CODES/tii-reader.h
+        HEADERS         += ../../TII-CODES/db-loader.h
+        HEADERS         += ../../TII-CODES/uploader.h
+        SOURCES         += ../../TII-CODES/tii-reader.cpp
+        SOURCES         += ../../TII-CODES/db-loader.cpp
+        SOURCES         += ../../TII-CODES/uploader.cpp
+        
+}       
+        
+tiiLib  {
+        INCLUDEPATH     += ../src/support/tii-library
+        HEADERS         += ../src/support/tii-library/tii-reader.h
+        HEADERS         += ../src/support/tii-library/db-loader.h
+        HEADERS         += ../src/support/tii-library/uploader.h
+        SOURCES         += ../src/support/tii-library/tii-reader.cpp
+        SOURCES         += ../src/support/tii-library/db-loader.cpp
+        SOURCES         += ../src/support/tii-library/uploader.cpp
+	
 }
 
-tiiLib	{
-	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/tii-reader.h
-	HEADERS		+= ../src/support/tii-library/db-loader.h
-	HEADERS		+= ../src/support/tii-library/uploader.h
-	SOURCES		+= ../src/support/tii-library/tii-reader.cpp
-	SOURCES		+= ../src/support/tii-library/db-loader.cpp
-	SOURCES		+= ../src/support/tii-library/uploader.cpp
-}
 
 mapserver {
 	DEFINES		+= __HAVE_MAP_SERVER__
@@ -941,9 +940,11 @@ mapserver {
 
 double	{
 	DEFINES		+= __WITH_DOUBLES__
+	DEFINES		+= __FFTW3__
 	LIBS		+= -lfftw3
 }
 
 single	{
+	DEFINES		+= __FFTW3__
 	LIBS		+= -lfftw3f
 }

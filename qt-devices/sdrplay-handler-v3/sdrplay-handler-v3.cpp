@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -95,13 +95,13 @@ std::string errorMessage (int errorCode) {
 	set_position_and_size (s, &myFrame, groupName);
 	myFrame. show	();
 
+	xmlWriter		= nullptr;
 	overloadLabel -> setStyleSheet ("QLabel {background-color : green}");
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
 	nrBits			= 12;	// default
 	denominator		= 2048;	// default
 
-	xmlDumper		= nullptr;
 	dumping. store	(false);
 //	See if there are settings from previous incarnations
 //	and config stuff
@@ -326,13 +326,11 @@ void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 }
 
 void	sdrplayHandler_v3::set_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	if (xmlWriter == nullptr) {
+	   setup_xmlDump ();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
 	}
 }
 //
@@ -382,34 +380,13 @@ bool	isValid (QChar c) {
 }
 
 bool	sdrplayHandler_v3::setup_xmlDump () {
-QTime theTime;
-QDate theDate;
-QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
-                                           QDir::homePath ()). toString ();
-        if ((saveDir != "") && (!saveDir. endsWith ("/")))
-           saveDir += "/";
-
-	QString channel		= sdrplaySettings -> value ("channel", "xx").
+QString channel		= sdrplaySettings -> value ("channel", "xx").
 	                                                      toString ();
-	QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-        for (int i = 0; i < timeString. length (); i ++)
-           if (!isValid (timeString. at (i)))
-              timeString. replace (i, 1, "-");
-
-	QString suggestedFileName =
-                    saveDir + deviceModel + "-" + channel + "-" +timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName +".uff",
-	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-
-	xmlWriter	= new xml_fileWriter (xmlDumper,
+	xmlWriter	= nullptr;
+	fprintf (stderr, "setup gaat aan de gang\n");
+	try {
+	   xmlWriter	= new xml_fileWriter (sdrplaySettings,
+	                                      channel,
 	                                      nrBits,
 	                                      "int16",
 	                                      2048000,
@@ -418,24 +395,23 @@ QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
 	                                      "SDRplay",
 	                                      deviceModel,
 	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
 	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. size () - x);
-        sdrplaySettings -> setValue ("saveDir_xmlDump", saveDir);
+	dumpButton	-> setText ("writing");
 	return true;
 }
-
+	
 void	sdrplayHandler_v3::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
-	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
+	xmlWriter	= nullptr;
+	dumping. store (false);
+	dumpButton	-> setText ("Dump");
 }
 //
 ///////////////////////////////////////////////////////////////////////

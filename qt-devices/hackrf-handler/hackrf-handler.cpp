@@ -178,9 +178,9 @@
 	         lnaGainSlider, &QSlider::setValue);
 	connect (this, &hackrfHandler::signal_lnaValue,
 	         lnagainDisplay, qOverload<int>(&QLCDNumber::display));
-	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
+	xmlWriter	= nullptr;
 }
 
 	hackrfHandler::~hackrfHandler() {
@@ -548,13 +548,11 @@ bool	hackrfHandler::load_hackrfFunctions () {
 }
 
 void	hackrfHandler::handle_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	if (xmlWriter == nullptr) {
+	   setup_xmlDump ();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
 	}
 }
 
@@ -564,60 +562,37 @@ bool	isValid (QChar c) {
 }
 
 bool	hackrfHandler::setup_xmlDump () {
-QTime	theTime;
-QDate	theDate;
-QString saveDir = hackrfSettings -> value (SAVEDIR_XML,
-	                                   QDir::homePath ()). toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ("/")))
-	   saveDir += "/";
-
-	QString channel		= hackrfSettings -> value ("channel", "xx").
-	                                                   toString ();
-	QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-	for (int i = 0; i < timeString. length (); i ++)
-	   if (!isValid (timeString. at (i)))
-	      timeString. replace (i, 1, '-');
-	QString suggestedFileName =
-	            saveDir + "hackrf" + "-" + channel +  "-" + timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName + ".uff",
-	                                         tr ("Xml (*.uff)"));
-	fileName        = QDir::toNativeSeparators (fileName);
-	xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-	
-	xmlWriter	= new xml_fileWriter (xmlDumper,
+QString channel		= hackrfSettings -> value ("channel", "xx").
+	                                                      toString ();
+	try {
+	   xmlWriter	= new xml_fileWriter (hackrfSettings,
+	                                      channel,
 	                                      8,
 	                                      "int8",
 	                                      2048000,
 	                                      lastFrequency,
 	                                      -1,
 	                                      "Hackrf",
-	                                      "--",
+	                                      serialNumber,
 	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
+	dumpButton	-> setText ("writing");
 	dumping. store (true);
-
-	QString	dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	hackrfSettings	-> setValue ("saveDir_xmlDump", saveDir);
-
 	return true;
 }
-
+	
 void	hackrfHandler::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
+	dumping. store (true);
+	dumpButton	-> setText ("Dump");
 	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
+	xmlWriter	= nullptr;
 }
 
 void	hackrfHandler::record_gainSettings	(int freq) {

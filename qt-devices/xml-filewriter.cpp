@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -15,7 +15,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
- *
+ * 
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -29,17 +29,31 @@ struct kort_woord {
 	uint8_t byte_2;
 };
 
-	xml_fileWriter::xml_fileWriter (FILE *f,
-	                                int	nrBits,
-	                                QString	container,
-	                                int	sampleRate,
-	                                int	frequency,	
-	                                int	deviceGain,
-	                                QString	deviceName,
-	                                QString	deviceModel,
-	                                QString	recorderVersion) {
+static inline
+bool	isValid (QChar c) {
+	return c. isLetterOrNumber () || (c == '-') || (c == '/');
+}
+
+	xml_fileWriter::xml_fileWriter	(QSettings *settings,
+	                                 const QString &channel,
+	                                 int     nrBits,
+                                         const QString  &container,
+                                         int     sampleRate,
+                                         int     frequency,
+                                         int     deviceGain,
+                                         const QString  &deviceName,
+                                         const QString  &deviceModel,
+                                         const QString  &recorderVersion):
+	                                          filenameFinder (settings) {
 uint8_t t	= 0;
-	xmlFile		= f;
+	QString fileName	=
+	              filenameFinder. find_xmlName (deviceName, channel);
+	if (fileName == "")
+	   throw (21);
+	xmlFile		= fopen (fileName. toUtf8 (). data (), "w+b");
+	if (xmlFile == nullptr)
+	   throw (21);
+	fprintf (stderr, "file is open\n");
 	this	-> nrBits	= nrBits;
 	this	-> container	= container;
 	this	-> sampleRate	= sampleRate;
@@ -50,7 +64,7 @@ uint8_t t	= 0;
 	this	-> recorderVersion	= recorderVersion;
 
 	for (int i = 0; i < 5000; i ++)
-	   fwrite (&t, 1, 1, f);
+	   fwrite (&t, 1, 1, xmlFile);
 	int16_t testWord	= 0xFF;
 
 	struct kort_woord *p	= (struct kort_woord *)(&testWord);
@@ -63,6 +77,8 @@ uint8_t t	= 0;
 }
 
 	xml_fileWriter::~xml_fileWriter	() {
+	if (xmlFile != nullptr)
+	   fclose (xmlFile);
 }
 
 void	xml_fileWriter::computeHeader	() {
@@ -84,6 +100,7 @@ static int16_t buffer_int16 [BLOCK_SIZE];
 static int bufferP_int16	= 0;
 void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
 //	nrElements	+= 2 * count;
+	fprintf (stderr, "count %d\n", count);
 	for (int i = 0; i < count; i ++) {
 	   buffer_int16 [bufferP_int16 ++] = real (data [i]);
 	   buffer_int16 [bufferP_int16 ++] = imag (data [i]);
