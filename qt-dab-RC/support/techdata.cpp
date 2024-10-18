@@ -396,4 +396,8 @@ void	techData::is_DAB_plus	(bool b) {
 	}
 }
 
-	
+void	techData::hide_missedLabel	() {
+	missedLabel	-> hide ();
+	missedSamples	-> hide ();
+}
+

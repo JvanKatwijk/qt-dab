@@ -361,6 +361,7 @@ QString h;
 	      ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
+	      techWindow_p	-> hide_missedLabel ();
 	   } catch (...) {
 //	      fprintf (stderr, "QT_AUDIO does not find streams\n");
 	      soundOut_p = nullptr;
@@ -3404,25 +3405,64 @@ void	RadioInterface::http_terminate	() {
 	httpButton -> setText ("http");
 }
 
-void	RadioInterface::displaySlide	(const QPixmap &p) {
-int w   = 360;
-int h   = 2 * w / 3;
+void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {
+int w   = 320;
+//int h   = 3 * w / 4;
+int h   = 200;
 	pauzeTimer. stop ();
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	pictureLabel ->
+//	       setPixmap (p. scaled (w, h));
 	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
+	pictureLabel -> setToolTip (t);
 	pictureLabel -> show ();
 }
 
 void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
+static int teller	= 0;
 QString slideName	= ":res/pauze-slide-%1.png";
 	pauzeTimer. stop ();
-	int nr		= rand () % 11;
-	slideName	= slideName. arg (nr);
-	if (p. load (slideName, "png"))
-	   displaySlide (p);
+//	int nr		= rand () % 12;
+	slideName	= slideName. arg (teller);
+	if (p. load (slideName, "png")) {
+	QString tooltipText;
+	   switch (teller) {
+	      case 2:
+	         tooltipText = "The DEC PDP-1";
+	         break;
+	      case 3:
+	         tooltipText = "The DEC PDP-8";
+	         break;
+	      case 4:
+	         tooltipText = "The DEC PDP-9";
+	         break;
+	      case 5:
+	         tooltipText = "The DEC PDP-11/60";
+	         break;
+	      case 6:
+	         tooltipText = "theDEC PDP-10 mainframe";
+	         break;
+	      case 7:
+	         tooltipText = "the Zilog Z80";
+	         break;
+	      case 8:
+	         tooltipText = "the Tandy TRS 80";
+	         break;
+	      case 9:
+	         tooltipText = "The famous M68000";
+	         break;
+	      case 10:
+	         tooltipText = "the unforgettable Atari 1040ST";
+	         break;
+	      default:
+	         tooltipText = "";
+	   }
+	   displaySlide (p, tooltipText);
+	}
+	  
 	pauzeTimer. start (1 * 30 * 1000);
+	teller = (teller + 1) % 12;
 }
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti
