@@ -169,6 +169,7 @@ std::string errorMessage (int errorCode) {
 }
 
 	sdrplayHandler_v3::~sdrplayHandler_v3 () {
+	close_xmlDump ();
 	threadRuns. store (false);
 	while (isRunning ())
 	   usleep (1000);
@@ -408,7 +409,6 @@ QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
 	if (xmlDumper == nullptr)
 	   return false;
 
-	fprintf (stderr, "Writing an xml file with gain %d\n", theGain);
 	xmlWriter	= new xml_fileWriter (xmlDumper,
 	                                      nrBits,
 	                                      "int16",
