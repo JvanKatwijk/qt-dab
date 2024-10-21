@@ -31,17 +31,12 @@ void	set_position_and_size (QSettings * settings,
 	int wi	= settings	-> value (key + "-w", 300). toInt ();
 	int he	= settings	-> value (key + "-h", 200). toInt ();
 	settings	-> endGroup ();
-	fprintf (stderr, "%s x = %d y = %d\n",
-	                  key. toLatin1 (). data (), x, y);
 	w 	-> resize (QSize (wi, he));
 	w	-> move (QPoint (x, y));
 }
 
 void	store_widget_position (QSettings *settings,
 	                       QWidget *w, const QString &key) {
-	fprintf (stderr, "set position %s %d %d\n",
-	                  key. toLatin1 (). data (), w -> pos (). x (),
-	                                             w -> pos (). y ());
 	settings	-> beginGroup (key);
 	settings	-> setValue (key + "-x", w -> pos (). x ());
 	settings	-> setValue (key + "-y", w -> pos (). y ());

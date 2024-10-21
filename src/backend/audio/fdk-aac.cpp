@@ -35,8 +35,8 @@
   *	and the fdk-aac decoder`
   */
 	fdkAAC::fdkAAC (RadioInterface *mr,
-                        RingBuffer<std::complex<int16_t>> *buffer) {
-        this    -> audioBuffer  = buffer;
+	                RingBuffer<std::complex<int16_t>> *buffer) {
+	this    -> audioBuffer  = buffer;
 	working			= false;
 	handle			= aacDecoder_Open (TT_MP4_LOAS, 1);
 	if (handle == nullptr)
@@ -52,8 +52,8 @@
 }
 
 int16_t	fdkAAC::MP42PCM (stream_parms *sp,
-                         uint8_t   packet [],
-                         int16_t   packetLength) {
+	                 uint8_t   packet [],
+	                 int16_t   packetLength) {
 uint32_t	packet_size;
 uint32_t	valid;
 AAC_DECODER_ERROR err;
@@ -91,38 +91,38 @@ int		output_size	= 8 * 2048;
 	if (!info || info -> sampleRate <= 0) 
 	   return -1;
 
-        if (info -> numChannels == 2) {
+	if (info -> numChannels == 2) {
 	   for (int i = 0; i < info -> frameSize; i ++) {
 	      std::complex<int16_t> s =
 	               std::complex<int16_t> (bufp [2 * i], bufp [2 * i + 1]);
-              audioBuffer  -> putDataIntoBuffer (&s, 1);
+	      audioBuffer  -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
-              newAudio (info -> frameSize, info -> sampleRate,
-                        sp -> psFlag, sp -> sbrFlag);
-        }
-        else
-        if (info -> numChannels == 1) {
-           int16_t buffer [2 * info -> frameSize];
-           for (uint16_t i = 0; i < info -> frameSize; i ++) {
-              buffer [2 * i]	= ((int16_t *)bufp) [i];
-//	      buffer [2 * i + 1] = bufp [2 * i];
-              buffer [2 * i + 1] = 0;
-           }
+	      newAudio (info -> frameSize, info -> sampleRate,
+	                sp -> psFlag, sp -> sbrFlag);
+	}
+	else
+	if (info -> numChannels == 1) {
+	   int16_t buffer [2 * info -> frameSize];
+	   for (uint16_t i = 0; i < info -> frameSize; i ++) {
+	      buffer [2 * i]	= ((int16_t *)bufp) [i];
+	      buffer [2 * i + 1] = buffer [2 * i];
+//	      buffer [2 * i + 1] = 0;
+	   }
 
 	   audioBuffer  -> putDataIntoBuffer ((std::complex<uint16_t> *)buffer,
 	                                              info -> frameSize);
 //	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
-              newAudio (info -> frameSize, info -> sampleRate,
-                        sp   ->  psFlag, sp   ->  sbrFlag);
+	      newAudio (info -> frameSize, info -> sampleRate,
+	                sp   ->  psFlag, sp   ->  sbrFlag);
 
-        }
-        else
-           fprintf (stderr, "Cannot handle these channels\n");
+	}
+	else
+	   fprintf (stderr, "Cannot handle these channels\n");
 
-        return info -> numChannels; 
+	return info -> numChannels; 
 }
 

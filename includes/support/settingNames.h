@@ -17,7 +17,7 @@
 #define	LOCAL_BROWSER_SETTING	"localBrowser"
 #define	LOCAL_TRANSMITTERS_SETTING	"localTransmitters"
 #define	CLEAR_SCAN_RESULT_SETTING	"clearScanResult"
-#define	SAVE_SLIDES_SETTING		"saveSlider"
+#define	SAVE_SLIDES_SETTING		"saveSlides"
 #define	TRANSMITTER_NAMES_SETTING	"transmitterNames"
 
 #define	COLOR_SETTINGS		"colorSettings"

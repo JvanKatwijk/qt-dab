@@ -282,10 +282,12 @@ uint8_t t	= 0;
 
 QString	findfileNames::basicPath	() {
 #ifndef __MINGW32__
-        QString tempPath	= QDir::tempPath ();
+        QString tempPath	= QDir::homePath ();
 #else
         QString tempPath	= QDir::homePath ();
 #endif
+	tempPath		=
+	                    dabSettings -> value ("tempPath", tempPath). toString ();
 	if (!tempPath. endsWith ('/'))
 	   tempPath		+= '/';
         tempPath        +=  "Qt-DAB-files/";

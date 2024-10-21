@@ -940,7 +940,7 @@ const char *type;
 	        return;
 	}
 
-	if ((int_configValue ("saveSlides", 0) != 0) &&
+	if ((int_configValue (SAVE_SLIDES_SETTING, 0) != 0) &&
 	                                         (path_for_pictures != "")) {
 	   QString pict = path_for_pictures + pictureName;
 	   QString temp = pict;
@@ -1208,9 +1208,8 @@ void	RadioInterface::TerminateProcess () {
 	   theOFDMHandler -> stop ();
 	the_ensembleHandler	-> hide ();
 //	delete	the_ensembleHandler;
-	configHandler_p	-> hide ();
 	delete	configHandler_p;
-	techWindow_p	-> hide ();
+//	techWindow_p	-> hide ();
 	delete techWindow_p;
 	if (contentTable_p != nullptr) {
 	   contentTable_p -> clearTable ();
@@ -3423,37 +3422,34 @@ QPixmap p;
 static int teller	= 0;
 QString slideName	= ":res/pauze-slide-%1.png";
 	pauzeTimer. stop ();
-//	int nr		= rand () % 12;
+//	int nr		= rand () % 11;
 	slideName	= slideName. arg (teller);
 	if (p. load (slideName, "png")) {
 	QString tooltipText;
 	   switch (teller) {
 	      case 2:
-	         tooltipText = "The DEC PDP-1";
+	         tooltipText = "homebrew 60-ies";
 	         break;
 	      case 3:
-	         tooltipText = "The DEC PDP-8";
+	         tooltipText = "homebrew 70-ies";
 	         break;
 	      case 4:
-	         tooltipText = "The DEC PDP-9";
+	         tooltipText = "Flee market in the 60-ies";
 	         break;
 	      case 5:
 	         tooltipText = "The DEC PDP-11/60";
 	         break;
 	      case 6:
-	         tooltipText = "theDEC PDP-10 mainframe";
+	         tooltipText = "the DEC PDP-1 mainframe";
 	         break;
 	      case 7:
-	         tooltipText = "the Zilog Z80";
+	         tooltipText = "the DEC PDP-10 mainframe";
 	         break;
 	      case 8:
-	         tooltipText = "the Tandy TRS 80";
+	         tooltipText = "the unforgettable DEC PDP-8";
 	         break;
 	      case 9:
-	         tooltipText = "The famous M68000";
-	         break;
-	      case 10:
-	         tooltipText = "the unforgettable Atari 1040ST";
+	         tooltipText = "The DEC VAX 11/780";
 	         break;
 	      default:
 	         tooltipText = "";

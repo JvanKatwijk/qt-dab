@@ -100,7 +100,7 @@ static int16_t buffer_int16 [BLOCK_SIZE];
 static int bufferP_int16	= 0;
 void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
 //	nrElements	+= 2 * count;
-	fprintf (stderr, "count %d\n", count);
+//	fprintf (stderr, "count %d\n", count);
 	for (int i = 0; i < count; i ++) {
 	   buffer_int16 [bufferP_int16 ++] = real (data [i]);
 	   buffer_int16 [bufferP_int16 ++] = imag (data [i]);
