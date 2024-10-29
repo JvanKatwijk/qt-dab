@@ -22,11 +22,8 @@
 
 #include	<QThread>
 #include	<QSettings>
-#include	<QTime>
-#include	<QDate>
 #include	<QLabel>
 #include	<QPoint>
-#include	<QFileDialog>
 #include	"sdrplay-handler-v3.h"
 #include	"position-handler.h"
 #include	"sdrplay-commands.h"
@@ -54,6 +51,7 @@
 #define	SDRPLAY_PPM		"sdrplay-ppm"
 #define	SDRPLAY_AGCMODE		"sdrplay_agcMode"
 #define	SDRPLAY_BIAS_T		"biasT_selector"
+#define	SDRPLAY_NOTCH		"notch_selector"
 #define	SDRPLAY_ANTENNA		"Antenna"
 
 std::string errorMessage (int errorCode) {
@@ -93,6 +91,7 @@ std::string errorMessage (int errorCode) {
         setupUi (&myFrame);
 	QString	groupName	= SDRPLAY_SETTINGS;
 	set_position_and_size (s, &myFrame, groupName);
+	myFrame.setWindowFlag(Qt::Tool, true);
 	myFrame. show	();
 
 	xmlWriter		= nullptr;
@@ -117,11 +116,11 @@ std::string errorMessage (int errorCode) {
 	lnaState		= lnaGainSetting -> value ();
 
 	ppmControl		-> setValue (
-	            sdrplaySettings -> value (SDRPLAY_PPM, 0). toInt());
+	            sdrplaySettings -> value (SDRPLAY_PPM, 0.0). toDouble ());
+	ppmValue		= ppmControl -> value ();
 
 	agcMode		=
 	       sdrplaySettings -> value (SDRPLAY_AGCMODE, 0). toInt() != 0;
-	sdrplaySettings	-> endGroup	();
 
 	if (agcMode) {
 	   agcControl -> setChecked (true);
@@ -133,7 +132,13 @@ std::string errorMessage (int errorCode) {
                sdrplaySettings -> value (SDRPLAY_BIAS_T, 0). toInt () != 0;
         if (biasT)
            biasT_selector -> setChecked (true);
-	
+
+	bool notch	=
+               sdrplaySettings -> value (SDRPLAY_NOTCH, 0). toInt () != 0;
+	if (notch)
+	   notch_selector -> setChecked (true);
+	sdrplaySettings	-> endGroup	();
+
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::set_ifgainReduction);
@@ -141,12 +146,14 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_v3::set_lnagainReduction);
 	connect (agcControl, &QCheckBox::stateChanged,
 	         this, &sdrplayHandler_v3::set_agcControl);
-	connect (ppmControl, qOverload<int>(&QSpinBox::valueChanged),
+	connect (ppmControl, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::set_ppmControl);
 	connect (dumpButton, &QPushButton::clicked,
                  this, &sdrplayHandler_v3::set_xmlDump);
 	connect (biasT_selector, &QCheckBox::stateChanged,	
 	         this, &sdrplayHandler_v3::set_biasT);
+	connect (notch_selector, &QCheckBox::stateChanged,	
+	         this, &sdrplayHandler_v3::set_notch);
 	connect (this, &sdrplayHandler_v3::overload_state_changed,
 	         this, &sdrplayHandler_v3::report_overload_state);
 
@@ -252,7 +259,7 @@ QString	sdrplayHandler_v3::deviceName	() {
 //
 
 void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
-	lnaGainSetting	-> setRange (low, high);
+	lnaGainSetting	-> setRange (low, high - 1);
 }
 
 void	sdrplayHandler_v3::set_serial	(const QString& s) {
@@ -317,6 +324,16 @@ biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 	sdrplaySettings -> endGroup ();
 }
 
+void	sdrplayHandler_v3::set_notch (int v) {
+notch_Request r (notch_selector -> isChecked () ? 1 : 0);
+	(void)v;
+	messageHandler (&r);
+	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
+	sdrplaySettings -> setValue (SDRPLAY_NOTCH,
+	                              notch_selector -> isChecked () ? 1 : 0);
+	sdrplaySettings -> endGroup ();
+}
+	
 void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' :
 	                                    s == "Antenna B" ? 'B' : 'C'));
@@ -372,11 +389,6 @@ void	sdrplayHandler_v3::show_tunerSelector	(bool b) {
 	   tunerSelector	-> show	();
 	else
 	   tunerSelector	-> hide	();
-}
-
-static inline
-bool	isValid (QChar c) {
-	return c. isLetterOrNumber () || (c == '-');
 }
 
 bool	sdrplayHandler_v3::setup_xmlDump () {
@@ -525,7 +537,7 @@ int	deviceIndex	= 0;
 	   errorCode	= 2;
 	   return;
         }
-//	fprintf (stderr, "functions loaded\n");
+	fprintf (stderr, "functions loaded\n");
 
 //	try to open the API
 	err	= sdrplay_api_Open ();
@@ -571,6 +583,7 @@ int	deviceIndex	= 0;
 	   }
 	}
 
+	fprintf (stderr, "we have devices\n");
 	if (ndev == 0) {
 	   fprintf (stderr, "no valid device found\n");
 	   errorCode	= 7;
@@ -602,6 +615,10 @@ int	deviceIndex	= 0;
 //
 	try {
 	   int antennaValue;
+	   int	lnaBounds;
+	   sdrplaySettings	-> beginGroup (SDRPLAY_SETTINGS);
+	   bool	notch	= sdrplaySettings -> value (SDRPLAY_NOTCH, 0). toInt () != 0;
+	   sdrplaySettings	-> endGroup ();
 	   switch (hwVersion) {
 	      case SDRPLAY_RSPdx_ :
 	      case SDRPLAY_RSPdxR2_ :
@@ -612,27 +629,28 @@ int	deviceIndex	= 0;
 	            	                     "RSPDx" : "RSPDxR2";
 	         theRsp	= new RspDx_handler (this,
 	                                     chosenDevice,
-	                                     inputRate,
-	                                     KHz (14070),
+	                                     KHz (220000),
 	                                     agcMode,
 	                                     lnaState,
 	                                     GRdBValue,
 	                                     antennaValue,
-	                                     biasT);
+	                                     biasT,
+	                                     notch,  ppmValue);
 	         break;
 
 	      case SDRPLAY_RSP1_ :
 	         nrBits		= 12;
 	         denominator	= 2048;
 	         deviceModel	= "RSP1";
+	         biasT_selector -> setEnabled (false);
+	         notch_selector -> setEnabled (false);
 	         theRsp	= new Rsp1_handler  (this,
 	                                     chosenDevice,
-	                                     inputRate,
-	                                     KHz (14070),
+	                                     KHz (220000),
 	                                     agcMode,
 	                                     lnaState,
 	                                     GRdBValue,
-	                                     biasT);
+	                                     biasT, ppmValue);
 	         break;
 
 	      case SDRPLAY_RSP1A_ :
@@ -643,12 +661,13 @@ int	deviceIndex	= 0;
 	                                                        "RSP-1B";
 	         theRsp	= new Rsp1A_handler (this,
 	                                     chosenDevice,
-	                                     inputRate,
-	                                     KHz (14070),
+	                                     KHz (220000),
 	                                     agcMode,
 	                                     lnaState,
 	                                     GRdBValue,
-	                                     biasT);
+	                                     biasT,
+	                                     notch,
+	                                     ppmValue);
 	         break;
 
 	      case SDRPLAY_RSP2_ :
@@ -658,13 +677,13 @@ int	deviceIndex	= 0;
 	         deviceModel	= "RSP-II";
 	         theRsp	= new RspII_handler (this,
 	                                     chosenDevice,
-	                                     inputRate,
-	                                     KHz (14070),
+	                                     KHz (220000),
 	                                     agcMode,
 	                                     lnaState,
 	                                     GRdBValue,
 	                                     antennaValue,
-	                                     biasT);
+	                                     biasT,
+	                                     notch,  ppmValue);
 	         break;
 
 	      case SDRPLAY_RSPduo_ :
@@ -673,27 +692,28 @@ int	deviceIndex	= 0;
 	         deviceModel	= "RSP-Duo";
 	         theRsp	= new RspDuo_handler (this,
 	                                      chosenDevice,
-	                                      inputRate,
-	                                      KHz (14070),
+	                                      KHz (220000),
 	                                      agcMode,
 	                                      lnaState,
 	                                      GRdBValue,
 	                                      antennaValue,
-	                                      biasT);
+	                                      biasT,
+	                                      notch, ppmValue);
 	         break;
 
 	      default:
 	         nrBits		= 14;
 	         denominator	= 4096;
 	         deviceModel	= "UNKNOWN";
+	         lnaBounds	= 4;
+	         lnaGainSetting	-> setRange (0, lnaBounds - 1);
 	         theRsp	= new Rsp_device (this,
 	                                  chosenDevice,
-	                                  2112000,
-	                                  KHz (14070),
+	                                  KHz (220000),
 	                                  agcMode,
 	                                  lnaState,
 	                                  GRdBValue,
-	                                  biasT);
+	                                  biasT, ppmValue);
 	         break;
 	   }
 	} catch (int e) {
@@ -706,6 +726,7 @@ int	deviceIndex	= 0;
 
 	threadRuns. store (true);       // it seems we can do some work
 	successFlag. store (true);
+
 	while (threadRuns. load ()) {
 	   while (!serverjobs. tryAcquire (1, 1000))
 	   if (!threadRuns. load ())
@@ -777,6 +798,14 @@ int	deviceIndex	= 0;
 	         biasT_Request *p = (biasT_Request *)(server_queue. front ());
 	         server_queue. pop ();
 	         p -> result = theRsp -> set_biasT (p -> checked);
+                 p -> waiter. release (1);
+	         break;
+	      }
+
+	      case NOTCH_REQUEST: {
+	         notch_Request *p = (notch_Request *)(server_queue. front ());
+	         server_queue. pop ();
+	         p -> result = theRsp -> set_notch (p -> checked);
                  p -> waiter. release (1);
 	         break;
 	      }

@@ -31,6 +31,7 @@
 #include	<QDebug>
 #include	<QFileDialog>
 #include	"hackrf-handler.h"
+#include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
@@ -43,12 +44,9 @@
 	                                  recorderVersion (recVersion),
 	                                  _I_Buffer (4 * 1024 * 1024) {
 
-	hackrfSettings -> beginGroup ("hackrfSettings");
-        int x   = hackrfSettings -> value ("position-x", 100). toInt ();
-        int y   = hackrfSettings -> value ("position-y", 100). toInt ();
-        hackrfSettings -> endGroup ();
         setupUi (&myFrame);
-        myFrame. move (QPoint (x, y));
+	set_position_and_size (s, &myFrame, "hackrfSettings");
+	myFrame. setWindowFlag (Qt::Tool, true);
 	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
@@ -186,9 +184,8 @@
 	hackrfHandler::~hackrfHandler() {
 	stopReader();
 	myFrame. hide ();
+	store_widget_position (hackrfSettings, &myFrame, "hackrfSettings");
 	hackrfSettings	-> beginGroup ("hackrfSettings");
-        hackrfSettings -> setValue ("position-x", myFrame. pos (). x ());
-        hackrfSettings -> setValue ("position-y", myFrame. pos (). y ());
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaGainSlider -> value());
 	hackrfSettings -> setValue ("hack_vgaGain",
@@ -554,11 +551,6 @@ void	hackrfHandler::handle_xmlDump () {
 	else {
 	   close_xmlDump ();
 	}
-}
-
-static inline
-bool	isValid (QChar c) {
-	return c. isLetterOrNumber () || (c == '-');
 }
 
 bool	hackrfHandler::setup_xmlDump () {

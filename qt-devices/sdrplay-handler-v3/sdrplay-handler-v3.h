@@ -116,7 +116,7 @@ public:
 	QString			deviceModel;
 	int			GRdBValue;
 	int			lnaState;
-	int			ppmValue;
+	double			ppmValue;
 	HINSTANCE		Handle;
 	bool			biasT;
 	xml_fileWriter		*xmlWriter;
@@ -142,6 +142,7 @@ private slots:
 	void			set_ppmControl		(int);
 	void			set_selectAntenna	(const QString &);
 	void			set_biasT		(int);
+	void			set_notch		(int);
 	void			report_overload_state	(bool);
 public slots:
 	void			set_lnabounds		(int, int);

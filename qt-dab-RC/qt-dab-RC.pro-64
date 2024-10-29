@@ -578,12 +578,12 @@ dabstick-win-v4 {
 
 dabstick-win64 {
 	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win-v4
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win-v4
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
 	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.h \
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.cpp \
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x64/rtlsdr.a

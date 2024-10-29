@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -30,23 +30,22 @@ class	RspDuo_handler: public Rsp_device {
 public:
 		RspDuo_handler (sdrplayHandler_v3 *parent,
 	                       sdrplay_api_DeviceT *chosenDevice,
-	                       int	sampleRate,
 	                       int	freq,
 	                       bool	agcMode,
 	                       int	lnaState,
 	                       int 	GRdB,
 	                       int	antennaValue,
-	                       bool	biasT);
+	                       bool	biasT,
+	                       bool	notch,
+	                       double	ppmValue);
 		~RspDuo_handler	();
 
 	int	lnaStates	(int frequency);
 	bool	restart		(int freq);
-	bool	set_agc		(int setPoint, bool on);
-	bool	set_GRdB	(int GRdBValue);
-	bool	set_ppm		(int ppm);
 	bool	set_lna		(int lnaState);
 	bool	set_antenna 	(int antenna);
 	bool	set_biasT	(bool biasT);
+	bool	set_notch	(bool on);
 private:
 	int16_t	bankFor_rspDuo 	(int freq);
 	int	get_lnaGain	(int, int);

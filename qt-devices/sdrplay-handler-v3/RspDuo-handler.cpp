@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,30 +24,37 @@
 
 	RspDuo_handler::RspDuo_handler (sdrplayHandler_v3 *parent,
 	                                sdrplay_api_DeviceT *chosenDevice,
-	                                int	sampleRate,
 	                                int	freq,
 	                                bool	agcMode,
 	                                int	lnaState,
 	                                int 	GRdB,
 	                                int	antennaValue,
-	                                bool	biasT) :
+	                                bool	biasT,
+	                                bool	notch,
+	                                double	ppmValue) :
 	                                Rsp_device (parent,
 	                                           chosenDevice, 
-	                                           sampleRate,
 	                                           freq,
 	                                           agcMode,
 	                                           lnaState,
-	                                           GRdB, biasT) {
+	                                           GRdB,
+	                                           biasT,
+	                                           ppmValue) {
 //	set_antenna (antennaValue);
 	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
-
-	set_lnabounds_signal	(0, lna_upperBound);
+	this    -> lna_upperBound =  lnaStates (freq);
+	set_lnabounds_signal    (0, lna_upperBound);
+        if (lnaState > lna_upperBound)
+           this -> lnaState = lna_upperBound;
+        set_lna (this -> lnaState);
 	show_lnaGain (get_lnaGain (lnaState, freq));
 
 	if (biasT)
 	   set_biasT (true);
+	if (notch)
+	   set_notch (true);
 }
 
 	RspDuo_handler::~RspDuo_handler	() {}
@@ -108,64 +115,6 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-bool	RspDuo_handler::set_agc	(int setPoint, bool on) {
-sdrplay_api_ErrT        err;
-
-	if (on) {
-	   chParams    -> ctrlParams. agc. setPoint_dBfs = - setPoint;
-	   chParams    -> ctrlParams. agc. enable = sdrplay_api_AGC_100HZ;
-	}
-	else
-	   chParams    -> ctrlParams. agc. enable =
-                                             sdrplay_api_AGC_DISABLE;
-
-	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
-	                                     chosenDevice -> tuner,
-                                             sdrplay_api_Update_Ctrl_Agc,
-                                             sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "agc: error %s\n",
-	                          parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-
-	this	-> agcMode = on;
-	return true;
-}
-
-bool	RspDuo_handler::set_GRdB	(int GRdBValue) {
-sdrplay_api_ErrT        err;
-
-	chParams -> tunerParams. gain. gRdB = GRdBValue;
-	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
-	                                     chosenDevice -> tuner,
-	                                     sdrplay_api_Update_Tuner_Gr,
-	                                     sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "grdb: error %s\n",
-                                   parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-	this	-> GRdB = GRdBValue;
-	return true;
-}
-
-bool	RspDuo_handler::set_ppm	(int ppmValue) {
-sdrplay_api_ErrT        err;
-
-	deviceParams    -> devParams -> ppm = ppmValue;
-	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
-	                                    chosenDevice -> tuner,
-	                                    sdrplay_api_Update_Dev_Ppm,
-	                                    sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "lna: error %s\n",
-	                          parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-	return true;
-}
-
 bool	RspDuo_handler::set_lna	(int lnaState) {
 sdrplay_api_ErrT        err;
 
@@ -210,16 +159,26 @@ sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
 
 	rspDuoTunerParams	= &(chParams -> rspDuoTunerParams);
-	rspDuoTunerParams -> biasTEnable = biasT_value;
+	rspDuoTunerParams	-> biasTEnable = biasT_value;
 	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
-                                  chosenDevice -> tuner,
+                                  chosenDevice	-> tuner,
 	                          sdrplay_api_Update_RspDuo_BiasTControl,
 		                  sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "setBiasT: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-	return true;
+	return err == sdrplay_api_Success;
+}
+
+bool	RspDuo_handler::set_notch (bool on) {
+sdrplay_api_ErrT err;
+sdrplay_api_RspDuoTunerParamsT * rspDuoTunerParams;
+
+	rspDuoTunerParams = &(chParams -> rspDuoTunerParams);
+	rspDuoTunerParams -> rfNotchEnable = on;
+	rspDuoTunerParams -> tuner1AmNotchEnable = on;
+
+	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
+	                                    chosenDevice -> tuner,
+                                            (sdrplay_api_ReasonForUpdateT)(sdrplay_api_Update_RspDuo_RfNotchControl | sdrplay_api_Update_RspDuo_Tuner1AmNotchControl),
+	                                      sdrplay_api_Update_Ext1_None);
+	return err == sdrplay_api_Success;
 }
 

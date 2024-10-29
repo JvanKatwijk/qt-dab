@@ -27,11 +27,8 @@
  */
 
 #include	<QThread>
-#include	<QFileDialog>
-#include	<QTime>
-#include	<QDate>
-#include	<QDir>
 #include	"rtlsdr-handler.h"
+#include	"position-handler.h"
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
@@ -123,13 +120,9 @@ char	manufac [256], product [256], serial [256];
 
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	rtlsdrSettings		-> beginGroup ("rtlsdrSettings");
-	int x   = rtlsdrSettings -> value ("position-x", 100). toInt ();
-        int y   = rtlsdrSettings -> value ("position-y", 100). toInt ();
-        rtlsdrSettings -> endGroup ();
-        setupUi (&myFrame);
-        myFrame. move (QPoint (x, y));
-
+	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, "rtlsdrSettings");
+	myFrame. setWindowFlag (Qt::Tool, true);
 	myFrame. show();
 	filtering			= false;
 
@@ -148,7 +141,7 @@ char	manufac [256], product [256], serial [256];
 //	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
 	const char *libraryString	= "librtlsdr.so";
 #elif __APPLE__
-    const char *libraryString	= "librtlsdr.dylib";
+	const char *libraryString	= "librtlsdr.dylib";
 #endif
 	phandle = new QLibrary (libraryString);
 	phandle -> load ();
@@ -188,7 +181,10 @@ char	manufac [256], product [256], serial [256];
 
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
 	deviceVersion	-> setText (deviceModel);
-	r		= this -> rtlsdr_set_sample_rate (theDevice, inputRate);
+	QString tunerType	= get_tunerType (rtlsdr_get_tuner_type (theDevice));
+	product_display	-> setText (tunerType);
+
+	r = rtlsdr_set_sample_rate (theDevice, inputRate);
 	if (r < 0) {
 	   delete phandle;
 	   throw (device_exception ("Setting samplerate for rtlsdr failed"));
@@ -274,18 +270,15 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrHandler::~rtlsdrHandler () {
 	stopReader	();
 	if (workerHandle != nullptr) {
-           rtlsdr_cancel_async (theDevice);
-           while (!workerHandle -> isFinished())
-              usleep (200); 
-           _I_Buffer. FlushRingBuffer();
-           delete       workerHandle;
-           workerHandle = nullptr;
+	   rtlsdr_cancel_async (theDevice);
+	   while (!workerHandle -> isFinished())
+	      usleep (200); 
+	   _I_Buffer. FlushRingBuffer();
+	   delete       workerHandle;
+	   workerHandle = nullptr;
 	}
-
+	store_widget_position (rtlsdrSettings, &myFrame, "rtlsdrSettings");
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-        rtlsdrSettings -> setValue ("position-x", myFrame. pos (). x ());
-        rtlsdrSettings -> setValue ("position-y", myFrame. pos (). y ());
-
 	rtlsdrSettings	-> setValue ("externalGain",
 	                              gainControl -> currentText());
 	rtlsdrSettings	-> setValue ("autogain",
@@ -415,6 +408,14 @@ bool	rtlsdrHandler::load_rtlFunctions() {
 	                 phandle -> resolve ("rtlsdr_get_tuner_gains");
 	if (rtlsdr_get_tuner_gains == nullptr) {
 	   fprintf (stderr, "Could not find rtlsdr_get_tuner_gains\n");
+	   return false;
+	}
+
+	rtlsdr_get_tuner_type	=
+	             (pfnrtlsdr_get_tuner_type)
+	                 phandle -> resolve ("rtlsdr_get_tuner_type");
+	if (rtlsdr_get_tuner_type == nullptr) {
+	   fprintf (stderr, "Could not find rtlsdr_get_tuner_type\n");
 	   return false;
 	}
 
@@ -634,7 +635,7 @@ QString channel		= rtlsdrSettings -> value ("channel", "xx").
 }
 	
 void	rtlsdrHandler::close_xmlDump () {
-	if (xmlWriter != nullptr)
+	if (xmlWriter == nullptr)
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
@@ -708,7 +709,7 @@ static int iqTeller	= 0;
 	   xmlWriter -> add ((std::complex<uint8_t> *)buf, len / 2);
 
 	if (iq_dumping. load ()) {
-	   for (int i = 0; i < len / 2; i ++) {
+	   for (uint32_t i = 0; i < len / 2; i ++) {
 	      dumpBuffer [2 * iqTeller]	= buf [2 * i];
 	      dumpBuffer [2 * iqTeller + 1] = buf [2 * i + 1];
 	      iqTeller ++;
@@ -724,7 +725,7 @@ static int iqTeller	= 0;
 	}
 	float dcI	= m_dcI;
 	float dcQ	= m_dcQ;
-	for (int i = 0; i < len / 2; i ++) {
+	for (uint32_t i = 0; i < len / 2; i ++) {
 	   float tempI	= mapTable [buf [2 * i]];
 	   float tempQ	= mapTable [buf [2 * i + 1]];
 	   sumI		+= tempI;
@@ -741,4 +742,26 @@ static int iqTeller	= 0;
 	else
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2);
 }
+
+QString	rtlsdrHandler::get_tunerType	(int tunerType) {
+	switch (tunerType) {
+	   case RTLSDR_TUNER_E4000:
+	      return "E4000";
+	   case RTLSDR_TUNER_FC0012:
+	      return "FC0012";
+	   case RTLSDR_TUNER_FC0013:
+	      return "FC0013";
+	   case RTLSDR_TUNER_FC2580:
+	      return "FC2580";
+	   case RTLSDR_TUNER_R820T:
+	      return "R820T";
+	      break;
+	   case RTLSDR_TUNER_R828D:
+	      return "R828D";
+	   default:
+	      return "unknown";
+	}
+}
+
+	
 

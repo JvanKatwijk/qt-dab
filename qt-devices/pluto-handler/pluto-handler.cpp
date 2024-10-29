@@ -22,13 +22,10 @@
 
 #include	<QThread>
 #include	<QSettings>
-#include	<QFileDialog>
-#include	<QTime>
-#include	<QDate>
 #include	<QLabel>
 #include	<QDebug>
-#include	<QFileDialog>
 #include	"pluto-handler.h"
+#include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
@@ -195,6 +192,8 @@ int	ret;
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, "plutoSettings");
+	myFrame. setWindowFlag (Qt::Tool, true); 
 	myFrame. show	();
 
 #ifdef	__MINGW32__
@@ -378,6 +377,7 @@ int	ret;
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
 	stopReader();
+	store_widget_position (plutoSettings, &myFrame, "plutoSettings");
 	plutoSettings	-> beginGroup ("plutoSettings");
 	plutoSettings	-> setValue ("pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);

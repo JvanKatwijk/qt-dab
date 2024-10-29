@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,15 +27,15 @@
 
 	Rsp_device::Rsp_device 	(sdrplayHandler_v3 *parent,
 	                         sdrplay_api_DeviceT *chosenDevice,
-	                         int sampleRate,
 	                         int startFreq,
 	                         bool agcMode,
 	                         int lnaState,
-	                         int GRdB, bool biasT) {
+	                         int GRdB,
+	                         bool biasT,
+	                         double ppmValue) {
 sdrplay_api_ErrT        err;
 	this	-> parent	= parent;
 	this	-> chosenDevice	=  chosenDevice;
-	this	-> sampleRate	= sampleRate;
 	this	-> freq		= startFreq;
 	this	-> agcMode	= agcMode;
 	this	-> lnaState	= lnaState;
@@ -62,13 +62,13 @@ sdrplay_api_ErrT        err;
 	}
 
 	this	-> chParams	= deviceParams -> rxChannelA;
-
-	deviceParams    -> devParams -> fsFreq. fsHz    = sampleRate;
+	deviceParams	-> devParams	-> ppm		= ppmValue;
+	deviceParams    -> devParams	-> fsFreq. fsHz    = 2048000;
         chParams        -> tunerParams. bwType = sdrplay_api_BW_1_536;
         chParams        -> tunerParams. ifType = sdrplay_api_IF_Zero;
 //
 //      these will change:
-        chParams        -> tunerParams. rfFreq. rfHz    = (float)startFreq;
+        chParams        -> tunerParams. rfFreq. rfHz    = (float)220000000;
 //
 //	It is known that all supported Rsp's can handle the values
 //	as given below. It is up to the particular Rsp to check
@@ -77,15 +77,21 @@ sdrplay_api_ErrT        err;
 	   this -> GRdB = 59;
 	if (GRdB < 20)
 	   this -> GRdB = 20;
+
         chParams        -> tunerParams. gain.gRdB       = this -> GRdB;
 	chParams        -> tunerParams. gain.LNAstate   = 3;
-	if (this -> agcMode) {
-           chParams    -> ctrlParams. agc. setPoint_dBfs = -30;
-           chParams    -> ctrlParams. agc. enable =
-                                             sdrplay_api_AGC_100HZ;
-        }
+
+//	Thanks to Peter:
+	chParams	-> ctrlParams. agc. setPoint_dBfs = -30;
+	chParams	-> ctrlParams. agc. attack_ms = 500;
+	chParams	-> ctrlParams. agc. decay_ms = 500;
+	chParams	-> ctrlParams. agc. decay_delay_ms = 200;
+	chParams	-> ctrlParams. agc. decay_threshold_dB = 5;
+
+	if (this -> agcMode) 
+	   chParams	-> ctrlParams. agc. enable = sdrplay_api_AGC_CTRL_EN;
         else
-           chParams    -> ctrlParams. agc. enable =
+           chParams	-> ctrlParams. agc. enable =
                                              sdrplay_api_AGC_DISABLE;
 
 	err	= parent -> sdrplay_api_Init (chosenDevice -> dev,
@@ -108,10 +114,23 @@ bool	Rsp_device::restart	(int freq) {
 	(void)freq;
 	return false;
 }
-
+//
+//	handling agc is common to all models
 bool	Rsp_device::set_agc	(int setPoint, bool on) {
-	(void)setPoint;
-	(void)on;
+sdrplay_api_ErrT err;
+
+	if (on) {
+	   chParams -> ctrlParams. agc. setPoint_dBfs = - setPoint;
+	   chParams -> ctrlParams. agc.enable = sdrplay_api_AGC_CTRL_EN;
+	}
+	else
+	   chParams->ctrlParams.agc.enable = sdrplay_api_AGC_DISABLE;
+
+	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
+	                                    chosenDevice -> tuner,
+	                                    sdrplay_api_Update_Ctrl_Agc,
+	                                    sdrplay_api_Update_Ext1_None);
+	return err == sdrplay_api_Success;
 	return false;
 }
 
@@ -119,15 +138,33 @@ bool	Rsp_device::set_lna	(int lnaState) {
 	(void)lnaState;
 	return false;
 }
-
+//
+//	handling GRdB is common to all models
 bool	Rsp_device::set_GRdB	(int GRdBValue) {
-	(void)GRdBValue;
+sdrplay_api_ErrT err;
+
+	chParams -> tunerParams. gain.gRdB = GRdBValue;
+	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
+	                                    chosenDevice -> tuner,
+	                                    sdrplay_api_Update_Tuner_Gr,
+	                                    sdrplay_api_Update_Ext1_None);
+	if (err == sdrplay_api_Success) {
+	   GRdB = GRdBValue;
+	   return true;
+	}
 	return false;
 }
+//
+//	handling ppm is common to all models
+bool	Rsp_device::set_ppm	(double ppmValue) {
+sdrplay_api_ErrT err;
 
-bool	Rsp_device::set_ppm	(int ppm) {
-	(void)ppm;
-	return false;
+	deviceParams -> devParams -> ppm = ppmValue;
+	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
+	                                    chosenDevice -> tuner,
+	                                    sdrplay_api_Update_Dev_Ppm,
+	                                    sdrplay_api_Update_Ext1_None);
+	return err == sdrplay_api_Success;
 }
 
 bool	Rsp_device::set_antenna	(int antenna) {
@@ -141,6 +178,11 @@ bool	Rsp_device::set_amPort 	(int amPort) {
 }
 
 bool	Rsp_device::set_biasT (bool  b) {
+	(void)b;
+	return false;
+}
+
+bool	Rsp_device::set_notch (bool b) {
 	(void)b;
 	return false;
 }

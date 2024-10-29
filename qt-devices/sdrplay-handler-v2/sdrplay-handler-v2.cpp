@@ -28,9 +28,8 @@
 #include	<QTime>
 #include	<QDate>
 #include	<QLabel>
-#include	<QPoint>
-#include	<QFileDialog>
 #include	"sdrplay-handler-v2.h"
+#include	"position-handler.h"
 #include	"sdrplayselect.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
@@ -71,12 +70,9 @@ mir_sdr_DeviceT devDesc [4];
 
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	sdrplaySettings	-> beginGroup ("sdrplaySettings_v2");
-	int x	= sdrplaySettings -> value ("position-x", 100). toInt ();
-	int y	= sdrplaySettings -> value ("position-y", 100). toInt ();
-	sdrplaySettings	-> endGroup ();
 	setupUi (&myFrame);
-	myFrame. move (QPoint (x, y));
+	set_position_and_size (s, &myFrame, "sdrplaySettings_v2");
+	myFrame.setWindowFlag(Qt::Tool, true);
 	myFrame. show ();
 	antennaSelector		-> hide();
 	tunerSelector		-> hide();
@@ -113,7 +109,7 @@ mir_sdr_DeviceT devDesc [4];
 	connect (this, &sdrplayHandler_v2::signal_agcSetting,
 	         agcControl, &QCheckBox::setChecked);
 
-	sdrplaySettings		-> beginGroup ("sdrplaySettings");
+	sdrplaySettings		-> beginGroup ("sdrplaySettings_v2");
 	int val		=
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt();
 	if (20 <= val && val <= 59)
@@ -267,9 +263,8 @@ mir_sdr_DeviceT devDesc [4];
 	sdrplayHandler_v2::~sdrplayHandler_v2() {
 	stopReader	();
 	myFrame. hide	();
-	sdrplaySettings	-> beginGroup ("sdrplaySettings");
-	sdrplaySettings	-> setValue ("position-x", myFrame. pos (). x ());
-	sdrplaySettings	-> setValue ("position-y", myFrame. pos (). y ());
+	store_widget_position (sdrplaySettings, &myFrame, "sdrplaySettings_v2");
+	sdrplaySettings	-> beginGroup ("sdrplaySettings_v2");
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
 	                                    GRdBSelector -> value());
@@ -972,7 +967,7 @@ QString theValue	= QString::number (GRdB) + ":";
 	theValue. append (":");
 	theValue. append (QString::number (agc));
 
-	sdrplaySettings         -> beginGroup ("sdrplaySettings");
+	sdrplaySettings         -> beginGroup ("sdrplaySettings_v2");
 	sdrplaySettings		-> setValue (QString::number (freq), theValue);
 	sdrplaySettings		-> endGroup ();
 }
@@ -983,7 +978,7 @@ int	lnaState;
 int	agc;
 QString	theValue	= "";
 
-	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	sdrplaySettings	-> beginGroup ("sdrplaySettings_v2");
 	theValue	= sdrplaySettings -> value (QString::number (freq), ""). toString ();
 	sdrplaySettings	-> endGroup ();
 

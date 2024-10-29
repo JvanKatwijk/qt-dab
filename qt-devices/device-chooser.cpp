@@ -26,11 +26,11 @@
 #include	"device-exceptions.h"
 
 #ifdef	HAVE_RTLSDR_V3
-#include	"rtlsdr-handler-v3.h"
+#include	"rtlsdr-handler-win.h"
 #define	RTLSDR_DEVICE_V3	0200
 #endif
 #ifdef	HAVE_RTLSDR_V4
-#include	"rtlsdr-handler-v4.h"
+#include	"rtlsdr-handler-win.h"
 #define	RTLSDR_DEVICE_V4	0201
 #endif
 #ifdef	HAVE_RTLSDR
@@ -222,12 +222,12 @@ int	deviceNumber	= getDeviceIndex (s);
 #endif
 #ifdef	HAVE_RTLSDR_V3
 	   case RTLSDR_DEVICE_V3:
-	      return new rtlsdrHandler_v3 (dabSettings, version);
+	      return new rtlsdrHandler_win (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V4
 	   case RTLSDR_DEVICE_V4:
-	      return new rtlsdrHandler_v4 (dabSettings, version);
+	      return new rtlsdrHandler_win (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR

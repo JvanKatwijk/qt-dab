@@ -67,21 +67,19 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QSpinBox" name="ppmControl">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ppm control. Tells the device the offset (in ppm) of the observed oscillator offset.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
+      <widget class="QDoubleSpinBox" name="ppmControl">
        <property name="minimum">
-        <number>-200</number>
+        <double>-2000.000000000000000</double>
        </property>
        <property name="maximum">
-        <number>200</number>
+        <double>20000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="notch_selector">
+       <property name="text">
+        <string>notch</string>
        </property>
       </widget>
      </item>
@@ -119,7 +117,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="ppmLabel">
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>

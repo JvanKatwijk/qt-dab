@@ -36,6 +36,7 @@
 #define LNA_REQUEST             0106
 #define ANTENNASELECT_REQUEST   0107
 #define	BIAS_T_REQUEST		0110
+#define	NOTCH_REQUEST		0111
 
 #include	<QSemaphore>
 
@@ -145,4 +146,13 @@ public:
 	~biasT_Request	() {}
 };
 	
+class	notch_Request: public generalCommand {
+public:
+	bool	checked;
+	notch_Request (bool notch_value):
+	            generalCommand (NOTCH_REQUEST) {
+	   this -> checked = notch_value;
+	}
+	~notch_Request	() {}
+};
 

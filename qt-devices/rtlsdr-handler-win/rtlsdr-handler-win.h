@@ -1,14 +1,10 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
- *
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -38,22 +34,22 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
-class	dll_driver_v4;
+class	dll_driver_win;
 class	xml_fileWriter;
 //
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler_v4 final:
-	               public deviceHandler, public  Ui_dabstickWidget {
+class	rtlsdrHandler_win final:
+	                public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler_v4	(QSettings *, const QString &);
-			~rtlsdrHandler_v4	();
+			rtlsdrHandler_win	(QSettings *, const QString &);
+			~rtlsdrHandler_win	();
 	bool		restartReader		(int32_t);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
-	                                                           int32_t);
+	                                                        int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		maxGain			();
@@ -68,7 +64,7 @@ private:
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
-	dll_driver_v4	*workerHandle;
+	dll_driver_win	*workerHandle;
 	int32_t		lastFrequency;
 	int16_t		gainsCount;
 	QString		deviceModel;
@@ -85,6 +81,7 @@ private:
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
 
+	QString		get_tunerType		(int);
 	bool		filtering;
 	LowPassFIR	theFilter;
 	int		currentDepth;

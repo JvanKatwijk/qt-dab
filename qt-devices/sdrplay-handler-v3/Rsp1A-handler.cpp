@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -32,30 +32,33 @@ int     RSP1A_Table [4] [11] = {
 
 	Rsp1A_handler::Rsp1A_handler (sdrplayHandler_v3 *parent,
 	                              sdrplay_api_DeviceT *chosenDevice,
-	                              int	sampleRate,
 	                              int	freq,
 	                              bool	agcMode,
 	                              int	lnaState,
 	                              int 	GRdB,
-	                              bool	biasT) :
+	                              bool	biasT,
+	                              bool	notch,
+	                              double	ppmValue) :
 	                              Rsp_device (parent,
 	                                          chosenDevice, 
-	                                          sampleRate,
 	                                          freq,
 	                                          agcMode,
 	                                          lnaState,
-	                                          GRdB, biasT) {
+	                                          GRdB,
+	                                          biasT, ppmValue) {
 
 	this	-> deviceModel		= "RSP-1A";
 	this	-> nrBits		= 12;
-	this	-> lna_upperBound =  lnaStates (freq);
-	set_lnabounds_signal	(0, lna_upperBound);
+	this	-> lna_upperBound	= lnaStates (freq);
+	set_lnabounds_signal (0, lna_upperBound);
 	if (lnaState > lna_upperBound)
 	   this -> lnaState = lna_upperBound;
 	set_lna (this -> lnaState);
 
 	if (biasT)
 	   set_biasT (true);
+	if (notch)
+	   set_notch (true);
 }
 
 	Rsp1A_handler::~Rsp1A_handler	() {}
@@ -107,64 +110,6 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-bool	Rsp1A_handler::set_agc	(int setPoint, bool on) {
-sdrplay_api_ErrT        err;
-
-	if (on) {
-	   chParams    -> ctrlParams. agc. setPoint_dBfs = setPoint;
-	   chParams    -> ctrlParams. agc. enable = sdrplay_api_AGC_100HZ;
-	}
-	else
-	   chParams    -> ctrlParams. agc. enable =
-                                             sdrplay_api_AGC_DISABLE;
-
-	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
-	                                     chosenDevice -> tuner,
-                                             sdrplay_api_Update_Ctrl_Agc,
-                                             sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "agc: error %s\n",
-	                          parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-
-	this	-> agcMode = on;
-	return true;
-}
-
-bool	Rsp1A_handler::set_GRdB	(int GRdBValue) {
-sdrplay_api_ErrT        err;
-
-	chParams -> tunerParams. gain. gRdB = GRdBValue;
-	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
-	                                     chosenDevice -> tuner,
-	                                     sdrplay_api_Update_Tuner_Gr,
-	                                     sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "grdb: error %s\n",
-                                   parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-	this	-> GRdB = GRdBValue;
-	return true;
-}
-
-bool	Rsp1A_handler::set_ppm	(int ppmValue) {
-sdrplay_api_ErrT        err;
-
-	deviceParams    -> devParams -> ppm = ppmValue;
-	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
-	                                    chosenDevice -> tuner,
-	                                    sdrplay_api_Update_Dev_Ppm,
-	                                    sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "lna: error %s\n",
-	                          parent -> sdrplay_api_GetErrorString (err));
-	   return false;
-	}
-	return true;
-}
-
 bool	Rsp1A_handler::set_lna	(int lnaState) {
 sdrplay_api_ErrT        err;
 
@@ -201,3 +146,13 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
+bool	Rsp1A_handler::set_notch (bool on) {
+sdrplay_api_ErrT err;
+
+	deviceParams -> devParams -> rsp1aParams. rfNotchEnable = on;
+	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
+                                           chosenDevice -> tuner,
+                                           sdrplay_api_Update_Rsp1a_RfNotchControl,
+                                           sdrplay_api_Update_Ext1_None);
+	return err == sdrplay_api_Success;
+}

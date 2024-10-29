@@ -504,10 +504,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.XV3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.X
-	CONFIG		+= dabstick-win-v4
+	TARGET		= qt-dab32-6.XV3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.X
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
@@ -525,7 +525,6 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= hackrf
 	CONFIG		+= lime
 	CONFIG		+= pluto
-#	CONFIG		+= pluto-rxtx
 	CONFIG		+= NO_SSE
 	CONFIG		+= preCompiled
 #	CONFIG		+= tiiLib
@@ -576,14 +575,14 @@ dabstick-linux {
 
 dabstick-win-v4 {
 	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win-v4
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win-v4
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
 	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4
 	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4/x86
 	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.h \
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.cpp \
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x86/rtlsdr.dll
@@ -591,12 +590,12 @@ dabstick-win-v4 {
 
 dabstick-win-v3 {
 	DEFINES		+= HAVE_RTLSDR_V3
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win-v3
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win-v3
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
 	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win-v3/rtlsdr-handler-v3.h \
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v3/rtlsdr-handler-v3.cpp \
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 #	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll

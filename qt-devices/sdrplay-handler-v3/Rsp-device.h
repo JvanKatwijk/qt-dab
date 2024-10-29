@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2020
+ *    Copyright (C) 2020 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -32,7 +32,6 @@ class Rsp_device : public QObject {
 Q_OBJECT
 protected:
 	sdrplay_api_DeviceT *chosenDevice;
-	int	sampleRate;
 	int	freq;
 	bool	agcMode;
 	int	lnaState;
@@ -48,22 +47,23 @@ protected:
 public:
 		Rsp_device 	(sdrplayHandler_v3 *parent,
 	                         sdrplay_api_DeviceT *chosenDevice,
-	                         int sampleRate,
 	                         int startFrequency,
 	                         bool agcMode,
 	                         int lnaState,
-	                         int GRdB, bool biasT);
+	                         int GRdB,
+	                         bool biasT, double ppmValue);
 	virtual	~Rsp_device	();
 virtual int	lnaStates	(int frequency);
 
 virtual	bool	restart		(int freq);
-virtual	bool	set_agc		(int setPoint, bool on);
+	bool	set_agc		(int setPoint, bool on);
 virtual	bool	set_lna		(int lnaState);
-virtual	bool	set_GRdB	(int GRdBValue);
-virtual	bool	set_ppm		(int ppm);
+	bool	set_GRdB	(int GRdBValue);
+	bool	set_ppm		(double ppm);
 virtual	bool	set_antenna	(int antenna);
 virtual	bool	set_amPort 	(int amPort);
 virtual	bool	set_biasT 	(bool biasT);
+virtual	bool	set_notch	(bool notch);
 signals:
 	void	set_lnabounds_signal	(int, int);
 	void	show_lnaGain		(int);

@@ -118,8 +118,9 @@ int	zeroCount = 0;
 	      zeroCount = 0;
 
 	   xmlText. append (theChar);
+	   fprintf (stderr, "%c ", theChar);
 	}
-
+	
 	xmlDoc. setContent (xmlText);
 	QDomElement root        = xmlDoc. documentElement ();
 	QDomNodeList nodes = root. childNodes ();

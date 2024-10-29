@@ -143,7 +143,6 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           int16_t	segmentNumber,
 	                           int32_t	segmentSize,
 	                           bool		lastFlag) {
-int32_t i;
 
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
@@ -159,7 +158,7 @@ int32_t i;
 
 	QByteArray segment;
 	segment. resize (segmentSize);
-	for (i = 0; i < segmentSize; i ++)
+	for (uint32_t i = 0; i < segmentSize; i ++)
 	   segment [i] = bodySegment [i];
 	motMap. insert (std::make_pair (segmentNumber, segment));
 //
@@ -171,7 +170,7 @@ int32_t i;
 //
 //	once we know how many segments there are/should be,
 //	we check for completeness
-	for (i = 0; i < numofSegments; i ++) {
+	for (uint32_t i = 0; i < numofSegments; i ++) {
 	   if (motMap. find (i) == motMap. end())
 	      return;
 	}
@@ -182,6 +181,7 @@ int32_t i;
 
 void	motObject::handleComplete	() {
 QByteArray result;
+
 	for (const auto &it : motMap)
 	   result. append (it. second);
 //	fprintf (stderr,

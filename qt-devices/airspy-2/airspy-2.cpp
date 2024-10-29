@@ -26,6 +26,7 @@
 #include	<QTime>
 #include	<QDate>
 #include	"airspy-2.h"
+#include	"position-handler.h"
 #include	"airspyselect.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
@@ -53,15 +54,12 @@ uint32_t samplerateCount;
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
 	QString	settingsHeader		= AIRSPY_SETTINGS;
-	airspySettings	-> beginGroup (settingsHeader);
-	int	x	= airspySettings -> value (settingsHeader + "-x",
-	                                                   100). toInt ();
-	int	y	= airspySettings -> value (settingsHeader + "-y",
-	                                                   100). toInt ();
 	setupUi (&myFrame);
-	myFrame. move (QPoint (x, y));
+	set_position_and_size (s, &myFrame, settingsHeader);
+	myFrame. setWindowFlag (Qt::Tool, true);
 	myFrame. show		();
 //
+	airspySettings	-> beginGroup (settingsHeader);
 //	Since we have different tabs, with different sliders for
 //	gain setting, restoring the settings is a tedious task
 	int tab	= airspySettings -> value (TAB_SETTINGS, 2). toInt ();
@@ -215,12 +213,8 @@ uint32_t samplerateCount;
 	myFrame. hide ();
 	src_delete	(converter);
 	QString	settingsHeader	= AIRSPY_SETTINGS;
-	airspySettings	-> beginGroup (settingsHeader);
-        airspySettings -> setValue (settingsHeader + "-x",
-	                                          myFrame. pos (). x ());
-        airspySettings -> setValue (settingsHeader + "-y",
-	                                          myFrame. pos (). y ());
-
+	store_widget_position (airspySettings, &myFrame, AIRSPY_SETTINGS);
+	airspySettings	-> beginGroup (AIRSPY_SETTINGS);
 	airspySettings	-> setValue (TAB_SETTINGS,
 	                                   tabWidget -> currentIndex ());
 	airspySettings	-> endGroup ();

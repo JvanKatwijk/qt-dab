@@ -41,6 +41,8 @@
 	remoteSettings		= s;
 
 	setupUi (&myFrame);
+	myFrame.setWindowFlag (Qt::Tool, true); 
+
 	myFrame. show		();
 	myFrame. hide		();
 	myFrame. show		();

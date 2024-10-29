@@ -21,9 +21,9 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	<QFileDialog>
 #include	<QTime>
 #include	"lime-handler.h"
+#include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
@@ -39,6 +39,8 @@ lms_info_str_t limedevices [10];
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, "limeSettings");
+	myFrame. setWindowFlag (Qt::Tool, true); 
 	myFrame. show	();
 
 	filtering	= false;
@@ -184,6 +186,7 @@ lms_info_str_t limedevices [10];
 	while (isRunning())
 	   usleep (100);
 	myFrame. hide ();
+	store_widget_position (limeSettings, &myFrame, "limeSettings");
 	limeSettings	-> beginGroup ("limeSettings");
 	limeSettings	-> setValue ("antenna", antennaList -> currentText());
 	limeSettings	-> setValue ("gain", gainSelector -> value());

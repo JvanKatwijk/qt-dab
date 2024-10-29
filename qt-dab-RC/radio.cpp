@@ -3458,7 +3458,7 @@ QString slideName	= ":res/pauze-slide-%1.png";
 	}
 	  
 	pauzeTimer. start (1 * 30 * 1000);
-	teller = (teller + 1) % 12;
+	teller = (teller + 1) % 11;
 }
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti
@@ -3643,7 +3643,6 @@ bool listChanged = false;
 	      }
 	   }
 	}
-
 //
 //	If the item is not yet in the list add it and - in dxMode
 //	add the data to the log
@@ -3717,50 +3716,46 @@ bool listChanged = false;
 //	the map
 	QString labelText;
 	for (auto &theTr : channel. transmitters) {
-	   if (!theTr. theTransmitter. valid)
-	      continue;
-	   position thePosition;
-	   thePosition. latitude	= theTr. theTransmitter. latitude;
-	   thePosition. longitude	= theTr. theTransmitter. longitude;
+	   if (theTr. theTransmitter. valid) {
+	      position thePosition;
+	      thePosition. latitude	= theTr. theTransmitter. latitude;
+	      thePosition. longitude	= theTr. theTransmitter. longitude;
 
-	   if (theTr. theTransmitter. valid && theTr. isStrongest) {
-	      channel. targetPos. latitude	= thePosition. latitude;
-	      channel. targetPos. longitude	= thePosition. longitude;
-	      channel. transmitterName		=
+	      if (theTr. theTransmitter. valid && theTr. isStrongest) {
+	         channel. targetPos. latitude	= thePosition. latitude;
+	         channel. targetPos. longitude	= thePosition. longitude;
+	         channel. transmitterName		=
 	                 theTr. theTransmitter. transmitterName;
-	      channel. mainId			= theTr. tiiValue >> 8;
-	      channel. subId			= theTr. tiiValue & 0xFF;
-	   }
+	         channel. mainId		= theTr. tiiValue >> 8;
+	         channel. subId			= theTr. tiiValue & 0xFF;
+	      }
 
-	   theTr. isFurthest	= false;
+	      theTr. isFurthest	= false;
 	
-	   QString theName 	= theTr. theTransmitter. transmitterName;
-	   float power		= theTr. theTransmitter. power;
-	   float height		= theTr. theTransmitter. height;
+	      QString theName 	= theTr. theTransmitter. transmitterName;
+	      float power	= theTr. theTransmitter. power;
+	      float height	= theTr. theTransmitter. height;
 
 //      if positions are known, we can compute distance and corner
-	   theTr.  distance	= distance	(thePosition, localPos);
-	   theTr.  corner	= corner	(thePosition, localPos);
+	      theTr.  distance	= distance	(thePosition, localPos);
+	      theTr.  corner	= corner	(thePosition, localPos);
 
-	   if (theTr. isStrongest) {
-	      channel. distance	= theTr. distance;
-	      channel. corner	= theTr. corner;
-	      channel. height	= height;
-	   }
+	      if (theTr. isStrongest) {
+	         channel. distance	= theTr. distance;
+	         channel. corner	= theTr. corner;
+	         channel. height	= height;
+	      }
 
-	   if (theTr. distance > maxDistance) {
-	      maxTrans	= theTr. tiiValue;
-	      maxDistance = theTr. distance;
-	   }
-	   int tiiValue_local	= theTr. tiiValue;
-	   labelText = "(" + QString::number (tiiValue_local >> 8) + ","
-	                    + QString::number (tiiValue_local & 0xFF) + ") ";
-	   if (theTr. theTransmitter. valid)
+	      if (theTr. distance > maxDistance) {
+	         maxTrans	= theTr. tiiValue;
+	         maxDistance = theTr. distance;
+	      }
+	      int tiiValue_local	= theTr. tiiValue;
+	      labelText = "(" + QString::number (tiiValue_local >> 8) + ","
+	                       + QString::number (tiiValue_local & 0xFF) + ") ";
 	      labelText += theName;
-	   else
-	      labelText += "Not in database";
-	   QString text2	= "";
-	   if (theTr. theTransmitter. valid)
+	      QString text2	= "";
+	      if (theTr. theTransmitter. valid)
 	             text2  =  " "
 	                    + QString::number (theTr. distance, 'f', 1) + " km " 
 	                    + QString::number (theTr. corner, 'f', 1) 
@@ -3769,10 +3764,21 @@ bool listChanged = false;
 	                    + "  " + QString::number (power, 'f', 1) + "kW";
 	   
 
-	   if (dxMode) 
-	      theDXDisplay. addRow (labelText, text2,  theTr. isStrongest);
-	   else 
-	      distanceLabel	-> setText (labelText + text2);
+	      if (dxMode) 
+	         theDXDisplay. addRow (labelText, text2,  theTr. isStrongest);
+	      else 
+	         distanceLabel	-> setText (labelText + text2);
+	   }
+	   else {
+	      int tiiValue_local	= theTr. tiiValue;
+	      labelText = "(" + QString::number (tiiValue_local >> 8) + ","
+	                       + QString::number (tiiValue_local & 0xFF) + ") ";
+	      labelText += "not in database";
+	      if (dxMode) 
+	         theDXDisplay. addRow (labelText, "",  theTr. isStrongest);
+	      else 
+	         distanceLabel	-> setText (labelText);
+	   }
 	}
 //	now handling the map
 //	see if we have a map

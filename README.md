@@ -32,6 +32,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
+* [A note on using an RTLSDR device](#note-on-rtlsdr-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [Documentation](#documentation)
@@ -235,6 +236,26 @@ influenced.
 At starting up Qt-DAB-6.X for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
 
 For a detailed description of all selectors, see the manual.
+
+A Bote on using an RTLSDR device
+======================================================================
+
+RTLSDR devices are - because of their price - rather popular.
+In Qt-DAB  different versions for the support library are provided,
+The windows and Linux versions differ in their implementation, 
+it turns out that under Windows, killing and restarting the "worker"
+thread on changing a channel might cause a crash, so a different
+model for implementing the start stop sequences was implemented.
+
+Furthermore, it turns out that for support of the V4 version of the
+sticks a new version of the library (".dll") is required. Unfortunately,
+using that library for "older" models (i.e. V3) models of the stick
+seems the device to make rather "deaf".
+
+So when implementing Qt-DAB for Windows, one chooses between the
+library support for the V3 or V4 version.
+Two precompiled versions are available, one with support for the V3
+and one with support for the V4 version of the stick.
 
 Scan control
 =======================================================================
