@@ -22,6 +22,18 @@ versions are available.
 For Windows  three installers are maintained, and a Linux x64 AppImage
 is available.
 
+Note
+==================================================================
+
+While not yet in the pictures, the main widget is equipped with a
+"folder" icon, an icon located on the top left of the right half of the widget.
+Touching it shows the folder/directory where the pictures are stored and
+where the tii table and the log file are placed.
+The default location is the dolder/directory QT-DAB-files in the user's
+home directory/folder
+
+=========================================================================
+
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
 ![6.5](/Qt_DAB-6.X-2.png?raw=true)
 
