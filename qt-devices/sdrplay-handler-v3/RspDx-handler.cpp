@@ -128,7 +128,7 @@ sdrplay_api_ErrT        err;
 	                                    chosenDevice -> tuner,
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
-	if (err == sdrplay_api_Success) {
+	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "grdb: error %s\n",
 	                         parent -> sdrplay_api_GetErrorString (err));
 	   return false;

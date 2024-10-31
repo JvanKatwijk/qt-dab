@@ -131,7 +131,7 @@ a spectrum of the audio of the selected service;
  * touching the icon showing a *speaker* controls muting the signal,
 if no audio is generated, or if the signal is muted, the icon will show this;
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
- * touching *with the right hand mouse button* the text of the dynamic label (Steely Dab - Reeling in the Years) shows a small menu to put the text on the clipboard;
+ * touching *with the right hand mouse button* the text of the dynamic label (Steely Dan - Reeling In The Years) shows a small menu to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map on which the transmitters will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
