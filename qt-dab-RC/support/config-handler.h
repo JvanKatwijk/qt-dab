@@ -114,6 +114,7 @@ private slots:
 	void	color_loadTableButton	();
 	void	color_sourcedumpButton	();
 	void	color_skinButton	();
+	void	color_pathButton	();
 //
 //	and the handlers:
 	void	handle_audioSelectButton	();
@@ -137,6 +138,7 @@ private slots:
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_saveTransmittersSelector	(int);
 	void	handle_tiiThreshold		(int);
+	void	handle_pathButton		();
 
 signals:
 	void	selectDecoder		(int);

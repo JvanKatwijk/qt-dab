@@ -50,6 +50,8 @@
 #define SKIN_BUTTON             QString ("skinButton")
 #define DUMP_BUTTON             QString ("dumpButton")
 
+#define	PATH_BUTTON		QString ("pathButton")
+
 static struct {
 	QString	decoderName;
 	int	decoderKey;
@@ -159,6 +161,8 @@ static struct {
 	this -> tiiThreshold_setter -> setValue (v);
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_tiiThreshold);
+	connect (pathButton, &QPushButton::clicked,
+	         this, &configHandler::handle_pathButton);
 	set_Colors ();
 }
 
@@ -263,6 +267,8 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_loadTableButton);
 	connect (dumpButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_sourcedumpButton);
+	connect (pathButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_pathButton);
 	connect (skinButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_skinButton);
 //
@@ -466,6 +472,12 @@ QString dumpButton_font =
 	   dabSettings -> value (DUMP_BUTTON + "_font",
 	                                              "black"). toString ();
 
+QString pathButton_color =
+	   dabSettings -> value (PATH_BUTTON + "_color",
+	                                              "white"). toString ();
+QString pathButton_font =
+	   dabSettings -> value (PATH_BUTTON + "_font",
+	                                              "black"). toString ();
 
 QString skinButton_font	=
 	   dabSettings -> value (SKIN_BUTTON + "_font",
@@ -523,6 +535,10 @@ QString	skinButton_color =
 	this -> dumpButton ->
 	              setStyleSheet (temp. arg (dumpButton_color,
 	                                        dumpButton_font));
+	this	-> pathButton ->
+	              setStyleSheet (temp. arg (pathButton_color,
+	                                        pathButton_font));
+	
 	this -> skinButton ->
 	              setStyleSheet (temp. arg (skinButton_color,
 	                                        skinButton_font));
@@ -575,6 +591,10 @@ void	configHandler::color_loadTableButton	() 	{
 
 void	configHandler::color_sourcedumpButton	()	{
 	set_buttonColors (this ->  dumpButton, DUMP_BUTTON);
+}
+
+void	configHandler::color_pathButton		()	{
+	set_buttonColors (this ->  pathButton, PATH_BUTTON);
 }
 
 void	configHandler::color_skinButton	() 	{
@@ -884,5 +904,16 @@ bool	configHandler::get_dxSelector () {
 
 void	configHandler::handle_tiiThreshold	(int t) {
 	dabSettings -> setValue ("tiiThreshold", t);
+}
+
+void	configHandler::handle_pathButton	() {
+QString dir	=
+	  QFileDialog::getExistingDirectory (nullptr,
+	                                     tr("Open Directory"),
+	                                     QDir::homePath (),
+                                             QFileDialog::ShowDirsOnly
+                                             | QFileDialog::DontResolveSymlinks);
+	if (dir != "")
+	   dabSettings	-> setValue ("filePath", dir);
 }
 

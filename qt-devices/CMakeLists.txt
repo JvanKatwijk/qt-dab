@@ -293,6 +293,40 @@ include_directories(
 	   add_definitions (-DHAVE_RTLSDR)
 	endif()
 
+	if (UHD)
+	   find_package(UHD REQUIRED)
+	   if (NOT UHD_FOUND)
+	      message(FATAL_ERROR "please install UHD library")
+	   endif ()
+	   list(APPEND extraLibs ${UHD_LIBRARIES})
+
+	   set(${devicesLibName}_UIS
+	       ${${devicesLibName}_UIS}
+               uhd/uhd-widget.ui
+	   )
+
+	   set(${devicesLibName}_MOCS
+	      ${${devicesLibName}_MOCS}
+	      uhd/uhd-handler.h
+	   )
+
+	   include_directories(
+	      uhd/
+	   )
+
+	   set(${devicesLibName}_HDRS
+	      ${${devicesLibName}_HDRS}
+	      uhd/uhd-handler.h
+	   )
+
+	   set(${devicesLibName}_SRCS
+	      ${${devicesLibName}_SRCS}
+	      uhd/uhd-handler.cpp
+	   )
+
+	   add_definitions(-DHAVE_UHD)
+	endif ()
+
 	if (SOAPY)
 	   set (${devicesLibName}_UIS
                 ${${devicesLibName}_UIS}
@@ -359,7 +393,7 @@ include_directories(
 	        ./spy-server-8/tcp-client-8.cpp
 	   )
 
-	   add_definitions (-DHAVE_SOAPY_8)
+	   add_definitions (-DHAVE_SPYSERVER_8)
 	endif()
 
 	if (SPY_SERVER_16)
@@ -395,7 +429,7 @@ include_directories(
 	        ./spy-server-16/tcp-client-16.cpp
 	   )
 
-	   add_definitions (-DHAVE_SOAPY_16)
+	   add_definitions (-DHAVE_SPYSERVER_16)
 	endif()
 
 #

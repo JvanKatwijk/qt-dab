@@ -18,8 +18,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -66,8 +69,8 @@
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -110,21 +113,32 @@
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="tiiThreshold_setter">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Default value is 4.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="minimum">
-          <number>3</number>
-         </property>
-         <property name="value">
-          <number>4</number>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="smallPushButton" name="pathButton">
+           <property name="text">
+            <string>path</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="tiiThreshold_setter">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Default value is 4.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="minimum">
+            <number>3</number>
+           </property>
+           <property name="value">
+            <number>4</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
-     </item>
-     <item>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QFormLayout" name="formLayout">
@@ -192,8 +206,8 @@
         </layout>
        </item>
       </layout>
-     </item>
-    </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">

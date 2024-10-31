@@ -44,7 +44,7 @@ class ficHandler: public fibDecoder {
 Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
-		~ficHandler();
+		~ficHandler		();
 	void	process_ficBlock	(std::vector<int16_t> &, int16_t);
 	void	stop			();
 	void	restart			();
@@ -59,6 +59,8 @@ private:
 	bool		punctureTable	[3072 + 24];
 	uint8_t		fibBits		[4 * 768];
 	bool		ficValid	[4];
+	uint8_t		ficBuffer	[256];
+	uint8_t		PRBS		[768];
 	void		process_ficInput	(int16_t, bool *);
 	int16_t		index;
 	int16_t		BitsperBlock;
@@ -67,13 +69,10 @@ private:
 	int16_t		ficMissed;
 	int16_t		ficRatio;
 	uint16_t	convState;
-	uint8_t		PRBS		[768];
 	FILE		*ficDumpPointer;
 	QMutex          ficLocker;
-	uint8_t		ficBuffer [256];
 	int		ficPointer;
 	std::atomic<bool> running;
-//	uint8_t		shiftRegister	[9];
 signals:
 	void		show_ficSuccess	(bool);
 };

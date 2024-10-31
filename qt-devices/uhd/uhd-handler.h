@@ -39,9 +39,9 @@ public:
 	void	stop		();
 
 private:
-	uhdHandler *m_theStick;
+	uhdHandler *theStick;
 	void	run		();
-	std::atomic<bool> m_stop_signal_called;
+	std::atomic<bool> stop_called;
 };
 
 class uhdHandler : public deviceHandler, public Ui_uhdWidget {
@@ -62,7 +62,7 @@ public:
 private:
 	QSettings *uhdSettings;
 	uhd::usrp::multi_usrp::sptr m_usrp;
-	uhd::rx_streamer::sptr m_rx_stream;
+	uhd::rx_streamer::sptr rx_stream;
 	uhd_streamer * m_workerHandle = nullptr;
 	RingBuffer<std::complex<float>> * theBuffer;
 	int32_t	inputRate;

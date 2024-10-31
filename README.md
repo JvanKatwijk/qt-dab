@@ -22,17 +22,6 @@ versions are available.
 For Windows  three installers are maintained, and a Linux x64 AppImage
 is available.
 
-Note
-==================================================================
-
-While not yet in the pictures, the main widget is equipped with a
-"folder" icon, an icon located on the top left of the right half of the widget.
-Touching it shows the folder/directory where the pictures are stored and
-where the tii table and the log file are placed.
-The default location is the dolder/directory QT-DAB-files in the user's
-home directory/folder
-
-=========================================================================
 
 ![6.5](/Qt_DAB-6.X-1.png?raw=true)
 ![6.5](/Qt_DAB-6.X-2.png?raw=true)
@@ -44,7 +33,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
-* [A note on using an RTLSDR device](#note-on-rtlsdr-device]
+* [A Note on using an RTLSDR device](#note-on-rtlsdr-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [Documentation](#documentation)
@@ -138,6 +127,7 @@ On the right half of the widget is shows the dynamic label, and the slides - if 
 of the bold text NPO Klassiek), will show (or hide) the *technical widget*,
 a widget showing all technical details as well as strength indicators and 
 a spectrum of the audio of the selected service;
+ * touching the small icon on top of the latter, the folder/directory in which the slides, the tii log and the log file are written is shown;
  * touching the icon showing a *speaker* controls muting the signal,
 if no audio is generated, or if the signal is muted, the icon will show this;
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
@@ -249,7 +239,7 @@ At starting up Qt-DAB-6.X for the (very) first time, no device is selected yet, 
 
 For a detailed description of all selectors, see the manual.
 
-A Bote on using an RTLSDR device
+A Note on using an RTLSDR device
 ======================================================================
 
 RTLSDR devices are - because of their price - rather popular.

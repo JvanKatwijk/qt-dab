@@ -237,6 +237,20 @@ uint32_t   available = GetRingBufferWriteAvailable();
 	return elementCount;
 }
 
+int32_t advanceWriteIndex(int32_t elementCount) {
+	PaUtil_WriteMemoryBarrier();
+	return writeIndex = (writeIndex + elementCount) & bigMask;
+  }
+
+/* ensure that previous reads (copies out of the ring buffer) are
+ * always completed before updating (writing) the read index.
+ * (write-after-read) => full barrier
+ */
+int32_t	advanceReadIndex(int32_t elementCount) {
+	PaUtil_FullMemoryBarrier();
+	return readIndex = (readIndex + elementCount) & bigMask;
+}
+
 int32_t	putDataIntoBuffer (const void *data, int32_t elementCount) {
 int32_t size1, size2, numWritten;
 void	*data1;

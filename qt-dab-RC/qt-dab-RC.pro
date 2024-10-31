@@ -9,6 +9,7 @@ QT		+= widgets xml multimedia
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
+
 win32 {
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math

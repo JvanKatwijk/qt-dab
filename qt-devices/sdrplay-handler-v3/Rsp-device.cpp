@@ -105,17 +105,27 @@ sdrplay_api_ErrT        err;
 
 	Rsp_device::~Rsp_device	() {}
 
+//
+//	lna states are model dependent
 int	Rsp_device::lnaStates	(int frequency) {
 	(void)frequency;
 	return 0;
 }
 
+//	restart is model deependent
 bool	Rsp_device::restart	(int freq) {
 	(void)freq;
 	return false;
 }
+
+//	setting an lna state is model deoendent
+bool	Rsp_device::set_lna	(int lnaState) {
+	(void)lnaState;
+	return false;
+}
 //
-//	handling agc is common to all models
+//
+//	setting agc is common to all models
 bool	Rsp_device::set_agc	(int setPoint, bool on) {
 sdrplay_api_ErrT err;
 
@@ -131,15 +141,9 @@ sdrplay_api_ErrT err;
 	                                    sdrplay_api_Update_Ctrl_Agc,
 	                                    sdrplay_api_Update_Ext1_None);
 	return err == sdrplay_api_Success;
-	return false;
 }
 
-bool	Rsp_device::set_lna	(int lnaState) {
-	(void)lnaState;
-	return false;
-}
-//
-//	handling GRdB is common to all models
+//	setting  GRdB is common to all models
 bool	Rsp_device::set_GRdB	(int GRdBValue) {
 sdrplay_api_ErrT err;
 
@@ -155,7 +159,7 @@ sdrplay_api_ErrT err;
 	return false;
 }
 //
-//	handling ppm is common to all models
+//	setting ppm is common to all models
 bool	Rsp_device::set_ppm	(double ppmValue) {
 sdrplay_api_ErrT err;
 
@@ -167,21 +171,25 @@ sdrplay_api_ErrT err;
 	return err == sdrplay_api_Success;
 }
 
+//	setting an antenna select is model dependent
 bool	Rsp_device::set_antenna	(int antenna) {
 	(void)antenna;
 	return false;
 }
 
+//	setting amPort is model dependent
 bool	Rsp_device::set_amPort 	(int amPort) {
 	(void)amPort;
 	return false;
 }
 
+//	setting the bias is model dependent (RspI does not have it)
 bool	Rsp_device::set_biasT (bool  b) {
 	(void)b;
 	return false;
 }
 
+//	setting the notch filter is model dependent
 bool	Rsp_device::set_notch (bool b) {
 	(void)b;
 	return false;

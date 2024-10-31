@@ -79,7 +79,7 @@ void	uhd_streamer::run () {
 	   uhd::rx_metadata_t md;
 	   size_t num_rx_samps =
                  m_theStick -> m_rx_stream -> recv (data1, size1, md, 1.0);
-	   m_theStick -> theBuffer -> AdvanceRingBufferWriteIndex (num_rx_samps);
+	   m_theStick -> theBuffer -> AdvanceWriteIndex (num_rx_samps);
 
 	   if (md.error_code == uhd::rx_metadata_t::ERROR_CODE_TIMEOUT) {
 	      std::cout << boost::format("Timeout while streaming") << std::endl;
