@@ -480,7 +480,7 @@ sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 	(void)tuner;
 	switch (eventId) {
 	   case sdrplay_api_GainChange:
-	      p -> theGain	= params -> gainParams. currGain;
+	      p -> show_tuner_gain (params -> gainParams. currGain);
 	      break;
 
 	   case sdrplay_api_PowerOverloadChange:
@@ -518,6 +518,8 @@ int	deviceIndex	= 0;
 	         this, &sdrplayHandler_v3::set_serial);
 	connect (this, &sdrplayHandler_v3::set_apiVersion_signal,
 	         this, &sdrplayHandler_v3::set_apiVersion);
+	connect (this, &sdrplayHandler_v3::show_tuner_gain,
+	         this, &sdrplayHandler_v3::display_gain);
 
 	denominator		= 2048;		// default
 	nrBits			= 12;		// default
@@ -1032,5 +1034,9 @@ void	sdrplayHandler_v3::report_overload_state (bool b) {
 	else
 	   overloadLabel -> setStyleSheet ("QLabel {background-color : green}");
 
+}
+
+void	sdrplayHandler_v3::display_gain	(double gain) {
+	gainDisplay -> setText (QString::number (gain, 'f', 0) + "dB");
 }
 

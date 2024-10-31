@@ -78,8 +78,21 @@
      </item>
      <item>
       <widget class="QCheckBox" name="notch_selector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The notch filter. The sdplay Rsp has a notch filter that - for the DAB band - blocks signals from the MW and FM band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>notch</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="gainDisplay">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number gere displays the currently applied attenuation on the incoming signal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>0 dB</string>
        </property>
       </widget>
      </item>

@@ -135,6 +135,7 @@ signals:
 	void			new_GRdBValue		(int);
 	void			new_lnaValue		(int);
 	void			new_agcSetting		(bool);
+	void			show_tuner_gain		(double);
 private slots:
 	void			set_ifgainReduction	(int);
 	void			set_lnagainReduction	(int);
@@ -144,6 +145,7 @@ private slots:
 	void			set_biasT		(int);
 	void			set_notch		(int);
 	void			report_overload_state	(bool);
+	void			display_gain		(double);
 public slots:
 	void			set_lnabounds		(int, int);
 	void			set_serial		(const QString &);
