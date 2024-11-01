@@ -71,7 +71,7 @@ rtlsdrHandler_win	*theStick	= (rtlsdrHandler_win *)ctx;
 	}
 
 	if (theStick -> isActive. load ()) {
-	   int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
+	   int ovf	= theStick ->  _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
 	   if (ovf < 0)
 	      (void)theStick -> _I_Buffer.
 	           putDataIntoBuffer ((std::complex<uint8_t> *)buf,
@@ -540,7 +540,7 @@ QString	rtlsdrHandler_win::get_tunerType	(int tunerType) {
 	}
 }
 
-void	rtlsdrHandler::reportOverflow (bool ovf) {
+void	rtlsdrHandler_win::reportOverflow (bool ovf) {
 static bool theOvf	= true;
 	if (ovf && !theOvf){
 	   overflowLabel -> setText ("Overload");
@@ -550,8 +550,8 @@ static bool theOvf	= true;
 	}
 	else
 	if (!ovf && theOvf) {		// space in the buffer is sufficient
-	   overflowLaabel -> setStyleSheet("QLabel {background-color : green;\
-                                                      color: white}");
+	   overflowLabel -> setStyleSheet("QLabel {background-color : green;\
+                                                   color: white}");
 	   theOvf	= false;
 	}
 	else

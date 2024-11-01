@@ -60,6 +60,7 @@ public:
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	struct rtlsdr_dev	*theDevice;
 	std::atomic<bool>	isActive;
+	void		reportOverflow		(bool);
 private:
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
@@ -86,7 +87,6 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 
-	void		reportOverflow		(bool);
 signals:
 	void		new_gainIndex		(int);
 	void		new_agcSetting		(bool);

@@ -122,9 +122,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="overflowLabel">
      <property name="text">
-      <string>dabstick</string>
+      <string/>
      </property>
     </widget>
    </item>

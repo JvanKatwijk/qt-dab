@@ -17,9 +17,12 @@ elsewehere. A good quote indicating what I try to achieve in the continuous deve
 
  * *It is much easier to add features to reliable software, than it is to add reliability to featureful software.*
 
+And indeed, it continuously shows that it is fairly easy to
+add new features.
+
 Of course, as for previous versions, for *Qt-DAB-6.X* some predefined
 versions are available.
-For Windows  three installers are maintained, and a Linux x64 AppImage
+For Windows  three installers are maintained, and for Linux an x64 AppImage
 is available.
 
 
@@ -33,7 +36,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
-* [A Note on using an RTLSDR device](#-note-on-rtlsdr-device]
+* [A Note on using an RTLSDR device](#a-note-on-rtlsdr-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [Documentation](#documentation)
@@ -52,15 +55,12 @@ A simple and clean interface is used and Qt-DAB-6.X  has support for a
 DABsticks, all models of the SDRplay, Airspy, HackRF, LimeSDR, Adalm Pluto etc.
 
 *Qt-DAB* is being developed under Fedora, and cross compiled -
-using the excellent Mingw64 toolset - for Windows. Traditionally, AppImages
-are built under an older version of Ubuntu (right now Ubuntu 20, Ubuntu 22 is too new for an AppImage).
+using the excellent Mingw64 toolset - for Windows. For Windows,
+installers are available,  two installers for 32 bit  versions and one
+for a 64 bit version. For Linux, an AppImage, available for x64 Linux, is
+available, built under an older version of Ubuntu (right now Ubuntu 20, Ubuntu 22 is too new for an AppImage).
 
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
-
-Some precompiled versions of Qt-DAB-6.X  are available.
-For Linux-x64  the afore mentiined AppImage,
-for Windows, there are two installers for the 32 bit version and
-an installer for the 64 bit version.
 
 *Qt-DAB* is GUI driven, 
 the full GUI shows 4+ widgets, one of them, the
@@ -73,7 +73,7 @@ Features
 
   * Qt-DAB supports input device:
    	- SDR DAB sticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick, 
-  	- All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSP DxII), with separate entries for the v2 and v3 library,
+  	- All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library,
 	- HACKRF One, 
   	- Airspy, including Airspy mini,
 	- LimeSDR, 
@@ -85,6 +85,7 @@ Features
 	- input from an rtl_tcp server.
   * Always supported input from files:
    	- prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
+  * with the possibility of generating such files from the input.
   * Qt-DAB records settings and maintains then between program invocations,
   * Qt-DAB supports *Favorites* (i.e. channel, service pairs) for easy switchingbetween  services in different ensembles (see below),
   * Qt-DAB supports  DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and AAC-LC) decoding,
@@ -93,7 +94,7 @@ Features
   * Qt-DAB supports generating *ETI* (Ensemble Transport Infterface) files from the selected ensemble.
   * Qt-DAB provides different views on the DAB input signal (spectrum, correlation, channel, etc),
   * Qt-DAB provides detailed information (including strength and a spectrum view) on the audio in audio services service,
-  * Qt-DAB recognizes and interprets  *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, shows them and displays the transmitters on a map,
+  * Qt-DAB recognizes and interprets  *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map,
   * Qt-DAB supports *dumping* of the input data of the DAB channel (Warning: produces large raw files!) into `.sdr` files or `.xml` file formats and playing them again later (see section on xml format),
   * Qt-DAB supports *saving audio*, either as uncompressed ".wav" files (samplerate 48000, two channels) or saving *HeAAC* frames from DAB+ services for processing by e.g. VLC,
   * Qt-DAB supports showing and saving the ensemble content description and provides advanced scanning possibilities,
@@ -104,7 +105,7 @@ Features
   * Qt-DAB offers *scheduling* of some operations on services for up to 7 days;
   * Qt-DAB allows running an arbitrary amount of services from tne current ensemble as *background service*. with the output sent to a file,
   * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
-  *The Qt-DAB implementation provides a clean device interface, it is easy to add other devices.
+  * The Qt-DAB implementation provides a clean device interface, it is easy to add other devices.
 
 Not implemented:
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
@@ -122,7 +123,7 @@ The main widget shows on the left half a list of services (either from the curre
 On the right half of the widget is shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
 * touching the *ensemble name* (NPO (8001) in the picture) makes the
-*content table*, i.e. an overview of the content of the ensemble, visible (or if it is visible, touching will hide it);
+*content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a ".csv" format. If  the data is visible, touching will hide it;
  * touching the small icon left of the name of the selected service (here left
 of the bold text NPO Radio 5), will show (or hide) the *technical widget*,
 a widget showing all technical details as well as strength indicators and 
@@ -133,7 +134,7 @@ if no audio is generated, or if the signal is muted, the icon will show this;
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
  * touching *with the right hand mouse button* the text of the dynamic label (Steely Dan - Reeling In The Years) shows a small menu to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
- * the button labeled *http* controls the http handler with which a map on which the transmitters will be shown;
+ * the button labeled *http* controls the http handler with which a map )with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
  * the button labeled *favourites* controls  whether the list of services
@@ -237,7 +238,7 @@ influenced.
 
 At starting up Qt-DAB-6.X for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
 
-For a detailed description of all selectors, see the manual.
+For a detailed description of all selectors, see the manual (or read the tooltips).
 
 A Note on using an RTLSDR device
 ======================================================================
@@ -382,7 +383,7 @@ Step 1
 -----------------------------------------------------------------
 
 - :information_source:  In the repository, the sources for 6.X are in the subdirectory *qt-dab-6.X* and for qt-dab-6.5 in the subdirectory *qt-dab-6.5*. 
-The subdirectories contain a *.pro( file with configuration informtion for use with *qmake*, and a *CMakeLists.txt* file with configuration information for use with *cmake*.
+The subdirectories contain a *.pro( file with configuration information for use with *qmake*, and a *CMakeLists.txt* file with configuration information for use with *cmake*.
 
 - :information_source: Qt-DAB uses - as the name suggests - the Qt framework,
 for the time being still the version 5, it uses further the Qwt (version 6.2) library and the gcc compiler suite.
