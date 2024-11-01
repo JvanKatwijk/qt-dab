@@ -2284,7 +2284,28 @@ int	tunedFrequency	=
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
 	the_ensembleHandler	-> reset ();
 	theOFDMHandler		-> start ();
+//
+//
 	int	switchDelay	= configHandler_p -> switchDelayValue ();
+	dabSettings_p	-> beginGroup ("channel-presets");
+	QString serviceName	= dabSettings_p -> value (theChannel, "noName").
+	                                                         toString ();
+	bool davidMode	= dabSettings_p -> value ("davidMode", 0). toInt () != 0;
+	dabSettings_p	-> endGroup ();
+	if (davidMode && (serviceName != "noName")) {
+	   presetTimer. stop ();
+	   nextService. valid		= true;
+	   nextService. channel		= theChannel;
+	   nextService. serviceName	= serviceName;
+	   nextService. SId		= 0;
+	   nextService. SCIds 		= 0;
+	   presetTimer. setSingleShot (true);
+	   int switchDelay			=
+	             configHandler_p -> switchDelayValue ();
+	   presetTimer. setInterval (switchDelay);
+	   presetTimer. start (switchDelay);
+	}
+	else
 	if (!theSCANHandler. active ())
 	   epgTimer. start (switchDelay);
 }

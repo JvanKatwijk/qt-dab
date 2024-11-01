@@ -125,6 +125,7 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 
+	void		reportOverflow		(bool);
 	float		m_dcI;
 	float		m_dcQ;
 //	here we need to load functions from the dll

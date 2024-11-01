@@ -86,6 +86,7 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 
+	void		reportOverflow		(bool);
 signals:
 	void		new_gainIndex		(int);
 	void		new_agcSetting		(bool);

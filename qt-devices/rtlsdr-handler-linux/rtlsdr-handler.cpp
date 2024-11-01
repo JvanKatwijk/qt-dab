@@ -221,6 +221,8 @@ char	manufac [256], product [256], serial [256];
 	     rtlsdrSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	rtlsdrSettings	-> endGroup();
 
+	(void)this -> rtlsdr_set_center_freq (theDevice, 220000000);
+
 	rtlsdr_get_usb_strings (theDevice, manufac, product, serial);
 	fprintf (stderr, "%s %s %s\n",
 	            manufac, product, serial);
@@ -737,10 +739,12 @@ static int iqTeller	= 0;
 // calculate correction values for next input buffer
 	m_dcI = sumI / (len / 2) * CORRF + (1 - CORRF) * dcI;
 	m_dcQ = sumQ / (len / 2) * CORRF + (1 - CORRF) * dcQ;
-	if (_I_Buffer. GetRingBufferWriteAvailable () < (int)len / 2)
-	   fprintf (stderr, "xx? ");
+	int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
+	if (ovf < 0)
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2 + ovf);
 	else
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2);
+	reportOverflow (ovf < 0);
 }
 
 QString	rtlsdrHandler::get_tunerType	(int tunerType) {
@@ -763,5 +767,22 @@ QString	rtlsdrHandler::get_tunerType	(int tunerType) {
 	}
 }
 
-	
+void	rtlsdrHandler::reportOverflow (bool ovf) {
+static bool theOvf	= true;
+	if (ovf && !theOvf){
+	   overflowLabel -> setText ("Overload");
+           overflowLabel -> setStyleSheet ("QLabel {background-color : red; \
+                                                   color: white}");
+	   theOvf	= true;
+	}
+	else
+	if (!ovf && theOvf) {		// space in the buffer is sufficient
+	   overflowLabel -> setStyleSheet("QLabel {background-color : green; \
+                                                   color: white}");
+	   theOvf	= false;
+	}
+	else
+	   theOvf = ovf;
+}
+
 

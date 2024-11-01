@@ -71,10 +71,15 @@ rtlsdrHandler_win	*theStick	= (rtlsdrHandler_win *)ctx;
 	}
 
 	if (theStick -> isActive. load ()) {
-	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () < (int)len / 2)
-	      fprintf (stderr, "xx? ");
-	   (void)theStick -> _I_Buffer.
+	   int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
+	   if (ovf < 0)
+	      (void)theStick -> _I_Buffer.
+	           putDataIntoBuffer ((std::complex<uint8_t> *)buf,
+	                                         (int)len / 2 + ovf);
+	   else
+	      (void)theStick -> _I_Buffer.
 	           putDataIntoBuffer ((std::complex<uint8_t> *)buf, (int)len / 2);
+	   theStick -> reportOverflow (ovf < 0);
 	}
 }
 //
@@ -179,6 +184,7 @@ char	manufac [256], product [256], serial [256];
 	   fprintf (stderr, "\n");
 	}
 
+	rtlsdr_set_center_freq (theDevice, 220000000);
 	rtlsdr_set_tuner_bandwidth (theDevice, KHz (1536));
 	rtlsdr_set_tuner_gain_mode (theDevice, 1);
 //
@@ -534,5 +540,22 @@ QString	rtlsdrHandler_win::get_tunerType	(int tunerType) {
 	}
 }
 
-	
+void	rtlsdrHandler::reportOverflow (bool ovf) {
+static bool theOvf	= true;
+	if (ovf && !theOvf){
+	   overflowLabel -> setText ("Overload");
+           overflowLabel -> setStyleSheet("QLabel {background-color : red;\
+                                                   color: white}");
+	   theOvf	= true;
+	}
+	else
+	if (!ovf && theOvf) {		// space in the buffer is sufficient
+	   overflowLaabel -> setStyleSheet("QLabel {background-color : green;\
+                                                      color: white}");
+	   theOvf	= false;
+	}
+	else
+	   theOvf = ovf;
+}
+
 
