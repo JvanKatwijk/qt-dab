@@ -146,6 +146,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        my_scanListHandler (this,
 	                                                        scanListFile),
 	                                        chooseDevice (Si),
+	                                        theLogger (Si),
 	                                        scanMonitor (this, Si, freqExtension) {
 int16_t k;
 QString h;
@@ -546,7 +547,9 @@ void	RadioInterface::doStart	() {
 	   channelSelector -> setCurrentIndex (0);
 
 	my_ofdmHandler	= new ofdmHandler  (this,
-	                                    inputDevice_p, &globals, dabSettings_p);
+	                                    inputDevice_p,
+	                                    &globals,
+	                                    dabSettings_p, &theLogger);
 	channel. cleanChannel ();
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());

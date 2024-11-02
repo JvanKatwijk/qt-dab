@@ -31,6 +31,7 @@
 #include	"ringbuffer.h"
 #include	"estimator.h"
 #include	"correlator.h"
+#include	"logger.h"
 //
 /**
   *	\brief ofdmHandler
@@ -43,7 +44,8 @@
 	ofdmHandler::ofdmHandler	(RadioInterface	*mr,
 	                                 deviceHandler	*inputDevice,
 	                                 processParams	*p,
-	                                 QSettings	*dabSettings):
+	                                 QSettings	*dabSettings,
+	                                 logger		*theLogger):
 	                                    radioInterface_p (mr),
 	                                    params (p -> dabMode),
 	                                    settings_p (dabSettings),
@@ -62,9 +64,11 @@
 	                                                 p -> stdDevBuffer,
 	                                                 p -> iqBuffer),
 	                                    theMscHandler (mr, p -> dabMode,
-	                                                p -> frameBuffer) {
+	                                                p -> frameBuffer,
+	                                                theLogger) {
 
 	this	-> p			= p;
+	this	-> theLogger		= theLogger;
 	this	-> threshold		= p -> threshold;
 	this	-> tiiBuffer_p		= p -> tiiBuffer;
 	this	-> nullBuffer_p		= p -> nullBuffer;

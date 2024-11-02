@@ -22,10 +22,12 @@
  */
 
 #pragma once
+
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<QString>
 #include	<QSettings>
+#include	<QMutex>
 #include	"findfilenames.h"
 
 class logger {
@@ -37,7 +39,8 @@ public:
 	      LOG_FRAMEDUMP_STARTS, LOG_FRAMEDUMP_STOPS,
 	      LOG_HIDDEN_SERVICE_STARTS, 
 	      LOG_SCANNING_STARTS, LOG_SCANNING_STOPS,
-	      LOG_ETI_STARTS, LOG_ETI_STOPS};
+	      LOG_ETI_STARTS, LOG_ETI_STOPS,
+	      LOG_SERVICE_STARTS};
 		logger	(QSettings *);
 		~logger	();
 	void	logging_starts	();
@@ -48,10 +51,11 @@ public:
 	void	log	(logType, const QString &, const QString &);
 private:
 	findfileNames	fileNameFinder;
-	QString	logFileName;
-	FILE	*logFile;
-	bool	logMode;
+	QString		logFileName;
+	FILE		*logFile;
+	bool		logMode;
 	QSettings	*logSettings;
+	QMutex		locker;
 };
 
 	

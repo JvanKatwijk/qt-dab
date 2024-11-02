@@ -44,6 +44,7 @@
 
 class	RadioInterface;
 class	Backend;
+class	logger;
 
 #ifdef	__MSC_THREAD__
 class mscHandler: public QThread  {
@@ -53,7 +54,8 @@ class	mscHandler {
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
-	                                         RingBuffer<uint8_t> *);
+	                                         RingBuffer<uint8_t> *,
+	                                         logger		*);
 			~mscHandler		();
 	void		processBlock_0		(Complex *);
 	void		process_Msc		(std::vector<Complex> &,
@@ -74,6 +76,7 @@ private:
         interLeaver     myMapper;
 	RadioInterface		*myRadioInterface;
 	RingBuffer<uint8_t>	*frameBuffer;
+	logger		*theLogger;
 #ifdef	__MSC_THREAD__
 	fftHandler	fft;
         QSemaphore      bufferSpace;

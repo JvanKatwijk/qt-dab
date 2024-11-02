@@ -64,6 +64,7 @@ void	logger::log	(logType t) {
 	   return;
 
 	QString theTime = QDateTime::currentDateTime (). toString ();
+	locker. lock ();
 	switch (t) {
 	   case LOG_RADIO_STOPS:
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
@@ -89,9 +90,11 @@ void	logger::log	(logType t) {
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
 	                                                 "ETI processing stops");
 	      break;
+	                                           
 
 	   default:;
 	}
+	locker. unlock ();
 }
 	
 void	logger::log	(logType, const QString &) {}
@@ -99,13 +102,21 @@ void	logger::log	(logType t, const QString &channel, int snr) {
 	if (logFile == nullptr)
 	   return;
 	QString theTime = QDateTime::currentDateTime (). toString ();
+	locker. lock ();
 	switch (t) {
 	   case LOG_NEW_CHANNEL:
 	      fprintf (logFile, "%s\t: %s %s %d\n",
 	                 theTime. toLatin1 (). data (), "new channel active",
 	                  channel. toLatin1 (). data (), snr);
+	      break;
+	   case LOG_SERVICE_STARTS:
+	      fprintf (logFile, "%s\t: %s %s %d\n",
+	                theTime. toLatin1 (). data (), "service activated",
+	                channel, snr);
+	      break;
 	   default:;
 	}
+	locker. unlock ();
 	
 }
 void	logger::log	(logType t, const QString & s1,
@@ -113,6 +124,7 @@ void	logger::log	(logType t, const QString & s1,
 	if (logFile == nullptr)
 	   return;
 	QString theTime = QDateTime::currentDateTime (). toString ();
+	locker. lock ();
 	switch (t) {
 	   case LOG_NEW_SERVICE:	//channel and service
 	      fprintf (logFile, "%s\t: %s %s %s\n",
@@ -151,5 +163,6 @@ void	logger::log	(logType t, const QString & s1,
 
 	   default:;
 	}
+	locker. unlock ();
 }
 

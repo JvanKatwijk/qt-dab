@@ -46,6 +46,7 @@
 class	RadioInterface;
 class	dabParams;
 class	processParams;
+class	logger;
 
 class ofdmHandler: public QThread {
 Q_OBJECT
@@ -53,7 +54,8 @@ public:
 		ofdmHandler  	(RadioInterface *,
 	                         deviceHandler *,
 	                         processParams *,
-	                         QSettings	*);
+	                         QSettings	*,
+	                         logger		*);
 		~ofdmHandler			();
 	void		start			();
 //	void		start			(int32_t);
@@ -111,6 +113,7 @@ private:
 //	deviceHandler		*device_p;
 	dabParams		params;
 	QSettings		*settings_p;
+	logger			*theLogger;
 	sampleReader		theReader;
 	ficHandler		theFicHandler;
 	etiGenerator		theEtiGenerator;

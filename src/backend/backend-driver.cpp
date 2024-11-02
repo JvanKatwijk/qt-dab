@@ -24,11 +24,13 @@
 #include        "mp2processor.h"
 #include        "mp4processor.h"
 #include	"data-processor.h"
+#include	"logger.h"
 //
 //	Driver program for the selected backend. Embodying that in a
 //	separate class makes the "Backend" class simpler.
 
 	backendDriver::backendDriver (RadioInterface *mr,
+	                              logger		*theLogger,
 	                              descriptorType *d,
 	                              bool	backgroundFlag,
 	                              RingBuffer<std::complex<int16_t>> *audioBuffer,
@@ -37,6 +39,8 @@
 	                              FILE *dump) {
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy != 077) {
+	      theLogger ->  log (logger::LOG_SERVICE_STARTS,
+	                               "MP2 service ", d -> bitRate);
               theProcessor = new mp2Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
@@ -44,6 +48,8 @@
 	   }
            else
            if (((audiodata *)d) -> ASCTy == 077) {
+	      theLogger -> log (logger::LOG_SERVICE_STARTS,
+	                               "MP4 service ", d -> bitRate);
               theProcessor =  new mp4Processor (mr,
 	                                        d -> bitRate,
                                                 audioBuffer,

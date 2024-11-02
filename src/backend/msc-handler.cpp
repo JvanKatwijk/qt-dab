@@ -27,6 +27,7 @@
 #include	"ofdm-decoder.h"
 #include	"backend.h"
 #include	"dab-params.h"
+#include	"logger.h"
 //
 //	Interface program for processing the MSC.
 //	The dabProcessor assumes the existence of an msc-handler, whether
@@ -43,7 +44,8 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-	                                 RingBuffer<uint8_t> *frameBuffer_i):
+	                                 RingBuffer<uint8_t> *frameBuffer_i,
+	                                 logger		*theLogger):
 	                                       params (dabMode),
 	                                       myMapper (dabMode),
 	                                       myRadioInterface (mr),
@@ -52,12 +54,12 @@ static int cifTable [] = {18, 72, 0, 36};
 	                                       ,fft (params. get_T_u (), false)
 	                                       ,bufferSpace (params. get_L())
 #endif		                            
-	                                                                {
+{
+	this	-> theLogger	= theLogger;
 	cifVector. resize (55296);
 	BitsperBlock		= 2 * params. get_carriers();
 	ibits. resize (BitsperBlock);
 	nrBlocks		= params. get_L();
-
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 #ifdef	__MSC_THREAD__
@@ -251,12 +253,13 @@ bool	mscHandler::set_Channel (descriptorType &d,
 //	}
 //	locker. unlock ();
 	theBackends. push_back (new Backend (myRadioInterface,
+	                                     theLogger,
 	                                     &d,
 	                                     audioBuffer,
 	                                     dataBuffer,
 	                                     frameBuffer,
 	                                     dump,
-	                                     flag));
+	                                     flag)); 
 	fprintf (stderr, "we have now %d backends running\n",
 	                        (int)(theBackends. size ()));
 	return true;

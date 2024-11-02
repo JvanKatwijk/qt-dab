@@ -606,7 +606,8 @@ void	RadioInterface::doStart_direct	() {
 	theLogger. log (logger::LOG_RADIO_STARTS, inputDevice_p -> deviceName (),
 	                                 channelSelector -> currentText ());
 	theOFDMHandler	= new ofdmHandler  (this,
-	                                    inputDevice_p, &globals, dabSettings_p);
+	                                    inputDevice_p,
+	                                    &globals, dabSettings_p, &theLogger);
 	channel. cleanChannel ();
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
@@ -2244,7 +2245,9 @@ void	RadioInterface::setPresetService () {
 void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theSCANHandler. Frequency (theChannel);
+	the_ensembleHandler	-> reset ();
 	theNewDisplay. showFrequency (theChannel, tunedFrequency);
+	usleep (1000);
 	inputDevice_p		-> restartReader (tunedFrequency);
 
 	channel. cleanChannel ();
@@ -2252,6 +2255,12 @@ int	tunedFrequency	=
 	channel. tunedFrequency	= tunedFrequency;
 	channel. countryName	= "";
 	theLogger. log (logger::LOG_NEW_CHANNEL, theChannel, channel. snr);
+	channel. realChannel	= !inputDevice_p -> isFileInput ();
+	if (channel. realChannel)
+	   dabSettings_p	-> setValue (CHANNEL_NAME, theChannel);
+//
+//	The ".sdr" and ".uff" files - when built by us - carry
+//	the channel frequency in their data
 	if (inputDevice_p -> isFileInput ()) {
 	   channelSelector		-> setEnabled (false);
 	   int freq	= inputDevice_p -> getVFOFrequency ();
@@ -2269,9 +2278,6 @@ int	tunedFrequency	=
 	      channel. tunedFrequency	= -1;
 	   }
 	}
-	channel. realChannel	= !inputDevice_p -> isFileInput ();
-	if (channel. realChannel)
-	   dabSettings_p	-> setValue (CHANNEL_NAME, theChannel);
 	distanceLabel		-> setText ("");
 	theDXDisplay. cleanUp ();
 	theNewDisplay. show_transmitters (channel. transmitters);
@@ -2282,9 +2288,6 @@ int	tunedFrequency	=
 	else
 	if (mapHandler != nullptr)
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
-	the_ensembleHandler	-> reset ();
-	theOFDMHandler		-> start ();
-//
 //
 	int	switchDelay	= configHandler_p -> switchDelayValue ();
 	dabSettings_p	-> beginGroup ("channel-presets");
@@ -2292,6 +2295,11 @@ int	tunedFrequency	=
 	                                                         toString ();
 	bool davidMode	= dabSettings_p -> value ("davidMode", 0). toInt () != 0;
 	dabSettings_p	-> endGroup ();
+//
+//	at this point we do not know whether or not a preset is 
+//	set, so if this mode is "on" and there is a service name
+//	associated with the channel, we take the possible preset
+//	setting ober with a new one
 	if (davidMode && (serviceName != "noName")) {
 	   presetTimer. stop ();
 	   nextService. valid		= true;
@@ -2308,6 +2316,9 @@ int	tunedFrequency	=
 	else
 	if (!theSCANHandler. active ())
 	   epgTimer. start (switchDelay);
+//
+//	all set, go for it
+	theOFDMHandler		-> start ();
 }
 //
 //	apart from stopping the reader, a lot of administration

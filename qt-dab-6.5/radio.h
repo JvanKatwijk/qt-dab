@@ -64,6 +64,7 @@
 #include	"tii-mapper.h"
 
 #include	"ensemble-handler.h"
+#include	"logger.h"
 
 class	QSettings;
 class	ofdmHandler;
@@ -242,6 +243,7 @@ private:
 	scanListHandler		my_scanListHandler;
 	deviceChooser		chooseDevice;
 	scanHandler		scanMonitor;
+	logger			theLogger;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 //

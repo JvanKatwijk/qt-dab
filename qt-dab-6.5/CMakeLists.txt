@@ -282,6 +282,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
 	     ../includes/support/distances.h 
+	     ../includes/support/logger.h
 	     ../includes/support/position-handler.h 
 	     ../includes/support/cacheElement.h 
 	     ../includes/support/settingNames.h 
@@ -413,6 +414,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/support/distances.cpp
+	     ../src/support/logger.cpp
 	     ../src/support/position-handler.cpp
 	     ../src/support/wavWriter.cpp
 	     ../src/support/converter_48000.cpp

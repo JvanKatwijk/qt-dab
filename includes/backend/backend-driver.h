@@ -29,10 +29,12 @@
 #include	"frame-processor.h"
 #include	"radio.h"
 
+class	logger;
 
 class	backendDriver {
 public:
 	backendDriver	(RadioInterface *,
+	                 logger		*,
 	                 descriptorType *,
 	                 bool,
 	                 RingBuffer<std::complex<int16_t>> *,
@@ -42,6 +44,7 @@ public:
 	~backendDriver	();
 void	addtoFrame	(const std::vector<uint8_t> outData);
 private:
-	frameProcessor	* theProcessor;
+	logger		*theLogger;
+	frameProcessor	*theProcessor;
 };
 

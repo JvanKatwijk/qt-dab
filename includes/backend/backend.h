@@ -36,6 +36,7 @@
 
 #define	NUMBER_SLOTS	25
 class	RadioInterface;
+class	logger;
 
 #ifdef	__THREADED_BACKEND__
 class	Backend: public QThread {
@@ -44,6 +45,7 @@ class	Backend {
 #endif
 public:
 		Backend	(RadioInterface	*mr,
+	                 logger		*theLogger,
 	                 descriptorType	*d,
 	                 RingBuffer<std::complex<int16_t>> *,
 	                 RingBuffer<uint8_t> *,

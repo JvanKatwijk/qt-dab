@@ -193,6 +193,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/logger.h \
 	   ../includes/support/position-handler.h \
            ../includes/support/cacheElement.h \
 	   ../includes/support/settingNames.h \
@@ -330,6 +331,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/logger.cpp \
 	   ../src/support/position-handler.cpp \
 	   ../src/support/wavWriter.cpp \
 	   ../src/support/converter_48000.cpp \

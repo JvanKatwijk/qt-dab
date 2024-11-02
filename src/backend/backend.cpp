@@ -24,6 +24,7 @@
 #include	"dab-constants.h"
 #include	"radio.h"
 #include	"backend.h"
+#include	"logger.h"
 //
 //	Interleaving is - for reasons of simplicity - done
 //	inline rather than through a special class-object
@@ -31,6 +32,7 @@
 
 //	fragmentsize == Length * CUSize
 	Backend::Backend	(RadioInterface *mr,
+	                         logger		*theLogger,
 	                         descriptorType	*d,
 	                         RingBuffer<std::complex<int16_t>> *audiobuffer,
 	                         RingBuffer<uint8_t> *databuffer,	
@@ -38,7 +40,8 @@
 	                         FILE *dump, int flag):
 	                                    deconvolver (d),
 	                                    outV (d -> bitRate * 24),
-	                                    driver (mr, 
+	                                    driver (mr,
+	                                            theLogger, 
 	                                            d,
 	                                            flag == BACK_GROUND,
 	                                            audiobuffer,

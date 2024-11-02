@@ -183,14 +183,14 @@ bool	Rsp_device::set_amPort 	(int amPort) {
 	return false;
 }
 
-//	setting the bias is model dependent (RspI does not have it)
+//	setting the bias is model dependent, RspI does not have it
 bool	Rsp_device::set_biasT (bool  b) {
 	(void)b;
 	return false;
 }
 
-//	setting the notch filter is model dependent
-bool	Rsp_device::set_notch (bool b) {
+//	setting the notch is model dependent (RspI does not have it)
+bool	Rsp_device::set_notch (bool  b) {
 	(void)b;
 	return false;
 }
