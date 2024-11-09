@@ -1,13 +1,19 @@
 //
 //	Names of sections
+#define	DAB_GENERAL		"dab-general"
 #define	CONFIG_HANDLER		"configHandler"
+#define	ENSEMBLE		"ENSEMBLE"
 #define	ENSEMBLE_HANDLER	"ensembleHandler"
 #define	CONTENT_TABLE		"contentTable"
+#define	SCANNER			"scannerHandler"
 //
 //
+#define	MAP_HANDLING		"MAP_HANDLING"
+#define	TII_THRESHOLD		"tiiThreshold"
 #define	MUTE_TIME_SETTING	"muteTime"
 #define	SWITCH_VALUE_SETTING	"switchDelay"
 #define	SERVICE_ORDER_SETTING	"servicOrder"
+#define	LOG_MODE		"logMode"
 #define	EPG2XML_SETTING		"epg2xml"
 #define	TII_DETECTOR_SETTING	"tii+detector"
 #define	UTC_SELECTOR_SETTING	"utcSelector"
@@ -20,16 +26,11 @@
 #define	SAVE_SLIDES_SETTING		"saveSlides"
 #define	TRANSMITTER_NAMES_SETTING	"transmitterNames"
 
-#define	COLOR_SETTINGS		"colorSettings"
+#define	COLOR_SETTINGS		"COLOR_SETTINGS"
 #define	SKIN_SETTING		"skin"
 #define	SAVE_SERVICE_SETTING	"saveService"
 
 #define	MAP_PORT_SETTING	"mapPort"
-
-#define	FONT_SIZE_SETTING	"fontSize"
-#define	FONT_SETTING		"theFont"
-#define	FONT_COLOR_SELECT	"fontColor"
-
 
 #define	NEW_DISPLAY_VISIBLE	"newDisplay"
 #define	LABEL_COLOR		"labelStyle"
@@ -56,7 +57,8 @@
 #define	SAVEDIR_XML		"saveDir_xmlDump"
 
 
-#define	S_SOUND_HANDLER		"soundHandler"
+#define	SOUND_HANDLER		"soundHandler"
+#define	SOUND_HANDLING		"soundHandling"
 #define	S_PORT_AUDIO		"PORTAUDIO"
 #define	S_QT_AUDIO		"QT_AUDIO"
 

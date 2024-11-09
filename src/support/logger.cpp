@@ -24,14 +24,16 @@
 #include	"logger.h"
 #include	<QDateTime>
 #include	<QDir>
+#include	"settingNames.h"
+#include	"settings-handler.h"
 
 	logger::logger (QSettings *s):
 	                                     fileNameFinder (s) {
 	this	-> logSettings	= s;
 	QString tempPath	= fileNameFinder. basicPath ();
-	tempPath		= s -> value ("logFile", tempPath). toString ();
+	value_s (logSettings, "LOG_FILE", "logFile", tempPath);
 	this	-> logFileName	= tempPath + "logFile.txt";
-	this	-> logMode	= s -> value ("logMode", 1). toInt () != 0;
+	this	-> logMode	= value_i (s, DAB_GENERAL, "logMode", 1) != 0;
 	if (logMode)
 	   logFile 	= fopen (logFileName. toLatin1 (). data (), "a");
 	else
@@ -48,7 +50,6 @@ void	logger::logging_starts	() {
 	if (logFile != nullptr)		// cannot happen
 	   return;
 
-	this -> logSettings  -> setValue ("logMode", 1);
 	logFile	= fopen (logFileName. toLatin1 (). data (), "a");
 }
 
@@ -56,7 +57,6 @@ void	logger::logging_stops	() {
 	if (logFile != nullptr)
 	   fclose (logFile);
 	logFile	= nullptr;
-	this -> logSettings -> setValue ("logMode", 0);
 }
 
 void	logger::log	(logType t) {
@@ -68,8 +68,7 @@ void	logger::log	(logType t) {
 	switch (t) {
 	   case LOG_RADIO_STOPS:
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
-	                                                "Radio stops");
-	      break;
+	                                                 "radio stops");
 	   case LOG_FRAMEDUMP_STOPS:
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
 	                                                 "framedump stops");
@@ -90,6 +89,10 @@ void	logger::log	(logType t) {
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
 	                                                 "ETI processing stops");
 	      break;
+	   case LOG_CONFIG_CHANGE:
+	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
+	                                                 "change in configuration");
+	      break;
 	                                           
 
 	   default:;
@@ -97,7 +100,29 @@ void	logger::log	(logType t) {
 	locker. unlock ();
 }
 	
-void	logger::log	(logType, const QString &) {}
+void	logger::log	(logType t, const QString &theString) {
+	if (logFile == nullptr)
+	   return;
+	QString theTime = QDateTime::currentDateTime (). toString ();
+	locker. lock ();
+	switch (t) {
+	   case LOG_CHANNEL_STOPS:
+	      fprintf (logFile, "%s\t: %s stops\n",
+	                        theTime. toLatin1 (). data (),
+	                        theString. toLatin1 (). data ());
+	      break;
+	   case LOG_SLIDE_WRITTEN:
+	      fprintf (logFile, "%s\t: %s written\n",
+	                        theTime. toLatin1 (). data (),
+	                        theString. toLatin1 (). data ());
+	      break;
+	
+	   default:
+	      break;
+	}
+	locker. unlock ();
+}
+
 void	logger::log	(logType t, const QString &channel, int snr) {
 	if (logFile == nullptr)
 	   return;
@@ -112,7 +137,7 @@ void	logger::log	(logType t, const QString &channel, int snr) {
 	   case LOG_SERVICE_STARTS:
 	      fprintf (logFile, "%s\t: %s %s %d\n",
 	                theTime. toLatin1 (). data (), "service activated",
-	                channel, snr);
+	                channel. toLatin1 (). data (), snr);
 	      break;
 	   default:;
 	}

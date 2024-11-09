@@ -39,6 +39,7 @@
 class	Rsp_device;
 class	generalCommand;
 class	xml_fileWriter;
+class	logger;
 
 #ifdef __MINGW32__
 //#include	"dlfcn.h"
@@ -52,7 +53,7 @@ class	sdrplayHandler_v3 final:
 Q_OBJECT
 public:
 			sdrplayHandler_v3	(QSettings *,
-	                                         const QString &);
+	                                         const QString &, logger *);
 			~sdrplayHandler_v3	();
 //	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();

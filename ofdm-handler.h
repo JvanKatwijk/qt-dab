@@ -122,6 +122,7 @@ private:
 	mscHandler		theMscHandler;
 
 //	deviceHandler		*inputDevice;
+	int			decoder;
 	int			threshold;
 	int			totalFrames;
 	int			goodFrames;

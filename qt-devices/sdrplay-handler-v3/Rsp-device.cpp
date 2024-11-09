@@ -130,7 +130,7 @@ bool	Rsp_device::set_agc	(int setPoint, bool on) {
 sdrplay_api_ErrT err;
 
 	if (on) {
-	   chParams -> ctrlParams. agc. setPoint_dBfs = - setPoint;
+	   chParams -> ctrlParams. agc. setPoint_dBfs = setPoint;
 	   chParams -> ctrlParams. agc.enable = sdrplay_api_AGC_CTRL_EN;
 	}
 	else

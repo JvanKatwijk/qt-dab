@@ -36,6 +36,7 @@
 #include	"ui_rtlsdr-widget.h"
 class	dll_driver_win;
 class	xml_fileWriter;
+class	logger;
 //
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
@@ -44,7 +45,8 @@ class	rtlsdrHandler_win final:
 	                public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler_win	(QSettings *, const QString &);
+			rtlsdrHandler_win	(QSettings *,
+	                                         const QString &, logger *);
 			~rtlsdrHandler_win	();
 	bool		restartReader		(int32_t);
 	void		stopReader		();

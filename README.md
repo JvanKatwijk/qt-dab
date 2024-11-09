@@ -1,17 +1,17 @@
-# Qt-DAB-6.X
+# Qt-DAB-6.8
 
 -------------------------------------------------------------------
 
-![6.1](/front-picture.png?raw=true)
+![6.8](/res/read_me/front-picture.png?raw=true)
 
 -------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
-About Qt-DAB-6.X
+About Qt-DAB-6.8
 -------------------------------------------------------------------------
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
-Qt-DAB is continuously under further development, **Qt-DAB-6.X** ,
+Qt-DAB is continuously under further development, **Qt-DAB-6.8** ,
 the stable version of Qt-DAB has - again - some new features, not often seen
 elsewehere. A good quote indicating what I try to achieve in the continuous development of Qt-DAB software is:
 
@@ -20,14 +20,26 @@ elsewehere. A good quote indicating what I try to achieve in the continuous deve
 And indeed, it continuously shows that it is fairly easy to
 add new features.
 
-Of course, as for previous versions, for *Qt-DAB-6.X* some predefined
+Of course, as for previous versions, for *Qt-DAB-6.8* some predefined
 versions are available.
 For Windows  three installers are maintained, and for Linux an x64 AppImage
 is available.
 
 
-![6.5](/Qt_DAB-6.X-1.png?raw=true)
-![6.5](/Qt_DAB-6.X-2.png?raw=true)
+![6.8](/res/read_me/Qt_DAB-6.X-1.png?raw=true)
+![6.8](/res/read_me/Qt_DAB-6.X-2.png?raw=true)
+
+What changed in Qt_DAB-6.8
+================================================================
+
+In Qt_DAB-6.8 the "ini" file was reorganized, the old one was a little
+messy. The "ini" file is named differently, which has has positive
+effect that running older versions is not affected, as negative effect
+that it is "empty"
+
+A seemingly minor change from the user's point of view is that now
+on selecting any channel, the service that was last used on that channel
+is started. 
 
 
 Table of Contents
@@ -101,7 +113,7 @@ Features
   * Qt-DAB supports handling *ip* output from data packets,
   * Qt-DAB supports sending *TPEG output* - when configured - as datagrams to port 8888,
   * Qt-DAB supports (automatic) *EPG* detection and building up a time table,
-  * Qt-DAB-6.X supports decoding and displaying  *journaline* when transmitted as subservice,
+  * Qt-DAB-6.8 supports decoding and displaying  *journaline* when transmitted as subservice,
   * Qt-DAB offers *scheduling* of some operations on services for up to 7 days;
   * Qt-DAB allows running an arbitrary amount of services from tne current ensemble as *background service*. with the output sent to a file,
   * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
@@ -113,9 +125,9 @@ Not implemented:
 Widgets and scopes
 =======================================================================
 
-![6.2](/Qt_DAB-6.X-2.png)
+![6.8](/res/read_me/Qt_DAB-6.X-2.png)
 
-The full GUI for Qt-DAB-6.X is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
+The full GUI for Qt-DAB-6.8 is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
 
 The *mainWidget* (see picture) is the one widget that is always visible
 as long as the program is running, it contains settings for controlling the visibility of other widgets.
@@ -156,7 +168,7 @@ If - in *ensemble mode* view - a service is also part of the favourites, the
 field in the right hand column is marked. Clicking on such a mark *removes* the
 service from the list, as does clicking on the field in the *favourites view*.
 
-![6.1](/technical-widget.png)
+![6.8](/res/read_me/technical-widget.png)
 
 The technical widget shows - as the name suggests - some technical details of
 the  selected audio service. If the audio of the service is also transmitted
@@ -173,7 +185,7 @@ resp. detecting a DAB+ frame, the RS error repair and the AAC decoding.
 The - in the picture red - label with text "mot available" turns green
 if in the selected service mot data (usually slides or text) is detected.
 
-![6.1](/spectrum-scope.png)
+![6.8](/res/read_me/spectrum-scope.png)
 
 The widget for the *spectrum scope* is equipped with a tab for selecting
 one of 6 views on the input signal.
@@ -188,12 +200,12 @@ lobs is shown.
 
 On the right hand side the widget shows some quality indicators of the DAB signal, such as applied frequency correction, remaining frequency error, SNR, some clock offsets and an estimate of the signal quality (for the latter, higher is better).
 
-![6.1](/spectrum-ideal.png)
+![6.8](/res/read_me/spectrum-ideal.png)
 
 The ideal form of the spectrum and the signal constellation as shown in the
 picture above is not often seen with real inputs.
 
-![6.1](/qt-dab-correlation.png)
+![6.8](/res/read_me/qt-dab-correlation.png)
 
 The *correlation* scope shows the correlation between the incoming signal and
 predefined  data, i.e. the data as they should be.
@@ -202,7 +214,7 @@ predefined  data, i.e. the data as they should be.
 The picture shows more more peaks, i.e. the signal from
 more than one transmitter is received. 
 
-![6.1](/qt-dab-null-period.png)
+![6.8](/res/read_me/qt-dab-null-period.png)
 
 A DAB signal is received as a sequence of samples, and can be thought to
 be built up from *frames*, each frame consisting of 199608 consecutive samples.
@@ -210,19 +222,19 @@ The first app. 2500 samples of a frame do not carry a signal, the NULL period.
 The *NULL scope* shows the samples in the transition from the NULL period to
 the first samples *with* data of a DAB frame.
 
-![6.1](/qt-dab-tii-data.png)
+![6.8](/res/read_me/qt-dab-tii-data.png)
 
 In reality the NULL period is not completely without signal, it contains an encoding of the TII data. The *TII scope* shows the spectrum of the data in the NULL
 period.
 This TII data - when decoded leads to 2 2 digit numbers -  is used to
 identify the transmitter of the signal received, these numbers can be mapped upon a name and location of the transmitter.
 
-![6.1](/qt-dab-channel.png)
+![6.8](/res/read_me/qt-dab-channel.png)
 
 The *channel scope* shows the *channel response* on the transmitted data, i.e.
 the deformation of the transmitted signal on the way from transmitter to receiver.  The picture shows the *cyan colored line*, i.e. the channel response on the amplitude, and the *red line*, i.e.  the channel effects on the phase of the samples.
 
-![6.1](/qt-dab-stddev.png)
+![6.8](/res/read_me/qt-dab-stddev.png)
 
 The *deviation scope* shows the mean deviation of the carriers
 in the decoded signal, ideally their phase is (a multiple of) 90
@@ -230,13 +242,13 @@ degrees. The phases are mapped upon (soft) bits, the larger the deviations,
 the less reliable these bits are.
 The Y-axis is in Hz.
 
-![8.1](/configuration-and-control.png)
+![8.8](/res/read_me/configuration-and-control.png)
 
 The *configuration and control* widget contains  checkboxes, spinboxes and
 buttons with which the configuration of the decoding process can be
 influenced.
 
-At starting up Qt-DAB-6.X for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
+At starting up Qt-DAB-6.8 for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
 
 For a detailed description of all selectors, see the manual (or read the tooltips).
 
@@ -263,7 +275,7 @@ and one with support for the V4 version of the stick.
 Scan control
 =======================================================================
 
-![6.1](/scan-widget.png?raw=true)
+![6.8](/res/read_me/scan-widget.png?raw=true)
 
 A separate widget - visible under control of the *scan* button on the
 main widget - provides full control on scanning. Qt-DAB provides different scanning modes, with single scannning and continuous scanning.
@@ -283,18 +295,18 @@ DAB transmissions are usually  transmitted by an SFN (Single Frequency Network),
 with unique TII data).
 If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
 
-![6.X](/DX-map.png?raw=true)
+![6.8](/res/read_me/DX-map.png?raw=true)
 
 The picture shows that in my environment, on channel 12C, the national network,
 I can identify 5 transmitters in the received signal.
 The left column in the widget shows the transmitter whose data is the data
 being processed.
 
-If the DX mode is set, Qt-DAB-6.X will save the transmitters that
+If the DX mode is set, Qt-DAB-6.8 will save the transmitters that
 are identified in a text file, in Windows the file in the Qt-DAB-files folder in the home folder, in Linux the file is stored in the Qt-DAB-files folder in the "/tmp" directory.
 Name of the file is *tii-files.txt*.
 
-![6.1](/QTmap.png?raw=true)
+![6.8](/res/read_me/QTmap.png?raw=true)
 
 As seen in the table above, distances to the transmitters can be
 computed. In Qt-DAB the transmitters can be made visible on a map.
@@ -316,7 +328,7 @@ See the manual for entering the home position to Qt-DAB.
 Documentation
 =================================================================
 
-An extensive *user's guide* - in PDF format - for Qt-DAB-6.X can be found in the "docs" directory in the repository. The manual contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
+An extensive *user's guide* - in PDF format - for Qt-DAB-6.8 can be found in the "docs" directory in the repository. The manual contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
 
 ![Qt-DAB documentation](/qt-dab-6-manual.png?raw=true)
 
@@ -382,8 +394,8 @@ Using an MS toolchain on Windows was for me not (yet?) successfull.
 Step 1
 -----------------------------------------------------------------
 
-- :information_source:  In the repository, the sources for 6.X are in the subdirectory *qt-dab-6.X* and for qt-dab-6.5 in the subdirectory *qt-dab-6.5*. 
-The subdirectories contain a *.pro( file with configuration information for use with *qmake*, and a *CMakeLists.txt* file with configuration information for use with *cmake*.
+- :information_source:  In the repository, the sources for 6.8 are in the subdirectory *qt-dab-6.8*. 
+The subdirectories contain a *.pro file with configuration information for use with *qmake*, and a *CMakeLists.txt* file with configuration information for use with *cmake*.
 
 - :information_source: Qt-DAB uses - as the name suggests - the Qt framework,
 for the time being still the version 5, it uses further the Qwt (version 6.2) library and the gcc compiler suite.
@@ -439,7 +451,7 @@ and install the libfaad package
 A note on Qt_Audio
 -----------------------------------------------------------------
 
-Qt_DAB-6.X allows selection between two audio subsystems, i.e. portaudio and
+Qt_DAB-6.8 allows selection between two audio subsystems, i.e. portaudio and
 Qt_Audio. It turns out that Qt_Audio does not work well on Ubuntu 20
 (it does on Fedora and Ubuntu 24 though). Since the AppImage is built
 on Ubuntu 20, selecting the Qt_Audio subsystem is ignored.
@@ -542,7 +554,7 @@ such an `.xml` file.
 
 While the current implementation for reading such files is limited to a single data block, the reader contains a *cont* button that, when touched while playing the data, will cause continuous playing of the data in the data block.
 
-![6.X](/qt-dab-xmlfiles.png?raw=true)
+![6.8](/res/read_me/qt-dab-xmlfiles.png?raw=true)
 
 The picture shows the reader when reading a file, generated from raw data emitted by an AIRspy device.
 

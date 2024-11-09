@@ -41,7 +41,10 @@
 #include	"device-exceptions.h"
 #include	"spyserver-client.h"
 
+#include	"settings-handler.h"
+
 #define	DEFAULT_FREQUENCY	(Khz (227360))
+#define	SPY_SERVER_16_SETTINGS	"SPY_SERVER_16_SETTINGS"
 
 	spyServer_client::spyServer_client	(QSettings *s):
 	                                        _I_Buffer (32 * 32768),
@@ -51,15 +54,17 @@
 	myFrame. show		();
 
     //	setting the defaults and constants
-	spyServer_settings	-> beginGroup ("spyServer_client");
-	settings. gain		= spyServer_settings ->
-	                          value ("spyServer-gain", 20). toInt();
-	settings. auto_gain	= spyServer_settings ->
-	                          value ("spyServer-auto_gain", 0). toInt();
+	settings. gain		= value_i (spyServer_settings,
+	                                   SPY_SERVER_16_SETTINGS,
+	                                   "spyServer-gain", 20);
+	settings. auto_gain	= value_i (spyServer_settings,
+	                                   SPY_SERVER_16_SETTINGS,
+	                                   "spyServer-auto_gain", 0);
+	settings. basePort	=  value_i (spyServer_settings,
+	                                    SPY_SERVER_16_SETTINGS,
+	                                    "spyServer+port", 5555);
 	if (settings. auto_gain != 0)
 	   autogain_selector	-> setChecked (true);
-	settings. basePort	= spyServer_settings -> value ("spyServer+port", 5555).toInt();
-	spyServer_settings	-> endGroup();
 	spyServer_gain	-> setValue (theGain);
 	lastFrequency	= DEFAULT_FREQUENCY;
 	connected	= false;
@@ -78,14 +83,12 @@
 }
 
 	spyServer_client::~spyServer_client () {
-	spyServer_settings ->  beginGroup ("spyServer_client");
 	if (connected) {		// close previous connection
 	   stopReader();
 	   connected = false;
 	}
-	spyServer_settings -> setValue ("spyServer_client-gain", 
-	                                            settings. gain);
-	spyServer_settings -> endGroup();
+	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
+	                              "spyServer_client-gain", settings. gain);
 	if (theServer != nullptr)
 	   delete theServer;
 	delete	hostLineEdit;
@@ -109,10 +112,8 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
-	spyServer_settings -> beginGroup ("spyServer_client");
-	ipAddress = spyServer_settings ->
-	                value ("remote-server", ipAddress). toString();
-	spyServer_settings -> endGroup();
+	ipAddress =value_s (spyServer_settings, SPY_SERVER_16_SETTINGS,
+	                                       "remote-server", ipAddress);
 	hostLineEdit	-> setText (ipAddress);
 
 	hostLineEdit	-> setInputMask ("000.000.000.000");
@@ -327,8 +328,8 @@ void	spyServer_client::handle_autogain	(int d) {
 	(void)d;
 	int x = autogain_selector -> isChecked ();
 	settings. auto_gain	= x != 0;
-	spyServer_settings	-> beginGroup ("spyServer_client");
-	spyServer_settings	-> setValue ("spyServer-auto_gain", x);
+	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
+	                             "spyServer-auto_gain", x ? 1 : 0);
 	if (connected)
 	   theServer -> set_gain_mode (d != x, 0);
 }

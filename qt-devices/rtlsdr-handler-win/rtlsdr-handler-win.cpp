@@ -33,6 +33,8 @@
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
+#include	"logger.h"
+#include	"settings-handler.h"
 
 #define	READLEN_DEFAULT	(4 * 8192)
 //
@@ -112,7 +114,8 @@ void	run () {
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler_win::rtlsdrHandler_win (QSettings *s,
-	                                      const QString &recorderVersion):
+	                                      const QString &recorderVersion,
+	                                      logger *theLogger): // dummy now
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
@@ -127,13 +130,11 @@ char	manufac [256], product [256], serial [256];
 	this	-> recorderVersion	= recorderVersion;
         setupUi (&myFrame);
 	set_position_and_size (s, &myFrame, "rtlsdrSettings");
-	myFrame.setWindowFlag(Qt::Tool, true);
 	myFrame. show();
 	filtering			= false;
 
-	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	currentDepth	= rtlsdrSettings -> value ("filterDepth", 5). toInt ();
-	rtlsdrSettings	-> endGroup ();
+	currentDepth	=  value_i (rtlsdrSettings, "rtlsdrSettings",
+	                                                 "filterDepth", 5);
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
 
@@ -189,20 +190,21 @@ char	manufac [256], product [256], serial [256];
 	rtlsdr_set_tuner_gain_mode (theDevice, 1);
 //
 //	See what the saved values are and restore the GUI settings
-	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	temp	= rtlsdrSettings -> value ("externalGain", "10"). toString();
+	temp	= value_s (rtlsdrSettings, "rtlsdrSettings",
+	                                   "externalGain", "10");
 	k	= gainControl -> findText (temp);
 	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
-	temp		= rtlsdrSettings -> value ("autogain",
-	                                      "autogain_on"). toString();
+	temp		= value_s (rtlsdrSettings, "rtlsdrSettings,
+	                                      "autogain", "autogain_on");
 	agcControl	-> setChecked (temp == "autogain_on");
 	
 	ppm_correction	->
-	     setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt());
+	     setValue (value_i (rtlsdrSettings, "rtlsdrSettings",
+	                                               "ppm_correction", 0));
 	save_gainSettings	=
-	     rtlsdrSettings -> value ("save_gainSettings", 1). toInt () != 0;
-	rtlsdrSettings	-> endGroup();
+	     value_i (rtlsdrSettings, "rtlsdrSettings,
+	                               "save_gainSettings", 1) != 0;
 
 	rtlsdr_get_usb_strings (theDevice, manufac, product, serial);
 	fprintf (stderr, "%s %s %s\n",
@@ -261,17 +263,17 @@ char	manufac [256], product [256], serial [256];
 	   workerHandle	= nullptr;
 //	   rtlsdr_clode (theDevice);
 	}
+	QString gainText	= gainControl -> currentText ();
 	store_widget_position (rtlsdrSettings, &myFrame, "rtlsdrSettings");
-	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	rtlsdrSettings	-> setValue ("externalGain",
-	                              gainControl -> currentText());
-	rtlsdrSettings	-> setValue ("autogain",
-	                              agcControl -> isChecked () ? "1" : "0");
-	rtlsdrSettings	-> setValue ("ppm_correction",
-	                              ppm_correction -> value());
-	rtlsdrSettings	-> setValue ("filterDepth", filterDepth -> value ());
+	store (rtlsdrSettings, "rtlsdrSettings",
+	                "externalGain", gainText);
+	store (rtlsdrSettings, "rtlsdrSettings",
+	                "autogain", agcControl -> isChecked () ? "1" : "0");
+	store (rtlsdrSettings, "rtlsdrSettings",
+	                "ppm_correction", ppm_correction -> value());
+	store (rtlsdrSettings, "rtlsdrSettings", 
+	                "filterDepth", filterDepth -> value ());
 	rtlsdrSettings	-> sync ();
-	rtlsdrSettings	-> endGroup();
 	usleep (1000);
 	myFrame. hide ();
 }
@@ -479,20 +481,16 @@ void    rtlsdrHandler_win::record_gainSettings (int freq) {
 QString	gain	= gainControl	-> currentText ();
 int	agc	= agcControl	-> isChecked () ? 1 : 0;
 QString theValue        = gain + ":" + QString::number (agc);
-
-	rtlsdrSettings         -> beginGroup ("rtlsdrSettings");
-	rtlsdrSettings         -> setValue (QString::number (freq), theValue);
-	rtlsdrSettings         -> endGroup ();
+QString key		= QString::number (freq);
+	store (rtlsdrSettings, "rtlsdrSettings", key, theValue);
 }
 
 void	rtlsdrHandler_win::update_gainSettings (int freq) {
 int	agc;
 QString	theValue	= "";
-
-	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	theValue	= rtlsdrSettings -> value (QString::number (freq), ""). toString ();
-	rtlsdrSettings	-> endGroup ();
-
+QString freqS		= QString::number (freq);
+	theValue	=  value_s (rtlsdrSettings, "rtlsdrSettings",
+	                                              freqS, theValue);
 	if (theValue == QString (""))
 	   return;		// or set some defaults here
 

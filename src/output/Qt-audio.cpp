@@ -25,6 +25,7 @@
 #include	"Qt-audio.h"
 #include	<QSettings>
 #include	"settingNames.h"
+#include	"settings-handler.h"
 //#include	<QMediaFormat>
 
 	Qt_Audio::Qt_Audio (QSettings *settings):
@@ -151,7 +152,8 @@ void	Qt_Audio::restart	() {
 	}
 	else
 	   fprintf (stderr, "restart gaat niet door\n");
-	int vol		= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
+	int vol		= value_i (audioSettings, SOUND_HANDLING,
+	                                  QT_AUDIO_VOLUME, 50);
 	m_audioOutput	-> setVolume ((float)vol / 100);
 }
 
@@ -175,7 +177,7 @@ void	Qt_Audio::resume	() {
 }
 
 void	Qt_Audio::setVolume	(int v) {
-	audioSettings	-> setValue (QT_AUDIO_VOLUME, v);
+	store (audioSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, v);
 	m_audioOutput	-> setVolume ((float)v / 100);
 }
 

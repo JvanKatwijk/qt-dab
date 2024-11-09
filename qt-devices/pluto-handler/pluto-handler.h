@@ -45,6 +45,7 @@
 //#endif
 
 class	xml_fileWriter;
+class	logger;
 
 #ifndef	PLUTO_RATE
 #define	PLUTO_RATE	2112000
@@ -123,11 +124,11 @@ struct stream_cfg {
 };
 
 class	plutoHandler:  //public QThread,
-	              public deviceHandler,
-	                                     public Ui_plutoWidget {
+	              public deviceHandler, public Ui_plutoWidget {
 Q_OBJECT
 public:
-			plutoHandler		(QSettings *, const QString &);
+			plutoHandler		(QSettings *,
+	                                         const QString &, logger *);
             		~plutoHandler		();
 	bool		restartReader		(int32_t);
 	void		stopReader		();

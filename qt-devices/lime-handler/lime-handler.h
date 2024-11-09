@@ -34,6 +34,7 @@
 #include	"device-handler.h"
 #include	"lime-widget.h"
 #include	"fir-filters.h"
+class		logger;
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -99,7 +100,8 @@ class	limeHandler:  //public QThread,
 	              public deviceHandler, public limeWidget {
 Q_OBJECT
 public:
-			limeHandler		(QSettings *, const QString &);
+			limeHandler		(QSettings *,
+	                                         const QString &, logger *);
 			~limeHandler		();
 
 	bool		restartReader		(int32_t);

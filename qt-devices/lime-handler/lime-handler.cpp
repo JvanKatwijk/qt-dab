@@ -26,28 +26,32 @@
 #include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
+#include	"logger.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
 
 #define	FIFO_SIZE	32768
+#define	LIME_SETTINGS	"LIME_SETTINGS"
+
 static
 int16_t localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
 
 	limeHandler::limeHandler (QSettings *s,
-	                          const QString &recorderVersion):
+	                          const QString &recorderVersion,
+	                          logger	*theLogger): // dummy for now
 	                             _I_Buffer (4* 1024 * 1024),
 	                             theFilter (5, 1560000 / 2, 2048000) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, "limeSettings");
-	myFrame. setWindowFlag (Qt::Tool, true); 
+	set_position_and_size (s, &myFrame, LIME_SETTINGS);
 	myFrame. show	();
 
 	filtering	= false;
 
-	limeSettings	-> beginGroup ("limeSettings");
-	currentDepth	= limeSettings	-> value ("filterDepth", 5). toInt ();
-	limeSettings	-> endGroup ();
+	currentDepth	= value_i (limeSettings, LIME_SETTINGS,
+	                                                "filterDepth", 5);
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
 #ifdef  __MINGW32__
@@ -126,11 +130,12 @@ lms_info_str_t limedevices [10];
 	for (int i = 0; i < res; i ++) 	
 	   antennaList	-> addItem (QString (antennas [i]));
 
-	limeSettings -> beginGroup ("limeSettings");
-	QString antenne	= limeSettings -> value ("antenna", "default"). toString();
+	QString antenne	=
+	           value_s (limeSettings, LIME_SETTINGS,
+	                                "antenna", "default");
 	save_gainSettings	=
-	          limeSettings -> value ("save_gainSettings", 1). toInt () != 0;
-	limeSettings	-> endGroup();
+	          value_i (limeSettings, LIME_SETTINGS, 
+	                                 "save_gainSettings", 1) != 0;
 
 	int k       = antennaList -> findText (antenne);
         if (k != -1) 
@@ -162,9 +167,7 @@ lms_info_str_t limedevices [10];
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
 	
-	limeSettings	-> beginGroup ("limeSettings");
-	k	= limeSettings	-> value ("gain", 50). toInt();
-	limeSettings	-> endGroup();
+	k	=  value_i (limeSettings, LIME_SETTINGS, "gain", 50);
 	gainSelector -> setValue (k);
 	setGain (k);
 	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
@@ -186,12 +189,12 @@ lms_info_str_t limedevices [10];
 	while (isRunning())
 	   usleep (100);
 	myFrame. hide ();
-	store_widget_position (limeSettings, &myFrame, "limeSettings");
-	limeSettings	-> beginGroup ("limeSettings");
-	limeSettings	-> setValue ("antenna", antennaList -> currentText());
-	limeSettings	-> setValue ("gain", gainSelector -> value());
-	limeSettings	-> setValue ("filterDepth", filterDepth -> value ());
-	limeSettings	-> endGroup();
+	store_widget_position (limeSettings, &myFrame, LIME_SETTINGS);
+	QString currentText = antennaList -> currentText ();
+	store (limeSettings, LIME_SETTINGS, "antenna", currentText);
+	store (limeSettings, LIME_SETTINGS, "gain", gainSelector -> value());
+	store (limeSettings, LIME_SETTINGS,
+	                      "filterDepth", filterDepth -> value ());
 	LMS_Close (theDevice);
 }
 
@@ -510,8 +513,8 @@ bool	isValid (QChar c) {
 }
 
 bool	limeHandler::setup_xmlDump () {
-QString channel		= limeSettings -> value ("channel", "xx").
-	                                                      toString ();
+QString channel		= value_s (limeSettings, DAB_GENERAL,
+	                                       "channel", "xx");
 	xmlWriter	= nullptr;
 	try {
 	   xmlWriter	= new xml_fileWriter (limeSettings,
@@ -547,17 +550,14 @@ void	limeHandler::record_gainSettings	(int key) {
 int gainValue	= gainSelector -> value ();
 QString theValue	= QString::number (gainValue);
 
-	limeSettings	-> beginGroup ("limeSettings");
-        limeSettings	-> setValue (QString::number (key), theValue);
-        limeSettings	-> endGroup ();
+        store (limeSettings, LIME_SETTINGS, QString::number (key), theValue);
 }
 
 void	limeHandler::update_gainSettings	(int key) {
 int	gainValue;
 
-	limeSettings	-> beginGroup ("limeSettings");
-        gainValue	= limeSettings -> value (QString::number (key), -1). toInt ();
-        limeSettings	-> endGroup ();
+        gainValue	= value_i (limeSettings, LIME_SETTINGS, 
+	                            QString::number (key), -1);
 
 	if (gainValue == -1)
 	   return;

@@ -27,6 +27,7 @@
 #include	<QString>
 #include	<QStringList>
 #include	<vector>
+class		logger;
 
 class	deviceChooser final {
 public:
@@ -34,11 +35,13 @@ public:
 			~deviceChooser	();
 	QStringList	getDeviceList	();
 	int		getDeviceIndex	(const QString &);	
-	deviceHandler	*createDevice	(const QString &, const QString &);
+	deviceHandler	*createDevice	(const QString &,
+	                                    const QString &, logger *);
 private:
 
 	QString		getFileName	(uint8_t &);
-	deviceHandler	*_createDevice	(const QString &, const QString &);
+	deviceHandler	*_createDevice	(const QString &,
+	                                   const QString &, logger *);
 	class	deviceItem {
 	public:
 		QString	deviceName;

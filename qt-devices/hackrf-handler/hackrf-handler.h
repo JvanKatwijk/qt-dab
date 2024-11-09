@@ -35,6 +35,7 @@
 #include	"ui_hackrf-widget.h"
 #include	"libhackrf/hackrf.h"
 #include	<QLibrary>
+class		logger;
 
 typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer *transfer);
 
@@ -84,7 +85,7 @@ class	hackrfHandler: public deviceHandler, public Ui_hackrfWidget {
 Q_OBJECT
 public:
 			hackrfHandler		(QSettings *,
-	                                            const QString &);
+	                                         const QString &, logger *);
 			~hackrfHandler		();
 
 	bool		restartReader		(int32_t);

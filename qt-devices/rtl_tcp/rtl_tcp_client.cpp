@@ -15,7 +15,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
- *
+ :*
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,6 +33,10 @@
 #include	"rtl_tcp_client.h"
 #include	"dab-constants.h"
 #include	"device-exceptions.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
+
+#define	RTL_TCP_CLIENT	"RTL_TCP_CLIENT"
 
 #define	DEFAULT_FREQUENCY	(Khz (220000))
 
@@ -48,15 +52,14 @@
 	myFrame. show		();
 
     //	setting the defaults and constants
-	remoteSettings	-> beginGroup ("rtl_tcp_client");
-	theGain		= remoteSettings ->
-	                          value ("rtl_tcp_client-gain", 20). toInt();
-	thePpm		= remoteSettings ->
-	                          value ("rtl_tcp_client-ppm", 0). toInt();
-	vfoOffset	= remoteSettings ->
-	                          value ("rtl_tcp_client-offset", 0). toInt();
-	basePort = remoteSettings -> value ("rtl_tcp_port", 1234).toInt();
-	remoteSettings	-> endGroup();
+	theGain		= value_i (remoteSettings, RTL_TCP_CLIENT,
+	                                    "rtl_tcp_client-gain", 20);
+	thePpm		= value_i (remoteSettings, RTL_TCP_CLIENT,
+	                                    "rtl_tcp_client-ppm", 0);
+	vfoOffset	= value_i (remoteSettings, RTL_TCP_CLIENT,
+	                                    "rtl_tcp_client-offset", 0);
+	basePort	= value_i (remoteSettings, RTL_TCP_CLIENT,
+	                                    "rtl_tcp_port", 1234);
 	tcp_gain	-> setValue (theGain);
 	tcp_ppm		-> setValue (thePpm);
 	lastFrequency	= DEFAULT_FREQUENCY;
@@ -78,18 +81,20 @@
 }
 
 	rtl_tcp_client::~rtl_tcp_client() {
-	remoteSettings ->  beginGroup ("rtl_tcp_client");
 	if (connected) {		// close previous connection
 	   stopReader();
 //	   streamer. close();
-	   remoteSettings -> setValue ("remote-server",
-	                               toServer. peerAddress(). toString());
+	   QString peerAddress	= toServer. peerAddress (). toString ();
+	   store (remoteSettings, RTL_TCP_CLIENT,
+	                           "remote-server", peerAddress);
 	   QByteArray datagram;
 	}
-	remoteSettings -> setValue ("rtl_tcp_client-gain",   theGain);
-	remoteSettings -> setValue ("rtl_tcp_client-ppm",    thePpm);
-	remoteSettings -> setValue ("rtl_tcp_client-offset", vfoOffset);
-	remoteSettings -> endGroup();
+	store (remoteSettings, RTL_TCP_CLIENT, 
+	                           "rtl_tcp_client-gain",   theGain);
+	store (remoteSettings, RTL_TCP_CLIENT,
+	                           "rtl_tcp_client-ppm",    thePpm);
+	store (remoteSettings, RTL_TCP_CLIENT,
+	                           "rtl_tcp_client-offset", vfoOffset);
 	toServer. close();
 	delete	hostLineEdit;
 }
@@ -112,10 +117,8 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
-	remoteSettings -> beginGroup ("rtl_tcp_client");
-	ipAddress = remoteSettings ->
-	                value ("remote-server", ipAddress). toString();
-	remoteSettings -> endGroup();
+	ipAddress	=  value_s (remoteSettings, RTL_TCP_CLIENT,
+	                           "remote-server", ipAddress);
 	hostLineEdit -> setText (ipAddress);
 
 	hostLineEdit	-> setInputMask ("000.000.000.000");
@@ -274,12 +277,13 @@ void	rtl_tcp_client::set_fCorrection	(int32_t ppm) {
 void	rtl_tcp_client::setDisconnect() {
 	if (connected) {		// close previous connection
 	   stopReader();
-	   remoteSettings -> beginGroup ("rtl_tcp_client");
-	   remoteSettings -> setValue ("remote-server",
-	                               toServer. peerAddress(). toString());
-	   remoteSettings -> setValue ("rtl_tcp_client-gain", theGain);
-	   remoteSettings -> setValue ("rtl_tcp_client-ppm", thePpm);
-	   remoteSettings -> endGroup();
+	   QString peerAddress	= toServer. peerAddress (). toString ();
+	   store (remoteSettings, RTL_TCP_CLIENT,
+	                               "remote-server", peerAddress);
+	   store (remoteSettings, RTL_TCP_CLIENT,
+	                               "rtl_tcp_client-gain", theGain);
+	   store (remoteSettings, RTL_TCP_CLIENT,
+	                                "rtl_tcp_client-ppm", thePpm);
 	   toServer. close();
 	}
 	connected	= false;

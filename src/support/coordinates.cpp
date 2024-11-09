@@ -28,12 +28,14 @@
 #include	<QSettings>
 
 #include	"settingNames.h"
+#include	"settings-handler.h"
+
 	coordinates::coordinates	(QSettings *dabSettings) {
 	this	-> dabSettings = dabSettings;
-	QString latVal = dabSettings  -> value (HOME_LATITUDE,
-	                                              "0"). toString ();
-        QString lonVal = dabSettings  -> value (HOME_LONGITUDE,
-	                                              "0"). toString ();
+	QString latVal = value_s (dabSettings, "MAP_HANDLING",
+	                  	                HOME_LATITUDE, "0");
+        QString lonVal = value_s (dabSettings, "MAP_HANDLING",
+	                                        HOME_LONGITUDE, "0");
 
 	QLocale	currentLocale	= QLocale::system ();
 	QLocale englishLocale(QLocale::English, QLocale::UnitedStates);
@@ -95,8 +97,10 @@ void	coordinates::set_longitude () {
 void	coordinates::handle_acceptButton () {
 	if (!latitude || !longitude)
 	   return;
-	dabSettings	-> setValue (HOME_LATITUDE, latitude -> text ());
-	dabSettings	-> setValue (HOME_LONGITUDE, longitude -> text ());
+	QString lat	= latitude -> text ();
+	QString lon	= longitude -> text ();
+	store (dabSettings, "MAP_HANDLING", HOME_LATITUDE, lat);
+	store (dabSettings, "MAP_HANDLING", HOME_LONGITUDE, lon);
 	QDialog::done (0);
 }
 

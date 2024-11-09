@@ -94,6 +94,7 @@ dabFrequencies frequencies_2 [] = {
 {nullptr, 0, false}
 };
 
+#define	SKIP_TABLE	"SKIP_TABLE"
 
 dabFrequencies alternatives [100];
 
@@ -192,14 +193,12 @@ void	bandHandler::saveSettings () {
 	   theTable. hide ();
 
 	if (fileName == "") {
-	   dabSettings	-> beginGroup ("skipTable");
 	   for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
 	      if (selectedBand [i]. skip)
-	         dabSettings	-> setValue (selectedBand [i]. key, 1);
+	         store (dabSettings, SKIP_TABLE, selectedBand [i]. key, 1);
 	      else
-	         dabSettings	-> remove (selectedBand [i]. key);
+	         remove (dabSettings, SKIP_TABLE, selectedBand [i]. key);
 	   }
-	   dabSettings	-> endGroup ();
 	}
 	else {
 	   QDomDocument skipList;
@@ -251,17 +250,15 @@ void	bandHandler::setup_skipList (const QString &fileName) {
 //
 //	default setting in the ini file!!
 void	bandHandler::default_skipList () {
-	dabSettings	->  beginGroup ("skipTable");
 	for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
 	   bool skipValue =
-	         dabSettings -> value (selectedBand [i]. key, 0). toInt () == 1;
+	         value_i (dabSettings, SKIP_TABLE, selectedBand [i]. key, 0) == 1;
 	   if (skipValue) {
 	      selectedBand [i]. skip = true;
 	      theTable. item (i, 1) -> setText ("-");
 	   }
 	   
 	}
-	dabSettings	-> endGroup ();
 }
 
 void	bandHandler::file_skipList	(const QString &fileName) {

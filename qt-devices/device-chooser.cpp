@@ -186,10 +186,11 @@ int	deviceChooser::getDeviceIndex	(const QString &name) {
 }
 
 deviceHandler	*deviceChooser::createDevice (const QString &deviceName,
-	                                      const QString &version) {
+	                                      const QString &version,
+	                                      logger *theLogger) {
 deviceHandler	*inputDevice;
 	try {
-	   inputDevice = _createDevice (deviceName, version);
+	   inputDevice = _createDevice (deviceName, version, theLogger);
 	} catch (std::exception &e) {
 	   QMessageBox:: warning (nullptr, "Warning", e. what ());
 	   return nullptr;
@@ -202,7 +203,8 @@ deviceHandler	*inputDevice;
 }
 
 deviceHandler	*deviceChooser::_createDevice (const QString &s,
-	                                         const QString &version) {
+	                                       const QString &version,
+	                                       logger *theLogger) {
 deviceHandler	*inputDevice_p	= nullptr;
 int	deviceNumber	= getDeviceIndex (s);
 
@@ -212,50 +214,46 @@ int	deviceNumber	= getDeviceIndex (s);
 	switch (deviceNumber) {
 #ifdef	HAVE_SDRPLAY_V2
 	   case SDRPLAY_V2_DEVICE:
-	      return new sdrplayHandler_v2 (dabSettings, version);
+	      return new sdrplayHandler_v2 (dabSettings, version, theLogger);
 	      break;
 #endif
 #ifdef	HAVE_SDRPLAY_V3
 	   case SDRPLAY_V3_DEVICE:
-	      return new sdrplayHandler_v3 (dabSettings, version);
+	      return new sdrplayHandler_v3 (dabSettings, version, theLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V3
 	   case RTLSDR_DEVICE_V3:
-	      return new rtlsdrHandler_win (dabSettings, version);
+	      return new rtlsdrHandler_win (dabSettings, version, theLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V4
 	   case RTLSDR_DEVICE_V4:
-	      return new rtlsdrHandler_win (dabSettings, version);
+	      return new rtlsdrHandler_win (dabSettings, version, theLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR
 	   case RTLSDR_DEVICE:
-	      return new rtlsdrHandler (dabSettings, version);
+	      return new rtlsdrHandler (dabSettings, version, theLogger);
 	      break;
 #endif
-#ifdef	HAVE_AIRSPY
+#ifdef 	HAVE_AIRSPY_2
 	   case AIRSPY_DEVICE:
-	      return new airspyHandler (dabSettings, version);
-	      break;
-#elif 	HAVE_AIRSPY_2
-	   case AIRSPY_DEVICE:
-	      return new airspy_2 (dabSettings, version);
+	      return new airspy_2 (dabSettings, version, theLogger);
 	      break;
 #endif
 #ifdef	HAVE_HACKRF
 	   case HACKRF_DEVICE:
-	      return new hackrfHandler (dabSettings, version);
+	      return new hackrfHandler (dabSettings, version, theLogger);
 #endif
 #ifdef	HAVE_LIME
 	   case LIME_DEVICE:
-	      return new limeHandler (dabSettings, version);
+	      return new limeHandler (dabSettings, version, theLogger);
 	      break;
 #endif
 #ifdef	HAVE_PLUTO
 	   case PLUTO_DEVICE:
-	      return new plutoHandler (dabSettings, version);
+	      return new plutoHandler (dabSettings, version, theLogger);
 #endif
 #ifdef HAVE_RTL_TCP
 	   case RTL_TCP_DEVICE:

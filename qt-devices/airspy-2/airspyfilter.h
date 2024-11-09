@@ -27,11 +27,12 @@
 #include	<cstdlib>
 #include	<cmath>
 #include	<complex>
+class		logger;
 
 class	airspyFilter {
 public:
-			airspyFilter	(int16_t, int32_t, int32_t);
-	                ~airspyFilter();
+			airspyFilter	(int16_t, int32_t, int32_t, logger *);
+	                ~airspyFilter	();
 	std::complex<float> Pass	(float re, float im);
 	int16_t		firSize;
 	int16_t		ip;

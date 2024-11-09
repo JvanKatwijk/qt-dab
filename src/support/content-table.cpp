@@ -26,7 +26,7 @@
 #include        "radio.h"
 #include	"dab-constants.h"
 #include	"findfilenames.h"
-#include	"settingNames.h"
+#include	"position-handler.h"
 
 	contentTable::contentTable (RadioInterface *theRadio, 
 	                                        QSettings *s,
@@ -36,21 +36,9 @@
 	this	-> dabSettings	= s;
 	this	-> channel	= channel;
 	this	-> columns	= cols;
-	QString headerName	= CONTENT_TABLE;
-	dabSettings	-> beginGroup (headerName);
-	int x		= dabSettings -> value (headerName + "-x",
-	                                                   200). toInt ();
-	int y		= dabSettings -> value (headerName + "-y",
-	                                                   200). toInt ();
-	int wi		= dabSettings -> value (headerName + "-w",
-	                                                   200). toInt ();
-	int hi		= dabSettings -> value (headerName + "h",
-	                                                   200). toInt ();
 	myWidget        = new QScrollArea (nullptr);
-        myWidget        -> resize (wi, hi);
-        myWidget        -> setWidgetResizable(true);
-	myWidget	-> move (x, y);
-	dabSettings	-> endGroup ();
+        myWidget        -> setWidgetResizable (true);
+	set_position_and_size (dabSettings, myWidget,  CONTENT_TABLE);
 	
         contentWidget	= new QTableWidget (0, cols);
 	contentWidget	-> setColumnWidth (0, 150);
@@ -68,17 +56,7 @@
 }
 
 	contentTable::~contentTable () {
-	QString	headerName	= CONTENT_TABLE;
-	dabSettings	-> beginGroup (headerName);
-	dabSettings	-> setValue (headerName + "-x",
-	                                         myWidget -> pos (). x ());
-	dabSettings	-> setValue (headerName + "-y",
-	                                         myWidget -> pos (). y ());
-	dabSettings	-> setValue (headerName + "-w",
-	                                         myWidget ->  width ());
-	dabSettings	-> setValue (headerName + "=h",
-	                                         myWidget -> height ());
-	dabSettings	-> endGroup ();
+	store_widget_position (dabSettings, myWidget, CONTENT_TABLE);
 	clearTable ();
         delete  contentWidget;
         delete  myWidget;

@@ -90,7 +90,7 @@ float Length	= jan_abs (V);
 	}
 
 	iqSelector			= SHOW_DECODED;
-	decoder				= FAST_DECODER;
+	decoder				= DEFAULT_DECODER;
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -224,8 +224,20 @@ DABFLOAT Alpha = 0.05f;
 	                    compute_avg (imag (carrierCenters [index]),
 	                                         abs (imag (r1)), Alpha));
 	   switch (decoder) {
-	      case FAST_DECODER:
+//
+//	s;ight;y improved wrt the original default variant
 	      default:
+	      {	 DABFLOAT abb	= ab1;
+//	      {	 DABFLOAT abb	= amplitudeLevel [index] * M_SQRT1_2;
+	 	 DABFLOAT	err_x = abs (abb - abs (real (r1))) / abb;
+                 DABFLOAT	err_y = abs (abb - abs (imag (r1))) / abb;
+	         ibits [i]	=
+	                    -sign (real (r1)) * (1 - err_x) * MAX_VITERBI; 
+	         ibits [carriers + i]	=
+	                    -sign (imag (r1)) * (1 - err_y) * MAX_VITERBI; 
+	      }
+
+	      case ALT1_DECODER:
 //	(normalized) value and the center point in the quadrant
 //	extremely simple, works fine
 	         ibits [i]	= 
@@ -234,8 +246,7 @@ DABFLOAT Alpha = 0.05f;
 	                        (int16_t) (- imag (r1) * MAX_VITERBI / ab1);
 	         break;
 
-	      case ALT1_DECODER:
-//
+	      case ALT2_DECODER:
 //	same as previous one, however, with a filtered "centerpoint"
 	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
 	         ibits [i]		=
@@ -245,21 +256,25 @@ DABFLOAT Alpha = 0.05f;
 	         break;
 	      }
 
-	      case ALT2_DECODER:
+	      case DEFAULT_DECODER:
 //	here we look at the error of the sample wrt a filtered "centerpoint"
 //	and give the X and Y the error as penalty
 //	works actually as best of the three
-	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
-	         DABFLOAT err_x	= abs (base - abs (real (r1)));
-	         DABFLOAT err_y	= abs (base - abs (imag (r1)));
+	      {	 Complex   base		= carrierCenters [index];
+	         DABFLOAT base_x	= real (base);
+	         DABFLOAT base_y	= imag (base);
+//	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
+	         DABFLOAT err_x	= abs (base_x - abs (real (r1))) / base_x;
+	         DABFLOAT err_y	= abs (base_y - abs (imag (r1))) / base_y;;
 	         ibits [i]		=
 	                 (int16_t) (-sign (real (r1)) *
-	                       (base - err_x) * MAX_VITERBI / base);
+	                       (1 - err_x) * MAX_VITERBI);
 	         ibits [carriers + i]	=
 	                 (int16_t) (-sign (imag (r1)) *
-	                       (base - err_y) * MAX_VITERBI / base);
+	                       (1 - err_y) * MAX_VITERBI);
 	         break;
 	      }
+
 	   }
 //
 //	an interesting observation (for me) was that using the

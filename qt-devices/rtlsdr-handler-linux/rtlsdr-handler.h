@@ -41,6 +41,7 @@
 #include	<QLibrary>
 class	dll_driver;
 class	xml_fileWriter;
+class	logger;
 //
 //	create typedefs for the library functions
 typedef	struct rtlsdr_dev rtlsdr_dev_t;
@@ -80,7 +81,8 @@ class	rtlsdrHandler final:
 	               public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler	(QSettings *, const QString &);
+			rtlsdrHandler	(QSettings *,
+	                                 const QString &, logger *);
 			~rtlsdrHandler	();
 	bool		restartReader	(int32_t);
 	void		stopReader	();

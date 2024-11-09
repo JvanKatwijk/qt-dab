@@ -33,6 +33,7 @@
 #include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
 #include	<QLibrary>
+class		logger;
 //
 //
 //	Note
@@ -121,7 +122,8 @@ class	sdrplayHandler_v2 final: // public QObject,
 	                   public deviceHandler, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
-			sdrplayHandler_v2	(QSettings *, const QString &);
+			sdrplayHandler_v2	(QSettings *,
+	                                         const QString &, logger *);
 			~sdrplayHandler_v2	();
 
 	bool		restartReader		(int32_t);

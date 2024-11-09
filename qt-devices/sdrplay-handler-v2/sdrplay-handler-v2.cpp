@@ -33,6 +33,12 @@
 #include	"sdrplayselect.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
+#include	"logger.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
+
+#define	SDRPLAY_SETTINGS_V2	"SDRPLAY_SETTINGS_V2"
+
 static
 int     RSP1_Table [] = {0, 24, 19, 43};
 
@@ -62,7 +68,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	here we start
 	sdrplayHandler_v2::
 	         sdrplayHandler_v2  (QSettings *s,
-	                             const QString &recorderVersion):
+	                             const QString &recorderVersion,
+	                             logger	*theLogger): // dummy right now
 	                                    _I_Buffer (4 * 1024 * 1024) {
 mir_sdr_ErrT	err;
 float	ver;
@@ -71,7 +78,7 @@ mir_sdr_DeviceT devDesc [4];
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, "sdrplaySettings_v2");
+	set_position_and_size (s, &myFrame, SDRPLAY_SETTINGS_V2);
 	myFrame.setWindowFlag(Qt::Tool, true);
 	myFrame. show ();
 	antennaSelector		-> hide();
@@ -109,28 +116,30 @@ mir_sdr_DeviceT devDesc [4];
 	connect (this, &sdrplayHandler_v2::signal_agcSetting,
 	         agcControl, &QCheckBox::setChecked);
 
-	sdrplaySettings		-> beginGroup ("sdrplaySettings_v2");
-	int val		=
-	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt();
+	int val		= value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                    "sdrplay-ifgrdb", 20);
 	if (20 <= val && val <= 59)
 	  signal_GRdBValue (val);
 
 	ppmControl		-> setValue (
-	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt());
+	            value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                     "sdrplay-ppm", 0));
 	bool	debugFlag	=
-	            sdrplaySettings -> value ("sdrplay-debug", 0). toInt();
+	            value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                     "sdrplay-debug", 0);
 	if (!debugFlag)
 	   debugControl -> hide();
 	bool agcMode		=
-	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
+	       value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                     "sdrplay-agcMode", 0) != 0;
 	if (agcMode) {
 	   signal_agcSetting	(true);
 	   GRdBSelector         -> hide();
 	   gainsliderLabel      -> hide();
 	}
 	save_gainSettings	=
-	       sdrplaySettings	-> value ("save_gainSettings", 1). toInt () != 0;
-	sdrplaySettings	-> endGroup();
+	       value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                     "save_gainSettings", 1) != 0;
 
 	err = my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
 	if (err != mir_sdr_Success) {
@@ -228,7 +237,8 @@ mir_sdr_DeviceT devDesc [4];
 	      break;
 	}
 
-	val	= sdrplaySettings -> value ("sdrplay-lnastate", 0). toInt();
+	val	= value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                      "sdrplay-lnastate", 0);
 	if (val < 0)
 	   val = 0;
 	if (val > lnaMax)
@@ -238,7 +248,8 @@ mir_sdr_DeviceT devDesc [4];
 	connect (this, &sdrplayHandler_v2::signal_lnaValue,
                  lnaGainSetting, &QSpinBox::setValue);
 
-	val	= sdrplaySettings -> value ("biasT_selector", 0). toInt ();
+	val	=  value_i (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                                      "biasT_selector", 0);
 	if (val != 0) {
 	   biasT_selector -> setChecked (true);
 	   handle_biasT_selector (1);
@@ -263,16 +274,16 @@ mir_sdr_DeviceT devDesc [4];
 	sdrplayHandler_v2::~sdrplayHandler_v2() {
 	stopReader	();
 	myFrame. hide	();
-	store_widget_position (sdrplaySettings, &myFrame, "sdrplaySettings_v2");
-	sdrplaySettings	-> beginGroup ("sdrplaySettings_v2");
-	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value());
-	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
-	                                    GRdBSelector -> value());
-	sdrplaySettings -> setValue ("sdrplay-lnastate",
-	                                    lnaGainSetting -> value());
-	sdrplaySettings	-> setValue ("sdrplay-agcMode",
+	store_widget_position (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS_V2);
+	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                            "sdrplay-ppm", ppmControl -> value());
+	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                             "sdrplay-ifgrdb", GRdBSelector -> value());
+	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                             "sdrplay-lnastate", lnaGainSetting -> value());
+	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                             "sdrplay-agcMode",
 	                                  agcControl -> isChecked() ? 1 : 0);
-	sdrplaySettings	-> endGroup();
 	sdrplaySettings	-> sync();
 
 	if (numofDevs > 0)
@@ -915,8 +926,8 @@ bool	isValid (QChar c) {
 }
 
 bool	sdrplayHandler_v2::setup_xmlDump () {
-QString channel		= sdrplaySettings -> value ("channel", "xx").
-	                                                      toString ();
+QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
+	                                                  "channel", "xx");
 	xmlWriter	= nullptr;
 	mir_sdr_GainValuesT theGains;
         my_mir_sdr_GetCurrentGain (&theGains);
@@ -967,9 +978,8 @@ QString theValue	= QString::number (GRdB) + ":";
 	theValue. append (":");
 	theValue. append (QString::number (agc));
 
-	sdrplaySettings         -> beginGroup ("sdrplaySettings_v2");
-	sdrplaySettings		-> setValue (QString::number (freq), theValue);
-	sdrplaySettings		-> endGroup ();
+	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                    	QString::number (freq), theValue);
 }
 
 void	sdrplayHandler_v2::update_gainSettings (int freq) {
@@ -978,9 +988,9 @@ int	lnaState;
 int	agc;
 QString	theValue	= "";
 
-	sdrplaySettings	-> beginGroup ("sdrplaySettings_v2");
-	theValue	= sdrplaySettings -> value (QString::number (freq), ""). toString ();
-	sdrplaySettings	-> endGroup ();
+	sdrplaySettings	-> beginGroup (SDRPLAY_SETTINGS_V2);
+	theValue	=  value_s (sdrplaySettings, SDRPLAY_SETTINGS_V2,
+	                         QString::number (freq), "");
 
 	if (theValue == QString (""))
 	   return;		// or set some defaults here
@@ -1018,7 +1028,8 @@ QString	theValue	= "";
 void	sdrplayHandler_v2::handle_biasT_selector (int k) {
 bool setting = biasT_selector -> isChecked ();
 	(void)k;
-	sdrplaySettings -> setValue ("biasT_selector", setting ? 1 : 0);
+	store (sdrplaySettings, SDRPLAY_SETTINGS_V2, 
+	                          "biasT_selector", setting ? 1 : 0);
 	switch (hwVersion) {
 	   case 1:		// old RSP
 	      return;		// no support for biasT

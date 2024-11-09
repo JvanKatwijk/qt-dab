@@ -34,19 +34,24 @@
 #include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
+#include	"logger.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
 
 #define	DEFAULT_VGA_GAIN	30
 #define	DEFAULT_LNA_GAIN	30
 
+#define	HACKRF_SETTINGS	"HACKRF_SETTINGS"
+
 	hackrfHandler::hackrfHandler  (QSettings *s,
-	                               const QString &recVersion):
+	                               const QString &recVersion,
+	                               logger	*theLogger) : // dummy for now
 	                                  hackrfSettings (s),
 	                                  recorderVersion (recVersion),
 	                                  _I_Buffer (4 * 1024 * 1024) {
 
         setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, "hackrfSettings");
-	myFrame. setWindowFlag (Qt::Tool, true);
+	set_position_and_size (s, &myFrame, HACKRF_SETTINGS);
 	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
@@ -74,26 +79,28 @@
 	lastFrequency	= Khz (220000);
 //
 //	See if there are settings from previous incarnations
-	hackrfSettings		-> beginGroup ("hackrfSettings");
 	lnaGainSlider 		-> setValue (
-	       hackrfSettings -> value ("hack_lnaGain",
-	                                         DEFAULT_LNA_GAIN). toInt());
+	       value_i (hackrfSettings, HACKRF_SETTINGS,
+	                               "hack_lnaGain", DEFAULT_LNA_GAIN));
 	vgaGainSlider 		-> setValue (
-	       hackrfSettings -> value ("hack_vgaGain",
-	                                         DEFAULT_VGA_GAIN). toInt());
+	       value_i (hackrfSettings, HACKRF_SETTINGS,
+	                               "hack_vgaGain", DEFAULT_VGA_GAIN));
 	bool isChecked =
-	       hackrfSettings -> value ("hack_AntEnable", 0). toBool();
+	       value_i (hackrfSettings, HACKRF_SETTINGS,
+	                               "hack_AntEnable", 0);
 	biasT_button -> setCheckState (isChecked ? Qt::Checked :
 	                                              Qt::Unchecked);
 	isChecked	=
-	       hackrfSettings -> value ("hack_AmpEnable", false). toBool();
+	       value_i (hackrfSettings, HACKRF_SETTINGS,
+	                              "hack_AmpEnable", 0) != 0;
 	AmpEnableButton	-> setCheckState (isChecked ? Qt::Checked : 
 	                                              Qt::Unchecked);
 	ppm_correction      -> setValue (
-	       hackrfSettings -> value ("hack_ppmCorrection", 0). toInt());
+	       value_i (hackrfSettings, HACKRF_SETTINGS,
+	                              "hack_ppmCorrection", 0));
 	save_gainSettings	=
-	       hackrfSettings -> value ("save_gainSettings", 1). toInt () != 0;
-	hackrfSettings	-> endGroup();
+	       value_i (hackrfSettings, HACKRF_SETTINGS,
+	                              "save_gainSettings", 1);
 //
 	if (hackrf_init () != HACKRF_SUCCESS) {
 	   delete  library_p;
@@ -184,19 +191,18 @@
 	hackrfHandler::~hackrfHandler() {
 	stopReader();
 	myFrame. hide ();
-	store_widget_position (hackrfSettings, &myFrame, "hackrfSettings");
-	hackrfSettings	-> beginGroup ("hackrfSettings");
-	hackrfSettings	-> setValue ("hack_lnaGain",
-	                                 lnaGainSlider -> value());
-	hackrfSettings -> setValue ("hack_vgaGain",
-	                                 vgaGainSlider	-> value());
-	hackrfSettings -> setValue ("hack_AntEnable",
-	                             biasT_button -> checkState() == Qt::Checked ? 1 : 0);
-	hackrfSettings -> setValue ("hack_AmpEnable",
+	store_widget_position (hackrfSettings, &myFrame, HACKRF_SETTINGS);
+	store (hackrfSettings, HACKRF_SETTINGS,
+	                         "hack_lnaGain", lnaGainSlider -> value());
+	store (hackrfSettings, HACKRF_SETTINGS,
+	                        "hack_vgaGain", vgaGainSlider	-> value());
+	store (hackrfSettings, HACKRF_SETTINGS, 
+	                        "hack_AntEnable", biasT_button -> checkState() == Qt::Checked ? 1 : 0);
+	store (hackrfSettings, HACKRF_SETTINGS,
+	                        "hack_AmpEnable",
 	                              AmpEnableButton -> checkState() == Qt::Checked);
-	hackrfSettings	-> setValue ("hack_ppmCorrection",
-	                              ppm_correction -> value());
-	hackrfSettings	-> endGroup();
+	store (hackrfSettings, HACKRF_SETTINGS,
+	                        "hack_ppmCorrection", ppm_correction -> value());
 	this	-> hackrf_close (theDevice);
 	this	-> hackrf_exit();
 }
@@ -554,8 +560,8 @@ void	hackrfHandler::handle_xmlDump () {
 }
 
 bool	hackrfHandler::setup_xmlDump () {
-QString channel		= hackrfSettings -> value ("channel", "xx").
-	                                                      toString ();
+QString channel		= value_s (hackrfSettings, DAB_GENERAL,
+	                                             "channel", "xx");
 	try {
 	   xmlWriter	= new xml_fileWriter (hackrfSettings,
 	                                      channel,
@@ -599,9 +605,8 @@ QString theValue;
 	theValue	= QString::number (vgaValue) + ":";
 	theValue	+= QString::number (lnaValue) + ":";
 	theValue	+= QString::number (ampEnable);
-	hackrfSettings  -> beginGroup ("hackrfSettings");
-	hackrfSettings	-> setValue (QString::number (freq), theValue);
-	hackrfSettings -> endGroup ();
+	store (hackrfSettings, HACKRF_SETTINGS,
+	                          QString::number (freq), theValue);
 }
 
 void	hackrfHandler::update_gainSettings	(int freq) {
@@ -609,10 +614,9 @@ int	vgaValue;
 int	lnaValue;
 int	ampEnable;
 QString	theValue	= "";
-
-	hackrfSettings	-> beginGroup ("hackrfSettings");
-	theValue	= hackrfSettings -> value (QString::number (freq), ""). toString ();
-	hackrfSettings	-> endGroup ();
+QString freqS		= QString::number (freq);
+	theValue	= value_s (hackrfSettings, HACKRF_SETTINGS,
+	                           freqS, theValue);
 
 	if (theValue == QString (""))
 	   return;		// or set some defaults here

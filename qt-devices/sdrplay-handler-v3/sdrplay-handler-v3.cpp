@@ -28,6 +28,11 @@
 #include	"position-handler.h"
 #include	"sdrplay-commands.h"
 #include	"xml-filewriter.h"
+
+#include	"logger.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
+
 //	The Rsp's
 #include	"Rsp-device.h"
 #include	"RspI-handler.h"
@@ -35,6 +40,7 @@
 #include	"RspII-handler.h"
 #include	"RspDuo-handler.h"
 #include	"RspDx-handler.h"
+
 
 #include	"device-exceptions.h"
 #define SDRPLAY_RSP1_   1
@@ -45,7 +51,7 @@
 #define SDRPLAY_RSP1B_  6
 #define SDRPLAY_RSPdxR2_  7
 
-#define	SDRPLAY_SETTINGS	"sdrplaySettings_v3"
+#define	SDRPLAY_SETTINGS	"SDRPLAY_SETTINGS_V3"
 #define	SDRPLAY_IFGRDB		"sdrplay-ifgrdb"
 #define	SDRPLAY_LNASTATE	"sdrplay-lnastate"
 #define	SDRPLAY_PPM		"sdrplay-ppm"
@@ -82,8 +88,10 @@ std::string errorMessage (int errorCode) {
 	return "";
 }
 
-	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
-	                                       const QString &recorderVersion):
+	sdrplayHandler_v3::
+	           sdrplayHandler_v3  (QSettings *s,
+	                               const QString &recorderVersion,
+	                               logger	*theLogger): // dummy right now
 	                                          _I_Buffer (4 * 1024 * 1024) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
@@ -91,7 +99,6 @@ std::string errorMessage (int errorCode) {
         setupUi (&myFrame);
 	QString	groupName	= SDRPLAY_SETTINGS;
 	set_position_and_size (s, &myFrame, groupName);
-	myFrame.setWindowFlag(Qt::Tool, true);
 	myFrame. show	();
 
 	xmlWriter		= nullptr;
@@ -105,22 +112,24 @@ std::string errorMessage (int errorCode) {
 //	See if there are settings from previous incarnations
 //	and config stuff
 
-	sdrplaySettings		-> beginGroup (groupName);
 	GRdBSelector 		-> setValue (
-	            sdrplaySettings -> value (SDRPLAY_IFGRDB, 20). toInt());
+	            value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_IFGRDB, 20));
 	GRdBValue		= GRdBSelector -> value ();
 
 	lnaGainSetting		-> setValue (
-	            sdrplaySettings -> value (SDRPLAY_LNASTATE, 4). toInt());
+	            value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_LNASTATE, 4));
 
 	lnaState		= lnaGainSetting -> value ();
 
 	ppmControl		-> setValue (
-	            sdrplaySettings -> value (SDRPLAY_PPM, 0.0). toDouble ());
+	            value_f (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_PPM, 0.0));
 	ppmValue		= ppmControl -> value ();
 
-	agcMode		=
-	       sdrplaySettings -> value (SDRPLAY_AGCMODE, 0). toInt() != 0;
+	agcMode		= value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                      SDRPLAY_AGCMODE, 0) != 0;
 
 	if (agcMode) {
 	   agcControl -> setChecked (true);
@@ -129,15 +138,16 @@ std::string errorMessage (int errorCode) {
 	}
 
 	biasT           =
-               sdrplaySettings -> value (SDRPLAY_BIAS_T, 0). toInt () != 0;
+               value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                      SDRPLAY_BIAS_T, 0) != 0;
         if (biasT)
            biasT_selector -> setChecked (true);
 
 	bool notch	=
-               sdrplaySettings -> value (SDRPLAY_NOTCH, 0). toInt () != 0;
+               value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                      SDRPLAY_NOTCH, 0) != 0;
 	if (notch)
 	   notch_selector -> setChecked (true);
-	sdrplaySettings	-> endGroup	();
 
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
@@ -185,16 +195,14 @@ std::string errorMessage (int errorCode) {
 	QString groupName	= SDRPLAY_SETTINGS;
 	store_widget_position (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS);
 
-	sdrplaySettings	-> beginGroup (SDRPLAY_SETTINGS);
-	sdrplaySettings -> setValue (SDRPLAY_PPM,
-	                                           ppmControl -> value ());
-	sdrplaySettings -> setValue (SDRPLAY_IFGRDB,
-	                                           GRdBSelector -> value ());
-	sdrplaySettings -> setValue (SDRPLAY_LNASTATE,
-	                                           lnaGainSetting -> value ());
-	sdrplaySettings	-> setValue (SDRPLAY_AGCMODE,
-	                                  agcControl -> isChecked() ? 1 : 0);
-	sdrplaySettings	-> endGroup ();
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                          SDRPLAY_PPM, ppmControl -> value ());
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                          SDRPLAY_IFGRDB, GRdBSelector -> value ());
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                          SDRPLAY_LNASTATE, lnaGainSetting -> value ());
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                          SDRPLAY_AGCMODE, agcControl -> isChecked() ? 1 : 0);
 	sdrplaySettings	-> sync();
 }
 
@@ -219,11 +227,13 @@ stopRequest r;
         if (!receiverRuns. load ())
            return;
         messageHandler (&r);
+	_I_Buffer. FlushRingBuffer();
 }
 //
 int32_t	sdrplayHandler_v3::getSamples (std::complex<float> *V, int32_t size) { 
 auto *temp 	= dynVec (std::complex<int16_t>, size);
-
+	if (!receiverRuns. load ())
+	   return 0;
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
         for (int i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
@@ -234,6 +244,8 @@ auto *temp 	= dynVec (std::complex<int16_t>, size);
 }
 
 int32_t	sdrplayHandler_v3::Samples	() {
+	if (!receiverRuns. load ())
+	   return 0;
 	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
@@ -318,28 +330,25 @@ biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 
 	(void)v;
 	messageHandler (&r);
-	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
-	sdrplaySettings -> setValue (SDRPLAY_BIAS_T,
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                          SDRPLAY_BIAS_T,
 	                              biasT_selector -> isChecked () ? 1 : 0);
-	sdrplaySettings -> endGroup ();
 }
 
 void	sdrplayHandler_v3::set_notch (int v) {
 notch_Request r (notch_selector -> isChecked () ? 1 : 0);
 	(void)v;
 	messageHandler (&r);
-	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
-	sdrplaySettings -> setValue (SDRPLAY_NOTCH,
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                           SDRPLAY_NOTCH,
 	                              notch_selector -> isChecked () ? 1 : 0);
-	sdrplaySettings -> endGroup ();
 }
 	
 void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' :
 	                                    s == "Antenna B" ? 'B' : 'C'));
-	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
-	sdrplaySettings	-> setValue (SDRPLAY_ANTENNA, s);
-	sdrplaySettings	-> endGroup ();
+	QString ss = s;
+	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_ANTENNA, ss);
 }
 
 void	sdrplayHandler_v3::set_xmlDump () {
@@ -366,11 +375,9 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 	   antennaSelector	-> show ();
 	}
 
-	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
 	QString setting	=
-	      sdrplaySettings	-> value (SDRPLAY_ANTENNA,
-	                                         "Antenna A"). toString ();
-	sdrplaySettings	-> endGroup ();
+	      value_s (sdrplaySettings, SDRPLAY_SETTINGS, 
+	                                SDRPLAY_ANTENNA, "Antenna A");
 	int k	= antennaSelector -> findText (setting);
 	if (k >= 0) 
 	   antennaSelector -> setCurrentIndex (k);
@@ -392,8 +399,8 @@ void	sdrplayHandler_v3::show_tunerSelector	(bool b) {
 }
 
 bool	sdrplayHandler_v3::setup_xmlDump () {
-QString channel		= sdrplaySettings -> value ("channel", "xx").
-	                                                      toString ();
+QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
+	                                               "channel", "xx");
 	xmlWriter	= nullptr;
 	fprintf (stderr, "setup gaat aan de gang\n");
 	try {
@@ -618,9 +625,8 @@ int	deviceIndex	= 0;
 	try {
 	   int antennaValue;
 	   int	lnaBounds;
-	   sdrplaySettings	-> beginGroup (SDRPLAY_SETTINGS);
-	   bool	notch	= sdrplaySettings -> value (SDRPLAY_NOTCH, 0). toInt () != 0;
-	   sdrplaySettings	-> endGroup ();
+	   bool	notch	= value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_NOTCH, 0) != 0;
 	   switch (hwVersion) {
 	      case SDRPLAY_RSPdx_ :
 	      case SDRPLAY_RSPdxR2_ :

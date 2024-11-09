@@ -41,7 +41,10 @@
 #include	"device-exceptions.h"
 #include	"spyserver-client-8.h"
 
+#include	"settings-handler.h"
+
 #define	DEFAULT_FREQUENCY	(Khz (227360))
+#define	SPY_SERVER_8_SETTINGS	"SPY_SERVER_8_SETTINGS"
 
 	spyServer_client_8::spyServer_client_8	(QSettings *s):
 	                                            _I_Buffer (32 * 32768),
@@ -51,10 +54,12 @@
 	myFrame. show		();
 
     //	setting the defaults and constants
-	spyServer_settings	-> beginGroup ("spyServer_client");
-	settings. gain		= spyServer_settings ->
-	                          value ("spyServer-gain", 20). toInt();
-	settings. basePort	= spyServer_settings -> value ("spyServer+port", 5555).toInt();
+	settings. gain		= value_i (spyServer_settings,
+	                                   SPY_SERVER_8_SETTINGS,
+	                                   "spyServer-gain", 20);
+	settings. basePort	= value_i (spyServer_settings,
+	                                   SPY_SERVER_8_SETTINGS,
+	                                   "spyServer+port", 5555);
 	spyServer_settings	-> endGroup();
 	spyServer_gain	-> setValue (theGain);
 	lastFrequency	= DEFAULT_FREQUENCY;
@@ -74,14 +79,12 @@
 }
 
 	spyServer_client_8::~spyServer_client_8 () {
-	spyServer_settings ->  beginGroup ("spyServer_client");
 	if (connected) {		// close previous connection
 	   stopReader();
 	   connected = false;
 	}
-	spyServer_settings -> setValue ("spyServer_client-gain", 
-	                                            settings. gain);
-	spyServer_settings -> endGroup();
+	store (spyServer_settings, SPY_SERVER_8_SETTINGS,
+	                         "spyServer_client-gain", settings. gain);
 	if (theServer != nullptr)
 	   delete theServer;
 	delete	hostLineEdit;
@@ -105,10 +108,9 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
-	spyServer_settings -> beginGroup ("spyServer_client");
-	ipAddress = spyServer_settings ->
-	                value ("remote-server", ipAddress). toString();
-	spyServer_settings -> endGroup();
+	ipAddress	= value_s (spyServer_settings,
+	                           SPY_SERVER_8_SETTINGS,
+	                           "remote-server", ipAddress);
 	hostLineEdit	-> setText (ipAddress);
 
 	hostLineEdit	-> setInputMask ("000.000.000.000");

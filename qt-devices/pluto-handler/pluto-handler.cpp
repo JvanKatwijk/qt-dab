@@ -28,6 +28,11 @@
 #include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
+#include	"logger.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
+
+#define	PLUTO_SETTINGS	"PLUTO_SETTINGS"
 
 //	Description for the fir-filter is here:
 #include	"dabFilter.h"
@@ -187,13 +192,13 @@ int	ret;
 }
 
 	plutoHandler::plutoHandler  (QSettings *s,
-	                             const QString &recorderVersion):
+	                             const QString &recorderVersion,
+	                             logger	*theLogger):	// dummy for now
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, "plutoSettings");
-	myFrame. setWindowFlag (Qt::Tool, true); 
+	set_position_and_size (s, &myFrame, PLUTO_SETTINGS);
 	myFrame. show	();
 
 #ifdef	__MINGW32__
@@ -230,15 +235,18 @@ int	ret;
 
 	plutoSettings	-> beginGroup ("plutoSettings");
 	bool agcMode	=
-	             plutoSettings -> value ("pluto-agc", 0). toInt () == 1;
+	             value_i (plutoSettings, PLUTO_SETTINGS,
+	                                   "pluto-agc", 0) != 0;
 	int  gainValue	=
-	             plutoSettings -> value ("pluto-gain", 50). toInt ();
+	             value_i (plutoSettings, PLUTO_SETTINGS,
+	                                   "pluto-gain", 50);
 	debugFlag	=
-	             plutoSettings -> value ("pluto-debug", 0). toInt () == 1;
+	             value_i (plutoSettings, PLUTO_SETTINGS,
+	                                   "pluto-debug", 0)!= 0;
 	save_gainSettings =
-	             plutoSettings -> value ("save_gainSettings", 1). toInt () != 0;
+	             value_i (plutoSettings, PLUTO_SETTINGS,	
+	                                   "save_gainSettings", 1) != 0;
 	filterOn	= true;
-	plutoSettings	-> endGroup ();
 
 	if (debugFlag)
 	   debugButton	-> setText ("debug on");
@@ -377,14 +385,14 @@ int	ret;
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
 	stopReader();
-	store_widget_position (plutoSettings, &myFrame, "plutoSettings");
-	plutoSettings	-> beginGroup ("plutoSettings");
-	plutoSettings	-> setValue ("pluto-agcMode",
+	store_widget_position (plutoSettings, &myFrame, PLUTO_SETTINGS);
+	store (plutoSettings, PLUTO_SETTINGS,
+	                            "pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);
-	plutoSettings	-> setValue ("pluto-gain", 
-	                              gainControl -> value ());
-	plutoSettings	-> setValue ("pluto-debug", debugFlag ? 1 : 0);
-	plutoSettings	-> endGroup ();
+	store (plutoSettings, PLUTO_SETTINGS,
+	                            "pluto-gain", gainControl -> value ());
+	store (plutoSettings, PLUTO_SETTINGS,
+	                             "pluto-debug", debugFlag ? 1 : 0);
 	if (!connected)		// should not happen
 	   return;
 	ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 0);
@@ -639,8 +647,8 @@ bool	isValid (QChar c) {
 }
 
 bool	plutoHandler::setup_xmlDump () {
-QString channel		= plutoSettings -> value ("channel", "xx").
-	                                                      toString ();
+QString channel		= value_s (plutoSettings, DAB_GENERAL,
+	                                         "channel", "xx");
 	xmlWriter	= nullptr;
 	try {
 	   xmlWriter	= new xml_fileWriter (plutoSettings,
@@ -678,9 +686,8 @@ int	agc		= agcControl		-> isChecked () ? 1 : 0;
 QString theValue	= QString::number (gainValue) + ":" +
 	                               QString::number (agc);
 
-	plutoSettings	-> beginGroup ("plutoSettings");
-	plutoSettings	-> setValue (QString::number (freq), theValue);
-	plutoSettings	-> endGroup ();
+	store (plutoSettings, PLUTO_SETTINGS,
+	                             QString::number (freq), theValue);
 }
 
 void	plutoHandler::update_gainSettings (int freq) {
@@ -688,9 +695,8 @@ int	gainValue;
 int	agc;
 QString	theValue	= "";
 
-	plutoSettings	-> beginGroup ("plutoSettings");
-	theValue	= plutoSettings -> value (QString::number (freq), ""). toString ();
-	plutoSettings	-> endGroup ();
+	theValue	= value_s (plutoSettings, PLUTO_SETTINGS,
+	                             QString::number (freq), theValue);
 
 	if (theValue == QString (""))
 	   return;		// or set some defaults here

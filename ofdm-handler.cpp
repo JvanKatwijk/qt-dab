@@ -32,6 +32,8 @@
 #include	"estimator.h"
 #include	"correlator.h"
 #include	"logger.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
 //
 /**
   *	\brief ofdmHandler
@@ -51,7 +53,7 @@
 	                                    settings_p (dabSettings),
 	                                    theReader (mr,
 	                                              inputDevice,
-	                                           p -> spectrumBuffer),
+	                                              p -> spectrumBuffer),
 	                                    theFicHandler (mr, p -> dabMode),
 	                                    theEtiGenerator (p -> dabMode,
 	                                                  &theFicHandler),
@@ -86,9 +88,14 @@
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 	this	-> correlationOrder	= 
-	         dabSettings -> value ("correlationOrder", 0) . toInt () != 0;
+	         value_i (dabSettings , CONFIG_HANDLER,
+	                             S_CORRELATION_ORDER, 0) != 0;
 	this	-> dxMode		=
-	         dabSettings -> value ("dxMode", 0) . toInt () != 0;
+	         value_i (dabSettings , CONFIG_HANDLER, S_DX_MODE, 0) != 0;
+
+	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
+	                                           "decoders", 
+	                                           DEFAULT_DECODER);
 
 	this	-> eti_on		= false;
 	ofdmBuffer. resize (2 * T_s);
@@ -123,6 +130,7 @@
 	connect (this, &ofdmHandler::show_Corrector,
 	         mr,  &RadioInterface::show_Corrector);
 	theTIIDetector. reset();
+	theOfdmDecoder. handle_decoderSelector (decoder);
 }
 
 	ofdmHandler::~ofdmHandler () {
@@ -181,7 +189,6 @@ float	snr		= 0;
 bool	inSync		= false;
 QVector<Complex> tester (T_u / 2);
 int	snrCount	= 0;
-
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;

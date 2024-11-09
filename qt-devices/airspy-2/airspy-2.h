@@ -35,7 +35,7 @@
 #include	<samplerate.h>
 
 class	xml_fileWriter;
-
+class	logger;
 
 extern "C"  {
  typedef int (*pfn_airspy_init)();
@@ -90,7 +90,8 @@ class airspy_2 final: // public QObject,
 	              public deviceHandler, public Ui_airspyWidget {
 Q_OBJECT
 public:
-			airspy_2		(QSettings *, const QString &);
+			airspy_2		(QSettings *,
+	                                         const QString &, logger *);
 			~airspy_2		();
 	int32_t		defaultFrequency	();
 	bool		restartReader		(int32_t);

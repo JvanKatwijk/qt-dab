@@ -31,11 +31,14 @@
 #include	"tii-reader.h"
 #include	<QSettings>
 #include	"tii-reader.h"
+#include	"settingNames.h"
+#include	"settings-handler.h"
 
 		tiiMapper::tiiMapper	(QSettings *dabSettings) {
 tiiReader theReader;
 	tiifileName = QDir::homePath () + "/.txdata.tii";
-	tiifileName = dabSettings -> value ("tiiFileName", tiifileName). toString ();                                         
+	tiifileName =
+	   value_s (dabSettings, DAB_GENERAL, "tiiFileName", tiifileName);                                         
 	if (tiifileName != "")
 	   theCache	= theReader. readFile (tiifileName);
 }

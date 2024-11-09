@@ -26,6 +26,8 @@
 #include	<cinttypes>
 #include	<cstring>
 #include	<QSettings>
+#include	"settingNames.h"
+#include	"settings-handler.h"
 
 #ifndef M_PI
 # define M_PI           3.14159265358979323846  /* pi */
@@ -207,7 +209,8 @@ std::vector<int16_t> theResult;
 //	NUM_GROUPS GROUPSIZE - value groups. 
 
 	int tiiThreshold	=
-	                   dabSettings -> value ("tiiThreshold", 4). toInt ();
+	                   value_i (dabSettings, DAB_GENERAL,
+	                                      "tiiThreshold", 4);
 	while (true) {
 	   memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 
