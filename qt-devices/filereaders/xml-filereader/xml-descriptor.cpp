@@ -86,6 +86,7 @@ Blocks	b;
 }
 
 void	xmlDescriptor::add_freqtoBlock	(int blockno, int freq) {
+	fprintf (stderr, "adding freq %d %d\n", blockno, freq);
 	blockList. at (blockno). frequency = freq;
 }
 
