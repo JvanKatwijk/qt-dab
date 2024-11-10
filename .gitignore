@@ -1,8 +1,8 @@
 obsolete/
-qt-dab-6.5/linux-bin
-qt-dab-6.5/.qmake.stash
-qt-dab-6.5/build
-qt-dab-6.5/Makefile
+qt-dab-6.8/linux-bin
+qt-dab-6.8/.qmake.stash
+qt-dab-6.8/build
+qt-dab-6.8/Makefile
 qt-dab-6.5/Output
 qt-dab-RC/linux-bin
 qt-dab-RC/.qmake.stash

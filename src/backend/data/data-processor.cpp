@@ -83,7 +83,6 @@
 	      break;
 
 	   case 44:
-	      fprintf (stderr, "going to install journaline\n");
 	      my_dataHandler	= new journaline_dataHandler();
 	      break;
 
@@ -93,6 +92,9 @@
 
 	   case 60:
 	      my_dataHandler	= new motHandler (mr, backgroundFlag);
+	      if (appType == 7) 
+	         fprintf (stderr, "SPI/EPG handling is under construction\n");
+	         
 	      break;
 	   
 	}
