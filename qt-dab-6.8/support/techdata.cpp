@@ -34,6 +34,9 @@
 
 #define	TECHDATA_SETTING	"techDataSettings"
 
+#define	DARK	"#00007f"
+#define	WHITE	"#ffffff"
+
 #define FRAMEDUMP_BUTTON        QString ("framedumpButton") 
 #define AUDIODUMP_BUTTON        QString ("audiodumpButton")
 
@@ -58,16 +61,16 @@
 
 	QString framedumpButton_color = 
            value_s (dabSettings, COLOR_SETTINGS, 
-	                              FRAMEDUMP_BUTTON + "_color", "white");
+	                              FRAMEDUMP_BUTTON + "_color", DARK);
 	QString framedumpButton_font =  
            value_s (dabSettings, COLOR_SETTINGS,
-	                              FRAMEDUMP_BUTTON + "_font", "black");
+	                              FRAMEDUMP_BUTTON + "_font", WHITE);
 	QString audiodumpButton_color = 
            value_s (dabSettings, COLOR_SETTINGS,
-	                              AUDIODUMP_BUTTON + "_color", "white");
+	                              AUDIODUMP_BUTTON + "_color", DARK);
 	QString audiodumpButton_font =  
            value_s (dabSettings, COLOR_SETTINGS,
-	                              AUDIODUMP_BUTTON + "_font", "black");
+	                              AUDIODUMP_BUTTON + "_font", WHITE);
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 

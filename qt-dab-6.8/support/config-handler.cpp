@@ -53,6 +53,13 @@
 
 #define	PATH_BUTTON		QString ("pathButton")
 
+#define	WHITE	"#ffffff"
+#define	BLACK	"#000000"
+#define	GREEN	"#8ff0a4"
+#define	BLUE	"#00ffff"
+#define	RED	"#ff007f"
+#define	YELLOW	"#f9f06b"
+
 static struct {
 	QString	decoderName;
 	int	decoderKey;
@@ -60,8 +67,17 @@ static struct {
 {"decoder_a", DEFAULT_DECODER},
 {"decoder_b", ALT1_DECODER},
 {"decoder_c", ALT2_DECODER},
+{"decoder_d", ALT3_DECODER},
 {"", 0}
 };
+
+static
+int	index_for_key (int key) {
+	for (int i = 0; decoders [i]. decoderKey != 0; i ++)
+	   if (decoders [i]. decoderKey == key)
+	      return i;
+	return 0;
+}
 
 	configHandler::configHandler (RadioInterface *parent,
 	                              QSettings *settings):
@@ -170,11 +186,9 @@ static struct {
 	this -> decoderSelector -> setEnabled (false);
 #endif
 
-	QString s	= value_s (dabSettings, CONFIG_HANDLER,
-	                                      "decoders", "decoder_a");
-	int k	= decoderSelector -> findText (s);
-	if (k > 0) 
-	   decoderSelector	-> setCurrentIndex (k);
+	int k	= value_i (dabSettings, CONFIG_HANDLER,
+	                                 "decoders", DEFAULT_DECODER);
+	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	
 	int v = value_i (dabSettings, CONFIG_HANDLER,
 	                             TII_THRESHOLD, 4);
@@ -406,103 +420,103 @@ void	configHandler::set_connections () {
 /////////////////////////////////////////////////////////////////////////
 //	
 void	configHandler::set_Colors () {
-QString audioSelectButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              AUDIOSELECT_BUTTON + "_font", "white");
 QString	audioSelectButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              AUDIOSELECT_BUTTON + "_color", "black");
+	                              AUDIOSELECT_BUTTON + "_color", GREEN);
+QString audioSelectButton_font	=
+	   value_s (dabSettings, COLOR_SETTINGS,
+	                              AUDIOSELECT_BUTTON + "_font", BLACK);
 
 QString fontButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              FONT_BUTTON + "_font", "white");
+	                              FONT_BUTTON + "_font", BLACK);
 QString	fontButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              FONT_BUTTON + "_color", "black");
+	                              FONT_BUTTON + "_color", WHITE);
 
 QString fontColorButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              FONTCOLOR_BUTTON + "_font", "white");
+	                              FONTCOLOR_BUTTON + "_font", WHITE);
 QString	fontColorButton_color =
 	   value_s (dabSettings, "COLOR_SETTINGD",
-	                              FONTCOLOR_BUTTON + "_color", "black");
+	                              FONTCOLOR_BUTTON + "_color", BLACK);
 
 QString devicewidgetButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              DEVICEWIDGET_BUTTON + "_color", "white");
+	                              DEVICEWIDGET_BUTTON + "_color", YELLOW);
 QString devicewidgetButton_font =
 	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              DEVICEWIDGET_BUTTON + "_font", "black");
+	                              DEVICEWIDGET_BUTTON + "_font", BLACK);
 
 QString portSelector_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              PORT_SELECTOR + "_font", "white");
+	                              PORT_SELECTOR + "_font", BLACK);
 QString	portSelector_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              PORT_SELECTOR + "_color", "black");
+	                              PORT_SELECTOR + "_color", YELLOW);
 
 QString	dlTextButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              DLTEXT_BUTTON + "_color", "black");
+	                              DLTEXT_BUTTON + "_color", YELLOW);
 QString dlTextButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              DLTEXT_BUTTON + "_font", "white");
+	                              DLTEXT_BUTTON + "_font", BLACK);
 
 QString resetButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              RESET_BUTTON + "_color", "white");
+	                              RESET_BUTTON + "_color", RED);
 QString resetButton_font =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              RESET_BUTTON + "_font", "black");
+	                              RESET_BUTTON + "_font", WHITE);
 
 QString	scheduleButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SCHEDULE_BUTTON + "_color", "black");
+	                              SCHEDULE_BUTTON + "_color", YELLOW);
 QString scheduleButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              SCHEDULE_BUTTON + "_font", "white");
+	                              SCHEDULE_BUTTON + "_font", BLACK);
 
 QString snrButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              SNR_BUTTON + "_color", "white");
+	                              SNR_BUTTON + "_color", BLUE);
 QString snrButton_font =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SNR_BUTTON + "_font", "black");
+	                              SNR_BUTTON + "_font", BLACK);
 
 QString	set_coordinatesButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SET_COORDINATES_BUTTON + "_color", "white");
+	                              SET_COORDINATES_BUTTON + "_color", BLUE);
 QString set_coordinatesButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SET_COORDINATES_BUTTON + "_font", "black");
+	                              SET_COORDINATES_BUTTON + "_font", BLACK);
 	
 QString	loadTableButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               LOAD_TABLE_BUTTON + "_color", "white");
+	                               LOAD_TABLE_BUTTON + "_color", RED);
 QString loadTableButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               LOAD_TABLE_BUTTON + "_font", "black");
+	                               LOAD_TABLE_BUTTON + "_font", WHITE);
 
 QString dumpButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               DUMP_BUTTON + "_color", "white");
+	                               DUMP_BUTTON + "_color", YELLOW);
 QString dumpButton_font =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               DUMP_BUTTON + "_font", "black");
+	                               DUMP_BUTTON + "_font", BLACK);
 
 QString pathButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               PATH_BUTTON + "_color", "white");
+	                               PATH_BUTTON + "_color", GREEN);
 QString pathButton_font =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               PATH_BUTTON + "_font", "black");
+	                               PATH_BUTTON + "_font", BLACK);
 
 QString skinButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               SKIN_BUTTON + "_font", "white");
+	                               SKIN_BUTTON + "_font", BLACK);
 QString	skinButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
-	                               SKIN_BUTTON + "_color", "black");
+	                               SKIN_BUTTON + "_color", YELLOW);
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 
@@ -732,8 +746,8 @@ int	decoder	= 0100;
 	   if (decoders [i]. decoderName == s) {
 	      decoder = decoders [i]. decoderKey;
 	      selectDecoder (decoder);
-	      store (dabSettings, CONFIG_HANDLER, "decoders", 
-	                                      decoders [i]. decoderName);
+	      store (dabSettings, CONFIG_HANDLER, "decoders", decoder);
+	      break;
 	   }
 }
 

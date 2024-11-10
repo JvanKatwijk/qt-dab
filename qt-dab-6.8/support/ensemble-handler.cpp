@@ -540,16 +540,19 @@ QStringList res;
 
 QStringList ensembleHandler::get_epgServices () {
 QStringList res;
-	for (auto &serv : ensembleList)
+	for (auto &serv : ensembleList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
                serv. name. contains (" EPG   ", Qt::CaseInsensitive) ||
                serv. name. contains ("Spored", Qt::CaseInsensitive) ||
                serv. name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
                serv. name. contains ("SPI", Qt::CaseSensitive) ||
                serv. name. contains ("BBC Guide", Qt::CaseInsensitive) ||
+               serv. name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
                serv. name. contains ("EPG_", Qt::CaseInsensitive) ||
-               serv. name. startsWith ("EPG ", Qt::CaseInsensitive) )
-	res << serv. name;
+               serv. name. startsWith ("EPG ", Qt::CaseInsensitive) ) {
+	      res << serv. name;
+	   }
+	}
 	return res;
 }
 

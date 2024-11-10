@@ -133,7 +133,7 @@
             <number>3</number>
            </property>
            <property name="value">
-            <number>4</number>
+            <number>6</number>
            </property>
           </widget>
          </item>
@@ -568,7 +568,7 @@
      <item>
       <widget class="smallComboBox" name="decoderSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder selector. Just as an experiment three (almost similar) approaches to map de decoded carriers onto bits are implemented. The default one is based on the geometrical distance between the complex value (normalized to an amplitude 1, and considered as a dot in a plane) and the centerpoint in that plane. The other two use the offset of the &amp;quot;arg&amp;quot; of the value tot PI/4 (all seen in quadrant 1), the larger the offset, the smaller the soft bit value. &lt;/p&gt;&lt;p&gt;The difference between the two is that the first one takes the measured value of the current carrier value, while the second one looks at the average corner value of that carrier.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding DAB means interpreting the output of the DPSK on the FFT output, the latter meaning taking the phase difference between corresponding carriers in subsequent FFT symbols.&lt;/p&gt;&lt;p&gt;Ideally these phases are a multiple of 90 degrees, in reality they are less precise. The decoders here all try to map the results of the previous phase onto &amp;quot;soft bits&amp;quot;, i.e. values between -127 and 127. Each &amp;quot;dot&amp;quot; is mapped onto two bits, one depending on the X coordinate, the other on the &amp;quot;Y&amp;quot; one&lt;/p&gt;&lt;p&gt;The differences between the decoders is the way they look at the way the measured values differ from the ideal ones.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>

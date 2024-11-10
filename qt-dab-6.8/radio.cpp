@@ -109,6 +109,14 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 #include	<unistd.h>
 #endif
 
+
+#define	WHITE	"#ffffff"
+#define	BLACK	"#000000"
+#define	GREEN	"#8ff0a4"
+#define	BLUE	"#00ffff"
+#define	RED	"#ff007f"
+#define	YELLOW	"#f9f06b"
+
 static inline
 QString ids_to_string (int mainId, int subId) {
 	return  "(" + QString::number (mainId) + "-"
@@ -557,6 +565,15 @@ QString h;
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
 	connectGUI ();
+//
+//	Just check whether the ini file is used before
+	bool iniExists	=
+	           value_i (dabSettings_p, DAB_GENERAL, "EXISTS", 0) != 0;
+	if (!iniExists) {
+	   store (dabSettings_p, DAB_GENERAL, "EXISTS", 1);
+	   QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("The ini file is new and no home location is known yet"));
+	}
 	if (inputDevice_p != nullptr) {
 	   doStart_direct ();
 	   qApp	-> installEventFilter (this);
@@ -609,6 +626,7 @@ void	RadioInterface::doStart_direct	() {
 	   theOFDMHandler	-> set_dcRemoval  (true);
 	   theNewDisplay. set_dcRemoval (true);
 	}
+
 	channel. cleanChannel ();
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
@@ -818,7 +836,6 @@ QString realName;
 	      if (objectName == QString (""))
 	         objectName = "epg file";
 	      objectName  = epgPath + objectName;
-
 	      {  QString temp = objectName;
 	         temp = temp. left (temp. lastIndexOf (QChar ('/')));
 	         if (!QDir (temp). exists ())
@@ -2833,56 +2850,57 @@ void	RadioInterface::new_channelIndex (int index) {
 //	Lots of code, about 400 lines, just for a gadget
 //	
 void	RadioInterface::set_Colors () {
+
 QString scanButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SCAN_BUTTON + "_color",
-	                                              "white");
+	                                             GREEN);
 QString scanButton_font =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SCAN_BUTTON + "_font",
-	                                              "black");
+	                                              BLACK);
 
 QString spectrumButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SPECTRUM_BUTTON + "_color",
-	                                              "white");
+	                                              BLUE);
 QString spectrumButton_font =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SPECTRUM_BUTTON + "_font",
-	                                              "black");
+	                                              BLACK);
 QString scanListButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SCANLIST_BUTTON + "_color",
-	                                              "white");
+	                                              GREEN);
 QString scanListButton_font =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SCANLIST_BUTTON + "_font",
-	                                              "black");
+	                                              BLACK);
 QString presetButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, PRESET_BUTTON + "_color",
-	                                              "white");
+	                                              GREEN);
 QString presetButton_font =
 	   value_s (dabSettings_p, COLOR_SETTINGS, PRESET_BUTTON + "_font",
-	                                              "black");
+	                                              BLACK);
 QString prevServiceButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS,
-	                    PREVSERVICE_BUTTON + "_color", "blaCK");
+	                            PREVSERVICE_BUTTON + "_color", YELLOW);
 QString prevServiceButton_font =
 	   value_s (dabSettings_p, COLOR_SETTINGS,
-	                    PREVSERVICE_BUTTON + "_font", "white");
+	                    PREVSERVICE_BUTTON + "_font", BLACK);
 QString nextServiceButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS,
-	                     NEXTSERVICE_BUTTON + "_color", "black");
+	                     NEXTSERVICE_BUTTON + "_color", YELLOW);
 QString nextServiceButton_font =
 	   value_s (dabSettings_p, COLOR_SETTINGS,
-	                     NEXTSERVICE_BUTTON + "_font", "white");
+	                     NEXTSERVICE_BUTTON + "_font", BLACK);
 
 QString	configButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, CONFIG_BUTTON + "_color",
-	                                              "black");
+	                                              YELLOW);
 QString configButton_font	=
 	   value_s (dabSettings_p, COLOR_SETTINGS, CONFIG_BUTTON + "_font",
-	                                              "white");
+	                                              BLACK);
 QString	httpButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, HTTP_BUTTON + "_color",
-	                                              "black");
+	                                              YELLOW);
 QString httpButton_font	=
 	   value_s (dabSettings_p, COLOR_SETTINGS, HTTP_BUTTON + "_font",
-	                                              "white");
+	                                              BLACK);
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	spectrumButton ->
@@ -3066,21 +3084,23 @@ void	RadioInterface::scheduled_ficDumping () {
 void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
 	
-	if (value_i (dabSettings_p, DAB_GENERAL, "epgFlag", 0) != 1)
+	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
 	   return;
 	if (theSCANHandler. active ())
 	   return;
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
 	for (auto serv : epgList) {
 	   packetdata pd;
+	   fprintf (stderr, "Looking to %s\n", serv. toLatin1 (). data ());
 	   theOFDMHandler -> data_for_packetservice (serv, pd, 0);
 	   if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
 	      continue;
+	   fprintf (stderr, "YES\n");
 	   if (pd. DSCTy == 60) {
 //	LOG hidden service starts
-//	      fprintf (stderr, "Starting hidden service %s\n",
-//	                                serv. toUtf8 (). data ());
+	      fprintf (stderr, "Starting hidden service %s\n",
+	                                serv. toUtf8 (). data ());
 	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, BACK_GROUND);
 	      dabService s;
 	      s. channel     = pd. channel;
@@ -3097,6 +3117,10 @@ void	RadioInterface::epgTimer_timeOut	() {
 void	RadioInterface::set_epgData (int SId, int theTime,
 	                             const QString &theText,
 	                             const QString &theDescr) {
+	fprintf (stderr, "the text: %X %s %s \n",
+	                     SId,
+	                     theText. toLatin1 (). data (),
+	                     theDescr. toLatin1 (). data ());
 	if (theOFDMHandler != nullptr)
 	   theOFDMHandler -> set_epgData (SId, theTime,
 	                                   theText, theDescr);

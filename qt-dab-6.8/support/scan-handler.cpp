@@ -167,13 +167,15 @@ QString scanmodeText (int e) {
 	scanModeSelector -> addItem ("until data");
 	scanModeSelector -> addItem ("continuous");
 	scanMode	=
-	             s -> value (S_SCAN_MODE, SINGLE_SCAN). toInt ();
+	             value_i (dabSettings, SCANNER,
+	                            S_SCAN_MODE,  SINGLE_SCAN);
 	scanModeSelector	-> setCurrentIndex (scanMode);
 	connect (startKnop, &QPushButton::clicked,
 	         this, &scanHandler::handle_startKnop);
 	connect (stopKnop, &QPushButton::clicked,
 	         this, &scanHandler::handle_stopKnop);
-	connect (scanModeSelector, qOverload<int>(&QComboBox::currentIndexChanged),
+	connect (scanModeSelector,
+	                qOverload<int>(&QComboBox::currentIndexChanged),
 	         this, &scanHandler::handle_scanMode);
 	if (!no_skipTables) {
 	   connect (defaultLoad, &QPushButton::clicked,

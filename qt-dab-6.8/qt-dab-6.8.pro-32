@@ -9,6 +9,7 @@ QT		+= widgets xml multimedia
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
+
 win32 {
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
@@ -27,7 +28,7 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-RC_ICONS	=  qt-dab-RC.ico
+RC_ICONS	=  qt-dab-6.8.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
@@ -197,6 +198,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/logger.h \
+	   ../includes/support/settings-handler.h \
 	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
 	   ../includes/support/settingnames.h \
@@ -335,6 +337,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/logger.cpp \
+	   ../src/support/settings-handler.cpp \
 	   ../src/support/position-handler.cpp \
 	   ../src/support/wavWriter.cpp \
 	   ../src/support/converter_48000.cpp \
@@ -385,7 +388,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.X
+TARGET		= qt-dab-6.8
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -438,7 +441,7 @@ CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
-#CONFIG		+= hackrf
+CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
@@ -504,10 +507,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.XV3
-	CONFIG		+= dabstick-win-v3
-#	TARGET		= qt-dab32-6.X
-#	CONFIG		+= dabstick-win-v4
+#	TARGET		= qt-dab32-6.8V3
+#	CONFIG		+= dabstick-win-v3
+	TARGET		= qt-dab32-6.8
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

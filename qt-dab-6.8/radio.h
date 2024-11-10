@@ -85,6 +85,7 @@ class	configHandler;
 #define DEFAULT_DECODER    0100
 #define ALT1_DECODER    0200
 #define ALT2_DECODER    0300
+#define ALT3_DECODER    0400
 
 
 #define SCAN_BUTTON		QString ("scanButton")

@@ -30,6 +30,7 @@
 #include	<QHeaderView>
 #include	<QDomDocument>
 #include	<stdio.h>
+#include	"settings-handler.h"
 
 	skiptableHandler::skiptableHandler (QSettings *s):
 	                                theTable (nullptr) {
@@ -62,20 +63,17 @@ void	skiptableHandler::setup_skipTable	(dabFrequencies *theBand) {
 
 void	skiptableHandler::load_skipTable	(const QString &source) {
 	if (source == "")  {	// kust load the current table
-	   dabSettings     ->  beginGroup ("skipTable");
            for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
 	      theTable. item (i, 0) -> setText (selectedBand [i]. key);
 	      theTable. item (i, 1) -> setText ("+");
-              bool skipValue =
-                 dabSettings -> value (selectedBand [i]. key, 0). toInt () == 1;
+              bool skipValue = value_i (dabSettings,
+	                                "skipTable",
+	                                selectedBand [i]. key, 0) != 1;
               if (skipValue) {
                  selectedBand [i]. skip = true;
                  theTable. item (i, 1) -> setText ("-");
-	fprintf (stderr, "found skip value for channel %s\n", 
-	                             selectedBand [i]. key. toLatin1 (). data ());
               }
            }
-           dabSettings     -> endGroup ();
 	}
 	else {
            for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
@@ -113,14 +111,12 @@ void	skiptableHandler::updateEntry (const QString &channel) {
 
 void	skiptableHandler::save_skipTable	(const QString &target) {
 	if (target == "")  {	// dump in the ini file
-	   dabSettings  -> beginGroup ("skipTable");
            for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
               if (selectedBand [i]. skip)
-                 dabSettings    -> setValue (selectedBand [i]. key, 1);
+                 store (dabSettings, "skipTable", selectedBand [i]. key, 1);
               else
-                 dabSettings    -> remove (selectedBand [i]. key);
+                 remove (dabSettings, "skipTable", selectedBand [i]. key);
            }
-           dabSettings  -> endGroup ();
 	}
 	else {
 	   QDomDocument skipList;
