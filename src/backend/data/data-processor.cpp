@@ -94,7 +94,6 @@
 	      my_dataHandler	= new motHandler (mr, backgroundFlag);
 	      if (appType == 7) 
 	         fprintf (stderr, "SPI/EPG handling is under construction\n");
-	         
 	      break;
 	   
 	}

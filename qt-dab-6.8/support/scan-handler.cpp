@@ -447,7 +447,7 @@ QString	scanHandler::getNextChannel	(const QString &s) {
 }
 
 QString	scanHandler::getChannel	(int frequency) {
-	for (int i = 0; selectedBand [i]. key != nullptr; i ++)
+	for (int i = 0; selectedBand [i]. key != nullptr; i ++) 
 	   if (selectedBand [i]. fKHz == frequency / 1000)
 	      return selectedBand [i]. key;
 	return "";
