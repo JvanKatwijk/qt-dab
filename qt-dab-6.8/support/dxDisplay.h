@@ -27,6 +27,7 @@
 #include	<QTableWidgetItem>
 #include	<QObject>
 #include	<QSettings>
+#include	<qwt_compass.h>
 
 class	RadioInterface;
 
@@ -36,7 +37,7 @@ public:
 		dxDisplay	(RadioInterface *, QSettings *);
 		~dxDisplay	();
 	void	setChannel	(const QString &);
-	void	addRow		(const QString &, const QString &, bool);
+	void	addRow		(const QString &, const QString &, bool, int);
 	void	cleanUp		();
 	void	show		();
 	void	hide		();
@@ -45,6 +46,7 @@ private:
 	QScrollArea	*myWidget;
 	QTableWidget	*tableWidget;
 	QSettings	*dxSettings;
+	QwtCompass	*theDial;
 };
 
 	

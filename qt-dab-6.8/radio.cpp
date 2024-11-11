@@ -3117,10 +3117,6 @@ void	RadioInterface::epgTimer_timeOut	() {
 void	RadioInterface::set_epgData (int SId, int theTime,
 	                             const QString &theText,
 	                             const QString &theDescr) {
-	fprintf (stderr, "the text: %X %s %s \n",
-	                     SId,
-	                     theText. toLatin1 (). data (),
-	                     theDescr. toLatin1 (). data ());
 	if (theOFDMHandler != nullptr)
 	   theOFDMHandler -> set_epgData (SId, theTime,
 	                                   theText, theDescr);
@@ -3772,7 +3768,8 @@ bool listChanged = false;
 	   
 
 	      if (dxMode) 
-	         theDXDisplay. addRow (labelText, text2,  theTr. isStrongest);
+	         theDXDisplay. addRow (labelText, text2, 
+	                                     theTr. isStrongest, theTr. corner);
 	      else 
 	         distanceLabel	-> setText (labelText + text2);
 	   }
@@ -3782,7 +3779,7 @@ bool listChanged = false;
 	                       + QString::number (tiiValue_local & 0xFF) + ") ";
 	      labelText += "not in database";
 	      if (dxMode) 
-	         theDXDisplay. addRow (labelText, "",  theTr. isStrongest);
+	         theDXDisplay. addRow (labelText, "",  theTr. isStrongest, 0);
 	      else 
 	         distanceLabel	-> setText (labelText);
 	   }

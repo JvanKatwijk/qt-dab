@@ -23,6 +23,12 @@
 #include	"radio.h"
 #include	"position-handler.h"
 #include	<QHeaderView>
+#include	<QHBoxLayout>
+#include	<qwt_compass.h>
+#include	<qlayout.h>
+#include	<qwt_compass_rose.h>
+#include	<qwt_dial_needle.h>
+#include	<QMap>
 
 	dxDisplay::dxDisplay (RadioInterface *mr, QSettings *s){
 	dxSettings	= s;
@@ -37,9 +43,23 @@
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 	headerView	-> resizeSection (0, 50);
-	myWidget	-> setWidget(tableWidget);
 	tableWidget 	-> setHorizontalHeaderLabels (
-	            QStringList () << tr ("r") << tr ("transmitter"));
+	                QStringList () << tr ("r") << tr ("transmitter"));
+	theDial		= new QwtCompass ();
+	QMap<double, QString> map;
+	map.insert(0.0, "N");
+	map.insert(90.0, "E");
+	map.insert(180.0, "S");
+	map.insert(270.0, "W");
+//	theDial -> setLabelMap(map)
+
+	theDial -> setNeedle (
+	       new QwtCompassMagnetNeedle(QwtCompassMagnetNeedle::ThinStyle));
+	theDial->setValue (220.0);
+
+	QHBoxLayout *l	= new QHBoxLayout (myWidget);
+	l -> addWidget (tableWidget);
+	l -> addWidget (theDial);
 	set_position_and_size (s, myWidget, "DX_DISPLAY");
 	myWidget	-> setWindowTitle ("dx display");
 }
@@ -76,7 +96,7 @@ void	dxDisplay::hide	() {
 	myWidget	-> hide ();
 }
 
-void	dxDisplay::addRow (const QString &tr, const QString &ds, bool b) {
+void	dxDisplay::addRow (const QString &tr, const QString &ds, bool b, int c) {
 int16_t	row	= tableWidget -> rowCount ();
 
 	tableWidget	-> insertRow (row);
@@ -96,5 +116,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 1) -> setText (tr);
 	tableWidget	-> item (row, 2) -> setText (ds);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
+	if (b)
+	   theDial -> setValue (c);
 }
 
