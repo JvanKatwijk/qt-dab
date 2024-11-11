@@ -37,19 +37,21 @@ QHBoxLayout	*layOut = new QHBoxLayout ();
 QDate currentDate	= QDate::currentDate ();
 QDate workingDate	= currentDate;
 
+static QString dayName [] = {
+"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 	dayBox. addItem ("today");
 	workingDate = workingDate. addDays (1);
-	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	dayBox. addItem (dayName [workingDate. dayOfWeek () - 1]);
 	workingDate = workingDate. addDays (1);
-	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	dayBox. addItem (dayName [workingDate. dayOfWeek () - 1]);
 	workingDate = workingDate. addDays (1);
-	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	dayBox. addItem (dayName [workingDate. dayOfWeek () - 1]);
 	workingDate = workingDate. addDays (1);
-	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	dayBox. addItem (dayName [workingDate. dayOfWeek () - 1]);
 	workingDate = workingDate. addDays (1);
-	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	dayBox. addItem (dayName [workingDate. dayOfWeek () - 1]);
 	workingDate = workingDate. addDays (1);
-	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	dayBox. addItem (dayName [workingDate. dayOfWeek () - 1]);
 	dayBox. setToolTip ("days ahead");
 	hourBox. setToolTip ("select the hour in the range 0 .. 23");
 	hourBox. setMaximum (23);

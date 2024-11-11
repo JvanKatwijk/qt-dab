@@ -31,52 +31,24 @@
 	Qt_Audio::Qt_Audio (QSettings *settings):
 	                 tempBuffer (8 * 32768) { 
 	audioSettings		= settings;
-	outputRate		= 48000;	// default
 	working. store		(false);
-	isInitialized. store	(false);
 	newDeviceIndex		= -1;
-//
-//	allDevices		= new QMediaDevices (nullptr);
-//	deviceList	 	= allDevices -> audioOutputs ();
-//	for (auto &deviceInfo : deviceList)
-//	      theList. push_back (deviceInfo. description (),
-//	                          QVariant:: fromValue (deviceInfo));
-	initialize_deviceList	();
-	initializeAudio (QAudioDeviceInfo::defaultOutputDevice());
-}
+	m_audioOutput		= nullptr;
 
-void	Qt_Audio::initialize_deviceList () {	
-	QAudioFormat audioFormat;
-	audioFormat. setSampleRate      (outputRate);
-        audioFormat. setChannelCount    (2);
-        audioFormat. setSampleSize      (sizeof (float) * 8);
-        audioFormat. setCodec           ("audio/pcm");
-        audioFormat. setByteOrder       (QAudioFormat::LittleEndian);
-        audioFormat. setSampleType      (QAudioFormat::Float);
+	m_settings. setChannelCount (2);
+	m_settings. setSampleRate (48000);
+	m_settings. setSampleFormat (QAudioFormat::Float);
+	m_settings. setChannelConfig (QAudioFormat::ChannelConfigStereo);
 
-	const QAudioDeviceInfo &defaultDeviceInfo =
-	                QAudioDeviceInfo::defaultOutputDevice ();
-	if (!defaultDeviceInfo. isFormatSupported (audioFormat))
-	   fprintf (stderr, "Default device does not support 48000\n");
-	else {
-	   fprintf (stderr, "Default device does support 48000\n");
-	   theList. push_back (defaultDeviceInfo);
-	}
-	for (auto &deviceInfo:
-	       QAudioDeviceInfo::availableDevices (QAudio::AudioOutput)) {
-	   if (deviceInfo != defaultDeviceInfo) {
-	      if (deviceInfo. isFormatSupported (audioFormat))
-	         theList. push_back (deviceInfo);
+	const QAudioDevice &defaultDevice = QMediaDevices::defaultAudioOutput ();
+	outputDevices. push_back (defaultDevice);
+
+	for (auto &theDevice : QMediaDevices::audioOutputs ()) {
+	   if (theDevice. isFormatSupported (m_settings))
+	   if (theDevice. isFormatSupported (m_settings)) {
+	      outputDevices. push_back (theDevice);
 	   }
 	}
-
-//	fprintf (stderr, "The devicelist \n");
-//	for (auto & listEl: theList)
-//	   fprintf (stderr, "%s\n",  listEl. deviceName (). toLatin1 (). data ());;
-
-//	fprintf (stderr, "Length of deviceList %d\n",  theList. size ());
-	if (theList. size () == 0)
-	   throw (22);
 }
 
 	Qt_Audio::~Qt_Audio () {
@@ -84,8 +56,8 @@ void	Qt_Audio::initialize_deviceList () {
 
 QStringList	Qt_Audio::streams	() {
 QStringList nameList;
-	for (auto & listEl: theList)
-	   nameList << listEl. deviceName ();
+	for (auto & listEl: outputDevices)
+	   nameList << listEl. description ();
 	return nameList;
 }
 //
@@ -98,7 +70,7 @@ void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	aa	= std::min ((int)(size * sizeof (float)), aa);
 	aa	&= ~03;
 	tempBuffer. putDataIntoBuffer ((char *)fragment, aa);
-	int periodSize = m_audioOutput -> periodSize ();
+	int periodSize = 2048;
 	char buffer [periodSize];
 	while ((m_audioOutput -> bytesFree () >= periodSize) &&
 	       (tempBuffer. GetRingBufferReadAvailable () >= periodSize)) {
@@ -107,54 +79,32 @@ void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	}
 }
 
-void	Qt_Audio::initializeAudio(const QAudioDeviceInfo &deviceInfo) {
-	audioFormat. setSampleRate	(outputRate);
-	audioFormat. setChannelCount	(2);
-	audioFormat. setSampleSize	(sizeof (float) * 8);
-	audioFormat. setCodec		("audio/pcm");
-	audioFormat. setByteOrder	(QAudioFormat::LittleEndian);
-	audioFormat. setSampleType	(QAudioFormat::Float);
-
-	if (!deviceInfo. isFormatSupported (audioFormat)) {
-           audioFormat = deviceInfo.nearestFormat (audioFormat);
-	}
-	isInitialized. store (false);
-	if (deviceInfo. isFormatSupported (audioFormat)) {
-	   m_audioOutput. reset (new QAudioOutput (audioFormat));
-	   if (m_audioOutput -> error () == QAudio::NoError) {
-	      isInitialized. store (true);
-//	      fprintf (stderr, "Initialization went OK\n");
-	   }
-//	   else
-//	     fprintf (stderr, "Audio device gives error\n");
-	}
-}
-
 void	Qt_Audio::stop () {
-	m_audioOutput	-> stop ();
-	working. store (false);
-	isInitialized. store (false);
+	if (m_audioOutput != nullptr)
+	   m_audioOutput        -> stop ();
+        working. store (false);
 }
 
 void	Qt_Audio::restart	() {
-//	fprintf (stderr, "Going to restart with %d\n", newDeviceIndex);
+	fprintf (stderr, "Going to restart with %d\n", newDeviceIndex);
 	if (newDeviceIndex < 0)
 	   return;
-	initializeAudio (theList. at (newDeviceIndex));
-	if (!isInitialized. load ()) {
-	   fprintf (stderr, "Init failed for device %d\n", newDeviceIndex);
-	   return;
-	}
+	if (m_audioOutput != nullptr)
+	   delete m_audioOutput;
+	m_audioOutput	= new QAudioSink (outputDevices. at (newDeviceIndex), 
+	                                                      m_settings);
+	theDevice. setDevice (outputDevices. at (newDeviceIndex));
 	theWorker	= m_audioOutput	-> start ();
 	if (m_audioOutput -> error () == QAudio::NoError) {
 	   working. store (true);
-//	   fprintf (stderr, "Device reports: no error\n");
+	   fprintf (stderr, "Device reports: no error\n");
 	}
 	else
 	   fprintf (stderr, "restart gaat niet door\n");
-	int vol		= value_i (audioSettings, SOUND_HANDLING,
-	                                  QT_AUDIO_VOLUME, 50);
-	m_audioOutput	-> setVolume ((float)vol / 100);
+	int vol		= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
+//	deviceList. at (newDeviceIndex). setVolume ((float)vol / 100);
+	fprintf (stderr, "restarted\n");
+	working. store (true);
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index) {
@@ -177,7 +127,11 @@ void	Qt_Audio::resume	() {
 }
 
 void	Qt_Audio::setVolume	(int v) {
+	if (!working. load ())
+           return;
 	store (audioSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, v);
-	m_audioOutput	-> setVolume ((float)v / 100);
+        fprintf (stderr, "Current volume is %f\n", theDevice. volume ());
+        audioSettings   -> setValue (QT_AUDIO_VOLUME, v);
+        theDevice. setVolume ((float)v / 100);
 }
 

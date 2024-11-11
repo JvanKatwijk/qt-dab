@@ -8,7 +8,7 @@ TEMPLATE	= app
 QT		+= widgets xml multimedia
 #CONFIG		+= console
 CONFIG		-= console
-QMAKE_CXXFLAGS	+= -std=c++14
+QMAKE_CXXFLAGS	+= -std=c++17
 
 win32 {
 QMAKE_CFLAGS	+=  -O3 -ffast-math
@@ -419,11 +419,12 @@ PKGCONFIG	+= zlib
 #PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
+INCLUDEPATH	+= /usr/local/qwt-6.3.0/include
 !mac {
 INCLUDEPATH	+= /usr/local/include
 #correct this for the correct path to the qwt6 library on your system
 #LIBS		+= -lqwt
-#LIBS		+= -lqwt-qt5
+LIBS		+= /usr/local/qwt-6.3.0/lib/libqwt.so.6.3.0
 }
 
 #mac {
@@ -453,8 +454,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment

@@ -22,18 +22,21 @@
  */
 #pragma once
 
-#include	<stdio.h>
-#include	<QAudioOutput>
-#include	<QStringList>
-#include	"dab-constants.h"
-#include	"audio-player.h"
-#include	<QIODevice>
-#include	<QScopedPointer>
-#include	<QComboBox>
-#include	<vector>
-#include	<atomic>
-#include	"ringbuffer.h"
-//#include	<QMediaDevices>
+#include        <stdio.h>
+#include        <QAudioOutput>
+#include        <QStringList>
+#include        "dab-constants.h"
+#include        "audio-player.h"
+#include        <QIODevice>
+//#include      <QAudioDevice>
+#include        <QScopedPointer>
+#include        <QAudioSink>
+#include        <QComboBox>
+#include        <vector>
+#include        <atomic>
+#include        "ringbuffer.h"
+#include        <QMediaDevices>
+#include        <QAudioDevice>
 class		QSettings;
 
 class	Qt_Audio: public audioPlayer {
@@ -51,16 +54,15 @@ public:
 private:
 	RingBuffer<char> tempBuffer;
 	QSettings	*audioSettings;
-	void		initialize_deviceList ();
-	void		initializeAudio(const QAudioDeviceInfo &deviceInfo);
-	QAudioFormat	audioFormat;
-	QScopedPointer<QAudioOutput> m_audioOutput;
-	int32_t		outputRate;
-	std::vector<QAudioDeviceInfo> theList;
-	std::atomic<bool>	isInitialized;
-	std::atomic<bool>	working;
-	QIODevice	*theWorker;
-	int		newDeviceIndex;
+	QAudioFormat	m_settings;
+	QList<QAudioDevice>     outputDevices;
+        QAudioSink      *m_audioOutput;
+        int32_t         outputRate;
+        std::atomic<bool>       working;
+        QIODevice       *theWorker;
+        int             newDeviceIndex;
+        QAudioOutput    theDevice;
+
 public slots:
 	void		setVolume	(int);
 };
