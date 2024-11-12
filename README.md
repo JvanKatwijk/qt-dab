@@ -48,7 +48,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
-* [A Note on using an RTLSDR device](#a-note-on-rtlsdr-device]
+* [A Note on using an RTLSDR device](#a-note-on-using-an-rtlsdr-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [Documentation](#documentation)
@@ -295,12 +295,13 @@ DAB transmissions are usually  transmitted by an SFN (Single Frequency Network),
 with unique TII data).
 If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
 
-![6.8](/res/read_me/DX-map.png?raw=true)
+![6.8](/res/read_me/transmitter.png?raw=true)
 
 The picture shows that in my environment, on channel 12C, the national network,
-I can identify 5 transmitters in the received signal.
+I can identify a couple of different transmitters in the received signal.
 The left column in the widget shows the transmitter whose data is the data
-being processed.
+being processed. New is the addition of a "compass" to show the direction
+from which the signal comes from the selected transmitter.
 
 If the DX mode is set, Qt-DAB-6.8 will save the transmitters that
 are identified in a text file, in Windows the file in the Qt-DAB-files folder in the home folder, in Linux the file is stored in the Qt-DAB-files folder in the "/tmp" directory.
