@@ -295,7 +295,7 @@ DAB transmissions are usually  transmitted by an SFN (Single Frequency Network),
 with unique TII data).
 If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
 
-![6.8](/res/read_me/transmitter.png?raw=true)
+![6.8](/res/read_me/transmitters.png?raw=true)
 
 The picture shows that in my environment, on channel 12C, the national network,
 I can identify a couple of different transmitters in the received signal.
