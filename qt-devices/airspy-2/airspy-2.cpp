@@ -667,7 +667,7 @@ QString key;
 	res	= res + ":" + QString::number (mixerButton -> isChecked ());
 	res	= res + ":" + QString::number (biasButton -> isChecked ());
 
-	store (airspySettings, "AIRSPY_SETTINGS", key, res);
+	store (airspySettings, AIRSPY_SETTINGS, key, res);
 }
 //
 //	When starting a channel, the gain sliders from the previous

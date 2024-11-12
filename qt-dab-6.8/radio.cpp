@@ -4035,7 +4035,7 @@ void	RadioInterface::handle_configFrame_closed () {
 }
 
 void	RadioInterface::handle_deviceFrame_closed () {
-	store (dabSettings_p, "Heneral", DEVICE_WIDGET_VISIBLE, 0);
+	store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 0);
 }
 
 void	RadioInterface::handle_newDisplayFrame_closed () {
