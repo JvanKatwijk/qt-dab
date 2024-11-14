@@ -46,16 +46,15 @@ QString	colorString;
 	   displayBuffer [i] = 0;
 	spectrumBuffer		= new Complex [spectrumSize];
 
-	dabSettings	-> beginGroup ("audioDisplay");
-	colorString = dabSettings -> value ("gridColor",
-	                                            "#5e5c64").toString();
+	colorString = value_s (abSettings, "audioDisplay",
+                                        "gridColor", "#5e5c64");
 	this	-> gridColor = QColor (colorString);
-	colorString = dabSettings -> value ("curveColor",
-	                                            "#f9f06b").toString();
+	colorString = value_s (dabSettings, "audioDisplay".
+	                                 "curveColor", "#f9f06b");
 	this	-> curveColor = QColor (colorString);
-	brush	= dabSettings -> value ("brush", 1).toInt() == 1;
-	displaySize = dabSettings->value("displaySize", displaySize).toInt();
-	dabSettings	-> endGroup ();
+	brush	= value_i (dabSettings, "audioDisplay", "brush", 1) != 0;
+	displaySize =  value_i (dabSettings, "audioDisplay",
+	                                "displaySize", displaySize);
 
 //	this	-> plotGrid	-> setCanvasBackground (displayColor);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
@@ -207,11 +206,9 @@ int	index;
 	if (index == 0)
 	   return;
 
-	dabSettings	-> beginGroup ("audioDisplay");
-	dabSettings	-> setValue ("displayColor", displayColor);
-	dabSettings	-> setValue ("gridColor", gridColor);
-	dabSettings	-> setValue ("curveColor", curveColor);
-	dabSettings	-> endGroup ();
+	store (dabSettings, "audioDisplay", "displayColor", displayColor);
+	store (dabSettings, "audioDisplay", "gridColor", gridColor);
+	store (dabSettings, "audioDisplay", "curveColor", curveColor);
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);

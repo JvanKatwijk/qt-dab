@@ -94,8 +94,7 @@
 	         value_i (dabSettings , CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
-	                                           "decoders", 
-	                                           DEFAULT_DECODER);
+	                                           "decoders", DEFAULT_DECODER); 
 
 	this	-> eti_on		= false;
 	ofdmBuffer. resize (2 * T_s);

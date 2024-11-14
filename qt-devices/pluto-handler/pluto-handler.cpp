@@ -233,7 +233,6 @@ int	ret;
 	rx_cfg. lo_hz			= 220000000;
 	rx_cfg. rfport			= "A_BALANCED";
 
-	plutoSettings	-> beginGroup ("plutoSettings");
 	bool agcMode	=
 	             value_i (plutoSettings, PLUTO_SETTINGS,
 	                                   "pluto-agc", 0) != 0;

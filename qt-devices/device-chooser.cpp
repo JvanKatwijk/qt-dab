@@ -179,9 +179,10 @@ QStringList res;
 }
 
 int	deviceChooser::getDeviceIndex	(const QString &name) {
-	for (auto &s: deviceList) 
+	for (auto &s: deviceList) {
 	   if (s. deviceName == name)
 	      return s. deviceNumber;
+	}
 	return -1;
 }
 
@@ -208,7 +209,7 @@ deviceHandler	*deviceChooser::_createDevice (const QString &s,
 deviceHandler	*inputDevice_p	= nullptr;
 int	deviceNumber	= getDeviceIndex (s);
 
-	if (deviceNumber == 0)
+	if (deviceNumber < 0)
 	   return nullptr;
 
 	switch (deviceNumber) {
