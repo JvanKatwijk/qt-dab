@@ -732,8 +732,9 @@ QString s;
 	channel. Eid		= id;
 //
 //	id we are scanning "to data", we reached the end
-	if (theSCANHandler. scan_to_data ())
+	if (theSCANHandler. scan_to_data ()) {
 	   stopScanning ();
+	}
 	else
 	if (theSCANHandler. active () && theSCANHandler. scan_single ())
 	   theSCANHandler. addEnsemble (channelSelector -> currentText (), v);
@@ -1890,6 +1891,7 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 QStringList list	= splitter (s);
 	if (list. length () != 2)
 	   return;
+	presetTimer. stop ();
 	fprintf (stderr, "we found %s %s\n",
 	                   list. at (1). toLatin1 (). data (),
 	                   list. at (0). toLatin1 (). data ());
@@ -2178,7 +2180,8 @@ void	RadioInterface::handle_nextServiceButton        () {
 void	RadioInterface::setPresetService () {
 	if (!running. load ())
 	   return;
-	stopScanning ();	// should not run
+	if (theSCANHandler. active ())
+	   return;
 	presetTimer. stop ();
 
 	if (nextService. channel != channel. channelName)
@@ -2262,14 +2265,20 @@ int	tunedFrequency	=
 	else
 	if (mapHandler != nullptr)
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
+
+	if (theSCANHandler. active ()) {
+	   theOFDMHandler	-> start ();
+	   return;
+	}
 //
+//	If we are scanning, we do not do delayed service start
 	int switchDelay		=
 	             configHandler_p -> switchDelayValue ();
 //	if no preset is started, we look in the tables what the servicename
 //	was the last time the channel was active
 	if (!inputDevice_p -> isFileInput () &&
 	                   !theSCANHandler. active ()) {
-	   if (firstService == "")
+	   if (firstService == "") 
 	      firstService =
 	            value_s (dabSettings_p, "channelPresets", theChannel, "");
 //
@@ -2278,6 +2287,7 @@ int	tunedFrequency	=
 //	associated with the channel, we set the [reset handling on
 //	but only if ....
 	   if (firstService != "") {
+	      presetTimer. stop ();	// should not run here
 	      nextService. channel	= theChannel;
 	      nextService. serviceName	= firstService;
 	      nextService. SId		= 0;
@@ -2393,7 +2403,6 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 	   fprintf (stderr, "Expert error 23\n");
 	   abort ();
 	}
-
 	stopScanning	();
 	stopChannel	();
 	new_channelIndex (currentChannel);
@@ -2416,8 +2425,8 @@ void	RadioInterface::startScanning	() {
 	the_ensembleHandler	-> set_showMode (SHOW_ENSEMBLE);
 	presetButton		-> setText ("not in use");
 	presetButton	-> setEnabled (false);
-	stopChannel     ();
 	presetTimer. stop ();
+	stopChannel     ();
 	channelTimer. stop ();
 	if (inputDevice_p -> isFileInput ())
 	   QMessageBox::warning (this, tr ("Warning"),
@@ -2513,6 +2522,8 @@ void	RadioInterface::start_scan_continuous () {
 	             configHandler_p -> switchDelayValue ();
 	channelTimer. start (2 * switchDelay);
 	startChannel    (channelSelector -> currentText ());
+	fprintf (stderr, "de scan start met  %s\n",
+	              channelSelector -> currentText (). toLatin1 (). data ());
 }
 //
 //	stop_scanning is called
@@ -2521,10 +2532,11 @@ void	RadioInterface::start_scan_continuous () {
 //	3. on device selection
 //	4. on handling a reset
 void	RadioInterface::stopScanning	() {
-	disconnect (theOFDMHandler, &ofdmHandler::no_signal_found,
-	            this, &RadioInterface::no_signal_found);
 	if (!theSCANHandler. active ())
 	   return;
+	fprintf (stderr, "De scan wordt gestopt\n");
+	disconnect (theOFDMHandler, &ofdmHandler::no_signal_found,
+	            this, &RadioInterface::no_signal_found);
 	presetButton	-> setText ("favorites");
 	presetButton	-> setEnabled (true);
 //	LOG scanning stops
@@ -2604,17 +2616,21 @@ void	RadioInterface::stop_scan_continuous () {
 //	Also called as a result of time out on channelTimer
 
 void	RadioInterface::channel_timeOut () {
+	fprintf (stderr, "Channel timeout\n");
 	channelTimer. stop ();
 	if (!theSCANHandler. active ())
 	   return;
 
-	if (theSCANHandler. scan_to_data ())
+	if (theSCANHandler. scan_to_data ()) {
 	   next_for_scan_to_data ();
+	}
 	else	
-	if (theSCANHandler. scan_single ())
+	if (theSCANHandler. scan_single ()) {
 	   next_for_scan_single ();
-	else
+	}
+	else {
 	   next_for_scan_continuous ();
+	}
 }
 
 void	RadioInterface::next_for_scan_to_data () {
@@ -2663,9 +2679,9 @@ void	RadioInterface::next_for_scan_continuous () {
 	stopChannel ();
 
 	QString cs	= theSCANHandler. getNextChannel ();
+	fprintf (stderr, "Hoing for channel %s\n", cs. toLatin1 (). data ());
 	int cc	= channelSelector -> findText (cs);
 	new_channelIndex (cc);
-
 	int switchDelay	= 
 	         configHandler_p -> switchDelayValue ();
 	channelTimer. start (2 * switchDelay);
@@ -3091,12 +3107,10 @@ void	RadioInterface::epgTimer_timeOut	() {
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
 	for (auto serv : epgList) {
 	   packetdata pd;
-	   fprintf (stderr, "Looking to %s\n", serv. toLatin1 (). data ());
 	   theOFDMHandler -> data_for_packetservice (serv, pd, 0);
 	   if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
 	      continue;
-	   fprintf (stderr, "YES\n");
 	   if (pd. DSCTy == 60) {
 //	LOG hidden service starts
 	      fprintf (stderr, "Starting hidden service %s\n",
@@ -3516,7 +3530,7 @@ bool setting	= configHandler_p -> eti_active ();
 	   return;
 
 	if (setting) {
-	   stopScanning ();	
+	   stopScanning ();
 	   disconnect (scanButton, &QPushButton::clicked,
 	               this, &RadioInterface::handle_scanButton);
 	   connect (scanButton, &QPushButton::clicked,
