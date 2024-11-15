@@ -46,13 +46,15 @@
 	tableWidget 	-> setHorizontalHeaderLabels (
 	                QStringList () << tr ("r") << tr ("transmitter"));
 	theDial		= new QwtCompass ();
+
 	QMap<double, QString> map;
 	map.insert(0.0, "N");
 	map.insert(90.0, "E");
 	map.insert(180.0, "S");
 	map.insert(270.0, "W");
 //	theDial -> setLabelMap(map)
-
+	QwtSimpleCompassRose *rose = new QwtSimpleCompassRose( 4, 1 );
+            theDial->setRose( rose );
 	theDial -> setNeedle (
 	       new QwtCompassMagnetNeedle(QwtCompassMagnetNeedle::ThinStyle));
 	theDial->setValue (220.0);
