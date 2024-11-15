@@ -195,7 +195,7 @@ char	manufac [256], product [256], serial [256];
 	k	= gainControl -> findText (temp);
 	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
-	temp		= value_s (rtlsdrSettings, "rtlsdrSettings,
+	temp		= value_s (rtlsdrSettings, "rtlsdrSettings",
 	                                      "autogain", "autogain_on");
 	agcControl	-> setChecked (temp == "autogain_on");
 	
@@ -203,7 +203,7 @@ char	manufac [256], product [256], serial [256];
 	     setValue (value_i (rtlsdrSettings, "rtlsdrSettings",
 	                                               "ppm_correction", 0));
 	save_gainSettings	=
-	     value_i (rtlsdrSettings, "rtlsdrSettings,
+	     value_i (rtlsdrSettings, "rtlsdrSettings",
 	                               "save_gainSettings", 1) != 0;
 
 	rtlsdr_get_usb_strings (theDevice, manufac, product, serial);
@@ -268,7 +268,7 @@ char	manufac [256], product [256], serial [256];
 	store (rtlsdrSettings, "rtlsdrSettings",
 	                "externalGain", gainText);
 	store (rtlsdrSettings, "rtlsdrSettings",
-	                "autogain", agcControl -> isChecked () ? "1" : "0");
+	                "autogain", agcControl -> isChecked () ? 1 : 0);
 	store (rtlsdrSettings, "rtlsdrSettings",
 	                "ppm_correction", ppm_correction -> value());
 	store (rtlsdrSettings, "rtlsdrSettings", 

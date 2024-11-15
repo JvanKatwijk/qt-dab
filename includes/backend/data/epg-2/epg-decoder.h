@@ -128,6 +128,8 @@ private:
 	int	process_defaultLanguage	(uint8_t *v, int index);
 	int	process_obsolete	(uint8_t *v, int index);
 
+	int     get_shortId		(uint8_t *v, int index);
+
 	void	record			(progDesc *);
 	QString	getCData		(uint8_t *v, int index, int elength);
 signals:

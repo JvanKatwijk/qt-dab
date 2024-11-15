@@ -22,17 +22,17 @@
  */
 //
 //
-//	The band handler now manages the skipTable
+//	The band handler now manages the scanTable
 //
 #include	<QSettings>
-#include	"skiptable-handler.h"
+#include	"scantable-handler.h"
 #include	"dab-constants.h"
 #include	<QHeaderView>
 #include	<QDomDocument>
 #include	<stdio.h>
 #include	"settings-handler.h"
 
-	skiptableHandler::skiptableHandler (QSettings *s):
+	scantableHandler::scantableHandler (QSettings *s):
 	                                theTable (nullptr) {
 	dabSettings	= s;
 	theTable. setColumnCount (2);
@@ -41,14 +41,13 @@
 	theTable. setHorizontalHeaderLabels (header);
 	theTable. verticalHeader () -> hide ();
 	theTable. setShowGrid	(true);
-	skipFile	= "";
 }
 
-	skiptableHandler::~skiptableHandler	() {
+	scantableHandler::~scantableHandler	() {
 	theTable. hide ();
 }
 
-void	skiptableHandler::setup_skipTable	(dabFrequencies *theBand) {
+void	scantableHandler::setup_scanTable	(dabFrequencies *theBand) {
 	this -> selectedBand = theBand;
 	for (int i = 0; selectedBand [i]. fKHz != 0; i ++)  {
 	   theTable. insertRow (i);
@@ -56,29 +55,33 @@ void	skiptableHandler::setup_skipTable	(dabFrequencies *theBand) {
                            new QTableWidgetItem (selectedBand [i]. key));
            theTable. setItem (i, 1,
                            new QTableWidgetItem (QString ("+")));
+	   selectedBand [i]. scan = true;
         }
 	connect (&theTable, &QTableWidget::cellDoubleClicked,
-	         this, &skiptableHandler::cellSelected);
+	         this, &scantableHandler::cellSelected);
 }
 
-void	skiptableHandler::load_skipTable	(const QString &source) {
-	if (source == "")  {	// kust load the current table
+void	scantableHandler::load_scanTable	(const QString &source) {
+	if (source == "")  {	// just load the current table
            for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
 	      theTable. item (i, 0) -> setText (selectedBand [i]. key);
 	      theTable. item (i, 1) -> setText ("+");
-              bool skipValue = value_i (dabSettings,
-	                                "skipTable",
-	                                selectedBand [i]. key, 0) != 1;
-              if (skipValue) {
-                 selectedBand [i]. skip = true;
+              selectedBand [i]. scan = true;
+              bool scanValue = value_i (dabSettings,
+	                                "scanTable",
+	                                selectedBand [i]. key, 1) != 0;
+              if (!scanValue) {
+                 selectedBand [i]. scan = false;
                  theTable. item (i, 1) -> setText ("-");
               }
-           }
+	   }
+	   theTable. show ();
 	}
 	else {
            for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
 	      theTable. item (i, 0) -> setText (selectedBand [i]. key);
 	      theTable. item (i, 1) -> setText ("+");
+	      selectedBand [i]. scan = true;
 	   }
 	   QDomDocument xml_bestand;
            QFile f (source);
@@ -89,50 +92,50 @@ void	skiptableHandler::load_skipTable	(const QString &source) {
               while (!component. isNull ()) {
                  if (component. tagName () == "BAND_ELEMENT") {
                     QString channel = component. attribute ("CHANNEL", "???");
-                    QString skipItem = component. attribute ("VALUE", "+");
-                    if ((channel != "???") && (skipItem == "-"))
-                       updateEntry (channel);
+                    QString scanItem = component. attribute ("VALUE", "+");
+                    if ((channel != "???") && (scanItem == "-"))
+                       updateEntry (channel, false);
                  }
                  component = component. nextSibling (). toElement ();
               }
+	      theTable. show ();
 	   }
 	}
 }
 
-void	skiptableHandler::updateEntry (const QString &channel) {
+void	scantableHandler::updateEntry (const QString &channel, bool val) {
         for (int i = 0; selectedBand [i]. key != nullptr; i ++)  {
            if (selectedBand [i]. key == channel) {
-              selectedBand [i]. skip = true;
-              theTable. item (i, 1) -> setText ("-");
+              selectedBand [i]. scan = val;
+              theTable. item (i, 1) ->  setText (val ? "+" : "-");
               return;
            }
         }
 }
 
-void	skiptableHandler::save_skipTable	(const QString &target) {
+void	scantableHandler::save_scanTable	(const QString &target) {
 	if (target == "")  {	// dump in the ini file
            for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
-              if (selectedBand [i]. skip)
-                 store (dabSettings, "skipTable", selectedBand [i]. key, 1);
+              if (selectedBand [i]. scan)
+                 store (dabSettings, "scanTable", selectedBand [i]. key, 1);
               else
-                 remove (dabSettings, "skipTable", selectedBand [i]. key);
+                 store (dabSettings, "scanTable", selectedBand [i]. key, 0);
            }
 	}
 	else {
-	   QDomDocument skipList;
+	   QDomDocument scanList;
 	   QDomElement root;
 
-	   root	= skipList. createElement ("skipList");
-	   skipList. appendChild (root);
+	   root	= scanList. createElement ("scanList");
+	   scanList. appendChild (root);
 
 	   for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
-	      if (!selectedBand [i]. skip)
-	         continue;
-	      QDomElement skipElement = skipList.
+	      QDomElement scanElement = scanList.
 	                                createElement ("BAND_ELEMENT");
-	      skipElement. setAttribute ("CHANNEL", selectedBand [i]. key);
-	      skipElement. setAttribute ("VALUE", "-");
-	      root. appendChild (skipElement);
+	      scanElement. setAttribute ("CHANNEL", selectedBand [i]. key);
+	      scanElement. setAttribute ("VALUE",
+	                                  selectedBand [i]. scan ? "+" : "-");
+	      root. appendChild (scanElement);
 	   }
 
 	   QFile file (target);
@@ -140,12 +143,22 @@ void	skiptableHandler::save_skipTable	(const QString &target) {
               return;
 
            QTextStream stream (&file);
-           stream << skipList. toString ();
+           stream << scanList. toString ();
            file. close ();
 	}
 }
 
-void	skiptableHandler::cellSelected (int row, int column) {
+void	scantableHandler::clear_scanTable	() {
+	for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
+	   selectedBand [i]. scan = true;
+	   theTable. setItem (i, 0,
+                           new QTableWidgetItem (selectedBand [i]. key));
+           theTable. setItem (i, 1,
+                           new QTableWidgetItem (QString ("+")));
+        }
+}
+
+void	scantableHandler::cellSelected (int row, int column) {
 QString s1 = theTable. item (row, 0) -> text ();
 QString s2 = theTable. item (row, 1) -> text ();
 	(void)column;
@@ -153,24 +166,29 @@ QString s2 = theTable. item (row, 1) -> text ();
            theTable. item (row, 1) -> setText ("+");
 	else
            theTable. item (row, 1) -> setText ("-");
-	selectedBand [row]. skip = s2 != "-";
-//	fprintf (stderr, "we zetten voor %s de zaak op %d\n",
-//	              selectedBand [row]. key. toUtf8 (). data (),
-//	              selectedBand [row]. skip);
+	
+	selectedBand [row]. scan = s2 != "-";
+	for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
+	   if (selectedBand [i]. key == s1) {
+	      selectedBand [i]. scan = s2 != "+";
+	      fprintf (stderr, "Band %s (%s) wordt %d\n", 
+	                          selectedBand [i]. key. toLatin1 (). data (),
+	                          s1. toLatin1 (). data (),
+	                          s2 != "+");
+	      break;
+	   }
+	}
 }
 
-void	skiptableHandler::show_skipTable	() {
+void	scantableHandler::show_scanTable	() {
 	theTable. show ();
 }
 
-void	skiptableHandler::hide_skipTable	() {
+void	scantableHandler::hide_scanTable	() {
 	theTable. hide ();
 }
 
-bool	skiptableHandler::isHidden		() {
+bool	scantableHandler::isHidden		() {
 	return theTable. isHidden ();
 }
-
-
-	
 

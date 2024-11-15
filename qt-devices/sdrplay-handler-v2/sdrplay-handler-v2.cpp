@@ -988,7 +988,6 @@ int	lnaState;
 int	agc;
 QString	theValue	= "";
 
-	sdrplaySettings	-> beginGroup (SDRPLAY_SETTINGS_V2);
 	theValue	=  value_s (sdrplaySettings, SDRPLAY_SETTINGS_V2,
 	                         QString::number (freq), "");
 

@@ -428,6 +428,7 @@ progDesc theElement;
 	         break;
 
 	      case 0x17:	// memberOf
+	         get_shortId (v, index);
 	         index	= process_memberOf (v, index);
 	         break;
 
@@ -559,6 +560,7 @@ int length	= v [index + 1];
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_476_p (v, index, &p -> ident);
+	         fprintf (stderr, "In serviceS cope %X\n", p -> ident);
 	         break;
 
 	      default:
@@ -1998,8 +2000,22 @@ int length	= v [index + 1];
 	}
 	else
 	   index += 2;
-
 	return index + length;
+}
+int	epgDecoder::get_shortId (uint8_t *v, int index) {
+int length	= v [index + 1];
+	if (length == 0XFE) {
+	   length = (v [index + 2] << 8) | v [index + 3];
+	   index += 4;
+	}
+	else
+	if (length == 0XFF) {
+	   length = (v [index + 2] << 16) | (v [index + 3] << 8) | v [index + 4];
+	     index += 5;
+	}
+	else
+	   index += 2;
+	return 0;
 }
 
 int	epgDecoder::process_473	(uint8_t *v, int index) {

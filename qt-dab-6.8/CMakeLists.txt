@@ -186,7 +186,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./support/clickable-label.h 
              ./support/icon-label.h 
              ./support/scan-handler.h 
-             ./support/skiptable-handler.h 
+             ./support/scantable-handler.h 
              ./support/aboutdialog.h 
 	     ./support/ensemble-handler.h
 	     ./support/config-handler.h
@@ -320,7 +320,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./support/clickable-label.cpp 
              ./support/icon-label.cpp 
              ./support/scan-handler.cpp 
-             ./support/skiptable-handler.cpp 
+             ./support/scantable-handler.cpp 
              ./support/aboutdialog.cpp 
              ./support/ensemble-handler.cpp 
              ./support/config-handler.cpp 
@@ -437,7 +437,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./support/clickable-label.h 
 	     ./support/icon-label.h 
 	     ./support/scan-handler.h 
-	     ./support/skiptable-handler.h 
+	     ./support/scantable-handler.h 
 	     ./support/aboutdialog.h 
 	     ./support/ensemble-handler.h 
 	     ./support/config-handler.h 
