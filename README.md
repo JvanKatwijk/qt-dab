@@ -41,6 +41,17 @@ A seemingly minor change from the user's point of view is that now
 on selecting any channel, the service that was last used on that channel
 is started. 
 
+Branches
+=================================================================
+Since Qt6 is already years underway, it was time to try to move over.
+The problem is that the AppImage has to be built on a reltively old 
+system, i.e. Ubuntu 20. U22 is too new.
+
+Therefore the qt-dab repository now has - next to the master branch
+a branch qt6-dab, a version that compiles well under Qt6.
+
+It is slightly experimental. the next step will be to build the
+Windows executables using Qt6.
 
 Table of Contents
 =================================================================
