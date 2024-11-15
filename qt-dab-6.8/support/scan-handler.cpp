@@ -108,40 +108,41 @@ QString scanmodeText (int e) {
 	                                         QSettings *s,
 	                                         const QString &extFile):
 	                                             myWidget (nullptr),
-	                                             skipTable (s),
+	                                             scanTable (s),
 	                                             filenameFinder (s) {
 	this	-> theRadio		= theRadio;
 	this	-> dabSettings		= s;
 	this	-> selectedBand		= nullptr;
-	this	->  no_skipTables	= false;
+	this	->  no_scanTables	= false;
 #ifndef	__MINGW32__
 	if (extFile != "") 
 	   selectedBand = load_extFile (extFile);
 #endif
 	if (selectedBand != nullptr)
-	   no_skipTables	= true;
+	   no_scanTables	= true;
 	else {
 	   QString	defaultString	= "VHF BAND III";
 	   QString t       =
                 value_s (dabSettings, SCANNER, S_DABBAND, defaultString);   
            selectedBand         = t == defaultString ? frequencies_1 :
 	                                                frequencies_2;
-	   no_skipTables	= t != "VHF Band III";
+	   no_scanTables	= t != defaultString;
 	}
-	   
 	QStringList	header;
 	kopLine		= new QLabel ("scan status");
 	startKnop	= new QPushButton ("start");
 	startKnop	-> setToolTip ("start the scan with the current settings");
 	stopKnop	= new QPushButton ("stop");
 	showKnop	= new QPushButton ("show");
-	showKnop	-> setToolTip ("show the skiplist, the list indicating which channels should be skipped when scanning");
+	showKnop	-> setToolTip ("show the scanlist, the list indicating which channels should NOT be skipped when scanning");
+	clearKnop	= new QPushButton ("clear");
+	clearKnop	-> setToolTip ("clear the current scantable, i.e. scan all channels");
 	defaultLoad	= new QPushButton ("load default");
-	defaultLoad	-> setToolTip ("load the default skiptable");
+	defaultLoad	-> setToolTip ("load the default scantable. Note that a \'+\' in the scanTable means SCAN this channel");
 	defaultStore	= new QPushButton ("store default");
-	defaultStore	-> setToolTip ("store the current settings of the skiptable into the qt-dab.ini file");
-	loadKnop	= new QPushButton ("load skipfile");
-	storeKnop	= new QPushButton ("store skipfile");
+	defaultStore	-> setToolTip ("store the current settings of the scantable into the qt-dab.ini file");
+	loadKnop	= new QPushButton ("load scanfile");
+	storeKnop	= new QPushButton ("store scanfile");
 	scanModeSelector	= new QComboBox ();
         contentWidget	= new QTableWidget (0, 3);
 	QHBoxLayout *LH	= new QHBoxLayout ();
@@ -149,6 +150,7 @@ QString scanmodeText (int e) {
 	LH		-> addWidget (startKnop);
 	LH		-> addWidget (stopKnop);
 	LH		-> addWidget (showKnop);
+	LH		-> addWidget (clearKnop);
 	LH_2		-> addWidget (defaultLoad);
 	LH_2		-> addWidget (defaultStore);
 	LH_2		-> addWidget (loadKnop);
@@ -161,8 +163,8 @@ QString scanmodeText (int e) {
 	LV		-> addWidget (contentWidget);
         myWidget. setLayout (LV);
 	myWidget. setWindowTitle ("scan monitor");
-	if (!no_skipTables)
-	   skipTable. setup_skipTable (selectedBand);
+	if (!no_scanTables)
+	   scanTable. setup_scanTable (selectedBand);
 	scanModeSelector -> addItem ("single scan");
 	scanModeSelector -> addItem ("until data");
 	scanModeSelector -> addItem ("continuous");
@@ -177,7 +179,7 @@ QString scanmodeText (int e) {
 	connect (scanModeSelector,
 	                qOverload<int>(&QComboBox::currentIndexChanged),
 	         this, &scanHandler::handle_scanMode);
-	if (!no_skipTables) {
+	if (!no_scanTables) {
 	   connect (defaultLoad, &QPushButton::clicked,
 	            this, &scanHandler::handle_defaultLoad);
 	   connect (defaultStore, &QPushButton::clicked,
@@ -188,13 +190,15 @@ QString scanmodeText (int e) {
 	            this, &scanHandler::handle_storeKnop);
 	   connect (showKnop, &QPushButton::clicked,
 	            this, &scanHandler::handle_showKnop);
+	   connect (clearKnop, &QPushButton::clicked,
+	            this, &scanHandler::handle_clearKnop);
 	}
 	header << "channel" << "ensemble" << "nrServices";
         contentWidget	-> setHorizontalHeaderLabels (header);
 	addRow ();	// for the ensemble name
 	totalServices	= 0;
 
-	skipFile	= "";
+	scanFile	= "";
 	scanning. store (false);
 //
 	connect (this, &scanHandler::startScanning,
@@ -205,7 +209,7 @@ QString scanmodeText (int e) {
 
 	scanHandler::~scanHandler () {
 	clearTable	();
-	skipTable. hide_skipTable ();
+	scanTable. hide_scanTable ();
         delete  contentWidget;
 }
 
@@ -237,7 +241,7 @@ void	scanHandler::show	() {
 
 void	scanHandler::hide	() {
 	myWidget. hide ();
-	skipTable. hide_skipTable ();
+	scanTable. hide_scanTable ();
 }
 
 bool	scanHandler::isVisible	() {
@@ -329,41 +333,50 @@ void	scanHandler::handle_scanMode (int index) {
 }
 
 void	scanHandler::handle_showKnop	() {
-	if (skipTable. isHidden ())
-	   skipTable. show_skipTable ();
+	if (scanTable. isHidden ())
+	   scanTable. show_scanTable ();
 	else
-	   skipTable. hide_skipTable ();
+	   scanTable. hide_scanTable ();
+}
+
+void	scanHandler::handle_clearKnop	() {
+	scanTable. clear_scanTable ();
 }
 
 void	scanHandler::handle_defaultLoad	() {
-	skipTable. load_skipTable ("");
-	skipFile	= "";
+	scanTable. load_scanTable ("");
+	scanFile	= "";
 }
 
 void	scanHandler::handle_defaultStore () {
-	skipTable. save_skipTable ("");
+	scanTable. save_scanTable ("");
 }
 
 void	scanHandler::handle_loadKnop	() {
-	skipFile  = QFileDialog::getOpenFileName (nullptr,
+QString saveDir	= filenameFinder. basicPath ();
+
+	scanFile  = QFileDialog::getOpenFileName (nullptr,
 	                                          "Open file ...",
-	                                          QDir::homePath(),
+	                                          saveDir,
 	                                          "xml data (*.xml)");
-	if (skipFile == QString ("")) 
+	if (scanFile == QString ("")) 
 	   return;
 
-	skipTable. load_skipTable (skipFile);
+	scanTable. load_scanTable (scanFile);
 }
 
 void	scanHandler::handle_storeKnop	() {
-	skipFile  = QFileDialog::getSaveFileName (nullptr,
-	                                          "Open file ...",
-	                                          QDir::homePath(),
-	                                          "xml data (*.xml)");
-	if (skipFile == QString ("")) 
-	   return;
+QString saveDir = filenameFinder. basicPath ();
 
-	skipTable. save_skipTable (skipFile);
+	scanFile  = QFileDialog::getSaveFileName (nullptr,
+	                                          "Open file ...",
+	                                          saveDir,
+	                                          "xml data (*.xml)");
+	if (scanFile == QString ("")) 
+	   return;
+	if (!scanFile. endsWith (".xml"))
+	   scanFile += ".xml";
+	scanTable. save_scanTable (scanFile);
 }
 
 void	scanHandler::setStop () {
@@ -412,7 +425,7 @@ FILE	*scanHandler::askFileName	() {
 QString	scanHandler::getFirstChannel	() {
 	currentChannel = 0;
 	while ((selectedBand [currentChannel]. fKHz != 0) &&
-	                 (selectedBand [currentChannel]. skip )) 
+	                 (!selectedBand [currentChannel]. scan )) 
 	   currentChannel ++;
 	if (selectedBand [currentChannel]. fKHz == 0)
 	   currentChannel = 0;
@@ -423,8 +436,10 @@ QString	scanHandler::getFirstChannel	() {
 QString	scanHandler::getNextChannel	() {
 	currentChannel ++;
 	while ((selectedBand [currentChannel]. fKHz != 0) &&
-                         (selectedBand [currentChannel]. skip ))
+                         (!selectedBand [currentChannel]. scan )) {
+	   fprintf (stderr, "Skipping channel %d\n", currentChannel);
            currentChannel ++;
+	}
 //
 //	are we at the end of the list?
 	if (selectedBand [currentChannel]. fKHz == 0) {
@@ -479,7 +494,7 @@ FILE *f	= fopen (extFile. toUtf8 (). data (), "r");
 	      continue;
 	   alternatives [filler]. key	= QString (channelName);
 	   alternatives [filler]. fKHz	= freq;
-	   alternatives [filler]. skip	= false;
+	   alternatives [filler]. scan	= true;
 	   filler ++;
 	}
 
