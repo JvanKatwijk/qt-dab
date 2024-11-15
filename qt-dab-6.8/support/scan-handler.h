@@ -36,7 +36,7 @@
 #include	<QPushButton>
 #include	<QComboBox>
 #include	"findfilenames.h"
-#include	"skiptable-handler.h"
+#include	"scantable-handler.h"
 
 class	RadioInterface;
 class	QSettings;
@@ -70,7 +70,7 @@ public:
 	QString		getChannel	(int frequency);
 
 private:
-	skiptableHandler	skipTable;
+	scantableHandler	scanTable;
 	QScrollArea	myWidget;
 	QString		channel;
 	findfileNames	filenameFinder;
@@ -80,6 +80,7 @@ private:
 	QPushButton	*startKnop;
 	QPushButton	*stopKnop;
 	QPushButton	*showKnop;
+	QPushButton	*clearKnop;
 	QPushButton	*defaultLoad;
 	QPushButton	*defaultStore;
 	QPushButton	*loadKnop;
@@ -90,7 +91,7 @@ private:
 	dabFrequencies alternatives [128];
 	dabFrequencies *load_extFile       (const QString &extFile);
 #endif
-	bool		no_skipTables;
+	bool		no_scanTables;
 
 	dabFrequencies	*selectedBand;
 	std::atomic<bool>	scanning;
@@ -102,13 +103,14 @@ private:
 
 	int		currentChannel;
 	int		scanMode;
-	QString		skipFile;
+	QString		scanFile;
 private slots:
 
 	void		handle_startKnop	();
 	void		handle_stopKnop		();
 	void		handle_scanMode		(int);
 	void		handle_showKnop		();
+	void		handle_clearKnop	();
 	void		handle_defaultLoad	();
 	void		handle_defaultStore	();
 	void		handle_loadKnop		();

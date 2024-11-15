@@ -33,30 +33,29 @@
 typedef struct {
         QString key;
         int     fKHz;
-        bool    skip;
+        bool    scan;
 } dabFrequencies;
 
 class	QSettings;
 
-class	skiptableHandler: public QObject {
+class	scantableHandler: public QObject {
 Q_OBJECT
 public:
-		skiptableHandler	(QSettings *);
-		~skiptableHandler	();
-	void	setup_skipTable		(dabFrequencies *);
-	void	load_skipTable		(const QString &);
-	void	save_skipTable		(const QString &);
+		scantableHandler	(QSettings *);
+		~scantableHandler	();
+	void	setup_scanTable		(dabFrequencies *);
+	void	load_scanTable		(const QString &);
+	void	save_scanTable		(const QString &);
 
-	void	show_skipTable		();
-	void	hide_skipTable		();
+	void	clear_scanTable		();
+	void	show_scanTable		();
+	void	hide_scanTable		();
 	bool	isHidden		();
 private:
 	QTableWidget	theTable;
 	QSettings	*dabSettings;
 	dabFrequencies	*selectedBand;
-	QString		skipFile;
-	
-	void		updateEntry	(const QString &channel);
+	void		updateEntry	(const QString &channel, bool val);
 
 private slots:
 	void	cellSelected	(int, int);
