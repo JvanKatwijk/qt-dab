@@ -40,20 +40,20 @@ Q_OBJECT
 public:
 			converter_48000		(RadioInterface *);
 			~converter_48000	();
-	int		convert			(std::complex<int16_t>*,
+	int		convert			(complex16*,
 	                                          int32_t, int, 
 	                                          std::vector<float> &);
 	                                           
 	void		start_audioDump		(const QString &);
 	void		stop_audioDump		();
 private:
-	int		convert_16000		(std::complex<int16_t> *,
+	int		convert_16000		(complex16 *,
 	                                         int, std::vector<float> &);
-	int		convert_24000		(std::complex<int16_t> *,
+	int		convert_24000		(complex16 *,
 	                                         int, std::vector<float> &);
-	int		convert_32000		(std::complex<int16_t> *,
+	int		convert_32000		(complex16 *,
 	                                         int, std::vector<float> &);
-	int		convert_48000		(std::complex<int16_t> *,
+	int		convert_48000		(complex16 *,
 	                                         int, std::vector<float> &);
 	wavWriter	theWriter;
 	newConverter	mapper_16;
@@ -61,19 +61,6 @@ private:
 	newConverter	mapper_32;
 	std::mutex	locker;
 	void		dump			(const Complex *, int);
-	void		dump			(const std::complex<int16_t> *, int);
-//
-//	For thermo
-	void		evaluatePeakLevel	(const Complex);
-	void		eval			(Complex *, int);
-
-	int32_t		peakLevelCurSampleCnt;  
-        int32_t		peakLevelSampleMax;
-        float		absPeakLeft;
-        float		absPeakRight;
-
-	int		repetitionCounter;
-signals:
-	void		showPeakLevel		(float, float);
+	void		dump			(const complex16 *, int);
 };
 

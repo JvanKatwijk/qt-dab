@@ -330,7 +330,8 @@ int	snrCount	= 0;
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-	      correctionNeeded	= !theFicHandler. syncReached();
+	      if (!correctionNeeded && !theFicHandler. syncReached ())
+	         correctionNeeded	= true;
 	      if (correctionNeeded) {
 	         int correction	=
 	            myFreqSyncer. estimate_CarrierOffset (ofdmBuffer);
@@ -461,8 +462,9 @@ int	snrCount	= 0;
 //NewOffset:
 //     we integrate the newly found frequency error with the
 //     existing frequency error.
-//
-	      fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
+
+	      int oldCoarseOffset	= coarseOffset;
+	      fineOffset += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 	      if (fineOffset > carrierDiff / 2) {
 	         coarseOffset += carrierDiff;
 	         fineOffset -= carrierDiff;
@@ -473,6 +475,10 @@ int	snrCount	= 0;
 	         fineOffset += carrierDiff;
 	      }
 	      show_Corrector (coarseOffset, fineOffset);
+	      if ((oldCoarseOffset != coarseOffset) &&
+	          (theFicHandler. get_ficQuality () < 40))
+	              correctionNeeded = true;;
+	   
 //ReadyForNewFrame:
 ///	and off we go, up to the next frame
 	   }

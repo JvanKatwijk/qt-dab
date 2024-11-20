@@ -65,6 +65,8 @@
 #include	"settingNames.h"
 #include	"uploader.h"
 
+static float peakLeftDamped = 0;
+static float peakRightDamped = 0;
 #if defined (__MINGW32__) || defined (_WIN32)
 #include <windows.h>
 __int64 FileTimeToInt64 (FILETIME & ft) {
@@ -281,14 +283,18 @@ QString h;
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 #ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("8") + " with RTLSDR-V3";
+	SystemVersion	= QString ("9") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("8") + " with RTLSDR-V4";
+	SystemVersion	= QString ("9") + " with RTLSDR-V4";
 #else
-	SystemVersion	= QString ("8");
+	SystemVersion	= QString ("9");
 #endif
-	setWindowTitle ("Qt-DAB-6." +SystemVersion);
-	version		= "Qt-DAB-6." + SystemVersion;
+#if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
+	version		= "Qt6-DAB-6." + SystemVersion;
+#else
+	version		= "Qt5-DAB-6." + SystemVersion;
+#endif
+	setWindowTitle (version);
 
 	ensembleWidget -> setWidget (the_ensembleHandler);
 	connect (the_ensembleHandler, &ensembleHandler::selectService,
@@ -314,6 +320,7 @@ QString h;
 	font. setBold (true);
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
+	motLabel	-> setStyleSheet ("QLabel {color : red}");
 	programTypeLabel	-> setStyleSheet (labelStyle);
 	font      = ensembleId -> font ();
 	font. setPointSize (14);
@@ -381,7 +388,7 @@ QString h;
 //	we end up here if selection was PORT_AUDIO or using Qt_Audio failed
 //	as it does on U20
 	if (soundOut_p == nullptr) {
-	   soundOut_p		= new audioSink		(latency);
+	   soundOut_p	= new audioSink	(latency);
 	   streams	= ((audioSink *)soundOut_p) -> streams ();
 	   temp		=
 	          value_s (dabSettings_p, SOUND_HANDLING, AUDIO_STREAM_NAME,
@@ -394,8 +401,10 @@ QString h;
 	   configHandler_p -> fill_streamTable (streams);
 	   configHandler_p -> show_streamSelector (true);
 	   k	= configHandler_p -> init_streamTable (temp);
-	   if (k >= 0)
-	      soundOut_p -> selectDevice (k);
+	   if (k >= 0) {
+	      QString str = configHandler_p -> currentStream ();
+	      soundOut_p -> selectDevice (k, str);
+	   }
 	   configHandler_p	-> connect_streamTable	();
 	}
 	else {
@@ -539,6 +548,17 @@ QString h;
 	   inputDevice_p = create_device (h, &theLogger);
 	}
 //
+	peakLeftDamped          = -100;
+        peakRightDamped         = -100;
+ 
+        leftAudio              -> setFillBrush (Qt::darkBlue);
+        rightAudio             -> setFillBrush (Qt::darkBlue);
+        leftAudio              -> setAlarmBrush (Qt::red);
+        rightAudio             -> setAlarmBrush (Qt::red);
+        leftAudio              -> setAlarmEnabled (true);  
+        rightAudio             -> setAlarmEnabled(true);
+ 
+
 //	do we show controls?
 	bool visible	=
 	            value_i (dabSettings_p, DAB_GENERAL, 
@@ -1118,7 +1138,6 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	   return;
 
 static int teller	= 0;
-//	if (!techWindow_p -> isHidden ()) {
 	teller ++;
 	if (teller > 10) {
 	   teller = 0;
@@ -1156,8 +1175,30 @@ static int teller	= 0;
 	      theTechData. putDataIntoBuffer (vec, amount);
 	      techWindow_p	-> audioDataAvailable (amount, rate);
 	   }
+	   peakLevel (tmpBuffer);
 	}
 }
+
+void	RadioInterface::peakLevel (const std::vector<float> &samples) {
+float	absPeakLeft	= 0;
+float	absPeakRight	= 0;
+	
+	for (int i = 0; i < samples. size () / 2; i ++) {
+	   const float absLeft  = std::abs (samples [2 * i]);
+	   const float absRight = std::abs (samples [2 * i + 1]);
+	   if (absLeft  > absPeakLeft)  
+	      absPeakLeft  = absLeft;
+	   if (absRight > absPeakRight)
+	      absPeakRight = absRight;
+	}
+
+	float leftDb  = (absPeakLeft  > 0.0f ?
+	                   20.0f * std::log10 (absPeakLeft)  : -40.0f);
+	float rightDb = (absPeakRight > 0.0f ?
+	                   20.0f * std::log10 (absPeakRight) : -40.0f);
+	showPeakLevel (leftDb, rightDb);
+}
+	
 //
 /////////////////////////////////////////////////////////////////////////////
 //	
@@ -1429,33 +1470,31 @@ void	RadioInterface::show_aacErrors (int s) {
 }
 //
 //	called from the ficHandler
-void	RadioInterface::show_ficSuccess (bool b) {
+void	RadioInterface::show_ficQuality (int val, int scaler) {
 	if (!running. load ())	
 	   return;
-	if (b) 
-	   ficSuccess ++;
+	
+	QPalette p      = theNewDisplay. ficError_display -> palette();
+	if (val * scaler < 85)
+	   p. setColor (QPalette::Highlight, Qt::red);
+	else
+	   p. setColor (QPalette::Highlight, Qt::green);
 
-	if (++ficBlocks >= 100) {
-	   QPalette p      = theNewDisplay. ficError_display -> palette();
-	   if (ficSuccess < 85)
-	      p. setColor (QPalette::Highlight, Qt::red);
-	   else
-	      p. setColor (QPalette::Highlight, Qt::green);
-
-	   theNewDisplay. ficError_display	-> setPalette (p);
-	   theNewDisplay. ficError_display	-> setValue (ficSuccess);
-	   total_ficError	+= 100 - ficSuccess;
-	   total_fics		+= 100;
-	   ficSuccess		= 0;
-	   ficBlocks		= 0;
-	}
+	theNewDisplay. ficError_display	-> setPalette (p);
+	theNewDisplay. ficError_display	-> setValue (val * scaler);
 }
 //
 //	called from the PAD handler
 void	RadioInterface::show_mothandling (bool b) {
-	if (!running. load () || !b)
+static bool old_mot = false;
+	
+	if (!running. load () || (old_mot == b))
 	   return;
-	techWindow_p	-> show_motHandling (b);
+	if (b)
+	   motLabel	-> setStyleSheet (labelStyle);
+	else
+	   motLabel	-> setStyleSheet ("QLabel {color : red}");
+	old_mot = b;
 }
 	
 //	just switch a color, called from the dabprocessor
@@ -1502,7 +1541,7 @@ void	RadioInterface::setStereo	(bool b) {
 	}
 	else
 	   stereoLabel	-> setText ("      ");
-	   
+	techWindow_p	-> showStereo (b);
 	stereoSetting = b;
 }
 
@@ -2014,6 +2053,7 @@ QString serviceName	= s. serviceName;
 //	and display the servicename on the serviceLabel
 	serviceLabel	-> setText (serviceName);
 	dynamicLabel	-> setText ("");
+	motLabel	-> setStyleSheet ("QLabel {color : red}");
 	the_ensembleHandler -> reportStart (serviceName);
 	audiodata ad;
 	theOFDMHandler -> data_for_audioservice (serviceName, ad);
@@ -3336,8 +3376,8 @@ void	RadioInterface::selectDecoder (int decoder) {
 void	RadioInterface:: set_streamSelector (int k) {
 	if (!running. load ())
 	   return;
-	((audioSink *)(soundOut_p)) -> selectDevice (k);
 	QString str = configHandler_p -> currentStream ();
+	((audioSink *)(soundOut_p)) -> selectDevice (k, str);
 	store (dabSettings_p, SOUND_HANDLING, AUDIO_STREAM_NAME, str);
 }
 //
@@ -3942,7 +3982,17 @@ void	RadioInterface::handle_iqSelector () {
 }
 
 void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
-	techWindow_p	-> showPeakLevel (iPeakLeft, iPeakRight);
+	auto peak_avr = [](float iPeak, float & ioPeakAvr) -> void {
+           ioPeakAvr = (iPeak > ioPeakAvr ? iPeak : ioPeakAvr - 0.5f /*decay*/);
+        };
+
+        peak_avr (iPeakLeft,  peakLeftDamped);
+        peak_avr (iPeakRight, peakRightDamped);
+
+        leftAudio              -> setFillBrush (Qt::cyan);
+        rightAudio             -> setFillBrush (Qt::cyan);
+        leftAudio              -> setValue (peakLeftDamped);
+        rightAudio             -> setValue (peakRightDamped);
 }
 
 void    RadioInterface::handle_presetButton     () {    

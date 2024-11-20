@@ -15,7 +15,6 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
- *
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,7 +50,7 @@ Q_OBJECT
 public:
 			mp4Processor	(RadioInterface *,
 	                                 int16_t,
-	                                 RingBuffer<std::complex<int16_t>> *,
+	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,
 	                                 bool,
 	                                 FILE *);
@@ -60,7 +59,12 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;
-	bool		processSuperframe (uint8_t [], int16_t);
+
+	void		handleRS (uint8_t frameBytes [], int16_t base,
+                                  uint8_t outVector [],
+	                          int16_t &errorLines, int16_t &repairs);
+
+	bool		processSuperframe (uint8_t []);
 	int		build_aacFile (int16_t aac_frame_len,
                                      stream_parms *sp,
                                      uint8_t	*data,

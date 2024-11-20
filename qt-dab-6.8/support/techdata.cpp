@@ -81,15 +81,6 @@
 	audiodumpButton ->
                       setStyleSheet (temp. arg (audiodumpButton_color,
                                                 audiodumpButton_font));
-	peakLeftDamped		= -100;
-	peakRightDamped         = -100;
-
-	thermoLeft		-> setFillBrush (Qt::darkBlue);
-        thermoRight		-> setFillBrush (Qt::darkBlue);
-        thermoLeft		-> setAlarmBrush (Qt::red);
-        thermoRight		-> setAlarmBrush (Qt::red);
-        thermoLeft		-> setAlarmEnabled (true);
-        thermoRight		-> setAlarmEnabled(true);
 
 	connect (&myFrame, &superFrame::frameClosed,
 	         this,  &techData::frameClosed);
@@ -119,7 +110,6 @@ void	techData::cleanUp	() {
 	frameError_display	-> setValue (0);
 	rsError_display		-> setValue (0);
 	aacError_display	-> setValue (0);
-	bitrateDisplay		-> display (0);
 	startAddressDisplay	-> display (0);
 	lengthDisplay		-> display (0);
 	subChIdDisplay		-> display (0);
@@ -127,8 +117,6 @@ void	techData::cleanUp	() {
 	codeRate		-> setText (ee);
 	ASCTy			-> setText (ee);
 	language		-> setText (ee);
-	motAvailable		-> 
-	               setStyleSheet ("QLabel {background-color : red}");
 	timeTable_button	-> setEnabled (false);
 	audioRate		-> display (0);
 }
@@ -136,7 +124,6 @@ void	techData::cleanUp	() {
 void	techData::show_serviceData	(audiodata *ad) {
 	show_serviceName	(ad -> serviceName, ad -> shortName);
 	show_serviceId		(ad -> SId);
-	show_bitRate		(ad -> bitRate);
 	show_startAddress	(ad -> startAddr);
 	show_length		(ad -> length);
 	show_subChId		(ad -> subchId);
@@ -145,6 +132,7 @@ void	techData::show_serviceData	(audiodata *ad) {
 	show_codeRate		(ad -> shortForm, ad -> protLevel);
 	show_language		(ad -> language);
 	show_fm			(ad -> fmFrequency);
+	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
 }
 
 void	techData::show		() {
@@ -195,13 +183,6 @@ void	techData::show_rsCorrections	(int c, int ec) {
 	ecCorrections -> display (ec);
 }
 
-void	techData::show_motHandling	(bool b) {
-
-	motAvailable -> setStyleSheet (b ?  
-                           "QLabel {background-color : green; color: white}":
-                           "QLabel {background-color : red; color : white}");
-}
-
 void	techData::show_timetableButton	(bool b) {
 	if (b)
 	   timeTable_button	-> setEnabled (true);
@@ -225,10 +206,6 @@ void	techData::show_serviceName	(const QString &s1, const QString &s2) {
 
 void	techData::show_serviceId		(int SId) {
 	serviceIdDisplay -> display (SId);
-}
-
-void	techData::show_bitRate		(int br) {
-	bitrateDisplay	-> display (br);
 }
 
 void	techData::show_startAddress	(int sa) {
@@ -358,6 +335,15 @@ void	techData::show_rate	(int rate, bool ps, bool sbr) {
 	audioRate	-> display (rate);
 }
 
+void	techData::showStereo	(bool b) {
+	 if (b) {
+	   stereoLabel	-> setStyleSheet ("QLabel {color : white}");
+           stereoLabel  -> setText ("<i>stereo</i>");
+        }
+        else
+           stereoLabel  -> setText ("      ");
+}
+
 void	techData::showMissed	(int missed) {
 	missedSamples	-> display (missed);
 }
@@ -365,21 +351,6 @@ void	techData::showMissed	(int missed) {
 void	techData::hideMissed	() {
 	missedLabel	-> hide ();
 	missedSamples	-> hide ();
-}
-
-void	techData::showPeakLevel (const float iPeakLeft,
-                                       const float iPeakRight) {
-	auto peak_avr = [](float iPeak, float & ioPeakAvr) -> void {
-	   ioPeakAvr = (iPeak > ioPeakAvr ? iPeak : ioPeakAvr - 0.5f /*decay*/);
-	};
-
-	peak_avr (iPeakLeft,  peakLeftDamped);
-	peak_avr (iPeakRight, peakRightDamped);
-
-	thermoLeft		-> setFillBrush (Qt::cyan);
-        thermoRight		-> setFillBrush (Qt::cyan);
-        thermoLeft		-> setValue (peakLeftDamped);
-        thermoRight		-> setValue (peakRightDamped);
 }
 
 void	techData::is_DAB_plus	(bool b) {

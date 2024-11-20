@@ -184,14 +184,14 @@ static floatQwt avg [4 * 512];
 	}
 
 	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = (int)((freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000);
+	   X_axis [i] = (freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000000.0;
 	   Y_value [i] = 0;
 	   for (int j = 0; j < 4; j ++) 
 	      Y_value [i] +=  avg [4 * i + j];
 	   Y_value [i]	=  get_db (Y_value [i] / 4);
 	}
 
-	spectrumScope_p -> display (X_axis, Y_value, freq, 
+	spectrumScope_p -> display (X_axis, Y_value, freq / 1000, 
 	                                    spectrumSlider -> value ());
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
@@ -292,14 +292,14 @@ static floatQwt avg [4 * 512];
 	}
 
 	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = (int) ((freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000);
+	   X_axis [i] = (freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000000.0;
 	   Y_value [i] = 0;
 	   for (int j = 0; j < 4; j ++) 
 	      Y_value [i] +=  avg [4 * i + j];
 	   Y_value [i]	=  get_db (Y_value [i]);
 	}
 
-	TII_Scope_p		-> display (X_axis, Y_value, freq, 
+	TII_Scope_p		-> display (X_axis, Y_value, freq / 1000, 
 	                                      tiiSlider -> value ());
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;

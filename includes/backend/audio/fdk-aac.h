@@ -27,7 +27,7 @@
 
 #include	<QObject>
 #include	<stdint.h>
-#include	<complex>
+#include	"dab-constants.h"
 #include	<aacdecoder_lib.h>
 #include	"ringbuffer.h"
 
@@ -54,14 +54,14 @@ class	fdkAAC : public QObject {
 Q_OBJECT
 public:
 		fdkAAC (RadioInterface *mr,
-                        RingBuffer<std::complex<int16_t>> *buffer);
+                        RingBuffer<complex16> *buffer);
 		~fdkAAC	();
 
 int16_t		MP42PCM (stream_parms *sp,
                          uint8_t   packet [],
                          int16_t   packetLength);
 private:
-	RingBuffer<std::complex<int16_t>>	*audioBuffer;
+	RingBuffer<complex16>	*audioBuffer;
 	bool			working;
 	HANDLE_AACDECODER	handle;
 signals:

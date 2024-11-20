@@ -73,7 +73,7 @@ static int cifTable [] = {18, 72, 0, 36};
 #endif
 }
 
-		mscHandler::~mscHandler() {
+		mscHandler::~mscHandler () {
 #ifdef	__MSC_THREAD__
 	running. store (false);
 	while (isRunning())
@@ -84,8 +84,8 @@ static int cifTable [] = {18, 72, 0, 36};
 	   b -> stopRunning();
 	   delete b;
 	}
-	locker. unlock();
 	theBackends. resize (0);
+	locker. unlock();
 }
 
 //
@@ -194,7 +194,6 @@ void	mscHandler::reset_Buffers	() {
 	start ();
 #endif
 }
-
 void	mscHandler::reset_Channel () {
 	fprintf (stderr, "channel reset: all services will be stopped\n");
 	locker. lock ();
@@ -209,7 +208,7 @@ void	mscHandler::reset_Channel () {
 void	mscHandler::stop_service	(descriptorType *d, int flag) {
 	fprintf (stderr, "obsolete function stopService\n");
 	locker. lock ();
-	for (int i = 0; i <  (int)theBackends. size (); i ++) {
+	for (int i = 0; i < (int)theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
 	   if ((b -> subChId == d -> subchId) && (b -> borf == flag)) {
 	      fprintf (stderr, "stopping (sub)service at subchannel %d\n",
@@ -217,6 +216,7 @@ void	mscHandler::stop_service	(descriptorType *d, int flag) {
 	      b -> stopRunning ();
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);
+	      break;
 	   }
 	}
 	locker. unlock ();
@@ -224,13 +224,14 @@ void	mscHandler::stop_service	(descriptorType *d, int flag) {
 
 void	mscHandler::stop_service	(int subchId, int flag) {
 	locker. lock ();
-	for (int i = 0; i < (int)(theBackends. size ()); i ++) {
+	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
 	   if ((b -> subChId == subchId) && (b -> borf == flag)) {
 	      fprintf (stderr, "stopping subchannel %d\n", subchId);
 	      b -> stopRunning ();
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);
+	      break;
 	   }
 	}
 	locker. unlock ();
@@ -249,6 +250,7 @@ bool	mscHandler::set_Channel (descriptorType &d,
 //	      theBackends. at (i) -> stopRunning ();
 //	      delete theBackends. at (i);
 //	      theBackends. erase (theBackends. begin () + i);
+//	      break;
 //	   }
 //	}
 //	locker. unlock ();
@@ -275,9 +277,8 @@ bool	mscHandler::set_Channel (descriptorType &d,
 
 void	mscHandler::process_mscBlock	(std::vector<int16_t> &fbits,
 	                                 int16_t blkno) { 
-int16_t	currentblk;
+int16_t	currentblk	= (blkno - 4) % numberofblocksperCIF;
 
-	currentblk	= (blkno - 4) % numberofblocksperCIF;
 //	and the normal operation is:
 	memcpy (&cifVector [currentblk * BitsperBlock],
 	                    fbits. data(), BitsperBlock * sizeof (int16_t));

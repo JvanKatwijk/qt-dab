@@ -48,8 +48,6 @@ public:
 	void	show			();
 	void	hide			();
 	bool	isHidden		();
-	void	showPeakLevel		(float, float);
-
 	void	is_DAB_plus		(bool);
 	void	hide_missedLabel	();
 private:
@@ -59,9 +57,6 @@ private:
 	superFrame		myFrame;
 	audioDisplay		*the_audioDisplay;
 
-	float			peakLeftDamped;
-	float			peakRightDamped;
-
 	void			set_buttonColors	(QPushButton *,
 	                                            const QString &buttonName);
 
@@ -69,14 +64,12 @@ public slots:
 	void		show_frameErrors	(int);
 	void		show_aacErrors		(int);
 	void		show_rsErrors		(int);
-	void		show_motHandling	(bool);
 	void		show_rsCorrections	(int, int);
 	void		show_timetableButton	(bool);
 	void		show_frameDumpButton	(bool);
 	void		show_serviceName	(const QString &,
 	                                         const QString &);
 	void		show_serviceId		(int);
-	void		show_bitRate		(int);
 	void		show_subChId		(int);
 	void		show_startAddress	(int);
 	void		show_length		(int);
@@ -86,6 +79,7 @@ public slots:
 	void		show_codeRate		(int, int);
 	void		show_fm			(int);
 	void		show_rate		(int, bool, bool);
+	void		showStereo		(bool);
 
 	void		hideMissed		();
 	void		showMissed		(int);

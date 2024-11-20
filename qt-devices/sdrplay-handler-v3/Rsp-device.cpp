@@ -86,7 +86,7 @@ sdrplay_api_ErrT        err;
 	chParams	-> ctrlParams. agc. attack_ms = 500;
 	chParams	-> ctrlParams. agc. decay_ms = 500;
 	chParams	-> ctrlParams. agc. decay_delay_ms = 200;
-	chParams	-> ctrlParams. agc. decay_threshold_dB = 5;
+	chParams	-> ctrlParams. agc. decay_threshold_dB = 3;
 
 	if (this -> agcMode) 
 	   chParams	-> ctrlParams. agc. enable = sdrplay_api_AGC_CTRL_EN;

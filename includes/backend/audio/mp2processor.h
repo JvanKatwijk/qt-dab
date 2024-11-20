@@ -35,6 +35,7 @@
 #include	<cstdio>
 #include	<complex>
 #include	<QObject>
+#include	"dab-constants.h"
 #include	"frame-processor.h"
 #include	"ringbuffer.h"
 #include	"pad-handler.h"
@@ -56,7 +57,7 @@ Q_OBJECT
 public:
 			mp2Processor	(RadioInterface *,
 	                                 int16_t,
-	                                 RingBuffer<std::complex<int16_t>> *,
+	                                 RingBuffer<complex16> *,
 	                                 bool);
 			~mp2Processor	();
 	void		addtoFrame	(const std::vector<uint8_t>);
@@ -67,7 +68,7 @@ private:
 	padHandler	my_padhandler;
 	int32_t		mp2sampleRate	(uint8_t *);
 	int32_t		mp2decodeFrame	(uint8_t *, int16_t *);
-	RingBuffer<std::complex<int16_t>>	*buffer;
+	RingBuffer<complex16>	*buffer;
 	int32_t		baudRate;
 	void		setSamplerate		(int32_t);
 	struct quantizer_spec *read_allocation (int, int);

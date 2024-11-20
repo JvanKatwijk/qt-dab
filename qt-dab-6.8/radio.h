@@ -400,6 +400,7 @@ private:
 	void			stop_scan_to_data	();
 	void			stop_scan_single	();
 	void			stop_scan_continuous	();
+	void			peakLevel	(const std::vector<float> &);
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();
@@ -424,7 +425,7 @@ public slots:
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
-	void			show_ficSuccess		(bool);
+	void			show_ficQuality		(int, int);
 	void			set_synced		(bool);
 	void			show_label		(const QString &);
 	void			handle_motObject	(QByteArray,

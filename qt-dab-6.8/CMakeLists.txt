@@ -109,13 +109,13 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	find_package (PkgConfig)
 	find_package (LSBId)
 
-	find_package (Qt5Core REQUIRED)
-	find_package (Qt5Widgets REQUIRED)
-	find_package (Qt5Network REQUIRED)
-	find_package (Qt5Xml REQUIRED)
+	find_package (Qt6Core REQUIRED)
+	find_package (Qt6Widgets REQUIRED)
+	find_package (Qt6Network REQUIRED)
+	find_package (Qt6Xml REQUIRED)
 	include_directories (
-	  ${Qt5Network_INCLUDE_DIRS}
-	  ${Qt5Xml_INCLUDE_DIRS}
+	  ${Qt6Network_INCLUDE_DIRS}
+	  ${Qt6Xml_INCLUDE_DIRS}
 	)
 
 	search_for_library (QWT Qwt)
@@ -595,7 +595,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	if (TCP_STREAMER)
 	   add_definitions (-DTCP_STREAMER)
-	   find_package (Qt5Network REQUIRED)
+	   find_package (Qt6Network REQUIRED)
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ../includes/output/tcp-streamer.h
@@ -635,9 +635,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
                message(FATAL_ERROR "please install portaudio V19")
            endif ()
            list(APPEND extraLibs ${PORTAUDIO_LIBRARIES})
-	   find_package (Qt5Multimedia REQUIRED)
+	   find_package (Qt6Multimedia REQUIRED)
 	   include_directories (
-	      ${Qt5Multimedia_INCLUDE_DIRS}
+	      ${Qt6Multimedia_INCLUDE_DIRS}
 	   )
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
@@ -683,10 +683,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	target_link_libraries (${objectName}
 	                       PRIVATE
-	                       Qt5::Widgets
-	                       Qt5::Network
-	                       Qt5::Xml
-	                       Qt5::Multimedia
+	                       Qt6::Widgets
+	                       Qt6::Network
+	                       Qt6::Xml
+	                       Qt6::Multimedia
 	                       ${RTLTCP_lib}
 	                       ${extraLibs}
 	                       ${FAAD_LIBRARIES}

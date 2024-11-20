@@ -23,6 +23,7 @@
 #pragma once
 
 #include	<QObject>
+#include	<QString>
 //
 //	interface class to the different output drivers
 //
@@ -30,13 +31,13 @@ class	audioPlayer: public QObject {
 Q_OBJECT
 public:
 		audioPlayer	();
-		~audioPlayer	();
+virtual		~audioPlayer	();
 virtual void	audioOutput	(float *, int);
 virtual	void	stop		();
 virtual	void	restart		();
 virtual void	suspend		();
 virtual	void	resume		();
-virtual	bool	selectDevice	(int16_t);
+virtual	bool	selectDevice	(int16_t, const QString &);
 virtual	bool	hasMissed	();
 virtual	int	missed		();
 };

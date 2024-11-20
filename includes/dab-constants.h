@@ -61,6 +61,7 @@ typedef	double	DABFLOAT;
 typedef	float	DABFLOAT;
 #endif
 typedef	std::complex<DABFLOAT> Complex;
+typedef std::complex<int16_t> complex16;
 
 #define	DEFAULT_SWITCHVALUE	6
 

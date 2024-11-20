@@ -34,6 +34,7 @@
 	this	-> datawidth	= datawidth;
 	this	-> dataheight	= height;
 	this	-> max		= max;
+	this	-> bufferSize	= width * height;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
 	setInterval (Qt::XAxis, QwtInterval (left, left + width));
 	setInterval (Qt::YAxis, QwtInterval (0, height));
@@ -62,5 +63,8 @@ double	spectrogramData::value (double x, double y) const {
 	   x = x - left;
 	   x = x / width  * (datawidth  - 1);
 	   y = y / height * (dataheight - 1);
+	   int index = (int)y * datawidth + (int)x;
+	   if ((index < 0) || (index >= bufferSize * 256))
+	      return 0;
 	   return data [(int)y * datawidth + (int)x];
 }

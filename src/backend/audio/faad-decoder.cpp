@@ -25,7 +25,7 @@
 #include        "radio.h"
 
 	faadDecoder::faadDecoder        (RadioInterface *mr,
-	                                 RingBuffer<std::complex<int16_t>> *buffer) {
+	                                 RingBuffer<complex16> *buffer) {
 	this    -> audioBuffer  = buffer;
 	aacCap          = NeAACDecGetCapabilities();
 	aacHandle       = NeAACDecOpen();
@@ -143,9 +143,8 @@ uint8_t channels;
 
 	if (channels == 2) {
 	   for (int i = 0; i < samples / 2; i ++) {
-	      std::complex<int16_t> s =
-	                      std::complex<int16_t> (outBuffer [2 * i],
-	                                             outBuffer [2 * i + 1]);
+	      complex16 s = complex16 (outBuffer [2 * i],
+	                               outBuffer [2 * i + 1]);
 	      audioBuffer -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 10)
@@ -155,9 +154,7 @@ uint8_t channels;
 	else
 	if (channels == 1) {
 	   for (int i = 0; i < samples; i ++) {
-	      std::complex<int16_t> s = 
-	                  std::complex<int16_t> (outBuffer [i],
-	                                         outBuffer [i]);
+	      complex16 s = complex16 (outBuffer [i], outBuffer [i]);
 	      audioBuffer  -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)

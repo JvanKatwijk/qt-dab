@@ -51,6 +51,7 @@ public:
 	void	start_ficDump		(FILE *);
 	void	stop_ficDump		();
 	void	get_fibBits		(uint8_t *, bool *);
+	int	get_ficQuality		();
 private:
 	dabParams	params;
 	viterbiSpiral	myViterbi;
@@ -73,8 +74,10 @@ private:
 	QMutex          ficLocker;
 	int		ficPointer;
 	std::atomic<bool> running;
+	int		successRatio;
+	int		fibCounter;
 signals:
-	void		show_ficSuccess	(bool);
+	void		show_ficQuality	(int, int);
 };
 
 

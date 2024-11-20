@@ -102,11 +102,13 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	   local ++;
 	}
 
-	connect (this, &ficHandler::show_ficSuccess,
-	         mr, &RadioInterface::show_ficSuccess);
+	connect (this, &ficHandler::show_ficQuality,
+	         mr, &RadioInterface::show_ficQuality);
 
 	ficPointer	= 0;
 	ficDumpPointer	= nullptr;
+	fibCounter	= 1;
+	successRatio	= 0;
 }
 
 		ficHandler::~ficHandler () {
@@ -194,14 +196,21 @@ int16_t	inputCount	= 0;
   *	One issue is what to do when we really believe the synchronization
   *	was lost.
   */
-//
+
+#define	RANGE 50
 //	default	
 	*valid = true;		// default, can be changed
 	for (int i = ficno * 3; i < ficno * 3 + 3; i ++) {
 	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
+	   fibCounter ++;
+	   if (fibCounter >= RANGE)
+	      fibCounter = 0;
 	   if (!check_CRC_bits (p, 256)) {
 	      *valid = false;
-	      show_ficSuccess (false);
+	      if (successRatio > 0)
+	         successRatio --;	
+	      if (fibCounter == 0)
+	         show_ficQuality (successRatio, 100 / 50);
 	      continue;
 	   }
 
@@ -218,8 +227,10 @@ int16_t	inputCount	= 0;
 	   if (ficDumpPointer != nullptr) 
 	      fwrite (ficBuffer, 1, 32, ficDumpPointer);
 	   ficLocker. unlock ();
-
-	   show_ficSuccess (true);
+	   if (successRatio < RANGE)
+	      successRatio ++;
+	   if (fibCounter == 0)
+	      show_ficQuality (successRatio, 100 / RANGE);
 	   fibDecoder::process_FIB (p, ficno);
 	}
 }
@@ -254,4 +265,8 @@ void	ficHandler::get_fibBits		(uint8_t *v, bool *b) {
 	   v [i] = fibBits [i];
 	for (int i = 0; i < 4; i ++)
 	    b [i] = ficValid [i];
+}
+
+int	ficHandler::get_ficQuality	() {
+	return successRatio * 100 / RANGE;
 }

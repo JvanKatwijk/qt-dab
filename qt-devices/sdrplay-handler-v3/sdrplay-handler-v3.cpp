@@ -106,7 +106,7 @@ std::string errorMessage (int errorCode) {
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
 	nrBits			= 12;	// default
-	denominator		= 2048;	// default
+	denominator		= 2048.0f;	// default
 
 	dumping. store	(false);
 //	See if there are settings from previous incarnations
@@ -236,8 +236,8 @@ auto *temp 	= dynVec (std::complex<int16_t>, size);
 	   return 0;
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
         for (int i = 0; i < amount; i ++)
-           V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
-                                        imag (temp [i]) / (float) denominator);
+           V [i] = std::complex<float> ((float)real (temp [i]) / denominator,
+                                        (float)imag (temp [i]) / denominator);
         if (dumping. load ())
            xmlWriter -> add (temp, amount);
         return amount;
@@ -402,7 +402,6 @@ bool	sdrplayHandler_v3::setup_xmlDump () {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                               "channel", "xx");
 	xmlWriter	= nullptr;
-	fprintf (stderr, "setup gaat aan de gang\n");
 	try {
 	   xmlWriter	= new xml_fileWriter (sdrplaySettings,
 	                                      channel,
@@ -528,7 +527,7 @@ int	deviceIndex	= 0;
 	connect (this, &sdrplayHandler_v3::show_tuner_gain,
 	         this, &sdrplayHandler_v3::display_gain);
 
-	denominator		= 2048;		// default
+	denominator		= 2048.0f;		// default
 	nrBits			= 12;		// default
 
 	Handle			= fetchLibrary ();
@@ -632,7 +631,7 @@ int	deviceIndex	= 0;
 	      case SDRPLAY_RSPdxR2_ :
 	         antennaValue = set_antennaSelect (hwVersion);
 	         nrBits		= 14;
-	         denominator	= 4096;
+	         denominator	= 8192.0f;
 	         deviceModel	=  hwVersion == SDRPLAY_RSPdx_?
 	            	                     "RSPDx" : "RSPDxR2";
 	         theRsp	= new RspDx_handler (this,
@@ -648,7 +647,7 @@ int	deviceIndex	= 0;
 
 	      case SDRPLAY_RSP1_ :
 	         nrBits		= 12;
-	         denominator	= 2048;
+	         denominator	= 4096.0f;
 	         deviceModel	= "RSP1";
 	         biasT_selector -> setEnabled (false);
 	         notch_selector -> setEnabled (false);
@@ -664,7 +663,7 @@ int	deviceIndex	= 0;
 	      case SDRPLAY_RSP1A_ :
 	      case SDRPLAY_RSP1B_ :
 	         nrBits		= 14;
-	         denominator	= 4096;
+	         denominator	= 4096.0f;
 	         deviceModel	= hwVersion == SDRPLAY_RSP1A_ ? "RSP-1A" :
 	                                                        "RSP-1B";
 	         theRsp	= new Rsp1A_handler (this,
@@ -681,7 +680,7 @@ int	deviceIndex	= 0;
 	      case SDRPLAY_RSP2_ :
 	         antennaValue = set_antennaSelect (SDRPLAY_RSP2_);
 	         nrBits		= 14;
-	         denominator	= 4096;
+	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-II";
 	         theRsp	= new RspII_handler (this,
 	                                     chosenDevice,
@@ -696,7 +695,7 @@ int	deviceIndex	= 0;
 
 	      case SDRPLAY_RSPduo_ :
 	         nrBits		= 14;
-	         denominator	= 4096;
+	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-Duo";
 	         theRsp	= new RspDuo_handler (this,
 	                                      chosenDevice,
@@ -711,7 +710,7 @@ int	deviceIndex	= 0;
 
 	      default:
 	         nrBits		= 14;
-	         denominator	= 4096;
+	         denominator	= 4096.0f;
 	         deviceModel	= "UNKNOWN";
 	         lnaBounds	= 4;
 	         lnaGainSetting	-> setRange (0, lnaBounds - 1);

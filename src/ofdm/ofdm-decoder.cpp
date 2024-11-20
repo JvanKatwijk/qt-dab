@@ -129,32 +129,16 @@ void	ofdmDecoder::processBlock_0 (
 //	For the computation of the MER we use the definition
 //	from ETSI TR 101 290 (appendix C1)
 float	ofdmDecoder::computeQuality (Complex *v) {
-//
-//	since we do not equalize, we have a kind of "fake"
-//	reference point.
-//
-	Complex middle = Complex (0, 0);
+	float q	= 0;
 	for (int i = 0; i < carriers; i ++) {
 	   Complex ss = v [T_u / 2 - carriers / 2 + i];
-	   middle += Complex (abs (real (ss)), abs (imag (ss)));
+	   float R	= abs (real (ss));
+	   float I	= abs (imag (ss));
+	   float t = abs (arg (Complex (R, I) * Complex (1, -1)));
+	   q += ((M_PI / 2 - t) * (M_PI / 2 - t)) / (M_PI / 2 * M_PI / 2);
 	}
-
-	middle	= middle / (DABFLOAT)carriers;;
-//	middle	= Complex ((real (middle) + imag (middle)) / 2,
-//	                   (real (middle) + imag (middle)) / 2);
-
-	float nominator		= 0;
-	float denominator	= 0;
-	for (int i = 0; i <= carriers; i ++) {
-	   Complex s		= v [T_u / 2 - carriers / 2 + i];
-	   float I_component	= real (s);
-	   float Q_component	= imag (s);
-	   float delta_I	= abs (I_component) - real (middle);
-	   float delta_Q	= abs (Q_component) - imag (middle);
-	   nominator		+= square (I_component) + square (Q_component);
-	   denominator		+= square (delta_I) + square (delta_Q);
-	}
-	return 20 * (10 * log10 (nominator / denominator));
+	q = q / carriers;
+	return q * 100;
 }
 /**
   *	for the other blocks of data, the first step is to go from
@@ -273,7 +257,6 @@ DABFLOAT Alpha = 0.05f;
 
 	   }
 	}
-
 
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {

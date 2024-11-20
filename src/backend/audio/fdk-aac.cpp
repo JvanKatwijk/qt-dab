@@ -35,7 +35,7 @@
   *	and the fdk-aac decoder`
   */
 	fdkAAC::fdkAAC (RadioInterface *mr,
-	                RingBuffer<std::complex<int16_t>> *buffer) {
+	                RingBuffer<complex16> *buffer) {
 	this    -> audioBuffer  = buffer;
 	working			= false;
 	handle			= aacDecoder_Open (TT_MP4_LOAS, 1);
@@ -93,8 +93,7 @@ int		output_size	= 8 * 2048;
 
 	if (info -> numChannels == 2) {
 	   for (int i = 0; i < info -> frameSize; i ++) {
-	      std::complex<int16_t> s =
-	               std::complex<int16_t> (bufp [2 * i], bufp [2 * i + 1]);
+	      complex16 s = complex16 (bufp [2 * i], bufp [2 * i + 1]);
 	      audioBuffer  -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
@@ -111,8 +110,8 @@ int		output_size	= 8 * 2048;
 //	      buffer [2 * i + 1] = 0;
 	   }
 
-	   audioBuffer  -> putDataIntoBuffer ((std::complex<uint16_t> *)buffer,
-	                                              info -> frameSize);
+	   audioBuffer  -> putDataIntoBuffer ((complex16 *)buffer,
+	                                      info -> frameSize);
 //	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)

@@ -40,7 +40,11 @@ void	audioPlayer::suspend		() {stop ();}
 
 void	audioPlayer::resume		() {restart ();}
 
-bool	audioPlayer::selectDevice	(int16_t k) {(void)k; return false;}
+bool	audioPlayer::selectDevice	(int16_t k, const QString &s) {
+	(void)k;
+	(void)s;
+	return false;
+}
 
 bool	audioPlayer::hasMissed		() {return false;}
 

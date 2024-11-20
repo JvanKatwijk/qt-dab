@@ -178,6 +178,10 @@ int32_t	WriteSpace	() {
 	return GetRingBufferWriteAvailable();
 }
 
+void	skipRead	(int32_t amount) {
+	AdvanceRingBufferReadIndex (amount);
+}
+
 void	FlushRingBuffer() {
 	writeIndex	= 0;
 	readIndex	= 0;

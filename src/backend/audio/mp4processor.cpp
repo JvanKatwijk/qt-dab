@@ -46,7 +46,7 @@
   */
 	mp4Processor::mp4Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
-	                            RingBuffer<std::complex<int16_t>> *b,
+	                            RingBuffer<complex16> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            bool		backgroundFlag,
 	                            FILE		*dump):
@@ -92,6 +92,8 @@
 	rsErrors		= 0;
 	totalCorrections	= 0;
 	goodFrames		= 0;
+
+//	superframe_sync		= 0;
 }
 
 	mp4Processor::~mp4Processor () {
@@ -126,6 +128,7 @@ int16_t	nbits	= 24 * bitRate;
 /**
   *	we take the last five blocks to look at
   */
+
 	if (blocksInBuffer >= 5) {
 ///	first, we show the "successrate"
 	   if (++frameCount >= 25) {
@@ -137,70 +140,78 @@ int16_t	nbits	= 24 * bitRate;
   *	starting for real: check the fire code
   *	if the firecode is OK, we handle the frame
   *	and adjust the buffer here for the next round
+  *	if the firecode check fails, we shift one block
   */
-	   if (fc. check (&frameBytes [blockFillIndex * nbits / 8]) &&
-	       (processSuperframe (frameBytes. data(),
-	                           blockFillIndex * nbits / 8))) {
+	   handleRS (frameBytes. data (), blockFillIndex * nbits / 8,
+	                                     outVector. data (),
+	                                     frameErrors, rsErrors);
+	   if (frameErrors > 0)	// cannot fix the potential frame 
+	      blocksInBuffer = 4;
+	   else
+	   if (!fc. check (&outVector [0])) {
+	      blocksInBuffer = 4;
+	   }
+	   else 	// let us try
+	   if (!processSuperframe (outVector. data ())) {
+	      frameErrors ++;
+	      blocksInBuffer = 0;
+	   }
+	   else {	// both firecode and superframe are OK
 //	since we processed a full cycle of 5 blocks, we just start a
 //	new sequence, beginning with block blockFillIndex
 	      blocksInBuffer	= 0;
+	      totalCorrections += rsErrors;
+	      if (++ goodFrames >= 100) {
+	         show_rsCorrections (totalCorrections, crcErrors);
+	         totalCorrections = 0;
+	         goodFrames = 0;
+	      }
 	      if (++successFrames > 25) {
 	         show_rsErrors (rsErrors);
 	         successFrames	= 0;
 	         rsErrors	= 0;
 	      }
 	   }
-	   else {
-/**
-  *	we were wrong, virtual shift to left in block sizes
-  */
-	      blocksInBuffer  = 4;
-	      frameErrors ++;
-	   }
 	}
 }
-
 /**
   *	\brief processSuperframe
   *
   *	First, we know the firecode checker gave green light
   *	We correct the errors using RS
   */
-bool	mp4Processor::processSuperframe (uint8_t frameBytes [], int16_t base) {
-uint8_t		num_aus;
-int16_t		i, j, k;
+
+void	mp4Processor::handleRS (uint8_t frameBytes [], int16_t base, 
+	                        uint8_t outVector [],
+	                        int16_t &errorLines, int16_t &repairs) {
 uint8_t		rsIn	[120];
 uint8_t		rsOut	[110];
-int		tmp;
-stream_parms    streamParameters;
-
+int16_t		ler;
+	errorLines	= 0;
+	repairs		= 0;
 /**
   *	apply reed-solomon error repar
   *	OK, what we now have is a vector with RSDims * 120 uint8_t's
   *	the superframe, containing parity bytes for error repair
   *	take into account the interleaving that is applied.
   */
-	for (j = 0; j < RSDims; j ++) {
-	   int16_t ler	= 0;
-	   for (k = 0; k < 120; k ++) 
+	for (int j = 0; j < RSDims; j ++) {
+	   for (int k = 0; k < 120; k ++) 
 	      rsIn [k] = frameBytes [(base + j + k * RSDims) % (RSDims * 120)];
 	   ler = my_rsDecoder. dec (rsIn, rsOut, 135);
-	   if (ler < 0) {
-	      rsErrors ++;
-//	      fprintf (stderr, "RS failure\n");
-	      return false;
-	   }
-	   totalCorrections += ler;
-	   goodFrames ++;
-	   if (goodFrames >= 100) {
-	      show_rsCorrections (totalCorrections, crcErrors);
-	      totalCorrections = 0;
-	      goodFrames = 0;
-	   }
-
-	   for (k = 0; k < 110; k ++) 
+	   for (int k = 0; k < 110; k ++) 
 	      outVector [j + k * RSDims] = rsOut [k];
+	   if (ler < 0)
+	      errorLines ++;
+	   else
+	      repairs += ler;
 	}
+}
+
+bool	mp4Processor::processSuperframe (uint8_t outVector []) {
+uint8_t		num_aus;
+int		tmp;
+stream_parms    streamParameters;
 
 //	bits 0 .. 15 is firecode
 //	bit 16 is unused
@@ -267,7 +278,7 @@ stream_parms    streamParameters;
   *	extract the AU's, and prepare a buffer,  with the sufficient
   *	lengthy for conversion to PCM samples
   */
-	for (i = 0; i < num_aus; i ++) {
+	for (int i = 0; i < num_aus; i ++) {
 	   int16_t	aac_frame_length;
 
 ///	sanity check 1
@@ -293,7 +304,7 @@ stream_parms    streamParameters;
 	      int segmentSize =
 	              build_aacFile (aac_frame_length,
 	                             &streamParameters,
-	                             &(outVector. data () [au_start [i]]),
+	                             &(outVector [au_start [i]]),
 	                             fileBuffer);
 	      if (dump == nullptr) {
 	         frameBuffer -> putDataIntoBuffer (fileBuffer. data (),

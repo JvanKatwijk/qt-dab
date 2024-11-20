@@ -30,19 +30,12 @@
 	                                mapper_24 (24000, 48000, 2 * 2400),
 	                                mapper_32 (32000, 48000, 2 * 3200) {
 	                              
-	this    -> peakLevelCurSampleCnt        = 0;
-	repetitionCounter		= 8;
-        this    -> peakLevelSampleMax   = 48000 / repetitionCounter; 
-        this    -> absPeakLeft          = 0.0f;
-        this    -> absPeakRight         = 0.0f;
-	connect (this, &converter_48000::showPeakLevel,
-	         mr, &RadioInterface::showPeakLevel);
 }
 
 	converter_48000::~converter_48000 () {
 }
 
-int	converter_48000::convert (std::complex<int16_t> *V,
+int	converter_48000::convert (complex16 *V,
 	                         int32_t amount, int32_t rate,
 	                         std::vector<float> 	&outB) {
 	switch (rate) {
@@ -70,7 +63,7 @@ void	converter_48000::stop_audioDump          () {
 
 //	scale up from 16 -> 48
 //	amount gives number of pairs
-int	converter_48000::convert_16000	(std::complex<int16_t> *V,
+int	converter_48000::convert_16000	(complex16 *V,
 	                                 int amount,
 	                                 std::vector<float> &out) {
 Complex buffer [mapper_16. getOutputsize ()];
@@ -84,7 +77,6 @@ int	teller = 0;
 	                                           buffer, &result)) {
 	      
 	      dump (buffer, result);
-	      eval (buffer, result);
 	      out. resize (out. size () + 2 * result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
@@ -97,7 +89,7 @@ int	teller = 0;
 
 //	scale up from 24000 -> 48000
 //	amount gives number of pairs
-int	converter_48000::convert_24000	(std::complex<int16_t> *V,
+int	converter_48000::convert_24000	(complex16 *V,
 	                                 int amount,
 	                                 std::vector<float> &out) {
 Complex buffer	[mapper_24. getOutputsize ()];
@@ -111,7 +103,6 @@ int	teller	= 0;
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
 	      dump (buffer, result);
-	      eval (buffer, result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
 	         out [teller ++] = imag (buffer [j]);
@@ -123,7 +114,7 @@ int	teller	= 0;
 
 //	scale up from 32000 -> 48000
 //	amount is number of pairs
-int	converter_48000::convert_32000	(std::complex<int16_t> *V,
+int	converter_48000::convert_32000	(complex16 *V,
 	                                 int amount,
 	                                 std::vector<float> &out) {
 Complex      buffer	[mapper_32. getOutputsize()];
@@ -137,7 +128,6 @@ int	teller	= 0;
 	                              imag (V [i]) / 32767.0),
 	                                           buffer, &result)) {
 	      dump (buffer, result);
-	      eval (buffer, result);
 	      for (int j = 0; j < result; j ++) {
 	         out [teller ++] = real (buffer [j]);
 	         out [teller ++] = imag (buffer [j]);
@@ -147,9 +137,9 @@ int	teller	= 0;
 	return teller;
 }
 
-int	converter_48000::convert_48000	(std::complex<int16_t> *V,
-	                                int amount,
-	                                std::vector<float> & out) {
+int	converter_48000::convert_48000	(complex16 *V,
+	                                 int amount,
+	                                 std::vector<float> & out) {
 Complex buffer [amount];
 	out. resize (2 * amount);
 	for (int i = 0; i < amount; i ++) {
@@ -159,7 +149,6 @@ Complex buffer [amount];
 	   out [2 * i + 1] = imag (buffer [i]);
 	}
 	dump (V, amount);
-	eval (buffer, amount);
 	return 2 * amount;
 }
 
@@ -177,7 +166,7 @@ void	converter_48000::dump (const Complex *buffer, int nrSamples) {
 }
 
 
-void	converter_48000::dump (const std::complex<int16_t> *buffer,
+void	converter_48000::dump (const complex16 *buffer,
 	                                          int nrSamples) {
 	if (!theWriter. isActive ())
 	   return;
@@ -191,30 +180,3 @@ void	converter_48000::dump (const std::complex<int16_t> *buffer,
         locker. unlock ();
 }
 
-void	converter_48000::eval (Complex *buffer, int amount) {
-	for (int i = 0; i < amount; i ++)
-	   evaluatePeakLevel (buffer [i]);
-}
-
-void	converter_48000::evaluatePeakLevel (const Complex s) {
-const float absLeft  = std::abs (real (s));
-const float absRight = std::abs (imag (s));
-
-	if (absLeft  > absPeakLeft)  
-	   absPeakLeft  = absLeft;
-	if (absRight > absPeakRight)
-	   absPeakRight = absRight;
-
-	peakLevelCurSampleCnt ++;
-	if (peakLevelCurSampleCnt >= peakLevelSampleMax) {
-	   peakLevelCurSampleCnt = 0;
-
-	   float leftDb  = (absPeakLeft  > 0.0f ?
-	                   20.0f * std::log10 (absPeakLeft)  : -40.0f);
-	   float rightDb = (absPeakRight > 0.0f ?
-	                   20.0f * std::log10 (absPeakRight) : -40.0f);
-	   emit showPeakLevel (leftDb, rightDb);
-	   absPeakLeft	= 0.0f;
-	   absPeakRight = 0.0f;
-	}
-}

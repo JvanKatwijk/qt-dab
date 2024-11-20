@@ -74,10 +74,11 @@ int32_t	i;
 	   Pa_Terminate();
 }
 
-bool	audioSink::selectDevice (int16_t idx) {
+bool	audioSink::selectDevice (int16_t idx, const QString &dev) {
 PaError err;
 int16_t	outputDevice;
 
+	(void)dev;
 	if (idx	== 0)
 	   return false;
 
@@ -263,8 +264,9 @@ bool	audioSink::isValidDevice (int16_t dev) {
 	return 0 <= dev && dev < numofDevices;
 }
 
-bool	audioSink::selectDefaultDevice() {
-	return selectDevice (Pa_GetDefaultOutputDevice());
+bool	audioSink::selectDefaultDevice () {
+	QString str = "default";
+	return selectDevice (Pa_GetDefaultOutputDevice (), str);
 }
 
 int32_t	audioSink::cardRate() {

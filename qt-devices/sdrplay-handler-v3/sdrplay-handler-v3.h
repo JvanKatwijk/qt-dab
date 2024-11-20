@@ -98,7 +98,7 @@ public:
 	int			inputRate;
 	std::atomic<bool>	failFlag;
 	std::atomic<bool>	successFlag;
-	int			denominator;
+	float			denominator;
 	std::atomic<bool>       threadRuns;
 	void			run			();
 	bool			messageHandler		(generalCommand *);

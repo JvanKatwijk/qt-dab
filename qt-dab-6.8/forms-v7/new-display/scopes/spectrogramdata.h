@@ -40,6 +40,7 @@ public:
 	int	height;		// rasterheigth
 	int	datawidth;	// width of matrix
 	int	dataheight;	// for now == rasterheigth
+	int	bufferSize;
 	double	max;
 
 	spectrogramData (double *data, int left,
