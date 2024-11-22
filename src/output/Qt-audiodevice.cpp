@@ -20,13 +20,22 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include	"Qt-audiodevice.h"
+#include	<QtGlobal>
+#include	"radio.h"
+#if QT_VERSION >= 0x060000
 //
 //	Create a "device"
-Qt_AudioDevice::Qt_AudioDevice (RingBuffer<float>* Buffer_i,
+Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
+	                        RingBuffer<char>* Buffer_i,
 	                        QObject* parent)
 	                               : QIODevice (parent),
 	                                 Buffer (Buffer_i) {
+
+	totalBytes	= 0;
+	missedBytes     = 0;
+	start ();
 }
 
 Qt_AudioDevice::~Qt_AudioDevice () {
@@ -40,21 +49,31 @@ void	Qt_AudioDevice::stop () {
 	Buffer -> FlushRingBuffer();
 	close ();
 }
+
+void	Qt_AudioDevice::samplesMissed (int &total, int &too_short) {
+	total		= totalBytes / (2 * sizeof (float));
+	too_short	= missedBytes / (2 * sizeof (float));
+
+	totalBytes	= 0;
+	missedBytes		= 0;
+}
+
 //
-//	we always return "len" bytes
+//	we always return "maxSize" bytes
 qint64	Qt_AudioDevice::readData (char* buffer, qint64 maxSize) {
 qint64	amount = 0;
 
 //	"maxSize" is the requested size in bytes
 //	"amount" is in floats
-	amount = Buffer -> getDataFromBuffer (buffer, maxSize / sizeof (float));
+	amount = Buffer -> getDataFromBuffer (buffer, maxSize);
 
-	if (sizeof (float) * amount < maxSize) {
-	   int16_t i;
-	   for (i = amount * sizeof (float); i < maxSize; i ++) 
+	if (amount < maxSize) {
+	   for (int i = amount; i < maxSize; i ++) 
 	      buffer [i] = 0;
 	}
 
+	totalBytes	+= amount;
+	missedBytes	+= maxSize - amount;
 	return maxSize;
 }
 //
@@ -64,4 +83,5 @@ qint64	Qt_AudioDevice::writeData (const char* data, qint64 len) {
 	Q_UNUSED (len);
 	return 0;
 }
+#endif
 

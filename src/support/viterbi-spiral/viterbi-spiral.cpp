@@ -122,14 +122,15 @@ int32_t	i;
 //	There are (in mode 1) 3 ofdm blocks, giving 4 FIC blocks
 //	There all have a predefined length. In that case we use the
 //	"fast" (i.e. spiral) code, otherwise we use the generic code
-	viterbiSpiral::viterbiSpiral (int16_t wordlength, bool spiral) {
+	viterbiSpiral::viterbiSpiral (int16_t wordLength,
+	                               bool spiral) {
 int polys [RATE] = POLYS;
 int16_t	i, state;
 #ifdef	__MINGW32__
 uint32_t	size;
 #endif
 
-	frameBits		= wordlength;
+	this	-> frameBits	= wordLength;
 	this	-> spiral	= spiral;
 //	partab_init	();
 
@@ -138,25 +139,25 @@ uint32_t	size;
 // By doubling the size, the problem disappears. It is not solved though
 // and not further investigation.
 #if defined (__MINGW32__) || defined (_WIN32)
-	size = 2 * ((wordlength + (K - 1)) / 8 + 1 + 16) & ~0xF;
+	size = 2 * ((wordLength + (K - 1)) / 8 + 1 + 16) & ~0xF;
 	data	= (uint8_t *)_aligned_malloc (size, 16);
-	size = 2 * (RATE * (wordlength + (K - 1)) * sizeof(COMPUTETYPE) + 16) & ~0xF;
+	size = 2 * (RATE * (wordLength + (K - 1)) * sizeof(COMPUTETYPE) + 16) & ~0xF;
 	symbols	= (COMPUTETYPE *)_aligned_malloc (size, 16);
-	size	= 2 * (wordlength + (K - 1)) * sizeof (decision_t);	
+	size	= 2 * (wordLength + (K - 1)) * sizeof (decision_t);	
 	size	= (size + 16) & ~0xF;
 	vp. decisions = (decision_t  *)_aligned_malloc (size, 16);
 #else
 	if (posix_memalign ((void**)&data, 16,
-	                        (wordlength + (K - 1))/ 8 + 1)){
+	                        (wordLength + (K - 1))/ 8 + 1)){
 	   printf("Allocation of data array failed\n");
 	}
 	if (posix_memalign ((void**)&symbols, 16,
-	                     RATE * (wordlength + (K - 1)) * sizeof(COMPUTETYPE))){
+	                     RATE * (wordLength + (K - 1)) * sizeof(COMPUTETYPE))){
 	   printf("Allocation of symbols array failed\n");
 	}
 	if (posix_memalign ((void**)&(vp. decisions),
 	                    16,
-	                    2 * (wordlength + (K - 1)) * sizeof (decision_t))){
+	                    2 * (wordLength + (K - 1)) * sizeof (decision_t))){
 	   printf ("Allocation of vp decisions failed\n");
 	}
 #endif
@@ -373,3 +374,27 @@ int32_t i;
 	vp -> old_metrics-> t[starting_state & (NUMSTATES-1)] = 0;
 }
 
+std::complex<int>
+	viterbiSpiral::bitErrors (const int16_t * const input,
+	                          uint8_t *punctureTable,
+	                          uint8_t const *output) {
+uint8_t Buffer [frameBits * RATE];
+int sr = 0;
+int polys[RATE] = POLYS;
+int	bits	= 0;
+int	errors	= 0;
+	for (int i = 0; i < frameBits; i++) {
+	   sr = ((sr << 1) | output [i]) & 0xff;
+	   for (int j = 0; j < RATE; j++)
+	      Buffer [RATE * i + j] = parity (sr & polys[j]);
+	}
+
+	for (int i = 0; i < frameBits * RATE; i++) {
+	   if (punctureTable [i]) {
+	      bits++;
+	      if ((input [i] > 0) != Buffer [i])
+	         errors++;
+	   }
+	}
+	return std::complex<int> (bits, errors);
+}

@@ -48,5 +48,8 @@ bool	audioPlayer::selectDevice	(int16_t k, const QString &s) {
 
 bool	audioPlayer::hasMissed		() {return false;}
 
-int	audioPlayer::missed		() { return -1;}
+void	audioPlayer::samplesMissed	(int &total, int &missed) {
+	total	= 1;
+	missed	= 0;
+}
 

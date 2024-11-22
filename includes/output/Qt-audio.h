@@ -39,13 +39,15 @@
 #include        <QAudioSink>
 #include        <QComboBox>
 #include        <QMediaDevices>
-#include        <QAudioDevice>
+#include	"Qt-audiodevice.h"
 #endif
 class		QSettings;
+class		RadioInterface;
+
 class	Qt_Audio: public audioPlayer {
 Q_OBJECT
 public:
-			Qt_Audio	(QSettings *);
+			Qt_Audio	(RadioInterface *, QSettings *);
 			~Qt_Audio	();
 	void		stop		();
 	void		restart		();
@@ -54,12 +56,15 @@ public:
 	void		audioOutput	(float *, int32_t);
 	QStringList	streams		();
 	bool		selectDevice	(int16_t, const QString &);
+
+	bool		hasMissed	();
+	void		samplesMissed	(int &, int &);
 private:
 	RingBuffer<char> tempBuffer;
 	QSettings	*audioSettings;
-        std::atomic<bool>       working;
-	QIODevice	*theWorker;
+	std::atomic<bool> working;
         int             newDeviceIndex;
+	RadioInterface	*mr;
 #if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
 	void		initialize_deviceList ();
 	void		initializeAudio(const QAudioDeviceInfo &deviceInfo);
@@ -68,7 +73,9 @@ private:
 	int32_t		outputRate;
 	std::vector<QAudioDeviceInfo> theList;
 	std::atomic<bool>	isInitialized;
+	QIODevice	*theWorker;
 #else
+	Qt_AudioDevice	*theIODevice;
 	QAudioFormat	m_settings;
 	QList<QAudioDevice>     outputDevices;
         QAudioSink      *m_audioOutput;

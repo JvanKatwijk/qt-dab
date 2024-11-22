@@ -45,7 +45,7 @@ public:
 	bool		selectDevice		(int16_t, const QString &);
 	bool		selectDefaultDevice	();
 	void		audioOutput		(float *, int32_t);
-	int32_t		missed			();
+	void		samplesMissed		(int &, int &);
 	bool		hasMissed		();
 private:
 	int16_t		numberofDevices		();

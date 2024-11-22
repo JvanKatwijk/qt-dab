@@ -216,15 +216,11 @@ bool	audioSink::hasMissed	() {
 	return true;
 }
 
-int32_t	audioSink::missed	() {
-	if (totalSamples == 0) {
-	   fprintf (stderr, "HELP\n");
-	   return 0;
-	}
-int32_t	h	= 100 - (theMissed * 100) / totalSamples;
+void	audioSink::samplesMissed	(int &total, int &missed) {
+	total		= totalSamples;
+	missed		= theMissed;
 	theMissed	= 0;
 	totalSamples	= 1;
-	return h;
 }
 //
 //	we call this with the amount of floats!!

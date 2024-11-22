@@ -5,9 +5,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Xml REQUIRED)
+find_package(Qt6Core REQUIRED)
+find_package(Qt6Widgets REQUIRED)
+find_package(Qt6Xml REQUIRED)
 
 set($(devicesLibName)_HDRS
         ${${devicesLibName}_HDRS}
@@ -43,10 +43,10 @@ include_directories(
 	.
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
-        ${QT5Widgets_INCLUDES}
+        ${QT6Widgets_INCLUDES}
         ${QT_QTCORE_INCLUDE_DIR}
         ${QT_QTGUI_INCLUDE_DIR}
-        ${QT5Widgets_INCLUDES}
+        ${QT6Widgets_INCLUDES}
         ${QT_QTCORE_INCLUDE_DIR}
 	filereaders
 	filereaders/xml-filereader
@@ -434,7 +434,7 @@ include_directories(
 
 #
 	if (RTL_TCP)
-	   find_package (Qt5Network REQUIRED)
+	   find_package (Qt6Network REQUIRED)
 	   set (${devicesLibName}_UIS
 	        ${${devicesLibName}_UIS}
 	        ./rtl_tcp/rtl_tcp-widget.ui
@@ -447,7 +447,7 @@ include_directories(
 
 	   include_directories (
 	      ./rtl_tcp
-	      ${Qt5Network_INCLUDE_DIRS}
+	      ${Qt6Network_INCLUDE_DIRS}
 	   )
 
 	   set ($(devicesLibName)_HDRS
@@ -460,7 +460,7 @@ include_directories(
 	        ./rtl_tcp/rtl_tcp_client.cpp
 	   )
 
-	   set (RTLTCP_lib Qt5::Network)
+	   set (RTLTCP_lib Qt6::Network)
 	   add_definitions (-DHAVE_RTL_TCP)
 	endif (RTL_TCP)
 
@@ -468,9 +468,9 @@ include_directories(
 
 	target_link_libraries(${devicesLibName}
         PRIVATE
-        Qt5::Widgets
-        Qt5::Xml
-        Qt5::Network
+        Qt6::Widgets
+        Qt6::Xml
+        Qt6::Network
         ${extraLibs}
 )
 

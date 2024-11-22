@@ -23,23 +23,32 @@
  */
 #pragma once
 
+#include	<Qt>
+#include	<QtGlobal>
 #include	<QIODevice>
 #include	<QObject>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
+class	RadioInterface;
 
+//#if QT_VERSION >= 0x060000
 class Qt_AudioDevice : public QIODevice {
 Q_OBJECT
 public:
-		Qt_AudioDevice	(RingBuffer<float> *, QObject *);
+		Qt_AudioDevice	(RadioInterface *,
+	                         RingBuffer<char> *, QObject *parent = nullptr);
 		~Qt_AudioDevice	();
 
 	void	start		();
 	void	stop		();
-
+	void	samplesMissed	(int &, int &);
 	qint64	readData	(char *data, qint64 maxlen);
 	qint64	writeData	(const char *data, qint64 len);
 
 private:
-	RingBuffer<float> *Buffer;
+	RingBuffer<char> *Buffer;
+	int	totalBytes;
+	int	missedBytes;
 };
+
+//#endif

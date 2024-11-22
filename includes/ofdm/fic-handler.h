@@ -57,7 +57,7 @@ private:
 	viterbiSpiral	myViterbi;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
-	bool		punctureTable	[3072 + 24];
+	uint8_t		punctureTable	[3072 + 24];
 	uint8_t		fibBits		[4 * 768];
 	bool		ficValid	[4];
 	uint8_t		ficBuffer	[256];
@@ -66,19 +66,18 @@ private:
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;
-	int16_t		ficBlocks;
-	int16_t		ficMissed;
-	int16_t		ficRatio;
 	uint16_t	convState;
 	FILE		*ficDumpPointer;
 	QMutex          ficLocker;
+	int		ficBlocks;
+	int		ficErrors;
+	int		ficBits;
 	int		ficPointer;
 	std::atomic<bool> running;
 	int		successRatio;
 	int		fibCounter;
 signals:
 	void		show_ficQuality	(int, int);
+	void		show_ficBER	(float);
 };
-
-
 

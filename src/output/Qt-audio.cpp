@@ -27,15 +27,20 @@
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
+class	RadioInterface;
+
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
-	Qt_Audio::Qt_Audio (QSettings *settings):
+#include	"Qt-audiodevice.h"
+	Qt_Audio::Qt_Audio (RadioInterface *mr,
+		            QSettings *settings):
 	                    tempBuffer (16 * 32768) { 
 	audioSettings		= settings;
 	working. store		(false);
 	newDeviceIndex		= -1;
 	
 	m_audioOutput		= nullptr;
-
+	theIODevice		= nullptr;
+	this	-> mr		= mr;
 	m_settings. setChannelCount (2);
 	m_settings. setSampleRate (48000);
 	m_settings. setSampleFormat (QAudioFormat::Float);
@@ -68,18 +73,8 @@ QStringList nameList;
 void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	if (!working. load ())
 	   return;
-	int aa = tempBuffer. GetRingBufferWriteAvailable ();
-	aa	= std::min ((int)(size * sizeof (float)), aa);
-	aa	&= ~03;
-	tempBuffer. putDataIntoBuffer ((char *)fragment, aa);
-	
-	int periodSize = 1 * 480 * sizeof (float);	// 10 msec
-	char buffer [periodSize];
-	while ((m_audioOutput -> bytesFree () >= periodSize) &&
-	       (tempBuffer. GetRingBufferReadAvailable () >= periodSize)) {
-	   tempBuffer. getDataFromBuffer (buffer, periodSize);
-	   theWorker	-> write (buffer, periodSize);
-	}
+	tempBuffer. putDataIntoBuffer ((char *)(fragment), 
+	                                     sizeof (float) * size);
 }
 
 void	Qt_Audio::stop () {
@@ -94,16 +89,20 @@ void	Qt_Audio::restart	() {
 	   return;
 	if (m_audioOutput != nullptr)
 	   delete m_audioOutput;
-	m_audioOutput	= new QAudioSink (outputDevices. at (newDeviceIndex), 
-	                                                      m_settings);
+	if (theIODevice != nullptr)	
+	   delete theIODevice;
+
+	m_audioOutput	= new QAudioSink (m_settings);
 	m_audioOutput -> setBufferSize (10 * 480 * sizeof (float));
-	theWorker	= m_audioOutput	-> start ();
+	
+	theIODevice = new Qt_AudioDevice (mr, &tempBuffer);
+	m_audioOutput	-> start (theIODevice);
 	if (m_audioOutput -> error () == QAudio::NoError) {
 	   working. store (true);
 	   fprintf (stderr, "Device reports: no error\n");
 	}
 	else
-	   fprintf (stderr, "restart gaat niet door\n");
+	   fprintf (stderr, "restart fails\n");
 	int vol		= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
 //	deviceList. at (newDeviceIndex). setVolume ((float)vol / 100);
 	fprintf (stderr, "restarted\n");
@@ -137,8 +136,18 @@ void	Qt_Audio::setVolume	(int v) {
         m_audioOutput -> setVolume ((float)v / 100);
 }
 
+bool	Qt_Audio::hasMissed	() {
+	return true;
+}
+
+void	Qt_Audio::samplesMissed	(int &total, int & missed) {
+	if (theIODevice != nullptr) 
+	   theIODevice -> samplesMissed (total, missed);
+}
+
 #else
-	Qt_Audio::Qt_Audio (QSettings *settings):
+	Qt_Audio::Qt_Audio (RadioInterface *mr, 
+	                       QSettings *settings):
 	                 tempBuffer (8 * 32768) { 
 	audioSettings		= settings;
 	outputRate		= 48000;	// default
@@ -290,5 +299,15 @@ void	Qt_Audio::resume	() {
 void	Qt_Audio::setVolume	(int v) {
 	store (audioSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, v);
 	m_audioOutput	-> setVolume ((float)v / 100);
+}
+
+bool	Qt_Audio::hasMissed	() {
+	return false;
+}
+
+
+void	Qt_Audio::samplesMissed	(int &total, int & missed) {
+	total	= 1;
+	missed	= 0;
 }
 #endif

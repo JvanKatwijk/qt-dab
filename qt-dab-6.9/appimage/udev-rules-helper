@@ -1,0 +1,28 @@
+#!/bin/bash
+
+HERE="$(dirname "$(readlink -f "${0}")")"
+
+rmmod dvb_usb_rtl28xxu || true
+
+cat > /tmp/10-rtl-sdr.rules <<\EOF
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", MODE="0666", SYMLINK+="rtl_sdr"
+EOF
+
+mv /tmp/10-rtl-sdr.rules /etc/udev/rules.d/10-rtl-sdr.rules
+
+cat > /tmp/52-airspy.rules <<\EOF
+ATTR{idVendor}=="1d50", ATTR{idProduct}=="60a1", SYMLINK+="airspy-%k", MODE="660", GROUP="plugdev"
+EOF
+
+mv /tmp/52-airspy.rules /etc/udev/rules.d/52-airspy.rules
+
+cat > /tmp/66-mirics.rules <<\EOF
+SUBSYSTEM=="usb",ENV{DEVTYPE}=="usb_device",ATTRS{idVendor}=="1df7",ATTRS{idProduct}=="2500",MODE:="0666"
+SUBSYSTEM=="usb",ENV{DEVTYPE}=="usb_device",ATTRS{idVendor}=="1df7",ATTRS{idProduct}=="3010",MODE:="0666"
+SUBSYSTEM=="usb",ENV{DEVTYPE}=="usb_device",ATTRS{idVendor}=="1df7",ATTRS{idProduct}=="3000",MODE:="0666"
+EOF
+
+mv /tmp/66-mirics.rules /etc/udev/rules.d/66-mirics.rules
+
+udevadm control --reload-rules
+udevadm trigger --attr-match=subsystem=usb

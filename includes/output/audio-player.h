@@ -39,6 +39,6 @@ virtual void	suspend		();
 virtual	void	resume		();
 virtual	bool	selectDevice	(int16_t, const QString &);
 virtual	bool	hasMissed	();
-virtual	int	missed		();
+virtual	void	samplesMissed	(int &, int &);
 };
 

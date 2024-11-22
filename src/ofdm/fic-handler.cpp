@@ -56,8 +56,10 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	BitsperBlock	= 2 * params. get_carriers();
 	ficno		= 0;
 	ficBlocks	= 0;
-	ficMissed	= 0;
-	ficRatio	= 0;
+
+	ficErrors	= 0;
+	ficBits		= 0;
+
 	for (int i = 0; i < 768; i ++) {
 	   PRBS [i] = shiftRegister [8] ^ shiftRegister [4];
 	   for (int j = 8; j > 0; j --)
@@ -104,6 +106,8 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	connect (this, &ficHandler::show_ficQuality,
 	         mr, &RadioInterface::show_ficQuality);
+	connect (this, &ficHandler::show_ficBER,
+	         mr, &RadioInterface::show_ficBER);
 
 	ficPointer	= 0;
 	ficDumpPointer	= nullptr;
@@ -176,6 +180,18 @@ int16_t	inputCount	= 0;
   *	deconvolution is according to DAB standard section 11.2
   */
 	myViterbi. deconvolve (viterbiBlock, bitBuffer_out);
+	std::complex<int> t =
+	      myViterbi. bitErrors (viterbiBlock, punctureTable,
+	                            reinterpret_cast<uint8_t *>(bitBuffer_out));
+	ficBits		+= real (t);
+	ficErrors	+= imag (t);
+	ficBlocks ++;
+	if (ficBlocks >= 30) {
+	   emit show_ficBER ((float)ficErrors / ficBits);
+	   ficBlocks	 = 0;
+	   ficErrors	/= 2;
+	   ficBits	/= 2;
+	}
 /**
   *	if everything worked as planned, we now have a
   *	768 bit vector containing three FIB's

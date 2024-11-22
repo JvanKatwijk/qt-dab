@@ -24,6 +24,7 @@
 #pragma once
 
 #include        <QObject>
+#include	"dab-constants.h"
 #include        "neaacdec.h"
 #include        "ringbuffer.h"
 
@@ -46,7 +47,7 @@ class	faadDecoder: public QObject{
 Q_OBJECT
 public:
         faadDecoder     (RadioInterface *mr,
-                         RingBuffer<complex16 *buffer);
+                         RingBuffer<complex16> *buffer);
         ~faadDecoder	();
 int16_t	 MP42PCM         (stream_parms *sp,
                          uint8_t buffer [],

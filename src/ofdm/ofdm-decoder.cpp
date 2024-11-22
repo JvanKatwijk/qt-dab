@@ -129,16 +129,17 @@ void	ofdmDecoder::processBlock_0 (
 //	For the computation of the MER we use the definition
 //	from ETSI TR 101 290 (appendix C1)
 float	ofdmDecoder::computeQuality (Complex *v) {
-	float q	= 0;
+static float f_n = 1;
+static float f_d = 1;
 	for (int i = 0; i < carriers; i ++) {
-	   Complex ss = v [T_u / 2 - carriers / 2 + i];
-	   float R	= abs (real (ss));
-	   float I	= abs (imag (ss));
-	   float t = abs (arg (Complex (R, I) * Complex (1, -1)));
-	   q += ((M_PI / 2 - t) * (M_PI / 2 - t)) / (M_PI / 2 * M_PI / 2);
+	   Complex ss	= v [T_u / 2 - carriers / 2 + i];
+	   float ab	= abs (ss) / sqrt (2);
+	   f_n		=  0.99 * f_n + 0.01 * (abs (ss) * abs (ss));
+	   float R	= abs (abs (real (ss)) - ab);
+	   float I	= abs (abs (imag (ss)) - ab);
+	   f_d		= 0.99 * f_d + 0.01 * (R * R + I * I);
 	}
-	q = q / carriers;
-	return q * 100;
+	return 10 * log10 (f_n / f_d + 0.1);
 }
 /**
   *	for the other blocks of data, the first step is to go from

@@ -1,0 +1,7 @@
+#!/bin/bash
+HERE="$(dirname "$(readlink -f "${0}")")"
+#cp "${HERE}/udev-rules-helper" /tmp/
+# Try to run using sudo, if this does not work ask the user for password
+#sudo -n -E -- "/tmp/udev-rules-helper" || pkexec "/tmp/udev-rules-helper"
+#rm "/tmp/udev-rules-helper"
+exec "${HERE}/usr/bin/qt-dab-6.9" "$@" 
