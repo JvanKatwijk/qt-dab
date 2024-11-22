@@ -7,6 +7,26 @@
 -------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
+Qt5 to Qt6
+------------------------------------------------------------------------
+
+Since Qt6 is there for quite a while, it is inevitable to move over
+to Qt6. While AppImages are built with "old" library versions,
+AppImage is and will be compiled with Qt5.
+
+To proceed, the current version in the branch "qt6-dab" is parametersized
+on the Qt version, and will compile with both Qt5 and Qt6 (with qwt 6.20)
+Parameterization will remain until the AppImages can be made with Qt6.
+
+
+While the Qt6 based version for Linux works fine, there are some issues
+with the windows version, probably caused by problems with the required dll's
+The branch "master" will remain unaltered until the changes to the
+qt6-branch are complete and properly functioning windows versions can be
+made.
+
+
+------------------------------------------------------------------------
 About Qt-DAB-6.8
 -------------------------------------------------------------------------
 
@@ -40,18 +60,6 @@ that it is "empty"
 A seemingly minor change from the user's point of view is that now
 on selecting any channel, the service that was last used on that channel
 is started. 
-
-Branches
-=================================================================
-Since Qt6 is already years underway, it was time to try to move over.
-The problem is that the AppImage has to be built on a reltively old 
-system, i.e. Ubuntu 20. U22 is too new.
-
-Therefore the qt-dab repository now has - next to the master branch
-a branch qt6-dab, a version that compiles well under Qt6.
-
-It is slightly experimental. the next step will be to build the
-Windows executables using Qt6.
 
 Table of Contents
 =================================================================
