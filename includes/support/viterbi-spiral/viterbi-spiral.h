@@ -44,9 +44,7 @@ public:
 		viterbiSpiral	(int16_t, bool spiral = false);
 		~viterbiSpiral	(void);
 	void	deconvolve	(int16_t *, uint8_t *);
-	std::complex<int>
-	         bitErrors	(const int16_t * const input,
-	                         uint8_t *punctureTable, uint8_t const *output);
+	void	convolve	(uint8_t *, uint8_t *, int);
 private:
 
 	bool		spiral;

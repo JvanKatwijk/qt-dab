@@ -36,6 +36,9 @@
 //	The last 24 bits shall be subjected to puncturing
 //	according to the table 8
 
+#define	FIC_BLOCKSIZE	3072
+#define	FIC_RESIDU	24
+#define	FIC_INPUT	2304
 /**
   *	\class ficHandler
   * 	We get in - through process_ficBlock - the FIC data
@@ -72,7 +75,8 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 //	(even through all instances, so we could create a static
 //	table), we make an punctureTable that contains the indices of
 //	the ofdmInput table
-	memset (punctureTable, (uint8_t)false, (3072 + 24) * sizeof (uint8_t));
+	memset (punctureTable, (uint8_t)false,
+	                       (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (uint8_t));
 	int	local	= 0;
 	for (int i = 0; i < 21; i ++) {
 	   for (int k = 0; k < 32 * 4; k ++) {
@@ -142,7 +146,7 @@ void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
 	if ((1 <= blkno) && (blkno <= 3)) {
 	   for (int i = 0; i < BitsperBlock; i ++) {
 	      ofdm_input [index ++] = data [i];
-	      if (index >= 2304) {
+	      if (index >= FIC_INPUT) {
 	         process_ficInput (ficno, &ficValid [ficno]);
 	         index = 0;
 	         ficno ++;
@@ -165,14 +169,17 @@ void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
   *	one above
   */
 void	ficHandler::process_ficInput (int16_t ficno, bool *valid) {
-int16_t	viterbiBlock [3072 + 24] = {0};
+static
+int16_t	viterbiBlock [FIC_BLOCKSIZE + FIC_RESIDU] = {0};
+static
+uint8_t	checkBlock   [FIC_BLOCKSIZE + FIC_RESIDU] = {0};
 int16_t	inputCount	= 0;
 
 	if (!running. load ())
 	   return;
-//	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
+	memset (viterbiBlock, 0, (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
 
-	for (int i = 0; i < 3072 + 24; i ++)
+	for (int i = 0; i < FIC_BLOCKSIZE + FIC_RESIDU; i ++)
 	   if (punctureTable [i])
 	      viterbiBlock [i] = ofdm_input [inputCount ++];
 /**
@@ -180,17 +187,26 @@ int16_t	inputCount	= 0;
   *	deconvolution is according to DAB standard section 11.2
   */
 	myViterbi. deconvolve (viterbiBlock, bitBuffer_out);
-	std::complex<int> t =
-	      myViterbi. bitErrors (viterbiBlock, punctureTable,
-	                            reinterpret_cast<uint8_t *>(bitBuffer_out));
-	ficBits		+= real (t);
-	ficErrors	+= imag (t);
+//
+//	we construct the input as it should have been:
+	myViterbi. convolve (bitBuffer_out, checkBlock, FIC_BLOCKSIZE / 4);
+//
+//	and compute the errors
+	for (int i = 0; i < 3072 + 24; i ++) {
+	   if (punctureTable [i])
+	      if ((checkBlock [i] == 0) && viterbiBlock [i] >= 0)
+	         ficErrors ++;
+	      else
+	      if ((checkBlock [i] != 0) && viterbiBlock [i] < 0)
+	         ficErrors ++;
+	}
+	ficBits		+= FIC_BLOCKSIZE + FIC_RESIDU;
 	ficBlocks ++;
-	if (ficBlocks >= 30) {
+	if (ficBlocks >= 40) {	// 4 blocks per frame, app 10 frames per sec
 	   emit show_ficBER ((float)ficErrors / ficBits);
 	   ficBlocks	 = 0;
-	   ficErrors	/= 2;
-	   ficBits	/= 2;
+	   ficErrors	 /= 4;
+	   ficBits	 /= 4;
 	}
 /**
   *	if everything worked as planned, we now have a
@@ -199,10 +215,10 @@ int16_t	inputCount	= 0;
   *	first step: energy dispersal according to the DAB standard
   *	We use a predefined vector PRBS
   */
-	for (int i = 0; i < 768; i ++)
+	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
 	   bitBuffer_out [i] ^= PRBS [i];
 
-	for (int i = 0; i < 768; i ++)
+	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
 	   fibBits [ficno * 768 + i] = bitBuffer_out [i];
 /**
   *	each of the fib blocks is protected by a crc

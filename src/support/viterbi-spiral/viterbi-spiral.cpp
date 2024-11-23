@@ -374,27 +374,37 @@ int32_t i;
 	vp -> old_metrics-> t[starting_state & (NUMSTATES-1)] = 0;
 }
 
-std::complex<int>
-	viterbiSpiral::bitErrors (const int16_t * const input,
-	                          uint8_t *punctureTable,
-	                          uint8_t const *output) {
-uint8_t Buffer [frameBits * RATE];
-int sr = 0;
-int polys[RATE] = POLYS;
-int	bits	= 0;
-int	errors	= 0;
-	for (int i = 0; i < frameBits; i++) {
-	   sr = ((sr << 1) | output [i]) & 0xff;
-	   for (int j = 0; j < RATE; j++)
-	      Buffer [RATE * i + j] = parity (sr & polys[j]);
-	}
+void	viterbiSpiral::convolve (uint8_t *input,
+	                         uint8_t *out, int blockLength) {
+uint8_t a0, a1 = 0,
+	    a2 = 0, 
+	    a3 = 0,
+	    a4 = 0,
+	    a5 = 0,
+	    a6 = 0;
 
-	for (int i = 0; i < frameBits * RATE; i++) {
-	   if (punctureTable [i]) {
-	      bits++;
-	      if ((input [i] > 0) != Buffer [i])
-	         errors++;
-	   }
-	}
-	return std::complex<int> (bits, errors);
+//#define POLYS { 0155, 0117, 0123, 0155}
+	for (int i = 0; i < blockLength; i ++) {
+	   a0 = input [i];
+	   out [4 * i + 0] = a0 ^ a2 ^ a3 ^ a5 ^ a6;
+           out [4 * i + 1] = a0 ^ a1 ^ a2 ^ a3 ^ a6;
+           out [4 * i + 2] = a0 ^ a1 ^ a4 ^ a6;
+           out [4 * i + 3] = out [4 * i + 0];
+
+//	now shift
+           a6 = a5; a5 = a4; a4 = a3; a3 = a2; a2 = a1; a1 = a0;
+        }
+//
+//      Now the residu bits. Empty the registers by shifting in
+//      zeros
+        for (int i = blockLength; i < blockLength + 6; i ++) {
+           a0 = 0;
+	   out [4 * i + 0] = a0 ^ a2 ^ a3 ^ a5 ^ a6;
+           out [4 * i + 1] = a0 ^ a1 ^ a2 ^ a3 ^ a6;
+           out [4 * i + 2] = a0 ^ a1 ^ a4 ^ a6;
+           out [4 * i + 3] = out [4 * i + 0];
+//	now shift
+           a6 = a5; a5 = a4; a4 = a3; a3 = a2; a2 = a1; a1 = a0;
+        }
 }
+

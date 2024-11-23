@@ -208,8 +208,11 @@ DABFLOAT Alpha = 0.05f;
 	                                         abs (real (r1)), Alpha),
 	                    compute_avg (imag (carrierCenters [index]),
 	                                         abs (imag (r1)), Alpha));
+	   DABFLOAT	weight_x = 0;
+	   DABFLOAT	weight_y = 0;
+	   
 	   switch (decoder) {
-	      case DEFAULT_DECODER:
+	      case ALT2_DECODER:
 //	here we look at the error of the sample wrt a filtered "centerpoint"
 //	and give the X and Y the error as penalty
 //	works actually as best of the three
@@ -219,44 +222,40 @@ DABFLOAT Alpha = 0.05f;
 	         DABFLOAT err_x	=
 	                 jan_abs (base_x - jan_abs (real (r1))) / base_x;
 	         DABFLOAT err_y	=
-	                 jan_abs (base_y - jan_abs (imag (r1))) / base_y;;
-	         ibits [i]		=
-	                 (int16_t) (-sign (real (r1)) *
-	                       (1 - err_x) * MAX_VITERBI);
-	         ibits [carriers + i]	=
-	                 (int16_t) (-sign (imag (r1)) *
-	                       (1 - err_y) * MAX_VITERBI);
+	                 jan_abs (base_y - jan_abs (imag (r1))) / base_y;
+	         weight_x	= (1 - err_x);
+	         weight_y	= (1 - err_y);
 	         break;
 	      }
-//	most simple version
+//
+//	assuming that for small angles x = sin (x)
 	      case ALT1_DECODER:
-	         ibits [i]	=
-	                    -sign (real (r1)) * jan_abs (real (r1)) / ab1 * MAX_VITERBI; 
-	         ibits [carriers + i]	=
-	                    -sign (imag (r1)) * jan_abs (imag (r1)) / ab1 * MAX_VITERBI; 
-	      break;
-
-	      case ALT2_DECODER:
-//	(normalized) value and the center point in the quadrant
-//	extremely simple, works fine
-	         ibits [i]	= 
-	                        (int16_t) (- real (r1) * MAX_VITERBI / ab1);
-	         ibits [carriers + i] =
-	                        (int16_t) (- imag (r1) * MAX_VITERBI / ab1);
+	      {	 Complex   base		= carrierCenters [index];
+	         DABFLOAT  avgError	=
+	                 (M_PI_4 - abs (arg (r1 * Complex (1, -1))))/ M_PI_4;
+	         weight_x	= jan_abs (real (r1)) / (1 - avgError);
+	         weight_y	= jan_abs (imag (r1)) / (1 - avgError);
 	         break;
+	      }
+
+//	most simple version
+	      case DEFAULT_DECODER:
+	      default:
+	         weight_x	= jan_abs (real (r1)) / ab1;
+	         weight_y	= jan_abs (imag (r1)) / ab1;
+	      break;
 
 	      case ALT3_DECODER:
 //	same as previous one, however, with a filtered "centerpoint"
 	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
-	         ibits [i]		=
-	                        (int16_t)( - real (r1) * MAX_VITERBI / base);
-	         ibits [carriers + i] =
-	                        (int16_t)( - imag (r1) * MAX_VITERBI / base);
+	         weight_x	= jan_abs (real (r1)) / base;
+	         weight_y	= jan_abs (imag (r1)) / base;
 	         break;
 	      }
-
-
 	   }
+	   ibits [i]	= -sign (real (r1)) * weight_x * MAX_VITERBI; 
+	   ibits [carriers + i]	=
+	                  -sign (imag (r1)) * weight_y * MAX_VITERBI; 
 	}
 
 //	From time to time we show the constellation of symbol 2.
