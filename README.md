@@ -14,16 +14,13 @@ Since Qt6 is there for quite a while, it is inevitable to move over
 to Qt6. While AppImages are built with "old" library versions,
 AppImage is and will be compiled with Qt5.
 
-To proceed, the current version in the branch "qt6-dab" is parametersized
+To proceed, the current version  is parametersized
 on the Qt version, and will compile with both Qt5 and Qt6 (with qwt 6.20)
 Parameterization will remain until the AppImages can be made with Qt6.
 
-
 While the Qt6 based version for Linux works fine, there are some issues
 with the windows version, probably caused by problems with the required dll's
-The branch "master" will remain unaltered until the changes to the
-qt6-branch are complete and properly functioning windows versions can be
-made.
+The Windows versions are compiled with Qt5 still.
 
 
 ------------------------------------------------------------------------

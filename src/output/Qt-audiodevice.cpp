@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2017 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,7 +24,10 @@
 #include	"Qt-audiodevice.h"
 #include	<QtGlobal>
 #include	"radio.h"
-#if QT_VERSION >= 0x060000
+
+//
+//	Note: this class is only referenced to in the Qt6 version
+//	NOT in the Qt5 version
 //
 //	Create a "device"
 Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
@@ -64,7 +67,7 @@ qint64	Qt_AudioDevice::readData (char* buffer, qint64 maxSize) {
 qint64	amount = 0;
 
 //	"maxSize" is the requested size in bytes
-//	"amount" is in floats
+//	"amount" is in uint8_t's
 	amount = Buffer -> getDataFromBuffer (buffer, maxSize);
 
 	if (amount < maxSize) {
@@ -83,5 +86,4 @@ qint64	Qt_AudioDevice::writeData (const char* data, qint64 len) {
 	Q_UNUSED (len);
 	return 0;
 }
-#endif
 

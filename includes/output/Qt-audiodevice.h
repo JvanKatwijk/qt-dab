@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2017 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -31,7 +31,9 @@
 #include	"ringbuffer.h"
 class	RadioInterface;
 
-//#if QT_VERSION >= 0x060000
+//
+//	Note: this class is NOT refefrences in the Qt5 version, only in
+//	the Qt6 version
 class Qt_AudioDevice : public QIODevice {
 Q_OBJECT
 public:
@@ -51,4 +53,3 @@ private:
 	int	missedBytes;
 };
 
-//#endif

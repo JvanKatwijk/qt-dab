@@ -22,6 +22,10 @@
  */
 #pragma once
 
+//
+//	Note: this class is parameterized on the Qt major version
+//	In this implementatiom, the audio output drivers have to
+//	implement the interface class "audioPlayer"
 #include        <stdio.h>
 #include        <QAudioOutput>
 #include        <QStringList>
@@ -30,6 +34,7 @@
 #include        <vector>
 #include        <atomic>
 #include        "ringbuffer.h"
+
 #if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
 #include	<QIODevice>
 #include	<QAudioOutput>
@@ -43,7 +48,8 @@
 #endif
 class		QSettings;
 class		RadioInterface;
-
+//
+//	The public interface is common to both the Qt5 and Qt6 version
 class	Qt_Audio: public audioPlayer {
 Q_OBJECT
 public:

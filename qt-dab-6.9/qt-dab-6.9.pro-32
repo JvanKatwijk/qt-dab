@@ -388,7 +388,12 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.9
+	equals (QT_MAJOR_VERSION, 5) {
+	TARGET		= qt-dab-qt5-6.9
+	}
+	else {
+	TARGET		= qt-dab-qt6-6.9
+	}
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -510,9 +515,19 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6.9V3
+#	equals (QT_MAJOR_VERSION, 5) {
+#	   TARGET		= qt-dab-qt5-6.9V3
+#	}
+#	else {
+#	   TARGET		= qt-dab-qt6-6.9V3
+#	}
 #	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.9
+	equals (QT_MAJOR_VERSION, 5) {
+	   TARGET		= qt-dab-qt5-6.9
+	}
+	else {
+	   TARGET		= qt-dab-qt6-6.9
+	}
 	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16

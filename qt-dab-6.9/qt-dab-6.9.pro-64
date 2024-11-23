@@ -389,7 +389,12 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.X
+	equals (QT_MAJOR_VERSION, 5) {
+        TARGET          = qt-dab-qt5-6.9
+        }
+        else {  
+        TARGET          = qt-dab-qt6-6.9
+        }
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -485,6 +490,13 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit
+	equals (QT_MAJOR_VERSION, 5) {
+        TARGET          = qt-dab64-qt5-6.9
+        }
+        else {  
+        TARGET          = qt-dab64-qt6-6.9
+        }
+
 	TARGET		= qt-dab64-6.9
 	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
