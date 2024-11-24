@@ -299,9 +299,15 @@ void	ensembleHandler::reset	() {
 	ensembleList. resize (0);
 }
 
+static inline
+bool	isAudio (uint32_t v) {
+	return (v & 0xFF0000) == 0;
+}
+
 void	ensembleHandler::updateList	() {
 int currentRow	= 0;
-
+bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
+	                                        "audioServices_only", 1);
 	clearTable ();
 	if (ensembleMode == SHOW_ENSEMBLE) {
 	   this -> setHorizontalHeaderLabels (
@@ -309,6 +315,8 @@ int currentRow	= 0;
 	                                             tr ("fav"));
 	   for (uint16_t i = 0; i < ensembleList. size (); i ++) {
 	      bool toMark = false;
+	      if (audioOnly && !isAudio (ensembleList [i]. SId))
+	         continue;
 	      if (handlePresets)
 	         toMark = inFavorites (ensembleList [i]. name) >= 0;
 	      addRow (ensembleList [i]. name,

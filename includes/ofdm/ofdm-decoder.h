@@ -81,16 +81,14 @@ private:
 	int32_t		carriers;
 	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>	ibits;
-	std::vector<float>	offsetVector;
-	std::vector<float>	squaredVector;
-	std::vector<DABFLOAT>	amplitudeLevel;
 	std::vector<Complex>	carrierCenters;
-	std::vector<DABFLOAT>	sigmaLevel;
 	std::vector<Complex>	conjVector;
 	std::vector<Complex>	fft_buffer;
 	
+	std::vector<float>	offsetVector;
+	std::vector<DABFLOAT>	amplitudeLevel;
 
-	phaseTable	*phasetable;
+//	phaseTable	*phasetable;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;

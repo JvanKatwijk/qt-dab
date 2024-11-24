@@ -41,7 +41,7 @@
 
 #define DEVICEWIDGET_BUTTON     QString ("devicewidgetButton")
 #define PORT_SELECTOR           QString ("portSelector")
-#define DLTEXT_BUTTON           QString ("dlTextButton")
+#define	DLTEXT_BUTTON		QString ("dlTextButton")
 #define RESET_BUTTON            QString ("resetButton")
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
 
@@ -64,10 +64,9 @@ static struct {
 	QString	decoderName;
 	int	decoderKey;
 } decoders []  = {
-{"decoder_a", DEFAULT_DECODER},
-{"decoder_b", ALT1_DECODER},
-{"decoder_c", ALT2_DECODER},
-{"decoder_d", ALT3_DECODER},
+{"decoder_a", DECODER_1},
+{"decoder_b", DECODER_2},
+{"decoder_c", DECODER_3},
 {"", 0}
 };
 
@@ -179,6 +178,9 @@ int	index_for_key (int key) {
 	b =  value_i (dabSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 	this	-> dxSelector -> setChecked (b);
 
+	b = value_i (dabSettings, CONFIG_HANDLER, "audioServices_only", 1);
+	this	-> audioServices_only -> setChecked (b);
+
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
@@ -187,7 +189,7 @@ int	index_for_key (int key) {
 #endif
 
 	int k	= value_i (dabSettings, CONFIG_HANDLER,
-	                                 "decoders", DEFAULT_DECODER);
+	                                 "decoders", DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	
 	int v = value_i (dabSettings, CONFIG_HANDLER,
@@ -355,6 +357,14 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
+	connect (audioServices_only, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_audioServices_only);
+	connect (dxSelector, &QCheckBox::stateChanged,
+	         myRadioInterface, &RadioInterface::handle_dxSelector);
+	connect (correlationSelector, &QCheckBox::stateChanged,
+	         myRadioInterface, &RadioInterface::handle_correlationSelector);
+//
+//	second line
 	int upload = value_i (dabSettings, CONFIG_HANDLER,
 	                              "UPLOAD_ENABLED", 0);
 	if (upload != 0)
@@ -366,7 +376,7 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::handle_LoggerButton);
 //	the epg2xmlSelector is just polled, no need to react on an event
 
-//	second line
+//	third line
 	connect (new_tiiMode_selector, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_tii_detectorMode);
 
@@ -376,14 +386,14 @@ void	configHandler::set_connections () {
 	connect (onTop, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_onTop);
 //
-//	third line
+//	fourthline
 //	here we expect the close without asking
 	connect (epg_selector, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_epgSelector);
 	connect (localBrowserSelector, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_localBrowser);
 //
-//	fourth line
+//	fifth line
 	connect (dcRemovalSelector, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_dcRemovalSelector);
 //	
@@ -404,10 +414,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_localTransmitterSelector);
 //
 //	botton row
-	connect (dxSelector, &QCheckBox::stateChanged,
-	         myRadioInterface, &RadioInterface::handle_dxSelector);
-	connect (correlationSelector, &QCheckBox::stateChanged,
-	         myRadioInterface, &RadioInterface::handle_correlationSelector);
 	connect (decoderSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	         &QComboBox::textActivated,
@@ -945,3 +951,11 @@ QString dir	=
 	   store (dabSettings, CONFIG_HANDLER, "filePath", dir);
 }
 
+void	configHandler::handle_audioServices_only	(int state) {
+uint8_t x	= audioServices_only -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
+}
+
+bool	configHandler::get_audioServices_only () {
+	return audioServices_only -> isChecked ();
+}

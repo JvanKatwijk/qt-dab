@@ -88,13 +88,13 @@
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 	this	-> correlationOrder	= 
-	         value_i (dabSettings , CONFIG_HANDLER,
+	         value_i (dabSettings, CONFIG_HANDLER,
 	                             S_CORRELATION_ORDER, 0) != 0;
 	this	-> dxMode		=
-	         value_i (dabSettings , CONFIG_HANDLER, S_DX_MODE, 0) != 0;
+	         value_i (dabSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
-	                                           "decoders", DEFAULT_DECODER); 
+	                                           "decoders", DECODER_1); 
 
 	this	-> eti_on		= false;
 	ofdmBuffer. resize (2 * T_s);

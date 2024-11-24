@@ -28,7 +28,6 @@
 #include	<vector>
 #include	"ofdm-decoder.h"
 #include	"radio.h"
-#include	"phasetable.h"
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"freq-interleaver.h"
@@ -78,19 +77,15 @@ float Length	= jan_abs (V);
 	this	-> T_g			= T_s - T_u;
 	phaseReference			.resize (T_u);
 	offsetVector. resize (T_u);
-	squaredVector. resize (T_u);
 	amplitudeLevel. resize (T_u);
 	carrierCenters. resize (T_u);
-	sigmaLevel. resize (T_u);
 	for (uint32_t i = 0; i < offsetVector. size (); i ++) {
-           offsetVector [i] = 0;
-	   squaredVector [i] = 0;
+	   offsetVector [i] = 0;
 	   amplitudeLevel [i] = 0;
-	   sigmaLevel [i] = 0;
 	}
 
 	iqSelector			= SHOW_DECODED;
-	decoder				= DEFAULT_DECODER;
+	decoder				= DECODER_1;
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -102,8 +97,6 @@ void	ofdmDecoder::stop ()	{
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i <  (int)(offsetVector. size ()); i ++) {
 	   offsetVector		[i] = 0;
-	   squaredVector	[i] = 0;
-	   sigmaLevel 		[i] = 0;
 	   amplitudeLevel	[i] = 0;
 	   carrierCenters	[i] = Complex (1, 1);
 	}
@@ -199,7 +192,6 @@ DABFLOAT Alpha = 0.05f;
 	   offsetVector [index] = 
 	           compute_avg (offsetVector [index], phaseOffset, Alpha);
 
-	   float phaseErr	= offsetVector [index] - fftPhase;
 	   amplitudeLevel [index]	= 
 	            compute_avg ( amplitudeLevel [index], ab1, Alpha);
 	   carrierCenters [index] =
@@ -212,50 +204,36 @@ DABFLOAT Alpha = 0.05f;
 	   DABFLOAT	weight_y = 0;
 	   
 	   switch (decoder) {
-	      case ALT2_DECODER:
+//	most simple version
+	      case DECODER_1:
+	      default:
+	         weight_x	= MAX_VITERBI / ab1;
+	         weight_y	= MAX_VITERBI / ab1;
+	      break;
+
+	      case DECODER_2:
+//	same as previous one, however, with a filtered "centerpoint"
+	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
+	         weight_x	= MAX_VITERBI / base;
+	         weight_y	= MAX_VITERBI / base;
+	         break;
+	      }
+
+	      case DECODER_3:
 //	here we look at the error of the sample wrt a filtered "centerpoint"
 //	and give the X and Y the error as penalty
 //	works actually as best of the three
 	      {	 Complex   base		= carrierCenters [index];
 	         DABFLOAT base_x	= real (base);
 	         DABFLOAT base_y	= imag (base);
-	         DABFLOAT err_x	=
-	                 jan_abs (base_x - jan_abs (real (r1))) / base_x;
-	         DABFLOAT err_y	=
-	                 jan_abs (base_y - jan_abs (imag (r1))) / base_y;
-	         weight_x	= (1 - err_x);
-	         weight_y	= (1 - err_y);
-	         break;
-	      }
-//
-//	assuming that for small angles x = sin (x)
-	      case ALT1_DECODER:
-	      {	 Complex   base		= carrierCenters [index];
-	         DABFLOAT  avgError	=
-	                 (M_PI_4 - abs (arg (r1 * Complex (1, -1))))/ M_PI_4;
-	         weight_x	= jan_abs (real (r1)) / (1 - avgError);
-	         weight_y	= jan_abs (imag (r1)) / (1 - avgError);
-	         break;
-	      }
-
-//	most simple version
-	      case DEFAULT_DECODER:
-	      default:
-	         weight_x	= jan_abs (real (r1)) / ab1;
-	         weight_y	= jan_abs (imag (r1)) / ab1;
-	      break;
-
-	      case ALT3_DECODER:
-//	same as previous one, however, with a filtered "centerpoint"
-	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
-	         weight_x	= jan_abs (real (r1)) / base;
-	         weight_y	= jan_abs (imag (r1)) / base;
+	         weight_x		= MAX_VITERBI / base_x;
+	         weight_y		= MAX_VITERBI / base_y;
 	         break;
 	      }
 	   }
-	   ibits [i]	= -sign (real (r1)) * weight_x * MAX_VITERBI; 
+	   ibits [i]	= -sign (real (r1)) * jan_abs (real (r1)) * weight_x; 
 	   ibits [carriers + i]	=
-	                  -sign (imag (r1)) * weight_y * MAX_VITERBI; 
+	                  -sign (imag (r1)) * jan_abs (imag (r1)) * weight_y; 
 	}
 
 //	From time to time we show the constellation of symbol 2.

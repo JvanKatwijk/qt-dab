@@ -86,6 +86,7 @@ public:
 	void	enable_loadLib		();
 	bool	get_correlationSelector	();
 	bool	get_dxSelector		();
+	bool	get_audioServices_only	();
 
 private:
 	RadioInterface	*myRadioInterface;
@@ -136,6 +137,7 @@ private slots:
 	void	handle_saveTransmittersSelector	(int);
 	void	handle_tiiThreshold		(int);
 	void	handle_pathButton		();
+	void	handle_audioServices_only	(int);
 
 signals:
 	void	selectDecoder		(int);

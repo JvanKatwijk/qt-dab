@@ -579,6 +579,7 @@ QString h;
 	if (value_i (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   techWindow_p -> show ();
 
+	dynamicLabel	-> setTextFormat (Qt::RichText);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //
@@ -716,7 +717,8 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 	   if (theSCANHandler. active ())
 	      theSCANHandler. addService (channel. channelName);
 	   if (theSCANHandler. active () && !theSCANHandler. scan_to_data ()) {
-	      theScanlistHandler. addElement (channel. channelName,
+	      if (SId & 0XF0000 == 0)	// only audio
+	         theScanlistHandler. addElement (channel. channelName,
 	                                              serviceName);
 	   }
 	}

@@ -82,10 +82,9 @@ class techData;
 //#include	"ui_config-helper.h"
 class	configHandler;
 
-#define DEFAULT_DECODER    0100
-#define ALT1_DECODER    0200
-#define ALT2_DECODER    0300
-#define ALT3_DECODER    0400
+#define DECODER_1    0100
+#define DECODER_2    0200
+#define DECODER_3    0300
 
 
 #define SCAN_BUTTON		QString ("scanButton")
