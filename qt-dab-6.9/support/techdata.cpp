@@ -221,10 +221,12 @@ void	techData::show_subChId		(int subChId) {
 }
 
 void	techData::show_language		(int l) {
+	language	-> setAlignment (Qt::AlignCenter);
 	language	-> setText (getLanguage (l));
 }
 
 void	techData::show_ASCTy		(int a) {
+	ASCTy	-> setAlignment (Qt::AlignCenter);
 	ASCTy	-> setText (a == 077 ? "DAB+"  : "DAB");
 	if (a == 077) {
 	   rsError_display	-> show ();
@@ -238,10 +240,12 @@ void	techData::show_ASCTy		(int a) {
 
 void	techData::show_uep		(int shortForm, int protLevel) {
 	QString protL = getProtectionLevel (shortForm, protLevel);
+	uepField	-> setAlignment (Qt::AlignCenter);
 	uepField	-> setText (protL);
 }
 
 void	techData::show_codeRate		(int shortForm, int protLevel) {
+	codeRate -> setAlignment (Qt::AlignCenter);
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 

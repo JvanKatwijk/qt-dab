@@ -284,6 +284,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QLabel" name="syncLabel">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for the time synchronization, if green, it looks like time syncing is OK, i.e. the software is able to identigy the start of the DAB frames in the incoming sample stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>synced</string>
            </property>
@@ -351,6 +354,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
         <widget class="QLabel" name="channelDisplay">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>Channel</string>
          </property>
@@ -359,7 +365,7 @@
        <item>
         <widget class="QLCDNumber" name="frequencyDisplay">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Coarse frequency correction, The software computed an estimate of the frequency offset by lokking at phasedifferences in the samples in the time domain. Based on the difference found a correction factor is applied to the input stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency of the currently selected channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>
@@ -386,7 +392,7 @@
        <item row="0" column="1">
         <widget class="QLCDNumber" name="coarse_correctorDisplay">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fine frequency correction, computed from the phase difference between the cyclic prefix and the corresponding elements in the ofdm symbol.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overall frequency correction, consisting of two parts, a fine correction, based on the phase difference between the timedomain samples in the cyclic prefix and the corresponding elements in the ofdm symbol (limited to 500 Hz) and the coarse correction, computed by correlation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>
@@ -411,7 +417,7 @@
           </font>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequeny offset, the computed frequency error, after applying the estimated frequency correction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequeny offset, the computed frequency error that is measured after applying the estimated frequency correction. Compuation is by looking at the phase difference in elements in subsequent DAB frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>
@@ -431,7 +437,7 @@
        <item row="2" column="1">
         <widget class="QLCDNumber" name="snrDisplay">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SNR, i.e. Signal Noise ratio, compoted from the difference in signal strength between the datablocks and the nullperiod.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SNR, i.e. Signal Noise ratio, computed from the difference in signal strength between the datablocks and the nullperiod.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>
@@ -500,6 +506,9 @@
        </item>
        <item row="5" column="1">
         <widget class="QLCDNumber" name="dcOffset_display">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The DC offset in the incoming signal, computed by looking at the average amplitude of both the I and the Q component of the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>
          </property>
@@ -543,7 +552,7 @@
        <item row="7" column="1">
         <widget class="QLCDNumber" name="ber_display">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bit error rate, i.e. the fraction of bits that are erroneous before applying Viterbi&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bit error rate, i.e. the fraction of bits that are erroneous before applying Viterbi, i.e. lower is better.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>

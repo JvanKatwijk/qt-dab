@@ -152,8 +152,8 @@ static float f_n = 1;
 static float f_d = 1;
 	for (int i = 0; i < carriers; i ++) {
 	   Complex ss	= v [T_u / 2 - carriers / 2 + i];
-	   float ab	= abs (ss) / sqrt (2);
-	   f_n		=  0.99 * f_n + 0.01 * (abs (ss) * abs (ss));
+	   float ab	= jan_abs (ss) / sqrt (2);
+	   f_n		=  0.99 * f_n + 0.01 * (jan_abs (ss) * jan_abs (ss));
 	   float R	= abs (abs (real (ss)) - ab);
 	   float I	= abs (abs (imag (ss)) - ab);
 	   f_d		= 0.99 * f_d + 0.01 * (R * R + I * I);
@@ -229,7 +229,6 @@ float	new_sum	= 0.0f;
 	   DABFLOAT	weight_x = 0;
 	   DABFLOAT	weight_y = 0;
 	   float	weight	= 0;
-	   
 
 	   const float realLevelDistPerBin =
                   (std::abs (real (r1)) - amplitudeVector [index] * M_SQRT1_2);
@@ -243,17 +242,20 @@ float	new_sum	= 0.0f;
 	   meanSigmaSqPerBin [index] =
 	           compute_avg (meanSigmaSqPerBin [index], sigmaSqPerBin, Alpha);
 	   meanPowerPerBin [index] =
-	               compute_avg (meanPowerPerBin [index], ab1 * ab1, Alpha);
+	           compute_avg (meanPowerPerBin [index], ab1 * ab1, Alpha);
 
 	   switch (decoder) {
+//
+//	Decoder 1 is the most simple one,  just compute the relative strength of
+//	x and y coordinate, related to a fictitious midddle
 	      case DECODER_1:
-	      default:
+	      default:		// should not happen
 	         weight_x	= MAX_VITERBI / ab1;
 	         weight_y	= MAX_VITERBI / ab1;
 	         ibits [i]	= -sign (real (r1)) *
-	                                jan_abs (real (r1)) * weight_x; 
+	                                abs (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= -sign (imag (r1)) *
-	                                jan_abs (imag (r1)) * weight_y; 
+	                                abs (imag (r1)) * weight_y; 
 	      break;
 
 	      case DECODER_2:
@@ -264,24 +266,26 @@ float	new_sum	= 0.0f;
 	         weight_x	= MAX_VITERBI / real (base);
 	         weight_y	= MAX_VITERBI / imag (base);
 	         ibits [i]	= -sign (real (r1)) *
-	                                jan_abs (real (r1)) * weight_x; 
+	                                abs (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= -sign (imag (r1)) *
-	                                jan_abs (imag (r1)) * weight_y; 
+	                                abs (imag (r1)) * weight_y; 
 	         break;
 	      }
-
+//
+//	decoders 3, 4 and 5 are derived from old-dab's version
 	      case  DECODER_3: { //	log likelihood ratio
 	         float sigma = amplitudeVector [index] /
 	                                  meanSigmaSqPerBin [index];
-	         new_sum += sigma * abs(r1);
-	         weight_x = weight_y = -140 * sigma * carriers / sum;
+	         new_sum += sigma * abs (r1);
+	         weight_x = weight_y = -100 * sigma * carriers / sum;
 	         ibits [i]		= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
 	      }
 	      break;
 
 	      case DECODER_4:
-	         r1 = r1 * abs (phaseReference [index]); // input power
+	         r1 = r1 * abs (fft_buffer [index]); // input power
+//	         r1 = r1 * abs (phaseReference [index]); // input power
 	         r1 = r1 / (meanSigmaSqPerBin [index] *
 	                       meanNullPower [index] / meanPowerPerBin [index] + 2);
 	         new_sum += abs (r1);
@@ -297,7 +301,6 @@ float	new_sum	= 0.0f;
 	         ibits [i]	= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
 	         break;
-
 	   }
 	}
 

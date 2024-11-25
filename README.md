@@ -28,7 +28,7 @@ and Qt6.
 
  * Qt_DAB 6.9 has - apart from the possibility to use either Qt5 or Qt6 - a few modifications: The strength meters moved from the "technical Widget" to the main widget, as did the "mot" indicator.
 
- * the Spectrum widget has a "BER" indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of decoding,the picture below show a value of 0.009, indicating that (on average) 9 bits per 1000 were wrong and needed correction.
+ * the Spectrum widget has a "BER" indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of decoding, the picture below show a value of 0.012, indicating that (on average) 12 bits per 1000 were wrong and needed correction when decoding the FIC data.
 
  * the Quality indicator on the spectrum widget shows no the Modulation quality as
 defined in ETSI TR 101 290 V1.3.1.

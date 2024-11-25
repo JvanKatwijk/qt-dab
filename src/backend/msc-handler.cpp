@@ -120,7 +120,7 @@ void	mscHandler::process_Msc	(std::vector<Complex> &b,
 
 void    mscHandler::run () {
 int	currentBlock	= 0;
-Complex fft_buffer [params. get_T_u()];
+Complex fft_buffer [params. get_T_u ()];
 Complex conjVector [params. get_T_u ()];
 int	carriers	= params. get_carriers ();
 
@@ -243,17 +243,6 @@ bool	mscHandler::set_Channel (descriptorType &d,
 	                         FILE *dump, int flag) {
 	fprintf (stderr, "going to open %s\n",
 	                d. serviceName. toLatin1 (). data ());
-//	locker. lock();
-//	for (int i = 0; i < theBackends. size (); i ++) {
-//	   if (d -> subchId == theBackends. at (i) -> subChId) {
-//	      fprintf (stderr, "The service is already running\n");
-//	      theBackends. at (i) -> stopRunning ();
-//	      delete theBackends. at (i);
-//	      theBackends. erase (theBackends. begin () + i);
-//	      break;
-//	   }
-//	}
-//	locker. unlock ();
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     theLogger,
 	                                     &d,

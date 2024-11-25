@@ -61,7 +61,7 @@
        <item>
         <widget class="smallPushButton" name="audioSelectButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation). Note that if no audio channels for the Qt_audio driver can be found, the default setting of portaudio is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>audio</string>
@@ -543,6 +543,9 @@
      </item>
      <item row="0" column="0">
       <widget class="QCheckBox" name="audioServices_only">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In most cases the interesting services are the audio services. If enabled, only the audio services are shown in the device list.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>audioservices</string>
        </property>
