@@ -85,6 +85,9 @@ class	configHandler;
 #define DECODER_1    0100
 #define DECODER_2    0200
 #define DECODER_3    0300
+#define DECODER_4    0400
+#define DECODER_5    0500
+#define DECODER_6    0600
 
 
 #define SCAN_BUTTON		QString ("scanButton")
@@ -270,10 +273,6 @@ private:
 	std::atomic<bool>	running;
 	deviceHandler		*inputDevice_p;
 //
-//	for the peaklevel indicator
-//	float			peakLeftDamped;
-//	float			peakRightDamped;
-
 	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut_p;
@@ -400,6 +399,7 @@ private:
 	void			stop_scan_single	();
 	void			stop_scan_continuous	();
 	void			peakLevel	(const std::vector<float> &);
+
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();

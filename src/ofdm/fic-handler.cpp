@@ -193,20 +193,21 @@ int16_t	inputCount	= 0;
 //
 //	and compute the errors
 	for (int i = 0; i < 3072 + 24; i ++) {
-	   if (punctureTable [i])
+	   if (punctureTable [i]) {
 	      if ((checkBlock [i] == 0) && viterbiBlock [i] >= 0)
 	         ficErrors ++;
 	      else
 	      if ((checkBlock [i] != 0) && viterbiBlock [i] < 0)
 	         ficErrors ++;
+	   }
 	}
 	ficBits		+= FIC_BLOCKSIZE + FIC_RESIDU;
 	ficBlocks ++;
 	if (ficBlocks >= 40) {	// 4 blocks per frame, app 10 frames per sec
 	   emit show_ficBER ((float)ficErrors / ficBits);
 	   ficBlocks	 = 0;
-	   ficErrors	 /= 4;
-	   ficBits	 /= 4;
+	   ficErrors	 /= 2;
+	   ficBits	 /= 2;
 	}
 /**
   *	if everything worked as planned, we now have a

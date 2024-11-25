@@ -322,7 +322,11 @@ int	snrCount	= 0;
 	         }
 	      }
 	      sampleCount	+= T_u;
-	      theOfdmDecoder. processBlock_0 (ofdmBuffer);
+	      bool frame_with_TII = 
+	                   (p -> dabMode == 1) &&
+	                     (theFicHandler. get_CIFcount () & 0x7) >= 4;
+	      theOfdmDecoder. processBlock_0 (ofdmBuffer, frame_with_TII);
+	      
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)
 	         theMscHandler.  processBlock_0 (ofdmBuffer. data());
@@ -446,7 +450,7 @@ int	snrCount	= 0;
 	               show_tii_spectrum ();
 	               std::vector<int16_t> resVec =
 	                              theTIIDetector. processNULL (dxMode);
-	               for (int i = 0; i < resVec. size (); i ++) {
+	               for (int i = 0; i < (int)(resVec. size ()); i ++) {
 	                  show_tii (resVec [i], i);
 	               }
 	               tii_counter = 0;

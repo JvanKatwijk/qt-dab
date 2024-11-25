@@ -7,22 +7,42 @@
 -------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
-Qt5 to Qt6
+Qt5 to Qt6 Qt5-DAB-6.9 and (Qt6-DAB-6.9)
 ------------------------------------------------------------------------
 
 Since Qt6 is there for quite a while, it is inevitable to move over
-to Qt6. While AppImages are built with "old" library versions,
-AppImage is and will be compiled with Qt5.
+to Qt6. Unfortunately,  AppImages are built with "old" library versions,
+and AppImages are and will be compiled with Qt5 for a while.
 
-To proceed, the current version  is parametersized
-on the Qt version, and will compile with both Qt5 and Qt6 (with qwt 6.20)
-Parameterization will remain until the AppImages can be made with Qt6.
+The qwt ibrary version - provided by the Fedora system - is for both the Qt5 and
+Qt6 versions 6.20, the Qt6 version Qt6.8.
 
 While the Qt6 based version for Linux works fine, there are some issues
-with the windows version, probably caused by problems with the required dll's
-The Windows versions are compiled with Qt5 still.
+with the Windows versions, probably caused by problems with some
+incomaptible dll's.
+The windows versions for Qt_DAB 6.9 are therefore still compiled with
+Qt4 (as is the AppImage).
+
+The sourcetree contains the sources for the 6.9 Version, both compilable using Qt5
+and Qt6.
+
+ * Qt_DAB 6.9 has - apart from the possibility to use either Qt5 or Qt6 - a few modifications: The strength meters moved from the "technical Widget" to the main widget, as did the "mot" indicator.
+
+ * the Spectrum widget has a "BER" indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of decoding,the picture below show a value of 0.009, indicating that (on average) 9 bits per 1000 were wrong and needed correction.
+
+ * the Quality indicator on the spectrum widget shows no the Modulation quality as
+defined in ETSI TR 101 290 V1.3.1.
+
+ * having the "BER" as measure for the quality of the decoding, some more experiments with decoders (i.e. the mapping from the result of the DPSK in the carriers  in the FFT bins to bits). Three of them are based on work of others (see the tooltip).
+
+ * There were questions why not to restrict the visible services in the list to audioservices only. The configuration and control widget has a selector for that.
+
+ * Since there was an additional selector on the configuration and control widget, the layout of the widget chanhed a little.
+
+ * Audio output handling using Qt-Audio has now different implementations for use under Qt5 or Qt6.
 
 
+![6.9](/res/read_me/qt-dab-6.9.png?raw=true)
 ------------------------------------------------------------------------
 About Qt-DAB-6.8
 -------------------------------------------------------------------------

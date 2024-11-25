@@ -580,6 +580,8 @@ QString h;
 	   techWindow_p -> show ();
 
 	dynamicLabel	-> setTextFormat (Qt::RichText);
+	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
+	dynamicLabel	-> setOpenExternalLinks(true);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //
@@ -717,7 +719,7 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 	   if (theSCANHandler. active ())
 	      theSCANHandler. addService (channel. channelName);
 	   if (theSCANHandler. active () && !theSCANHandler. scan_to_data ()) {
-	      if (SId & 0XF0000 == 0)	// only audio
+	      if ((SId & 0XF0000) == 0)	// only audio
 	         theScanlistHandler. addElement (channel. channelName,
 	                                              serviceName);
 	   }
@@ -1188,7 +1190,7 @@ void	RadioInterface::peakLevel (const std::vector<float> &samples) {
 float	absPeakLeft	= 0;
 float	absPeakRight	= 0;
 	
-	for (int i = 0; i < samples. size () / 2; i ++) {
+	for (int i = 0; i < (int)(samples. size ()) / 2; i ++) {
 	   const float absLeft  = std::abs (samples [2 * i]);
 	   const float absRight = std::abs (samples [2 * i + 1]);
 	   if (absLeft  > absPeakLeft)  
@@ -1373,6 +1375,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice_p = new deviceHandler ();
 	   return;		// nothing will happen
 	}
+
 	doStart_direct ();		// will set running
 }
 
@@ -1518,6 +1521,7 @@ void	RadioInterface::set_synced	(bool b) {
 }
 //
 //	called from the PAD handler
+
 
 void	RadioInterface::show_label	(const QString &s) {
 #ifdef	HAVE_PLUTO_RXTX

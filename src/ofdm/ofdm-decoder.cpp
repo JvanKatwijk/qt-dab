@@ -41,6 +41,7 @@
   *	carriers and map them on (soft) bits
   */
 
+#define	Alpha	0.05f
 static inline
 Complex	normalize (const Complex &V) {
 float Length	= jan_abs (V);
@@ -73,19 +74,29 @@ float Length	= jan_abs (V);
 	this	-> nrBlocks		= params. get_L		();
 	this	-> carriers		= params. get_carriers	();
 
-	repetitionCounter		= 8;
-	this	-> T_g			= T_s - T_u;
-	phaseReference			.resize (T_u);
-	offsetVector. resize (T_u);
-	amplitudeLevel. resize (T_u);
-	carrierCenters. resize (T_u);
-	for (uint32_t i = 0; i < offsetVector. size (); i ++) {
-	   offsetVector [i] = 0;
-	   amplitudeLevel [i] = 0;
+	repetitionCounter	= 8;
+	this	-> T_g		= T_s - T_u;
+	phaseReference		.resize (T_u);
+	offsetVector.		resize (T_u);
+	amplitudeVector.	resize (T_u);
+	carrierCenters.		resize (T_u);
+	meanLevelPerBin.	resize (T_u);
+	meanSigmaSqPerBin.	resize (T_u); 
+	meanPowerPerBin.	resize (T_u);
+	meanNullPower.		resize (T_u);
+
+	for (uint32_t i = 0; i < T_u; i ++) {
+	   meanLevelPerBin	[i] = 0;
+	   meanSigmaSqPerBin	[i] = 0;
+	   offsetVector		[i] = 0;
+	   amplitudeVector	[i] = 0;
+	   meanPowerPerBin	[i] = 0;
+	   meanNullPower	[i] = 0;
 	}
 
-	iqSelector			= SHOW_DECODED;
-	decoder				= DECODER_1;
+	sum			= 1;
+	iqSelector		= SHOW_DECODED;
+	decoder			= DECODER_1;
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -95,16 +106,20 @@ void	ofdmDecoder::stop ()	{
 }
 
 void	ofdmDecoder::reset ()	{
-	for (int i = 0; i <  (int)(offsetVector. size ()); i ++) {
+	for (int i = 0; i <  T_u; i ++) {
+	   meanLevelPerBin	[i] = 0;
+	   meanSigmaSqPerBin	[i] = 0;
 	   offsetVector		[i] = 0;
-	   amplitudeLevel	[i] = 0;
+	   amplitudeVector	[i] = 0;
+	   meanPowerPerBin	[i] = 0;
 	   carrierCenters	[i] = Complex (1, 1);
+	   meanNullPower	[i] = 0;
 	}
 }
 //
 //
 void	ofdmDecoder::processBlock_0 (
-	                std::vector <Complex> buffer) {
+	                std::vector <Complex> buffer, bool withTII) {
 	fft. fft (buffer);
 /**
   *	we are now in the frequency domain, and we keep the carriers
@@ -112,6 +127,17 @@ void	ofdmDecoder::processBlock_0 (
   */
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
+	if (withTII)
+	   return;
+	
+	for (int i = 0; i < carriers; i ++) {
+	   int16_t	index	= myMapper.  mapIn (i);
+	   if (index < 0) 
+	      index += T_u;
+	   meanNullPower [index] =
+	      compute_avg (meanNullPower [index],
+	                       abs (phaseReference [index]), Alpha);
+	}
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -158,7 +184,7 @@ int	sign (DABFLOAT x) {
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &ibits) {
-DABFLOAT Alpha = 0.05f;
+float	new_sum	= 0.0f;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
@@ -191,9 +217,9 @@ DABFLOAT Alpha = 0.05f;
 	   DABFLOAT phaseOffset	= M_PI_4 - fftPhase;
 	   offsetVector [index] = 
 	           compute_avg (offsetVector [index], phaseOffset, Alpha);
-
-	   amplitudeLevel [index]	= 
-	            compute_avg ( amplitudeLevel [index], ab1, Alpha);
+//
+	   amplitudeVector [index]	= 
+	            compute_avg ( amplitudeVector [index], ab1, Alpha);
 	   carrierCenters [index] =
 	            Complex (
 	                    compute_avg (real (carrierCenters [index]),
@@ -202,40 +228,80 @@ DABFLOAT Alpha = 0.05f;
 	                                         abs (imag (r1)), Alpha));
 	   DABFLOAT	weight_x = 0;
 	   DABFLOAT	weight_y = 0;
+	   float	weight	= 0;
 	   
+
+	   const float realLevelDistPerBin =
+                  (std::abs (real (r1)) - amplitudeVector [index] * M_SQRT1_2);
+	   const float imagLevelDistPerBin =
+                  (std::abs (imag (r1)) - amplitudeVector [index] * M_SQRT1_2);
+
+	   const float sigmaSqPerBin =
+                   realLevelDistPerBin * realLevelDistPerBin +
+                   imagLevelDistPerBin * imagLevelDistPerBin;
+	
+	   meanSigmaSqPerBin [index] =
+	           compute_avg (meanSigmaSqPerBin [index], sigmaSqPerBin, Alpha);
+	   meanPowerPerBin [index] =
+	               compute_avg (meanPowerPerBin [index], ab1 * ab1, Alpha);
+
 	   switch (decoder) {
-//	most simple version
 	      case DECODER_1:
 	      default:
 	         weight_x	= MAX_VITERBI / ab1;
 	         weight_y	= MAX_VITERBI / ab1;
+	         ibits [i]	= -sign (real (r1)) *
+	                                jan_abs (real (r1)) * weight_x; 
+	         ibits [carriers + i]	= -sign (imag (r1)) *
+	                                jan_abs (imag (r1)) * weight_y; 
 	      break;
 
 	      case DECODER_2:
-//	same as previous one, however, with a filtered "centerpoint"
-	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
-	         weight_x	= MAX_VITERBI / base;
-	         weight_y	= MAX_VITERBI / base;
-	         break;
-	      }
-
-	      case DECODER_3:
 //	here we look at the error of the sample wrt a filtered "centerpoint"
 //	and give the X and Y the error as penalty
 //	works actually as best of the three
-	      {	 Complex   base		= carrierCenters [index];
-	         DABFLOAT base_x	= real (base);
-	         DABFLOAT base_y	= imag (base);
-	         weight_x		= MAX_VITERBI / base_x;
-	         weight_y		= MAX_VITERBI / base_y;
+	      {	 Complex   base	= carrierCenters [index];
+	         weight_x	= MAX_VITERBI / real (base);
+	         weight_y	= MAX_VITERBI / imag (base);
+	         ibits [i]	= -sign (real (r1)) *
+	                                jan_abs (real (r1)) * weight_x; 
+	         ibits [carriers + i]	= -sign (imag (r1)) *
+	                                jan_abs (imag (r1)) * weight_y; 
 	         break;
 	      }
+
+	      case  DECODER_3: { //	log likelihood ratio
+	         float sigma = amplitudeVector [index] /
+	                                  meanSigmaSqPerBin [index];
+	         new_sum += sigma * abs(r1);
+	         weight_x = weight_y = -140 * sigma * carriers / sum;
+	         ibits [i]		= (real (r1)) * weight_x; 
+	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
+	      }
+	      break;
+
+	      case DECODER_4:
+	         r1 = r1 * abs (phaseReference [index]); // input power
+	         r1 = r1 / (meanSigmaSqPerBin [index] *
+	                       meanNullPower [index] / meanPowerPerBin [index] + 2);
+	         new_sum += abs (r1);
+	         weight_x = weight_y = -140 * carriers / sum;
+	         ibits [i]	= (real (r1)) * weight_x; 
+	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
+	         break;
+
+	      case DECODER_5:
+	         r1 = r1 * abs (phaseReference [index]); // input power
+	         new_sum += abs (r1);
+	         weight_x = weight_y = -140 * carriers / sum;
+	         ibits [i]	= (real (r1)) * weight_x; 
+	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
+	         break;
+
 	   }
-	   ibits [i]	= -sign (real (r1)) * jan_abs (real (r1)) * weight_x; 
-	   ibits [carriers + i]	=
-	                  -sign (imag (r1)) * jan_abs (imag (r1)) * weight_y; 
 	}
 
+	sum = new_sum;
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {

@@ -52,7 +52,7 @@ public:
 	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
-	void	processBlock_0		(std::vector<Complex >);
+	void	processBlock_0		(std::vector<Complex>, bool);
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
 	                                 std::vector<int16_t> &);
@@ -86,8 +86,13 @@ private:
 	std::vector<Complex>	fft_buffer;
 	
 	std::vector<float>	offsetVector;
-	std::vector<DABFLOAT>	amplitudeLevel;
+	std::vector<float>	amplitudeVector;
+	std::vector<float>	meanLevelPerBin;
+        std::vector<float>	meanSigmaSqPerBin;
+	std::vector<float>	meanPowerPerBin;
+	std::vector<float>	meanNullPower;
 
+	float		sum;
 //	phaseTable	*phasetable;
 	int		iqSelector;
 	int		decoder;
