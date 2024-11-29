@@ -151,7 +151,8 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/freqsyncer.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
-	   ../includes/ofdm/tii-detector.h \
+	   ../includes/ofdm/tii-detector-1.h \
+	   ../includes/ofdm/tii-detector-2.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
@@ -295,7 +296,8 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/freqsyncer.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
-	   ../src/ofdm/tii-detector.cpp \
+	   ../src/ofdm/tii-detector-1.cpp \
+	   ../src/ofdm/tii-detector-2.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
@@ -515,20 +517,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab-qt5-6.9V3
-#	}
-#	else {
-#	   TARGET		= qt-dab-qt6-6.9V3
-#	}
-#	CONFIG		+= dabstick-win-v3
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab-qt5-6.9
+	   TARGET		= qt-dab32-qt5-6.9V3
 	}
 	else {
-	   TARGET		= qt-dab-qt6-6.9
+	   TARGET		= qt-dab32-qt6-6.9V3
 	}
-	CONFIG		+= dabstick-win-v4
+	CONFIG		+= dabstick-win-v3
+#	equals (QT_MAJOR_VERSION, 5) {
+#	   TARGET		= qt-dab32-qt5-6.9
+#	}
+#	else {
+#	   TARGET		= qt-dab32-qt6-6.9
+#	}
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

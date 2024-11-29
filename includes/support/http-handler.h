@@ -33,48 +33,50 @@
 #include	<QString>
 #include	<QSettings>
 #include	"tii-mapper.h"
+#include	"cacheElement.h"
 class	RadioInterface;
 
 typedef struct {
-	uint8_t	type;
-	position coords;
-	QString transmitterName;
-	QString channelName;
-	QString	dateTime;
-	int	tiiValue;
-	int	snr;
-	int	distance;
-	int	azimuth;
-	float	power;
-	float	height;
+	uint8_t		type;
+	position	coords;
+	QString		transmitterName;
+	QString 	channelName;
+	QString		dateTime;
+	QString		ensemble;
+	QString		polarization;
+	QString		direction;
+	uint16_t	Eid;
+	uint8_t		mainId;
+	uint8_t		subId;
+	int		snr;
+	int		distance;
+	int		azimuth;
+	float		power;
+	float		altitude;
+	float		height;
 } httpData;
 
 class	httpHandler: public QObject {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
-	                         const QString &mapPort,
-	                         const QString &browserAddress,
+	                         const QString	&mapPort,
+	                         const QString	&browserAddress,
 	                         position	address,
-	                         const QString &saveName,
-	                         bool	autoBrowse,
-	                         QSettings	*setings = nullptr);
+	                         const QString	&saveName,
+	                         bool		autoBrowse,
+	                         QSettings	*settings = nullptr);
 		~httpHandler	();
 	void	start		();
 	void	stop		();
 	void	run		();
 	void	putData		(uint8_t, position);
 	void	putData		(uint8_t	type,
-	                         position	target,
-	                         QString	transmittername,
-	                         QString	channelName,
-	                         QString	dateTime,
-	                         int 		ttiValue,
-	                         int		snr,
-	                         int 		distance,
-	                         int 		azimuth,
-	                         float 		power,
-	                         float 		height);
+	                         struct transmitterDesc *theTr,
+	                         const QString & theTime,
+	                         const QString & channelName,
+	                         float snr);
+	
 private:
 	QSettings		*dabSettings;
 	FILE			*saveFile;

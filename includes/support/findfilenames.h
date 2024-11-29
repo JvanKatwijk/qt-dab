@@ -53,6 +53,7 @@ const	QString	findskipFile_fileName		();
 	QString findMaps_fileName		();
 	QString	find_eti_fileName		(const QString &, const QString &);
 	QString	find_xmlName			(const QString &, const QString &);
+	QString finddxDump_fileName		(const QString &);
 private:
 	QString	outputDialog			(QString saveDir,
 	                                         const QString &channel,

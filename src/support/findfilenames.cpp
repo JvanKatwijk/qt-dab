@@ -81,7 +81,6 @@ QString suggestedFileName;
 	return QDir::toNativeSeparators (fileName);
 }
 
-	                         
 FILE	*findfileNames::findContentDump_fileName (const QString &channel) {
 QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 
@@ -97,6 +96,14 @@ QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 
 	save_dirName (CONTENT_DIR, fileName);
 	return fileP;
+}
+
+QString	findfileNames::finddxDump_fileName (const QString &channel) {
+QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
+
+	if (fileName == "")
+	   return nullptr;
+	return fileName;
 }
 
 //
@@ -266,6 +273,7 @@ uint8_t t	= 0;
 	   fileName = suggestedFilename;
 	return fileName;
 }
+
 
 QString	findfileNames::basicPath	() {
 

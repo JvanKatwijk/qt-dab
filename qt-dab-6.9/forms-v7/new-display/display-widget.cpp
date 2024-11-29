@@ -442,9 +442,8 @@ void	displayWidget::show_cpuLoad	(float use) {
 void	displayWidget::show_transmitters (std::vector<transmitterDesc> &tr) {
 QString textList;
 	for (int i = 0; i < tr. size (); i ++) {
-	   int tiiValue		= tr [i]. tiiValue;
-	   uint16_t mainId	= tiiValue >> 8;
-	   uint16_t subId	= tiiValue & 0xFF;
+	   uint16_t mainId	= tr [i]. theTransmitter. mainId;
+	   uint16_t subId	= tr [i]. theTransmitter. subId;
 	   QString trId = QString ("(") + QString::number (mainId) +
 	                  " " + QString::number (subId) + ") ";
 	   textList. append (trId);

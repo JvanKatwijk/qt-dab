@@ -497,7 +497,6 @@ isEmpty(GITHASHSTRING) {
         TARGET          = qt-dab64-qt6-6.9
         }
 
-	TARGET		= qt-dab64-6.9
 	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

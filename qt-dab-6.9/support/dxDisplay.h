@@ -28,7 +28,7 @@
 #include	<QObject>
 #include	<QSettings>
 #include	<qwt_compass.h>
-
+#include	"cacheElement.h"
 class	RadioInterface;
 
 class	dxDisplay:public QFrame {
@@ -37,7 +37,11 @@ public:
 		dxDisplay	(RadioInterface *, QSettings *);
 		~dxDisplay	();
 	void	setChannel	(const QString &);
-	void	addRow		(const QString &, const QString &, bool, int);
+	void	addRow		(cacheElement *theTransmitter, bool);
+//	                        uint8_t, uint8_t, const QString &,
+//	                        const QString &, const QString &,
+//	                        float, int, float, float, int,
+//	                        int, const QString &, bool);
 	void	cleanUp		();
 	void	show		();
 	void	hide		();
@@ -47,6 +51,8 @@ private:
 	QTableWidget	*tableWidget;
 	QSettings	*dxSettings;
 	QwtCompass	*theDial;
+	QString		theChannel;
+	void		dump	(FILE *);
 };
 
 	

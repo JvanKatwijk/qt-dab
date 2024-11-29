@@ -77,6 +77,14 @@ enum AudioFlags : uint32_t {
     AFL_PS_USED  = 0x2
 };
 
+typedef struct  {
+	uint8_t mainId;
+	uint8_t subId;
+	float strength;
+	float phase;
+	bool norm;
+} tiiResult;
+
 #define	SINGLE_SCAN		0
 #define	SCAN_SINGLE		0
 #define	SCAN_TO_DATA		1

@@ -2837,9 +2837,9 @@ QString theHeight;
 	else
 	   theName 	= ";";
 	
-	if (tr. distance > 0) {
-	   theDistance	= QString::number (tr. distance, 'f', 1) + " km ";
-	   theCorner	= QString::number (tr. corner, 'f', 1)
+	if (tr. theTransmitter. distance > 0) {
+	   theDistance	= QString::number (tr. theTransmitter. distance, 'f', 1) + " km ";
+	   theCorner	= QString::number (tr. theTransmitter. azimuth, 'f', 1)
 	                      + QString::fromLatin1 (" \xb0 ");
 	   theHeight	= " (" + QString::number (tr. theTransmitter. height, 'f', 1) +  "m)" + "\n";
 	}
@@ -3657,9 +3657,11 @@ Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	      theNewDisplay. show_null (inBuffer, amount);
 }
 
-void	RadioInterface::show_tii	(int tiiValue, int index) {
+void	RadioInterface::show_tii	(int tiiValue,	
+	                                 float strength, int index) {
 QString	country	= "";
 int	mainId	= tiiValue >> 8;
+int	subId	= tiiValue & 0xFF;
 cacheElement	theTransmitter;
 bool listChanged = false;
 
@@ -3702,21 +3704,22 @@ bool listChanged = false;
 	      theTIIProcessor. get_transmitter (channel. realChannel?
 	                                         channel. channelName :
 	                                         "any",
-	                                     channel. Eid,
-	                                     tiiValue >> 8, tiiValue & 0xFF);
+	                                         channel. Eid,
+	                                         mainId, subId);
+//
+//	first step: see if we need to replace an invalid element
 	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
 	   cacheElement t2 =
 	           channel. transmitters. at (i). theTransmitter;
-	   if ((channel. transmitters. at (i). tiiValue == tiiValue)) {
-	      if (!t2. valid && tr -> valid) {
-	         channel. transmitters. erase (channel. transmitters. begin () + i);
+	   if ((t2. mainId == tr -> mainId) &&
+	      (t2. subId  == tr -> subId)) {	// OK, already seen
+	      if (!t2. valid && tr -> valid) { // replace 
+	         channel. transmitters. erase
+	                         (channel. transmitters. begin () + i);
 	         i -= 1;
-//	         fprintf (stderr, "removing an element\n");
 	      }
-	      else {
-	         inList = true;
-	         break;
-	      }
+	      else 	//	do not add to the list, 
+	         inList = true;	
 	   }
 	}
 //
@@ -3724,28 +3727,28 @@ bool listChanged = false;
 //	add the data to the log
 	if (!inList) {
 	   theTransmitter = *tr;
-	   theTransmitter. mainId	= tiiValue >> 8;
-	   theTransmitter. subId	= tiiValue & 0xFF;
-	   theTransmitter. channel	= channel. channelName;
-	   transmitterDesc t = {tiiValue, false, false, theTransmitter, 0, 0};
-	   channel. transmitters. push_back (t);	
+	   theTransmitter. strength	= strength;
+	   if (tr -> valid) {
+	      position thePosition;
+              thePosition. latitude     = theTransmitter. latitude;
+              thePosition. longitude    = theTransmitter. longitude;
+	      theTransmitter. distance  = distance   (thePosition, localPos);
+              theTransmitter. azimuth	= corner     (thePosition, localPos);
+	      transmitterDesc t = {true,  false, false, theTransmitter};
+	      channel. transmitters. push_back (t);	
+	   }
+	   else {
+	      tr -> mainId	= mainId;
+	      tr -> subId	= subId;
+	      tr -> ensemble	= "no ensemble";
+	      transmitterDesc t = {false,  false, false, theTransmitter};
+	      channel. transmitters. push_back (t);	
+	   }
+
 	   if (dxMode) {
 	      if (theDXDisplay. isHidden ())
 	         theDXDisplay. show ();
-	      FILE *tiiFile	=
-	                 fopen (QString (path_for_tiiFile + "tii-files.txt" ).
-	                                    toStdString (). c_str (), "a");
-	      if (tiiFile != nullptr) {
-	         QDateTime theTime;
-	         QString tod = theTime. currentDateTime (). toString ();
-	         fprintf (tiiFile , "%s -> %s %s %d %d %s\n",
-	                            tod. toLatin1 (). data (),
-	                            channel.  countryName. toLatin1 (). data (),
-	                            channel. channelName. toLatin1 (). data (),
-	                            tiiValue >> 8, tiiValue & 0xFF,
-	                            theTransmitter. transmitterName. toLatin1 (). data ());
-	         fclose (tiiFile);
-	      }
+	      addtoLogFile (&theTransmitter);
 	   }
 	   listChanged	= true;
 	}
@@ -3758,8 +3761,10 @@ bool listChanged = false;
 	         currentMax = i;
 	      channel. transmitters. at (i). isStrongest = false;
 	   }
+
 	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	      if (channel. transmitters. at (i). tiiValue == tiiValue) {
+	      if ((channel. transmitters. at (i). theTransmitter. mainId == mainId) &&
+	          (channel. transmitters. at (i). theTransmitter. subId == subId))  {
 	         channel. transmitters. at (i). isStrongest = true;
 	         if (i != currentMax)
 	            listChanged = true;
@@ -3772,7 +3777,6 @@ bool listChanged = false;
 	               (theNewDisplay. get_tab () == SHOW_TII))) 
 	   theNewDisplay. show_transmitters (channel. transmitters);
 //
-//	and recompute distances etc etc
 	if (!dxMode) {
 	   QFont f ("Arial", 9);
 	   distanceLabel ->  setFont (f);
@@ -3791,8 +3795,10 @@ bool listChanged = false;
 //	The list was changed, so we rewrite the dxDisplay and 
 //	the map
 	QString labelText;
+//
+//	we only compute distances for "reasonable" values
 	for (auto &theTr : channel. transmitters) {
-	   if (theTr. theTransmitter. valid) {
+	   if (theTr. isValid) {
 	      position thePosition;
 	      thePosition. latitude	= theTr. theTransmitter. latitude;
 	      thePosition. longitude	= theTr. theTransmitter. longitude;
@@ -3802,61 +3808,62 @@ bool listChanged = false;
 	         channel. targetPos. longitude	= thePosition. longitude;
 	         channel. transmitterName		=
 	                 theTr. theTransmitter. transmitterName;
-	         channel. mainId		= theTr. tiiValue >> 8;
-	         channel. subId			= theTr. tiiValue & 0xFF;
+//	         channel. mainId		= theTr. tiiValue >> 8;
+//	         channel. subId			= theTr. tiiValue & 0xFF;
+	         channel. mainId	=
+	                 theTr. theTransmitter. mainId;
+	         channel. subId	=
+	                 theTr. theTransmitter. subId;
+	         channel. height =
+	                 theTr. theTransmitter. height;
 	      }
 
 	      theTr. isFurthest	= false;
 	
 	      QString theName 	= theTr. theTransmitter. transmitterName;
-	      float power	= theTr. theTransmitter. power;
-	      float height	= theTr. theTransmitter. height;
 
-//      if positions are known, we can compute distance and corner
-	      theTr.  distance	= distance	(thePosition, localPos);
-	      theTr.  corner	= corner	(thePosition, localPos);
-
-	      if (theTr. isStrongest) {
-	         channel. distance	= theTr. distance;
-	         channel. corner	= theTr. corner;
-	         channel. height	= height;
+	      if (theTr. theTransmitter. distance > maxDistance) {
+	         maxTrans	= (theTr. theTransmitter. mainId << 8) |
+	                           theTr. theTransmitter. subId;
+	         maxDistance	= theTr. theTransmitter. distance;
 	      }
 
-	      if (theTr. distance > maxDistance) {
-	         maxTrans	= theTr. tiiValue;
-	         maxDistance = theTr. distance;
+	      if (dxMode) {
+	         theDXDisplay. addRow (&theTr. theTransmitter,
+	                                  theTr. isStrongest);
 	      }
-	      int tiiValue_local	= theTr. tiiValue;
-	      labelText = "(" + QString::number (tiiValue_local >> 8) + ","
-	                       + QString::number (tiiValue_local & 0xFF) + ") ";
-	      labelText += theName;
-	      QString text2	= "";
-	      if (theTr. theTransmitter. valid)
-	             text2  =  " "
-	                    + QString::number (theTr. distance, 'f', 1) + " km " 
-	                    + QString::number (theTr. corner, 'f', 1) 
-	                    + QString::fromLatin1 (" \xb0 ") 
-	                    + " (" + QString::number (height, 'f', 1) +  "m)"
-	                    + "  " + QString::number (power, 'f', 1) + "kW";
-	   
-
-	      if (dxMode) 
-	         theDXDisplay. addRow (labelText, text2, 
-	                                     theTr. isStrongest, theTr. corner);
-	      else 
-	         distanceLabel	-> setText (labelText + text2);
+	      else { // no dxMode
+	         labelText =
+	              create_tiiLabel (&theTr. theTransmitter);
+	         distanceLabel	-> setText (labelText);
+	      }
 	   }
-	   else {
-	      int tiiValue_local	= theTr. tiiValue;
-	      labelText = "(" + QString::number (tiiValue_local >> 8) + ","
-	                       + QString::number (tiiValue_local & 0xFF) + ") ";
+	   else {	// no valid transmitter
+	      uint8_t mainId		= theTr. theTransmitter. mainId;
+	      uint8_t subId		= theTr. theTransmitter. subId;
+	      labelText = "(" + QString::number (mainId) + ","
+	                       + QString::number (subId) + ") ";
 	      labelText += "not in database";
-	      if (dxMode) 
-	         theDXDisplay. addRow (labelText, "",  theTr. isStrongest, 0);
+	      if (dxMode) {
+	         cacheElement dummy;
+	         dummy. mainId	= mainId;
+	         dummy. subId	= subId;
+	         dummy. ensemble	= "unknown";
+	         dummy. transmitterName = "unknown";
+	         dummy. distance	= 0;	
+	         dummy. azimuth		= 0;
+	         dummy. strength	= 0;
+	         dummy. power		= 0;
+	         dummy. altitude	= 0;
+	         dummy. height		= 0;
+                 dummy. direction	= " ";
+	         theDXDisplay. addRow (&dummy, false);
+	      }
 	      else 
 	         distanceLabel	-> setText (labelText);
 	   }
 	}
+
 //	now handling the map
 //	see if we have a map
 	if ((mapHandler == nullptr) || !listChanged) 
@@ -3869,8 +3876,12 @@ bool listChanged = false;
 	   uint8_t key	= MAP_NORM_TRANS;	// default value
 	   bool localTransmitters	=
 	            configHandler_p -> localTransmitterSelector_active ();
-	   if ((!localTransmitters) && (theTr. tiiValue  == maxTrans)) { 
-	      key = MAP_MAX_TRANS;
+	   if (!localTransmitters) {
+	      uint8_t mainId = theTr. theTransmitter. mainId;
+	      uint8_t subId  = theTr. theTransmitter. subId;
+	      if (((mainId << 8) | subId)  == maxTrans) { 
+	         key = MAP_MAX_TRANS;
+	      }
 	   }
 //
 	   QDateTime theTime = 
@@ -3881,18 +3892,11 @@ bool listChanged = false;
 	   thePosition. latitude        = theTr. theTransmitter. latitude;
 	   thePosition. longitude       = theTr. theTransmitter. longitude;
  
-
 	   mapHandler -> putData (key,
-	                          thePosition, 
-	                          theTr. theTransmitter. transmitterName,
-	                          channel. channelName,
+	                          &theTr,
 	                          theTime. toString (Qt::TextDate),
-	                          theTr. tiiValue,
-	                          channel. snr,
-	                          theTr. distance,
-	                          theTr. corner,
-	                          theTr. theTransmitter. power,
-	                          theTr. theTransmitter. height);
+	                          channel. channelName,
+	                          channel. snr);
 	}
 }
 
@@ -4195,3 +4199,76 @@ void	RadioInterface::handle_folderButton	() {
 #endif
 }
 
+QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
+	uint8_t mainId		= transmitter -> mainId;
+	uint8_t subId		= transmitter -> subId;
+	const QString & transmitterName
+	                        = transmitter -> transmitterName;
+	float	theDistance	= transmitter -> distance;
+        float	theAzimuth	= transmitter -> azimuth;
+	int	theAltitude	= transmitter -> altitude;
+        int	theHeight	= transmitter -> height;
+        float	thePower	= transmitter -> power;
+
+QString labelText = "(" + QString::number (mainId) + ","
+	               + QString::number (subId) + ") ";
+	labelText += transmitterName;
+	labelText += "  "
+	             + QString::number (theDistance, 'f', 1) + " km " 
+                     + QString::number (theAzimuth, 'f', 1)
+                     + QString::fromLatin1 (" \xb0 ") + ",  "
+                     + QString::number (theAltitude) +  "m "
+                     + QString::number (theHeight) +  "m "
+                     + QString::number (thePower, 'f', 1) + "kW";
+	return labelText;
+}
+
+
+void	RadioInterface::addtoLogFile (const cacheElement *theTransmitter) {
+	const QString &channel	= theTransmitter -> channel;
+        const QString &ensemble	= theTransmitter -> ensemble;
+        const QString transmitterName = theTransmitter -> transmitterName;
+        uint8_t	mainId		= theTransmitter -> mainId;
+        uint8_t	subId		= theTransmitter -> subId;
+        float distance		= theTransmitter -> distance;
+        float azimuth		= theTransmitter -> azimuth;
+        float strength		= theTransmitter -> strength;
+        float power		= theTransmitter -> power;
+        int altitude		= theTransmitter -> altitude;
+        int height		= theTransmitter -> height;
+	const QString &direction = theTransmitter -> direction;
+
+FILE	*theFile = nullptr;
+bool exists	= false;
+
+	QString fileName = path_for_tiiFile + "tii-files.csv";
+	if (theFile = fopen (fileName. toLatin1 (). data (), "r"))  {
+	   exists = true;
+	   fclose (theFile);
+	}
+	theFile	= fopen (fileName. toLatin1 (). data (), "a");
+	if (theFile == nullptr) 
+	   return;
+
+	if (!exists) 
+	   fprintf (theFile, "date; channel; ensemble; transmitter; mainId; subId;distance (km);azimuth;strength;Power;altitude;height;direction\n\n");
+	 QDateTime theTime;
+	 QString tod = theTime. currentDateTime (). toString ();	
+
+	fprintf (theFile, "%s;%s;%s;%s;%d;%d;%.1f;%.1f;%.1f;%.1f;%d;%d;%s\n",
+	         tod. toLatin1 (). data (),	// the time
+	         channel. toLatin1 (). data (),	// the channel
+	         ensemble. toLatin1 (). data (),	// the ensemblename
+	         transmitterName. toLatin1 (). data (),
+	         (int)mainId,
+	         (int)subId,
+	         (float)distance,
+	         (float)azimuth,
+	         strength,
+	         power,
+	         altitude,
+	         height,
+	         direction. toLatin1 (). data ());
+
+	fclose (theFile);
+}

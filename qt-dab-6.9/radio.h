@@ -400,6 +400,9 @@ private:
 	void			stop_scan_continuous	();
 	void			peakLevel	(const std::vector<float> &);
 
+	QString			create_tiiLabel (const cacheElement *);
+	void			addtoLogFile	(const cacheElement *);
+
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();
@@ -468,7 +471,7 @@ public slots:
 	void			handle_iqSelector	();
 
 	void			show_spectrum		(int);
-	void			show_tii		(int, int);
+	void			show_tii		(int, float, int);
 	void			show_tii_spectrum       ();
 	void			show_snr		(float);
 	void			show_null		(int);

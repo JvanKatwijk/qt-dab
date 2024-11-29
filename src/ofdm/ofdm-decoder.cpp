@@ -80,18 +80,16 @@ float Length	= jan_abs (V);
 	offsetVector.		resize (T_u);
 	amplitudeVector.	resize (T_u);
 	carrierCenters.		resize (T_u);
-	meanLevelPerBin.	resize (T_u);
-	meanSigmaSqPerBin.	resize (T_u); 
-	meanPowerPerBin.	resize (T_u);
-	meanNullPower.		resize (T_u);
+	avgSigmaSqPerBin.	resize (T_u); 
+	avgPowerPerBin.		resize (T_u);
+	avgNullPower.		resize (T_u);
 
 	for (uint32_t i = 0; i < T_u; i ++) {
-	   meanLevelPerBin	[i] = 0;
-	   meanSigmaSqPerBin	[i] = 0;
+	   avgSigmaSqPerBin	[i] = 0;
 	   offsetVector		[i] = 0;
 	   amplitudeVector	[i] = 0;
-	   meanPowerPerBin	[i] = 0;
-	   meanNullPower	[i] = 0;
+	   avgPowerPerBin	[i] = 0;
+	   avgNullPower		[i] = 0;
 	}
 
 	sum			= 1;
@@ -107,13 +105,12 @@ void	ofdmDecoder::stop ()	{
 
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i <  T_u; i ++) {
-	   meanLevelPerBin	[i] = 0;
-	   meanSigmaSqPerBin	[i] = 0;
+	   avgSigmaSqPerBin	[i] = 0;
 	   offsetVector		[i] = 0;
 	   amplitudeVector	[i] = 0;
-	   meanPowerPerBin	[i] = 0;
+	   avgPowerPerBin	[i] = 0;
 	   carrierCenters	[i] = Complex (1, 1);
-	   meanNullPower	[i] = 0;
+	   avgNullPower		[i] = 0;
 	}
 }
 //
@@ -134,8 +131,8 @@ void	ofdmDecoder::processBlock_0 (
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
 	      index += T_u;
-	   meanNullPower [index] =
-	      compute_avg (meanNullPower [index],
+	   avgNullPower [index] =
+	      compute_avg (avgNullPower [index],
 	                       abs (phaseReference [index]), Alpha);
 	}
 }
@@ -230,19 +227,18 @@ float	new_sum	= 0.0f;
 	   DABFLOAT	weight_y = 0;
 	   float	weight	= 0;
 
-	   const float realLevelDistPerBin =
+	   const float X_Offset =
                   (std::abs (real (r1)) - amplitudeVector [index] * M_SQRT1_2);
-	   const float imagLevelDistPerBin =
+	   const float Y_Offset =
                   (std::abs (imag (r1)) - amplitudeVector [index] * M_SQRT1_2);
 
 	   const float sigmaSqPerBin =
-                   realLevelDistPerBin * realLevelDistPerBin +
-                   imagLevelDistPerBin * imagLevelDistPerBin;
+	               X_Offset * X_Offset + Y_Offset + Y_Offset;
 	
-	   meanSigmaSqPerBin [index] =
-	           compute_avg (meanSigmaSqPerBin [index], sigmaSqPerBin, Alpha);
-	   meanPowerPerBin [index] =
-	           compute_avg (meanPowerPerBin [index], ab1 * ab1, Alpha);
+	   avgSigmaSqPerBin [index] =
+	           compute_avg (avgSigmaSqPerBin [index], sigmaSqPerBin, Alpha);
+	   avgPowerPerBin [index] =
+	           compute_avg (avgPowerPerBin [index], ab1 * ab1, Alpha);
 
 	   switch (decoder) {
 //
@@ -275,7 +271,7 @@ float	new_sum	= 0.0f;
 //	decoders 3, 4 and 5 are derived from old-dab's version
 	      case  DECODER_3: { //	log likelihood ratio
 	         float sigma = amplitudeVector [index] /
-	                                  meanSigmaSqPerBin [index];
+	                                  avgSigmaSqPerBin [index];
 	         new_sum += sigma * abs (r1);
 	         weight_x = weight_y = -100 * sigma * carriers / sum;
 	         ibits [i]		= (real (r1)) * weight_x; 
@@ -286,8 +282,8 @@ float	new_sum	= 0.0f;
 	      case DECODER_4:
 	         r1 = r1 * abs (fft_buffer [index]); // input power
 //	         r1 = r1 * abs (phaseReference [index]); // input power
-	         r1 = r1 / (meanSigmaSqPerBin [index] *
-	                       meanNullPower [index] / meanPowerPerBin [index] + 2);
+	         r1 = r1 / (DABFLOAT)(avgSigmaSqPerBin [index] *
+	                       avgNullPower [index] / avgPowerPerBin [index] + 2);
 	         new_sum += abs (r1);
 	         weight_x = weight_y = -140 * carriers / sum;
 	         ibits [i]	= (real (r1)) * weight_x; 

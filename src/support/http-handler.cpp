@@ -29,6 +29,7 @@
 #include	<stdlib.h>
 #include	<unistd.h>
 #include	<sys/types.h>
+#include	"distances.h"
 #ifndef	__MINGW32__
 #include	<sys/socket.h>
 #include	<fcntl.h>
@@ -72,7 +73,7 @@
 	if (saveFile != nullptr) {
 	   fprintf (saveFile, "Home location; %f; %f\n\n", 
 	                         homeAddress. latitude, homeAddress. longitude);
-	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power, height\n\n");
+	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power, altitude, height, dir\n\n");
 	}
 
 	connect (this, &httpHandler::setChannel,
@@ -158,7 +159,6 @@ std::string	ctype;
 	      usleep (2000000);
 	      continue;
 	   }
-	   fprintf (stderr, "We are in business\n");
 //
 //	someone needs us, let us see what (s)he wants
 	   while (running. load ()) {
@@ -434,7 +434,7 @@ int params	= 0;
 
 	
 // read map file from resource file
-	QFile file (":res/qt-map-6X.html");
+	QFile file (":res/qt-map-69.html");
 	if (file. open (QFile::ReadOnly)) {
 	   QByteArray record_data (1, 0);
 	   QDataStream in (&file);
@@ -502,21 +502,27 @@ QString Jsontxt;
 	   return "";
 	Jsontxt += "[\n";
 	locker. lock ();
+	QString direction	= t [0]. direction;
+	if (direction. size () < 3)
+	   direction = "??";
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d, \"height\":%d}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d,  \"height\":%d, \"direction\":\"%s\"}",
 	       t [0]. type,
 	       dotNumber (t [0]. coords. latitude). c_str (),
 	       dotNumber (t [0]. coords. longitude). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
 	       t [0]. channelName. toUtf8 (). data (),
 	       t [0]. dateTime. toUtf8 (). data (),
-	       t [0]. tiiValue,
+	       (t [0]. mainId << 8) | (t [0]. subId),
 	       t [0]. snr,
 	       t [0]. distance,
 	       t [0]. azimuth,
 	       (int)(t [0]. power * 100),
-	       (int)(t [0]. height));
+	       (int)(t [0]. altitude),
+	       (int)(t [0]. height),
+	       direction. toUtf8 (). data ());
+
 	Jsontxt += QString (buf);
 //
 	transmitterList. erase (transmitterList. begin());
@@ -526,7 +532,8 @@ QString Jsontxt;
 	return Jsontxt. toStdString ();
 }
 
-void	httpHandler::putData	(uint8_t type, position target) {
+void	httpHandler::putData	(uint8_t type,
+	                         position target) {
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
 	   if ((transmitterList [i]. coords. latitude == target. latitude) &&
 	       (transmitterList [i]. coords. longitude == target. longitude))
@@ -538,11 +545,16 @@ void	httpHandler::putData	(uint8_t type, position target) {
 	t. transmitterName	= "";
 	t. channelName		= "";
 	t. dateTime		= "";
-	t. tiiValue		= 0;
+	t. polarization		= "";
+	t. direction		= "";
+	t. Eid			= 0;
+	t. mainId		= 0;
+	t. subId		= 0;
 	t. snr			= 0;
 	t. distance		= 0;
 	t. azimuth		= 0;
 	t. power		= 0;
+	t. altitude		= 0;
 	t. height		= 0;
 
 	locker. lock ();
@@ -551,36 +563,37 @@ void	httpHandler::putData	(uint8_t type, position target) {
 	transmitterList. push_back (t);
 	locker. unlock ();
 }
-	
+
 void	httpHandler::putData	(uint8_t	type,
-	                         position	target,
-	                         QString	transmitterName,
-	                         QString	channelName,
-	                         QString	dateTime,
-	                         int		tiiValue,
-	                         int		snr,
-	                         int		distance,
-	                         int		azimuth,
-	                         float		power,
-	                         float		height) {
+	                         struct transmitterDesc	*theTr,
+	                         const QString		&theTime,
+	                         const QString		&channelName,
+	                         float	 snr) {
+	float latitude	= theTr -> theTransmitter. latitude;
+	float longitude	= theTr -> theTransmitter. longitude;
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
-	   if ((transmitterList [i]. coords. latitude == target. latitude) &&
-	       (transmitterList [i]. coords. longitude == target. longitude))
+	   if ((transmitterList [i]. coords. latitude == latitude) &&
+	       (transmitterList [i]. coords. longitude == longitude))
 	      return;
 
-	   
 	httpData t;
 	t. type			= type;
-	t. coords		= target;
-	t. transmitterName	= transmitterName;
+//	t. ensemble		= theTr -> ensemble;
+	t. coords. latitude	= latitude;
+	t. coords. longitude	= longitude;
+	t. transmitterName	= theTr -> theTransmitter. transmitterName;
 	t. channelName		= channelName;
-	t. dateTime		= dateTime;
-	t. tiiValue		= tiiValue;
-	t. snr			= snr,
-	t. distance		= distance;
-	t. azimuth		= azimuth;
-	t. power		= power;
-	t. height		= height;
+	t. dateTime		= theTime;
+	t. polarization		= theTr -> theTransmitter. polarization;
+	t. direction		= theTr -> theTransmitter. direction;
+	t. mainId		= theTr -> theTransmitter. mainId;
+	t. subId		= theTr -> theTransmitter. subId;
+	t. snr			= theTr -> theTransmitter. strength;
+	t. distance		= theTr -> theTransmitter. distance;
+	t. azimuth		= theTr -> theTransmitter. azimuth;
+	t. power		= theTr -> theTransmitter. power;
+	t. altitude		= theTr -> theTransmitter. altitude;
+	t. height		= theTr -> theTransmitter. height;
 
 	locker. lock ();
 	transmitterList. push_back (t);
@@ -588,24 +601,30 @@ void	httpHandler::putData	(uint8_t	type,
 //	fprintf (stderr, "Vectorsize %d\n", transmitterList. size ());
 
 	for (int i = 0; i < (int)(transmitterVector. size ()); i ++) {
-	   if ((transmitterVector. at (i). transmitterName == transmitterName) &&
-	       (transmitterVector. at (i). channelName == channelName)) {
-//	      fprintf (stderr, "%s %s is er al\n",
-//	                            transmitterName. toLatin1 (). data (),
-//	                            channelName. toLatin1 (). data ());
+	   if ((transmitterVector. at (i). transmitterName ==
+	               t. transmitterName) &&
+	       (transmitterVector. at (i). channelName ==
+	               t. channelName)) {
 	      return;
 	   }
 	}
 	
 	if ((saveFile != nullptr)  &&
 	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
-	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f, %f\n",
+	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f, %d, %d, %s\n",
 	                      channelName. toUtf8 (). data (),
-	                      target. latitude, target. longitude,
-	                      transmitterName. toUtf8 (). data (),
+	                      t. coords. latitude,
+	                      t. coords. longitude,
+	                      t. transmitterName. toUtf8 (). data (),
 	                      t. dateTime. toUtf8 (). data (),
-	                      tiiValue / 100, tiiValue % 100,
-	                      distance, azimuth, power, height);
+	                      t. mainId,
+	                      t. subId,
+	                      (int)(t. distance),
+	                      (int)(t. azimuth),
+	                      t. power,
+	                      (int)(t. altitude),
+	                      (int)(t. height),
+	                      t. direction. toUtf8 (). data ());
 	   transmitterVector. push_back (t);
 	}
 }

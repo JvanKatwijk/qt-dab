@@ -32,15 +32,19 @@
 #define	SEPARATOR	';'
 #define	COUNTRY		1
 #define	CHANNEL		2
-#define	LABEL		3
+#define	ENSEMBLE	3
 #define	EID		4
 #define	TII		5
 #define	LOCATION	6
 #define	LATITUDE	7
 #define	LONGITUDE	8
-#define	HEIGHT		9
+#define	ALTITUDE	9
+#define	HEIGHT		10
+#define	POLARIZATION	11
+#define	FREQUENCY	12
 #define	POWER		13
-#define	NR_COLUMNS	14
+#define DIRECTION	14
+#define	NR_COLUMNS	15
 
 		tiiReader::tiiReader	() {
 }
@@ -89,12 +93,21 @@ std::vector<cacheElement> res;
 	   ed. mainId		= get_mainId (columnVector [TII]);
 	   ed. subId		= get_subId (columnVector [TII]);
 	   ed. channel		= columnVector [CHANNEL]. trimmed ();
-	   ed. ensemble 	= columnVector [LABEL]. trimmed ();
+	   ed. ensemble 	= columnVector [ENSEMBLE]. trimmed ();
 	   ed. transmitterName	= columnVector [LOCATION];
 	   ed. latitude		= convert (columnVector [LATITUDE]);
 	   ed. longitude	= convert (columnVector [LONGITUDE]);
 	   ed. power		= convert (columnVector [POWER]);
+	   ed. altitude		= convert (columnVector [ALTITUDE]);
 	   ed. height		= convert (columnVector [HEIGHT]);
+	   ed. polarization	= columnVector [POLARIZATION].trimmed();
+	   ed. frequency	= convert (columnVector[FREQUENCY]);
+	   ed. direction	= columnVector [DIRECTION]. trimmed();
+
+	   if ((ed. mainId == 255) ||(ed. subId == 255))
+	      ed. valid = false;
+	   if ((ed. mainId == 0) || (ed. subId == 0))
+	      ed. valid = false;
 	   if (count >= (int) res. size ())
 	      res. resize (res. size () + 100);
 	   res. at (count) = ed;

@@ -40,7 +40,8 @@
 #include	"ofdm-decoder.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	"tii-detector.h"
+#include	"tii-detector-1.h"
+#include	"tii-detector-2.h"
 #include	"eti-generator.h"
 
 class	RadioInterface;
@@ -117,7 +118,8 @@ private:
 	sampleReader		theReader;
 	ficHandler		theFicHandler;
 	etiGenerator		theEtiGenerator;
-	TII_Detector		theTIIDetector;
+	TII_Detector_A		theTIIDetector_A;
+	TII_Detector_B		theTIIDetector_B;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 
@@ -155,12 +157,13 @@ private:
 	bool			isEvenFrame	(int16_t, dabParams *);
 	bool			correlationOrder;
 	bool			dxMode;
+	uint8_t			tiiDecoder;
 virtual	void			run		();
 signals:
 	void		set_synced		(bool);
 	void		no_signal_found		();
 	void		set_sync_lost		();
-	void		show_tii		(int, int);
+	void		show_tii		(int, float, int);
 	void		show_tii_spectrum	();
 	void		show_spectrum		(int);
 	void		show_snr		(float);

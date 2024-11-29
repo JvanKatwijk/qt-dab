@@ -21,7 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	"tii-detector.h"
+#include	"tii-detector-2.h"
 #include	<cstdio>
 #include	<cinttypes>
 #include	<cstring>
@@ -113,16 +113,14 @@ uint8_t table [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
-		TII_Detector::TII_Detector (uint8_t dabMode,
-	                                    QSettings	*dabSettings,
-	                                    int16_t	depth):
+		TII_Detector_B::TII_Detector_B (uint8_t dabMode,
+	                                       QSettings	*dabSettings):
 	                                      params (dabMode),
 	                                      T_u (params. get_T_u ()),
 	                                      carriers (params. get_carriers ()),
 	                                      my_fftHandler (params. get_T_u (),
 	                                                    false) {
 	this	-> dabSettings	= dabSettings;
-	this	-> depth	= depth;
 	theBuffer. resize	(T_u);
 	window. resize 		(T_u);
 	for (int i = 0; i < T_u; i ++)
@@ -135,21 +133,21 @@ uint8_t table [] = {
 	
 }
 
-		TII_Detector::~TII_Detector () {
+		TII_Detector_B::~TII_Detector_B () {
 }
 
-void	TII_Detector::setMode	(bool b) {
+void	TII_Detector_B::setMode	(bool b) {
 	detectMode_new = b;
 }
 
-void	TII_Detector::reset	() {
+void	TII_Detector_B::reset	() {
 	for (int i = 0; i < T_u; i ++)
 	   theBuffer [i] = Complex (0, 0);
 }
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (std::vector<Complex> v) {
+void	TII_Detector_B::addBuffer (std::vector<Complex> v) {
 
 	for (int i = 0; i < T_u; i ++)
 	   v [i] = v [i] *  window [i];
@@ -160,7 +158,7 @@ void	TII_Detector::addBuffer (std::vector<Complex> v) {
 }
 //
 //	Note that the input is fft output, not yet reordered
-void	TII_Detector::collapse (std::vector<Complex> &inVec, float *outVec) {
+void	TII_Detector_B::collapse (std::vector<Complex> &inVec, float *outVec) {
 
 	for (int i = 0; i < carriers / 8; i ++) {	
 	   int carr = - carriers / 2 + 2 * i;
@@ -189,12 +187,12 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
 
-std::vector<int16_t>	TII_Detector::processNULL (bool dxMode) {
+std::vector<tiiResult>	TII_Detector_B::processNULL (bool dxMode) {
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
 float	C_table		[GROUPSIZE];		  // contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
-std::vector<int16_t> theResult;
+std::vector<tiiResult> theResult;
 
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
@@ -289,7 +287,11 @@ std::vector<int16_t> theResult;
 	         }
 	      }
 	      if (finInd != -1) {
-	         theResult. push_back (maxIndex + 256 * finInd);
+	         tiiResult v;
+	         v. subId	= maxIndex;
+	         v. mainId	= finInd;
+	         v. strength	= 1;
+	         theResult. push_back (v);
 	         for (int i = 0; i < 8; i ++) {
 	            if (table [finInd] & bits [i]) {
 	               int index = maxIndex + i * 24;
@@ -322,7 +324,11 @@ std::vector<int16_t> theResult;
 	             hulpTable [index] = 0;
 	         }
 	      }
-	      theResult. push_back (maxIndex + finInd * 256);
+	      tiiResult v;
+	      v. subId		= maxIndex;
+	      v. mainId		= finInd;	
+	      v. strength	= 1;
+	      theResult. push_back (v);
 	   }
 	   if (!dxMode)
 	      break;

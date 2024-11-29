@@ -186,7 +186,7 @@ int	index_for_key (int key) {
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
-	this -> decoderSelector -> setToolTip ("The signal to be decoded results from applying a phase difference to each of the relevant \"bin\"s from the FFT operation. The resulting phase, ideally PI/4, is then mapped upon two bits, one derived from the X coordinate, onde from the Y coordinate. There are diferent waus of doing this mapping, taking into account the offset of the phase to PI/4. In Qt-DAB 2 simple approaches and 3 more complex ones (derived from work from old-dab) are implemented.  In general differences are hardly noticeable");
+	this -> decoderSelector -> setToolTip (" There are several ideas on how to derive the softbits from the phase difference in the subsequent bins of the FFT output. 5 different approaches are implemented, decoder C is said to be the best when there is white noise and a difference in the amplitude of the carriers. while decoder D  is said to be the best when there is frequency selective interference and finally, decider E is said the best when there is strong frequency selective interference. The decoders C, D and E are derived from the work of old-dab");
 #else
 	this -> decoderSelector -> setEnabled (false);
 #endif

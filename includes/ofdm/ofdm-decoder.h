@@ -87,10 +87,9 @@ private:
 	
 	std::vector<float>	offsetVector;
 	std::vector<float>	amplitudeVector;
-	std::vector<float>	meanLevelPerBin;
-        std::vector<float>	meanSigmaSqPerBin;
-	std::vector<float>	meanPowerPerBin;
-	std::vector<float>	meanNullPower;
+        std::vector<float>	avgSigmaSqPerBin;
+	std::vector<float>	avgPowerPerBin;
+	std::vector<float>	avgNullPower;
 
 	float		sum;
 //	phaseTable	*phasetable;

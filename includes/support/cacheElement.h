@@ -35,6 +35,7 @@ public:
 	QString		country;
 	QString		channel;
 	QString		ensemble;
+	QString		location;
 	uint16_t 	Eid;
 	int8_t		mainId;
 	int8_t		subId;
@@ -42,9 +43,20 @@ public:
 	float		latitude;
 	float		longitude;
 	float		power;
+	float		altitude;
 	float		height;
+	QString		polarization;
+	float		frequency;
+	QString		direction;
+//
+//	There are values differing per instance of the 
+//	same transmitter
+	float		strength;
+	float		distance;
+	float		azimuth;
+	
 	cacheElement	() {
-	   valid = false;
+	   valid		= false;
 	   country		= "not known";
 	   channel		= "";
 	   ensemble		= "";
@@ -56,18 +68,19 @@ public:
 	   longitude		= 0;
 	   power		= 0;
 	   height		= 0;
+	   power		= 0;
+	   polarization		= "";
+	   frequency		= 0;
+	   direction		= "";
 	}
 	~cacheElement	()	{}
 };
 
 
 struct transmitterDesc {
-	int	tiiValue;
+	bool	isValid;
 	bool	isStrongest;
 	bool	isFurthest;
 	cacheElement theTransmitter;
-	float	distance;
-	float	corner;
-	
 };
 

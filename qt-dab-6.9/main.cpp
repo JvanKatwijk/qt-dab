@@ -121,8 +121,9 @@ QTranslator	theTranslator;
 	   }
 	}
 
+	fprintf (stderr, "dase 1\n");
 	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
-
+	fprintf (stderr, "dabSettings gehad\n");
 	
 	QString presetFile = QDir::homePath () + "/" + ".qt-dab-presets.xml";
 	presetFile	= QDir::toNativeSeparators (presetFile);
@@ -132,9 +133,11 @@ QTranslator	theTranslator;
  *      Before we connect control to the gui, we have to
  *      instantiate
  */
+	fprintf (stderr, "Gase 3\n");
 #if QT_VERSION >= 0x050600
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
+	fprintf (stderr, "Gase 4\n");
 
 	dabSettings	-> beginGroup ("SKIN_HANDLING");
 	QString skin    = dabSettings -> value ("skin", "Combinear"). toString ();
@@ -145,7 +148,9 @@ QTranslator	theTranslator;
 	          skin == "Darkeum"   ? ":res/Darkeum.qss" :
 	          skin == "EasyCode"  ? ":res/EasyCode.qss":
 	          skin == "Diffnes"   ? ":res/Diffnes.qss" : "";
+	fprintf (stderr, "skin geselecteerd, e gaan QApp doen\n");
 	QApplication a (argc, argv);
+	fprintf (stderr, "QApp gedaan\n");
 	if (skin != "") {
 	   QFile file (skin);
 	   if (file .open (QFile::ReadOnly | QFile::Text)) {   
@@ -153,13 +158,13 @@ QTranslator	theTranslator;
 	      file.close ();
 	   }
 	}
-
+	fprintf (stderr, "The skin gezet\n");
 //	setting the language
 	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (&theTranslator, locale);
 	a. setWindowIcon (QIcon (":/res/qt-dab-6-128x128.png"));
-
+	fprintf (stderr, "Icon gezet en we gaan radio interface installeren\n");
 	myRadioInterface = new RadioInterface (dabSettings,
 	                                       scanListFile,
 	                                       presetFile,
@@ -170,8 +175,9 @@ QTranslator	theTranslator;
 	                                       clockPort,
 	                                       fmFrequency
 	                                       );
+	fprintf (stderr, "Die is geinit, nu showen\n");
 	myRadioInterface -> show();
-
+	fprintf (stderr, "Geef gas\n");
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	a. exec();
 /*
