@@ -20,10 +20,10 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
-#include "tii-detector-1.h"
+#include	"tii-detector-1.h"
 #include        "settingNames.h"
 #include        "settings-handler.h"
-
+#include	<complex>
 
 // TII pattern for transmission modes I, II and IV
 static const uint8_t table[] = {
@@ -244,7 +244,7 @@ int	teller	= 0;
 	      Complex x		= buffer [i + j * 192];
 	      etsiVec [i]	+= x;
 	      nonetsiVec [i] +=
-	           std::polar (abs (x),
+	           std::polar ((float)abs (x),
 	                       (float)(arg(x) - (float)Reftable [i + j * 192]*M_PI_2));
 	   }
 	}

@@ -172,6 +172,7 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           TRANSMITTER_NAMES_SETTING, 0) == 1;
 	this -> saveTransmittersSelector -> setChecked (b);
+	this	-> saveTransmittersSelector -> setEnabled (false);
 
 	b =  value_i (dabSettings, CONFIG_HANDLER,
 	                           S_CORRELATION_ORDER, 0) != 0;

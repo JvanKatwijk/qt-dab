@@ -218,7 +218,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/dab-config.h
 	     ../includes/ofdm/fib-table.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii-detector.h
+	     ../includes/ofdm/tii-detector-1.h
+	     ../includes/ofdm/tii-detector-2.h
 	     ../includes/ofdm/timesyncer.h
 	     ../includes/ofdm/estimator.h
 	     ../includes/protection/protTables.h
@@ -346,7 +347,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/ofdm/freq-interleaver.cpp
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
-	     ../src/ofdm/tii-detector.cpp
+	     ../src/ofdm/tii-detector-1.cpp
+	     ../src/ofdm/tii-detector-2.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/ofdm/estimator.cpp
 	     ../src/protection/protTables.cpp
@@ -460,7 +462,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/freqsyncer.h
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii-detector.h
+	     ../includes/ofdm/tii-detector-1.h
+	     ../includes/ofdm/tii-detector-2.h
 	     ../includes/ofdm/estimator.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h

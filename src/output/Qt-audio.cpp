@@ -36,7 +36,7 @@ class	RadioInterface;
 	                    tempBuffer (16 * 32768) { 
 	audioSettings		= settings;
 	working. store		(false);
-	newDeviceIndex		= -1;
+	newDeviceIndex		= 0;
 	
 	m_audioOutput		= nullptr;
 	theIODevice		= nullptr;
@@ -84,7 +84,6 @@ void	Qt_Audio::stop () {
 }
 
 void	Qt_Audio::restart	() {
-	fprintf (stderr, "Going to restart with %d\n", newDeviceIndex);
 	if (newDeviceIndex < 0)
 	   return;
 	if (m_audioOutput != nullptr)
@@ -118,15 +117,17 @@ bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
 }
 
 void	Qt_Audio::suspend	() {
-	if (!working. load ())
-	   return;
-	m_audioOutput	-> suspend ();
+//	if (!working. load ())
+//	   return;
+//	m_audioOutput	-> suspend ();
+	stop ();
 }
 
 void	Qt_Audio::resume	() {
-	if (!working. load ())
-	   return;
-	m_audioOutput	-> resume ();
+//	if (!working. load ())
+//	   return;
+//	m_audioOutput	-> resume ();
+	restart ();
 }
 
 void	Qt_Audio::setVolume	(int v) {
@@ -141,7 +142,7 @@ bool	Qt_Audio::hasMissed	() {
 }
 
 void	Qt_Audio::samplesMissed	(int &total, int & missed) {
-	if (theIODevice != nullptr) 
+	if (theIODevice != nullptr)
 	   theIODevice -> samplesMissed (total, missed);
 }
 
@@ -304,7 +305,6 @@ void	Qt_Audio::setVolume	(int v) {
 bool	Qt_Audio::hasMissed	() {
 	return false;
 }
-
 
 void	Qt_Audio::samplesMissed	(int &total, int & missed) {
 	total	= 1;

@@ -4228,6 +4228,8 @@ void	RadioInterface::addtoLogFile (const cacheElement *theTransmitter) {
 	const QString &channel	= theTransmitter -> channel;
         const QString &ensemble	= theTransmitter -> ensemble;
         const QString transmitterName = theTransmitter -> transmitterName;
+	float	latitude	= theTransmitter -> latitude;
+	float	longitude	= theTransmitter -> longitude;
         uint8_t	mainId		= theTransmitter -> mainId;
         uint8_t	subId		= theTransmitter -> subId;
         float distance		= theTransmitter -> distance;
@@ -4251,20 +4253,20 @@ bool exists	= false;
 	   return;
 
 	if (!exists) 
-	   fprintf (theFile, "date; channel; ensemble; transmitter; mainId; subId;distance (km);azimuth;strength;Power;altitude;height;direction\n\n");
+	   fprintf (theFile, "date; channel; ensemble; transmitter; coords; mainId; subId;distance (km);azimuth;Power;altitude;height;direction\n\n");
 	 QDateTime theTime;
 	 QString tod = theTime. currentDateTime (). toString ();	
 
-	fprintf (theFile, "%s;%s;%s;%s;%d;%d;%.1f;%.1f;%.1f;%.1f;%d;%d;%s\n",
+	fprintf (theFile, "%s;%s;%s;%s; (%f, %f);%d;%d;%.1f;%.1f;%.1f;%d;%d;%s\n",
 	         tod. toLatin1 (). data (),	// the time
 	         channel. toLatin1 (). data (),	// the channel
 	         ensemble. toLatin1 (). data (),	// the ensemblename
 	         transmitterName. toLatin1 (). data (),
+	         latitude, longitude,
 	         (int)mainId,
 	         (int)subId,
 	         (float)distance,
 	         (float)azimuth,
-	         strength,
 	         power,
 	         altitude,
 	         height,

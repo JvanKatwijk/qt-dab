@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>244</width>
+    <width>238</width>
     <height>693</height>
    </rect>
   </property>
@@ -48,39 +48,39 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
-     <item>
-      <widget class="smallPushButton" name="framedumpButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ audio services are encoded in an AAC format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to store the AAC frames into a file.&lt;/p&gt;&lt;p&gt;As usual, touching the button again will close the output file. Programs like vlc can handle such files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>frame dump</string>
-       </property>
-      </widget>
+    <layout class="QFormLayout" name="formLayout_2">
+     <item row="0" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="smallPushButton" name="framedumpButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ audio services are encoded in an AAC format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to store the AAC frames into a file.&lt;/p&gt;&lt;p&gt;As usual, touching the button again will close the output file. Programs like vlc can handle such files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>frame dump</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="audiodumpButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audio output can be saved as a file in uncompressed PCM format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to save the PCM data into a file.&lt;/p&gt;&lt;p&gt;The output is a regular &amp;quot;.wav&amp;quot; file which can be handled by many other audio programs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>dump audio</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
-     <item>
-      <widget class="smallPushButton" name="audiodumpButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audio output can be saved as a file in uncompressed PCM format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to save the PCM data into a file.&lt;/p&gt;&lt;p&gt;The output is a regular &amp;quot;.wav&amp;quot; file which can be handled by many other audio programs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>dump audio</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>serviceId</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item row="1" column="1">
       <widget class="QLCDNumber" name="serviceIdDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -93,14 +93,14 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Start Address of CU</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QLCDNumber" name="startAddressDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -110,14 +110,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Used CUs</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QLCDNumber" name="lengthDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -127,14 +127,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Subchannel ID</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QLCDNumber" name="subChIdDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -144,7 +144,11 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+    </layout>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
       <widget class="QLabel" name="label_5">
        <property name="minimumSize">
         <size>
@@ -157,7 +161,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="0" column="1">
       <widget class="QLabel" name="uepField">
        <property name="minimumSize">
         <size>
@@ -176,28 +180,28 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_12">
        <property name="text">
         <string>code rate:</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="1" column="1">
       <widget class="QLabel" name="codeRate">
        <property name="text">
         <string>TextLabel</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>Type:</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="2" column="1">
       <widget class="QLabel" name="ASCTy">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -207,14 +211,14 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_9">
        <property name="text">
         <string>Language:</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="3" column="1">
       <widget class="QLabel" name="language">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language (defined by provider)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -224,66 +228,6 @@
        </property>
        <property name="text">
         <string>language</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>rs corrections/100</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLCDNumber" name="rsCorrections">
-       <property name="toolTip">
-        <string>The number of corrections made by the reed-solomon algorithm over 10 DAB+ frames (so the number does not relate to the classic DAB/MP2 frames)</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>ec errors </string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QLCDNumber" name="ecCorrections">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS decoding/recovery uses parity bits. If, however, a parity bit is faulty, recovery of errors may lead to introducing errors. The crc check following the recovery should reveal that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="missedLabel">
-       <property name="text">
-        <string>audio % OK</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QLCDNumber" name="missedSamples">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audiohandler runs with its own clock. If less than the requested number of&lt;/p&gt;&lt;p&gt;audiosamples is passed on, the percentage = shown here - will drop accordingly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
        </property>
       </widget>
      </item>
@@ -405,6 +349,70 @@
       <widget class="QLabel" name="rsErrorLabel">
        <property name="text">
         <string>RS</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>rs corrections/100</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLCDNumber" name="rsCorrections">
+       <property name="toolTip">
+        <string>The number of corrections made by the reed-solomon algorithm over 10 DAB+ frames (so the number does not relate to the classic DAB/MP2 frames)</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::NoFrame</enum>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>ec errors </string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLCDNumber" name="ecCorrections">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS decoding/recovery uses parity bits. If, however, a parity bit is faulty, recovery of errors may lead to introducing errors. The crc check following the recovery should reveal that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::NoFrame</enum>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="missedLabel">
+       <property name="text">
+        <string>audio % OK</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLCDNumber" name="missedSamples">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audiohandler runs with its own clock. If less than the requested number of&lt;/p&gt;&lt;p&gt;audiosamples is passed on, the percentage = shown here - will drop accordingly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Shape::NoFrame</enum>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::SegmentStyle::Flat</enum>
        </property>
       </widget>
      </item>

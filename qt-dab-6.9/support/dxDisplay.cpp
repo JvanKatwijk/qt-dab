@@ -36,7 +36,7 @@
 	myWidget	-> resize (220, 400);
 	myWidget	-> setWidgetResizable(true);
 
-	tableWidget 	= new QTableWidget (0, 13);
+	tableWidget 	= new QTableWidget (0, 12);
 	tableWidget	-> setColumnWidth (0, 30);
 	tableWidget	-> setColumnWidth (1, 70);
 	tableWidget	-> setColumnWidth (2, 70);
@@ -49,7 +49,6 @@
 	tableWidget	-> setColumnWidth (9, 70);
 	tableWidget	-> setColumnWidth (10, 70);
 	tableWidget	-> setColumnWidth (11, 70);
-	tableWidget	-> setColumnWidth (12, 70);
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 //	headerView	-> resizeSection (0, 50);
@@ -57,7 +56,7 @@
 	                QStringList () << tr ("x") << tr ("mainId") <<
 	                tr ("subId") << tr ("channel") <<tr ("ensemble") <<
 	                tr ("transmiiter") << tr ("dist") <<
-	                tr ("azimuth") << tr ("strength") << tr ("power") <<
+	                tr ("azimuth")  << tr ("power") <<
 	                tr ("alt") << tr ("height") << tr ("direction"));
 
 	theDial		= new QwtCompass ();
@@ -189,10 +188,6 @@ int16_t	row	= tableWidget -> rowCount ();
 	item11		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 11, item11);
 
-	QTableWidgetItem *item12 = new QTableWidgetItem;
-	item12		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	tableWidget	-> setItem (row, 12, item12);
-
 	tableWidget	-> setCurrentItem (item0);
 	tableWidget	-> item (row, 1) -> setText (QString::number (mainId));
 	tableWidget	-> item (row, 2) -> setText (QString::number (subId));
@@ -200,12 +195,11 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 4) -> setText (ensemble);
 	tableWidget	-> item (row, 5) -> setText (transmitterName);
 	tableWidget	-> item (row, 6) -> setText (QString::number (distance, 'f', 1) + " km");
-	tableWidget	-> item (row, 7) -> setText (QString::number (azimuth) + QString::fromLatin1 (" \xb0 "));
-	tableWidget	-> item (row, 8) -> setText (QString::number (strength, 'f', 1) + " dB ");
-	tableWidget	-> item (row, 9) -> setText (QString::number (power, 'f', 1) + " KW ");
-	tableWidget	-> item (row, 10) -> setText (QString::number (altitude) +  " m");
-	tableWidget	-> item (row, 11) -> setText (QString::number (height) +  " m");
-	tableWidget	-> item (row, 12) -> setText (dir);
+	tableWidget	-> item (row, 7) -> setText (QString::number (azimuth, 'f', 1) + QString::fromLatin1 (" \xb0 "));
+	tableWidget	-> item (row, 8) -> setText (QString::number (power, 'f', 1) + " KW ");
+	tableWidget	-> item (row, 9) -> setText (QString::number (altitude) +  " m");
+	tableWidget	-> item (row, 10) -> setText (QString::number (height) +  " m");
+	tableWidget	-> item (row, 11) -> setText (dir);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
 	if (b)
 	   theDial -> setValue (azimuth);

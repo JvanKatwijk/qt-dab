@@ -52,7 +52,6 @@ typedef	void	*HINSTANCE;
 #endif
 
 #define	MAX_VITERBI	127
-
 #define	NR_TAPS		512
 
 #ifdef	__WITH_DOUBLES__
@@ -69,6 +68,9 @@ typedef std::complex<int16_t> complex16;
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
+#ifndef	M_PI_2
+#define	M_PI_2		(M_PI / 2.0f)
+#endif
 constexpr float	RAD_PER_DEGREE = (float)(M_PI / 180.0);
 
 enum AudioFlags : uint32_t {
