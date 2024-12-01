@@ -31,6 +31,7 @@
 #include	<QMap>
 
 	dxDisplay::dxDisplay (RadioInterface *mr, QSettings *s){
+	(void)mr;
 	dxSettings	= s;
 	myWidget	= new QScrollArea (nullptr);
 	myWidget	-> resize (220, 400);
@@ -116,12 +117,6 @@ void	dxDisplay::hide	() {
 }
 
 void	dxDisplay::addRow (cacheElement *theTransmitter, bool isStrongest) {
-//void	dxDisplay::addRow (uint8_t mainId, uint8_t subId,
-//	                   const QString &channel, const QString &ensemble, 
-//	                   const QString &transmitterName,
-//	                   float distance, int azimuth, float strength,
-//	                   float power, int altitude, int height,
-//	                   const QString &dir, bool b) {
 int16_t	row	= tableWidget -> rowCount ();
 
 	const QString &channel	= theTransmitter -> channel;
@@ -131,12 +126,11 @@ int16_t	row	= tableWidget -> rowCount ();
 	int   subId		= theTransmitter -> subId;
 	float distance		= theTransmitter -> distance;
 	float azimuth		= theTransmitter -> azimuth;
-	float strength		= theTransmitter -> strength;
+//	float strength		= theTransmitter -> strength;
 	float power		= theTransmitter -> power;
 	int   altitude		= theTransmitter -> altitude;
 	int  height		= theTransmitter -> height;
 	const QString &dir	= theTransmitter -> direction;
-
 	bool	b		= isStrongest;
 
 	tableWidget	-> insertRow (row);
@@ -203,5 +197,73 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
 	if (b)
 	   theDial -> setValue (azimuth);
+}
+
+void	dxDisplay::addRow (uint8_t mainId, uint8_t subId,
+	                                       const QString &channel) {
+int16_t	row	= tableWidget -> rowCount ();
+
+	tableWidget	-> insertRow (row);
+	QTableWidgetItem *item0	= new QTableWidgetItem;
+	item0		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 0, item0);
+
+	QTableWidgetItem *item1 = new QTableWidgetItem;
+	item1		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 1, item1);
+
+	QTableWidgetItem *item2 = new QTableWidgetItem;
+	item2		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 2, item2);
+
+	QTableWidgetItem *item3 = new QTableWidgetItem;
+	item3		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 3, item3);
+
+	QTableWidgetItem *item4 = new QTableWidgetItem;
+	item4		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 4, item4);
+
+	QTableWidgetItem *item5 = new QTableWidgetItem;
+	item5		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 5, item5);
+
+	QTableWidgetItem *item6 = new QTableWidgetItem;
+	item6		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 6, item6);
+
+	QTableWidgetItem *item7 = new QTableWidgetItem;
+	item7		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 7, item7);
+
+	QTableWidgetItem *item8 = new QTableWidgetItem;
+	item8		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 8, item8);
+
+	QTableWidgetItem *item9 = new QTableWidgetItem;
+	item9		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 9, item9);
+
+	QTableWidgetItem *item10 = new QTableWidgetItem;
+	item10		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 10, item10);
+
+	QTableWidgetItem *item11 = new QTableWidgetItem;
+	item11		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 11, item11);
+
+	tableWidget	-> setCurrentItem (item0);
+	tableWidget	-> item (row, 1) -> setText (QString::number (mainId));
+	tableWidget	-> item (row, 2) -> setText (QString::number (subId));
+	tableWidget	-> item (row, 3) -> setText (channel);
+	tableWidget	-> item (row, 4) -> setText ("unknown");
+	tableWidget	-> item (row, 5) -> setText ("unknown");
+	tableWidget	-> item (row, 6) -> setText ("??");
+	tableWidget	-> item (row, 7) -> setText ("??");
+	tableWidget	-> item (row, 8) -> setText ("??");
+	tableWidget	-> item (row, 9) -> setText ("??");
+	tableWidget	-> item (row, 10) -> setText ("??");
+	tableWidget	-> item (row, 11) -> setText ("??");
+	tableWidget	-> item (row, 0) -> setText ( "");
 }
 

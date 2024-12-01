@@ -233,7 +233,7 @@ float	new_sum	= 0.0f;
                   (std::abs (imag (r1)) - amplitudeVector [index] * M_SQRT1_2);
 
 	   const float sigmaSqPerBin =
-	               X_Offset * X_Offset + Y_Offset + Y_Offset;
+	               X_Offset * X_Offset - Y_Offset + Y_Offset;
 	
 	   avgSigmaSqPerBin [index] =
 	           compute_avg (avgSigmaSqPerBin [index], sigmaSqPerBin, Alpha);
@@ -276,6 +276,7 @@ float	new_sum	= 0.0f;
 	         weight_x = weight_y = -100 * sigma * carriers / sum;
 	         ibits [i]		= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
+	         sum = new_sum;
 	      }
 	      break;
 
@@ -288,6 +289,7 @@ float	new_sum	= 0.0f;
 	         weight_x = weight_y = -140 * carriers / sum;
 	         ibits [i]	= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
+	         sum = new_sum;
 	         break;
 
 	      case DECODER_5:
@@ -296,11 +298,11 @@ float	new_sum	= 0.0f;
 	         weight_x = weight_y = -140 * carriers / sum;
 	         ibits [i]	= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
+	         sum = new_sum;
 	         break;
 	   }
 	}
 
-	sum = new_sum;
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {

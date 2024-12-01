@@ -7,30 +7,37 @@
 -------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
-From Qt5 to Qt6: Qt5-DAB-6.9 and Qt6-DAB-6.9
+From Qt5 to Qt6: Qt-DAB-qt5-6.9 and Qt-DAB-qt6-6.9
 ------------------------------------------------------------------------
 
 ![6.9](/res/read_me/qt-dab-6.9.png?raw=true)
 
-Since Qt6 is there for quite a while, it is inevitable to move over
-to Qt6. Unfortunately, AppImages require  "old" library versions,
-so AppImages are and will be compiled with Qt5 for a while.
-So, we need to have a sourcetree that can be compiled with Qt5 and Qt6,
-and indeed, the  sources for the 6.9 Version, both compilable using Qt5
-and Qt6.
-
-While preparing the sources for Qt6, some more changes were made, so
-the version number was increased and is 6.9.
+As the name suggests, Qt-DAB uses the Qt libraries as framework for (a.o) the GUI and the GUI handling. QT5 was the version were most of the developments
+were done with so far. Since Qt6 - a newer version of the Qt library system -
+is there now for quite a while, it is inevitable to move over
+to using Qt6. While the differences between Qt5 and Qt6 are manageable,
+the audio subsyste (Qt_audio) had undergone a major redesign and rewrite,
+reflected in the rewrite of the Qt_Audio driver in Qt-DAB.
 
 Fedora 41 - my development ennvironment - supports both Qt5 and Qt6
-with Qwt 6.20 as qt library.
-The Qt6 based version for Linux works fine, there are some issues
-with the Windows versions, probably caused by problems with some
-incomaptible dll's.
-The windows versions for Qt_DAB 6.9 are therefore still compiled with
-Qt4 (as is the AppImage).
+with Qwt 6.20 as qwt library, the library used for the various
+scopes and displays.
+(The versions of Qt and qwt used can be found on the description one sees when clicking on the copyright symbol on the main widget).
 
-Aaprt from the modifications required for Qt6 - mosty the Qt_audio soundhandler - some more modifications were made, most of them on my "todo" list.
+Unfortunately, AppImages require  "old" library versions to be used.
+The AppImage is built on Ubuntu 20 (which is indeed rather old), but
+for building AppImages, Ubuntu 22 is "too new".
+So, while Qt-DAB is still compiled on the old U20 system, Ubuntu 20 does
+not support Qt6 (unless one compiles the libraries etc from source),
+so for the AppImage Qt5 is still needed. 
+
+So, for now, we need a sourcetree that can be compiled with Qt5 as well as
+with Qt6, and indeed, the current sourcetree can be compiled with either.
+
+Anyway, while preparing the sources for Qt6, some more changes were made, so
+the version number was increased and is 6.9.
+
+Apart from the modifications required for Qt6 - mosty the Qt_audio soundhandler - some more modifications were made, most of them on my "todo" list.
 Some of them are clearly visible, others are "under the hood"
 
  * the audio strength meter and the "mot" indicator are placed on the main widget, which seems to make more sense
@@ -53,27 +60,28 @@ Some of them are clearly visible, others are "under the hood"
 
 ![6.9](/res/read_me/tiifile.png?raw=true)
 
-Experimental versions of the Qt-DAB-qt5-6.9 (an installer for W64 and an AppImage for Linux) are included in the 6.8 release
+The Qt6 based version for Linux works fine, there are, however, some issues
+with the (cross compiled) Windows versions, probably caused by problems with some incompatible dll's.
+The windows versions for Qt_DAB 6.9 are therefore - for the time being - still compiled with Qt5 (as is the AppImage).
+
+While development for Qt-DAB-qtX-6.9 is not yet fully completed,
+experimental versions of the Qt-DAB-qt5-6.9 (an installer for W64 and an AppImage for Linux) are included in the 6.8 release
 
 ------------------------------------------------------------------------
-About Qt-DAB-6.8
+About Qt-DAB
 -------------------------------------------------------------------------
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
-Qt-DAB is continuously under further development, **Qt-DAB-6.8** ,
-the stable version of Qt-DAB has - again - some new features, not often seen
-elsewehere. A good quote indicating what I try to achieve in the continuous development of Qt-DAB software is:
 
- * *It is much easier to add features to reliable software, than it is to add reliability to featureful software.*
+The basic design principle for Qt-DAB is "Keep it as simple as possible",
+but that does not mean putting many restrictions on the software,
+its use and its structure.  And indeed, it continuously shows that it is fairly easy to add new features.
 
-And indeed, it continuously shows that it is fairly easy to
-add new features.
+That explains e.g. why the GUI has a single main widget that
+contains essentially all that is needed when just selecting a service and listening, while other widgets, visible under user control, if made visible show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
 
-Of course, as for previous versions, for *Qt-DAB-6.8* some predefined
-versions are available.
-For Windows  three installers are maintained, and for Linux an x64 AppImage
-is available.
-
+Of course, as for previous versions, for the current stable version,  *Qt-DAB-6.8*, predefined executables and installers are available.
+For Windows  **three** installers are available, and for Linux there is an x64 AppImage.
 
 ![6.8](/res/read_me/Qt_DAB-6.X-1.png?raw=true)
 ![6.8](/res/read_me/Qt_DAB-6.X-2.png?raw=true)

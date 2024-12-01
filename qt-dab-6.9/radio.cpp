@@ -3839,28 +3839,19 @@ bool listChanged = false;
 	      }
 	   }
 	   else {	// no valid transmitter
-	      uint8_t mainId		= theTr. theTransmitter. mainId;
-	      uint8_t subId		= theTr. theTransmitter. subId;
-	      labelText = "(" + QString::number (mainId) + ","
-	                       + QString::number (subId) + ") ";
-	      labelText += "not in database";
 	      if (dxMode) {
-	         cacheElement dummy;
-	         dummy. mainId	= mainId;
-	         dummy. subId	= subId;
-	         dummy. ensemble	= "unknown";
-	         dummy. transmitterName = "unknown";
-	         dummy. distance	= 0;	
-	         dummy. azimuth		= 0;
-	         dummy. strength	= 0;
-	         dummy. power		= 0;
-	         dummy. altitude	= 0;
-	         dummy. height		= 0;
-                 dummy. direction	= " ";
-	         theDXDisplay. addRow (&dummy, false);
+	         theDXDisplay. addRow (theTr. theTransmitter. mainId,
+	                               theTr. theTransmitter. subId,
+	                               theTr. theTransmitter. channel);
 	      }
-	      else 
+	      else  {
+	         uint8_t mainId		= theTr. theTransmitter. mainId;
+	         uint8_t subId		= theTr. theTransmitter. subId;
+	         labelText = "(" + QString::number (mainId) + ","
+	                            + QString::number (subId) + ") ";
+	         labelText += "not in database";
 	         distanceLabel	-> setText (labelText);
+	      }
 	   }
 	}
 
@@ -4216,32 +4207,21 @@ QString labelText = "(" + QString::number (mainId) + ","
 	labelText += "  "
 	             + QString::number (theDistance, 'f', 1) + " km " 
                      + QString::number (theAzimuth, 'f', 1)
-                     + QString::fromLatin1 (" \xb0 ") + ",  "
-                     + QString::number (theAltitude) +  "m "
-                     + QString::number (theHeight) +  "m "
-                     + QString::number (thePower, 'f', 1) + "kW";
+                     + QString::fromLatin1 (" \xb0 ") + ",  ";
+//	             + QString::number (theAltitude) +  "m "
+//	             + QString::number (theHeight) +  "m "
+//	             + QString::number (thePower, 'f', 1) + "kW";
 	return labelText;
 }
 
 
 void	RadioInterface::addtoLogFile (const cacheElement *theTransmitter) {
-	const QString &channel	= theTransmitter -> channel;
-        const QString &ensemble	= theTransmitter -> ensemble;
-        const QString transmitterName = theTransmitter -> transmitterName;
-	float	latitude	= theTransmitter -> latitude;
-	float	longitude	= theTransmitter -> longitude;
-        uint8_t	mainId		= theTransmitter -> mainId;
-        uint8_t	subId		= theTransmitter -> subId;
-        float distance		= theTransmitter -> distance;
-        float azimuth		= theTransmitter -> azimuth;
-        float strength		= theTransmitter -> strength;
-        float power		= theTransmitter -> power;
-        int altitude		= theTransmitter -> altitude;
-        int height		= theTransmitter -> height;
-	const QString &direction = theTransmitter -> direction;
-
 FILE	*theFile = nullptr;
 bool exists	= false;
+
+	if ((theTransmitter -> mainId == 0) ||
+	                        (theTransmitter -> mainId == 255))
+	   return;
 
 	QString fileName = path_for_tiiFile + "tii-files.csv";
 	if (theFile = fopen (fileName. toLatin1 (). data (), "r"))  {
@@ -4254,23 +4234,26 @@ bool exists	= false;
 
 	if (!exists) 
 	   fprintf (theFile, "date; channel; ensemble; transmitter; coords; mainId; subId;distance (km);azimuth;Power;altitude;height;direction\n\n");
-	 QDateTime theTime;
-	 QString tod = theTime. currentDateTime (). toString ();	
 
-	fprintf (theFile, "%s;%s;%s;%s; (%f, %f);%d;%d;%.1f;%.1f;%.1f;%d;%d;%s\n",
+	QDateTime theTime;
+	QString tod = theTime. currentDateTime (). toString ();	
+//	QString symb	=  QString::fromLatin1 (" \xb0 ");
+	QString symb	= "";
+
+	fprintf (theFile, "%s;%s;%s;%s; (%f, %f);%d;%d;%.1f km;%.1f %s  ;%.1f kW;%d m;%d m;%s\n",
 	         tod. toLatin1 (). data (),	// the time
-	         channel. toLatin1 (). data (),	// the channel
-	         ensemble. toLatin1 (). data (),	// the ensemblename
-	         transmitterName. toLatin1 (). data (),
-	         latitude, longitude,
-	         (int)mainId,
-	         (int)subId,
-	         (float)distance,
-	         (float)azimuth,
-	         power,
-	         altitude,
-	         height,
-	         direction. toLatin1 (). data ());
-
+	         theTransmitter -> channel. toLatin1 (). data (),
+	         theTransmitter -> ensemble. toLatin1 (). data (),
+	         theTransmitter -> transmitterName. toLatin1 (). data (),
+	         theTransmitter -> latitude,
+	         theTransmitter -> longitude,
+	         theTransmitter -> mainId,
+	         theTransmitter -> subId,
+	         theTransmitter -> distance,
+	         theTransmitter -> azimuth, symb. toLatin1 (). data (),
+	         theTransmitter -> power,
+	         (int)(theTransmitter -> altitude),
+	         (int)(theTransmitter -> height),
+	         theTransmitter -> direction. toLatin1 (). data ());
 	fclose (theFile);
 }

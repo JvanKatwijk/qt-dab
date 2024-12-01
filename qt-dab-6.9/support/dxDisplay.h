@@ -38,10 +38,7 @@ public:
 		~dxDisplay	();
 	void	setChannel	(const QString &);
 	void	addRow		(cacheElement *theTransmitter, bool);
-//	                        uint8_t, uint8_t, const QString &,
-//	                        const QString &, const QString &,
-//	                        float, int, float, float, int,
-//	                        int, const QString &, bool);
+	void	addRow		(uint8_t, uint8_t, const QString &);
 	void	cleanUp		();
 	void	show		();
 	void	hide		();
