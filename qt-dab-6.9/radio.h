@@ -262,7 +262,6 @@ private:
 	contentTable		*scanTable_p;
 	channelDescriptor	channel;
 	QDialog			*the_aboutLabel;
-	int			maxDistance;
 	bool			error_report;
 	techData		*techWindow_p;
 //	Ui_configWidget		configWidget;

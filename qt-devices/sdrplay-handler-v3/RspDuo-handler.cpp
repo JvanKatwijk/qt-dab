@@ -29,6 +29,7 @@
 	                                int	lnaState,
 	                                int 	GRdB,
 	                                int	antennaValue,
+	                                int	tuner,
 	                                bool	biasT,
 	                                bool	notch,
 	                                double	ppmValue) :
@@ -41,6 +42,7 @@
 	                                           biasT,
 	                                           ppmValue) {
 //	set_antenna (antennaValue);
+//	set_tuner  (tunerValue)
 	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
@@ -152,6 +154,10 @@ sdrplay_api_ErrT        err;
 	   return false;
 
 	return true;
+}
+
+void	RspDuo_handler::set_tuner	(int tuner) {
+	(void)tuner;
 }
 
 bool	RspDuo_handler::set_biasT	(bool biasT_value) {

@@ -37,6 +37,7 @@
 #define ANTENNASELECT_REQUEST   0107
 #define	BIAS_T_REQUEST		0110
 #define	NOTCH_REQUEST		0111
+#define	TUNERSELECT_REQUEST	0112
 
 #include	<QSemaphore>
 
@@ -156,3 +157,12 @@ public:
 	~notch_Request	() {}
 };
 
+class	tunerRequest: public generalCommand {
+public:
+	int	tuner;
+	tunerRequest (int tuner) :
+	           generalCommand (TUNERSELECT_REQUEST) {
+	   this	-> tuner	= tuner;
+	}
+	~tunerRequest	() {}
+};

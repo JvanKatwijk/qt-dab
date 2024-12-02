@@ -59,6 +59,7 @@
 #define	SDRPLAY_BIAS_T		"biasT_selector"
 #define	SDRPLAY_NOTCH		"notch_selector"
 #define	SDRPLAY_ANTENNA		"Antenna"
+#define	SDRPLAY_TUNER		"tuner"
 
 std::string errorMessage (int errorCode) {
 	switch (errorCode) {
@@ -349,6 +350,12 @@ void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 	                                    s == "Antenna B" ? 'B' : 'C'));
 	QString ss = s;
 	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_ANTENNA, ss);
+}
+
+void	sdrplayHandler_v3::set_selectTuner	(const QString &s) {
+	messageHandler (new tunerRequest (s == "tuner 1" ? 1 : 2));
+	QString ss = s;
+	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_TUNER, ss);
 }
 
 void	sdrplayHandler_v3::set_xmlDump () {
@@ -704,6 +711,7 @@ int	deviceIndex	= 0;
 	                                      lnaState,
 	                                      GRdBValue,
 	                                      antennaValue,
+	                                      1,
 	                                      biasT,
 	                                      notch, ppmValue);
 	         break;

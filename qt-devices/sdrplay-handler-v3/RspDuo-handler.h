@@ -35,6 +35,7 @@ public:
 	                       int	lnaState,
 	                       int 	GRdB,
 	                       int	antennaValue,
+	                       int	tuner,
 	                       bool	biasT,
 	                       bool	notch,
 	                       double	ppmValue);
@@ -44,6 +45,7 @@ public:
 	bool	restart		(int freq);
 	bool	set_lna		(int lnaState);
 	bool	set_antenna 	(int antenna);
+	void	set_tuner	(int tuner);
 	bool	set_biasT	(bool biasT);
 	bool	set_notch	(bool on);
 private:

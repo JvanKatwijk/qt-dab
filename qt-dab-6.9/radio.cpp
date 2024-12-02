@@ -189,7 +189,6 @@ QString h;
 	running. 		store (false);
 	theOFDMHandler		= nullptr;
 	stereoSetting		= false;
-	maxDistance		= -1;
 	contentTable_p		= nullptr;
 	scanTable_p		= nullptr;
 	mapHandler		= nullptr;
@@ -3382,7 +3381,6 @@ void	RadioInterface::handle_dcRemovalSelector (bool b) {
 }
 
 void	RadioInterface::set_transmitters_local  (bool isChecked) {
-	maxDistance = -1;
 	channel. targetPos	= position {0, 0};
 	if ((isChecked) && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos);
@@ -3424,7 +3422,6 @@ bool	RadioInterface::autoStart_http () {
 	                              localPos,
 	                              "",
 	                              configHandler_p -> localBrowserSelector_active (), dabSettings_p);
-	maxDistance = -1;
 	return mapHandler != nullptr;
 }
 
@@ -3457,7 +3454,6 @@ void	RadioInterface::handle_httpButton	() {
 	                                 localPos,
 	                                 mapFile,
 	                                 configHandler_p -> localBrowserSelector_active (), dabSettings_p);
-	   maxDistance = -1;
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}
@@ -3682,7 +3678,6 @@ cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 }
 
 void	RadioInterface::show_tiiData	(const std::vector<tiiData> &r) {
-int strongest	= 0;
 bool	need_to_print	= false;
 
 	if (r. size () == 0)
@@ -3691,12 +3686,11 @@ bool	need_to_print	= false;
 	bool dxMode	= configHandler_p -> get_dxSelector ();
 
 	if (!dxMode) {
-	   channel. transmitters. resize (0);
 	   if (!theDXDisplay. isHidden ())
 	      theDXDisplay. hide ();
 	}
 
-//	first step: are we going to process the data or not
+//	first step: are we going to process the data or not?
 	if (!running. load ())	// shouldn't be
 	   return;
 
@@ -3720,36 +3714,42 @@ bool	need_to_print	= false;
 	   transmitter_country	-> setText (country);
 	}
 
+//	The data in the vector is sorted on sognal strength
+	int strongest = (r [0]. mainId << 8) | r [0]. subId;
+
 //	first step
 //	see whether or not the data is already in the list
 //	if it is already
 	for (uint16_t i = 0; i < r. size (); i ++) {
-	   if ((r [i]. mainId == 0) || (r [i]. mainId == 255))
+	   if ((r [i]. mainId == 0) ||
+	       ((r [i]. mainId & 0xFF) == 0xFF))
 	      continue;
-
-	   if (i == 0)
-	      strongest = (r [i]. mainId << 8) | r [i]. subId;
+//
 	   cacheElement * tr =
 	      theTIIProcessor. get_transmitter (channel. realChannel?
 	                                         channel. channelName :
 	                                         "any",
 	                                         channel. Eid,
 	                                         r [i]. mainId,  r [i]. subId);
-	   cacheElement *t2 = inList (r [i]. mainId, r [i]. subId);
 //	if the (mainId, subId) is alreay known but without a name found
 //	and we see now a good element, throuw the old one out
-	   if (t2 != nullptr) {
-	      if ((t2 -> transmitterName == "not in database") &&
-	          (tr -> ensemble != ""))
-	         removeFromList (t2 -> mainId, t2 -> subId);
-	      else
-	         continue;
+	   if (tr -> mainId != -1) {
+	      cacheElement *t2 = inList (r [i]. mainId, r [i]. subId);
+
+	      if (t2 != nullptr) {
+	         if (t2 -> transmitterName == "not in database") {
+	            removeFromList (t2 -> mainId, t2 -> subId);
+	         }
+	         else {
+	            continue;
+	         }
+	      }
 	   }
 //	we have to add the entry to the list
 	   need_to_print = true;
 	   cacheElement theTransmitter = *tr;
 	   theTransmitter. strength	= r [i]. strength;
-	   if ((theTransmitter. mainId == 0) ||
+	   if ((theTransmitter. mainId == -1) ||
 	       (theTransmitter. mainId == 255)) {	// apparently not found
 	      theTransmitter. mainId	= r [i]. mainId;
 	      theTransmitter. subId	= r [i]. subId;
@@ -3776,9 +3776,11 @@ bool	need_to_print	= false;
 	int	bestIndex = -1;
 //	Now the list is updated, see whether or not the strongest is ...
 	for (int i = 0; i < channel. transmitters. size (); i ++) {
-	   uint8_t old_mainId = channel. transmitters [i]. theTransmitter. mainId;
-	   uint8_t old_subId  = channel. transmitters [i]. theTransmitter. subId;
-	   if ((old_mainId == mainId) && (old_subId == subId)) {
+	   uint8_t current_mainId =
+	           channel. transmitters [i]. theTransmitter. mainId;
+	   uint8_t current_subId  =
+	           channel. transmitters [i]. theTransmitter. subId;
+	   if ((current_mainId == mainId) && (current_subId == subId)) {
 	      if (channel. transmitters [i]. isStrongest) 
 	         break;	// nothing changes
 	      else 
@@ -3787,11 +3789,11 @@ bool	need_to_print	= false;
 	   }
 	   else 
 	      channel. transmitters [i]. isStrongest = false;
+
 	   need_to_print = true;
 	}
 	if (!need_to_print)
 	   return;
-
 //
 //	for content maps etc we need to have the data of the strongest
 //	signal
@@ -3818,6 +3820,7 @@ bool	need_to_print	= false;
 	      if (theTr. isStrongest) {
 	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
 	         distanceLabel	-> setText (labelText);
+	         break;
 	      }
 	   }
 	}
@@ -3825,8 +3828,9 @@ bool	need_to_print	= false;
 	if (mapHandler == nullptr)
 	      return;
 //
-//	we need to compute the one with the largest distance	
-	maxDistance = 0;
+//	On the map, we show - next to the list - the strongest one and
+//	the one with the largest distance to the home position	
+	int maxDistance = 0;
 	transmitterDesc *best = nullptr;
 	for (auto &theTr : channel. transmitters) {
 	   if (theTr. theTransmitter. transmitterName == "not in database")

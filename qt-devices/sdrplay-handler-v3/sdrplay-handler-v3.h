@@ -143,6 +143,7 @@ private slots:
 	void			set_agcControl		(int);
 	void			set_ppmControl		(int);
 	void			set_selectAntenna	(const QString &);
+	void			set_selectTuner		(const QString &);
 	void			set_biasT		(int);
 	void			set_notch		(int);
 	void			report_overload_state	(bool);
