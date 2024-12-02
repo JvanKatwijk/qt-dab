@@ -108,6 +108,8 @@ std::vector<cacheElement> res;
 	      ed. valid = false;
 	   if ((ed. mainId == 0) || (ed. subId == 0))
 	      ed. valid = false;
+	   if (ed. ensemble == "")
+	      ed. valid = false;
 	   if (count >= (int) res. size ())
 	      res. resize (res. size () + 100);
 	   res. at (count) = ed;

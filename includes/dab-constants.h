@@ -85,7 +85,7 @@ typedef struct  {
 	float strength;
 	float phase;
 	bool norm;
-} tiiResult;
+} tiiData;
 
 #define	SINGLE_SCAN		0
 #define	SCAN_SINGLE		0

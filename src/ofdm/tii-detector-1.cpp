@@ -172,6 +172,9 @@ constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
         memset (invTable, 0x377, 256);
         for (int i = 0; i < 70; ++i)
             invTable [table [i]] = i;
+
+	tiiThreshold	= value_i (dabSettings, CONFIG_HANDLER,
+	                                        "tiiSettings", 4) * 2;
 }
 
 	TII_Detector_A::~TII_Detector_A () { }
@@ -256,8 +259,8 @@ static uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 // Sort the elemtnts according to their strength
 static	int fcmp (const void *a, const void *b) {
-tiiResult *element1 = (tiiResult*)a;
-tiiResult *element2 = (tiiResult*)b;
+tiiData *element1 = (tiiData *)a;
+tiiData *element2 = (tiiData *)b;
 
 	if (element1 -> strength > element2 -> strength)
 	   return -1;
@@ -268,7 +271,7 @@ tiiResult *element2 = (tiiResult*)b;
 	   return 0;
 }
 
-std::vector<tiiResult> TII_Detector_A::processNULL (bool dxMode) {
+std::vector<tiiData> TII_Detector_A::processNULL (bool dxMode) {
 // collapsed ETSI float values
 float etsi_floatTable [NUM_GROUPS * GROUPSIZE];	
 
@@ -286,12 +289,7 @@ float max = 0;
 // noise level
 float noise = 1e9;
 // results
-std::vector<tiiResult> theResult;
-// threshold above noise
-int Threshold_db        = value_i (dabSettings, DAB_GENERAL,
-                                              "tiiThreshold", 4);
-//float threshold = pow (10, (float)Threshold_db / 10);
-float threshold = 10;
+std::vector<tiiData> theResult;
 
 	collapse (theBuffer. data (), etsiTable, nonetsiTable);
 
@@ -319,7 +317,7 @@ float threshold = 10;
 	}
 
 	for (int subId = 0; subId < GROUPSIZE; subId++) {
-	   tiiResult element;
+	   tiiData element;
 	   Complex sum		= Complex (0, 0);
 	   Complex etsi_sum	= Complex (0, 0);
 	   Complex nonetsi_sum	= Complex (0, 0);
@@ -337,13 +335,13 @@ float threshold = 10;
 //	The number of times the limit is reached in the group is counted
 	   for (int i = 0; i < NUM_GROUPS; i++) {
 	      if (etsi_floatTable [subId + i * GROUPSIZE] >
-	                                      noise * threshold) {
+	                                      noise * tiiThreshold) {
 	         etsi_count++;
 	         etsi_pattern |= (0x80 >> i);
 	         etsi_sum += etsiTable[subId + GROUPSIZE * i];
 	      }
 	      if (nonetsi_floatTable[subId + i * GROUPSIZE] >
-	                                          noise * threshold) {
+	                                          noise * tiiThreshold) {
 	         nonetsi_count++;
 	         nonetsi_pattern |= (0x80 >> i);
 	         nonetsi_sum += nonetsiTable[subId + GROUPSIZE * i];
@@ -424,7 +422,12 @@ float threshold = 10;
 	      decodedBuffer [i] *= 0.9;
 	resetBuffer ();
 	qsort (theResult.data (), theResult. size (),
-	                               sizeof (tiiResult), &fcmp);
+	                               sizeof (tiiData), &fcmp);
 
 	return theResult;
 }
+
+void	TII_Detector_A::set_tiiThreshold	(int v) {
+	tiiThreshold = 2 * v;
+}
+

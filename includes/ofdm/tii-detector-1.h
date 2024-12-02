@@ -38,7 +38,8 @@ public:
 	void		reset		();
 	void		setMode		(bool);
 	void		addBuffer	(std::vector<Complex>);
-	std::vector<tiiResult>	processNULL	(bool);
+	void		set_tiiThreshold	(int);
+	std::vector<tiiData>	processNULL	(bool);
 
 private:
 	QSettings	*dabSettings;
@@ -55,6 +56,8 @@ private:
 
 	std::vector<Complex >	theBuffer;
 	std::vector<DABFLOAT>	window;
+
+	int		tiiThreshold;
 };
 
 

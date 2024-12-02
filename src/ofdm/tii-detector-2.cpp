@@ -130,7 +130,8 @@ uint8_t table [] = {
 	for (int i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
 	detectMode_new	= false;
-	
+	tiiThreshold	= value_i (dabSettings, CONFIG_HANDLER, 
+	                                     "tiiThreshold", 4);
 }
 
 		TII_Detector_B::~TII_Detector_B () {
@@ -144,6 +145,11 @@ void	TII_Detector_B::reset	() {
 	for (int i = 0; i < T_u; i ++)
 	   theBuffer [i] = Complex (0, 0);
 }
+
+void	TII_Detector_B::set_tiiThreshold	(int t) {
+	tiiThreshold = t;
+}
+
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
@@ -187,12 +193,12 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
 
-std::vector<tiiResult>	TII_Detector_B::processNULL (bool dxMode) {
+std::vector<tiiData>	TII_Detector_B::processNULL (bool dxMode) {
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
 float	C_table		[GROUPSIZE];		  // contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
-std::vector<tiiResult> theResult;
+std::vector<tiiData> theResult;
 
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
@@ -287,7 +293,7 @@ std::vector<tiiResult> theResult;
 	         }
 	      }
 	      if (finInd != -1) {
-	         tiiResult v;
+	         tiiData v;
 	         v. subId	= maxIndex;
 	         v. mainId	= finInd;
 	         v. strength	= 1;
@@ -324,7 +330,7 @@ std::vector<tiiResult> theResult;
 	             hulpTable [index] = 0;
 	         }
 	      }
-	      tiiResult v;
+	      tiiData v;
 	      v. subId		= maxIndex;
 	      v. mainId		= finInd;	
 	      v. strength	= 1;

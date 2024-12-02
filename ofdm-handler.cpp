@@ -122,8 +122,8 @@
 	         radioInterface_p, &RadioInterface::set_synced);
 	connect (this, &ofdmHandler::set_sync_lost,
 	         radioInterface_p, &RadioInterface::set_sync_lost);
-	connect (this, &ofdmHandler::show_tii,
-	         radioInterface_p, &RadioInterface::show_tii);
+	connect (this, &ofdmHandler::show_tiiData,
+	         radioInterface_p, &RadioInterface::show_tiiData);
 	connect (this, &ofdmHandler::show_tii_spectrum,
 	         radioInterface_p, &RadioInterface::show_tii_spectrum);
 	connect (this, static_cast<void (ofdmHandler::*)(float)>(&ofdmHandler::show_snr),
@@ -470,16 +470,11 @@ int	snrCount	= 0;
 	                                                          T_u);
 	               show_tii_spectrum ();
 	               
-	               std::vector<tiiResult> resVec =
+	               std::vector<tiiData> resVec =
 	               (tiiDecoder == TII_DECODER_A) ?
 	                              theTIIDetector_A. processNULL (dxMode):
 	                              theTIIDetector_B. processNULL (dxMode);
-	               for (int i = 0; i < (int)(resVec. size ()); i ++) {
-	                  uint16_t theId = (resVec [i]. mainId << 8) |
-	                                             resVec [i]. subId;
-	                  show_tii (theId, resVec [i]. strength, i);
-//	                  show_tii (resVec [i]. , i);
-	               }
+	               show_tiiData (resVec);
 	               tii_counter = 0;
 	               theTIIDetector_A. reset();
 	               theTIIDetector_B. reset();
@@ -705,5 +700,10 @@ void	ofdmHandler::set_correlationOrder	(bool b) {
 
 void	ofdmHandler::set_dxMode		(bool b) {
 	dxMode	= b;
+}
+
+void	ofdmHandler::set_tiiThreshold	(int v) {
+	theTIIDetector_A. set_tiiThreshold (v);
+	theTIIDetector_B. set_tiiThreshold (v);
 }
 

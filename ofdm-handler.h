@@ -92,7 +92,9 @@ public:
 	int		scanWidth		();
 	void		start_ficDump		(FILE *);
 	void		stop_ficDump		();
-
+//
+//	for the tiiHhandlers
+	void		set_tiiThreshold	(int);
 //	for the mscHandler
 	void		reset_services		();
 	void		stop_service		(descriptorType *, int);
@@ -163,7 +165,7 @@ signals:
 	void		set_synced		(bool);
 	void		no_signal_found		();
 	void		set_sync_lost		();
-	void		show_tii		(int, float, int);
+	void		show_tiiData		(const std::vector<tiiData> &);
 	void		show_tii_spectrum	();
 	void		show_spectrum		(int);
 	void		show_snr		(float);
