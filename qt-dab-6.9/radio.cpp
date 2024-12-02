@@ -2753,7 +2753,7 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 QString	tii;
 QString	theName;
 QString theDistance;
-QString	theCorner;
+QString	theAzimuth;
 QString	theHeight;
 
 	if (theOFDMHandler == nullptr) {	// cannot happen
@@ -2772,13 +2772,13 @@ QString	theHeight;
 	   theName 	= ";";
 	if (channel. distance > 0) {
 	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
-	   theCorner	= QString::number (channel. corner, 'f', 1)
+	   theAzimuth	= QString::number (channel. azimuth, 'f', 1)
 	                      + QString::fromLatin1 (" \xb0 ");
 	   theHeight	= " (" + QString::number (channel. height, 'f', 1) +  "m)" + "\n";
 	}
 	else {
 	   theDistance	= "unknown";
-	   theCorner	= "";
+	   theAzimuth	= "";
 	   theHeight	= "\n";
 	}
 	   
@@ -2793,7 +2793,7 @@ QString	theHeight;
 	                      utcTime + ";" +
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) +";" +
-	                      theName + theDistance + theCorner + theHeight;
+	                      theName + theDistance + theAzimuth + theHeight;
 	return headLine;
 }
 
@@ -3625,6 +3625,12 @@ std::vector<Complex> inBuffer (2048);
 	   theNewDisplay. show_spectrum (inBuffer, channel. tunedFrequency);
 }
 
+void	RadioInterface::handle_tiiThreshold	(int v) {
+	store (dabSettings_p, CONFIG_HANDLER, TII_THRESHOLD, v);
+	if (theOFDMHandler != nullptr)
+	   theOFDMHandler -> set_tiiThreshold (v);
+}
+
 void	RadioInterface::show_tii_spectrum	() {
 std::vector<Complex> inBuffer (2048);
 
@@ -3657,13 +3663,30 @@ Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	      theNewDisplay. show_null (inBuffer, amount);
 }
 
-void	RadioInterface::show_tii	(int tiiValue,	
-	                                 float strength, int index) {
-QString	country	= "";
-int	mainId	= tiiValue >> 8;
-int	subId	= tiiValue & 0xFF;
-cacheElement	theTransmitter;
-bool listChanged = false;
+void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
+	for (uint16_t i = 0; i < channel. transmitters. size (); i ++)
+	   if ((mainId == channel. transmitters [i]. theTransmitter. mainId) &&
+	       (subId == channel. transmitters [i]. theTransmitter. subId)) {
+	          channel. transmitters. erase
+                                 (channel. transmitters. begin () + i);
+	         break;
+	   }
+}
+
+cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
+	for (auto &tr: channel. transmitters) 
+	   if ((tr. theTransmitter. mainId == mainId) &&
+               (tr. theTransmitter. subId ==  subId))
+	     return &tr. theTransmitter;
+	return nullptr;
+}
+
+void	RadioInterface::show_tiiData	(const std::vector<tiiData> &r) {
+int strongest	= 0;
+bool	need_to_print	= false;
+
+	if (r. size () == 0)
+	   return;
 
 	bool dxMode	= configHandler_p -> get_dxSelector ();
 
@@ -3673,21 +3696,9 @@ bool listChanged = false;
 	      theDXDisplay. hide ();
 	}
 
-	if (!running. load () ||(mainId == 0xFF))	// shouldn't be
+//	first step: are we going to process the data or not
+	if (!running. load ())	// shouldn't be
 	   return;
-
-	if (theOFDMHandler -> get_ecc () == 0) 
-	   return;
-
-	if (!channel. has_ecc) {
-	   channel. ecc_byte	= theOFDMHandler -> get_ecc ();
-	   country		= find_ITU_code (channel. ecc_byte,
-	                                         (channel. Eid >> 12) &0xF);
-	   channel. has_ecc	= true;
-	   channel. countryName	= country;
-	   channel. transmitterName = "";
-	   transmitter_country	-> setText (country);
-	}
 
 	if ((localPos. latitude == 0) || (localPos. longitude == 0)) 
 	   return;
@@ -3695,173 +3706,143 @@ bool listChanged = false;
 	if (!theTIIProcessor. has_tiiFile ())
 	   return;
 
-//	OK, here we really start
-//	first we check whether the item is already in the list, however
-//	if it is but was not found in the database and now it is,
-//	replace the item
-	bool inList	= false;
-	cacheElement * tr =
+	if (theOFDMHandler -> get_ecc () == 0) 
+	   return;
+
+//	probably yes, get the country code
+	if (!channel. has_ecc) {
+	   channel. ecc_byte	= theOFDMHandler -> get_ecc ();
+	   QString country	= find_ITU_code (channel. ecc_byte,
+	                                         (channel. Eid >> 12) &0xF);
+	   channel. has_ecc	= true;
+	   channel. countryName	= country;
+	   channel. transmitterName = "";
+	   transmitter_country	-> setText (country);
+	}
+
+//	first step
+//	see whether or not the data is already in the list
+//	if it is already
+	for (uint16_t i = 0; i < r. size (); i ++) {
+	   if ((r [i]. mainId == 0) || (r [i]. mainId == 255))
+	      continue;
+
+	   if (i == 0)
+	      strongest = (r [i]. mainId << 8) | r [i]. subId;
+	   cacheElement * tr =
 	      theTIIProcessor. get_transmitter (channel. realChannel?
 	                                         channel. channelName :
 	                                         "any",
 	                                         channel. Eid,
-	                                         mainId, subId);
-//
-//	first step: see if we need to replace an invalid element
-	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	   cacheElement t2 =
-	           channel. transmitters. at (i). theTransmitter;
-	   if ((t2. mainId == tr -> mainId) &&
-	      (t2. subId  == tr -> subId)) {	// OK, already seen
-	      if (!t2. valid && tr -> valid) { // replace 
-	         channel. transmitters. erase
-	                         (channel. transmitters. begin () + i);
-	         i -= 1;
-	      }
-	      else 	//	do not add to the list, 
-	         inList = true;	
+	                                         r [i]. mainId,  r [i]. subId);
+	   cacheElement *t2 = inList (r [i]. mainId, r [i]. subId);
+//	if the (mainId, subId) is alreay known but without a name found
+//	and we see now a good element, throuw the old one out
+	   if (t2 != nullptr) {
+	      if ((t2 -> transmitterName == "not in database") &&
+	          (tr -> ensemble != ""))
+	         removeFromList (t2 -> mainId, t2 -> subId);
+	      else
+	         continue;
 	   }
-	}
-//
-//	If the item is not yet in the list add it and - in dxMode
-//	add the data to the log
-	if (!inList) {
-	   theTransmitter = *tr;
-	   theTransmitter. strength	= strength;
-	   if (tr -> valid) {
-	      position thePosition;
-              thePosition. latitude     = theTransmitter. latitude;
-              thePosition. longitude    = theTransmitter. longitude;
-	      theTransmitter. distance  = distance   (thePosition, localPos);
-              theTransmitter. azimuth	= corner     (thePosition, localPos);
-	      transmitterDesc t = {true,  false, false, theTransmitter};
-	      channel. transmitters. push_back (t);	
-	   }
-	   else {
-	      tr -> mainId	= mainId;
-	      tr -> subId	= subId;
-	      tr -> ensemble	= "no ensemble";
+//	we have to add the entry to the list
+	   need_to_print = true;
+	   cacheElement theTransmitter = *tr;
+	   theTransmitter. strength	= r [i]. strength;
+	   if ((theTransmitter. mainId == 0) ||
+	       (theTransmitter. mainId == 255)) {	// apparently not found
+	      theTransmitter. mainId	= r [i]. mainId;
+	      theTransmitter. subId	= r [i]. subId;
+	      theTransmitter. transmitterName	= "not in database";
 	      transmitterDesc t = {false,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
-
-	   if (dxMode) {
-	      if (theDXDisplay. isHidden ())
-	         theDXDisplay. show ();
+	   else {	// valid, compute distance
+	      position thePosition;
+	      thePosition. latitude     = theTransmitter. latitude;
+	      thePosition. longitude    = theTransmitter. longitude;
+	      theTransmitter. distance  = distance   (thePosition, localPos);
+	      theTransmitter. azimuth	= corner     (thePosition, localPos);
+	      transmitterDesc t = {true,  false, false, theTransmitter};
+	      channel. transmitters. push_back (t);	
+	   }
+	   if (dxMode)
 	      addtoLogFile (&theTransmitter);
-	   }
-	   listChanged	= true;
+	   need_to_print = true;
 	}
 //
-//	Check which one is "strongest", 
-	if (index == 0) {
-	   int currentMax = -1;
-	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	      if (channel.transmitters. at (i). isStrongest)
-	         currentMax = i;
-	      channel. transmitters. at (i). isStrongest = false;
+	uint8_t mainId = strongest >> 8;
+	uint8_t subId  = strongest  & 0xFF;
+	int	bestIndex = -1;
+//	Now the list is updated, see whether or not the strongest is ...
+	for (int i = 0; i < channel. transmitters. size (); i ++) {
+	   uint8_t old_mainId = channel. transmitters [i]. theTransmitter. mainId;
+	   uint8_t old_subId  = channel. transmitters [i]. theTransmitter. subId;
+	   if ((old_mainId == mainId) && (old_subId == subId)) {
+	      if (channel. transmitters [i]. isStrongest) 
+	         break;	// nothing changes
+	      else 
+	         channel. transmitters [i]. isStrongest = true;
+	      bestIndex = i;
 	   }
-
-	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	      if ((channel. transmitters. at (i). theTransmitter. mainId == mainId) &&
-	          (channel. transmitters. at (i). theTransmitter. subId == subId))  {
-	         channel. transmitters. at (i). isStrongest = true;
-	         if (i != currentMax)
-	            listChanged = true;
-	      }
-	   }
+	   else 
+	      channel. transmitters [i]. isStrongest = false;
+	   need_to_print = true;
 	}
-
-//	display the transmitters on the scope widget
-	if (!(theNewDisplay. isHidden () &&
-	               (theNewDisplay. get_tab () == SHOW_TII))) 
-	   theNewDisplay. show_transmitters (channel. transmitters);
-//
-	if (!dxMode) {
-	   QFont f ("Arial", 9);
-	   distanceLabel ->  setFont (f);
-	}
-	else {
-	   if (listChanged)	// adapt the list and display
-	      theDXDisplay. cleanUp ();
-	   theDXDisplay. show ();
-	   theDXDisplay. setChannel (channel. channelName);
-	}
-
-	if (!listChanged && dxMode)
+	if (!need_to_print)
 	   return;
 
-	int	maxTrans	= -1;
-//	The list was changed, so we rewrite the dxDisplay and 
-//	the map
-	QString labelText;
 //
-//	we only compute distances for "reasonable" values
-	for (auto &theTr : channel. transmitters) {
-	   if (theTr. isValid) {
-	      position thePosition;
-	      thePosition. latitude	= theTr. theTransmitter. latitude;
-	      thePosition. longitude	= theTr. theTransmitter. longitude;
+//	for content maps etc we need to have the data of the strongest
+//	signal
+	if (bestIndex >= 0) {
+	   cacheElement *ce = &channel. transmitters [bestIndex]. theTransmitter;	
+	   channel. mainId		= ce -> mainId;
+           channel. subId		= ce -> subId;
+           channel. transmitterName	= ce -> transmitterName;
+           channel. height		= ce -> height;
+           channel. distance		= ce -> distance;
+           channel. azimuth		= ce -> azimuth; 
+	}
 
-	      if (theTr. theTransmitter. valid && theTr. isStrongest) {
-	         channel. targetPos. latitude	= thePosition. latitude;
-	         channel. targetPos. longitude	= thePosition. longitude;
-	         channel. transmitterName		=
-	                 theTr. theTransmitter. transmitterName;
-//	         channel. mainId		= theTr. tiiValue >> 8;
-//	         channel. subId			= theTr. tiiValue & 0xFF;
-	         channel. mainId	=
-	                 theTr. theTransmitter. mainId;
-	         channel. subId	=
-	                 theTr. theTransmitter. subId;
-	         channel. height =
-	                 theTr. theTransmitter. height;
-	      }
-
-	      theTr. isFurthest	= false;
-	
-	      QString theName 	= theTr. theTransmitter. transmitterName;
-
-	      if (theTr. theTransmitter. distance > maxDistance) {
-	         maxTrans	= (theTr. theTransmitter. mainId << 8) |
-	                           theTr. theTransmitter. subId;
-	         maxDistance	= theTr. theTransmitter. distance;
-	      }
-
-	      if (dxMode) {
-	         theDXDisplay. addRow (&theTr. theTransmitter,
-	                                  theTr. isStrongest);
-	      }
-	      else { // no dxMode
-	         labelText =
-	              create_tiiLabel (&theTr. theTransmitter);
-	         distanceLabel	-> setText (labelText);
-	      }
-	   }
-	   else {	// no valid transmitter
-	      if (dxMode) {
-	         theDXDisplay. addRow (theTr. theTransmitter. mainId,
-	                               theTr. theTransmitter. subId,
-	                               theTr. theTransmitter. channel);
-	      }
-	      else  {
-	         uint8_t mainId		= theTr. theTransmitter. mainId;
-	         uint8_t subId		= theTr. theTransmitter. subId;
-	         labelText = "(" + QString::number (mainId) + ","
-	                            + QString::number (subId) + ") ";
-	         labelText += "not in database";
+//	if the list has somehow changed, rewrite it
+	if (dxMode) {
+	   theDXDisplay. cleanUp ();
+	   theDXDisplay. show ();
+	   for (int i = 0; i < channel. transmitters. size (); i ++) 
+	      theDXDisplay. addRow (&channel. transmitters [i]. theTransmitter,
+	                            channel. transmitters [i]. isStrongest);
+	}
+	else {	// just show on the main widget the strongest
+	   for (auto &theTr: channel. transmitters) {
+	      if (theTr. isStrongest) {
+	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
 	         distanceLabel	-> setText (labelText);
 	      }
 	   }
 	}
-
-//	now handling the map
-//	see if we have a map
-	if ((mapHandler == nullptr) || !listChanged) 
+//
+	if (mapHandler == nullptr)
 	      return;
+//
+//	we need to compute the one with the largest distance	
+	maxDistance = 0;
+	transmitterDesc *best = nullptr;
+	for (auto &theTr : channel. transmitters) {
+	   if (theTr. theTransmitter. transmitterName == "not in database")
+	      continue;
+	   if (theTr. theTransmitter. distance > maxDistance) {
+	      maxDistance = theTr. theTransmitter. distance;
+	      best =  &theTr;
+           }
+	}
+	if (best == nullptr)
+	   return;	// should not happen
+	int	maxTrans	= (best -> theTransmitter. mainId << 8) |
+	                          (best -> theTransmitter. subId);
 
 	for (auto &theTr : channel. transmitters) {
-	   if (!theTr. theTransmitter. valid)
+	   if (theTr. theTransmitter. transmitterName == "not in database")
 	      continue;
 
 	   uint8_t key	= MAP_NORM_TRANS;	// default value
@@ -3870,7 +3851,7 @@ bool listChanged = false;
 	   if (!localTransmitters) {
 	      uint8_t mainId = theTr. theTransmitter. mainId;
 	      uint8_t subId  = theTr. theTransmitter. subId;
-	      if (((mainId << 8) | subId)  == maxTrans) { 
+	      if (((mainId << 8) | subId)  == maxTrans) {
 	         key = MAP_MAX_TRANS;
 	      }
 	   }
@@ -4224,7 +4205,8 @@ bool exists	= false;
 	   return;
 
 	QString fileName = path_for_tiiFile + "tii-files.csv";
-	if (theFile = fopen (fileName. toLatin1 (). data (), "r"))  {
+	theFile = fopen (fileName. toLatin1 (). data (), "r");
+	if (theFile != nullptr) {
 	   exists = true;
 	   fclose (theFile);
 	}

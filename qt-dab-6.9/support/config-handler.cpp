@@ -200,7 +200,7 @@ int	index_for_key (int key) {
 	                             TII_THRESHOLD, 4);
 	this -> tiiThreshold_setter -> setValue (v);
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &configHandler::handle_tiiThreshold);
+	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
 	set_Colors ();

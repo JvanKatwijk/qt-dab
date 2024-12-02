@@ -160,14 +160,14 @@ public:
 	int		nrTransmitters;
 	int		snr;
 	std::vector<transmitterDesc>	transmitters;
+	position	targetPos;
 //	QByteArray	transmitters;
 	int8_t		mainId;
 	int8_t		subId;
-	position	targetPos;
 	QString		transmitterName;
 	float		height;
 	float		distance;
-	float		corner;
+	float		azimuth;
 	bool		audioActive;
 
 	void	cleanChannel () {
@@ -179,12 +179,12 @@ public:
 	nrTransmitters	= 0;
 	transmitters. resize (0);
 	countryName	= "";
+	has_ecc		= false;
+	Eid		= 0;
 	targetPos	= position {0, 0};
 	mainId		= -1;
 	subId		= -1;
 	transmitterName	= "";
-	Eid		= 0;
-	has_ecc		= false;
 	snr		= 0;
 	height		= -1;
 	distance	= -1;
@@ -402,7 +402,8 @@ private:
 
 	QString			create_tiiLabel (const cacheElement *);
 	void			addtoLogFile	(const cacheElement *);
-
+	void			removeFromList	(uint8_t, uint8_t);
+	cacheElement		*inList		(uint8_t, uint8_t);
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();
@@ -471,7 +472,8 @@ public slots:
 	void			handle_iqSelector	();
 
 	void			show_spectrum		(int);
-	void			show_tii		(int, float, int);
+	void			handle_tiiThreshold	(int);
+	void			show_tiiData		(const std::vector <tiiData> &);
 	void			show_tii_spectrum       ();
 	void			show_snr		(float);
 	void			show_null		(int);
