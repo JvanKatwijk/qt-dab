@@ -29,6 +29,7 @@
 #include	<vector>
 #include	"dab-constants.h"
 #include	"fft-handler.h"
+#include	"phasetable.h"
 class	QSettings;
 
 class	TII_Detector_B {
@@ -39,16 +40,20 @@ public:
 	void		setMode		(bool);
 	void		addBuffer	(std::vector<Complex>);
 	void		set_tiiThreshold	(int);
-	std::vector<tiiData>	processNULL	(bool);
+	QVector<tiiData>	processNULL	();
 
 private:
 	QSettings	*dabSettings;
 	dabParams	params;
+	phaseTable	theTable;
+	std::vector<Complex> refTable;
 	int16_t		T_u;
 	int16_t		carriers;	
 	fftHandler	my_fftHandler;
 	void		resetBuffer	();
 	void		collapse (std::vector<Complex> &inVec, float *outVec);
+
+	bool		isPeak (const Complex *v, int index, float avg);
 
 	bool		collisions	= false;
 	uint8_t		invTable [256];

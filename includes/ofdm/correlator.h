@@ -33,7 +33,6 @@
 #include	"dab-params.h"
 #include	"process-params.h"
 #include	"ringbuffer.h"
-#include	"fft-handler.h"
 
 class	RadioInterface;
 

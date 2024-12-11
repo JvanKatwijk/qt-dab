@@ -1,3 +1,4 @@
+#
 /*
  *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -156,6 +157,7 @@ constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
 
 	TII_Detector_A::TII_Detector_A (uint8_t dabMode, 
 	                          QSettings	*dabSettings):
+	                              theTable (dabMode),
 	                               params(dabMode),
 		                       T_u (params.get_T_u()),
   		                       carriers (params. get_carriers ()),
@@ -169,10 +171,6 @@ constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
            window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
 	   theBuffer [i] = Complex (0, 0);
 	}
-        memset (invTable, 0x377, 256);
-        for (int i = 0; i < 70; ++i)
-            invTable [table [i]] = i;
-
 	tiiThreshold	= value_i (dabSettings, CONFIG_HANDLER,
 	                                        "tiiSettings", 4) * 2;
 }
@@ -190,8 +188,6 @@ void	TII_Detector_A::resetBuffer	() {
 
 void	TII_Detector_A::reset	() {
 	resetBuffer ();
-	for (int i = 0; i < carriers / 2; i++)
-	   decodedBuffer [i] = Complex (0, 0);
 }
 
 void	TII_Detector_A::addBuffer (std::vector<Complex> v) {
@@ -271,7 +267,7 @@ tiiData *element2 = (tiiData *)b;
 	   return 0;
 }
 
-std::vector<tiiData> TII_Detector_A::processNULL (bool dxMode) {
+QVector<tiiData> TII_Detector_A::processNULL () {
 // collapsed ETSI float values
 float etsi_floatTable [NUM_GROUPS * GROUPSIZE];	
 
@@ -289,7 +285,7 @@ float max = 0;
 // noise level
 float noise = 1e9;
 // results
-std::vector<tiiData> theResult;
+QVector<tiiData> theResult;
 
 	collapse (theBuffer. data (), etsiTable, nonetsiTable);
 
@@ -399,27 +395,7 @@ std::vector<tiiData> theResult;
 	      element. norm		= norm;
 	      theResult. push_back (element);
 	   }
-
-// Calculate the level of the second main ID
-//	   for (int i = 0; i < NUM_GROUPS; i++) {
-//	      if ((table [mainId] & bits [i])== 0) {
-//	         int index = subId + GROUPSIZE * i;
-//	         if (float_ptr [index] > noise * threshold)
-//	            sum += cmplx_ptr [index];
-//	      }
-//	   }
-// List only additional main ID 99
-//	   element. mainId	= 99;
-//	   element. strength	= abs (sum)/max/(count - 4);
-//	   element. phase	= arg(sum) * F_DEG_PER_RAD;
-//	   element. norm	= norm;
-//	   theResult. push_back (element);
 	}
-//	fprintf (stderr, "max =%.0f, noise = %.1fdB\n",
-//	                                  max, 10 * log10 (noise/max));
-	if (max > 4000000)
-	   for (int i = 0; i < carriers / 2; i++)
-	      decodedBuffer [i] *= 0.9;
 	resetBuffer ();
 	qsort (theResult.data (), theResult. size (),
 	                               sizeof (tiiData), &fcmp);

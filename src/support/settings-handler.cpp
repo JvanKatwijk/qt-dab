@@ -3,7 +3,7 @@
 #include	"settings-handler.h"
 
 
-void	store (QSettings *s, QString paragraph, QString key, QString &v) {
+void	store (QSettings *s, QString paragraph, QString key, QString v) {
 	s	-> beginGroup (paragraph);
 	s	-> setValue (key, v);
 	s	-> endGroup ();

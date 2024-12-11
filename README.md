@@ -37,12 +37,13 @@ with Qt6, and indeed, the current sourcetree can be compiled with either.
 Anyway, while preparing the sources for Qt6, some more changes were made, so
 the version number was increased and is 6.9.
 
-Apart from the modifications required for Qt6 - mosty the Qt_audio soundhandler - some more modifications were made, most of them on my "todo" list.
-Some of them are clearly visible, others are "under the hood"
+Apart from the modifications required for Qt6 - mosty the Qt_audio soundhandler  that is still troublesome for windows using Qt6 - some more modifications were made, most of them on my "todo" list. Some of them are clearly visible, others are "under the hood"
+
+ * the spectrum widget is slightly enlarged, to get a better view on the different "scopes". Additionally, the NULL scope has a marker, telling here the software "thinks" the first datablock in the input samplestream starts (ideally this is sample 504). Furthermore, as an experiment, the largest peaks in the correlation scope are matched to TII data. 
 
  * the audio strength meter and the "mot" indicator are placed on the main widget, which seems to make more sense
 
- * the Spectrum widget has a "BER" indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of decoding, the picture below show a value of 0.012, indicating that (on average) 12 bits per 1000 were wrong and needed correction when decoding the FIC data.
+ * the Spectrum widget has a "BER" indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of the decoded samples, the picture below show a value of 0.015, indicating that (on average) 15 input bits per 1000  needed correction when decoding the FIC data.
 
  * the Quality indicator on the spectrum widget shows now the Modulation quality as defined in ETSI TR 101 290 V1.3.1. 
 
@@ -50,7 +51,7 @@ Some of them are clearly visible, others are "under the hood"
 
  * There were questions why not to restrict the visible services in the list to audioservices only. The configuration and control widget has a selector for that.
 
- * Since there was an additional selector on the configuration and control widget, the layout of the widget chanhed a little.
+ * Since there was an additional selector on the configuration and control widget, the layout of the widget changed a little.
 
  * the dxDisplay now shows more data on the transmitters that are identified in the current channel. 
 
@@ -59,6 +60,10 @@ Some of them are clearly visible, others are "under the hood"
  * if the "dxMode" is "on" the tii data, as appearing on the dxDisplay, is now written - extended with the coordinates of the transmitters - in a ".csv" file.
 
 ![6.9](/res/read_me/tiifile.png?raw=true)
+
+ * Some checkboxes on the configuration widget were obsolete and are removed
+
+ * the SDRplay device selector now shows - when an RSPDuo is recognized - a tuner selector that seems to work.
 
 The Qt6 based version for Linux works fine, there are, however, some issues
 with the (cross compiled) Windows versions, probably caused by problems with some incompatible dll's.

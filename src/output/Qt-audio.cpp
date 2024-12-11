@@ -33,7 +33,7 @@ class	RadioInterface;
 #include	"Qt-audiodevice.h"
 	Qt_Audio::Qt_Audio (RadioInterface *mr,
 		            QSettings *settings):
-	                    tempBuffer (16 * 32768) { 
+	                       tempBuffer (16 * 32768) { 
 	audioSettings		= settings;
 	working. store		(false);
 	newDeviceIndex		= 0;
@@ -50,10 +50,10 @@ class	RadioInterface;
 	                       QMediaDevices::defaultAudioOutput ();
 	outputDevices. push_back (defaultDevice);
 
-	for (auto &theDevice : QMediaDevices::audioOutputs ()) {
-	   if (theDevice. isFormatSupported (m_settings))
-	   if (theDevice. isFormatSupported (m_settings)) {
-	      outputDevices. push_back (theDevice);
+	for (auto &deviceInfo : QMediaDevices::audioOutputs ()) {
+	   if ((deviceInfo != defaultDevice) &&
+	           deviceInfo. isFormatSupported (m_settings)) {
+	      outputDevices. push_back (deviceInfo);
 	   }
 	}
 }
@@ -94,7 +94,8 @@ void	Qt_Audio::restart	() {
 	m_audioOutput	= new QAudioSink (m_settings);
 	m_audioOutput -> setBufferSize (10 * 480 * sizeof (float));
 	
-	theIODevice = new Qt_AudioDevice (mr, &tempBuffer);
+	theIODevice	= new Qt_AudioDevice (mr, &tempBuffer);
+	theIODevice	-> start ();
 	m_audioOutput	-> start (theIODevice);
 	if (m_audioOutput -> error () == QAudio::NoError) {
 	   working. store (true);
@@ -102,14 +103,16 @@ void	Qt_Audio::restart	() {
 	}
 	else
 	   fprintf (stderr, "restart fails\n");
-	int vol		= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
-//	deviceList. at (newDeviceIndex). setVolume ((float)vol / 100);
-	fprintf (stderr, "restarted\n");
+	int vol	= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
+        m_audioOutput -> setVolume ((float)vol / 100);
 	working. store (true);
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
-	(void)s;
+	for (int i = 0; i < outputDevices. size (); i ++)
+	   if (outputDevices [i]. description () == s)
+	      newDeviceIndex = i;
+	
 	newDeviceIndex	= index;
 	stop ();
 	restart ();
@@ -268,7 +271,7 @@ void	Qt_Audio::restart	() {
 	theWorker	= m_audioOutput	-> start ();
 	if (m_audioOutput -> error () == QAudio::NoError) {
 	   working. store (true);
-//	   fprintf (stderr, "Device reports: no error\n");
+	   fprintf (stderr, "Device reports: no error\n");
 	}
 	else
 	   fprintf (stderr, "restart gaat niet door\n");
@@ -278,8 +281,9 @@ void	Qt_Audio::restart	() {
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
-	(void)s;
-	newDeviceIndex	= index;
+	for (int i = 0; i < theList. size (); i ++)
+	   if (theList [i]. deviceName () == s)
+	      newDeviceIndex = i;
 	stop ();
 	restart ();
 	return working. load ();

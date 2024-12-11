@@ -184,3 +184,6 @@ void	spectrumScope::set_bitDepth	(int d) {
 	this	-> bitDepth	= d;
 }
 
+void	spectrumScope::clean		() {
+}
+

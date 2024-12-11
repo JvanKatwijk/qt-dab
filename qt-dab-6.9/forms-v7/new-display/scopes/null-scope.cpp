@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2022
+ *    Copyright (C)  2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -45,6 +45,11 @@ QString	colorString	= "black";
 	colorString	= dabSettings -> value ("curveColor",
 	                                            "magenta"). toString();
 	curveColor	= QColor (colorString);
+
+	colorString	= dabSettings -> value ("labelColor",
+	                                             "yellow"). toString ();
+	labelColor	= QColor (colorString);
+
 //	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
 	plotgrid		= nullScope;
@@ -78,13 +83,16 @@ QString	colorString	= "black";
 	spectrumCurve. setOrientation (Qt::Horizontal);
 	spectrumCurve. setBaseline	(0);
 	spectrumCurve. attach (plotgrid);
+
+	Marker		= new QwtPlotMarker ();
 }
 
 	nullScope::~nullScope	() {
 	delete		grid;
+	delete	Marker;
 }
 
-void	nullScope::display	(const Complex *V, int amount) {
+void	nullScope::display	(const Complex *V, int amount, int startIndex) {
 float	max	= 0;
 floatQwt X_axis [512];
 floatQwt Y_values [512];
@@ -95,7 +103,26 @@ floatQwt Y_values [512];
 	   if (abs (V [i]) > max)
 	      max = abs (V [i]);
 	}
-	   
+
+	if (startIndex < 0)
+	   Marker -> hide ();
+	else {
+//	   fprintf (stderr, "Hoera, we gaan de marker zetten %d\n", startIndex); 
+	   Marker	-> setXValue (startIndex);
+	   Marker	-> setYValue (200);
+           Marker	-> setLineStyle (QwtPlotMarker::VLine);
+           QwtText theText = "***" + QString::number (startIndex);
+           QFont zz = theText. font ();
+           int pp = zz. pointSize ();
+           zz . setPointSize (pp + 3);
+           theText. setFont (zz);
+           Marker	-> setLinePen (labelColor, 1.0);
+           Marker	-> setLabelOrientation (Qt::Orientation::Vertical);
+           Marker	-> setLabelAlignment (Qt::AlignLeft);
+           Marker	-> setLabel  (theText);
+           Marker	-> attach (plotgrid);
+	}
+
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (floatQwt)X_axis [0],
 				         X_axis [512 - 1]);
@@ -131,10 +158,18 @@ QColor color;
 	   return;
 	this		-> curveColor	= color;
 
+	color	= QColorDialog::getColor (labelColor,
+	                                        nullptr, "label color");
+	if (!color. isValid ())
+	   return;
+
+	this		-> labelColor	= color;
+
 	dabSettings	-> beginGroup ("nullScope");
 	dabSettings	-> setValue ("displayColor", displayColor. name ());
 	dabSettings	-> setValue ("gridColor", gridColor. name ());
 	dabSettings	-> setValue ("curveColor", curveColor. name ());
+	dabSettings	-> setValue ("labelColor", labelColor. name ());
 	dabSettings	-> endGroup ();
 
 	spectrumCurve. setPen (QPen (this -> curveColor, 2.0));
@@ -156,3 +191,7 @@ QColor color;
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
+
+void	nullScope::clean		() {
+}
+

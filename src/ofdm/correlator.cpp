@@ -108,13 +108,18 @@ const	int SEARCH_OFFSET = T_g / 2;
 	   sum	+= lbuf [i];
 	}
 
+	typedef struct {
+	   int index;
+	   float Value;
+	} corVal;
+	std::vector<corVal> workList;
 	sum /= T_u / 2;
 	QVector<int> indices;
 
 	for (i = T_g - SEARCH_OFFSET; i < T_g + SEARCH_OFFSET; i ++) {
 	   if (lbuf [i] / sum > threshold)  {
 	      bool foundOne = true;
-	      for (int j = 1; (j < SEARCH_GAP) &&
+	      for (int j = 2; (j < SEARCH_GAP) &&
 	                              (i + j < T_g + SEARCH_OFFSET); j ++) {
 	         if (lbuf [i + j] > lbuf [i]) {
 	            foundOne = false;
@@ -122,8 +127,11 @@ const	int SEARCH_OFFSET = T_g / 2;
 	         }
 	      }
 	      if (foundOne) {
-	         indices. push_back (i);
-	         if (lbuf [i]> Max){
+	         corVal t;
+	         t. index = i;
+	         t. Value = lbuf [i];
+	         workList. push_back (t);
+	         if (lbuf [i] > Max){
 	            Max = lbuf [i];
 	            maxIndex = i;
 	         }
@@ -135,25 +143,37 @@ const	int SEARCH_OFFSET = T_g / 2;
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);
 	}
-
-	if (!firstFound) {
-	   for (int i = 0; i < indices. size (); i ++) {
-	      if (T_g - 30 <= indices. at (i) &&
-	                    indices. at (i) <= T_g + 30) {
-	         std::vector<int> temp;
-	         temp. push_back (indices. at (i));
-	         for (int j = 0; j < i; j ++)
-	            temp. push_back (indices. at (j));
-	         for (int j = i + 1; j < indices. size (); j ++)
-	            temp. push_back (indices. at (j));
-	         indices. resize (0);
-	         for (int i = 0; i < (int)(temp. size ()); i ++)
-	            indices. push_back (temp. at (i));
-	         break;
+	
+	while (workList. size () > 0) {
+	   float Max = 0;
+	   int bestIndex = -1;
+	   for (int i = 0; i < workList. size (); i ++) {
+	      if (workList [i]. Value > Max) {
+	         bestIndex = i;
+	         Max = workList [i]. Value;
 	      }
+	   }
+	   if (bestIndex >= 0) {
+	      indices. push_back (workList [bestIndex]. index);
+	      workList. erase (workList. begin () + bestIndex);
 	   }
 	}
 
+//	for (int i = 0; i < indices. size (); i ++) {
+//	   if (T_g - 15 <= indices. at (i) &&
+//	                    indices. at (i) <= T_g + 15) {
+//	      std::vector<int> temp;
+//	      temp. push_back (indices. at (i));
+//	      for (int j = 0; j < i; j ++)
+//	         temp. push_back (indices. at (j));
+//	      for (int j = i + 1; j < indices. size (); j ++)
+//	         temp. push_back (indices. at (j));
+//	      indices. resize (0);
+//	      for (int i = 0; i < (int)(temp. size ()); i ++)
+//	         indices. push_back (temp. at (i));
+//	      break;
+//	   }
+//	}
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (lbuf, T_u / 2);

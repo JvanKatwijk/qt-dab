@@ -54,7 +54,9 @@ public:
 	void		display			(const std::vector<float> &v,
 	                                         int T_g,
 	                                         int length,
-		                                 int sliderValue);
+		                                 int sliderValue,
+	                                         const std::vector<displayElement> &);
+	void		clean			();
 
 private:
 	QwtPlotCurve	spectrumCurve;
@@ -63,10 +65,13 @@ private:
         QColor          displayColor;
         QColor          gridColor;
         QColor          curveColor;
+	QColor		labelColor;
+
 	int		plotLength;
 	QwtPlot         *plotgrid;
         QwtPlotGrid     *grid;
 
+	std::vector<QwtPlotMarker *>	Markers;
 	int		displaySize;
 
 	float		get_db		(float);

@@ -37,8 +37,8 @@ public:
 	QString		ensemble;
 	QString		location;
 	uint16_t 	Eid;
-	int8_t		mainId;
-	int8_t		subId;
+	uint8_t		mainId;
+	uint8_t		subId;
 	QString		transmitterName;
 	float		latitude;
 	float		longitude;
@@ -61,8 +61,8 @@ public:
 	   channel		= "";
 	   ensemble		= "";
 	   Eid			= 0;
-	   mainId		= -1;
-	   subId		= -1;
+	   mainId		= 255;
+	   subId		= 255;
 	   transmitterName	= "not in database";
 	   latitude		= 0;
 	   longitude		= 0;

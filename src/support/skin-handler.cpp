@@ -41,6 +41,7 @@
 	                    "Combinear" <<
 	                    "Darkeum"	<<
 	                    "EasyCode"	<<
+	                    "globstyle" <<
 	                    "Diffnes";
 
 	skinList. setStringList (skins);

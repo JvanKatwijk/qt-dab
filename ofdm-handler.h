@@ -40,8 +40,7 @@
 #include	"ofdm-decoder.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	"tii-detector-1.h"
-#include	"tii-detector-2.h"
+#include	"tii-detector.h"
 #include	"eti-generator.h"
 
 class	RadioInterface;
@@ -104,9 +103,8 @@ public:
 	                                         FILE *, int);
 	bool		set_dataChannel		(packetdata &,
 	                                         RingBuffer<uint8_t> *, int);
-	void		set_tiiDetectorMode	(bool);
+//	void		set_tiiDetectorMode	(bool);
 	void		handle_iqSelector	();
-	void		set_dcRemoval		(bool);
 	void		handle_decoderSelector	(int);
 	void		set_correlationOrder	(bool);
 	void		set_dxMode		(bool);
@@ -120,8 +118,7 @@ private:
 	sampleReader		theReader;
 	ficHandler		theFicHandler;
 	etiGenerator		theEtiGenerator;
-	TII_Detector_A		theTIIDetector_A;
-	TII_Detector_B		theTIIDetector_B;
+	TII_Detector		theTIIDetector;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 
@@ -159,20 +156,19 @@ private:
 	bool			isEvenFrame	(int16_t, dabParams *);
 	bool			correlationOrder;
 	bool			dxMode;
-	uint8_t			tiiDecoder;
 virtual	void			run		();
 signals:
 	void		set_synced		(bool);
 	void		no_signal_found		();
 	void		set_sync_lost		();
-	void		show_tiiData		(const std::vector<tiiData> &);
+	void		show_tiiData		(QVector<tiiData>, int);
 	void		show_tii_spectrum	();
 	void		show_spectrum		(int);
 	void		show_snr		(float);
 	void		show_snr		(float, float, float,
 	                                                  float, float);
 	void		show_clock_error	(int);
-	void		show_null		(int);
+	void		show_null		(int, int);
 	void		show_channel		(int);
 	void		show_Corrector		(int, float);
 };

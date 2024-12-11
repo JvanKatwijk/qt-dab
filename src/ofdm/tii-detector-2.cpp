@@ -115,6 +115,7 @@ uint8_t table [] = {
 
 		TII_Detector_B::TII_Detector_B (uint8_t dabMode,
 	                                       QSettings	*dabSettings):
+	                                      theTable (dabMode),
 	                                      params (dabMode),
 	                                      T_u (params. get_T_u ()),
 	                                      carriers (params. get_carriers ()),
@@ -126,10 +127,24 @@ uint8_t table [] = {
 	for (int i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
 
+	refTable.               resize (T_u);
+        for (int i = 0; i < T_u; i ++)
+           refTable [i] = Complex (0, 0);
+//
+//      generate the refence values using the format we have after
+//      doing an FFT
+        for (int i = 1; i <= carriers / 2; i ++) {
+           float Phi_k = theTable. get_Phi (i);
+           refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
+           Phi_k = theTable. get_Phi (-i);
+           refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
+        }
+
 	memset (invTable, 0x377, 256);
 	for (int i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
 	detectMode_new	= false;
+//	detectMode_new	= true;
 	tiiThreshold	= value_i (dabSettings, CONFIG_HANDLER, 
 	                                     "tiiThreshold", 4);
 }
@@ -184,6 +199,20 @@ void	TII_Detector_B::collapse (std::vector<Complex> &inVec, float *outVec) {
 	}
 }
 
+bool	TII_Detector_B::isPeak (const Complex *v, int index, float avg) {
+	if (abs (v [index]) < 2 * avg)
+	   return false;
+	if (abs(v [index + 1]) < 2 * avg)
+	   return false;
+	return true;
+	if (index > 2)
+	   if (abs (v [index - 2]) > 0.75 * abs (v [index]))
+	      return false;
+	if (abs (v [index + 1 + 2]) > 0.75 * abs (v [index + 1]))
+	   return false;
+	return true;
+}
+	
 static
 uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
@@ -193,21 +222,21 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
 
-std::vector<tiiData>	TII_Detector_B::processNULL (bool dxMode) {
+QVector<tiiData>	TII_Detector_B::processNULL () {
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
 float	C_table		[GROUPSIZE];		  // contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
-std::vector<tiiData> theResult;
 
+QVector<tiiData> theResult;
+	bool dxMode	= true;
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
 //	Each "value" is the sum of 4 pairs of subsequent carriers,
 //	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
-
 	collapse (theBuffer, hulpTable);
-//
+
 //	since the "energy levels" in the different GROUPSIZE'd values
 //	may differ, we compute an average for each of the
 //	NUM_GROUPS GROUPSIZE - value groups. 
@@ -251,6 +280,10 @@ std::vector<tiiData> theResult;
 	         }
 	      }
 	   }
+	   float newAvg	= 0;
+	   for (int i = 0; i < NUM_GROUPS; i ++)
+	      newAvg += avgTable [i];
+	   newAvg /= NUM_GROUPS;
 
 //	we extract from this result the highest values that
 //	meet the constraint of 4 values being sufficiently high
@@ -259,24 +292,25 @@ std::vector<tiiData> theResult;
 	
 	   for (int j = 0; j < GROUPSIZE; j ++) {
 	      if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
-//	      if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
 	         maxTable = C_table [j];
 	         maxIndex = j;
 	         break;
 	      }
 	   }
-//
+
 	   if (maxIndex < 0)
 	      return theResult;
 
+	float strength = 10 * log10 (maxTable / (4 * newAvg));
 //	The - almost - final step is then to figure out which
 //	group contributed most, obviously only where maxIndex  > 0
 //	we start with collecting the values of the correct
 //	elements of the NUM_GROUPS groups
 
 	   float x [NUM_GROUPS];
-	   for (int i = 0; i < NUM_GROUPS; i ++) 
+	   for (int i = 0; i < NUM_GROUPS; i ++) {
 	      x [i] = hulpTable [maxIndex + GROUPSIZE * i];
+	   }
 
 //	find the best match
 	   int finInd = -1;
@@ -285,7 +319,7 @@ std::vector<tiiData> theResult;
 	      for (int k = 0; k < (int)(sizeof (table)); k ++) {
 	         float val = 0;
 	         for (int l = 0; l < NUM_GROUPS; l ++)
-	            if ((table [k] & bits [l]) != 0)
+	            if (table [k] & (bits [l] != 0))
 	               val += x [l];
 	         if  (val > mm) {
 	            mm = val;
@@ -296,7 +330,7 @@ std::vector<tiiData> theResult;
 	         tiiData v;
 	         v. subId	= maxIndex;
 	         v. mainId	= finInd;
-	         v. strength	= 1;
+	         v. strength	= strength;
 	         theResult. push_back (v);
 	         for (int i = 0; i < 8; i ++) {
 	            if (table [finInd] & bits [i]) {
@@ -308,6 +342,7 @@ std::vector<tiiData> theResult;
 	   }
 	   else {		// detectMode_new is false
 ////	we extract the four max values as bits
+	      float theStrength = 0;
 	      uint16_t pattern	= 0;
 	      for (int i = 0; i < 4; i ++) {
 	         float mmax	= 0;
@@ -333,7 +368,7 @@ std::vector<tiiData> theResult;
 	      tiiData v;
 	      v. subId		= maxIndex;
 	      v. mainId		= finInd;	
-	      v. strength	= 1;
+	      v. strength	= strength;
 	      theResult. push_back (v);
 	   }
 	   if (!dxMode)

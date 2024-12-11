@@ -195,3 +195,8 @@ bool	Rsp_device::set_notch (bool  b) {
 	return false;
 }
 
+bool	Rsp_device::set_tuner	(int tuner) {
+	(void)tuner;
+	return false;
+}
+

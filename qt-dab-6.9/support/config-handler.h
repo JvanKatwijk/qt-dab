@@ -54,7 +54,6 @@ public:
 	int	switchDelayValue	();
 	int	muteValue		();
 	bool	closeDirect_active	();
-	bool	tii_detector_active	();
 	bool	utcSelector_active	();
 	bool	epg_automatic_active	();
 	bool	eti_active		();
@@ -64,8 +63,6 @@ public:
 	bool	logger_active		();
 	bool	clearScan_Selector_active	();
 	bool	localBrowserSelector_active	();
-	bool	localTransmitterSelector_active	();
-	bool	transmitterNames_active	();
 //
 //	a few others
 	void	showLoad		(float);
@@ -85,7 +82,6 @@ public:
 
 	void	enable_loadLib		();
 	bool	get_correlationSelector	();
-	bool	get_dxSelector		();
 	bool	get_audioServices_only	();
 
 private:
@@ -126,15 +122,11 @@ private slots:
 	void	handle_skinSelector		();
 	void	handle_onTop			(int);
 	void	handle_epgSelector		(int);
-	void	handle_dcRemovalSelector	(int);
-	void	handle_tii_detectorMode		(int);
 	void	handle_utc_selector		(int);
 	void	handle_localBrowser		(int);
-	void	handle_localTransmitterSelector		(int);
 	void	handle_clearScan_Selector	(int);
 	void	handle_saveSlides		(int);
 	void	handle_decoderSelector		(const QString &s);
-	void	handle_saveTransmittersSelector	(int);
 	void	handle_tiiThreshold		(int);
 	void	handle_pathButton		();
 	void	handle_audioServices_only	(int);

@@ -23,24 +23,23 @@
 
 #pragma once
 
-#include	<QtNetwork>
-#include	<QSettings>
-#include	<QLabel>
-#include	<QMessageBox>
-#include	<QLineEdit>
-#include	<QHostAddress>
-#include	<QByteArray>
-#include	<QTcpSocket>
-#include	<QTimer>
-#include	<QComboBox>
-#include	<cstdio>
-#include	"dab-constants.h"
-#include	"device-handler.h"
-#include	"ringbuffer.h"
-#include	"ui_rtl_tcp-widget.h"
+#include  <QtNetwork>
+#include  <QSettings>
+#include  <QLabel>
+#include  <QMessageBox>
+#include  <QLineEdit>
+#include  <QHostAddress>
+#include  <QByteArray>
+#include  <QTcpSocket>
+#include  <QTimer>
+#include  <QComboBox>
+#include  <cstdio>
+#include  "dab-constants.h"
+#include  "device-handler.h"
+#include  "ringbuffer.h"
+#include  "ui_rtl_tcp-widget.h"
 
-class	rtl_tcp_client: //public QObject,
-	                public deviceHandler, Ui_rtl_tcp_widget {
+class rtl_tcp_client :  public deviceHandler, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
 			rtl_tcp_client	(QSettings *);
@@ -49,37 +48,41 @@ public:
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *V, int32_t size);
-	int32_t		Samples		();
-	int16_t		bitDepth	();
-	bool		isFileInput	();
+	int32_t 	Samples		();
+	int16_t 	bitDepth	();
+	void		resetBuffer	();
 	QString		deviceName	();
-private slots:
-	void		sendGain	(int);
-	void		set_Offset	(int);
-	void		set_fCorrection	(int);
-	void		readData	();
-	void		setConnection	();
-	void		wantConnect	();
-	void		setDisconnect	();
+	bool		isFileInput	();
+
 private:
-	RingBuffer<std::complex<float>>	_I_Buffer;
+	RingBuffer<std::complex<float>>  _I_Buffer;
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
-	void		setGainMode	(int32_t gainMode);
 	void		sendCommand	(uint8_t, int32_t);
-	QLineEdit	*hostLineEdit;
-	bool		isvalidRate	(int32_t);
+	QLineEdit	* hostLineEdit;
+	bool		isvalidRate(int32_t);
 	QSettings	*remoteSettings;
-	int32_t		theRate;
+	int32_t		Bitrate;
+	int32_t		vfoFrequency;
 	bool		connected;
-	int16_t		theGain;
-	int		vfoOffset;
-	int16_t		thePpm;
-	QHostAddress	serverAddress;
+	int16_t		Gain;
+	double		Ppm;
+	int16_t		AgcMode;
+	int16_t		biasT;
+	QString		ipAddress;
 	QTcpSocket	toServer;
 	qint64		basePort;
-	bool		dumping;
-	FILE		*dumpfilePointer;
-};
 
+private slots:
+	void		sendGain	(int);
+	void		set_fCorrection(double);
+	void		readData	();
+	void		wantConnect	();
+	void		setDisconnect	();
+	void		setBiasT	(int);
+	void		setBandwidth	(int);
+	void		setPort		(int);
+	void		setAddress	();
+	void		setAgcMode	(int);
+};
 

@@ -50,6 +50,7 @@ public:
 	                         QSettings *);
 		~devScope	();
 	void	display		(const std::vector<float>);
+	void	clean		();
 
 private:
 

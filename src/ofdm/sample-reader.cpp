@@ -63,7 +63,7 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	dcRemoval	= false;
+	dcRemoval	= true;
 	dcReal		= 0;
 	dcImag		= 0;
 	repetitionCounter	= 8;
@@ -190,11 +190,5 @@ void	sampleReader::start_dumping (const QString &fileName, int freq) {
 
 void	sampleReader::stop_dumping() {
 	sourceDumper.close ();
-}
-
-void	sampleReader::set_dcRemoval	(bool b) {
-	dcRemoval	= b;
-	dcReal		= 0;
-	dcImag		= 0;
 }
 

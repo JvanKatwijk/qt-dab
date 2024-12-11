@@ -230,64 +230,6 @@ stopRequest r;
         messageHandler (&r);
 	_I_Buffer. FlushRingBuffer();
 }
-//
-int32_t	sdrplayHandler_v3::getSamples (std::complex<float> *V, int32_t size) { 
-auto *temp 	= dynVec (std::complex<int16_t>, size);
-	if (!receiverRuns. load ())
-	   return 0;
-	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-        for (int i = 0; i < amount; i ++)
-           V [i] = std::complex<float> ((float)real (temp [i]) / denominator,
-                                        (float)imag (temp [i]) / denominator);
-        if (dumping. load ())
-           xmlWriter -> add (temp, amount);
-        return amount;
-}
-
-int32_t	sdrplayHandler_v3::Samples	() {
-	if (!receiverRuns. load ())
-	   return 0;
-	return _I_Buffer. GetRingBufferReadAvailable();
-}
-
-void	sdrplayHandler_v3::resetBuffer	() {
-	_I_Buffer. FlushRingBuffer();
-}
-
-int16_t	sdrplayHandler_v3::bitDepth	() {
-	return nrBits;
-}
-
-QString	sdrplayHandler_v3::deviceName	() {
-	return deviceModel + ":" + serial;
-}
-
-///////////////////////////////////////////////////////////////////////////
-//	Handling the GUI
-//////////////////////////////////////////////////////////////////////
-//
-//	Since the daemon is not threadproof, we have to package the
-//	actual interface into its own thread.
-//	Communication with that thread is synchronous!
-//
-
-void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
-	lnaGainSetting	-> setRange (low, high - 1);
-}
-
-void	sdrplayHandler_v3::set_serial	(const QString& s) {
-	serialNumber	-> setText (s);
-}
-
-void	sdrplayHandler_v3::set_apiVersion (float version) {
-QString v = QString::number (version, 'r', 2);
-	api_version	-> display (v);
-}
-
-void    sdrplayHandler_v3::show_lnaGain (int g) {
-        lnaGRdBDisplay  -> display (g);
-}
-
 void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
 GRdBRequest r (GRdB);
 	
@@ -353,10 +295,69 @@ void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 }
 
 void	sdrplayHandler_v3::set_selectTuner	(const QString &s) {
-	messageHandler (new tunerRequest (s == "tuner 1" ? 1 : 2));
-	QString ss = s;
-	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_TUNER, ss);
+	int tuner = s == "Tuner 1" ? 1 : 2; 
+	messageHandler (new tunerRequest (tuner));
+	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_TUNER, tuner);
 }
+
+//
+int32_t	sdrplayHandler_v3::getSamples (std::complex<float> *V, int32_t size) { 
+auto *temp 	= dynVec (std::complex<int16_t>, size);
+	if (!receiverRuns. load ())
+	   return 0;
+	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
+        for (int i = 0; i < amount; i ++)
+           V [i] = std::complex<float> ((float)real (temp [i]) / denominator,
+                                        (float)imag (temp [i]) / denominator);
+        if (dumping. load ())
+           xmlWriter -> add (temp, amount);
+        return amount;
+}
+
+int32_t	sdrplayHandler_v3::Samples	() {
+	if (!receiverRuns. load ())
+	   return 0;
+	return _I_Buffer. GetRingBufferReadAvailable();
+}
+
+void	sdrplayHandler_v3::resetBuffer	() {
+	_I_Buffer. FlushRingBuffer();
+}
+
+int16_t	sdrplayHandler_v3::bitDepth	() {
+	return nrBits;
+}
+
+QString	sdrplayHandler_v3::deviceName	() {
+	return deviceModel + ":" + serial;
+}
+
+///////////////////////////////////////////////////////////////////////////
+//	Handling the GUI
+//////////////////////////////////////////////////////////////////////
+//
+//	Since the daemon is not threadproof, we have to package the
+//	actual interface into its own thread.
+//	Communication with that thread is synchronous!
+//
+
+void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
+	lnaGainSetting	-> setRange (low, high - 1);
+}
+
+void	sdrplayHandler_v3::set_serial	(const QString& s) {
+	serialNumber	-> setText (s);
+}
+
+void	sdrplayHandler_v3::set_apiVersion (float version) {
+QString v = QString::number (version, 'r', 2);
+	api_version	-> display (v);
+}
+
+void    sdrplayHandler_v3::show_lnaGain (int g) {
+        lnaGRdBDisplay  -> display (g);
+}
+
 
 void	sdrplayHandler_v3::set_xmlDump () {
 	if (xmlWriter == nullptr) {
@@ -396,13 +397,6 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 #endif
 	         this, &sdrplayHandler_v3::set_selectAntenna);
 	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
-}
-
-void	sdrplayHandler_v3::show_tunerSelector	(bool b) {
-	if (b)
-	   tunerSelector	-> show	();
-	else
-	   tunerSelector	-> hide	();
 }
 
 bool	sdrplayHandler_v3::setup_xmlDump () {
@@ -704,6 +698,14 @@ int	deviceIndex	= 0;
 	         nrBits		= 14;
 	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-Duo";
+	         tunerSelector	-> show	();
+	         connect (tunerSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	         &QComboBox::textActivated,
+#else
+	         qOverload<const QString &>(&QComboBox::activated),
+#endif
+	         this, &sdrplayHandler_v3::set_selectTuner);
 	         theRsp	= new RspDuo_handler (this,
 	                                      chosenDevice,
 	                                      KHz (220000),
@@ -824,7 +826,17 @@ int	deviceIndex	= 0;
                  p -> waiter. release (1);
 	         break;
 	      }
-	
+
+	      case TUNERSELECT_REQUEST: {
+	         tunerRequest *p =
+	               (tunerRequest *)(server_queue. front ());
+	         server_queue. pop();
+	         fprintf (stderr, "Going to call set_tuner\n");
+	         p -> result = theRsp -> set_tuner (p -> tuner);
+	         p -> waiter. release (1);
+	         break;
+	      }
+
 	      default:		// cannot happen
 	         fprintf (stderr, "Helemaal fout\n");
 	         break;
@@ -1035,6 +1047,13 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Update");
 	if (sdrplay_api_Update == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_Update\n");
+	   return false;
+	}
+
+	sdrplay_api_SwapRspDuoActiveTuner = (sdrplay_api_SwapRspDuoActiveTuner_t)
+	                 GETPROCADDRESS (Handle, "sdrplay_api_SwapRspDuoActiveTuner");
+	if (sdrplay_api_SwapRspDuoActiveTuner == nullptr) {
+	   fprintf (stderr, "could not find sdrplay_api_SwapRspDuoActiveTuner\n");
 	   return false;
 	}
 

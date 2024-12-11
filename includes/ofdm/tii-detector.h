@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -29,30 +29,30 @@
 #include	<vector>
 #include	"dab-constants.h"
 #include	"fft-handler.h"
+#include	"phasetable.h"
 class	QSettings;
 
-class	TII_Detector_A {
+class	TII_Detector {
 public:
-			TII_Detector_A	(uint8_t dabMode, QSettings *);
-			~TII_Detector_A	();
+			TII_Detector	(uint8_t dabMode, QSettings *);
+			~TII_Detector	();
 	void		reset		();
-	void		setMode		(bool);
 	void		addBuffer	(std::vector<Complex>);
 	void		set_tiiThreshold	(int);
-	std::vector<tiiData>	processNULL	(bool);
+	QVector<tiiData>	processNULL	();
 
 private:
 	QSettings	*dabSettings;
 	dabParams	params;
+	phaseTable	theTable;
+	std::vector<Complex> table_2;
 	int16_t		T_u;
 	int16_t		carriers;	
 	fftHandler	my_fftHandler;
-	void		resetBuffer	();
-	void		collapse	(Complex *, Complex *, Complex *);
+	void		collapse	(Complex *, 
+	                                 Complex *, Complex *);
 
-	bool		collisions	= false;
-	uint8_t		invTable [256];
-	Complex		decodedBuffer[768];
+//	bool		collisions	= false;
 
 	std::vector<Complex >	theBuffer;
 	std::vector<DABFLOAT>	window;

@@ -52,6 +52,7 @@ public:
 		~spectrumScope	();
 	void	display		(floatQwt *, floatQwt *, int, int);
 	void	set_bitDepth	(int);
+	void	clean		();
 
 private:
 

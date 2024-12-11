@@ -98,6 +98,7 @@ class	configHandler;
 #define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
+#define	TII_BUTTON		QString ("tiiButton")
 /*
  *	The main gui object. It inherits from
  *	QWidget and the generated form
@@ -411,7 +412,6 @@ signals:
 public slots:
 	void			channelSignal		(const QString &);
 	void			handle_correlationSelector	(int);
-	void			handle_dxSelector	(int);
 	void			show_dcOffset		(float);
 	void			startScanning		();
 	void			stopScanning		();
@@ -472,10 +472,10 @@ public slots:
 
 	void			show_spectrum		(int);
 	void			handle_tiiThreshold	(int);
-	void			show_tiiData		(const std::vector <tiiData> &);
+	void			show_tiiData		(QVector<tiiData>, int);
 	void			show_tii_spectrum       ();
 	void			show_snr		(float);
-	void			show_null		(int);
+	void			show_null		(int, int);
 	void			showIQ			(int);
 	void			show_correlation	(int, int,
 	                                                 QVector<int> );
@@ -538,6 +538,7 @@ private slots:
 	void			handle_httpButton	();
 	void			setVolume		(int);
 	void			handle_snrLabel		();
+	void			handle_tiiButton	();
 //
 //	color handlers
 	void			handle_labelColor	();
@@ -549,18 +550,17 @@ private slots:
 	void			color_nextServiceButton ();
 	void			color_configButton	();
 	void			color_httpButton	();
+	void			color_tiiButton		();
 
 //
 //	config handlers
 public slots:
 	void			set_transmitters_local		(bool);
-	void			set_tii_detectorMode		(bool);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
 //	void			handle_transmSelector		(int);
 	void			handle_eti_activeSelector	(int);
 	void			handle_loadTable		();
-	void			handle_dcRemovalSelector	(bool);
 	void			selectDecoder			(int);
 	void			handle_aboutLabel		();
 };

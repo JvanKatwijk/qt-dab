@@ -52,6 +52,7 @@ public:
 		~channelScope	();
 	void	display		(const floatQwt *, 
 	                         const floatQwt *, const floatQwt *, int);
+	void	clean		();
 
 private:
 

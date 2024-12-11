@@ -43,6 +43,7 @@
 	                                           ppmValue) {
 //	set_antenna (antennaValue);
 //	set_tuner  (tunerValue)
+	this	-> parent		= parent;
 	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
@@ -57,6 +58,8 @@
 	   set_biasT (true);
 	if (notch)
 	   set_notch (true);
+
+	currentTuner	= 1;
 }
 
 	RspDuo_handler::~RspDuo_handler	() {}
@@ -156,8 +159,23 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-void	RspDuo_handler::set_tuner	(int tuner) {
-	(void)tuner;
+bool	RspDuo_handler::set_tuner	(int tuner) {
+	if (tuner == currentTuner)
+	   return true;;
+
+	sdrplay_api_ErrT res =
+	           parent -> sdrplay_api_SwapRspDuoActiveTuner (
+	                          chosenDevice ->  dev,
+	                          &chosenDevice -> tuner, 
+	                          sdrplay_api_RspDuo_AMPORT_1);
+	if (res != sdrplay_api_Success) {
+	   fprintf (stderr, "Swapping tuner failed\n");
+	}
+	else {
+	   fprintf (stderr, "Swapping tuner success\n");
+	   currentTuner = tuner;
+	}
+	return true;
 }
 
 bool	RspDuo_handler::set_biasT	(bool biasT_value) {

@@ -59,10 +59,13 @@ public:
 		~displayWidget	();
 	int	get_tab		();
 	void	set_bitDepth	(int);
+
+	void	setSilent	();
 	void	show_spectrum	(std::vector<Complex> &, int);
-	void	show_null	(Complex *, int);
-	void	show_correlation	(const std::vector<float> &, int,
-	                         QVector<int> &, int);
+	void	show_null	(Complex *, int, int);
+	void	show_correlation	(const std::vector<float> &,
+	                                 QVector<int> &, int,
+	                                 std::vector<transmitterDesc> &);
 	void	show_tii	(std::vector<Complex>, int);
 	void	show_channel	(const std::vector<Complex>);
 	void	show_stdDev	(const std::vector<float>);

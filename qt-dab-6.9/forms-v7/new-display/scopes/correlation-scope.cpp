@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2022
+ *    Copyright (C)  2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -38,18 +38,22 @@ bool	brush;
 
 	dabSettings	-> beginGroup ("correlationScope");
 	colorString	= dabSettings -> value ("displayColor",
-	                                              "white"). toString();
+	                                              "#8ff0a4"). toString();
 	displayColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("gridColor",
-	                                               "black"). toString();
+	                                            "#8ff0a4"). toString();
 	gridColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("curveColor",
-	                                                "magenta"). toString();
+	                                                "#8ff0a4"). toString();
 	curveColor	= QColor (colorString);
+	colorString	= dabSettings -> value ("labelColor",
+	                                                 "yellow"). toString ();
+	labelColor	= QColor (colorString);
+
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
 
-	plotgrid			= corrGrid;
+	plotgrid	= corrGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
@@ -95,11 +99,10 @@ bool	brush;
 void	correlationScope::display	(const std::vector<float> &v,
 	                                 int T_g,
 	                                 int amount,
-	                                 int sliderValue) {
+	                                 int sliderValue,
+	                                 const std::vector<displayElement> &ss) {
 auto *X_axis	= dynVec (floatQwt, amount);
 auto *Y_value	= dynVec (floatQwt, amount);
-//double X_axis [amount];
-//double Y_value [amount];
 floatQwt Max	= -200;
 int	teller	= 0;
 int	input	= v. size ();
@@ -114,6 +117,33 @@ int	input	= v. size ();
 	   if (Y_value [teller] > Max)
 	      Max = Y_value [teller];
 	   teller ++;
+	}
+
+	for (auto x: Markers) {
+//	   x -> detach (*plotgrid);
+	   delete x;
+	}
+	Markers. resize (0);
+	for (auto &x : ss) {
+	   if (x. index < 0)
+	      break;
+	   QwtPlotMarker *marker  = new QwtPlotMarker (x. Name);
+	   marker -> setXValue (x. index);  
+	   marker -> setYValue (200);  
+	   marker -> setLineStyle (QwtPlotMarker::VLine);
+//	   QwtText theText = x. Name;
+	   QwtText theText = ">>>>>> (" + QString::number (x. TII >> 8) +
+	                      " " + QString::number (x. TII & 0xFF) + ")";
+	   QFont zz = theText. font ();
+	   int pp = zz. pointSize ();
+	   zz . setPointSize (pp + 3);
+	   theText. setFont (zz);
+	   marker -> setLinePen (labelColor, 1.0);
+	   marker -> setLabelOrientation (Qt::Orientation::Vertical);
+	   marker -> setLabelAlignment (Qt::AlignLeft);
+	   marker -> setLabel  (theText);
+	   marker -> attach (plotgrid);
+	   Markers. push_back (marker);
 	}
 
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
@@ -153,10 +183,17 @@ QColor	color;
 	if (!color. isValid ())
 	   return;
 	this	-> curveColor	= color;
+
+	color	= QColorDialog::getColor (labelColor, nullptr, "label color");
+	if (!color. isValid ())
+	   return;
+	this	-> labelColor	= color;
+
 	dabSettings	-> beginGroup ("correlationScope");
 	dabSettings	-> setValue ("displayColor", displayColor. name ());
 	dabSettings	-> setValue ("gridColor", gridColor. name ());
 	dabSettings	-> setValue ("curveColor", curveColor. name ());
+	dabSettings	-> setValue ("labelColor", labelColor. name ());
 	dabSettings	-> endGroup ();
 
 	spectrumCurve. setPen (QPen(this -> curveColor, 2.0));
@@ -173,5 +210,8 @@ QColor	color;
 	grid -> setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
+}
+
+void	correlationScope::clean		() {
 }
 

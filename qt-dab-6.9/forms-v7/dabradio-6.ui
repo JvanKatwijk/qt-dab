@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
+    <width>612</width>
     <height>329</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-6.8</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_13">
+  <layout class="QHBoxLayout" name="horizontalLayout_14">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
@@ -62,7 +62,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>227</width>
+             <width>224</width>
              <height>153</height>
             </rect>
            </property>
@@ -402,7 +402,16 @@
           <double>-20.000000000000000</double>
          </property>
          <property name="upperBound">
-          <double>5.000000000000000</double>
+          <double>0.000000000000000</double>
+         </property>
+         <property name="scaleMaxMajor">
+          <number>9</number>
+         </property>
+         <property name="scaleMaxMinor">
+          <number>2</number>
+         </property>
+         <property name="scaleStepSize">
+          <double>3.000000000000000</double>
          </property>
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
@@ -413,8 +422,11 @@
          <property name="originMode">
           <enum>QwtThermo::OriginMode::OriginMinimum</enum>
          </property>
+         <property name="spacing">
+          <number>2</number>
+         </property>
          <property name="pipeWidth">
-          <number>8</number>
+          <number>6</number>
          </property>
         </widget>
        </item>
@@ -424,32 +436,74 @@
           <double>-20.000000000000000</double>
          </property>
          <property name="upperBound">
-          <double>5.000000000000000</double>
+          <double>0.000000000000000</double>
+         </property>
+         <property name="scaleMaxMajor">
+          <number>9</number>
+         </property>
+         <property name="scaleMaxMinor">
+          <number>4</number>
+         </property>
+         <property name="scaleStepSize">
+          <double>3.000000000000000</double>
          </property>
          <property name="orientation">
           <enum>Qt::Orientation::Horizontal</enum>
          </property>
+         <property name="scalePosition">
+          <enum>QwtThermo::ScalePosition::TrailingScale</enum>
+         </property>
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="borderWidth">
+          <number>1</number>
+         </property>
          <property name="pipeWidth">
-          <number>8</number>
+          <number>6</number>
          </property>
         </widget>
        </item>
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="distanceLabel">
-       <property name="font">
-        <font>
-         <pointsize>9</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured, this line shows the name of the transmitter that is received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <item>
+        <widget class="QLabel" name="distanceLabel">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured, this line shows the name of the transmitter that is received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>168</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="tiiButton">
+         <property name="text">
+          <string>tii disply</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

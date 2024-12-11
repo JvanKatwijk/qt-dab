@@ -46,6 +46,7 @@ Qt_AudioDevice::~Qt_AudioDevice () {
 
 void	Qt_AudioDevice::start () {
 	bool b = open (QIODevice::ReadOnly);
+	fprintf (stderr, "Start QIODevice says %s\n", b ? "yes" : "no");
 }
 
 void	Qt_AudioDevice::stop () {
@@ -75,6 +76,7 @@ qint64	amount = 0;
 	      buffer [i] = 0;
 	}
 
+	fprintf (stderr, "Got %d, asked %d\n", amount, maxSize);
 	totalBytes	+= amount;
 	missedBytes	+= maxSize - amount;
 	return maxSize;

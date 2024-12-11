@@ -85,7 +85,15 @@ typedef struct  {
 	float strength;
 	float phase;
 	bool norm;
+	int	index;
 } tiiData;
+
+typedef struct {
+	float strength;
+	int index;
+	QString Name;
+	int TII;
+} displayElement;
 
 #define	SINGLE_SCAN		0
 #define	SCAN_SINGLE		0

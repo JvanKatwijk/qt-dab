@@ -57,7 +57,6 @@ public:
 	                                 int32_t n, int32_t phase, bool saving);
 	      void	start_dumping	(const QString &, int);
 	      void	stop_dumping();
-	      void	set_dcRemoval	(bool);
 private:
 	      riffWriter	sourceDumper;
 	      RadioInterface	*myRadioInterface;

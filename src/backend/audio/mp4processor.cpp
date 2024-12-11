@@ -145,32 +145,36 @@ int16_t	nbits	= 24 * bitRate;
 	   handleRS (frameBytes. data (), blockFillIndex * nbits / 8,
 	                                     outVector. data (),
 	                                     frameErrors, rsErrors);
-	   if (frameErrors > 0)	// cannot fix the potential frame 
+	   if (frameErrors > 0) {	// cannot fix the potential frame 
 	      blocksInBuffer = 4;
-	   else
+	      return;
+	   }
+	   
 	   if (!fc. check (&outVector [0])) {
 	      blocksInBuffer = 4;
+	      return;
 	   }
-	   else 	// let us try
+
 	   if (!processSuperframe (outVector. data ())) {
 	      frameErrors ++;
 	      blocksInBuffer = 0;
+	      return;
 	   }
-	   else {	// both firecode and superframe are OK
+
+//	when here, both firecode and superframe are OK
 //	since we processed a full cycle of 5 blocks, we just start a
 //	new sequence, beginning with block blockFillIndex
-	      blocksInBuffer	= 0;
-	      totalCorrections += rsErrors;
-	      if (++ goodFrames >= 100) {
-	         show_rsCorrections (totalCorrections, crcErrors);
-	         totalCorrections = 0;
-	         goodFrames = 0;
-	      }
-	      if (++successFrames > 25) {
-	         show_rsErrors (rsErrors);
-	         successFrames	= 0;
-	         rsErrors	= 0;
-	      }
+	   blocksInBuffer	= 0;
+	   totalCorrections += rsErrors;
+	   if (++ goodFrames >= 100) {
+	      show_rsCorrections (totalCorrections, crcErrors);
+	      totalCorrections = 0;
+	      goodFrames = 0;
+	   }
+	   if (++successFrames > 25) {
+	      show_rsErrors (rsErrors);
+	      successFrames	= 0;
+	      rsErrors	= 0;
 	   }
 	}
 }

@@ -37,9 +37,6 @@
 #include	"settings-handler.h"
 //
 
-#define	TII_DECODER_A	0
-#define	TII_DECODER_B	1
-
 /**
   *	\brief ofdmHandler
   *	The ofdmHandler class is the driver of the processing
@@ -62,9 +59,7 @@
 	                                    theFicHandler (mr, p -> dabMode),
 	                                    theEtiGenerator (p -> dabMode,
 	                                                  &theFicHandler),
-	                                    theTIIDetector_A (p -> dabMode,
-	                                                      dabSettings),
-	                                    theTIIDetector_B (p -> dabMode,
+	                                    theTIIDetector (p -> dabMode,
 	                                                      dabSettings),
 	                                    theOfdmDecoder (mr,
 	                                                 p -> dabMode,
@@ -114,10 +109,6 @@
 	totalFrames			= 0;
 	scanMode			= false;
 
-	tiiDecoder			=
-	                   value_i (dabSettings, CONFIG_HANDLER, 
-	                                 TII_DETECTOR_SETTING, TII_DECODER_A);
-
 	connect (this, &ofdmHandler::set_synced,
 	         radioInterface_p, &RadioInterface::set_synced);
 	connect (this, &ofdmHandler::set_sync_lost,
@@ -138,8 +129,7 @@
 //	end of dummy
 	connect (this, &ofdmHandler::show_Corrector,
 	         mr,  &RadioInterface::show_Corrector);
-	theTIIDetector_A. reset();
-	theTIIDetector_B. reset();
+	theTIIDetector. reset();
 	theOfdmDecoder. handle_decoderSelector (decoder);
 }
 
@@ -155,15 +145,8 @@
 	}
 }
 
-void	ofdmHandler::set_tiiDetectorMode	(bool b) {
-	if (!b)
-	   tiiDecoder = TII_DECODER_B;
-	else
-	   tiiDecoder = TII_DECODER_A;
-	theTIIDetector_A. reset ();
-	theTIIDetector_B. reset ();
-//	theTIIDetector_B. setMode (b);
-}
+//void	ofdmHandler::set_tiiDetectorMode	(bool b) {
+//}
 
 void	ofdmHandler::start () {
 	theFicHandler. restart	();
@@ -228,8 +211,7 @@ int	snrCount	= 0;
 	         sampleCount	= 0;
 
 	         set_synced (false);
-	         theTIIDetector_A. reset ();
-	         theTIIDetector_B. reset ();
+	         theTIIDetector. reset ();
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
 	               inSync	= true;
@@ -283,17 +265,17 @@ int	snrCount	= 0;
 
 	         theReader. get_samples (ofdmBuffer, 0,
 	                               T_u, coarseOffset + fineOffset, false);
+
+	         startIndex = myCorrelator. findIndex (ofdmBuffer,
+	                                               correlationOrder,
+	                                               2.5 * threshold);
 	         if (null_shower) {
 	            for (int i = 0; i < T_u / 4; i ++)
 	               tester [T_u / 4 + i] = ofdmBuffer [i];
 	            nullBuffer_p -> putDataIntoBuffer (tester. data (),
 	                                                       T_u / 2);
-	            show_null (T_u / 2);
+	            show_null (T_u / 2, startIndex);
 	         }
-
-	         startIndex = myCorrelator. findIndex (ofdmBuffer,
-	                                               correlationOrder,
-	                                               3 * threshold);
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
 	               set_sync_lost();
@@ -461,23 +443,17 @@ int	snrCount	= 0;
  */
 	      if (params. get_dabMode () == 1) {
 	         if (isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
-	            if (tiiDecoder == TII_DECODER_A)
-	               theTIIDetector_A. addBuffer (ofdmBuffer);
-	            else
-	               theTIIDetector_B. addBuffer (ofdmBuffer);
+	            theTIIDetector. addBuffer (ofdmBuffer);
 	            if (++tii_counter >= tii_delay) {
 	               tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
 	                                                          T_u);
 	               show_tii_spectrum ();
 	               
-	               std::vector<tiiData> resVec =
-	               (tiiDecoder == TII_DECODER_A) ?
-	                              theTIIDetector_A. processNULL (dxMode):
-	                              theTIIDetector_B. processNULL (dxMode);
-	               show_tiiData (resVec);
+	               QVector<tiiData> resVec =
+	                              theTIIDetector. processNULL ();
+	               show_tiiData (resVec, 0);
 	               tii_counter = 0;
-	               theTIIDetector_A. reset();
-	               theTIIDetector_B. reset();
+	               theTIIDetector. reset();
 	            }
 	         }
 	      }
@@ -686,10 +662,6 @@ void	ofdmHandler::handle_iqSelector	() {
 	theOfdmDecoder. handle_iqSelector ();
 }
 
-void	ofdmHandler::set_dcRemoval (bool b) {
-	theReader. set_dcRemoval (b);
-}
-
 void	ofdmHandler::handle_decoderSelector	(int d) {
 	theOfdmDecoder. handle_decoderSelector (d);
 }
@@ -703,7 +675,6 @@ void	ofdmHandler::set_dxMode		(bool b) {
 }
 
 void	ofdmHandler::set_tiiThreshold	(int v) {
-	theTIIDetector_A. set_tiiThreshold (v);
-	theTIIDetector_B. set_tiiThreshold (v);
+	theTIIDetector. set_tiiThreshold (v);
 }
 

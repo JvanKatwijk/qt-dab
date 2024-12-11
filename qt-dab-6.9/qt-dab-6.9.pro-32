@@ -16,9 +16,14 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g 
+#QMAKE_CXXFLAGS	+=  -g 
+#QMAKE_LFLAGS	+=  -g 
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -151,8 +156,7 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/freqsyncer.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
-	   ../includes/ofdm/tii-detector-1.h \
-	   ../includes/ofdm/tii-detector-2.h \
+	   ../includes/ofdm/tii-detector.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
@@ -237,6 +241,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/buttons/verysmallpushbutton.h \
 	   ../includes/support/buttons/smallqlistview.h \
 	   ../includes/support/buttons/smallspinbox.h \
+	   ../includes/support/buttons/circular-button.h \
 	   ../qt-devices/device-handler.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
@@ -296,8 +301,7 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/freqsyncer.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
-	   ../src/ofdm/tii-detector-1.cpp \
-	   ../src/ofdm/tii-detector-2.cpp \
+	   ../src/ofdm/tii-detector.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
@@ -372,6 +376,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/verysmallpushbutton.cpp \
 	   ../src/support/buttons/smallqlistview.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
+	   ../src/support/buttons/circular-button.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
@@ -517,20 +522,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab-qt5-6.9V3
-#	}
-#	else {
-#	   TARGET		= qt-dab-qt6-6.9V3
-#	}
-#	CONFIG		+= dabstick-win-v3
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab-qt5-6.9
+	   TARGET		= qt-dab32-qt5-6.9V3
 	}
 	else {
-	   TARGET		= qt-dab-qt6-6.9
+	   TARGET		= qt-dab32-qt6-6.9V3
 	}
-	CONFIG		+= dabstick-win-v4
+	CONFIG		+= dabstick-win-v3
+#	equals (QT_MAJOR_VERSION, 5) {
+#	   TARGET		= qt-dab-qt5-6.9
+#	}
+#	else {
+#	   TARGET		= qt-dab-qt6-6.9
+#	}
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

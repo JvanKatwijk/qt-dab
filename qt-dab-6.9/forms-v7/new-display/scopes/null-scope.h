@@ -49,7 +49,8 @@ public:
 	                         int,
 	                         QSettings *);
 		~nullScope	();
-	void	display		(const Complex * , int);
+	void	display		(const Complex * , int, int);
+	void	clean		();
 
 private:
 
@@ -58,10 +59,13 @@ private:
 	QColor		displayColor;
 	QColor		gridColor;
 	QColor		curveColor;
+	QColor		labelColor;
 
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;
 	QwtPlotPicker   *lm_picker;
+
+	QwtPlotMarker	*Marker;
 
 
 private slots:

@@ -84,7 +84,7 @@ float Length	= jan_abs (V);
 	avgPowerPerBin.		resize (T_u);
 	avgNullPower.		resize (T_u);
 
-	for (uint32_t i = 0; i < T_u; i ++) {
+	for (int32_t i = 0; i < T_u; i ++) {
 	   avgSigmaSqPerBin	[i] = 0;
 	   offsetVector		[i] = 0;
 	   amplitudeVector	[i] = 0;
@@ -92,7 +92,7 @@ float Length	= jan_abs (V);
 	   avgNullPower		[i] = 0;
 	}
 
-	sum			= 1;
+	meanValue		- 1.0f;
 	iqSelector		= SHOW_DECODED;
 	decoder			= DECODER_1;
 }
@@ -124,8 +124,10 @@ void	ofdmDecoder::processBlock_0 (
   */
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
-	if (withTII)
+	
+	if (withTII) {
 	   return;
+	}
 	
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
@@ -135,6 +137,7 @@ void	ofdmDecoder::processBlock_0 (
 	      compute_avg (avgNullPower [index],
 	                       abs (phaseReference [index]), Alpha);
 	}
+	return;
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -181,7 +184,7 @@ int	sign (DABFLOAT x) {
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &ibits) {
-float	new_sum	= 0.0f;
+float sum = 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
@@ -272,11 +275,12 @@ float	new_sum	= 0.0f;
 	      case  DECODER_3: { //	log likelihood ratio
 	         float sigma = amplitudeVector [index] /
 	                                  avgSigmaSqPerBin [index];
-	         new_sum += sigma * abs (r1);
-	         weight_x = weight_y = -100 * sigma * carriers / sum;
+	         sum	+= sigma * abs (r1);
+	         weight_x = weight_y = -100 * sigma / meanValue;
+	         meanValue = sum / carriers;
 	         ibits [i]		= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
-	         sum = new_sum;
+	         
 	      }
 	      break;
 
@@ -285,20 +289,20 @@ float	new_sum	= 0.0f;
 //	         r1 = r1 * abs (phaseReference [index]); // input power
 	         r1 = r1 / (DABFLOAT)(avgSigmaSqPerBin [index] *
 	                       avgNullPower [index] / avgPowerPerBin [index] + 2);
-	         new_sum += abs (r1);
-	         weight_x = weight_y = -140 * carriers / sum;
+	         sum += abs (r1);
+	         weight_x = weight_y = -140 / meanValue;
+	         meanValue = sum / carriers;
 	         ibits [i]	= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
-	         sum = new_sum;
 	         break;
 
 	      case DECODER_5:
 	         r1 = r1 * abs (phaseReference [index]); // input power
-	         new_sum += abs (r1);
-	         weight_x = weight_y = -140 * carriers / sum;
+	         sum += abs (r1);
+	         weight_x = weight_y = -140 / meanValue;
+	         meanValue = sum / carriers;
 	         ibits [i]	= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
-	         sum = new_sum;
 	         break;
 	   }
 	}

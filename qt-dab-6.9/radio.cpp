@@ -212,7 +212,7 @@ QString h;
 	globals. diff_length	=
 	          value_i (dabSettings_p, DAB_GENERAL, "diff_length", DIFF_LENGTH);
 	globals. tii_delay   =
-	          value_i (dabSettings_p, DAB_GENERAL, "tii_delay", 5);
+	          value_i (dabSettings_p, DAB_GENERAL, "tii_delay", 3);
 	if (globals. tii_delay < 2)
 	   globals. tii_delay	= 2;
 	globals. tii_depth      =
@@ -256,6 +256,8 @@ QString h;
 
 	connect (folder_shower, SIGNAL (clicked ()),
 	         this, SLOT (handle_folderButton ()));
+	connect (tiiButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_tiiButton ()));
 
 //	put the widgets in the right place and create the workers
 	set_position_and_size	(dabSettings_p, this, S_MAIN_WIDGET);
@@ -486,6 +488,8 @@ QString h;
 	         this, &RadioInterface::color_configButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
+	connect (tiiButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_tiiButton);
 	connect (prevServiceButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_prevServiceButton);
 	connect (nextServiceButton, &smallPushButton::rightClicked,
@@ -553,13 +557,16 @@ QString h;
 	peakLeftDamped          = -100;
         peakRightDamped         = -100;
  
-        leftAudio              -> setFillBrush (Qt::darkBlue);
-        rightAudio             -> setFillBrush (Qt::darkBlue);
-        leftAudio              -> setAlarmBrush (Qt::red);
-        rightAudio             -> setAlarmBrush (Qt::red);
-        leftAudio              -> setAlarmEnabled (true);  
-        rightAudio             -> setAlarmEnabled(true);
- 
+        leftAudio	-> setFillBrush	(QColor ("white"));
+        rightAudio	-> setFillBrush (QColor ("white"));
+	leftAudio	-> setBorderWidth	(0);
+	rightAudio	-> setBorderWidth	(0);
+	leftAudio	-> setValue (-30);
+	rightAudio	-> setValue (-30);
+        leftAudio	-> setAlarmBrush (Qt::red);
+        rightAudio	-> setAlarmBrush (Qt::red);
+        leftAudio	-> setAlarmEnabled (true);  
+        rightAudio	-> setAlarmEnabled(true);
 
 //	do we show controls?
 	bool visible	=
@@ -647,11 +654,6 @@ void	RadioInterface::doStart_direct	() {
 	theOFDMHandler	= new ofdmHandler  (this,
 	                                    inputDevice_p,
 	                                    &globals, dabSettings_p, &theLogger);
-	if (value_i (dabSettings_p, CONFIG_HANDLER, "dcRemoval", 0) != 0) {
-	   theOFDMHandler	-> set_dcRemoval  (true);
-	   theNewDisplay. set_dcRemoval (true);
-	}
-
 	channel. cleanChannel ();
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
@@ -674,8 +676,6 @@ void	RadioInterface::doStart_direct	() {
 #endif
 	         this, &RadioInterface::handle_channelSelector);
 
-	if (configHandler_p -> tii_detector_active ())
-	   theOFDMHandler -> set_tiiDetectorMode (true);
 
 	startChannel (channelSelector -> currentText ());
 	int auto_http	= value_i (dabSettings_p, DAB_GENERAL, "auto_http", 0);
@@ -1149,18 +1149,18 @@ static int teller	= 0;
 	   teller = 0;
 	   if (!techWindow_p -> isHidden ())
 	      techWindow_p	-> show_rate (rate, ps, sbr);
-	   audiorateLabel	-> setStyleSheet (labelStyle);
+	   audiorateLabel	-> setStyleSheet ("color:cyan");
 	   audiorateLabel	-> setText (QString::number (rate));
 	   if (!ps)
 	      psLabel -> setText (" ");
 	   else {
-	      psLabel -> setStyleSheet (labelStyle); 
+	      psLabel -> setStyleSheet ("color:cyan"); 
 	      psLabel -> setText ("ps");
 	   }
 	   if (!sbr)
 	      sbrLabel -> setText ("  "); 
 	   else {
-	      sbrLabel -> setStyleSheet (labelStyle);
+	      sbrLabel -> setStyleSheet ("color:cyan");
 	      sbrLabel -> setText ("sbr");
 	   }
 	}
@@ -2128,7 +2128,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	channel. audioActive	= true;
 	set_soundLabel (true);
 	programTypeLabel	-> setText (getProgramType (ad. programType));
-	rateLabel		-> setStyleSheet (labelStyle);
+	rateLabel		-> setStyleSheet ("color:magenta");
 	rateLabel		-> setText (QString::number (ad. bitRate) + "kbit");
 //	show service related data
 	techWindow_p	-> show_serviceData 	(&ad);
@@ -2316,11 +2316,6 @@ int	tunedFrequency	=
 	distanceLabel		-> setText ("");
 	theDXDisplay. cleanUp ();
 	theNewDisplay. show_transmitters (channel. transmitters);
-	bool localTransmitters =
-	             configHandler_p -> localTransmitterSelector_active ();
-	if (localTransmitters  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos);
-	else
 	if (mapHandler != nullptr)
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
 
@@ -2378,7 +2373,8 @@ void	RadioInterface::stopChannel	() {
 	stop_sourcedumping	();
 	stop_etiHandler	();	// if any
 	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
-	transmitter_country	-> setText ("");
+	transmitter_country	-> setText	("");
+	theNewDisplay. setSilent	();
 //
 //	first, stop services in fore and background
 	if (channel. currentService. valid)
@@ -2410,10 +2406,6 @@ void	RadioInterface::stopChannel	() {
 
 	show_pauzeSlide ();
 	channel. cleanChannel	();
-	bool localTransmitters	=
-	             configHandler_p -> localTransmitterSelector_active ();
-	if (localTransmitters && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos);
 	QCoreApplication::processEvents ();
 //
 //	no processing left at this time
@@ -2976,6 +2968,13 @@ QString httpButton_font	=
 	   value_s (dabSettings_p, COLOR_SETTINGS, HTTP_BUTTON + "_font",
 	                                              BLACK);
 
+QString	tiiButton_color =
+	   value_s (dabSettings_p, COLOR_SETTINGS, TII_BUTTON + "_color",
+	                                              YELLOW);
+QString tiiButton_font	=
+	   value_s (dabSettings_p, COLOR_SETTINGS, TII_BUTTON + "_font",
+	                                              BLACK);
+
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	spectrumButton ->
 	              setStyleSheet (temp. arg (spectrumButton_color,
@@ -2995,6 +2994,9 @@ QString httpButton_font	=
 	httpButton	->
 	              setStyleSheet (temp. arg (httpButton_color,
 	                                        httpButton_font));
+	tiiButton	->
+	              setStyleSheet (temp. arg (tiiButton_color,
+	                                        tiiButton_font));
 	prevServiceButton ->
 	              setStyleSheet (temp. arg (prevServiceButton_color,
 	                                        prevServiceButton_font));
@@ -3033,6 +3035,10 @@ void	RadioInterface::color_configButton	() 	{
 
 void	RadioInterface::color_httpButton	() 	{
 	set_buttonColors (httpButton, HTTP_BUTTON);
+}
+
+void	RadioInterface::color_tiiButton	() 	{
+	set_buttonColors (tiiButton, TII_BUTTON);
 }
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
@@ -3368,18 +3374,6 @@ void	RadioInterface::handle_LoggerButton (int s) {
 	}
 }
 
-void	RadioInterface::set_tii_detectorMode (bool isChecked) {
-	if (theOFDMHandler != nullptr) 
-	   theOFDMHandler	-> set_tiiDetectorMode (isChecked);
-}
-
-void	RadioInterface::handle_dcRemovalSelector (bool b) {
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler	-> set_dcRemoval  (b);
-	theNewDisplay. set_dcRemoval (b);
-	store (dabSettings_p, CONFIG_HANDLER, "dcRemoval", b ? 1 : 0);
-}
-
 void	RadioInterface::set_transmitters_local  (bool isChecked) {
 	channel. targetPos	= position {0, 0};
 	if ((isChecked) && (mapHandler != nullptr))
@@ -3442,17 +3436,11 @@ void	RadioInterface::handle_httpButton	() {
 	            value_s (dabSettings_p, MAP_HANDLING, MAP_PORT_SETTING,
 	                                             "8080");
 
-	   QString mapFile;
-	   if (configHandler_p -> transmitterNames_active ())
-	      mapFile = theFilenameFinder. findMaps_fileName ();
-	   else
-	      mapFile = ""; 
-
 	   mapHandler = new httpHandler (this,
 	                                 mapPort,
 	                                 browserAddress,
 	                                 localPos,
-	                                 mapFile,
+	                                 QString (""),
 	                                 configHandler_p -> localBrowserSelector_active (), dabSettings_p);
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
@@ -3478,13 +3466,14 @@ void	RadioInterface::http_terminate	() {
 
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {
 int w   = 320;
-//int h   = 3 * w / 4;
-int h   = 200;
+int h   = 3 * w / 4;
 	pauzeTimer. stop ();
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
-	pictureLabel ->
-//	       setPixmap (p. scaled (w, h));
-	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
+	if ((p. width () != 320) || (p. height () != 200))
+	   pictureLabel ->
+	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	else
+	   pictureLabel -> setPixmap (p);
 	pictureLabel -> setToolTip (t);
 	pictureLabel -> show ();
 }
@@ -3639,7 +3628,8 @@ std::vector<Complex> inBuffer (2048);
 	   theNewDisplay. show_tii (inBuffer, channel. tunedFrequency);
 }
 
-void	RadioInterface::show_correlation	(int s, int g, QVector<int> r) {
+void	RadioInterface::show_correlation	(int s, int g,
+	                                         QVector<int> maxVals) {
 std::vector<float> inBuffer (s);
 
 	(void)g;
@@ -3647,16 +3637,19 @@ std::vector<float> inBuffer (s);
 	theResponseBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden ()) {
 	   if (theNewDisplay. get_tab () == SHOW_CORRELATION)
-	      theNewDisplay. show_correlation (inBuffer, g, r, channel. distance);
+	      theNewDisplay. show_correlation (inBuffer,
+	                                       maxVals,
+	                                       g,
+	                                       channel. transmitters);
 	}
 }
 
-void	RadioInterface::show_null		(int amount) {
+void	RadioInterface::show_null		(int amount, int startIndex) {
 Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	theNULLBuffer. getDataFromBuffer (inBuffer, amount);
 	if (!theNewDisplay. isHidden ())
 	   if (theNewDisplay. get_tab () ==  SHOW_NULL)
-	      theNewDisplay. show_null (inBuffer, amount);
+	      theNewDisplay. show_null (inBuffer, amount, startIndex);
 }
 
 void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
@@ -3677,14 +3670,14 @@ cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 	return nullptr;
 }
 
-void	RadioInterface::show_tiiData	(const std::vector<tiiData> &r) {
-bool	need_to_print	= false;
+void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
+bool	need_to_print	= true;
 
 	if (r. size () == 0)
 	   return;
 
-	bool dxMode	= configHandler_p -> get_dxSelector ();
-
+	bool dxMode	= value_i (dabSettings_p, CONFIG_HANDLER, 
+	                                        S_DX_MODE, 0) != 0;
 	if (!dxMode) {
 	   if (!theDXDisplay. isHidden ())
 	      theDXDisplay. hide ();
@@ -3714,7 +3707,7 @@ bool	need_to_print	= false;
 	   transmitter_country	-> setText (country);
 	}
 
-//	The data in the vector is sorted on sognal strength
+//	The data in the vector is sorted on signal strength
 	int strongest = (r [0]. mainId << 8) | r [0]. subId;
 
 //	first step
@@ -3722,9 +3715,24 @@ bool	need_to_print	= false;
 //	if it is already
 	for (uint16_t i = 0; i < r. size (); i ++) {
 	   if ((r [i]. mainId == 0) ||
-	       ((r [i]. mainId & 0xFF) == 0xFF))
+	       (r [i]. mainId == 255))
 	      continue;
 //
+//	It the new TII data make sense and there is already
+//	an item in the transmitterList, then just check whether
+//	or not that item as recorgnized
+	   cacheElement *to = inList (r [i]. mainId, r [i]. subId);
+	   if (to != nullptr) {
+	      if (to -> transmitterName == "not in database") {
+	         removeFromList (to -> mainId, to -> subId);
+	      }
+ 	      else {
+	         to -> strength = r [i]. strength;
+	         need_to_print = false;
+	         continue;
+	      }
+	   }
+
 	   cacheElement * tr =
 	      theTIIProcessor. get_transmitter (channel. realChannel?
 	                                         channel. channelName :
@@ -3733,27 +3741,15 @@ bool	need_to_print	= false;
 	                                         r [i]. mainId,  r [i]. subId);
 //	if the (mainId, subId) is alreay known but without a name found
 //	and we see now a good element, throuw the old one out
-	   if (tr -> mainId != -1) {
-	      cacheElement *t2 = inList (r [i]. mainId, r [i]. subId);
-
-	      if (t2 != nullptr) {
-	         if (t2 -> transmitterName == "not in database") {
-	            removeFromList (t2 -> mainId, t2 -> subId);
-	         }
-	         else {
-	            continue;
-	         }
-	      }
-	   }
 //	we have to add the entry to the list
 	   need_to_print = true;
 	   cacheElement theTransmitter = *tr;
 	   theTransmitter. strength	= r [i]. strength;
-	   if ((theTransmitter. mainId == -1) ||
-	       (theTransmitter. mainId == 255)) {	// apparently not found
+	   if (theTransmitter. mainId == 255) {	// apparently not found
 	      theTransmitter. mainId	= r [i]. mainId;
 	      theTransmitter. subId	= r [i]. subId;
 	      theTransmitter. transmitterName	= "not in database";
+	      theTransmitter. strength	= r [i]. strength;
 	      transmitterDesc t = {false,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
@@ -3763,6 +3759,7 @@ bool	need_to_print	= false;
 	      thePosition. longitude    = theTransmitter. longitude;
 	      theTransmitter. distance  = distance   (thePosition, localPos);
 	      theTransmitter. azimuth	= corner     (thePosition, localPos);
+	      theTransmitter. strength	= r [i]. strength;
 	      transmitterDesc t = {true,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
@@ -3770,30 +3767,25 @@ bool	need_to_print	= false;
 	      addtoLogFile (&theTransmitter);
 	   need_to_print = true;
 	}
+
 //
 	uint8_t mainId = strongest >> 8;
 	uint8_t subId  = strongest  & 0xFF;
 	int	bestIndex = -1;
+
+	float Strength	= 0;
 //	Now the list is updated, see whether or not the strongest is ...
 	for (int i = 0; i < channel. transmitters. size (); i ++) {
-	   uint8_t current_mainId =
-	           channel. transmitters [i]. theTransmitter. mainId;
-	   uint8_t current_subId  =
-	           channel. transmitters [i]. theTransmitter. subId;
-	   if ((current_mainId == mainId) && (current_subId == subId)) {
-	      if (channel. transmitters [i]. isStrongest) 
-	         break;	// nothing changes
-	      else 
-	         channel. transmitters [i]. isStrongest = true;
+	   if (channel. transmitters [i]. theTransmitter. strength > Strength) {
 	      bestIndex = i;
+	      Strength  = channel. transmitters [i]. theTransmitter. strength;
 	   }
-	   else 
-	      channel. transmitters [i]. isStrongest = false;
-
-	   need_to_print = true;
+	   channel. transmitters [i]. isStrongest = false;
 	}
-	if (!need_to_print)
-	   return;
+
+	if (bestIndex >= 0) {
+	   channel. transmitters [bestIndex]. isStrongest = true;
+	}
 //
 //	for content maps etc we need to have the data of the strongest
 //	signal
@@ -3811,9 +3803,10 @@ bool	need_to_print	= false;
 	if (dxMode) {
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
-	   for (int i = 0; i < channel. transmitters. size (); i ++) 
+	   for (int i = 0; i < channel. transmitters. size (); i ++) {
 	      theDXDisplay. addRow (&channel. transmitters [i]. theTransmitter,
-	                            channel. transmitters [i]. isStrongest);
+	                              bestIndex == i);
+	   }
 	}
 	else {	// just show on the main widget the strongest
 	   for (auto &theTr: channel. transmitters) {
@@ -3850,14 +3843,10 @@ bool	need_to_print	= false;
 	      continue;
 
 	   uint8_t key	= MAP_NORM_TRANS;	// default value
-	   bool localTransmitters	=
-	            configHandler_p -> localTransmitterSelector_active ();
-	   if (!localTransmitters) {
-	      uint8_t mainId = theTr. theTransmitter. mainId;
-	      uint8_t subId  = theTr. theTransmitter. subId;
-	      if (((mainId << 8) | subId)  == maxTrans) {
-	         key = MAP_MAX_TRANS;
-	      }
+	   uint8_t mainId = theTr. theTransmitter. mainId;
+	   uint8_t subId  = theTr. theTransmitter. subId;
+	   if (((mainId << 8) | subId)  == maxTrans) {
+	      key = MAP_MAX_TRANS;
 	   }
 //
 	   QDateTime theTime = 
@@ -3964,7 +3953,7 @@ std::vector<Complex> v (n);
 	           (theNewDisplay. get_tab () == SHOW_CHANNEL))
 	   theNewDisplay. show_channel (v);
 }
-
+	                                 
 bool	RadioInterface::channelOn () {
 	return (!theNewDisplay. isHidden () &&
 	           (theNewDisplay. get_tab () == SHOW_CHANNEL));
@@ -3988,8 +3977,6 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
         peak_avr (iPeakLeft,  peakLeftDamped);
         peak_avr (iPeakRight, peakRightDamped);
 
-        leftAudio              -> setFillBrush (Qt::cyan);
-        rightAudio             -> setFillBrush (Qt::cyan);
         leftAudio              -> setValue (peakLeftDamped);
         rightAudio             -> setValue (peakRightDamped);
 }
@@ -4130,18 +4117,6 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 	   theOFDMHandler -> set_correlationOrder (b);
 }
 
-void	RadioInterface::handle_dxSelector		(int d) {
-	(void)d;
-	bool b = configHandler_p -> get_dxSelector ();
-	store (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, b ? 1 : 0);
-	if (!b)
-	   theDXDisplay. hide ();
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> set_dxMode (b);
-	if (b)
-	   distanceLabel -> setText ("");
-}
-
 void	RadioInterface::channelSignal (const QString &channel) {
 	stopChannel ();
 	startChannel (channel);
@@ -4243,3 +4218,23 @@ bool exists	= false;
 	         theTransmitter -> direction. toLatin1 (). data ());
 	fclose (theFile);
 }
+
+void	RadioInterface::handle_tiiButton () {
+	bool dxMode	= value_i (dabSettings_p, CONFIG_HANDLER, 
+	                                        S_DX_MODE, 0) != 0;
+	dxMode	= !dxMode;
+	store (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, dxMode ? 1 : 0);
+	if (theOFDMHandler == nullptr)
+	   return;
+	if (!dxMode) {
+	   theDXDisplay. cleanUp ();
+	   theDXDisplay. hide ();
+	}
+	if (dxMode) {
+	   distanceLabel	-> setText ("");
+	   theDXDisplay. cleanUp ();
+	   theDXDisplay. show ();
+	}
+	theOFDMHandler -> set_dxMode (dxMode);
+}
+

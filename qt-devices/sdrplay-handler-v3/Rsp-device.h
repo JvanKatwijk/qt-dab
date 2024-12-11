@@ -64,6 +64,7 @@ virtual	bool	set_antenna	(int antenna);
 virtual	bool	set_amPort 	(int amPort);
 virtual	bool	set_biasT 	(bool biasT);
 virtual	bool	set_notch 	(bool notch);
+virtual	bool	set_tuner	(int tuner);
 signals:
 	void	set_lnabounds_signal	(int, int);
 	void	show_lnaGain		(int);

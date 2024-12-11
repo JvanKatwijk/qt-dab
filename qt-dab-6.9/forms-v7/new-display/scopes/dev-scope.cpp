@@ -158,3 +158,7 @@ QColor color;
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
+
+void	devScope::clean		() {
+}
+

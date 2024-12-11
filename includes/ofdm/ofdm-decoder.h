@@ -91,8 +91,7 @@ private:
 	std::vector<float>	avgPowerPerBin;
 	std::vector<float>	avgNullPower;
 
-	float		sum;
-//	phaseTable	*phasetable;
+	float		meanValue;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;

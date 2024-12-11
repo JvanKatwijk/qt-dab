@@ -53,8 +53,8 @@ int	sliderValue;
 //
 	myFrame. hide ();
 
-	dcOffset_display	-> hide ();
-	dcOffset_label		-> hide ();
+	dcOffset_display	-> show ();
+	dcOffset_label		-> show ();
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
 	                                                512, dabSettings_p);
@@ -199,37 +199,65 @@ static floatQwt avg [4 * 512];
 	                                    waterfallSlider -> value (),
 	                                    freq / 1000);
 }
-//
-//	for "corr" we get a segment of 1024 float values,
-//	with as second parameter a list of indices with maximum values
-void	displayWidget::show_correlation	(const std::vector<float> &v, int T_g,
-	                                 QVector<int> &ww, int baseDistance) {
-	if (currentTab != SHOW_CORRELATION)
-	   return;
-	correlationScope_p	-> display (v, T_g,
-	                                    correlationLength -> value (),
-	                                    correlationSlider -> value ());
-	if (ww. size () > 0) {
-	   QString t = "Matches ";
-	   for (int i = 0; i < ww. size (); i ++) {
-	      if (i == 0) {
-	         t = t + " " + QString::number (ww [i]);
-	         if (baseDistance > 0)
-	            t = t + " (" + QString::number (baseDistance) + ")";
-	      }
-	      if (i >= 1) {
-	         int lO = ww [i] - ww [0];
-	         if (baseDistance <= 0)
-	            t = t + " " + QString::number (lO);
-	         else {
-	            int d = M_PER_SAMPLE * lO / 1000 + baseDistance;
-	            t = t + " (" + QString::number (d) + "km)";
-	         }
+
+std::vector<displayElement> sort (std::vector<displayElement> in) {
+std::vector<displayElement> res;
+
+	while (in. size () > 0) {
+	   float max = -100;
+	   int maxIndex = -1;
+	   for (int i = 0; i < in. size (); i ++) {
+	      if (in [i]. strength >= max) {
+	         maxIndex = i;
+	         max = in [i]. strength;
 	      }
 	   }
-	   correlationsVector -> setText (t);
+	   res. push_back (in [maxIndex]);
+	   in. erase (in. begin () + maxIndex);
 	}
+	return res;
+}
 
+	      
+//	for "corr" we get a segment of 1024 float values,
+//	with as second parameter a list of indices with maximum values
+//	and a list of transmitters
+void	displayWidget::show_correlation	(const std::vector<float> &v,
+	                                 QVector<int> &maxVals,
+	                                 int T_g,
+	                                 std::vector<transmitterDesc> &theTr) {
+	if (currentTab != SHOW_CORRELATION)
+	   return;
+
+	std::vector<displayElement> displayElements;
+	for (int i = 0; i < theTr. size (); i ++) {
+	   displayElement xx;
+	   xx. strength = theTr [i]. theTransmitter. strength;
+	   xx. index = -1;
+	   xx. Name = theTr [i]. theTransmitter. transmitterName;
+	   xx. TII  = (theTr [i]. theTransmitter. mainId << 8) |
+	                 theTr [i]. theTransmitter. subId;
+	   displayElements. push_back (xx);
+	}
+	displayElements = sort (displayElements);
+
+	for (int i = 0; i < maxVals. size (); i ++)
+	   if (i < displayElements. size ())
+	      displayElements [i]. index = maxVals [i];
+	   
+	correlationScope_p	-> display (v, T_g,
+	                                    correlationLength -> value (),
+	                                    correlationSlider -> value (),
+	                                    displayElements);
+
+	if (displayElements. size () > 0) {
+	   int TII = displayElements [0]. TII;
+	   QString ss = "(" + QString::number (TII >> 8) +
+	               " " + QString::number (TII & 0xFF) + ") " +
+	               displayElements [0]. Name;
+	   correlationsVector -> setText (ss);
+	}
+//	and now for the waterfall scope
 	if (v. size () < 512)
 	   return;
 	floatQwt X_axis [512];
@@ -251,14 +279,16 @@ void	displayWidget::show_correlation	(const std::vector<float> &v, int T_g,
 //	for "null" we get a segment of 1024 timedomain samples
 //	(the amplitudes!)
 //	that can be displayed directly
-void	displayWidget::show_null	(Complex  *v, int amount) {
+void	displayWidget::show_null	(Complex *v, int amount,
+	                                      int startIndex) {
 	if  (currentTab != SHOW_NULL)
 	   return;
 	if (amount < 1024)
 	   return;
 	for (int i = 0; i < 512; i ++)
 	   v [i] = (v [2 * i] + v [2 * i + 1]) / (DABFLOAT)2.0;
-	nullScope_p	-> display (v, amount);
+
+	nullScope_p	-> display (v, amount, startIndex);
 	floatQwt X_axis [512];
 	floatQwt Y_value [512];
 	float	MMax	= 0;
@@ -432,6 +462,9 @@ void	displayWidget::showFrequency (const QString &channel, int freq) {
 	if (freq % 1000 < 100)
 	   p2 = "0" + p2;
 	frequencyDisplay	-> display (p1 + '.' + p2);
+	QFont font	= channelDisplay -> font ();
+	font. setPointSize (18);
+	channelDisplay		-> setFont (font);
 	channelDisplay		-> setText (channel);
 }
 
@@ -503,3 +536,24 @@ void	displayWidget::handle_ncpScope_checkBox	(int d) {
 	
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,"ncpScope", ncpScope ? 1 : 0);
 }
+
+void	displayWidget::setSilent	() {
+	if (currentTab == SHOW_SPECTRUM)
+	   spectrumScope_p	-> clean ();
+
+	if (currentTab == SHOW_NULL) 
+	   nullScope_p		-> clean ();
+
+	if (currentTab == SHOW_CORRELATION)
+	   correlationScope_p	-> clean ();
+
+	if (currentTab == SHOW_TII)
+	   TII_Scope_p		-> clean ();
+
+	if (currentTab == SHOW_CHANNEL)
+	   channelScope_p	-> clean ();
+
+	if (currentTab == SHOW_STDDEV)
+	   devScope_p		-> clean ();
+}
+

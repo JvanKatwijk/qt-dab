@@ -179,3 +179,6 @@ float   channelScope::get_db (float x) {
         return 20 * log10 ((x + 1) / (float)(normalizer));
 }
 
+void	channelScope::clean		() {
+}
+

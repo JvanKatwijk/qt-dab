@@ -40,6 +40,7 @@
 #define	TUNERSELECT_REQUEST	0112
 
 #include	<QSemaphore>
+#include	<stdio.h>
 
 class generalCommand {
 public:
@@ -163,6 +164,7 @@ public:
 	tunerRequest (int tuner) :
 	           generalCommand (TUNERSELECT_REQUEST) {
 	   this	-> tuner	= tuner;
+	fprintf (stderr, "Creating a message for set_tuner for tuner %d\n", tuner);
 	}
 	~tunerRequest	() {}
 };

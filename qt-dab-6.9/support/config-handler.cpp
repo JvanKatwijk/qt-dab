@@ -125,11 +125,6 @@ int	index_for_key (int key) {
 	if (x != 0)
 	   this -> epg2xmlSelector -> setChecked (true);
 //
-//	second row of checkboxes
-	bool dm =  value_i (dabSettings, CONFIG_HANDLER,
-	                                TII_DETECTOR_SETTING, 0) == 1;
-	this -> new_tiiMode_selector -> setChecked (dm);
-
 	bool b	= value_i (dabSettings, CONFIG_HANDLER,
                                         UTC_SELECTOR_SETTING, 0) == 1;
 	this -> utc_selector -> setChecked (b);
@@ -151,15 +146,7 @@ int	index_for_key (int key) {
 	                           LOCAL_BROWSER_SETTING, 1) != 0;
 	this -> localBrowserSelector -> setChecked (b);
 //
-//	fourth row of checkboxes
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          "dcRemoval", 0) !=  0;
-	this -> dcRemovalSelector	-> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           LOCAL_TRANSMITTERS_SETTING, 0) == 1;
-	this -> localTransmitterSelector -> setChecked (b);
-//
 //	fifth row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           CLEAR_SCAN_RESULT_SETTING, 1) == 1;
@@ -171,15 +158,9 @@ int	index_for_key (int key) {
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           TRANSMITTER_NAMES_SETTING, 0) == 1;
-	this -> saveTransmittersSelector -> setChecked (b);
-	this	-> saveTransmittersSelector -> setEnabled (false);
-
 	b =  value_i (dabSettings, CONFIG_HANDLER,
 	                           S_CORRELATION_ORDER, 0) != 0;
 	this	-> correlationSelector -> setChecked (b);
-
-	b =  value_i (dabSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
-	this	-> dxSelector -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER, "audioServices_only", 1);
 	this	-> audioServices_only -> setChecked (b);
@@ -278,10 +259,6 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::selectDecoder);
 	connect (this, &configHandler::set_transmitters_local,
 	         myRadioInterface, &RadioInterface::set_transmitters_local);
-	connect (this, &configHandler::set_tii_detectorMode,
-	         myRadioInterface, &RadioInterface::set_tii_detectorMode);
-	connect (this, &configHandler::set_dcRemoval,
-	         myRadioInterface, &RadioInterface::handle_dcRemovalSelector);
 
 	connect (audioSelectButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_audioSelectButton);
@@ -363,8 +340,6 @@ void	configHandler::set_connections () {
 //	top line
 	connect (audioServices_only, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_audioServices_only);
-	connect (dxSelector, &QCheckBox::stateChanged,
-	         myRadioInterface, &RadioInterface::handle_dxSelector);
 	connect (correlationSelector, &QCheckBox::stateChanged,
 	         myRadioInterface, &RadioInterface::handle_correlationSelector);
 //
@@ -381,8 +356,6 @@ void	configHandler::set_connections () {
 //	the epg2xmlSelector is just polled, no need to react on an event
 
 //	third line
-	connect (new_tiiMode_selector, &QCheckBox::stateChanged,
-	         this, &configHandler::handle_tii_detectorMode);
 
 	connect (utc_selector, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_utc_selector);
@@ -397,15 +370,8 @@ void	configHandler::set_connections () {
 	connect (localBrowserSelector, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_localBrowser);
 //
-//	fifth line
-	connect (dcRemovalSelector, &QCheckBox::stateChanged,
-	         this, &configHandler::handle_dcRemovalSelector);
-//	
 	connect (etiActivated_selector, &QCheckBox::stateChanged,
 	         myRadioInterface, &RadioInterface::handle_eti_activeSelector);
-//
-	connect (saveTransmittersSelector, &QCheckBox::stateChanged,
-	         this, &configHandler::handle_saveTransmittersSelector);
 //
 //	fifh line
 	connect (clearScan_selector, &QCheckBox::stateChanged,
@@ -413,9 +379,6 @@ void	configHandler::set_connections () {
 
 	connect (saveSlides, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_saveSlides);
-//
-	connect (localTransmitterSelector, &QCheckBox::stateChanged,	
-	         this, &configHandler::handle_localTransmitterSelector);
 //
 //	botton row
 	connect (decoderSelector,
@@ -730,14 +693,6 @@ void	configHandler::handle_localBrowser	(int d) {
 	               this ->  localBrowserSelector -> isChecked () ? 1 : 0);
 }
 
-void	configHandler::handle_localTransmitterSelector (int c) {
-	(void)c;
-	store (dabSettings, CONFIG_HANDLER, LOCAL_TRANSMITTERS_SETTING, 
-	               this ->  localTransmitterSelector -> isChecked () ? 1 : 0);
-	set_transmitters_local (
-	               this -> localTransmitterSelector -> isChecked ());
-}
-
 void	configHandler::handle_clearScan_Selector (int c) {
 	(void)c;
 	store (dabSettings, CONFIG_HANDLER, CLEAR_SCAN_RESULT_SETTING,
@@ -761,22 +716,8 @@ int	decoder	= 0100;
 	   }
 }
 
-void	configHandler::handle_saveTransmittersSelector	(int d) {
-	int transmitterNames =
-	             saveTransmittersSelector -> isChecked () ? 1 : 0;
-	store (dabSettings, CONFIG_HANDLER,
-	                      TRANSMITTER_NAMES_SETTING, transmitterNames);
-}
-
 void	configHandler::handle_upload_selector (int d) {
 	(void)d;
-}
-
-void	configHandler::handle_tii_detectorMode (int d) {
-	(void)d;
-	set_tii_detectorMode (new_tiiMode_selector -> isChecked () );
-	store (dabSettings, CONFIG_HANDLER, TII_DETECTOR_SETTING,
-	               new_tiiMode_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_utc_selector	(int d) {
@@ -791,10 +732,6 @@ int	configHandler::get_serviceOrder	() {
 
 bool	configHandler::upload_selector_active	() {
 	return upload_selector -> isChecked ();
-}
-
-bool	configHandler::tii_detector_active	() {
-	return new_tiiMode_selector -> isChecked ();
 }
 
 bool	configHandler::closeDirect_active	() {
@@ -839,14 +776,6 @@ bool	configHandler::onTop_active	() {
 
 bool	configHandler::localBrowserSelector_active	() {
 	return localBrowserSelector -> isChecked ();
-}
-
-bool	configHandler::localTransmitterSelector_active	() {
-	return localTransmitterSelector -> isChecked ();
-}
-
-bool	configHandler::transmitterNames_active	() {
-	return saveTransmittersSelector	-> isChecked ();
 }
 
 static inline
@@ -918,11 +847,6 @@ void	configHandler::showLoad		(float load) {
 	loadDisplay	-> display (load);
 }
 
-void	configHandler::handle_dcRemovalSelector	(int d) {
-	(void)d;
-	set_dcRemoval (dcRemovalSelector -> isChecked ());
-}
-
 void	configHandler::enable_loadLib	() {
 	loadTableButton	-> setEnabled (true);
 }
@@ -934,10 +858,6 @@ audiosystemSelector the_selector (dabSettings);
 
 bool	configHandler::get_correlationSelector () {
 	return correlationSelector -> isChecked ();
-}
-
-bool	configHandler::get_dxSelector () {
-	return dxSelector -> isChecked ();
 }
 
 void	configHandler::handle_tiiThreshold	(int t) {

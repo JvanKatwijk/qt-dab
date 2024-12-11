@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>238</width>
-    <height>693</height>
+    <width>309</width>
+    <height>695</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,7 +57,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ audio services are encoded in an AAC format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to store the AAC frames into a file.&lt;/p&gt;&lt;p&gt;As usual, touching the button again will close the output file. Programs like vlc can handle such files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>frame dump</string>
+          <string>save AAC</string>
          </property>
         </widget>
        </item>
@@ -67,7 +67,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audio output can be saved as a file in uncompressed PCM format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to save the PCM data into a file.&lt;/p&gt;&lt;p&gt;The output is a regular &amp;quot;.wav&amp;quot; file which can be handled by many other audio programs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>dump audio</string>
+          <string>save WAV</string>
          </property>
         </widget>
        </item>
