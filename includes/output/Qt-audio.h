@@ -84,8 +84,11 @@ private:
 	Qt_AudioDevice	*theIODevice;
 	QAudioFormat	m_settings;
 	QList<QAudioDevice>     outputDevices;
-        QAudioSink      *m_audioOutput;
+	QAudioSink	*m_audioSink;
         int32_t         outputRate;
+public slots:
+	void		state_changed		(const QAudio::State);
+	void		updateAudioDevices	();
 #endif
 public slots:
 	void		setVolume	(int);

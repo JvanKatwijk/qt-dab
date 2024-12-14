@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml multimedia
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 
 win32 {

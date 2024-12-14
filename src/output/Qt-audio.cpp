@@ -38,7 +38,7 @@ class	RadioInterface;
 	working. store		(false);
 	newDeviceIndex		= 0;
 	
-	m_audioOutput		= nullptr;
+	m_audioSink		= nullptr;
 	theIODevice		= nullptr;
 	this	-> mr		= mr;
 	m_settings. setChannelCount (2);
@@ -78,33 +78,33 @@ void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 }
 
 void	Qt_Audio::stop () {
-	if (m_audioOutput != nullptr)
-	   m_audioOutput        -> stop ();
+	if (m_audioSink != nullptr)
+	   m_audioSink        -> stop ();
         working. store (false);
 }
 
 void	Qt_Audio::restart	() {
 	if (newDeviceIndex < 0)
 	   return;
-	if (m_audioOutput != nullptr)
-	   delete m_audioOutput;
+	if (m_audioSink != nullptr)
+	   delete m_audioSink;
 	if (theIODevice != nullptr)	
 	   delete theIODevice;
 
-	m_audioOutput	= new QAudioSink (m_settings);
-	m_audioOutput -> setBufferSize (10 * 480 * sizeof (float));
+	m_audioSink	= new QAudioSink (m_settings);
+	m_audioSink -> setBufferSize (10 * 480 * sizeof (float));
 	
 	theIODevice	= new Qt_AudioDevice (mr, &tempBuffer);
 	theIODevice	-> start ();
-	m_audioOutput	-> start (theIODevice);
-	if (m_audioOutput -> error () == QAudio::NoError) {
+	m_audioSink	-> start (theIODevice);
+	if (m_audioSink -> error () == QAudio::NoError) {
 	   working. store (true);
 	   fprintf (stderr, "Device reports: no error\n");
 	}
 	else
 	   fprintf (stderr, "restart fails\n");
 	int vol	= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
-        m_audioOutput -> setVolume ((float)vol / 100);
+        m_audioSink -> setVolume ((float)vol / 100);
 	working. store (true);
 }
 
@@ -122,14 +122,14 @@ bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
 void	Qt_Audio::suspend	() {
 //	if (!working. load ())
 //	   return;
-//	m_audioOutput	-> suspend ();
+//	m_audioSink	-> suspend ();
 	stop ();
 }
 
 void	Qt_Audio::resume	() {
 //	if (!working. load ())
 //	   return;
-//	m_audioOutput	-> resume ();
+//	m_audioSink	-> resume ();
 	restart ();
 }
 
@@ -137,7 +137,7 @@ void	Qt_Audio::setVolume	(int v) {
 	if (!working. load ())
            return;
 	store (audioSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, v);
-        m_audioOutput -> setVolume ((float)v / 100);
+        m_audioSink -> setVolume ((float)v / 100);
 }
 
 bool	Qt_Audio::hasMissed	() {
@@ -221,9 +221,9 @@ void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	aa	= std::min ((int)(size * sizeof (float)), aa);
 	aa	&= ~03;
 	tempBuffer. putDataIntoBuffer ((char *)fragment, aa);
-	int periodSize = m_audioOutput -> periodSize ();
+	int periodSize = m_audioSink -> periodSize ();
 	char buffer [periodSize];
-	while ((m_audioOutput -> bytesFree () >= periodSize) &&
+	while ((m_audioSink -> bytesFree () >= periodSize) &&
 	       (tempBuffer. GetRingBufferReadAvailable () >= periodSize)) {
 	   tempBuffer. getDataFromBuffer (buffer, periodSize);
 	   theWorker	-> write (buffer, periodSize);
@@ -243,8 +243,8 @@ void	Qt_Audio::initializeAudio(const QAudioDeviceInfo &deviceInfo) {
 	}
 	isInitialized. store (false);
 	if (deviceInfo. isFormatSupported (audioFormat)) {
-	   m_audioOutput. reset (new QAudioOutput (audioFormat));
-	   if (m_audioOutput -> error () == QAudio::NoError) {
+	   m_audioSink. reset (new QAudioOutput (audioFormat));
+	   if (m_audioSink -> error () == QAudio::NoError) {
 	      isInitialized. store (true);
 //	      fprintf (stderr, "Initialization went OK\n");
 	   }
@@ -254,7 +254,7 @@ void	Qt_Audio::initializeAudio(const QAudioDeviceInfo &deviceInfo) {
 }
 
 void	Qt_Audio::stop () {
-	m_audioOutput	-> stop ();
+	m_audioSink	-> stop ();
 	working. store (false);
 	isInitialized. store (false);
 }
@@ -268,8 +268,8 @@ void	Qt_Audio::restart	() {
 	   fprintf (stderr, "Init failed for device %d\n", newDeviceIndex);
 	   return;
 	}
-	theWorker	= m_audioOutput	-> start ();
-	if (m_audioOutput -> error () == QAudio::NoError) {
+	theWorker	= m_audioSink	-> start ();
+	if (m_audioSink -> error () == QAudio::NoError) {
 	   working. store (true);
 	   fprintf (stderr, "Device reports: no error\n");
 	}
@@ -277,7 +277,7 @@ void	Qt_Audio::restart	() {
 	   fprintf (stderr, "restart gaat niet door\n");
 	int vol		= value_i (audioSettings, SOUND_HANDLING,
 	                                  QT_AUDIO_VOLUME, 50);
-	m_audioOutput	-> setVolume ((float)vol / 100);
+	m_audioSink	-> setVolume ((float)vol / 100);
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
@@ -292,18 +292,18 @@ bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
 void	Qt_Audio::suspend	() {
 	if (!working. load ())
 	   return;
-	m_audioOutput	-> suspend ();
+	m_audioSink	-> suspend ();
 }
 
 void	Qt_Audio::resume	() {
 	if (!working. load ())
 	   return;
-	m_audioOutput	-> resume ();
+	m_audioSink	-> resume ();
 }
 
 void	Qt_Audio::setVolume	(int v) {
 	store (audioSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, v);
-	m_audioOutput	-> setVolume ((float)v / 100);
+	m_audioSink	-> setVolume ((float)v / 100);
 }
 
 bool	Qt_Audio::hasMissed	() {

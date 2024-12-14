@@ -55,6 +55,7 @@ float Length	= jan_abs (V);
 	                                 RingBuffer<Complex> *iqBuffer_i) :
 	                                    myRadioInterface (mr),
 	                                    params (dabMode),
+	                                    theTable (dabMode),
 	                                    myMapper (dabMode),
 	                                    fft (params. get_T_u (), false),
 	                                    devBuffer (devBuffer_i),
@@ -73,6 +74,19 @@ float Length	= jan_abs (V);
 	this	-> T_u			= params. get_T_u	();
 	this	-> nrBlocks		= params. get_L		();
 	this	-> carriers		= params. get_carriers	();
+
+//	refTable.		resize (T_u);
+//	for (int i = 0; i < T_u; i ++)
+//	   refTable [i] = Complex (0, 0);
+////
+////	generate the refence values using the format we have after
+////	doing an FFT
+//	for (int i = 1; i <= params. get_carriers() / 2; i ++) {
+//	   DABFLOAT Phi_k =  theTable. get_Phi (i);
+//	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
+//	   Phi_k = theTable. get_Phi (-i);
+//	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
+//	}
 
 	repetitionCounter	= 8;
 	this	-> T_g		= T_s - T_u;
@@ -115,7 +129,7 @@ void	ofdmDecoder::reset ()	{
 }
 //
 //
-void	ofdmDecoder::processBlock_0 (
+float	ofdmDecoder::processBlock_0 (
 	                std::vector <Complex> buffer, bool withTII) {
 	fft. fft (buffer);
 /**
@@ -124,9 +138,14 @@ void	ofdmDecoder::processBlock_0 (
   */
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
-	
+
+	Complex temp	= Complex (0, 0);;
+//	for (int carrier = -carriers / 2; carrier < carriers; carrier ++) {
+//	   int index = carrier < 0 ? T_u + carrier : carrier + 1;
+//	   temp += phaseReference [index] * conj (refTable [index]);
+//	}
 	if (withTII) {
-	   return;
+	   return arg (temp);
 	}
 	
 	for (int i = 0; i < carriers; i ++) {
@@ -137,7 +156,7 @@ void	ofdmDecoder::processBlock_0 (
 	      compute_avg (avgNullPower [index],
 	                       abs (phaseReference [index]), Alpha);
 	}
-	return;
+	return arg (temp);
 }
 //
 //	Just interested. In the ideal case the constellation of the

@@ -30,6 +30,7 @@
 #include	"dab-constants.h"
 #include	"fft-handler.h"
 #include	"phasetable.h"
+#include	<QVector>
 class	QSettings;
 
 class	TII_Detector {

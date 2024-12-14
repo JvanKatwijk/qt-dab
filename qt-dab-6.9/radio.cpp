@@ -2379,7 +2379,7 @@ void	RadioInterface::stopChannel	() {
 //	first, stop services in fore and background
 	if (channel. currentService. valid)
 	   stopService (channel. currentService);
-	soundOut_p	-> suspend ();
+//	soundOut_p	-> suspend ();
 
 	for (auto s : channel. backgroundServices) {
 	   theOFDMHandler -> stop_service (s. subChId, BACK_GROUND);

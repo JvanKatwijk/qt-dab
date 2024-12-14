@@ -51,5 +51,6 @@ private:
 	RingBuffer<char> *Buffer;
 	int	totalBytes;
 	int	missedBytes;
+	std::atomic<bool> running;
 };
 

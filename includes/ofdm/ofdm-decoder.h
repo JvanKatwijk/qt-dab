@@ -31,7 +31,7 @@
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
 #include	"fft-handler.h"
-
+#include	"phasetable.h"
 class	RadioInterface;
 
 #define	SHOW_RAW	0100
@@ -52,7 +52,7 @@ public:
 	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
-	void	processBlock_0		(std::vector<Complex>, bool);
+	float	processBlock_0		(std::vector<Complex>, bool);
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
 	                                 std::vector<int16_t> &);
@@ -63,6 +63,7 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
+	phaseTable	theTable;
 	interLeaver     myMapper;
 	fftHandler	fft;
 	RingBuffer<float>	*devBuffer;
@@ -91,6 +92,7 @@ private:
 	std::vector<float>	avgPowerPerBin;
 	std::vector<float>	avgNullPower;
 
+	std::vector<Complex>	refTable;
 	float		meanValue;
 	int		iqSelector;
 	int		decoder;

@@ -325,8 +325,7 @@ int	snrCount	= 0;
 	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&
 	                     (theFicHandler. get_CIFcount () & 0x7) >= 4;
-	      theOfdmDecoder. processBlock_0 (ofdmBuffer, frame_with_TII);
-	      
+	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer, frame_with_TII);
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)
 	         theMscHandler.  processBlock_0 (ofdmBuffer. data());
@@ -441,6 +440,7 @@ int	snrCount	= 0;
 /*
  *	odd frames carry - if any = the TII data
  */
+	tii_delay = 2;
 	      if (params. get_dabMode () == 1) {
 	         if (isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
 	            theTIIDetector. addBuffer (ofdmBuffer);
