@@ -169,6 +169,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
+	           ../includes/output/Qt6
 	           ../includes/scopes-qwt6
 	           ../qt-devices
 	           ../qt-devices/filereaders/
@@ -218,8 +219,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/dab-config.h
 	     ../includes/ofdm/fib-table.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii-detector-1.h
-	     ../includes/ofdm/tii-detector-2.h
+	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/timesyncer.h
 	     ../includes/ofdm/estimator.h
 	     ../includes/protection/protTables.h
@@ -347,8 +347,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/ofdm/freq-interleaver.cpp
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
-	     ../src/ofdm/tii-detector-1.cpp
-	     ../src/ofdm/tii-detector-2.cpp
+	     ../src/ofdm/tii-detector.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/ofdm/estimator.cpp
 	     ../src/protection/protTables.cpp
@@ -462,8 +461,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/freqsyncer.h
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii-detector-1.h
-	     ../includes/ofdm/tii-detector-2.h
+	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/estimator.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
@@ -645,22 +643,22 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
 	       ../includes/output/audiosink.h
-	       ../includes/output/Qt-audio.h
-	       ../includes/output/Qt-audiodevice.h
+	       ../includes/output/Qt6/Qt-audio.h
+	       ../includes/output/Qt6/Qt-audiodevice.h
 	   )
 
 	   set (${objectName}_MOCS
 	       ${${objectName}_MOCS}
 	       ../includes/output/audiosink.h
-	       ../includes/output/Qt-audio.h
-	       ../includes/output/Qt-audiodevice.h
+	       ../includes/output/Qt6/Qt-audio.h
+	       ../includes/output/Qt6/Qt-audiodevice.h
 	   )
 
 	   set (${objectName}_SRCS
 	      ${${objectName}_SRCS}
 	      ../src/output/audiosink.cpp
-	     ../src/output/Qt-audio.cpp
-	     ../src/output/Qt-audiodevice.cpp
+	     ../src/output/Qt6/Qt-audio.cpp
+	     ../src/output/Qt6/Qt-audiodevice.cpp
 	   )
 	endif (NOT TCP_STREAMER)
 
