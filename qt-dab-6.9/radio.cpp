@@ -256,6 +256,9 @@ QString h;
 
 	connect (folder_shower, SIGNAL (clicked ()),
 	         this, SLOT (handle_folderButton ()));
+        bool dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
+                                                S_DX_MODE, 0) != 0;
+	tiiButton -> setText (dxMode ? "tii local" : "dx display");
 	connect (tiiButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_tiiButton ()));
 
@@ -2118,6 +2121,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
 	   theOFDMHandler -> data_for_packetservice (ad. serviceName, pd, i);
+	   fprintf (stderr, "pd for comp %d is %s defined\n", i,
+	                                  pd. defined ? " " : "not");
 	   if (pd. defined) {
 	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, FORE_GROUND);
 	      break;
@@ -3760,6 +3765,8 @@ bool	need_to_print	= true;
 	      theTransmitter. distance  = distance   (thePosition, localPos);
 	      theTransmitter. azimuth	= corner     (thePosition, localPos);
 	      theTransmitter. strength	= r [i]. strength;
+	      theTransmitter. phase	= r [i]. phase;
+	      theTransmitter. norm	= r [i]. norm;
 	      transmitterDesc t = {true,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
@@ -4229,11 +4236,13 @@ void	RadioInterface::handle_tiiButton () {
 	if (!dxMode) {
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. hide ();
+	   tiiButton	-> setText ("dx display");
 	}
 	if (dxMode) {
 	   distanceLabel	-> setText ("");
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
+	   tiiButton	-> setText ("tii local");
 	}
 	theOFDMHandler -> set_dxMode (dxMode);
 }

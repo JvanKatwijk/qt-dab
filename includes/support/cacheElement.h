@@ -54,6 +54,8 @@ public:
 	float		strength;
 	float		distance;
 	float		azimuth;
+	float		phase;
+	bool		norm;
 	
 	cacheElement	() {
 	   valid		= false;
@@ -72,6 +74,8 @@ public:
 	   polarization		= "";
 	   frequency		= 0;
 	   direction		= "";
+	   phase		= 0;
+	   norm			= false;
 	}
 	~cacheElement	()	{}
 };

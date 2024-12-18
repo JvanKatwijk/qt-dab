@@ -421,7 +421,7 @@ int	snrCount	= 0;
 //
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
-	      if (!isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
+	      if (isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
 	         float sum	= 0;
 	         for (int i = 0; i < T_null; i ++)
 	            sum += abs (ofdmBuffer [i]);
@@ -440,21 +440,22 @@ int	snrCount	= 0;
 /*
  *	odd frames carry - if any = the TII data
  */
-	tii_delay = 2;
-	      if (params. get_dabMode () == 1) {
-	         if (isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
-	            theTIIDetector. addBuffer (ofdmBuffer);
-	            if (++tii_counter >= tii_delay) {
-	               tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
+	tii_delay = 5;
+	      if ((params. get_dabMode () == 1) &&
+	           (theFicHandler. get_CIFcount () >= 4)){
+	         theTIIDetector. addBuffer (ofdmBuffer);
+	         if (++tii_counter >= tii_delay) {
+	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
 	                                                          T_u);
-	               show_tii_spectrum ();
-	               
-	               QVector<tiiData> resVec =
-	                              theTIIDetector. processNULL ();
-	               show_tiiData (resVec, 0);
-	               tii_counter = 0;
-	               theTIIDetector. reset();
-	            }
+	            show_tii_spectrum ();
+	            int16_t tiiThreshold    = value_i (settings_p,
+	                                     CONFIG_HANDLER,
+                                             "tiiSettings", 6);
+	            QVector<tiiData> resVec =
+	                           theTIIDetector. processNULL (tiiThreshold);
+	            show_tiiData (resVec, 0);
+	            tii_counter = 0;
+	            theTIIDetector. reset();
 	         }
 	      }
 /**
@@ -675,6 +676,6 @@ void	ofdmHandler::set_dxMode		(bool b) {
 }
 
 void	ofdmHandler::set_tiiThreshold	(int v) {
-	theTIIDetector. set_tiiThreshold (v);
+	store (settings_p, CONFIG_HANDLER, "tiiSettings", v);
 }
 

@@ -143,21 +143,24 @@ const	int SEARCH_OFFSET = T_g / 2;
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);
 	}
-	
-	while (workList. size () > 0) {
-	   float Max = 0;
-	   int bestIndex = -1;
-	   for (int i = 0; i < workList. size (); i ++) {
-	      if (workList [i]. Value > Max) {
-	         bestIndex = i;
-	         Max = workList [i]. Value;
-	      }
-	   }
-	   if (bestIndex >= 0) {
-	      indices. push_back (workList [bestIndex]. index);
-	      workList. erase (workList. begin () + bestIndex);
-	   }
-	}
+
+	for (int i = 0; i < workList. size (); i ++)
+	   indices. push_back (workList [i]. index);
+
+//	while (workList. size () > 0) {
+//	   float Max = 0;
+//	   int bestIndex = -1;
+//	   for (int i = 0; i < workList. size (); i ++) {
+//	      if (workList [i]. Value > Max) {
+//	         bestIndex = i;
+//	         Max = workList [i]. Value;
+//	      }
+//	   }
+//	   if (bestIndex >= 0) {
+//	      indices. push_back (workList [bestIndex]. index);
+//	      workList. erase (workList. begin () + bestIndex);
+//	   }
+//	}
 
 //	for (int i = 0; i < indices. size (); i ++) {
 //	   if (T_g - 15 <= indices. at (i) &&

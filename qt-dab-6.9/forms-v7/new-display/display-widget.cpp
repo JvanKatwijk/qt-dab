@@ -31,6 +31,7 @@
 #include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
+#include	"dab-constants.h"
 #include	"position-handler.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
@@ -200,25 +201,11 @@ static floatQwt avg [4 * 512];
 	                                    freq / 1000);
 }
 
-std::vector<displayElement> sort (std::vector<displayElement> in) {
-std::vector<displayElement> res;
-
-	while (in. size () > 0) {
-	   float max = -100;
-	   int maxIndex = -1;
-	   for (int i = 0; i < in. size (); i ++) {
-	      if (in [i]. strength >= max) {
-	         maxIndex = i;
-	         max = in [i]. strength;
-	      }
-	   }
-	   res. push_back (in [maxIndex]);
-	   in. erase (in. begin () + maxIndex);
-	}
+std::vector<corrElement> sort (std::vector<corrElement> in) {
+std::vector<corrElement> res;
 	return res;
 }
 
-	      
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
 //	and a list of transmitters
@@ -226,37 +213,45 @@ void	displayWidget::show_correlation	(const std::vector<float> &v,
 	                                 QVector<int> &maxVals,
 	                                 int T_g,
 	                                 std::vector<transmitterDesc> &theTr) {
+std::vector<corrElement> showData;
 	if (currentTab != SHOW_CORRELATION)
 	   return;
 
-	std::vector<displayElement> displayElements;
-	for (int i = 0; i < theTr. size (); i ++) {
-	   displayElement xx;
-	   xx. strength = theTr [i]. theTransmitter. strength;
-	   xx. index = -1;
-	   xx. Name = theTr [i]. theTransmitter. transmitterName;
-	   xx. TII  = (theTr [i]. theTransmitter. mainId << 8) |
-	                 theTr [i]. theTransmitter. subId;
-	   displayElements. push_back (xx);
-	}
-	displayElements = sort (displayElements);
+	for (auto &theTransm : theTr) {
+	   corrElement t;
+	   t. mainId	= theTransm. theTransmitter. mainId;
+	   t. subId	= theTransm. theTransmitter. subId;
+	   t. phase	= theTransm. theTransmitter. phase;
+	   t. Name	= theTransm. theTransmitter. transmitterName;
+	   t. strength	= theTransm. theTransmitter. strength;
+	   t. norm	= theTransm. theTransmitter. norm;
 
-	for (int i = 0; i < maxVals. size (); i ++)
-	   if (i < displayElements. size ())
-	      displayElements [i]. index = maxVals [i];
-	   
+	  showData. push_back (t);
+	}
+	float max	= 0;
+	int maxInd	= -1;
+	for (int i = 0; i < showData. size (); i ++) {
+	   if (showData [i]. strength > max) {
+	      maxInd = i;
+	      max = showData [i]. strength;
+	   }
+	}
+	
+	if (maxInd >= 0) {
+	   int mainId	= showData [maxInd]. mainId;
+	   int subId	= showData [maxInd]. subId;
+	   QString name	= showData [maxInd]. Name;
+	   QString ss = "(" + QString::number (mainId) +
+	               " " + QString::number (subId) + ") " + name;
+	   correlationsVector -> setText (ss);
+	}
+
+	if (value_i (dabSettings_p, CONFIG_HANDLER, "show_lines", 0) == 0)
+	   showData. resize (0);
 	correlationScope_p	-> display (v, T_g,
 	                                    correlationLength -> value (),
 	                                    correlationSlider -> value (),
-	                                    displayElements);
-
-	if (displayElements. size () > 0) {
-	   int TII = displayElements [0]. TII;
-	   QString ss = "(" + QString::number (TII >> 8) +
-	               " " + QString::number (TII & 0xFF) + ") " +
-	               displayElements [0]. Name;
-	   correlationsVector -> setText (ss);
-	}
+	                                    showData);
 //	and now for the waterfall scope
 	if (v. size () < 512)
 	   return;

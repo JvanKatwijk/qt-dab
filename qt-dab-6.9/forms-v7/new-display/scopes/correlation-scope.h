@@ -55,7 +55,7 @@ public:
 	                                         int T_g,
 	                                         int length,
 		                                 int sliderValue,
-	                                         const std::vector<displayElement> &);
+		                                 const std::vector<corrElement> &);
 	void		clean			();
 
 private:

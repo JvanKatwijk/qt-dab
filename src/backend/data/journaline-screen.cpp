@@ -29,6 +29,7 @@
 	journalineScreen::journalineScreen (std::vector<tableElement> &table):
 	                                        myFrame (nullptr) {
 
+	fprintf (stderr, "Screen aangeroepen\n");
 	this	-> table = &table;
 	pathVector. resize (0);
 	resetButton	= new QPushButton ("reset");
@@ -118,8 +119,8 @@ void	journalineScreen::select_sub (QModelIndex ind) {
 }
 
 void	journalineScreen::displayElement (NML::News_t &element) {
-//	fprintf (stderr, "Display een element met type %d\n",
-//	                              element. object_type);
+	fprintf (stderr, "Display een element met type %d\n",
+	                              element. object_type);
 	switch (element. object_type) {
 	   case NML::MENU:
 	      display_Menu (element);
@@ -174,6 +175,7 @@ int	journalineScreen::findIndex	(int key) {
 }
 
 void	journalineScreen::start		(int index) {
+	fprintf (stderr, "we zijn in start\n");
 	pathVector. push_back (0);
 	displayElement (*(*table) [index]. element);
 }
