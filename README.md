@@ -27,33 +27,38 @@ scopes and displays.
 Unfortunately, AppImages require  "old" library versions to be used.
 The AppImage is built on Ubuntu 20 (which is indeed rather old), but
 for building AppImages, Ubuntu 22 is "too new".
-So, while Qt-DAB is still compiled on the old U20 system, Ubuntu 20 does
-not support Qt6 (unless one compiles the libraries etc from source),
-so for the AppImage Qt5 is still needed. 
+While it is possible to install a Qt 6 version on U20, and to build
+a qet library for it, the appimage builder does not build the right appImage.
 
-So, for now, we need a sourcetree that can be compiled with Qt5 as well as
+So, while Qt-DAB is still compiled on the old U20 system,
+for the AppImage Qt5 is still needed. 
+
+Another issue - still to be solved = is that there are still problems
+with the Qt Audio from Qt6 on Windows, so the Windows versions will
+be precompiled using Qt5 as well.
+
+We need a sourcetree that can be compiled with Qt5 as well as
 with Qt6, and indeed, the current sourcetree can be compiled with either.
 
 Anyway, while preparing the sources for Qt6, some more changes were made, so
 the version number was increased and is 6.9.
 
-Apart from the modifications required for Qt6 - mosty the Qt_audio soundhandler  that is still troublesome for windows using Qt6 - some more modifications were made, most of them on my "todo" list. Some of them are clearly visible, others are "under the hood"
-
- * the spectrum widget is slightly enlarged, to get a better view on the different "scopes". Additionally, the NULL scope has a marker, telling here the software "thinks" the first datablock in the input samplestream starts (ideally this is sample 504). Furthermore, as an experiment, the largest peaks in the correlation scope are matched to TII data. 
+ * the spectrum widget is slightly enlarged, to get a better view on the different "scopes". Additionally, the NULL scope has a marker, telling here the software "thinks" the first datablock in the input samplestream starts (ideally this is sample 504). Furthermore, on the correlation scope, the software will also show a (rough) estimate of which peak in the correlation matches with which
+mainId subId combination. The scope widget jas a button to select or de-select that feature.
 
  * the audio strength meter and the "mot" indicator are placed on the main widget, which seems to make more sense
 
- * the Spectrum widget has a "BER" indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of the decoded samples, the picture below show a value of 0.015, indicating that (on average) 15 input bits per 1000  needed correction when decoding the FIC data.
+ * the Spectrum widget has a "BER" (Bit Error Rate) indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of the decoded samples, the picture below show a value of 0.015, indicating that (on average) 15 input bits per 1000  needed correction when decoding the FIC data.
 
  * the Quality indicator on the spectrum widget shows now the Modulation quality as defined in ETSI TR 101 290 V1.3.1. 
 
  * having the "BER" as measure for the quality of the decoding, some more experiments with decoders (i.e. the mapping from the result of the DPSK in the carriers  in the FFT bins to bits). Three of them are based on work of others (see the tooltip).
 
- * There were questions why not to restrict the visible services in the list to audioservices only. The configuration and control widget has a selector for that.
+ * There were questions why not to restrict the visible services in the list to audioservices only. The configuration and control widget has a selector for that. (There is a small problem that is still to be addressed: skipping through the list, with the "+" and "-" buttons does not exclude the data services).
 
- * Since there was an additional selector on the configuration and control widget, the layout of the widget changed a little.
+ * Some selectors were removed from the configuration and control widget.
 
- * the dxDisplay now shows more data on the transmitters that are identified in the current channel. 
+ * the dxDisplay now shows more data on the transmitters that are identified in the current channel. The "etsi" label tells whether ot not the encoding of the TII data is done correct or not (some older transmitters use an incorrect encoding scheme that makes it more complex to estimate the delay in the arrival of the data)
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 

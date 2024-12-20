@@ -114,12 +114,23 @@ int	sliderValue;
 		                           "channelSlider", 20);
 	channelSlider		-> setValue (sliderValue);
 
+	setMarkers		= value_i (dabSettings_p,
+	                                   DISPLAY_WIDGET_SETTINGS,
+	                                   "setMarkers", 0) != 0;
+	show_marksButton	-> setStyleSheet ("color:cyan");
+	if (setMarkers)
+	   show_marksButton	-> setText ("no markers");
+	else
+	   show_marksButton	-> setText ("set markers");
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
 	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
 	         this, SLOT (rightMouseClick ()));
 	connect (ncpScope_checkBox, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_ncpScope_checkBox (int)));
+	connect (show_marksButton, &QPushButton::clicked,
+	         this, &displayWidget::handle_marksButton);
+
 }
 
 	displayWidget::~displayWidget () {
@@ -226,7 +237,7 @@ std::vector<corrElement> showData;
 	   t. strength	= theTransm. theTransmitter. strength;
 	   t. norm	= theTransm. theTransmitter. norm;
 
-	  showData. push_back (t);
+	   showData. push_back (t);
 	}
 	float max	= 0;
 	int maxInd	= -1;
@@ -245,8 +256,7 @@ std::vector<corrElement> showData;
 	               " " + QString::number (subId) + ") " + name;
 	   correlationsVector -> setText (ss);
 	}
-
-	if (value_i (dabSettings_p, CONFIG_HANDLER, "show_lines", 0) == 0)
+	if (!setMarkers) 
 	   showData. resize (0);
 	correlationScope_p	-> display (v, T_g,
 	                                    correlationLength -> value (),
@@ -552,3 +562,12 @@ void	displayWidget::setSilent	() {
 	   devScope_p		-> clean ();
 }
 
+void	displayWidget::handle_marksButton	() {
+	setMarkers = !setMarkers;
+	if (setMarkers)
+	   show_marksButton	-> setText ("no markers");
+	else
+	   show_marksButton	-> setText ("set markers");
+	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	                          "setMarkers", setMarkers ? 1 : 0);
+}

@@ -1318,7 +1318,7 @@ void	RadioInterface::updateTimeDisplay() {
 //	that it rings when there is no processor running
 	if (theOFDMHandler == nullptr)
 	   return;
-	if (!techWindow_p -> isHidden ())  {
+	if (!techWindow_p -> isHidden () && soundOut_p -> hasMissed ())  {
 	   int totalSamples	= 0;
 	   int totalMissed	= 0;
 	   soundOut_p -> samplesMissed (totalSamples, totalMissed);

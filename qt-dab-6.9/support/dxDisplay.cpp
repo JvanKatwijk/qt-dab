@@ -37,26 +37,28 @@
 	myWidget	-> resize (220, 400);
 	myWidget	-> setWidgetResizable(true);
 
-	tableWidget 	= new QTableWidget (0, 12);
+	tableWidget 	= new QTableWidget (0, 13);
 	tableWidget	-> setColumnWidth (0, 30);
 	tableWidget	-> setColumnWidth (1, 70);
 	tableWidget	-> setColumnWidth (2, 70);
-	tableWidget	-> setColumnWidth (3, 100);
+	tableWidget	-> setColumnWidth (3, 50);
 	tableWidget	-> setColumnWidth (4, 100);
-	tableWidget	-> setColumnWidth (5, 200);
-	tableWidget	-> setColumnWidth (6, 70);
+	tableWidget	-> setColumnWidth (5, 100);
+	tableWidget	-> setColumnWidth (6, 200);
 	tableWidget	-> setColumnWidth (7, 70);
 	tableWidget	-> setColumnWidth (8, 70);
 	tableWidget	-> setColumnWidth (9, 70);
 	tableWidget	-> setColumnWidth (10, 70);
 	tableWidget	-> setColumnWidth (11, 70);
+	tableWidget	-> setColumnWidth (12, 70);
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 //	headerView	-> resizeSection (0, 50);
 	tableWidget 	-> setHorizontalHeaderLabels (
 	                QStringList () << tr ("x") << tr ("mainId") <<
-	                tr ("subId") << tr ("channel") <<tr ("ensemble") <<
-	                tr ("transmiiter") << tr ("dist") <<
+	                tr ("subId") << "etsi" <<
+	                tr ("channel") <<tr ("ensemble") <<
+	                tr ("transmitter") << tr ("dist") <<
 	                tr ("azimuth")  << tr ("power") <<
 	                tr ("alt") << tr ("height") << tr ("direction"));
 
@@ -124,6 +126,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	const QString &transmitterName = theTransmitter -> transmitterName;	
 	int   mainId		= theTransmitter -> mainId;
 	int   subId		= theTransmitter -> subId;
+	bool	etsi		= theTransmitter -> norm;
 	float distance		= theTransmitter -> distance;
 	float azimuth		= theTransmitter -> azimuth;
 //	float strength		= theTransmitter -> strength;
@@ -133,67 +136,72 @@ int16_t	row	= tableWidget -> rowCount ();
 	const QString &dir	= theTransmitter -> direction;
 	bool	b		= isStrongest;
 
-	tableWidget	-> insertRow (row);
+	tableWidget	-> insertRow (row);	// the mark
 	QTableWidgetItem *item0	= new QTableWidgetItem;
 	item0		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 0, item0);
 
-	QTableWidgetItem *item1 = new QTableWidgetItem;
+	QTableWidgetItem *item1 = new QTableWidgetItem;	// mainId
 	item1		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 1, item1);
 
-	QTableWidgetItem *item2 = new QTableWidgetItem;
+	QTableWidgetItem *item2 = new QTableWidgetItem;	// subId
 	item2		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 2, item2);
 
-	QTableWidgetItem *item3 = new QTableWidgetItem;
+	QTableWidgetItem *item3 = new QTableWidgetItem;	 // etsi
 	item3		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 3, item3);
 
-	QTableWidgetItem *item4 = new QTableWidgetItem;
+	QTableWidgetItem *item4 = new QTableWidgetItem;	// channel
 	item4		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 4, item4);
 
-	QTableWidgetItem *item5 = new QTableWidgetItem;
+	QTableWidgetItem *item5 = new QTableWidgetItem;	// ensemble
 	item5		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 5, item5);
 
-	QTableWidgetItem *item6 = new QTableWidgetItem;
+	QTableWidgetItem *item6 = new QTableWidgetItem;	// transmitter
 	item6		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 6, item6);
 
-	QTableWidgetItem *item7 = new QTableWidgetItem;
+	QTableWidgetItem *item7 = new QTableWidgetItem;	// dist
 	item7		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 7, item7);
 
-	QTableWidgetItem *item8 = new QTableWidgetItem;
+	QTableWidgetItem *item8 = new QTableWidgetItem;	// azimuth
 	item8		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 8, item8);
 
-	QTableWidgetItem *item9 = new QTableWidgetItem;
+	QTableWidgetItem *item9 = new QTableWidgetItem;	// power
 	item9		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 9, item9);
 
-	QTableWidgetItem *item10 = new QTableWidgetItem;
+	QTableWidgetItem *item10 = new QTableWidgetItem;	// alt
 	item10		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 10, item10);
 
-	QTableWidgetItem *item11 = new QTableWidgetItem;
+	QTableWidgetItem *item11 = new QTableWidgetItem;	// height
 	item11		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 11, item11);
+
+	QTableWidgetItem *item12 = new QTableWidgetItem;	// direction
+	item12		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 12, item12);
 
 	tableWidget	-> setCurrentItem (item0);
 	tableWidget	-> item (row, 1) -> setText (QString::number (mainId));
 	tableWidget	-> item (row, 2) -> setText (QString::number (subId));
-	tableWidget	-> item (row, 3) -> setText (channel);
-	tableWidget	-> item (row, 4) -> setText (ensemble);
-	tableWidget	-> item (row, 5) -> setText (transmitterName);
-	tableWidget	-> item (row, 6) -> setText (QString::number (distance, 'f', 1) + " km");
-	tableWidget	-> item (row, 7) -> setText (QString::number (azimuth, 'f', 1) + QString::fromLatin1 (" \xb0 "));
-	tableWidget	-> item (row, 8) -> setText (QString::number (power, 'f', 1) + " KW ");
-	tableWidget	-> item (row, 9) -> setText (QString::number (altitude) +  " m");
-	tableWidget	-> item (row, 10) -> setText (QString::number (height) +  " m");
-	tableWidget	-> item (row, 11) -> setText (dir);
+	tableWidget	-> item (row, 3) -> setText (etsi ? "*" : " ");
+	tableWidget	-> item (row, 4) -> setText (channel);
+	tableWidget	-> item (row, 5) -> setText (ensemble);
+	tableWidget	-> item (row, 6) -> setText (transmitterName);
+	tableWidget	-> item (row, 7) -> setText (QString::number (distance, 'f', 1) + " km");
+	tableWidget	-> item (row, 8) -> setText (QString::number (azimuth, 'f', 1) + QString::fromLatin1 (" \xb0 "));
+	tableWidget	-> item (row, 9) -> setText (QString::number (power, 'f', 1) + " KW ");
+	tableWidget	-> item (row, 10) -> setText (QString::number (altitude) +  " m");
+	tableWidget	-> item (row, 11) -> setText (QString::number (height) +  " m");
+	tableWidget	-> item (row, 12) -> setText (dir);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
 	if (b)
 	   theDial -> setValue (azimuth);

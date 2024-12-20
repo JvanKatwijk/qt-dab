@@ -93,7 +93,7 @@ typedef struct {
 	int	subId;
 	float	phase;
 	bool	norm;
-	float strength;
+	float	strength;
 	QString Name;
 } corrElement;
 

@@ -49,8 +49,8 @@ public:
 
 private:
 	RingBuffer<char> *Buffer;
-	int	totalBytes;
-	int	missedBytes;
+	int	totalBytes_l;
+	int	missedBytes_l;
 	std::atomic<bool> running;
 };
 

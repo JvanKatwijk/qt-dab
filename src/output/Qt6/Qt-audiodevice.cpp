@@ -36,8 +36,8 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	                               : QIODevice (parent),
 	                                 Buffer (Buffer_i) {
 
-	totalBytes	= 0;
-	missedBytes     = 0;
+	totalBytes_l	= 0;
+	missedBytes_l	= 0;
 	start ();
 }
 
@@ -52,13 +52,11 @@ void	Qt_AudioDevice::stop () {
 	Buffer -> FlushRingBuffer();
 	close ();
 }
-
 void	Qt_AudioDevice::samplesMissed (int &total, int &too_short) {
-	total		= totalBytes / (2 * sizeof (float));
-	too_short	= missedBytes / (2 * sizeof (float));
-
-	totalBytes	= 0;
-	missedBytes		= 0;
+	total		= totalBytes_l / (2 * sizeof (float));
+	too_short	= missedBytes_l / (2 * sizeof (float));
+	totalBytes_l	= 0;
+	missedBytes_l	= 0;
 }
 
 //
@@ -75,8 +73,8 @@ qint64	amount = 0;
 	      buffer [i] = 0;
 	}
 
-	totalBytes	+= amount;
-	missedBytes	+= maxSize - amount;
+	totalBytes_l	+= amount;
+	missedBytes_l	+= maxSize - amount;
 	return maxSize;
 }
 //

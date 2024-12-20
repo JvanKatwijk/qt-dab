@@ -36,7 +36,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The tabwidget here contains the tabs for the different scopes, supported by this Qt-DAB implementation&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="spectr">
           <attribute name="title">
@@ -93,6 +93,16 @@
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QPushButton" name="show_marksButton">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The encoding of the TII data (if any) can be used to get an estimate of the delay of the signal. This estimate (not always very accurate) then can be used  to label the peaks in the correlation scope (these peaks can also be used to compute a delay in the arrival of the signal of a particular transmitter) label the peaks in the correlation scope with the TII numbers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>show marks</string>
+               </property>
+              </widget>
+             </item>
              <item>
               <widget class="QLabel" name="correlationsVector">
                <property name="toolTip">
