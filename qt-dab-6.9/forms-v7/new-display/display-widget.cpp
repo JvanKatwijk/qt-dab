@@ -117,7 +117,9 @@ int	sliderValue;
 	setMarkers		= value_i (dabSettings_p,
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "setMarkers", 0) != 0;
-	show_marksButton	-> setStyleSheet ("color:cyan");
+	show_marksButton	-> setStyleSheet ("color:yellow");
+	QString qss = QString ("background-color: QColor (Qt::yellow), QColor(Qt::black)");
+	show_marksButton -> setStyleSheet (qss);
 	if (setMarkers)
 	   show_marksButton	-> setText ("no markers");
 	else

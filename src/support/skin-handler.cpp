@@ -37,11 +37,11 @@
 
 	skins = QStringList();
 	skins << "skins" << "no skin"	<<
+	                    "globstyle" <<
 	                    "Adaptic"	<<
 	                    "Combinear" <<
 	                    "Darkeum"	<<
 	                    "EasyCode"	<<
-	                    "globstyle" <<
 	                    "Diffnes";
 
 	skinList. setStringList (skins);

@@ -12,12 +12,12 @@ cp ../res/radio-pictures/qt-dab-6.9-128x128.png	appdir/usr/share/icons/hicolor/1
 cp ../res/radio-pictures/qt-dab-6.9-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/
 
 touch appdir/qt-dab-6.9.png
-
-wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
-chmod +x appimagetool-*.AppImage
+  
+wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
+chmod a+x linuxdeployqt*.AppImage
 unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
-./appimagetool-*.AppImage -s deploy appdir/usr/share/applications/*.desktop # Bundle EVERYTHING
 ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs -no-translations
+./linuxdeployqt*.AppImage --appimage-extract
 find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
 chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
 export PATH=squashfs-root/usr/bin/:$PATH

@@ -681,7 +681,8 @@ void	RadioInterface::doStart_direct	() {
 
 
 	startChannel (channelSelector -> currentText ());
-	int auto_http	= value_i (dabSettings_p, DAB_GENERAL, "auto_http", 0);
+	int auto_http	= value_i (dabSettings_p, CONFIG_HANDLER,
+	                                       "auto_http", 0);
 	if ((auto_http != 0) && (localPos. latitude != 0)) {
 	   bool succ = autoStart_http ();
 	   if (succ)
