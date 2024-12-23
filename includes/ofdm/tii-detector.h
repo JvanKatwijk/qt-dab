@@ -38,9 +38,9 @@ public:
 			TII_Detector	(uint8_t dabMode, QSettings *);
 			~TII_Detector	();
 	void		reset		();
-	void		addBuffer	(std::vector<Complex>);
-	void		set_tiiThreshold	(int);
-	QVector<tiiData>	processNULL	();
+	void		resetBuffer	();
+	void		addBuffer	(const std::vector<Complex> &);
+	QVector<tiiData>	processNULL	(int16_t);
 
 private:
 	QSettings	*dabSettings;
@@ -48,15 +48,17 @@ private:
 	phaseTable	theTable;
 	std::vector<Complex> table_2;
 	int16_t		T_u;
+	int16_t		T_g;
 	int16_t		carriers;	
+	bool		carrierDelete;
+	Complex		decodedBuffer [768];
 	fftHandler	my_fftHandler;
-	void		collapse	(Complex *, 
+	void		collapse	(const Complex *, 
 	                                 Complex *, Complex *);
-
+	void		decode	(std::vector<Complex> &, Complex *);
 //	bool		collisions	= false;
 
-	std::vector<Complex >	theBuffer;
-	std::vector<DABFLOAT>	window;
+	std::vector<Complex >	nullSymbolBuffer;
 
 	int		tiiThreshold;
 };

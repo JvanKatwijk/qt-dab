@@ -146,6 +146,10 @@ void	IQDisplay::displayIQ (const std::vector<Complex> &z, float scale) {
 	   setPoint (x, y, 1000);
 	   Points. push_back (std::complex<int32_t> (xx, yy));
 	   setPoint (xx, yy, 1000);
+	   Points. push_back (std::complex<int32_t> (xx, y));
+	   setPoint (xx, y, 1000);
+	   Points. push_back (std::complex<int32_t> (x, yy));
+	   setPoint (x, yy, 1000);
 	}
 
 	memcpy (plotDataDrawBuffer. data (),

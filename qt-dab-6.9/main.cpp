@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -136,14 +136,14 @@ QTranslator	theTranslator;
 #endif
 
 	dabSettings	-> beginGroup ("SKIN_HANDLING");
-	QString skin    = dabSettings -> value ("skin", "Combinear"). toString ();
+	QString skin    = dabSettings -> value ("skin", "globstyle"). toString ();
 	dabSettings	-> endGroup ();
 
 	skin    = skin == "Combinear" ? ":res/Combinear.qss" :
+	          skin == "globstyle" ? ":res/globstyle.qss":
 	          skin == "Adaptic"   ? ":res/Adaptic.qss" :
 	          skin == "Darkeum"   ? ":res/Darkeum.qss" :
 	          skin == "EasyCode"  ? ":res/EasyCode.qss":
-	          skin == "globstyle" ? ":res/globstyle.qss" :
 	          skin == "Diffnes"   ? ":res/Diffnes.qss" : "";
 
 	QApplication a (argc, argv);

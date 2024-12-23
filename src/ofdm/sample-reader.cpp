@@ -63,7 +63,7 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	dcRemoval	= true;
+	dcRemoval	= false;
 	dcReal		= 0;
 	dcImag		= 0;
 	repetitionCounter	= 8;
@@ -129,7 +129,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 //	so here, bufferContent >= n
 	nrSamples	= theRig -> getSamples (buffer, nrSamples);
 	bufferContent	-= nrSamples;
-//
+
 //	if dumping is "on" dump
 	if (sourceDumper. isActive ()) {
 	   for (int i = 0; i < nrSamples; i ++) {

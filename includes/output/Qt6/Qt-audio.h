@@ -35,17 +35,13 @@
 #include        <atomic>
 #include        "ringbuffer.h"
 
-#if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
-#include	<QIODevice>
-#include	<QAudioOutput>
-#else
 #include        <QIODevice>
 #include        <QScopedPointer>
 #include        <QAudioSink>
 #include        <QComboBox>
 #include        <QMediaDevices>
 #include	"Qt-audiodevice.h"
-#endif
+
 class		QSettings;
 class		RadioInterface;
 //
@@ -71,16 +67,6 @@ private:
 	std::atomic<bool> working;
         int             newDeviceIndex;
 	RadioInterface	*mr;
-#if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
-	void		initialize_deviceList ();
-	void		initializeAudio(const QAudioDeviceInfo &deviceInfo);
-	QAudioFormat	audioFormat;
-	QScopedPointer<QAudioOutput> m_audioOutput;
-	int32_t		outputRate;
-	std::vector<QAudioDeviceInfo> theList;
-	std::atomic<bool>	isInitialized;
-	QIODevice	*theWorker;
-#else
 	Qt_AudioDevice	*theIODevice;
 	QAudioFormat	m_settings;
 	QList<QAudioDevice>     outputDevices;
@@ -89,7 +75,6 @@ private:
 public slots:
 	void		state_changed		(const QAudio::State);
 	void		updateAudioDevices	();
-#endif
 public slots:
 	void		setVolume	(int);
 };

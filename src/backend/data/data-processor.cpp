@@ -155,6 +155,7 @@ static int expected_cntidx = 0;
 	uint16_t paddr	= getBits (vec, 6, 10);
 //	Useful data length
 	uint8_t udlen	= getBits (vec, 17,7); 
+//	fprintf (stderr, "udlen = %d\n", udlen);
 	if (udlen == 0)
 	   return;
 
@@ -211,10 +212,12 @@ static int expected_cntidx = 0;
 	      return;
 
 	      case 3: { // Single packet, mostly padding
-	         series. resize (udlen * 8);
-	         for (uint8_t i = 0; i < udlen * 8; i ++)
-	            series [i] = vec [3 * 8 + i];
-	         my_dataHandler -> add_mscDatagroup (series);
+	         if (Length > 3 * 8 + udlen * 8) {
+	            series. resize (udlen * 8);
+	            for (uint8_t i = 0; i < udlen * 8; i ++)
+	               series [i] = vec [3 * 8 + i];
+	            my_dataHandler -> add_mscDatagroup (series);
+	         }
 	         series. resize (0);
               }
 	      return;

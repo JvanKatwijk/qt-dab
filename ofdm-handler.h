@@ -65,6 +65,7 @@ public:
 	bool		start_etiGenerator	(const QString &);
 	void		stop_etiGenerator	();
 	void		reset_etiGenerator	();
+	void		set_tiiThreshold	(int16_t);
 	void		set_scanMode		(bool);
 	void		get_frameQuality	(int *, int*, int *);
 //	servicing our subordinates
@@ -92,8 +93,6 @@ public:
 	void		start_ficDump		(FILE *);
 	void		stop_ficDump		();
 //
-//	for the tiiHhandlers
-	void		set_tiiThreshold	(int);
 //	for the mscHandler
 	void		reset_services		();
 	void		stop_service		(descriptorType *, int);
@@ -121,6 +120,8 @@ private:
 	TII_Detector		theTIIDetector;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
+
+	int16_t			tiiThreshold;
 
 //	deviceHandler		*inputDevice;
 	int			decoder;
@@ -153,7 +154,6 @@ private:
 	QByteArray		transmitters;
 	bool			correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
-	bool			isEvenFrame	(int16_t, dabParams *);
 	bool			correlationOrder;
 	bool			dxMode;
 virtual	void			run		();

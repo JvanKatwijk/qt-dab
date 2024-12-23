@@ -129,6 +129,8 @@
 //	end of dummy
 	connect (this, &ofdmHandler::show_Corrector,
 	         mr,  &RadioInterface::show_Corrector);
+	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
+                                             TII_THRESHOLD, 6);
 	theTIIDetector. reset();
 	theOfdmDecoder. handle_decoderSelector (decoder);
 }
@@ -145,8 +147,9 @@
 	}
 }
 
-//void	ofdmHandler::set_tiiDetectorMode	(bool b) {
-//}
+void	ofdmHandler::set_tiiThreshold	(int16_t threshold) {
+	tiiThreshold = threshold;
+}
 
 void	ofdmHandler::start () {
 	theFicHandler. restart	();
@@ -324,8 +327,9 @@ int	snrCount	= 0;
 	      sampleCount	+= T_u;
 	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&
-	                     (theFicHandler. get_CIFcount () & 0x7) >= 4;
-	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer, frame_with_TII);
+	                     ((theFicHandler. get_CIFcount () & 0x7) == 0);
+	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer,
+	                                             frame_with_TII);
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)
 	         theMscHandler.  processBlock_0 (ofdmBuffer. data());
@@ -421,7 +425,21 @@ int	snrCount	= 0;
 //
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
-	      if (!isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
+
+	      if (frame_with_TII) {
+	         theTIIDetector. addBuffer (ofdmBuffer);
+	         if (++tii_counter >= tii_delay) {
+	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
+	                                                          T_u);
+	            show_tii_spectrum ();
+	            QVector<tiiData> resVec =
+	                           theTIIDetector. processNULL (tiiThreshold);
+	            show_tiiData (resVec, 0);
+	            tii_counter = 0;
+//	            theTIIDetector. reset();
+	         }
+	      }
+	      else {	// compute SNR
 	         float sum	= 0;
 	         for (int i = 0; i < T_null; i ++)
 	            sum += abs (ofdmBuffer [i]);
@@ -435,26 +453,6 @@ int	snrCount	= 0;
 	         if (snrCount >= 3) {
 	            snrCount = 0;
 	            show_snr (snr);
-	         }
-	      }
-/*
- *	odd frames carry - if any = the TII data
- */
-	tii_delay = 2;
-	      if (params. get_dabMode () == 1) {
-	         if (isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
-	            theTIIDetector. addBuffer (ofdmBuffer);
-	            if (++tii_counter >= tii_delay) {
-	               tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
-	                                                          T_u);
-	               show_tii_spectrum ();
-	               
-	               QVector<tiiData> resVec =
-	                              theTIIDetector. processNULL ();
-	               show_tiiData (resVec, 0);
-	               tii_counter = 0;
-	               theTIIDetector. reset();
-	            }
 	         }
 	      }
 /**
@@ -619,19 +617,6 @@ void	ofdmHandler::stop_dumping() {
 	theReader. stop_dumping();
 }
 
-bool	ofdmHandler::isEvenFrame (int16_t cf, dabParams *p) {
-	switch (p -> get_dabMode()) {
-	   default:
-	   case 1:
-	      return (cf & 07) >= 4;
-	   case 2:
-	   case 3:
-	      return (cf & 02);
-	   case 4:
-	      return (cf & 03) >= 2;
-	}
-}
-
 void	ofdmHandler::start_ficDump	(FILE *f) {
 	theFicHandler. start_ficDump (f);
 }
@@ -672,9 +657,5 @@ void	ofdmHandler::set_correlationOrder	(bool b) {
 
 void	ofdmHandler::set_dxMode		(bool b) {
 	dxMode	= b;
-}
-
-void	ofdmHandler::set_tiiThreshold	(int v) {
-	theTIIDetector. set_tiiThreshold (v);
 }
 

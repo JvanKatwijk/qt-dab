@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2017 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,38 +19,38 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
-
 #pragma once
 
-#include	<cstdint>
-#include	"dab-params.h"
-#include	<complex>
-#include	<vector>
-#include	"fft-handler.h"
-class	QSettings;
+#include	<Qt>
+#include	<QtGlobal>
+#include	<QIODevice>
+#include	<QObject>
+#include	"dab-constants.h"
+#include	"ringbuffer.h"
+class	RadioInterface;
 
-class	TII_Detector {
+//
+//	Note: this class is NOT refefrences in the Qt5 version, only in
+//	the Qt6 version
+class Qt_AudioDevice : public QIODevice {
+Q_OBJECT
 public:
-			TII_Detector	(uint8_t dabMode, QSettings *, int16_t);
-			~TII_Detector	();
-	void		reset		();
-	void		setMode		(bool);
-	void		addBuffer	(std::vector<Complex>);
-	std::vector<int16_t>	processNULL	(bool);
+		Qt_AudioDevice	(RadioInterface *,
+	                         RingBuffer<char> *, QObject *parent = nullptr);
+		~Qt_AudioDevice	();
+
+	void	start		();
+	void	stop		();
+	void	samplesMissed	(int &, int &);
+	qint64	readData	(char *data, qint64 maxlen);
+	qint64	writeData	(const char *data, qint64 len);
 
 private:
-	QSettings	*dabSettings;
-	dabParams	params;
-	int16_t		T_u;
-	int16_t		carriers;
-	fftHandler	my_fftHandler;
-	void		collapse	(std::vector<Complex> &, float *);
-	bool		detectMode_new;
-	int16_t		depth;
-	uint8_t		invTable [256];
-	std::vector<Complex >	theBuffer;
-	std::vector<DABFLOAT>	window;
+	RingBuffer<char> *Buffer;
+	int	totalBytes_l;
+	int	missedBytes_l;
+	std::atomic<bool> running;
 };
-
 

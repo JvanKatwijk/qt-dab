@@ -105,10 +105,12 @@ private:
 
 	int			currentTab;
 	int			ncpScope;
+	bool			setMarkers;
 private slots:
 	void		switch_tab	(int);
 	void		rightMouseClick		();
 	void		handle_ncpScope_checkBox (int);
+	void		handle_marksButton	();
 signals:
 	void		mouseClick	();
 	void		frameClosed	();

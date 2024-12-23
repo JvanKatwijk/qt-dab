@@ -89,11 +89,13 @@ typedef struct  {
 } tiiData;
 
 typedef struct {
-	float strength;
-	int index;
+	int	mainId;
+	int	subId;
+	float	phase;
+	bool	norm;
+	float	strength;
 	QString Name;
-	int TII;
-} displayElement;
+} corrElement;
 
 #define	SINGLE_SCAN		0
 #define	SCAN_SINGLE		0

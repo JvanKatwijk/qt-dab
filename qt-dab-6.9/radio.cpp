@@ -256,6 +256,9 @@ QString h;
 
 	connect (folder_shower, SIGNAL (clicked ()),
 	         this, SLOT (handle_folderButton ()));
+        bool dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
+                                                S_DX_MODE, 0) != 0;
+	tiiButton -> setText (dxMode ? "tii local" : "dx display");
 	connect (tiiButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_tiiButton ()));
 
@@ -585,9 +588,9 @@ QString h;
 	if (value_i (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   techWindow_p -> show ();
 
-	dynamicLabel	-> setTextFormat (Qt::RichText);
-	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
-	dynamicLabel	-> setOpenExternalLinks(true);
+//	dynamicLabel	-> setTextFormat (Qt::RichText);
+//	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
+//	dynamicLabel	-> setOpenExternalLinks(true);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //
@@ -678,7 +681,8 @@ void	RadioInterface::doStart_direct	() {
 
 
 	startChannel (channelSelector -> currentText ());
-	int auto_http	= value_i (dabSettings_p, DAB_GENERAL, "auto_http", 0);
+	int auto_http	= value_i (dabSettings_p, CONFIG_HANDLER,
+	                                       "auto_http", 0);
 	if ((auto_http != 0) && (localPos. latitude != 0)) {
 	   bool succ = autoStart_http ();
 	   if (succ)
@@ -1315,7 +1319,7 @@ void	RadioInterface::updateTimeDisplay() {
 //	that it rings when there is no processor running
 	if (theOFDMHandler == nullptr)
 	   return;
-	if (!techWindow_p -> isHidden ())  {
+	if (!techWindow_p -> isHidden () && soundOut_p -> hasMissed ())  {
 	   int totalSamples	= 0;
 	   int totalMissed	= 0;
 	   soundOut_p -> samplesMissed (totalSamples, totalMissed);
@@ -2118,6 +2122,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
 	   theOFDMHandler -> data_for_packetservice (ad. serviceName, pd, i);
+	   fprintf (stderr, "pd for comp %d is %s defined\n", i,
+	                                  pd. defined ? " " : "not");
 	   if (pd. defined) {
 	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, FORE_GROUND);
 	      break;
@@ -3760,6 +3766,8 @@ bool	need_to_print	= true;
 	      theTransmitter. distance  = distance   (thePosition, localPos);
 	      theTransmitter. azimuth	= corner     (thePosition, localPos);
 	      theTransmitter. strength	= r [i]. strength;
+	      theTransmitter. phase	= r [i]. phase;
+	      theTransmitter. norm	= r [i]. norm;
 	      transmitterDesc t = {true,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
@@ -4229,11 +4237,13 @@ void	RadioInterface::handle_tiiButton () {
 	if (!dxMode) {
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. hide ();
+	   tiiButton	-> setText ("dx display");
 	}
 	if (dxMode) {
 	   distanceLabel	-> setText ("");
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
+	   tiiButton	-> setText ("tii local");
 	}
 	theOFDMHandler -> set_dxMode (dxMode);
 }

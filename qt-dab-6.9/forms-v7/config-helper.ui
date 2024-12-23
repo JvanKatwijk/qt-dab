@@ -133,7 +133,7 @@
             <string> dB</string>
            </property>
            <property name="minimum">
-            <number>3</number>
+            <number>6</number>
            </property>
            <property name="value">
             <number>6</number>
@@ -518,6 +518,16 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QCheckBox" name="auto_http">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this checkbox is set, then Qt-DAB will (try to) start up the http handler (i.e. the map handler) on the next invocation of the program.&lt;/p&gt;&lt;p&gt;Of course, it will only work if&lt;/p&gt;&lt;p&gt;(a) the local position is filled in, and &lt;/p&gt;&lt;p&gt;(b) the database with TII data is accessible&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>auto http</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QCheckBox" name="logger_selector">
        <property name="toolTip">

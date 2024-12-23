@@ -165,6 +165,10 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER, "audioServices_only", 1);
 	this	-> audioServices_only -> setChecked (b);
 
+	b = value_i (dabSettings, CONFIG_HANDLER, "auto_http", 9) != 0;
+	this	-> auto_http -> setChecked (b);
+
+
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
@@ -184,6 +188,8 @@ int	index_for_key (int key) {
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
+	connect (auto_http, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_auto_http);
 	set_Colors ();
 }
 
@@ -877,9 +883,16 @@ QString dir	=
 
 void	configHandler::handle_audioServices_only	(int state) {
 uint8_t x	= audioServices_only -> isChecked ();
+	(void)state;
 	store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
 }
 
 bool	configHandler::get_audioServices_only () {
 	return audioServices_only -> isChecked ();
+}
+
+void	configHandler::handle_auto_http	(int state) {
+uint8_t x	= auto_http -> isChecked ();
+	(void)state;
+	store (dabSettings, CONFIG_HANDLER, "auto_http", x);
 }

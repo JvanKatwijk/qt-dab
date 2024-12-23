@@ -119,7 +119,7 @@ int	zeroCount = 0;
 	      zeroCount = 0;
 
 	   xmlText. append (theChar);
-	   fprintf (stderr, "%c ", theChar);
+//	   fprintf (stderr, "%c ", theChar);
 	}
 	
 	xmlDoc. setContent (xmlText);
@@ -235,6 +235,6 @@ int	zeroCount = 0;
 	   }
 	}
 	*ok	= nrBlocks > 0;
-	printDescriptor ();
+//	printDescriptor ();
 }
 

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2023
+ *    Copyright (C) 2015 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -77,7 +77,16 @@ uint16_t i;
 
 	switch (charset) {
 	   case UnicodeUcs2:
-	      s = QString::fromUtf16 ((const ushort*) buffer, length);
+	      for (int i = 0; i < size / 2; i ++) {
+	         uint16_t xx = buffer [2 * i + 1] & 0xFF;
+	         for (int j = 10;
+	              j < sizeof (ebuLatinToUcs2) / sizeof (uint16_t); j ++)
+	              if (ebuLatinToUcs2 [j] == xx) {
+	                 s += QString (char (j));
+	                 break;
+	            }
+	      }
+//	      s = QString::fromStdWString ((const short *) buffer, size);
 	      break;
 
 	   case UnicodeUtf8:

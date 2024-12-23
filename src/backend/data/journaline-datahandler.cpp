@@ -75,7 +75,6 @@ uint8_t	*buffer	= (uint8_t *) alloca (len / 8 * sizeof (uint8_t));
 int32_t	res;
 	for (uint16_t i = 0; i < len / 8; i ++)
 	   buffer [i] = getBits (data, 8 * i, 8);
-
 	res = DAB_DATAGROUP_DECODER_putData (theDecoder, len / 8, buffer);
 	if (res < 0)
 	   return;
@@ -87,8 +86,6 @@ void	journaline_dataHandler::init_dataBase 	() {
 }
 
 void	journaline_dataHandler::destroy_dataBase	() {
-//	fprintf (stderr, "Table has %d elements\n",
-//	                          table. size ());
 	for (int i = 0; i < table. size (); i ++)
 	   delete table [i]. element;
 }
@@ -125,8 +122,9 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	      }
 	   }
 	   break;
+
 	   default:
-//	      fprintf (stderr, "SOMETHING ELSE\n");
+	      fprintf (stderr, "SOMETHING ELSE\n");
 	      break;
 	}
 }

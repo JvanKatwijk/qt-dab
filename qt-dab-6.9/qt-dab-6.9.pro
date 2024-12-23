@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml multimedia
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 
 win32 {
@@ -870,13 +870,27 @@ local-audio {
 	PKGCONFIG	+= portaudio-2.0
 	DEFINES		+= QT_AUDIO
 	QT		+= multimedia 
-	HEADERS		+= ../includes/output/Qt-audio.h \	
-	                   ../includes/output/Qt-audiodevice.h \
+
+	equals (QT_MAJOR_VERSION, 5) {
+	INCLUDEPATH	+= ../includes/output/Qt5
+	HEADERS		+= ../includes/output/Qt5/Qt-audio.h \	
+	                   ../includes/output/Qt5/Qt-audiodevice.h \
 	                   ../includes/output/audiosink.h 
-	SOURCES		+= ../src/output/Qt-audio.cpp \
-	                   ../src/output/Qt-audiodevice.cpp \
+	SOURCES		+= ../src/output/Qt5/Qt-audio.cpp \
+	                   ../src/output/Qt5/Qt-audiodevice.cpp \
 	                   ../src/output/audiosink.cpp 
 	LIBS		+= -lportaudio
+	} else {
+	INCLUDEPATH	+= ../includes/output/Qt6
+	HEADERS		+= ../includes/output/Qt6/Qt-audio.h \	
+	                   ../includes/output/Qt6/Qt-audiodevice.h \
+	                   ../includes/output/audiosink.h 
+	SOURCES		+= ../src/output/Qt6/Qt-audio.cpp \
+	                   ../src/output/Qt6/Qt-audiodevice.cpp \
+	                   ../src/output/audiosink.cpp 
+	LIBS		+= -lportaudio
+	}
+
 }
 
 datastreamer	{

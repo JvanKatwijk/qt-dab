@@ -130,6 +130,7 @@ private slots:
 	void	handle_tiiThreshold		(int);
 	void	handle_pathButton		();
 	void	handle_audioServices_only	(int);
+	void	handle_auto_http		(int);
 
 signals:
 	void	selectDecoder		(int);

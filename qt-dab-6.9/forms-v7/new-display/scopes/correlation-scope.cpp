@@ -100,7 +100,7 @@ void	correlationScope::display	(const std::vector<float> &v,
 	                                 int T_g,
 	                                 int amount,
 	                                 int sliderValue,
-	                                 const std::vector<displayElement> &ss) {
+	                                 const std::vector<corrElement> &ss) {
 auto *X_axis	= dynVec (floatQwt, amount);
 auto *Y_value	= dynVec (floatQwt, amount);
 floatQwt Max	= -200;
@@ -124,16 +124,21 @@ int	input	= v. size ();
 	   delete x;
 	}
 	Markers. resize (0);
+	int up_to_4	= 0;
 	for (auto &x : ss) {
-	   if (x. index < 0)
+	   up_to_4 ++;
+	   if (up_to_4 > 4)
 	      break;
+	   int x_coord = (int)(x. phase / 360 * 2048 + 400);
+	   if ((x_coord < X_axis [0]) || (x_coord >= X_axis [0] + amount))
+	      continue;
 	   QwtPlotMarker *marker  = new QwtPlotMarker (x. Name);
-	   marker -> setXValue (x. index);  
+	   marker -> setXValue (x_coord);  
 	   marker -> setYValue (200);  
 	   marker -> setLineStyle (QwtPlotMarker::VLine);
 //	   QwtText theText = x. Name;
-	   QwtText theText = ">>>>>> (" + QString::number (x. TII >> 8) +
-	                      " " + QString::number (x. TII & 0xFF) + ")";
+	   QwtText theText = ">>>>>> (" + QString::number (x. mainId) +
+	                      " " + QString::number (x. subId) + ")";
 	   QFont zz = theText. font ();
 	   int pp = zz. pointSize ();
 	   zz . setPointSize (pp + 3);
