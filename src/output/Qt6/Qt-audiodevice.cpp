@@ -46,6 +46,7 @@ Qt_AudioDevice::~Qt_AudioDevice () {
 
 void	Qt_AudioDevice::start () {
 	bool b = open (QIODevice::ReadOnly);
+	fprintf (stderr, "Opening QIODevice %s\n", b ? "ok" : "error");
 }
 
 void	Qt_AudioDevice::stop () {

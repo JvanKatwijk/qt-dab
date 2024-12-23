@@ -588,9 +588,9 @@ QString h;
 	if (value_i (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   techWindow_p -> show ();
 
-	dynamicLabel	-> setTextFormat (Qt::RichText);
-	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
-	dynamicLabel	-> setOpenExternalLinks(true);
+//	dynamicLabel	-> setTextFormat (Qt::RichText);
+//	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
+//	dynamicLabel	-> setOpenExternalLinks(true);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //

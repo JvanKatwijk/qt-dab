@@ -294,9 +294,9 @@ float sum = 0;
 	      case  DECODER_3: { //	log likelihood ratio
 	         float sigma = amplitudeVector [index] /
 	                                  avgSigmaSqPerBin [index];
-	         sum	+= sigma * abs (r1);
-	         weight_x = weight_y = -100 * sigma / meanValue;
-	         meanValue = sum / carriers;
+	         sum		+= sigma * abs (r1);
+	         weight_x	= weight_y = -100 * sigma / meanValue;
+	         meanValue	= sum / carriers;
 	         ibits [i]		= (real (r1)) * weight_x; 
 	         ibits [carriers + i]	= (imag (r1)) * weight_y; 
 	         

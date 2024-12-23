@@ -71,7 +71,7 @@ void	padHandler::processPAD (uint8_t *buffer, int16_t last,
 uint8_t	fpadType	= (L1 >> 6) & 03;
 
 	if (fpadType != 00) {
-//	   fprintf (stderr, "fPadtype = %x\n");
+//	   fprintf (stderr, "fPadtype = %x_padInd\n");
 	   return;
 	}
 //
@@ -127,19 +127,14 @@ int16_t	i;
 	      case 2:	// start of fragment, extract the length
 	         if (firstSegment && !lastSegment) {
 	            segmentNumber   = b [last - 2] >> 4;
-	            if (dynamicLabelText. size () > 0) {
-	               QString displayText =
-	                            toQStringUsingCharset 
-	                              ((const char *)(dynamicLabelText. data()),
-                                      (CharacterSet)charSet,
-	                               dynamicLabelText. size ());
-#ifdef	_PAD_TRACE_
-	               fprintf (stderr, ">>>>shortPad %s\n",
-	                                  displayText. toLatin1 (). data ());
-#endif
+	            if (dynamicLabelText. size () > 0) { 
+	             QString displayText =  toQStringUsingCharset 
+	                                  ((char *)(dynamicLabelText. data()),
+	                                  (CharacterSet)charSet,
+	                                  dynamicLabelText. size());
 	               show_label (displayText);
 	            }
-	            dynamicLabelText. clear ();
+	            dynamicLabelText = "";
 	         }
 	         still_to_go     = b [last - 1] & 0x0F;
 	         shortpadData. resize (0);
@@ -153,14 +148,10 @@ int16_t	i;
 	         }
 
 	         if ((still_to_go <= 0) && (shortpadData. size() > 1)) {
-	            shortpadData. push_back (0);
-	            dynamicLabelText. append ((char *)shortpadData. data (),
-	                                      shortpadData. size ());
-//	               append (toQStringUsingCharset 
-//	                             ((char *)(shortpadData. data()),
-//	                             (CharacterSet)charSet,
-//	                              shortpadData. size()));
-	            shortpadData. resize (0);
+	             shortpadData. push_back (0);
+	             dynamicLabelText. append ((const char *)shortpadData. data (),
+	                                       shortpadData. size ());
+	             shortpadData. resize (0);
 	         }
 	         break;
 
@@ -178,24 +169,18 @@ int16_t	i;
 	      shortpadData . push_back (0);
 //
 //	just to avoid doubling by unsollicited shortpads
-	      dynamicLabelText. append ((char *)shortpadData. data (),
+	      dynamicLabelText. append ((const char *)shortpadData. data (),
 	                                shortpadData. size ());
-//	               append (toQStringUsingCharset ((char *)(shortpadData. data()),
-//	                                  (CharacterSet)charSet));
 	      shortpadData. resize (0);
 //	if we are at the end of the last segment (and the text is not empty)
 //	then show it.
 	      if (!firstSegment && lastSegment) {
 	         if (dynamicLabelText. size() > 0) {
-	            QString displayText = 
-	                  toQStringUsingCharset 
-	                             ((char *)(dynamicLabelText. data()),
-                                      (CharacterSet)charSet,
-	                              dynamicLabelText. size());
-#ifdef	_PAD_TRACE_
-	            fprintf (stderr, ">>>shortpad %s\n",
-	                              displayTextText. toLatin1 (). data ());
-#endif
+	            QString displayText =
+	                      toQStringUsingCharset (
+	                               (const char *)dynamicLabelText. data (),
+	                               (CharacterSet) charSet,
+	                               dynamicLabelText. size ());
 	            show_label (displayText);
 	         }
 	         dynamicLabelText. clear();
@@ -226,7 +211,7 @@ std::vector<uint8_t> data;		// for the local addition
 	if (CI_flag == 0) {
 	   if (mscGroupElement && (xpadLength > 0)) {
 	      if (last < xpadLength - 1) {
-//	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
+	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
 	         return;
 	      }
 	      
@@ -329,7 +314,7 @@ int16_t  dataLength                = 0;
 	      fprintf (stderr, "segment 1\n");
 #endif
 	      charSet = (prefix >> 4) & 017;
-	      dynamicLabelText. clear();
+	      dynamicLabelText. clear ();
 	   }
 	   else {
 	      int test = ((prefix >> 4) & 07) + 1;
@@ -351,7 +336,7 @@ int16_t  dataLength                = 0;
 #ifdef	_PAD_TRACE_
 	      fprintf (stderr, "clear command\n");
 #endif
-	      dynamicLabelText. clear();
+	      dynamicLabelText. clear ();;
 	      segmentno = -1;
 	   }
 	   else {		// Dynamic text length
@@ -366,24 +351,18 @@ int16_t  dataLength                = 0;
 	      }
 
 //	convert dynamic label
-//	      QString segmentText = toQStringUsingCharset (
-//	                                 (const char *)&data [2],
-//	                                 (CharacterSet) charSet,
-//	                                 dataLength);
-	      dynamicLabelText. append ((char *)&data [2], dataLength);
+	
+	      dynamicLabelText. append ((const char *)(&data [2]), dataLength);
 
 //	if at the end, show the label
 	      if (last) {
 	         if (!moreXPad) {
-	            QString displayText = toQStringUsingCharset (
-	                                        dynamicLabelText. data (),
-	                                        (CharacterSet) charSet,
-	                                        dynamicLabelText. size ());
+	            QString displayText =
+	                     toQStringUsingCharset (
+	                              (const char *) dynamicLabelText. data (),
+	                              (CharacterSet) charSet,
+	                              dynamicLabelText. size ());
 	            show_label (displayText);
-#ifdef	_PAD_TRACE_
-	            fprintf (stderr, "last segment encountered %s\n",
-	                          dusplayText. toLatin1 (). data ());
-#endif
 	            segmentno = -1;
 	         }
 	         else
@@ -406,20 +385,13 @@ int16_t  dataLength                = 0;
 	      moreXPad   = false;
 	   }
 	   
-//	   QString segmentText = toQStringUsingCharset (
-//	                              (const char *) data,
-//	                              (CharacterSet) charSet,
-//	                              dataLength);
-	   dynamicLabelText. append ((char *)data, dataLength);
+	   dynamicLabelText. append ((const char *)data, dataLength);
 	   if (!moreXPad && isLastSegment) {
-	      QString displayText = toQStringUsingCharset (
-	                                   dynamicLabelText. data (),
-	                                   (CharacterSet) charSet,
-	                 	           dynamicLabelText. size ());
-#ifdef	_PAD_TRACE_
-	      fprintf (stderr, "%s\n", displayText. toLatin1 (). data ());
-#endif
-	      show_label (displayText);
+	             QString displayText =  toQStringUsingCharset 
+	                                  ((char *)(dynamicLabelText. data()),
+	                                  (CharacterSet)charSet,
+	                                  dynamicLabelText. size());
+	             show_label (displayText);
 	   }
 	}
 }
