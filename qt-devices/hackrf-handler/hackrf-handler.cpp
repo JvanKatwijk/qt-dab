@@ -174,7 +174,7 @@
 	connect (this, &hackrfHandler::signal_antEnable,
 	         biasT_button, &QCheckBox::setChecked);
 	connect (this, &hackrfHandler::signal_ampEnable,
-	         biasT_button, &QCheckBox::setChecked);
+	         AmpEnableButton, &QCheckBox::setChecked);
 	connect (this, &hackrfHandler::signal_vgaValue,
 		 vgaGainSlider, &QSlider::setValue);
 	connect (this, &hackrfHandler::signal_vgaValue,
