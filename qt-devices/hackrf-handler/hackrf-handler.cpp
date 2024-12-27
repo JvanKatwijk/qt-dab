@@ -174,7 +174,7 @@
 	connect (this, &hackrfHandler::signal_antEnable,
 	         biasT_button, &QCheckBox::setChecked);
 	connect (this, &hackrfHandler::signal_ampEnable,
-	         biasT_button, &QCheckBox::setChecked);
+	         AmpEnableButton, &QCheckBox::setChecked);
 	connect (this, &hackrfHandler::signal_vgaValue,
 		 vgaGainSlider, &QSlider::setValue);
 	connect (this, &hackrfHandler::signal_vgaValue,
@@ -365,7 +365,7 @@ int	res;
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
-auto *temp = dynVec (std::complex<int16_t>, size);
+auto *temp = dynVec (std::complex<int8_t>, size);
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++)
 	   V [i] = std::complex<float> (real (temp [i]) / 127.0f,
