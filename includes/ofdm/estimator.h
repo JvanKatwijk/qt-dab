@@ -39,11 +39,12 @@
 #include	"ringbuffer.h"
 class	RadioInterface;
 
-class estimator : public QObject, public phaseTable {
+class estimator : public QObject {
 Q_OBJECT
 public:
 			estimator 		(RadioInterface *,
-	                                         processParams *);
+	                                         processParams *,
+	                                         phaseTable *);
 			~estimator		();
 	void		estimate		(std::vector<Complex>,
 	                                         std::vector<Complex> &);

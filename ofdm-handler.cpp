@@ -59,8 +59,8 @@
 	                                    theFicHandler (mr, p -> dabMode),
 	                                    theEtiGenerator (p -> dabMode,
 	                                                  &theFicHandler),
-	                                    theTIIDetector (p -> dabMode,
-	                                                      dabSettings),
+//	                                    theTIIDetector (p -> dabMode,
+//	                                                      dabSettings),
 	                                    theOfdmDecoder (mr,
 	                                                 p -> dabMode,
 	                                                 inputDevice -> bitDepth(),
@@ -131,7 +131,7 @@
 	         mr,  &RadioInterface::show_Corrector);
 	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
                                              TII_THRESHOLD, 6);
-	theTIIDetector. reset();
+//	theTIIDetector. reset();
 	theOfdmDecoder. handle_decoderSelector (decoder);
 }
 
@@ -179,9 +179,11 @@ void	ofdmHandler::stop	() {
 void	ofdmHandler::run	() {
 int32_t		startIndex;
 timeSyncer	myTimeSyncer (&theReader);
-freqSyncer	myFreqSyncer (radioInterface_p, p);
-estimator	myEstimator  (radioInterface_p, p);
-correlator	myCorrelator (radioInterface_p, p);
+phaseTable	theTable (p -> dabMode);
+TII_Detector	theTIIDetector (p -> dabMode, &theTable);
+freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
+estimator	myEstimator  (radioInterface_p, p, &theTable);
+correlator	myCorrelator (radioInterface_p, p, &theTable);
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
 int	sampleCount	= 0;

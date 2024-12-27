@@ -273,7 +273,6 @@ QString h;
 	configHandler_p		-> set_connections ();
 	configHandler_p		-> setDeviceList (theDeviceChoser.
 	                                            getDeviceList ());
-
 	connect (configHandler_p, &configHandler::frameClosed,
 	         this, &RadioInterface::handle_configFrame_closed);
 	connect (configHandler_p, &configHandler::handle_fontSelect,
@@ -710,12 +709,28 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 	if (!running. load())
 	   return;
 
+	if (subChId < 0)
+	   return;
 	serviceId ed;
 	ed. name	= serviceName;
 	ed. SId		= SId;
 	ed. subChId	= subChId;
 	ed. channel	= channel. channelName;
 
+	if (the_ensembleHandler -> alreadyIn (ed))
+	   return;
+
+	packetdata pd;
+	audiodata ad;
+	theOFDMHandler -> data_for_audioservice (serviceName, ad);
+	theOFDMHandler -> data_for_packetservice (serviceName, pd, 0);
+	if (!ad. defined && !pd. defined)
+	   return;
+	if (pd. defined && (pd. appType == -256))
+	   return;
+	if (pd. defined && (pd. appType != 7) && 
+	             configHandler_p -> get_audioServices_only ())
+	   return;
 	bool added	= the_ensembleHandler -> add_to_ensemble (ed);
 	if (added) {
 	   channel. nrServices ++;
@@ -2122,8 +2137,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
 	   theOFDMHandler -> data_for_packetservice (ad. serviceName, pd, i);
-	   fprintf (stderr, "pd for comp %d is %s defined\n", i,
-	                                  pd. defined ? " " : "not");
+//	   fprintf (stderr, "pd for comp %d is %s defined\n", i,
+//	                                  pd. defined ? " " : "not");
 	   if (pd. defined) {
 	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, FORE_GROUND);
 	      break;

@@ -35,7 +35,7 @@ class	QSettings;
 
 class	TII_Detector {
 public:
-			TII_Detector	(uint8_t dabMode, QSettings *);
+			TII_Detector	(uint8_t dabMode, phaseTable *theTable);
 			~TII_Detector	();
 	void		reset		();
 	void		resetBuffer	();
@@ -43,9 +43,8 @@ public:
 	QVector<tiiData>	processNULL	(int16_t);
 
 private:
-	QSettings	*dabSettings;
 	dabParams	params;
-	phaseTable	theTable;
+//	phaseTable	theTable;
 	std::vector<Complex> table_2;
 	int16_t		T_u;
 	int16_t		T_g;

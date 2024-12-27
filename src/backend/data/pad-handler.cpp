@@ -211,7 +211,7 @@ std::vector<uint8_t> data;		// for the local addition
 	if (CI_flag == 0) {
 	   if (mscGroupElement && (xpadLength > 0)) {
 	      if (last < xpadLength - 1) {
-	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
+//	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
 	         return;
 	      }
 	      

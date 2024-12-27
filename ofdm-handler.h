@@ -117,7 +117,7 @@ private:
 	sampleReader		theReader;
 	ficHandler		theFicHandler;
 	etiGenerator		theEtiGenerator;
-	TII_Detector		theTIIDetector;
+//	TII_Detector		theTIIDetector;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 

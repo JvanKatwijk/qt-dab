@@ -36,15 +36,15 @@
 
 class	RadioInterface;
 
-class freqSyncer : public QObject, public phaseTable {
+class freqSyncer : public QObject {
 Q_OBJECT
 public:
 			freqSyncer 		(RadioInterface *,
-	                                         processParams *);
+	                                         processParams *,
+	                                         phaseTable *);
 			~freqSyncer		();
 	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
 private:
-	std::vector<Complex> refTable;
 	dabParams	params;
 	std::vector<float> phaseDifferences;
 	int16_t		diff_length;

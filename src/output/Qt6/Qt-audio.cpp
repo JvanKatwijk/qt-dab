@@ -85,36 +85,45 @@ QStringList nameList;
 }
 
 void	Qt_Audio::restart	() {
+	if (newDeviceIndex < 0)
+	   return;
 	if (m_audioSink != nullptr) {
 	   delete m_audioSink;
 	   m_audioSink	= nullptr;
+	   if (theIODevice != nullptr) {
+	      theIODevice	-> close ();
+	      delete theIODevice;
+	   }
 	}
-	if (newDeviceIndex < 0)
-	   return;
 	QAudioDevice currentDevice
 	                = outputDevices. at (newDeviceIndex);
+	bool test 	= currentDevice. isFormatSupported (m_settings);
+	fprintf (stderr, "format is %s supported\n", test? "wel" : "niet");
 	fprintf (stderr, "going for %s\n",
 	                  currentDevice. description (). toLatin1 (). data ());
+	QAudioOutput  ttt;
+	ttt. setDevice (currentDevice);
+	if (ttt. isMuted ())
+	   ttt. setMuted (false);
 	m_audioSink	= new QAudioSink (currentDevice, m_settings);
+
+	m_audioSink	-> setBufferSize (8 * 32768);
+	connect (m_audioSink, &QAudioSink::stateChanged,
+                 this, &Qt_Audio::state_changed);
+//
+//	and run off
+	theIODevice	= new Qt_AudioDevice (mr, &tempBuffer);
+	theIODevice	-> start ();
+	m_audioSink	-> start (theIODevice);
+	QtAudio::Error err = m_audioSink -> error ();
+	fprintf (stderr, "Errorcode %d\n", (int)(err));
 	int currentVolume	= value_i (audioSettings, SOUND_HANDLING,
 	                                      QT_AUDIO_VOLUME, 50);
 	qreal linearVolume =
                        QAudio::convertVolume (currentVolume / qreal (100),
                                               QAudio::LogarithmicVolumeScale,
                                               QAudio::LinearVolumeScale);
-
 	m_audioSink	-> setVolume (linearVolume);
-	connect (m_audioSink, &QAudioSink::stateChanged,
-                 this, &Qt_Audio::state_changed);
-//
-//	and run off
-	theIODevice	-> close ();
-	delete theIODevice;
-	theIODevice	= new Qt_AudioDevice (mr, &tempBuffer);
-	theIODevice	-> start ();
-	m_audioSink	-> start (theIODevice);
-	QtAudio::Error err = m_audioSink -> error ();
-	fprintf (stderr, "Errorcode %d\n", (int)(err));
 }
 
 void	Qt_Audio::stop	() {
@@ -143,18 +152,19 @@ void	Qt_Audio::resume	() {
 void    Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	if (m_audioSink == 0)
 	   return;
-        tempBuffer. putDataIntoBuffer ((char *)(fragment),
-                                             sizeof (float) * size);
+	tempBuffer. putDataIntoBuffer ((char *)fragment,
+	                                       sizeof (float) * size);
 }
 
 void	Qt_Audio::state_changed (const QAudio::State newState) {
-
 	switch (newState) {
 	   case QAudio::ActiveState:
 	      fprintf (stderr, "State: active\n");
 	      break;
 	   case QAudio::IdleState:
 	      fprintf (stderr, "State: Idle\n");
+	      if (m_audioSink -> error () != QAudio::NoError)
+	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
 	      break;
 	   case QAudio::StoppedState:
 	      fprintf (stderr, "State: Stopped\n");
@@ -171,7 +181,6 @@ bool	Qt_Audio::selectDevice (int16_t index, const QString &deviceName) {
 	   theIODevice -> stop ();
            m_audioSink -> stop ();
            m_audioSink -> disconnect (this);
-	   m_audioSink	= nullptr;
 	}
 	newDeviceIndex = index;
 	for (int i = 0; i < outputDevices. size (); i ++) {

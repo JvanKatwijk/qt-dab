@@ -562,5 +562,6 @@ public slots:
 	void			handle_eti_activeSelector	(int);
 	void			handle_loadTable		();
 	void			selectDecoder			(int);
+	
 	void			handle_aboutLabel		();
 };

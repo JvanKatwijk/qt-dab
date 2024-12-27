@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -107,37 +107,22 @@ static bool collisions = false;
 static int selected_subId	= 99;
 
 	TII_Detector::TII_Detector (uint8_t dabMode,
-	                            QSettings *dabSettings) :
+	                               phaseTable *theTable) :
 	                                     params (dabMode),
-	                                     theTable (dabMode),
 	                                     T_u (params.get_T_u()),
 	                                     T_g (params. get_T_g ()),
                                              carriers (params. get_carriers ()),
                                              my_fftHandler (params. get_T_u (),
                                                             false) {
-	this	-> dabSettings	= dabSettings;
 	nullSymbolBuffer.resize (T_u);
 	carrierDelete	= false;
-	std::vector<Complex> refTable;
-	refTable.		resize (T_u);
-	for (int i = 0; i < T_u; i ++)
-	   refTable [i] = Complex (0, 0);
-//
-//	generate the refence values using the format we have after
-//	doing an FFT
-	for (int i = 1; i <= params. get_carriers() / 2; i ++) {
-	   float Phi_k = theTable.  get_Phi (i);
-	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
-	   Phi_k = theTable.  get_Phi (-i);
-	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
-	}
-
 	table_2. resize (carriers / 2);
 	int teller = 0;
 	for (int carrier = - carriers / 2;
 	               carrier < carriers / 2; carrier += 2) {
 	   int index	= carrier < 0 ? carrier + T_u : carrier + 1;
-	   table_2 [teller ++] = refTable [index] * conj (refTable [index + 1]);
+	   table_2 [teller ++] = theTable -> refTable [index] *
+	                         conj (theTable -> refTable [index + 1]);
 	}
 
 	reset();
@@ -225,7 +210,7 @@ Complex buffer [carriers / 2];
 
 //	We determine first the offset of the "best fit",
 //	the offset indicates the subId
-static uint8_t bits[] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
+static uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 // Sort the elemtnts accordibg to their strength
 static
@@ -242,17 +227,28 @@ int	fcmp (const void *a, const void *b) {
 }
 
 QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db) {
-float etsi_floatTable [NUM_GROUPS * GROUPSIZE];		// collapsed ETSI float values
-float nonetsi_floatTable [NUM_GROUPS * GROUPSIZE];	// collapsed non-ETSI float values
-Complex etsiTable [NUM_GROUPS * GROUPSIZE];		// collapsed ETSI complex values
-Complex nonetsiTable [NUM_GROUPS * GROUPSIZE];		// collapsed non-ETSI complex values
-float max = 0;		// abs value of the strongest carrier
-float noise = 1e9;	// noise level
+//	collapsed ETSI float values
+float	etsi_floatTable [NUM_GROUPS * GROUPSIZE];	
+//	collapsed non-ETSI float values
+float	nonetsi_floatTable [NUM_GROUPS * GROUPSIZE];
+//	collapsed ETSI complex values
+Complex etsiTable [NUM_GROUPS * GROUPSIZE];
+//	collapsed non-ETSI complex values
+
+Complex nonetsiTable [NUM_GROUPS * GROUPSIZE];
+float	max = 0;		// abs value of the strongest carrier
+float	noise = 1e9;	// noise level
 QVector<tiiData> theResult;		// results
 
 float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
+int Teller = 0;
 
-	decode (nullSymbolBuffer, decodedBuffer);
+	for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
+	   const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
+	   decodedBuffer [Teller++] += 
+	       nullSymbolBuffer [fftIdx] * conj (nullSymbolBuffer [fftIdx + 1]);
+	}
+//	decode (nullSymbolBuffer, decodedBuffer);
 
 	collapse (decodedBuffer, etsiTable, nonetsiTable);
 
@@ -263,12 +259,12 @@ float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 	   if (x > max)
 	      max = x;
 	   x = abs (nonetsiTable [i]);
-	   nonetsi_floatTable[i] = x;
+	   nonetsi_floatTable [i] = x;
 	   if (x > max)
 	      max = x;
 	}
 
-//	determine the noise level of the lowest group
+//	determine the noise level by taking the level of the lowest group
 	for (int subId = 0; subId < GROUPSIZE; subId++) {
 	   float avg = 0;
 	   for (int i = 0; i < NUM_GROUPS; i++)
@@ -362,7 +358,7 @@ float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 	      element. norm = norm;
 	      theResult. push_back (element);
 	   }
-
+	collisions = true;
 	   if ((count > 4) && collisions) {
 	      sum = Complex (0,0);
 

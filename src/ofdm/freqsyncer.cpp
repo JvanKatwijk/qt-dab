@@ -27,8 +27,8 @@
 #include	<vector>
 
 	freqSyncer::freqSyncer (RadioInterface *mr,
-	                                processParams	*p):
-	                                     phaseTable (p -> dabMode),
+	                                processParams	*p,
+	                                phaseTable	*theTable):
 	                                     params (p -> dabMode),
 	                                     fft_forward (params. get_T_u (), false) {
 int32_t	i;
@@ -43,26 +43,13 @@ float	Phi_k;
 	
 	phaseDifferences.       resize (diff_length);
 
-	refTable.		resize (T_u);
-	for (i = 0; i < T_u; i ++)
-	   refTable [i] = Complex (0, 0);
-//
-//	generate (again) the reference values for block 0,
-//	however, use the format we have after doing an FFT
-	for (i = 1; i <= params. get_carriers() / 2; i ++) {
-	   Phi_k =  get_Phi (i);
-	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
-	   Phi_k = get_Phi (-i);
-	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
-	}
-
-//
 //      prepare a table for the coarse frequency synchronization
 //      can be a static one, actually, we are only interested in
 //      the ones with a null
 	for (i = 1; i <= diff_length; i ++) 
-	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
-	                         conj (refTable [(T_u + i + 1) % T_u])));
+	   phaseDifferences [i - 1] =
+	        abs (arg (theTable -> refTable [(T_u + i) % T_u] *
+	             conj (theTable -> refTable [(T_u + i + 1) % T_u])));
 	
 }
 

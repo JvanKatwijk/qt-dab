@@ -1,3 +1,4 @@
+#
 /*
  *    Copyright (C) 2018 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -517,12 +518,12 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	QString serviceName =
 	    ensemble -> services [serviceIndex]. serviceLabel;
 
-	if (!ensemble -> services [serviceIndex]. is_shown) {
+//	if (!ensemble -> services [serviceIndex]. is_shown) {
 	   add_to_ensemble (serviceName,
 	                  ensemble -> services [serviceIndex]. SId, SubChId);
-	}
+//	}
 	ensemble -> services [serviceIndex]. is_shown			= true;
-	localBase -> serviceComps [serviceCompIndex]. is_madePublic	= true;
+//	localBase -> serviceComps [serviceCompIndex]. is_madePublic	= true;
 	localBase -> serviceComps [serviceCompIndex]. subchannelId 	= SubChId;
 	localBase -> serviceComps [serviceCompIndex]. DSCTy		= DSCTy;
 	localBase -> serviceComps [serviceCompIndex]. DGflag		= DGflag;
@@ -1199,8 +1200,8 @@ int	serviceIndex	= find_service (SId);
 	   base	-> serviceComps [firstFree]. inUse		= true;
 	   ensemble -> services [serviceIndex]. SCIds		= 0;
 
-	   add_to_ensemble (dataName, SId, subChId);
 	}
+	add_to_ensemble (dataName, SId, subChId);
 	ensemble -> services [serviceIndex]. is_shown	= true;
 }
 
@@ -1553,8 +1554,8 @@ int     serviceIndex;
 	int subchId	=
 	           currentConfig -> serviceComps [compIndex]. subchannelId;
 
-	fprintf (stderr, "%s has subchId %d compIndex %d\n",
-	                         s. toLatin1 (). data (), subchId, compIndex);
+//	fprintf (stderr, "%s has subchId %d compIndex %d\n",
+//	                         s. toLatin1 (). data (), subchId, compIndex);
 	if ((subchId == -1) ||
 	           !currentConfig -> subChannels [subchId]. inUse) {
 	   fibLocker. unlock ();

@@ -159,6 +159,7 @@ public:
 	bool		isAudio;
 	int16_t		programType;
         QString		channel;        // just for presets
+	int16_t		FEC_scheme;
 
 };
 //

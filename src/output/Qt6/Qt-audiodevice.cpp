@@ -38,20 +38,44 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 
 	totalBytes_l	= 0;
 	missedBytes_l	= 0;
-	start ();
+	running. store (false);
+//	start ();
 }
 
 Qt_AudioDevice::~Qt_AudioDevice () {
 }
 
 void	Qt_AudioDevice::start () {
+	if (running. load ())
+	   return;
 	bool b = open (QIODevice::ReadOnly);
 	fprintf (stderr, "Opening QIODevice %s\n", b ? "ok" : "error");
+	fprintf (stderr, "current channel %d %d\n",
+	                        currentReadChannel (), currentWriteChannel ());
+	running. store (true);
+}
+
+//	we always return "maxSize" bytes
+qint64	Qt_AudioDevice::readData (char* buffer, qint64 maxSize) {
+qint64	amount = 0;
+static int64_t teller = 0;
+//	"maxSize" is the requested size in bytes
+//	"amount" is in uint8_t's
+	amount = Buffer -> getDataFromBuffer (buffer, maxSize);
+	if (amount < maxSize) {
+	   for (int i = amount; i < maxSize; i ++)
+	      buffer [i] = (char)(0); 
+	}
+
+	totalBytes_l	+= amount;
+	missedBytes_l	+= maxSize - amount;
+	return maxSize;
 }
 
 void	Qt_AudioDevice::stop () {
 	Buffer -> FlushRingBuffer();
 	close ();
+	running. store (false);
 }
 void	Qt_AudioDevice::samplesMissed (int &total, int &too_short) {
 	total		= totalBytes_l / (2 * sizeof (float));
@@ -61,23 +85,6 @@ void	Qt_AudioDevice::samplesMissed (int &total, int &too_short) {
 }
 
 //
-//	we always return "maxSize" bytes
-qint64	Qt_AudioDevice::readData (char* buffer, qint64 maxSize) {
-qint64	amount = 0;
-
-//	"maxSize" is the requested size in bytes
-//	"amount" is in uint8_t's
-	amount = Buffer -> getDataFromBuffer (buffer, maxSize);
-
-	if (amount < maxSize) {
-	   for (int i = amount; i < maxSize; i ++) 
-	      buffer [i] = 0;
-	}
-
-	totalBytes_l	+= amount;
-	missedBytes_l	+= maxSize - amount;
-	return maxSize;
-}
 //
 //	usused here
 qint64	Qt_AudioDevice::writeData (const char* data, qint64 len) {

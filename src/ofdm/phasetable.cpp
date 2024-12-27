@@ -120,8 +120,10 @@ struct phasetableElement modeIV_table [] = {
 	{-1000, -1000, 0, 0}
 };
 
-	phaseTable::phaseTable (int16_t modus) {
-	Mode	= modus;
+	phaseTable::phaseTable (int16_t dabMode):
+	                                params (dabMode),
+	                                T_u (params. get_T_u ()) {
+	Mode	= dabMode;
 	currentTable	= modeI_table;
 	switch (Mode) {
 	   default:
@@ -137,9 +139,21 @@ struct phasetableElement modeIV_table [] = {
 	      currentTable	= modeIV_table;
 	      break;
 	}
+	refTable. resize (T_u);
+        for (int i = 0; i < T_u; i ++)
+           refTable [i] = Complex (0, 0);
+//
+//      generate the refence values using the format we have after
+//      doing an FFT
+        for (int i = 1; i <= params. get_carriers() / 2; i ++) {
+           float Phi_k =  get_Phi (i);
+           refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
+           Phi_k =  get_Phi (-i);
+	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
+        }
 }
 
-	phaseTable::~phaseTable() {
+	phaseTable::~phaseTable () {
 }
 
 static

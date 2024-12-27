@@ -59,7 +59,6 @@
 	   FEC_table [i] = false;
 
 	fillPointer	= 0;
-	fprintf (stderr, "** DBG: dataProcessor: appType=%d FEC=%d DSCTy=%d (", pd -> appType, FEC_scheme, pd -> DSCTy);
 	switch (DSCTy) {
 	   default:
 	      fprintf (stderr, "DSCTy %d not supported\n", DSCTy);

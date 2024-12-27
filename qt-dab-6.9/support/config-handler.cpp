@@ -881,12 +881,6 @@ QString dir	=
 	   store (dabSettings, CONFIG_HANDLER, "filePath", dir);
 }
 
-void	configHandler::handle_audioServices_only	(int state) {
-uint8_t x	= audioServices_only -> isChecked ();
-	(void)state;
-	store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
-}
-
 bool	configHandler::get_audioServices_only () {
 	return audioServices_only -> isChecked ();
 }
@@ -895,4 +889,10 @@ void	configHandler::handle_auto_http	(int state) {
 uint8_t x	= auto_http -> isChecked ();
 	(void)state;
 	store (dabSettings, CONFIG_HANDLER, "auto_http", x);
+}
+
+void	configHandler::handle_audioServices_only	(int state) {
+uint8_t x       = audioServices_only -> isChecked ();
+        (void)state;
+        store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
 }
