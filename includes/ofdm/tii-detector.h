@@ -40,7 +40,7 @@ public:
 	void		reset		();
 	void		resetBuffer	();
 	void		addBuffer	(const std::vector<Complex> &);
-	QVector<tiiData>	processNULL	(int16_t);
+	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
 private:
 	dabParams	params;
@@ -54,8 +54,6 @@ private:
 	fftHandler	my_fftHandler;
 	void		collapse	(const Complex *, 
 	                                 Complex *, Complex *);
-	void		decode	(std::vector<Complex> &, Complex *);
-//	bool		collisions	= false;
 
 	std::vector<Complex >	nullSymbolBuffer;
 

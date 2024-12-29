@@ -167,6 +167,10 @@ int	index_for_key (int key) {
 
 	b = value_i (dabSettings, CONFIG_HANDLER, "auto_http", 9) != 0;
 	this	-> auto_http -> setChecked (b);
+	b = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0) != 0;
+	this	-> tiiCollisions -> setChecked (b);
+	b = value_i (dabSettings, CONFIG_HANDLER, "tiiFilter", 1) != 0;
+	this	-> tiiFilter -> setChecked (b);
 
 
 #ifndef	__MSC_THREAD__
@@ -182,7 +186,7 @@ int	index_for_key (int key) {
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	
 	int v = value_i (dabSettings, CONFIG_HANDLER,
-	                             TII_THRESHOLD, 4);
+	                             TII_THRESHOLD, 12);
 	this -> tiiThreshold_setter -> setValue (v);
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
@@ -190,6 +194,10 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_pathButton);
 	connect (auto_http, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_auto_http);
+	connect (tiiCollisions, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_tiiCollisions);
+	connect (tiiFilter, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_tiiFilter);
 	set_Colors ();
 }
 
@@ -896,3 +904,16 @@ uint8_t x       = audioServices_only -> isChecked ();
         (void)state;
         store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
 }
+
+void	configHandler::handle_tiiCollisions	(int state) {
+uint8_t x	= tiiCollisions	-> isChecked ();
+	(void)state;
+	store (dabSettings, CONFIG_HANDLER, "tiiCollisions", x);
+}
+
+void	configHandler::handle_tiiFilter		(int state) {
+bool	x	= tiiFilter	-> isChecked ();
+	(void)state;
+	store (dabSettings, CONFIG_HANDLER, "tiiFilter", x ? 1 : 0);
+}
+

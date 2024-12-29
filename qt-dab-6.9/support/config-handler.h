@@ -131,6 +131,8 @@ private slots:
 	void	handle_pathButton		();
 	void	handle_audioServices_only	(int);
 	void	handle_auto_http		(int);
+	void	handle_tiiCollisions		(int);
+	void	handle_tiiFilter		(int);
 
 signals:
 	void	selectDecoder		(int);

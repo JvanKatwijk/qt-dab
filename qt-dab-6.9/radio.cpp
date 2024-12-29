@@ -1991,9 +1991,7 @@ QString serviceName	= service;
 	for (int i = service. size (); i < 16; i ++)
 	   serviceName. push_back (' ');
 
-	if (!inputDevice_p -> isFileInput () &&
-	                        (value_i (dabSettings_p, "channelPresets",
-	                               "davidMode", D_NIX) != D_PRIV)) {
+	if (!inputDevice_p -> isFileInput ()) {
 	   QString theService = service;
 	   QString channelName = theChannel;
 	   store (dabSettings_p, "channelPresets", channelName, theService);
@@ -2088,7 +2086,6 @@ QString serviceName	= s. serviceName;
 //	mark the selected service in the service list
 //
 //	and display the servicename on the serviceLabel
-	serviceLabel	-> setText (serviceName);
 	dynamicLabel	-> setText ("");
 	motLabel	-> setStyleSheet ("QLabel {color : red}");
 	the_ensembleHandler -> reportStart (serviceName);
@@ -2101,6 +2098,7 @@ QString serviceName	= s. serviceName;
 	   if (theOFDMHandler -> has_timeTable (ad. SId))
 	      techWindow_p -> show_timetableButton (true);
 	   startAudioservice (ad);
+	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	   techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
 
 #ifdef	HAVE_PLUTO_RXTX
@@ -2109,6 +2107,7 @@ QString serviceName	= s. serviceName;
 #endif
 	}
 	else {
+	   serviceLabel	-> setText (serviceName);
 	   packetdata pd;
 	   theOFDMHandler -> data_for_packetservice (serviceName, pd, 0);
 	   if (pd. defined) {
@@ -2352,13 +2351,13 @@ int	tunedFrequency	=
 //	was the last time the channel was active
 	if (!inputDevice_p -> isFileInput () &&
 	                   !theSCANHandler. active ()) {
-	   if (firstService == "") 
+
+	   if (firstService == "") 	// no preset specified
 	      firstService =
 	            value_s (dabSettings_p, "channelPresets", theChannel, "");
-//
 //	at this point we do not know whether or not a preset is 
 //	set, so if this mode is "on" and there is a service name
-//	associated with the channel, we set the [reset handling on
+//	associated with the channel, we set the preset handling on
 //	but only if ....
 	   if (firstService != "") {
 	      presetTimer. stop ();	// should not run here
@@ -2371,6 +2370,7 @@ int	tunedFrequency	=
 	      presetTimer. start (switchDelay);
 	   }
 	}
+
 	if (!theSCANHandler. active ())
 	   epgTimer. start (switchDelay);
 //
@@ -2750,7 +2750,7 @@ void	RadioInterface::next_for_scan_continuous () {
 	stopChannel ();
 
 	QString cs	= theSCANHandler. getNextChannel ();
-	fprintf (stderr, "Hoing for channel %s\n", cs. toLatin1 (). data ());
+	fprintf (stderr, "Going for channel %s\n", cs. toLatin1 (). data ());
 	int cc	= channelSelector -> findText (cs);
 	new_channelIndex (cc);
 	int switchDelay	= 
@@ -2805,7 +2805,9 @@ QString	theHeight;
 	                      utcTime + ";" +
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) +";" +
-	                      theName + theDistance + theAzimuth + theHeight;
+	                      theName + ";" +
+	                      theDistance + ";" +
+	                      theAzimuth + ";" + theHeight;
 	return headLine;
 }
 
@@ -2868,7 +2870,9 @@ QString theHeight;
 	                 ";" +
 	                 ";" +
 	                 ";" +
-	                  theName + theDistance + theCorner + theHeight;
+	                  theName +";" +
+	                  theDistance + ";" +
+	                  theCorner + ";" + theHeight;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -4224,10 +4228,10 @@ bool exists	= false;
 //	QString symb	=  QString::fromLatin1 (" \xb0 ");
 	QString symb	= "";
 
-	fprintf (theFile, "%s;%s;%s;%s; (%f, %f);%d;%d;%.1f km;%.1f %s  ;%.1f kW;%d m;%d m;%s\n",
+	fprintf (theFile, "%s;\"%s\";\"%s\";\"%s\"; \"(%f, %f)\";\"%d\";\"%d\";\"%.1f km\";\"%.1f %s\"  ;\"%.1f kW\";\"%d m\";\"%d m\";\"%s\"\n",
 	         tod. toLatin1 (). data (),	// the time
 	         theTransmitter -> channel. toLatin1 (). data (),
-	         theTransmitter -> ensemble. toLatin1 (). data (),
+	         theTransmitter -> ensemble. toLatin1 (). data (), +
 	         theTransmitter -> transmitterName. toLatin1 (). data (),
 	         theTransmitter -> latitude,
 	         theTransmitter -> longitude,

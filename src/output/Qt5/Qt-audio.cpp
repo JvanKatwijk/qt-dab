@@ -32,6 +32,7 @@ class	RadioInterface;
 	Qt_Audio::Qt_Audio (RadioInterface *mr, 
 	                       QSettings *settings):
 	                      tempBuffer (8 * 32768) { 
+	(void)mr;
 	audioSettings		= settings;
 	outputRate		= 48000;	// default
 	working. store		(false);
@@ -160,7 +161,8 @@ void	Qt_Audio::restart	() {
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
-	for (int i = 0; i < theList. size (); i ++)
+	(void)index;
+	for (int i = 0; i < (int)(theList. size ()); i ++)
 	   if (theList [i]. deviceName () == s)
 	      newDeviceIndex = i;
 	stop ();
@@ -171,12 +173,14 @@ bool	Qt_Audio::selectDevice	(int16_t index, const QString &s) {
 void	Qt_Audio::suspend	() {
 	if (!working. load ())
 	   return;
+	tempBuffer. FlushRingBuffer ();
 	m_audioSink	-> suspend ();
 }
 
 void	Qt_Audio::resume	() {
 	if (!working. load ())
 	   return;
+	tempBuffer. FlushRingBuffer ();
 	m_audioSink	-> resume ();
 }
 

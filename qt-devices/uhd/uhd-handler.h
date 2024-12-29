@@ -34,12 +34,12 @@ class uhdHandler;
 
 class uhd_streamer : public QThread {
 public:
-		uhd_streamer	(uhdHandler * d);
+		uhd_streamer	(uhdHandler *);
 		~uhd_streamer	();
 	void	stop		();
 
 private:
-	uhdHandler *theStick;
+	uhdHandler	*theStick;
 	void	run		();
 	std::atomic<bool> stop_called;
 };
@@ -60,15 +60,14 @@ public:
 	QString deviceName	();
 
 private:
-	QSettings *uhdSettings;
+	QSettings	*uhdSettings;
 	uhd::usrp::multi_usrp::sptr m_usrp;
 	uhd::rx_streamer::sptr rx_stream;
 	uhd_streamer * m_workerHandle = nullptr;
 	RingBuffer<std::complex<float>> * theBuffer;
-	int32_t	inputRate;
-	int32_t ringBufferSize;
-
-	int16_t	maxGain		();
+	int32_t		ringBufferSize;
+	int16_t		maxGain		();
+	int		inputRate;
 
 private slots:
 	void	setExternalGain	(int);

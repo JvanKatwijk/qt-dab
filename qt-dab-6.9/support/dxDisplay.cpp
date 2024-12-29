@@ -35,7 +35,7 @@
 	dxSettings	= s;
 	myWidget	= new QScrollArea (nullptr);
 	myWidget	-> resize (220, 400);
-	myWidget	-> setWidgetResizable(true);
+	myWidget	-> setWidgetResizable (true);
 
 	tableWidget 	= new QTableWidget (0, 14);
 	tableWidget	-> setColumnWidth (0, 30);
@@ -52,6 +52,7 @@
 	tableWidget	-> setColumnWidth (11, 70);
 	tableWidget	-> setColumnWidth (12, 70);
 	tableWidget	-> setColumnWidth (13, 70);
+
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 //	headerView	-> resizeSection (0, 50);
@@ -64,6 +65,7 @@
 	                tr ("alt") << tr ("height") << tr ("direction"));
 
 	theDial		= new QwtCompass ();
+	theDial		-> setLineWidth (8);
 
 	QMap<double, QString> map;
 	map.insert(0.0, "N");
@@ -77,11 +79,12 @@
 	       new QwtCompassMagnetNeedle(QwtCompassMagnetNeedle::ThinStyle));
 	theDial -> setValue (220.0);
 
-	QHBoxLayout *l	= new QHBoxLayout (myWidget);
+	QHBoxLayout *l	= new QHBoxLayout ();
 	l -> addWidget (tableWidget);
 	l -> addWidget (theDial);
-	set_position_and_size (s, myWidget, "DX_DISPLAY");
+	myWidget	-> setLayout (l);
 	myWidget	-> setWindowTitle ("dx display");
+	set_position_and_size (s, myWidget, "DX_DISPLAY");
 	theChannel	= "";
 }
 

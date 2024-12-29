@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml multimedia
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 
 win32 {
@@ -466,8 +466,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= uhd
 #CONFIG		+= colibri
 #CONFIG		+= elad-device
-CONFIG		+= faad
-#CONFIG		+= fdk-aac
+#CONFIG		+= faad
+CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler

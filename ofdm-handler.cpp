@@ -433,9 +433,14 @@ int	snrCount	= 0;
 	         if (++tii_counter >= tii_delay) {
 	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
 	                                                          T_u);
+	            uint8_t x = value_i (settings_p, CONFIG_HANDLER,
+	                                               "tiiCollisdions", 0);
+	            uint8_t x1 = value_i (settings_p, CONFIG_HANDLER,
+	                                               "tiiFilter", 0) != 0;
 	            show_tii_spectrum ();
 	            QVector<tiiData> resVec =
-	                           theTIIDetector. processNULL (tiiThreshold);
+	                           theTIIDetector. processNULL (tiiThreshold,
+	                                                 x, x1);
 	            show_tiiData (resVec, 0);
 	            tii_counter = 0;
 //	            theTIIDetector. reset();

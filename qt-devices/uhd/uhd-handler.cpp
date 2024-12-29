@@ -34,6 +34,9 @@
 #include "uhd-handler.h"
 #include "device-exceptions.h"
 
+#define	INPUT_RATE	2048000
+#define	BUFFER_SIZE	(1024 * 1024)
+
 	uhd_streamer::uhd_streamer (uhdHandler * d) :
 	                                       m_theStick (d) {
 	m_stop_signal_called. store (false);
@@ -106,8 +109,6 @@ void	uhd_streamer::run () {
 std::vector<std::string> antList;
 	setupUi (&myFrame);
 	myFrame.show ();
-	inputRate	= 2048000;
-	ringBufferSize	= 1024;
 
 // create a usrp device.
 	std::string args;
@@ -128,12 +129,12 @@ std::vector<std::string> antList;
 
 	   std::cout << boost::format("Using Device: %s") % m_usrp->get_pp_string() << std::endl;
 //	set sample rate
-	   m_usrp -> set_rx_rate (inputRate);
+	   m_usrp -> set_rx_rate (INPUT_RATE);
 	   inputRate = (int32_t)std::round(m_usrp->get_rx_rate());
 	   std::cout << boost::format("Actual RX Rate: %f Msps...") % (inputRate / 1e6) << std::endl << std::endl;
 
 //	allocate the rx buffer
-	   theBuffer = new RingBuffer<std::complex<float>>(ringBufferSize * 1024);
+	   theBuffer = new RingBuffer<std::complex<float>>(BUFFER_SIZE);
 	} catch (...) {
 	   qWarning("No luck with UHD\n");
 	   throw device_exception ("No luck with UHD");

@@ -83,7 +83,9 @@ const	int SEARCH_OFFSET = T_g / 2;
 //
 //	into the frequency domain, now correlate
 	for (i = 0; i < T_u; i ++) 
-	   v [i] = v [i] * conj (theTable -> refTable [i]);
+//	   v [i] = v [i] * conj (theTable -> refTable [i]);
+	   v [i] = v [i] * Complex (real (theTable -> refTable [i]),
+	                           -imag (theTable -> refTable [i]));
 
 //	and, again, back into the time domain
 	fft_backwards. fft (v);

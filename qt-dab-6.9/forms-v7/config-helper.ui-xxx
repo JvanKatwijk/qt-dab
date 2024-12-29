@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>433</height>
+    <width>494</width>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,70 +16,91 @@
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QRadioButton" name="orderServiceIds">
-         <property name="text">
-          <string>serviceIds</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QRadioButton" name="orderServiceIds">
+           <property name="text">
+            <string>serviceIds</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="orderAlfabetical">
+           <property name="text">
+            <string>alphabetically</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="ordersubChannelIds">
+           <property name="text">
+            <string>subchannelIds</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QRadioButton" name="orderAlfabetical">
-         <property name="text">
-          <string>alphabetically</string>
+        <widget class="smallPushButton" name="audioSelectButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation). Note that if no audio channels for the Qt_audio driver can be found, the default setting of portaudio is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="ordersubChannelIds">
          <property name="text">
-          <string>subchannelIds</string>
+          <string>audio</string>
          </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="smallPushButton" name="fontButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font for displaying the servicenames in the ensemble display can be set here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>font</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="fontSizeSelector">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font size of the service lists (both the ensemble view and the favorites view) can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="minimum">
-          <number>8</number>
-         </property>
-         <property name="maximum">
-          <number>15</number>
-         </property>
-         <property name="value">
-          <number>10</number>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="smallPushButton" name="fontButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font for displaying the servicenames in the ensemble display can be set here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>font</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="fontSizeSelector">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font size of the service lists (both the ensemble view and the favorites view) can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="minimum">
+            <number>8</number>
+           </property>
+           <property name="maximum">
+            <number>15</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="smallPushButton" name="fontColorButton">
@@ -91,12 +112,52 @@
          </property>
         </widget>
        </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="smallPushButton" name="pathButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The files containing slides - if being saved - will be saved in a folder/directory Qt-DAB-files in the home folder/directory. The tii files as well as the log file (both of caourse when enabled) are also stored in that folder/directory. The path can be altered by entering an EXISTING folder/directory in the menu that appears when the button is touched. That path will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>path</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="tiiThreshold_setter">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Default value is 4.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="suffix">
+            <string> dB</string>
+           </property>
+           <property name="minimum">
+            <number>6</number>
+           </property>
+           <property name="value">
+            <number>6</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
-     </item>
-     <item>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>mute time (in min)</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
           <widget class="smallSpinBox" name="muteTimeSetting">
            <property name="toolTip">
@@ -110,7 +171,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The switch time - expressed in seconds - is the time the processor will wait to see if there is&lt;/p&gt;&lt;p&gt;any data in a channel. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>switch time (in seconds)</string>
+            <string>switch time (in sec)</string>
            </property>
           </widget>
          </item>
@@ -118,16 +179,6 @@
           <widget class="smallSpinBox" name="switchDelaySetting">
            <property name="toolTip">
             <string>Set here the delay, when searching for data in a channel, in seconds</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>mute time (in minutes)</string>
            </property>
           </widget>
          </item>
@@ -147,22 +198,40 @@
          </item>
          <item>
           <widget class="QLCDNumber" name="loadDisplay">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number tells the overall CPU load (so, not only the load caused by running Qt-DAB)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+            <enum>QFrame::Shape::NoFrame</enum>
            </property>
            <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
+            <enum>QLCDNumber::SegmentStyle::Flat</enum>
            </property>
           </widget>
          </item>
         </layout>
        </item>
       </layout>
-     </item>
-    </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="2" column="3" colspan="2">
+      <widget class="smallPushButton" name="loadTableButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button will instruct the software to load a fresh database. Note that this only works if either the software is precompiled or you have installed the small library as discussed in the installation instructions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>load table</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="smallPushButton" name="devicewidgetButton">
        <property name="sizePolicy">
@@ -200,6 +269,27 @@
        </property>
       </widget>
      </item>
+     <item row="2" column="5">
+      <widget class="smallPushButton" name="dumpButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>Raw dump</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="2" colspan="2">
       <widget class="smallPushButton" name="dlTextButton">
        <property name="font">
@@ -212,6 +302,38 @@
        </property>
        <property name="text">
         <string>dlText</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
+      <widget class="smallPushButton" name="set_coordinatesButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Cantarell</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button shows a small menu where you can fill in the coordinates (in decimal notation) of your location.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>coordinates</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="6">
+      <widget class="smallPushButton" name="scheduleButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>schedule</string>
        </property>
       </widget>
      </item>
@@ -236,17 +358,17 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="6">
-      <widget class="smallPushButton" name="scheduleButton">
+     <item row="2" column="6">
+      <widget class="smallPushButton" name="skinButton">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few &amp;quot;skin&amp;quot;s for the widgets in the program. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>schedule</string>
+        <string>skin</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="smallPushButton" name="snrButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -268,74 +390,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="smallPushButton" name="set_coordinatesButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <family>Cantarell</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button shows a small menu where you can fill in the coordinates (in decimal notation) of your location.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>coordinates</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3" colspan="2">
-      <widget class="smallPushButton" name="loadTableButton">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button will instruct the software to load a freesh database. Note that this only works if either the software is precompiled or you have installed the small library as discussed in the installation instructions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>load table</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="5">
-      <widget class="smallPushButton" name="dumpButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Raw dump</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="6">
-      <widget class="smallPushButton" name="skinButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few &amp;quot;skin&amp;quot;s for the widgets in the program. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>skin</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -343,20 +397,20 @@
      <item row="0" column="0">
       <widget class="QCheckBox" name="upload_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This selector is currently not in use&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;upload enable&amp;quot; is a selector for - if configured - allowing some data to be uploaded to fmlist.org. When touching the ensemblename on top of the left part of the main widget, the current content of the ensemble is shown (in &amp;quot;.csv&amp;quot;  format).  If this selector is enabled - and if the feature is configured - you will be asked to accept (or deny) sending up the contents of the ensemble to &amp;quot;fmlist.org&amp;quot; (the site that is responsible for the database mapping the TII numbers to station names and station attributes.&lt;/p&gt;&lt;p&gt;The same for rh result of the single scan.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string/>
+        <string>upload enable</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QCheckBox" name="logger_selector">
+      <widget class="QCheckBox" name="utc_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometime one wants to see what was done, the logger just dumps some data into a file, showing the selections made.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you want to see UTC in the logs select this one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>  logger</string>
+        <string> utc Selector</string>
        </property>
       </widget>
      </item>
@@ -371,22 +425,22 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QCheckBox" name="new_tiiMode_selector">
+      <widget class="QCheckBox" name="closeDirect_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;a second implementation of the tii decoder can be selected here. The decoder &amp;quot;sees&amp;quot; more tii data, but also more erroneous data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>    new tii detector</string>
+        <string>close without asking</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QCheckBox" name="utc_selector">
+      <widget class="QCheckBox" name="epg_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you want to see UTC in the logs select this one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string> utc Selector</string>
+        <string>epg automatic</string>
        </property>
       </widget>
      </item>
@@ -401,22 +455,22 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QCheckBox" name="closeDirect_selector">
+      <widget class="QCheckBox" name="correlationSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synchronization of the receiver software with the incoming samplestream is dome using correlation. As the scope on the displaywidget often shows is that there is more than a single peak in the correlation. Normally, the strongest peak is used, however, sometimes the difference in stength between peaks is so small, that the &amp;quot;strongest&amp;quot; one changes quite often.&lt;/p&gt;&lt;p&gt;Selecting this ensures that the software takes the first of the peaks that meers some strength criteria&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>  close without asking</string>
+        <string>first correlation</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QCheckBox" name="epg_selector">
+      <widget class="QCheckBox" name="etiActivated_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;eti files can be generated by Qt-DAB-5.x. Since generating an eti file from an ensemble seems incompatible with scanning, the scan button is replaced by an &amp;quot;eti&amp;quot; button when eti is activated.&lt;/p&gt;&lt;p&gt;Note that building up an eti file requires quite some resources.&lt;/p&gt;&lt;p&gt;If eti is activated, the scanButton is replaced by the etiButton. Touching that button shows a fileselection menu, after selecting a file the content of the ensemble is sent in eti format to the file. The eti session stops when (a) the eti button is touched again, (b) switching to another channel or (c) disabling eti by unchecking the checkbox.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>epg automatic</string>
+        <string>eti activated</string>
        </property>
       </widget>
      </item>
@@ -431,36 +485,6 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QCheckBox" name="dcRemovalSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;dc removal. Selecting this function adds a simple dc removal filter to the input stream. Due to inaccuraccies in the tuning and processing of the input (devices), a DC component may have&lt;/p&gt;&lt;p&gt;become part of the input stream. The dc removal filter eliminates most of it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>dc removal</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QCheckBox" name="etiActivated_selector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;eti files can be generated by Qt-DAB-5.x. Since generating an eti file from an ensemble seems incompatible with scanning, the scan button is replaced by an &amp;quot;eti&amp;quot; button when eti is activated.&lt;/p&gt;&lt;p&gt;Note that building up an eti file requires quite some resources.&lt;/p&gt;&lt;p&gt;If eti is activated, the scanButton is replaced by the etiButton. Touching that button shows a fileselection menu, after selecting a file the content of the ensemble is sent in eti format to the file. The eti session stops when (a) the eti button is touched again, (b) switching to another channel or (c) disabling eti by unchecking the checkbox.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>eti activated</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QCheckBox" name="localTransmitterSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that - rather than showing all transmitters on a map - only the transmitters that are seen for the currrent channel are made visible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>local transmitters</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
       <widget class="QCheckBox" name="clearScan_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting the selector has effect when scanning. If set, the scan table is cleared whenever a&lt;/p&gt;&lt;p&gt;new scan (mode &amp;quot;scan once&amp;quot;) is started.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -470,7 +494,7 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QCheckBox" name="saveSlides">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, slides (pictures) appearing during transmissions are being saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -480,13 +504,13 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="2">
-      <widget class="QCheckBox" name="saveTransmittersSelector">
+     <item row="3" column="2">
+      <widget class="QCheckBox" name="audioServices_only">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this is set, the transmitter descriptions visible on the map are also stored in a &amp;quot;.csv&amp;quot;  file,&lt;/p&gt;&lt;p&gt;On starting the httpHandler, a file selection menu will appear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Many ensembles contain both audio and data services (e.g. TPEG, EPG). If selected here, only audio services will be shown in the services list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>save transmitters</string>
+        <string>audio services only</string>
        </property>
       </widget>
      </item>
@@ -495,9 +519,29 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
+      <widget class="QCheckBox" name="auto_http">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this checkbox is set, then Qt-DAB will (try to) start up the http handler (i.e. the map handler) on the next invocation of the program.&lt;/p&gt;&lt;p&gt;Of course, it will only work if&lt;/p&gt;&lt;p&gt;(a) the local position is filled in, and &lt;/p&gt;&lt;p&gt;(b) the database with TII data is accessible&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>auto http</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="logger_selector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, a log file is maintained (as usual for windows in the folder in the home folder and for Linux in the directory /tmp in a folder/directory Qt-DAB-files) in a txt file :logFile.txt, in which activities such as selecting a device, channel, service, dump are written, preceded by the time of the activity.&lt;/p&gt;&lt;p&gt;The setting of the selector is maintained between program invocations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>  logger</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="smallComboBox" name="decoderSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder selector. Just as an experiment three (almost similar) approaches to map de decoded carriers onto bits are implemented. The default one is based on the geometrical distance between the complex value (normalized to an amplitude 1, and considered as a dot in a plane) and the centerpoint in that plane. The other two use the offset of the &amp;quot;arg&amp;quot; of the value tot PI/4 (all seen in quadrant 1), the larger the offset, the smaller the soft bit value. &lt;/p&gt;&lt;p&gt;The difference between the two is that the first one takes the measured value of the current carrier value, while the second one looks at the average corner value of that carrier.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding DAB means interpreting the output of the DPSK on the FFT output, the latter meaning taking the phase difference between corresponding carriers in subsequent FFT symbols.&lt;/p&gt;&lt;p&gt;Ideally these phases are a multiple of 90 degrees, in reality they are less precise. The decoders here all try to map the results of the previous phase onto &amp;quot;soft bits&amp;quot;, i.e. values between -127 and 127. Each &amp;quot;dot&amp;quot; is mapped onto two bits, one depending on the X coordinate, the other on the &amp;quot;Y&amp;quot; one&lt;/p&gt;&lt;p&gt;The differences between the decoders is the way they look at the way the measured values differ from the ideal ones. In general, the most simple one, here the &amp;quot;decoder_a&amp;quot;, gives the best results.&lt;/p&gt;&lt;p&gt;The quality can be seen by looking at the fic BER value, that shows the percentage of the input soft bits in FIC processing that are wrong (and needed to be repaired by the viterbi decoder)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
