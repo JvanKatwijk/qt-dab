@@ -190,6 +190,10 @@ int	index_for_key (int key) {
 	this -> tiiThreshold_setter -> setValue (v);
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
+	connect (this, &configHandler::process_tiiCollisions,
+	         myRadioInterface, &RadioInterface::handle_tiiCollisions);
+	connect (this, &configHandler::process_tiiFilter,
+	         myRadioInterface, &RadioInterface::handle_tiiFilter);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
 	connect (auto_http, &QCheckBox::stateChanged,
@@ -905,15 +909,17 @@ uint8_t x       = audioServices_only -> isChecked ();
         store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
 }
 
-void	configHandler::handle_tiiCollisions	(int state) {
-uint8_t x	= tiiCollisions	-> isChecked ();
-	(void)state;
-	store (dabSettings, CONFIG_HANDLER, "tiiCollisions", x);
+void	configHandler::handle_tiiCollisions     (int state) {
+bool x       = tiiCollisions -> isChecked ();
+        (void)state;
+        store (dabSettings, CONFIG_HANDLER, "tiiCollisions", x);
+	process_tiiCollisions (x);
 }
 
-void	configHandler::handle_tiiFilter		(int state) {
-bool	x	= tiiFilter	-> isChecked ();
-	(void)state;
-	store (dabSettings, CONFIG_HANDLER, "tiiFilter", x ? 1 : 0);
+void	configHandler::handle_tiiFilter         (int state) {
+bool    x       = tiiFilter     -> isChecked ();
+        (void)state;
+        store (dabSettings, CONFIG_HANDLER, "tiiFilter", x ? 1 : 0);
+	process_tiiFilter (x);
 }
 

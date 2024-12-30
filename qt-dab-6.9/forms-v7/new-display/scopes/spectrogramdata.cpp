@@ -42,7 +42,7 @@
 #endif
 }
 
-	spectrogramData::~spectrogramData() {
+	spectrogramData::~spectrogramData () {
 }
 
 void	spectrogramData::initRaster (const QRectF &x, const QSize &raster) {

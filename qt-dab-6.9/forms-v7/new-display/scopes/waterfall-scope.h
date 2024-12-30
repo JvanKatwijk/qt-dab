@@ -39,7 +39,7 @@ public:
 		waterfallScope	(QwtPlot *, int, int);
 		~waterfallScope	();
 	void	display		(const floatQwt *, const floatQwt *,
-	                         floatQwt, int32_t);
+	                         floatQwt, int32_t marker = 0);
 	void	cleanUp		();
 private:
 	QwtPlot		*plotgrid;
@@ -47,8 +47,12 @@ private:
 	int		bitDepth;
 	spectrogramData	*WaterfallData;
 	int16_t		rasterSize;
-	double		*plotData;
+	std::vector<double>	plotData;
 	QwtLinearColorMap	*colorMap;
+	QwtLinearColorMap 	*axisMap;
 	QwtScaleWidget		*rightAxis;
+	bool		started;
+	int		oldAmp;
+	
 };
 

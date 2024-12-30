@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2024
+ *    Copyright (C)  2016 .. 2022
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,27 +33,44 @@
 	                                      plotgrid (scope),
 	                                      displaySize (displaySize_i),
 	                                      rasterSize (rasterSize_i) {
-	colorMap	= new QwtLinearColorMap (Qt::darkCyan, Qt::red);
+	colorMap  = new QwtLinearColorMap (Qt::darkCyan, Qt::red);
+	QwtLinearColorMap *c2 = new QwtLinearColorMap (Qt::darkCyan, Qt::red);
 	colorMap        -> addColorStop (0.1, Qt::cyan);
 	colorMap        -> addColorStop (0.4, Qt::green);
 	colorMap        -> addColorStop (0.7, Qt::yellow);
-	rightAxis	= plotgrid -> axisWidget (QwtPlot::yRight);
-	axisMap		= new QwtLinearColorMap (Qt::darkCyan, Qt::red);
-	axisMap		-> addColorStop (0.1, Qt::cyan);
-	axisMap		-> addColorStop (0.4, Qt::green);
-	axisMap		-> addColorStop (0.7, Qt::yellow);
+	c2              -> addColorStop (0.1, Qt::cyan);
+	c2              -> addColorStop (0.4, Qt::green);
+	c2              -> addColorStop (0.7, Qt::yellow);
 	this            -> setColorMap (colorMap);
+	rightAxis	= plotgrid -> axisWidget (QwtPlot::yRight);
 
-	this -> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 	plotData. resize (displaySize * rasterSize);
 
 	for (int i = 0; i < rasterSize; i ++)
 	   for (int j = 0; j < displaySize; j ++)
 	      plotData [i * displaySize + j] = (double)i / rasterSize;
 
-	WaterfallData	= nullptr;
+	WaterfallData   = new spectrogramData (plotData. data (),
+	                                       10000,
+	                                       1000,
+	                                       rasterSize,
+	                                       displaySize,
+	                                       50.0);
+	this -> setData (WaterfallData);
+	this -> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
+	rightAxis -> setColorMap (this -> data () -> interval (Qt::YAxis),
+	                          c2);
+	plotgrid	-> setAxisScale (QwtPlot::xBottom,
+	                                 10000,
+	                                 11000);
+
+	plotgrid	-> enableAxis (QwtPlot::xBottom);
+	plotgrid	-> enableAxis (QwtPlot::yLeft);
+	plotgrid	-> setAxisScale (QwtPlot::yLeft, 0, rasterSize);
+
+	this		-> attach     (plotgrid);
 	started		= false;
-	oldAmp		= 1000;		//  impossible value
+	oldAmp		= 0;
 }
 
 	waterfallScope::~waterfallScope () {
@@ -89,8 +106,7 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	   plotData [(rasterSize - 1) * displaySize + i] =  Y1_value [i];
 
 //	invalidateCache ();
-
-	if (!started || ((int)amp != oldAmp)) {
+	if (!started || (amp != oldAmp) {
 	   WaterfallData = new spectrogramData (plotData. data (),
 	                                        orig,
 	                                        width,
@@ -98,19 +114,17 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	                                        displaySize,
 	                                        amp / 2);
 
-	   this		-> setData (WaterfallData);
-           plotgrid	-> setAxisScale (QwtPlot::xBottom,
-                                         orig,
-                                         orig + width);
+	   this  -> setData      (WaterfallData);
+	   this  -> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 
-           plotgrid	-> enableAxis (QwtPlot::xBottom);
-           plotgrid	-> enableAxis (QwtPlot::yLeft);
-           plotgrid	-> setAxisScale (QwtPlot::yLeft, 0, rasterSize);
-	   rightAxis	-> setColorMap (this -> data () -> interval (Qt::YAxis),
-	                                           axisMap);
-           this 	-> attach     (plotgrid);
+	   plotgrid	-> setAxisScale (QwtPlot::xBottom,
+	                                 orig,
+	                                 orig + width);
+	   plotgrid 	-> enableAxis (QwtPlot::xBottom);
+	   this		-> attach     (plotgrid);
 	   started	= true;
-	   oldAmp	= (int)amp;
+	   oldAmp	= amp;
+	
 	}
 	plotgrid        -> replot();
 }

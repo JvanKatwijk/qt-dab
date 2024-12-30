@@ -16,17 +16,17 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+#QMAKE_CFLAGS	+=  -O3 -ffast-math
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 #QMAKE_CXXFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -ffast-math -flto
 #QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g 
 #QMAKE_CXXFLAGS	+=  -g 
 #QMAKE_LFLAGS	+=  -g 
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg

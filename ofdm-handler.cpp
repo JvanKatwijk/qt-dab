@@ -59,8 +59,6 @@
 	                                    theFicHandler (mr, p -> dabMode),
 	                                    theEtiGenerator (p -> dabMode,
 	                                                  &theFicHandler),
-//	                                    theTIIDetector (p -> dabMode,
-//	                                                      dabSettings),
 	                                    theOfdmDecoder (mr,
 	                                                 p -> dabMode,
 	                                                 inputDevice -> bitDepth(),
@@ -131,6 +129,10 @@
 	         mr,  &RadioInterface::show_Corrector);
 	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
                                              TII_THRESHOLD, 6);
+	tiiCollisions_active = value_i (settings_p, CONFIG_HANDLER,
+	                                      "tiiCollisions", 1) != 0;
+	tiiFilter_active = value_i (settings_p, CONFIG_HANDLER,
+	                                      "tiiFilter", 1) != 0;
 //	theTIIDetector. reset();
 	theOfdmDecoder. handle_decoderSelector (decoder);
 }
@@ -149,6 +151,14 @@
 
 void	ofdmHandler::set_tiiThreshold	(int16_t threshold) {
 	tiiThreshold = threshold;
+}
+
+void	ofdmHandler::set_tiiCollisions	(bool b) {
+	tiiCollisions_active = b;
+}
+
+void	ofdmHandler::set_tiiFilter	(bool b) {
+	tiiFilter_active	= b;
 }
 
 void	ofdmHandler::start () {
@@ -433,14 +443,11 @@ int	snrCount	= 0;
 	         if (++tii_counter >= tii_delay) {
 	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
 	                                                          T_u);
-	            uint8_t x = value_i (settings_p, CONFIG_HANDLER,
-	                                               "tiiCollisdions", 0);
-	            uint8_t x1 = value_i (settings_p, CONFIG_HANDLER,
-	                                               "tiiFilter", 0) != 0;
 	            show_tii_spectrum ();
 	            QVector<tiiData> resVec =
 	                           theTIIDetector. processNULL (tiiThreshold,
-	                                                 x, x1);
+	                                                 tiiCollisions_active,
+	                                                 tiiFilter_active);
 	            show_tiiData (resVec, 0);
 	            tii_counter = 0;
 //	            theTIIDetector. reset();

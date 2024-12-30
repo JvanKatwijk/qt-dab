@@ -30,7 +30,7 @@ constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
 
 
 // TII pattern for transmission modes I, II and IV
-static const uint8_t table[] = {
+static const uint8_t patternTable[] = {
 	0x0f,	// 0 0 0 0 1 1 1 1		0
 	0x17,	// 0 0 0 1 0 1 1 1		1
 	0x1b,	// 0 0 0 1 1 0 1 1		2
@@ -322,12 +322,20 @@ int Teller = 0;
 //	In the alternative test we look at the degree in which the
 //	phases of the "pins" are more or less equal
 	   if ((etsi_count >= 4) || (nonetsi_count >= 4))  {
-	      float mse_etsi	= get_mse (etsi_phases);
-	      float mse_nonetsi	= get_mse (nonetsi_phases);
-	      bool test1_a	= 2 * mse_nonetsi < mse_etsi;
-	      bool test1_b	= abs (nonetsi_sum) > abs (etsi_sum);
-	      bool test2_a	= 2 * mse_etsi < mse_nonetsi;
-	      if ((tiiFilter && test1_a) || (!tiiFilter && test1_b)) {
+	      bool	test_1	= false;
+	      bool	test_2	= false;
+	      if (tiiFilter) {
+	         float mse_etsi		= get_mse (etsi_phases);
+	         float mse_nonetsi	= get_mse (nonetsi_phases);
+	         test_1	= 2 * mse_nonetsi < mse_etsi;
+	         test_2 = 2 * mse_etsi < mse_nonetsi;
+	      }
+	      else {
+	         test_1	= abs (nonetsi_sum) > abs (etsi_sum);
+	         test_2 = true;
+	      }
+
+	      if (test_1) {
 	         norm		= true;
 	         sum		= nonetsi_sum;
 	         cmplx_ptr	= nonetsiTable;
@@ -336,22 +344,22 @@ int Teller = 0;
 	         pattern	= nonetsi_pattern;
 	      }
 	      else
-	      if ((tiiFilter && test2_a)  || !tiiFilter) {
+	      if (test_2) {
 	         sum		= etsi_sum;
 	         cmplx_ptr	= etsiTable;
 	         float_ptr	= etsi_floatTable;
 	         count		= etsi_count;
 	         pattern	= etsi_pattern;
 	      }
-	      else {
+	      else {	// happens onlu when tiiFilter is "on"
 	         count = 0;
 	      }
 	   }
 
 //	Find the Main Id that matches the pattern
 	   if (count == 4) {
-	      for (; mainId < (int)sizeof (table); mainId++)
-	         if (table [mainId] == pattern)
+	      for (; mainId < (int)sizeof (patternTable); mainId++)
+	         if (patternTable [mainId] == pattern)
 	            break;
 	   }
 
@@ -359,10 +367,10 @@ int Teller = 0;
 	   else
 	   if (count > 4) {
 	      float mm = 0;
-	      for (int k = 0; k < (int)sizeof (table); k++) {
+	      for (int k = 0; k < (int)sizeof (patternTable); k++) {
 	         Complex val = Complex (0,0);
 	         for (int i = 0; i < NUM_GROUPS; i++) {
-	            if (table [k] & bits [i])
+	            if (patternTable [k] & bits [i])
 	               val += cmplx_ptr [subId + GROUPSIZE * i];
 	         }
 
@@ -388,7 +396,7 @@ int Teller = 0;
 
 // Calculate the level of the second main ID
 	      for (int i = 0; i < NUM_GROUPS; i++) {
-	         if ((table [mainId] & bits [i])== 0) {
+	         if ((patternTable [mainId] & bits [i]) == 0) {
 	            int index = subId + GROUPSIZE * i;
 	            if (float_ptr [index] > noise * threshold)
 	               sum += cmplx_ptr [index];
@@ -396,8 +404,8 @@ int Teller = 0;
 	      }
 
 	      if (subId == selected_subId) { // List all possible main IDs
-	         for (int k = 0; k < (int)sizeof (table); k++) {
-	            int pattern2 = table [k] & pattern;
+	         for (int k = 0; k < (int)sizeof (patternTable); k++) {
+	            int pattern2 = patternTable [k] & pattern;
 	            int count2 = 0;
 	            for (int i = 0; i < NUM_GROUPS; i++)
 	               if (pattern2 & bits [i])

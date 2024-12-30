@@ -2549,7 +2549,12 @@ void	RadioInterface::start_scan_single () {
 	                           "tii" + ";" +
 	                           "time" + ";" +
 	                           "SNR" + ";" +
-	                           "nr services" + ";";
+	                           "nr services" + ";" +
+	                           "transmitterName;" +
+	                           "distance;" +
+	                           "azimuth;" +
+	                           "height";
+	 
 	scanTable_p	-> addLine (topLine);
 	scanTable_p	-> addLine ("\n");
 
@@ -2580,7 +2585,11 @@ void	RadioInterface::start_scan_continuous () {
 	                           "tii" + ";" +
 	                           "time" + ";" +
 	                           "SNR" + ";" +
-	                           "nr services" + ";";
+	                           "nr services" + ";" +
+	                           "transmitterName;" +
+	                           "distance;" +
+	                           "azimuth;" +
+	                           "height";
 	scanTable_p -> addLine (topLine);
 	scanTable_p	-> addLine ("\n");
 
@@ -2605,7 +2614,7 @@ void	RadioInterface::start_scan_continuous () {
 void	RadioInterface::stopScanning	() {
 	if (!theSCANHandler. active ())
 	   return;
-	fprintf (stderr, "De scan wordt gestopt\n");
+//	fprintf (stderr, "De scan wordt gestopt\n");
 	disconnect (theOFDMHandler, &ofdmHandler::no_signal_found,
 	            this, &RadioInterface::no_signal_found);
 	presetButton	-> setText ("favorites");
@@ -2750,7 +2759,7 @@ void	RadioInterface::next_for_scan_continuous () {
 	stopChannel ();
 
 	QString cs	= theSCANHandler. getNextChannel ();
-	fprintf (stderr, "Going for channel %s\n", cs. toLatin1 (). data ());
+//	fprintf (stderr, "Going for channel %s\n", cs. toLatin1 (). data ());
 	int cc	= channelSelector -> findText (cs);
 	new_channelIndex (cc);
 	int switchDelay	= 
@@ -2775,13 +2784,13 @@ QString	theHeight;
 
 	if (channel. mainId != -1) 
 	   tii		= ids_to_string (channel. mainId,
-	                                     channel. subId) + ";" ;
+	                                     channel. subId);
 	else
-	   tii		= "?,?;";
+	   tii		= "???";
 	if (channel. transmitterName != "")
-	   theName	= channel. transmitterName + ";";
+	   theName	= channel. transmitterName;
 	else
-	   theName 	= ";";
+	   theName 	= " ";
 	if (channel. distance > 0) {
 	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
 	   theAzimuth	= QString::number (channel. azimuth, 'f', 1)
@@ -2801,12 +2810,12 @@ QString	theHeight;
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
 	                      hextoString (channel. Eid) + ";" +
-	                      tii +
+	                      tii + ";" +
 	                      utcTime + ";" +
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) +";" +
 	                      theName + ";" +
-	                      theDistance + ";" +
+			      theDistance + ";" +
 	                      theAzimuth + ";" + theHeight;
 	return headLine;
 }
@@ -2847,9 +2856,9 @@ QString theHeight;
 	tii		= ids_to_string (tr. theTransmitter. mainId,
 	                                 tr. theTransmitter. subId) + ";" ;
 	if (tr. theTransmitter. transmitterName != "")
-	   theName	= tr. theTransmitter. transmitterName + ";";
+	   theName	= tr. theTransmitter. transmitterName;
 	else
-	   theName 	= ";";
+	   theName 	= "";
 	
 	if (tr. theTransmitter. distance > 0) {
 	   theDistance	= QString::number (tr. theTransmitter. distance, 'f', 1) + " km ";
@@ -4266,4 +4275,13 @@ void	RadioInterface::handle_tiiButton () {
 	}
 	theOFDMHandler -> set_dxMode (dxMode);
 }
+
+void	RadioInterface::handle_tiiCollisions     (bool b) {
+	theOFDMHandler	-> set_tiiCollisions (b);
+}
+
+void	RadioInterface::handle_tiiFilter         (bool b) {
+	theOFDMHandler	-> set_tiiFilter	(b);
+}
+
 

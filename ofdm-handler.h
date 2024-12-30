@@ -65,9 +65,13 @@ public:
 	bool		start_etiGenerator	(const QString &);
 	void		stop_etiGenerator	();
 	void		reset_etiGenerator	();
-	void		set_tiiThreshold	(int16_t);
 	void		set_scanMode		(bool);
 	void		get_frameQuality	(int *, int*, int *);
+//
+//	for the tii settings
+	void		set_tiiThreshold	(int16_t);
+	void		set_tiiCollisions	(bool);
+	void		set_tiiFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
 	QString		find_service		(uint32_t, int);
@@ -122,6 +126,8 @@ private:
 	mscHandler		theMscHandler;
 
 	int16_t			tiiThreshold;
+	bool			tiiCollisions_active;
+	bool			tiiFilter_active;
 
 //	deviceHandler		*inputDevice;
 	int			decoder;
