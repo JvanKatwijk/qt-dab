@@ -104,6 +104,8 @@ static const uint8_t patternTable[] = {
 };
 
 static int selected_subId	= 99;
+#define	SECTION_SIZE	192
+#define	NR_SECTIONS	4
 
 	TII_Detector::TII_Detector (uint8_t dabMode,
 	                               phaseTable *theTable) :
@@ -165,13 +167,13 @@ Complex buffer [carriers / 2];
 
 //	a single carrier cannot be a TII carrier.
 	if (carrierDelete) {
-	   for (int i = 0; i < 192; i++) {
+	   for (int i = 0; i < SECTION_SIZE; i++) {
 	      float x [4];
 	      float max = 0;
 	      float sum = 0;
 	      int index = 0;
-	      for(int j = 0; j < 4; j++) {
-	         x [j] = abs (buffer [i + j * 192]);
+	      for (int j = 0; j < NR_SECTIONS; j++) {
+	         x [j] = abs (buffer [i + j * SECTION_SIZE]);
 		 sum += x [j];
 		 if (x [j] > max) {
 	            max = x[j];
@@ -181,19 +183,18 @@ Complex buffer [carriers / 2];
 
 	      float min = (sum - max) / 3;
 	      if (sum < max * 1.5 && max > 0.0) {
-	         buffer [i + index * 192] *= min / max;
-//	         fprintf(stderr, "carrier index %d\n", i  + index * 192);
+	         buffer [i + index * SECTION_SIZE] *= min / max;
 	      }
 	   }
 	}
 
-	for (int i = 0; i < 192; i++) {
+	for (int i = 0; i < SECTION_SIZE; i++) {
 	   etsiVec [i]	= Complex (0, 0);
 	   nonetsiVec [i] =  Complex (0, 0);
-	   for (int j = 0; j < 4; j++) {
-	      Complex x = buffer [i + j * 192];
+	   for (int j = 0; j < NR_SECTIONS; j++) {
+	      Complex x = buffer [i + j * SECTION_SIZE];
 	      etsiVec [i] += x;
-	      nonetsiVec [i] += x * conj (table_2 [i + j * 192]);
+	      nonetsiVec [i] += x * conj (table_2 [i + j * SECTION_SIZE]);
 	   }
 	}
 }
@@ -279,7 +280,6 @@ int Teller = 0;
 	      noise = avg;
 	}
 
-//	fprintf (stderr, "Noise %f %f %f\n", noise, max, noise / max);
 	for (int subId = 0; subId < GROUPSIZE; subId++) {
 	   tiiData element;
 	   Complex sum		= Complex (0,0);
@@ -302,7 +302,7 @@ int Teller = 0;
 	      if (etsi_floatTable [subId + i * GROUPSIZE] >
 	                                          noise * threshold) {
 	         etsi_count++;
-	         etsi_pattern |= (0x80 >> i);
+	         etsi_pattern |= bits [i];
 	         etsi_sum	+= etsiTable [subId + GROUPSIZE * i]; 
 	         etsi_phases.
 	               push_back (arg (etsiTable [subId + GROUPSIZE * i]));
@@ -310,7 +310,7 @@ int Teller = 0;
 	      if (nonetsi_floatTable [subId + i * GROUPSIZE] >
 	                                          noise * threshold) {
 	         nonetsi_count++;
-	         nonetsi_pattern |= (0x80 >> i);
+	         nonetsi_pattern |= bits [i];
 	         nonetsi_sum += nonetsiTable [subId + GROUPSIZE * i];
 	         nonetsi_phases.
 	                push_back (arg (nonetsiTable [subId + GROUPSIZE * i]));
@@ -322,20 +322,7 @@ int Teller = 0;
 //	In the alternative test we look at the degree in which the
 //	phases of the "pins" are more or less equal
 	   if ((etsi_count >= 4) || (nonetsi_count >= 4))  {
-	      bool	test_1	= false;
-	      bool	test_2	= false;
-	      if (tiiFilter) {
-	         float mse_etsi		= get_mse (etsi_phases);
-	         float mse_nonetsi	= get_mse (nonetsi_phases);
-	         test_1	= 2 * mse_nonetsi < mse_etsi;
-	         test_2 = 2 * mse_etsi < mse_nonetsi;
-	      }
-	      else {
-	         test_1	= abs (nonetsi_sum) > abs (etsi_sum);
-	         test_2 = true;
-	      }
-
-	      if (test_1) {
+	      if (abs (nonetsi_sum) > abs (etsi_sum)) {
 	         norm		= true;
 	         sum		= nonetsi_sum;
 	         cmplx_ptr	= nonetsiTable;
@@ -343,39 +330,59 @@ int Teller = 0;
 	         count		= nonetsi_count;
 	         pattern	= nonetsi_pattern;
 	      }
-	      else
-	      if (test_2) {
+	      else {
 	         sum		= etsi_sum;
 	         cmplx_ptr	= etsiTable;
 	         float_ptr	= etsi_floatTable;
 	         count		= etsi_count;
 	         pattern	= etsi_pattern;
 	      }
-	      else {	// happens onlu when tiiFilter is "on"
-	         count = 0;
-	      }
 	   }
 
 //	Find the Main Id that matches the pattern
 	   if (count == 4) {
-	      for (; mainId < (int)sizeof (patternTable); mainId++)
-	         if (patternTable [mainId] == pattern)
-	            break;
+	      bool couldBe = true;
+	      if (tiiFilter)  {
+	         float f_nonetsi = get_mse (nonetsi_phases);
+	         float f_etsi    = get_mse (etsi_phases);
+	         if (norm &&  (2 * f_nonetsi > f_etsi))
+	            couldBe = false;
+	         else
+	         if (!norm && (2 * f_etsi > f_nonetsi))
+	            couldBe = false;
+	      } 
+	      if (couldBe) {
+	         for (; mainId < (int)sizeof (patternTable); mainId++)
+	            if (patternTable [mainId] == pattern)
+	               break;
+	      }
+	      else {
+//	         fprintf (stderr, "stopped potential junk\n");
+	         count = 0;	// just quit
+	      }
 	   }
 
 //	Find the best match. We extract the four max values as bits
 	   else
 	   if (count > 4) {
+	      float avgPhase = 0;
+	      etsi_phases. resize (0);
 	      float mm = 0;
+	      float KK = 1000;
 	      for (int k = 0; k < (int)sizeof (patternTable); k++) {
-	         Complex val = Complex (0,0);
+	         Complex val = Complex (0, 0);
 	         for (int i = 0; i < NUM_GROUPS; i++) {
-	            if (patternTable [k] & bits [i])
+	            if (patternTable [k] & bits [i]) {
+	               etsi_phases.
+	                   push_back (arg (cmplx_ptr [subId + GROUPSIZE * i]));
 	               val += cmplx_ptr [subId + GROUPSIZE * i];
+	            }
 	         }
 
-	         if (abs (val) > mm) {
-	            mm = abs (val);
+	         if (get_mse (etsi_phases) < KK) {
+	            KK = get_mse (etsi_phases);
+//	         if (abs (val) > mm) {
+//	            mm = abs (val);
 	            sum = val;
 	            mainId = k;
 	         }
@@ -390,7 +397,8 @@ int Teller = 0;
 	      element. norm = norm;
 	      theResult. push_back (element);
 	   }
-
+//
+//	Colliiions still to be done
 	   if ((count > 4) && (collisions != 0)) {
 	      sum = Complex (0,0);
 

@@ -810,7 +810,6 @@ QStringList s	= theOFDMHandler -> basicPrint ();
 	         this, &RadioInterface::handle_contentSelector);
 
 	contentTable_p		-> addLine (headLine);
-//	contentTable_p		-> addLine ("\n");
 	for (auto &ss : s)
 	   contentTable_p -> addLine (ss);
 	contentTable_p -> show ();
@@ -2795,12 +2794,13 @@ QString	theHeight;
 	   theDistance	= QString::number (channel. distance, 'f', 1) + " km ";
 	   theAzimuth	= QString::number (channel. azimuth, 'f', 1)
 	                      + QString::fromLatin1 (" \xb0 ");
-	   theHeight	= " (" + QString::number (channel. height, 'f', 1) +  "m)" + "\n";
+	   theHeight	= " (" + QString::number (channel. height, 'f', 1) +  "m)";
 	}
 	else {
+	   theName	= "unknown";
 	   theDistance	= "unknown";
 	   theAzimuth	= "";
-	   theHeight	= "\n";
+	   theHeight	= "";
 	}
 	   
 	QString utcTime	= convertTime (UTC. year, UTC.month,
@@ -2824,7 +2824,7 @@ void	RadioInterface::show_for_single_scan () {
 QString	headLine = build_headLine ();
 	QStringList s = theOFDMHandler -> basicPrint ();
 	scanTable_p -> addLine (headLine);
-	scanTable_p -> addLine ("\n;\n");
+	scanTable_p -> addLine ("\n");
 	for (const auto &l : s)
 	   scanTable_p -> addLine (l);
 	scanTable_p -> addLine ("\n;\n;\n");
@@ -2864,9 +2864,10 @@ QString theHeight;
 	   theDistance	= QString::number (tr. theTransmitter. distance, 'f', 1) + " km ";
 	   theCorner	= QString::number (tr. theTransmitter. azimuth, 'f', 1)
 	                      + QString::fromLatin1 (" \xb0 ");
-	   theHeight	= " (" + QString::number (tr. theTransmitter. height, 'f', 1) +  "m)" + "\n";
+	   theHeight	= " (" + QString::number (tr. theTransmitter. height, 'f', 1) +  "m)";
 	}
 	else {
+	   theName	= "unknown";
 	   theDistance	= "unknown";
 	   theCorner	= "?";
 	   theHeight	= "?";
