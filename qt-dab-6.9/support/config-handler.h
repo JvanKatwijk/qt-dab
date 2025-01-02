@@ -149,7 +149,7 @@ signals:
 	void	set_dcRemoval		(bool);
 	void	frameClosed		();
 
-	void	process_tiiCollisions	(bool);
+	void	process_tiiCollisions	(int);
 	void	process_tiiFilter	(bool);
 
 };

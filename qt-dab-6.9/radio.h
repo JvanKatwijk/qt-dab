@@ -564,6 +564,6 @@ public slots:
 	void			selectDecoder			(int);
 	
 	void			handle_aboutLabel		();
-	void			handle_tiiCollisions		(bool);
+	void			handle_tiiCollisions		(int);
 	void			handle_tiiFilter		(bool);
 };

@@ -77,18 +77,18 @@ void    waterfallScope::display (const floatQwt *X_axis,
 int     orig    = (int)(X_axis [0]);
 int     width   = (int)(X_axis [displaySize - 1] - orig);
 
-	(void)marker;
 /*
  *      shift one row, faster with memmove than writing out
  *      the loops. Note that source and destination overlap
  *      and we therefore use memmove rather than memcpy
  */
+
 	memmove (&plotData [0], &plotData [displaySize],
 	                     (rasterSize - 1) * displaySize * sizeof (double));
 	for (int i = 0; i < displaySize; i ++)
 	   plotData [(rasterSize - 1) * displaySize + i] =  Y1_value [i];
 
-//	invalidateCache ();
+	invalidateCache ();
 
 	if (!started || ((int)amp != oldAmp)) {
 	   WaterfallData = new spectrogramData (plotData. data (),

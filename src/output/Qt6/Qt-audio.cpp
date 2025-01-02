@@ -97,14 +97,6 @@ void	Qt_Audio::restart	() {
 	}
 	QAudioDevice currentDevice
 	                = outputDevices. at (newDeviceIndex);
-	bool test 	= currentDevice. isFormatSupported (m_settings);
-	fprintf (stderr, "format is %s supported\n", test? "wel" : "niet");
-	fprintf (stderr, "going for %s\n",
-	                  currentDevice. description (). toLatin1 (). data ());
-	QAudioOutput  ttt;
-	ttt. setDevice (currentDevice);
-	if (ttt. isMuted ())
-	   ttt. setMuted (false);
 	m_audioSink	= new QAudioSink (currentDevice, m_settings);
 
 	m_audioSink	-> setBufferSize (8 * 32768);

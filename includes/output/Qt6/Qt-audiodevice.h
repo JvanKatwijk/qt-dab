@@ -52,5 +52,10 @@ private:
 	int	totalBytes_l;
 	int	missedBytes_l;
 	std::atomic<bool> running;
+private slots:
+	void	print_readyRead		();
+	void	print_readChannelFinished	();
+	void	print_channelReadyRead		(int);
+	void	print_aboutToClose		();
 };
 

@@ -4277,7 +4277,7 @@ void	RadioInterface::handle_tiiButton () {
 	theOFDMHandler -> set_dxMode (dxMode);
 }
 
-void	RadioInterface::handle_tiiCollisions     (bool b) {
+void	RadioInterface::handle_tiiCollisions     (int b) {
 	theOFDMHandler	-> set_tiiCollisions (b);
 }
 

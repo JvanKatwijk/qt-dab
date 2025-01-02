@@ -39,6 +39,14 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	totalBytes_l	= 0;
 	missedBytes_l	= 0;
 	running. store (false);
+	connect (this, SIGNAL (readyRead ()),
+	         this, SLOT (print_readyRead ()));
+	connect (this, SIGNAL (readChannelFinished ()),
+	         this, SLOT (print_readChannelFinished ()));
+	connect (this, SIGNAL (channelReadyRead (int)),
+	         this, SLOT (print_channelReadyRead (int)));
+	connect (this, SIGNAL (aboutToClose ()),
+	         this, SLOT (print_aboutToClose ()));
 //	start ();
 }
 
@@ -58,7 +66,6 @@ void	Qt_AudioDevice::start () {
 //	we always return "maxSize" bytes
 qint64	Qt_AudioDevice::readData (char* buffer, qint64 maxSize) {
 qint64	amount = 0;
-static int64_t teller = 0;
 //	"maxSize" is the requested size in bytes
 //	"amount" is in uint8_t's
 	amount = Buffer -> getDataFromBuffer (buffer, maxSize);
@@ -67,7 +74,7 @@ static int64_t teller = 0;
 	      buffer [i] = (char)(0); 
 	}
 
-	totalBytes_l	+= amount;
+	totalBytes_l	+= maxSize;
 	missedBytes_l	+= maxSize - amount;
 	return maxSize;
 }
@@ -91,5 +98,21 @@ qint64	Qt_AudioDevice::writeData (const char* data, qint64 len) {
 	Q_UNUSED (data);
 	Q_UNUSED (len);
 	return 0;
+}
+
+void	Qt_AudioDevice::print_readyRead () {
+	fprintf (stderr, "signal was readyRead\n");
+}
+
+void	Qt_AudioDevice::print_readChannelFinished () {
+	fprintf (stderr, "signal was readChannelFinished\n");
+}
+
+void	Qt_AudioDevice::print_channelReadyRead (int channel) {
+	fprintf (stderr, "signal was channelReadyRead for channel %d\n", channel);
+}
+
+void	Qt_AudioDevice::print_aboutToClose () {
+	fprintf (stderr, "signal was aboutTiClose\n");
 }
 

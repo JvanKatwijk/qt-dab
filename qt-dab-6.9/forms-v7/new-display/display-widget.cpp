@@ -230,6 +230,7 @@ std::vector<corrElement> showData;
 	if (currentTab != SHOW_CORRELATION)
 	   return;
 
+	
 	for (auto &theTransm : theTr) {
 	   corrElement t;
 	   t. mainId	= theTransm. theTransmitter. mainId;
@@ -279,6 +280,7 @@ std::vector<corrElement> showData;
 	}
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] *= 50.0 / MMax;
+
 	waterfallScope_p -> display (X_axis, Y_value, 
 	                              waterfallSlider -> value (),
 	                              v. size () / 2);

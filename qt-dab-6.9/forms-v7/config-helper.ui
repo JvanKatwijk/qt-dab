@@ -174,19 +174,16 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QCheckBox" name="tiiCollisions">
+          <widget class="QSpinBox" name="tiiCollisions">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, the tii decoder will after finding a match for a mainId at a given subId continue to search for other matches with the same subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>collis.</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Collisions. It is obviously possible that one receives more than one mainId with a fiven subId. Setting this sponbox to a number indicating a subId, tells the software to look for all mainIds that use this subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="tiiFilter">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;An additional filter for reducing the number of false positives when using a low threshold&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The tii filter is an additional filter to reduce the number of false positives that may  be seen in RII detection when the tii threshold. The filter looks at the signal values representing the potential TII value (detected by looking at the signal strength) and looks whether or not the phases of the components of the potential TII value are reasonably wellformed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>tiifilter</string>
@@ -205,7 +202,7 @@
             </font>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Default value is 4.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Signals with an strength lower than the threshold value are considered noise.  Of course, the lower the value, the more chance there is to get false positive. The minimum value is set to 5 dB. Using a small antenna I use 10dB, with the filter set &amp;quot;on&amp;quot; and get very few false positives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="suffix">
             <string> dB</string>

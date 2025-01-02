@@ -167,8 +167,8 @@ int	index_for_key (int key) {
 
 	b = value_i (dabSettings, CONFIG_HANDLER, "auto_http", 9) != 0;
 	this	-> auto_http -> setChecked (b);
-	b = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0) != 0;
-	this	-> tiiCollisions -> setChecked (b);
+	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0);
+	this	-> tiiCollisions -> setValue (c);
 	b = value_i (dabSettings, CONFIG_HANDLER, "tiiFilter", 1) != 0;
 	this	-> tiiFilter -> setChecked (b);
 
@@ -198,7 +198,7 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_pathButton);
 	connect (auto_http, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_auto_http);
-	connect (tiiCollisions, &QCheckBox::stateChanged,
+	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_tiiCollisions);
 	connect (tiiFilter, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_tiiFilter);
@@ -909,11 +909,9 @@ uint8_t x       = audioServices_only -> isChecked ();
         store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
 }
 
-void	configHandler::handle_tiiCollisions     (int state) {
-bool x       = tiiCollisions -> isChecked ();
-        (void)state;
-        store (dabSettings, CONFIG_HANDLER, "tiiCollisions", x);
-	process_tiiCollisions (x);
+void	configHandler::handle_tiiCollisions     (int value) {
+        store (dabSettings, CONFIG_HANDLER, "tiiCollisions", value);
+	process_tiiCollisions (value);
 }
 
 void	configHandler::handle_tiiFilter         (int state) {
