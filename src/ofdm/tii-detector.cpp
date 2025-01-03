@@ -249,6 +249,8 @@ QVector<tiiData> theResult;		// results
 float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 int Teller = 0;
 
+	if (selected_subId > 0)	// handling collisions
+	   tiiFilter = false;
 	for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
 	   const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
 	   decodedBuffer [Teller++] += 

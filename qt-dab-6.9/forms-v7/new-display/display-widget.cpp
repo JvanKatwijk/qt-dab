@@ -44,7 +44,6 @@
 	                                         theFFT (4 * 512, false),
 	                                         dabSettings_p (dabSettings) {
 	(void)mr;
-int	sliderValue;
 	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
 	setupUi (&myFrame);
 	set_position_and_size (dabSettings_p, &myFrame, 
@@ -64,7 +63,7 @@ int	sliderValue;
 	correlationScope_p	= new correlationScope (correlationDisplay,
 	                                                256, dabSettings_p);
 	TII_Scope_p		= new spectrumScope	(tiiDisplay,
-	                                                512, dabSettings_p);
+	                                                192, dabSettings_p);
 	channelScope_p		= new channelScope	(channelPlot,
 	                                                 NR_TAPS,
 	                                                 dabSettings_p);
@@ -75,7 +74,7 @@ int	sliderValue;
 	                                                512, 50);
 //
 //	and the settings for the sliders:
-	sliderValue		= value_i (dabSettings_p,
+	int sliderValue		= value_i (dabSettings_p,
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "spectrumSlider", 30);
 	spectrumSlider		-> setValue (sliderValue);
@@ -117,9 +116,9 @@ int	sliderValue;
 	setMarkers		= value_i (dabSettings_p,
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "setMarkers", 0) != 0;
-	show_marksButton	-> setStyleSheet ("color:yellow");
-	QString qss = QString ("background-color: QColor (Qt::yellow), QColor(Qt::black)");
-	show_marksButton -> setStyleSheet (qss);
+	show_marksButton	-> 
+	          setStyleSheet (
+	                "background-color : green; color: white");
 	if (setMarkers)
 	   show_marksButton	-> setText ("no markers");
 	else
@@ -214,11 +213,6 @@ static floatQwt avg [4 * 512];
 	                                    freq / 1000);
 }
 
-std::vector<corrElement> sort (std::vector<corrElement> in) {
-std::vector<corrElement> res;
-	return res;
-}
-
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
 //	and a list of transmitters
@@ -230,6 +224,7 @@ std::vector<corrElement> showData;
 	if (currentTab != SHOW_CORRELATION)
 	   return;
 
+	(void)maxVals;
 	
 	for (auto &theTransm : theTr) {
 	   corrElement t;
@@ -244,7 +239,7 @@ std::vector<corrElement> showData;
 	}
 	float max	= 0;
 	int maxInd	= -1;
-	for (int i = 0; i < showData. size (); i ++) {
+	for (uint16_t i = 0; i < showData. size (); i ++) {
 	   if (showData [i]. strength > max) {
 	      maxInd = i;
 	      max = showData [i]. strength;
@@ -282,7 +277,7 @@ std::vector<corrElement> showData;
 	   Y_value [i] *= 50.0 / MMax;
 
 	waterfallScope_p -> display (X_axis, Y_value, 
-	                              waterfallSlider -> value (),
+	                              0.1 * waterfallSlider -> value (),
 	                              v. size () / 2);
 }
 //	for "null" we get a segment of 1024 timedomain samples
@@ -316,35 +311,40 @@ void	displayWidget::show_null	(Complex *v, int amount,
 //	for "tii" we get a segment of 2048 time domain samples,
 //	we take an FFT, do some averaging and display
 void	displayWidget::show_tii	(std::vector<Complex> v, int freq) {
-int	l	= v. size ();
 floatQwt	X_axis [512];
-floatQwt  Y_value [512];
+floatQwt	Y_value [512];
 
-static floatQwt avg [4 * 512];
 	if (currentTab != SHOW_TII)
 	   return;
 
 	theFFT. fft (v);
-	for (int i = 0; i < (int)(v. size ()) / 2; i ++) {
-	   avg [i] = 0.5 * avg [i] + 0.5 * abs (v [l / 2 + i]);
-	   avg [l / 2 + i] = 0.5 * avg [l / 2 + i] + 0.5 * abs (v [i]);
+//
+//	in the regular scope we just show the data the tii decoder will
+//	be working on
+	floatQwt resVec [192];
+	for (int i = 0; i < 192; i ++) {
+	   resVec [i] = 0;
+	   for (int j = 0; j < 4; j ++) {
+	      int index = (1024 + 2 * i + j * 384) % 1024;
+	      resVec [i] += abs (v [index] + v [index + 1]);
+	   }
+	   X_axis [i] = i;
 	}
+
+	TII_Scope_p		-> display (X_axis, resVec, 96, 
+	                                      tiiSlider -> value ());
 
 	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = (freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000000.0;
-	   Y_value [i] = 0;
-	   for (int j = 0; j < 4; j ++) 
-	      Y_value [i] +=  avg [4 * i + j];
-	   Y_value [i]	=  get_db (Y_value [i]);
+	   int index = (int)((float)i / 512 * 192);
+	   Y_value [i] = resVec [index];
+	   X_axis [i] = index;
 	}
 
-	TII_Scope_p		-> display (X_axis, Y_value, freq / 1000, 
-	                                      tiiSlider -> value ());
 	for (int i = 0; i < 512; i ++)
-	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
+	   Y_value [i] = 4 * (Y_value [i] - get_db (0)) / 8;
 	waterfallScope_p	-> display (X_axis, Y_value, 
-	                                    waterfallSlider -> value (),
-	                                    freq / 1000);
+	                                    1.5 * waterfallSlider -> value (),
+	                                    96);
 }
 
 void	displayWidget::show_channel	(const std::vector<Complex> Values) {
@@ -483,7 +483,7 @@ void	displayWidget::show_cpuLoad	(float use) {
 
 void	displayWidget::show_transmitters (std::vector<transmitterDesc> &tr) {
 QString textList;
-	for (int i = 0; i < tr. size (); i ++) {
+	for (uint16_t i = 0; i < tr. size (); i ++) {
 	   uint16_t mainId	= tr [i]. theTransmitter. mainId;
 	   uint16_t subId	= tr [i]. theTransmitter. subId;
 	   QString trId = QString ("(") + QString::number (mainId) +

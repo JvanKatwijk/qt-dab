@@ -34,14 +34,18 @@
 	                                      displaySize (displaySize_i),
 	                                      rasterSize (rasterSize_i) {
 	colorMap	= new QwtLinearColorMap (Qt::darkCyan, Qt::red);
-	colorMap        -> addColorStop (0.1, Qt::cyan);
+	colorMap        -> addColorStop (0.0, Qt::cyan);
+//	colorMap        -> addColorStop (0.1, Qt::cyan);
 	colorMap        -> addColorStop (0.4, Qt::green);
-	colorMap        -> addColorStop (0.7, Qt::yellow);
+	colorMap        -> addColorStop (0.6, Qt::yellow);
+	colorMap        -> addColorStop (0.8, Qt::red);
 	rightAxis	= plotgrid -> axisWidget (QwtPlot::yRight);
 	axisMap		= new QwtLinearColorMap (Qt::darkCyan, Qt::red);
-	axisMap		-> addColorStop (0.1, Qt::cyan);
+	axisMap		-> addColorStop (0.0, Qt::cyan);
+//	axisMap		-> addColorStop (0.1, Qt::cyan);
 	axisMap		-> addColorStop (0.4, Qt::green);
-	axisMap		-> addColorStop (0.7, Qt::yellow);
+	axisMap		-> addColorStop (0.6, Qt::yellow);
+	axisMap		-> addColorStop (0.8, Qt::red);
 	this            -> setColorMap (colorMap);
 
 	this -> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
@@ -96,7 +100,7 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	                                        width,
 	                                        rasterSize,
 	                                        displaySize,
-	                                        amp / 2);
+	                                        amp);
 
 	   this		-> setData (WaterfallData);
            plotgrid	-> setAxisScale (QwtPlot::xBottom,

@@ -186,7 +186,7 @@ char	manufac [256], product [256], serial [256];
 	}
 
 	rtlsdr_set_center_freq (theDevice, 220000000);
-	rtlsdr_set_tuner_bandwidth (theDevice, KHz (1536));
+	rtlsdr_set_tuner_bandwidth (theDevice, KHz (1575));
 	rtlsdr_set_tuner_gain_mode (theDevice, 1);
 //
 //	See what the saved values are and restore the GUI settings
