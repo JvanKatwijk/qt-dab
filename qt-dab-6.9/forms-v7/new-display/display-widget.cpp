@@ -123,6 +123,7 @@
 	   show_marksButton	-> setText ("no markers");
 	else
 	   show_marksButton	-> setText ("set markers");
+//
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
 	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
@@ -131,7 +132,9 @@
 	         this, SLOT (handle_ncpScope_checkBox (int)));
 	connect (show_marksButton, &QPushButton::clicked,
 	         this, &displayWidget::handle_marksButton);
-
+//
+	for (int i = 0; i < 2048; i ++)
+	   workingBuffer [i] =  0; 
 }
 
 	displayWidget::~displayWidget () {
@@ -164,6 +167,8 @@ void	displayWidget::switch_tab	(int t) {
 	currentTab	= t;
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS, "tabSettings", t);
 	waterfallScope_p	-> cleanUp ();
+	for (int i = 0; i < 2048; i ++)
+	   workingBuffer [i] =  0;
 }
 
 int	displayWidget::get_tab		() {
@@ -180,8 +185,7 @@ int	displayWidget::get_tab		() {
 //
 //	for "spectrum" we get a segment of 2048 timedomain samples
 //	we take the fft and average a little
-void	displayWidget::show_spectrum	(std::vector<Complex> &v,
-	                                                   int freq) {
+void	displayWidget::show_spectrum	(std::vector<Complex> &v, int freq) {
 int	l	= v. size ();
 floatQwt  X_axis [512];
 floatQwt  Y_value [512];
@@ -256,6 +260,7 @@ std::vector<corrElement> showData;
 	}
 	if (!setMarkers) 
 	   showData. resize (0);
+
 	correlationScope_p	-> display (v, T_g,
 	                                    correlationLength -> value (),
 	                                    correlationSlider -> value (),
@@ -309,7 +314,8 @@ void	displayWidget::show_null	(Complex *v, int amount,
 }
 //
 //	for "tii" we get a segment of 2048 time domain samples,
-//	we take an FFT, do some averaging and display
+//	data is from the NULL period with TII data, after the
+//	FFT, we collapse to 192 "bin"s
 void	displayWidget::show_tii	(std::vector<Complex> v, int freq) {
 floatQwt	X_axis [512];
 floatQwt	Y_value [512];
@@ -319,21 +325,27 @@ floatQwt	Y_value [512];
 
 	theFFT. fft (v);
 //
+//	smoothen the data a little
+	for (int i = 0; i < v. size (); i ++)
+	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.8) +
+	                       abs (v [i]) * DABFLOAT (0.2);
+//
 //	in the regular scope we just show the data the tii decoder will
 //	be working on
 	floatQwt resVec [192];
 	for (int i = 0; i < 192; i ++) {
 	   resVec [i] = 0;
-	   for (int j = 0; j < 4; j ++) {
+	   for (int j = 0; j < 2; j ++) {
 	      int index = (1024 + 2 * i + j * 384) % 1024;
-	      resVec [i] += abs (v [index] + v [index + 1]);
+	      resVec [i] += 2 * abs (workingBuffer [index] + workingBuffer [index + 1]);
 	   }
 	   X_axis [i] = i;
 	}
 
 	TII_Scope_p		-> display (X_axis, resVec, 96, 
 	                                      tiiSlider -> value ());
-
+//
+//	for the waterfall we upsample from 192 -> 512
 	for (int i = 0; i < 512; i ++) {
 	   int index = (int)((float)i / 512 * 192);
 	   Y_value [i] = resVec [index];
@@ -575,3 +587,10 @@ void	displayWidget::handle_marksButton	() {
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
 	                          "setMarkers", setMarkers ? 1 : 0);
 }
+
+void	displayWidget::clean_tii	() {
+	waterfallScope_p	-> cleanUp ();
+	for (int i = 0; i < 2048; i ++)
+	   workingBuffer [i] =  0;
+}
+

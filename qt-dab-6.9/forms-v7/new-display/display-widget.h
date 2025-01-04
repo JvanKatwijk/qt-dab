@@ -80,6 +80,7 @@ public:
 	void	show_clock_err	(int);
 	void	showFrequency	(const QString &, int);
 
+	void	clean_tii	();
 	void	show_cpuLoad	(float);
 	void	show_transmitters	(std::vector<transmitterDesc> &);
 
@@ -103,6 +104,7 @@ private:
 	channelScope		*channelScope_p;
 	IQDisplay		*IQDisplay_p;
 
+	DABFLOAT		workingBuffer [2048];
 	int			currentTab;
 	int			ncpScope;
 	bool			setMarkers;

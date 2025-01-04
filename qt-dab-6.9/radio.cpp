@@ -2311,7 +2311,7 @@ int	tunedFrequency	=
 	   QString sChannel = theChannel;
 	   store (dabSettings_p, DAB_GENERAL, CHANNEL_NAME, sChannel);
 	}
-//
+
 //	The ".sdr" and ".uff" files - when built by us - carry
 //	the channel frequency in their data
 	if (inputDevice_p -> isFileInput ()) {
@@ -2334,6 +2334,7 @@ int	tunedFrequency	=
 
 	distanceLabel		-> setText ("");
 	theDXDisplay. cleanUp ();
+	theNewDisplay. clean_tii	();
 	theNewDisplay. show_transmitters (channel. transmitters);
 	if (mapHandler != nullptr)
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
@@ -3783,6 +3784,9 @@ bool	need_to_print	= true;
 	   if (theTransmitter. mainId == 255) {	// apparently not found
 	      theTransmitter. mainId	= r [i]. mainId;
 	      theTransmitter. subId	= r [i]. subId;
+	      theTransmitter. pattern	= r [i]. pattern;
+	      theTransmitter. phase	= r [i]. phase;
+	      theTransmitter. norm	= r [i]. norm;
 	      theTransmitter. transmitterName	= "not in database";
 	      theTransmitter. strength	= r [i]. strength;
 	      transmitterDesc t = {false,  false, false, theTransmitter};
@@ -3797,6 +3801,7 @@ bool	need_to_print	= true;
 	      theTransmitter. strength	= r [i]. strength;
 	      theTransmitter. phase	= r [i]. phase;
 	      theTransmitter. norm	= r [i]. norm;
+	      theTransmitter. pattern	= r [i]. pattern;
 	      transmitterDesc t = {true,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }

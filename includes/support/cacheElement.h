@@ -38,6 +38,7 @@ public:
 	QString		location;
 	uint16_t 	Eid;
 	uint8_t		mainId;
+	uint16_t	pattern;
 	uint8_t		subId;
 	QString		transmitterName;
 	float		latitude;

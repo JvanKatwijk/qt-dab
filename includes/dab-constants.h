@@ -82,10 +82,11 @@ enum AudioFlags : uint32_t {
 typedef struct  {
 	uint8_t mainId;
 	uint8_t subId;
-	float strength;
-	float phase;
-	bool norm;
+	float	strength;
+	float	phase;
+	bool	norm;
 	int	index;
+	uint16_t	pattern;
 } tiiData;
 
 typedef struct {

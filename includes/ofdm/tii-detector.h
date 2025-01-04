@@ -53,10 +53,9 @@ private:
 	Complex		decodedBuffer [768];
 	fftHandler	my_fftHandler;
 	void		collapse	(const Complex *, 
-	                                 Complex *, Complex *);
+	                                 Complex *, Complex *, bool);
 
 	std::vector<Complex >	nullSymbolBuffer;
-
 	int		tiiThreshold;
 };
 

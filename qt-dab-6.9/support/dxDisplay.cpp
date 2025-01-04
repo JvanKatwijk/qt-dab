@@ -30,6 +30,14 @@
 #include	<qwt_dial_needle.h>
 #include	<QMap>
 
+static inline
+QString	convertNumber (uint16_t v) {
+uint16_t	firstDigit (v / 10);
+uint16_t	secondDigit (v % 10);
+	return QString::number (firstDigit) +
+	                  QString::number (secondDigit);
+}
+
 	dxDisplay::dxDisplay (RadioInterface *mr, QSettings *s){
 	(void)mr;
 	dxSettings	= s;
@@ -57,8 +65,8 @@
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 //	headerView	-> resizeSection (0, 50);
 	tableWidget 	-> setHorizontalHeaderLabels (
-	                QStringList () << tr ("x") << tr ("main") <<
-	                tr ("sub") << tr ("phase") << tr ("strength") <<
+	                QStringList () << tr ("x") << tr ("pattern") <<
+	                tr ("tii") << tr ("phase") << tr ("strength") <<
 	                tr ("channel") <<tr ("ensemble") <<
 	                tr ("transmitter") << tr ("dist") <<
 	                tr ("azimuth")  << tr ("power") <<
@@ -128,6 +136,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	const QString &channel	= theTransmitter -> channel;
 	const QString &ensemble	= theTransmitter -> ensemble;
 	const QString &transmitterName = theTransmitter -> transmitterName;	
+	uint16_t pattern	= theTransmitter -> pattern;
 	int   mainId		= theTransmitter -> mainId;
 	int   subId		= theTransmitter -> subId;
 	bool	etsi		= theTransmitter -> norm;
@@ -146,11 +155,11 @@ int16_t	row	= tableWidget -> rowCount ();
 	item0		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 0, item0);
 
-	QTableWidgetItem *item1 = new QTableWidgetItem;	// mainId
+	QTableWidgetItem *item1 = new QTableWidgetItem;	// pattern
 	item1		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 1, item1);
 
-	QTableWidgetItem *item2 = new QTableWidgetItem;	// subId
+	QTableWidgetItem *item2 = new QTableWidgetItem;	// tii data
 	item2		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 2, item2);
 
@@ -198,9 +207,13 @@ int16_t	row	= tableWidget -> rowCount ();
 	item13		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 13, item13);
 
+
 	tableWidget	-> setCurrentItem (item0);
-	tableWidget	-> item (row, 1) -> setText (QString::number (mainId));
-	tableWidget	-> item (row, 2) -> setText (QString::number (subId));
+	QString aa	= QString ("0x") + QString::number (pattern, 16);
+	tableWidget	-> item (row, 1) -> setText (aa);
+	QString tii	= convertNumber (mainId) + ":" +
+	                          convertNumber (subId);
+	tableWidget	-> item (row, 2) -> setText (tii);
 	QString ss	= QString::number (phase, 'f', 1) + 
 	                         (etsi ? " *" : "");
 	tableWidget	-> item (row, 3) -> setText (ss);
