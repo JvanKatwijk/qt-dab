@@ -67,7 +67,7 @@
 
 	gainSelector	-> setValue (Gain);
 	PpmSelector	-> setValue (Ppm);
-	setAgcMode	( AgcMode);
+	setAgcMode	(AgcMode);
 	portSelector	-> setValue (basePort);
 	addressSelector	-> setText (ipAddress);
 	vfoFrequency = DEFAULT_FREQUENCY;

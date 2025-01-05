@@ -211,8 +211,10 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> setCurrentItem (item0);
 	QString aa	= QString ("0x") + QString::number (pattern, 16);
 	tableWidget	-> item (row, 1) -> setText (aa);
-	QString tii	= convertNumber (mainId) + ":" +
+	QString tii	= convertNumber (mainId) + "-" +
 	                          convertNumber (subId);
+	if (theTransmitter -> collision)
+	   tii += "!";
 	tableWidget	-> item (row, 2) -> setText (tii);
 	QString ss	= QString::number (phase, 'f', 1) + 
 	                         (etsi ? " *" : "");

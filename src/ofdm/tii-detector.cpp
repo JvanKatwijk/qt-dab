@@ -131,14 +131,16 @@ static const uint8_t patternTable[] = {
 
 
 void	TII_Detector::resetBuffer	() {
-	for (int i = 0; i < T_u; i++)
-	   nullSymbolBuffer[i] = Complex (0, 0);
+	memset (nullSymbolBuffer. data (), 0, T_u * sizeof (Complex));
+//	for (int i = 0; i < T_u; i++)
+//	   nullSymbolBuffer[i] = Complex (0, 0);
 }
 
 void	TII_Detector::reset		() {
 	resetBuffer();
-	for (int i = 0; i < carriers / 2; i++)
-	   decodedBuffer[i] = Complex (0, 0);
+	memset (decodedBuffer, 0, carriers / 2 * sizeof (Complex));
+//	for (int i = 0; i < carriers / 2; i++)
+//	   decodedBuffer[i] = Complex (0, 0);
 }
 
 //	To reduce noise in the input signal, we might
@@ -236,8 +238,6 @@ QVector<tiiData> theResult;		// results
 float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 int Teller = 0;
 
-	if (selected_subId > 0)	// handling collisions
-	   tiiFilter = false;
 	for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
 	   const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
 	   decodedBuffer [Teller++] += 
@@ -352,6 +352,7 @@ int Teller = 0;
 	      element. strength = abs (sum) / max / (tiiFilter ? 2 : 4);
 	      element. phase	= arg (sum) * F_DEG_PER_RAD;
 	      element. norm	= norm;
+	      element. collision	= false;
 	      element. pattern	= patternTable [mainId];
 	      theResult. push_back (element);
 	   }
@@ -377,12 +378,13 @@ int Teller = 0;
 	               if (pattern2 & bits [i])
 	                  count2++;
 	            if ((count2 == 4) && (k != mainId)) {
-	               element. mainId	= k;
-	               element. subId	= selected_subId;
-	               element. strength = abs(sum) / max / (count - 4);
-	               element. phase	= arg(sum) * F_DEG_PER_RAD;
-	               element. norm	= norm;
-	               element. pattern	= patternTable [mainId];
+	               element. mainId		= k;
+	               element. subId		= selected_subId;
+	               element. strength	= abs(sum) / max / (count - 4);
+	               element. phase		= arg(sum) * F_DEG_PER_RAD;
+	               element. norm		= norm;
+	               element. collision	= true;
+	               element. pattern		= patternTable [mainId];
 	               theResult. push_back (element);
 	            }
 	         }

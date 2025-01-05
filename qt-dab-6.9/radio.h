@@ -301,7 +301,7 @@ private:
 	bool			sourceDumping;
 	bool			audioDumping;
 	void			set_Colors		();
-	void			set_channelButton	(int);
+	void			setChannelButton	(int);
 
 	void			displaySlide	(const QPixmap &,	
 	                                              const QString &t = "");
@@ -324,18 +324,18 @@ private:
 	size_t			previous_idle_time;
 	size_t			previous_total_time;
 
-	QPixmap			fetch_announcement (int id);
+	QPixmap			fetchAnnouncement (int id);
 
 	QString			convertTime		(int, int, int, int, int);
 	QString			convertTime		(struct theTime &);
-	void			set_buttonColors	(QPushButton *,
+	void			setButtonColors		(QPushButton *,
 	                                                 const QString &);
 	QString			footText		();
 	QString			presetText		();
 	void			cleanScreen		();
 	void			hideButtons		();
 	void			showButtons		();
-	deviceHandler		*create_device		(const QString &,
+	deviceHandler		*createDevice		(const QString &,
 	                                                             logger *);
 	timeTableHandler	*my_timeTable;
 
@@ -347,13 +347,13 @@ private:
 	void			startPacketservice	(const QString &);
 	void			startAudiodumping	();
 	void			stopAudiodumping	();
-	void			scheduled_audioDumping	();
-	void			scheduled_dlTextDumping ();
-	void			scheduled_ficDumping	();
+	void			scheduledAudioDumping	();
+	void			scheduledDLTextDumping ();
+	void			scheduledFICDumping	();
 	FILE			*ficDumpPointer;
 
-	void			start_sourcedumping	();
-	void			stop_sourcedumping	();
+	void			startSourcedumping	();
+	void			stopSourcedumping	();
 	void			startFramedumping	();
 	void			stopFramedumping	();
 	void			scheduled_frameDumping	(const QString &);
@@ -366,39 +366,39 @@ private:
 	                                                 const QString &s);
 	void			scheduleSelect		(const QString &s);
 
-	QString			build_headLine		();
+	QString			buildHeadLine		();
 	QString			build_cont_addLine	(transmitterDesc &);
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 
-	void			doStart_direct		();
-	void			save_MOTObject		(QByteArray &,
+	void			startDirect		();
+	void			saveMOTObject		(QByteArray &,
 	                                                 QString);
 
-	void			save_MOTtext		(QByteArray &, int,
+	void			saveMOTtext		(QByteArray &, int,
 	                                                 const QString &);
-	void			show_MOTlabel		(QByteArray &, int,
+	void			showMOTlabel		(QByteArray &, int,
 	                                                 const QString &,
 	                                                 int, bool);
-	void			stop_muting		();
+	void			stopMuting		();
 
 
 //	short hands
-	void                    new_channelIndex        (int);
+	void                    newChannelIndex        (int);
 
 	std::mutex		locker;
-	void			set_soundLabel		(bool);
+	void			setSoundLabel		(bool);
 
-	void			start_scan_to_data	();
-	void			start_scan_single	();
-	void			start_scan_continuous	();
-	void			next_for_scan_to_data	();
-	void			next_for_scan_single	();
-	void			next_for_scan_continuous	();
-	void			stop_scan_to_data	();
-	void			stop_scan_single	();
-	void			stop_scan_continuous	();
-	void			peakLevel	(const std::vector<float> &);
+	void			startScan_to_data	();
+	void			startScan_single	();
+	void			startScan_continuous	();
+	void			nextFor_scan_to_data	();
+	void			nextFor_scan_single	();
+	void			nextFor_scan_continuous	();
+	void			stopScan_to_data	();
+	void			stopScan_single	();
+	void			stopScan_continuous	();
+	void			setPeakLevel	(const std::vector<float> &);
 
 	QString			create_tiiLabel (const cacheElement *);
 	void			addtoLogFile	(const cacheElement *);

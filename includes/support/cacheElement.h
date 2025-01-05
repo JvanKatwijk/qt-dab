@@ -57,6 +57,7 @@ public:
 	float		azimuth;
 	float		phase;
 	bool		norm;
+	bool		collision;
 	
 	cacheElement	() {
 	   valid		= false;
@@ -77,6 +78,7 @@ public:
 	   direction		= "";
 	   phase		= 0;
 	   norm			= false;
+	   collision		= false;
 	}
 	~cacheElement	()	{}
 };

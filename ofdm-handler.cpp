@@ -201,7 +201,7 @@ int	totalSamples	= 0;
 int	cCount		= 0;
 float	snr		= 0;
 bool	inSync		= false;
-QVector<Complex> tester (T_u / 2);
+Complex tester	[T_u / 2];
 int	snrCount	= 0;
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
@@ -274,8 +274,11 @@ int	snrCount	= 0;
 	            totalSamples = 0;
 	            frameCount	= 0;
 	            null_shower = true;
-	            for (int i = 0; i < T_u / 4; i ++)
-	               tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
+	            memcpy (tester, &(ofdmBuffer [T_null - T_u / 3]),
+	                                 T_u / 4 * sizeof (Complex));
+	                                   
+//	            for (int i = 0; i < T_u / 4; i ++)
+//	               tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
 	         }
 
 	         theReader. get_samples (ofdmBuffer, 0,
@@ -285,12 +288,14 @@ int	snrCount	= 0;
 	                                               correlationOrder,
 	                                               2.5 * threshold);
 	         if (null_shower) {
-	            for (int i = 0; i < T_u / 4; i ++)
-	               tester [T_u / 4 + i] = ofdmBuffer [i];
-	            nullBuffer_p -> putDataIntoBuffer (tester. data (),
-	                                                       T_u / 2);
+	            memcpy (&tester [T_u / 4], ofdmBuffer. data (),
+	                               T_u / 4 * sizeof (Complex));
+//	            for (int i = 0; i < T_u / 4; i ++)
+//	               tester [T_u / 4 + i] = ofdmBuffer [i];
+	            nullBuffer_p -> putDataIntoBuffer (tester, T_u / 2);
 	            show_null (T_u / 2, startIndex);
 	         }
+
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
 	               set_sync_lost();
