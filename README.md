@@ -77,6 +77,8 @@ The windows versions for Qt_DAB 6.9 are therefore - for the time being - still c
 While development for Qt-DAB-qtX-6.9 is not yet fully completed,
 experimental versions of the Qt-DAB-qt5-6.9 (an installer for W64 and an AppImage for Linux) are included in the 6.8 release
 
+A Beta version of Qt_DAB-6.9 is available in the releases section
+
 ------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------

@@ -530,10 +530,10 @@ isEmpty(GITHASHSTRING) {
 	}
 	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab-qt5-6.9
+#	   TARGET		= qt-dab32-qt5-6.9
 #	}
 #	else {
-#	   TARGET		= qt-dab-qt6-6.9
+#	   TARGET		= qt-dab32-qt6-6.9
 #	}
 #	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
