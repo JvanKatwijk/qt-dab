@@ -188,6 +188,11 @@ int	index_for_key (int key) {
 	int v = value_i (dabSettings, CONFIG_HANDLER,
 	                             TII_THRESHOLD, 12);
 	this -> tiiThreshold_setter -> setValue (v);
+
+	v = value_i (dabSettings, CONFIG_HANDLER, "tii-detector", 1);
+	this	-> tiiSelector	-> setChecked (v != 0);
+	if (v == 0)
+	   tiiCollisions -> setEnabled (false);
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 	connect (this, &configHandler::process_tiiCollisions,
@@ -202,6 +207,10 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_tiiCollisions);
 	connect (tiiFilter, &QCheckBox::stateChanged,
 	         this, &configHandler::handle_tiiFilter);
+	connect (tiiSelector, &QCheckBox::stateChanged,
+	         this, &configHandler::handle_tiiSelector);
+	connect (this, &configHandler::process_tiiSelector,
+	         myRadioInterface, &RadioInterface::process_tiiSelector);
 	set_Colors ();
 }
 
@@ -919,5 +928,13 @@ bool    x       = tiiFilter     -> isChecked ();
         (void)state;
         store (dabSettings, CONFIG_HANDLER, "tiiFilter", x ? 1 : 0);
 	process_tiiFilter (x);
+}
+
+void	configHandler::handle_tiiSelector	(int state) {
+bool	x 	= tiiSelector	-> isChecked ();
+	(void)state;
+	store (dabSettings, CONFIG_HANDLER, "tii-detector", x ? 1 : 0);
+	tiiCollisions -> setEnabled (x);
+	process_tiiSelector (x);
 }
 

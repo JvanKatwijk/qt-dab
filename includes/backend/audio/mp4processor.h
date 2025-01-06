@@ -59,6 +59,11 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;
+#ifdef	__WITH_FDK_AAC__
+	fdkAAC		aacDecoder;
+#else
+	faadDecoder	aacDecoder;
+#endif
 
 	void		handleRS (uint8_t frameBytes [], int16_t base,
                                   uint8_t outVector [],
@@ -95,9 +100,9 @@ private:
 	reedSolomon	my_rsDecoder;
 //	and for the aac decoder
 #ifdef	__WITH_FDK_AAC__
-	fdkAAC		*aacDecoder;
+//	fdkAAC		*aacDecoder;
 #else
-	faadDecoder	*aacDecoder;
+//	faadDecoder	*aacDecoder;
 #endif
 signals:
 	void		show_frameErrors		(int);

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -51,7 +51,6 @@
 	                                    ,freeSlots (NUMBER_SLOTS) 
 #endif 
 	                                          {
-int32_t i, j;
 	this	-> radioInterface	= mr;
 	this	-> startAddr		= d -> startAddr;
 	this	-> Length		= d -> length;
@@ -68,7 +67,7 @@ int32_t i, j;
 //	                  serviceName. toUtf8 (). data (),
 //	                                    serviceId, startAddr);
 	interleaveData. resize (16);
-	for (i = 0; i < 16; i ++) {
+	for (int i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
 	   memset (interleaveData [i]. data(), 0,
 	                               fragmentSize * sizeof (int16_t));
@@ -82,9 +81,9 @@ int32_t i, j;
 	uint8_t shiftRegister [9];
 	disperseVector. resize (24 * bitRate);
 	memset (shiftRegister, 1, 9);
-	for (i = 0; i < bitRate * 24; i ++) {
+	for (int i = 0; i < bitRate * 24; i ++) {
 	   uint8_t b = shiftRegister [8] ^ shiftRegister [4];
-	   for (j = 8; j > 0; j--)
+	   for (int j = 8; j > 0; j--)
 	      shiftRegister [j] = shiftRegister [j - 1];
 	   shiftRegister [0] = b;
 	   disperseVector [i] = b;
@@ -93,10 +92,10 @@ int32_t i, j;
 //	for local buffering the input, we have
 	nextIn				= 0;
 	nextOut				= 0;
-	for (i = 0; i < NUMBER_SLOTS; i ++)
+	for (int i = 0; i < NUMBER_SLOTS; i ++)
 	   theData [i]. resize (fragmentSize);
 	running. store (true);
-	start();
+	start ();
 #endif
 }
 

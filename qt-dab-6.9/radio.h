@@ -272,6 +272,7 @@ private:
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	deviceHandler		*inputDevice_p;
+	bool			dxMode;
 //
 	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
@@ -477,7 +478,7 @@ public slots:
 	void			show_snr		(float);
 	void			show_null		(int, int);
 	void			showIQ			(int);
-	void			show_correlation	(int, int,
+	void			showCorrelation		(int, int,
 	                                                 QVector<int> );
 	void			show_stdDev		(int);
 	void			showPeakLevel		(float, float);
@@ -498,6 +499,8 @@ public slots:
 	void			scheduler_timeOut	(const QString &);
 	void			show_changeLabel (const QStringList notInOld,
                                           	  const QStringList notInNew);
+
+	void			process_tiiSelector	(bool);
  
 //	Somehow, these must be connected to the GUI
 private slots:

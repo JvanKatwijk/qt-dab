@@ -50,13 +50,13 @@ public:
 
 	      	~sampleReader		();
 	      void	setRunning	(bool b);
-	      float	get_sLevel	();
-	      Complex	get_sample	(float);
-	      void	get_samples	(std::vector<Complex> &v,
+	      float	getSLevel	();
+	      Complex	getSample	(float);
+	      void	getSamples	(std::vector<Complex> &v,
 	                                 int index,
 	                                 int32_t n, int32_t phase, bool saving);
-	      void	start_dumping	(const QString &, int);
-	      void	stop_dumping();
+	      void	startDumping	(const QString &, int);
+	      void	stopDumping();
 private:
 	      riffWriter	sourceDumper;
 	      RadioInterface	*myRadioInterface;

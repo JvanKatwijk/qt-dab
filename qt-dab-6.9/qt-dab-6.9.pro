@@ -16,14 +16,11 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g 
-#QMAKE_CXXFLAGS	+=  -g 
-#QMAKE_LFLAGS	+=  -g 
+#QMAKE_CFLAGS	+=  -O3 -ffast-math
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -78,7 +75,7 @@ DEPENDPATH += . \
 	      ../includes/output \
 	      ../includes/support \
 	      ../includes/support/buttons \
-	      ../includes/scopes-qwt6 \
+#	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/new-reader \
@@ -111,7 +108,7 @@ INCLUDEPATH += . \
 	      ../includes/support/buttons \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
-	      ../includes/scopes-qwt6 \
+#	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -157,6 +154,8 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
 	   ../includes/ofdm/tii-detector.h \
+	   ../includes/ofdm/tii-detector-1.h \
+	   ../includes/ofdm/tii-detector-2.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
@@ -302,6 +301,8 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
 	   ../src/ofdm/tii-detector.cpp \
+	   ../src/ofdm/tii-detector-1.cpp \
+	   ../src/ofdm/tii-detector-2.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
@@ -522,20 +523,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3
-	}
-	else {
-	   TARGET		= qt-dab32-qt6-6.9V3
-	}
-	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9
+#	   TARGET		= qt-dab32-qt5-6.9V3
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9
+#	   TARGET		= qt-dab32-qt6-6.9V3
 #	}
-#	CONFIG		+= dabstick-win-v4
+#	CONFIG		+= dabstick-win-v3
+	equals (QT_MAJOR_VERSION, 5) {
+	   TARGET		= qt-dab32-qt5-6.9
+	}
+	else {
+	   TARGET		= qt-dab32-qt6-6.9
+	}
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

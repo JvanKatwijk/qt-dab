@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2024
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -18,393 +18,148 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-//
-//	This implementation of the TII decoder is taken from
-//	Rolf Zerr's (aka old-dab) implemementation as done in DABstar.
-#include "tii-detector.h"
-#define NUM_GROUPS      8
-#define GROUPSIZE       24
-constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
 
+#include	"tii-detector.h"
+#include	"dab-params.h"
+#include	<cstdio>
+#include	<cinttypes>
+#include	<cstring>
+#include	<QSettings>
 
-// TII pattern for transmission modes I, II and IV
-static const uint8_t patternTable[] = {
-	0x0f,	// 0 0 0 0 1 1 1 1		0
-	0x17,	// 0 0 0 1 0 1 1 1		1
-	0x1b,	// 0 0 0 1 1 0 1 1		2
-	0x1d,	// 0 0 0 1 1 1 0 1		3
-	0x1e,	// 0 0 0 1 1 1 1 0		4
-	0x27,	// 0 0 1 0 0 1 1 1		5
-	0x2b,	// 0 0 1 0 1 0 1 1		6
-	0x2d,	// 0 0 1 0 1 1 0 1		7
-	0x2e,	// 0 0 1 0 1 1 1 0		8
-	0x33,	// 0 0 1 1 0 0 1 1		9
-	0x35,	// 0 0 1 1 0 1 0 1		10
-	0x36,	// 0 0 1 1 0 1 1 0		11
-	0x39,	// 0 0 1 1 1 0 0 1		12
-	0x3a,	// 0 0 1 1 1 0 1 0		13
-	0x3c,	// 0 0 1 1 1 1 0 0		14
-	0x47,	// 0 1 0 0 0 1 1 1		15
-	0x4b,	// 0 1 0 0 1 0 1 1		16
-	0x4d,	// 0 1 0 0 1 1 0 1		17
-	0x4e,	// 0 1 0 0 1 1 1 0		18
-	0x53,	// 0 1 0 1 0 0 1 1		19
-	0x55,	// 0 1 0 1 0 1 0 1		20
-	0x56,	// 0 1 0 1 0 1 1 0		21
-	0x59,	// 0 1 0 1 1 0 0 1		22
-	0x5a,	// 0 1 0 1 1 0 1 0		23
-	0x5c,	// 0 1 0 1 1 1 0 0		24
-	0x63,	// 0 1 1 0 0 0 1 1		25
-	0x65,	// 0 1 1 0 0 1 0 1		26
-	0x66,	// 0 1 1 0 0 1 1 0		27
-	0x69,	// 0 1 1 0 1 0 0 1		28
-	0x6a,	// 0 1 1 0 1 0 1 0		29
-	0x6c,	// 0 1 1 0 1 1 0 0		30
-	0x71,	// 0 1 1 1 0 0 0 1		31
-	0x72,	// 0 1 1 1 0 0 1 0		32
-	0x74,	// 0 1 1 1 0 1 0 0		33
-	0x78,	// 0 1 1 1 1 0 0 0		34
-	0x87,	// 1 0 0 0 0 1 1 1		35
-	0x8b,	// 1 0 0 0 1 0 1 1		36
-	0x8d,	// 1 0 0 0 1 1 0 1		37
-	0x8e,	// 1 0 0 0 1 1 1 0		38
-	0x93,	// 1 0 0 1 0 0 1 1		39
-	0x95,	// 1 0 0 1 0 1 0 1		40
-	0x96,	// 1 0 0 1 0 1 1 0		41
-	0x99,	// 1 0 0 1 1 0 0 1		42
-	0x9a,	// 1 0 0 1 1 0 1 0		43
-	0x9c,	// 1 0 0 1 1 1 0 0		44
-	0xa3,	// 1 0 1 0 0 0 1 1		45
-	0xa5,	// 1 0 1 0 0 1 0 1		46
-	0xa6,	// 1 0 1 0 0 1 1 0		47
-	0xa9,	// 1 0 1 0 1 0 0 1		48
-	0xaa,	// 1 0 1 0 1 0 1 0		49
-	0xac,	// 1 0 1 0 1 1 0 0		50
-	0xb1,	// 1 0 1 1 0 0 0 1		51
-	0xb2,	// 1 0 1 1 0 0 1 0		52
-	0xb4,	// 1 0 1 1 0 1 0 0		53
-	0xb8,	// 1 0 1 1 1 0 0 0		54
-	0xc3,	// 1 1 0 0 0 0 1 1		55
-	0xc5,	// 1 1 0 0 0 1 0 1		56
-	0xc6,	// 1 1 0 0 0 1 1 0		57
-	0xc9,	// 1 1 0 0 1 0 0 1		58
-	0xca,	// 1 1 0 0 1 0 1 0		59
-	0xcc,	// 1 1 0 0 1 1 0 0		60
-	0xd1,	// 1 1 0 1 0 0 0 1		61
-	0xd2,	// 1 1 0 1 0 0 1 0		62
-	0xd4,	// 1 1 0 1 0 1 0 0		63
-	0xd8,	// 1 1 0 1 1 0 0 0		64
-	0xe1,	// 1 1 1 0 0 0 0 1		65
-	0xe2,	// 1 1 1 0 0 0 1 0		66
-	0xe4,	// 1 1 1 0 0 1 0 0		67
-	0xe8,	// 1 1 1 0 1 0 0 0		68
-	0xf0	// 1 1 1 1 0 0 0 0		69
+#ifndef M_PI
+# define M_PI           3.14159265358979323846  /* pi */
+#endif
+
+static
+uint8_t patternTable [] = {
+	0017,		// 0 0 0 0 1 1 1 1		0
+	0027,		// 0 0 0 1 0 1 1 1		1
+	0033,		// 0 0 0 1 1 0 1 1		2
+	0035,		// 0 0 0 1 1 1 0 1		3
+	0036,		// 0 0 0 1 1 1 1 0		4
+	0047,		// 0 0 1 0 0 1 1 1		5
+	0053,		// 0 0 1 0 1 0 1 1		6
+	0055,		// 0 0 1 0 1 1 0 1		7
+	0056,		// 0 0 1 0 1 1 1 0		8
+	0063,		// 0 0 1 1 0 0 1 1		9
+
+	0065,		// 0 0 1 1 0 1 0 1		10
+	0066,		// 0 0 1 1 0 1 1 0		11
+	0071,		// 0 0 1 1 1 0 0 1		12
+	0072,		// 0 0 1 1 1 0 1 0		13
+	0074,		// 0 0 1 1 1 1 0 0		14
+	0107,		// 0 1 0 0 0 1 1 1		15
+	0113,		// 0 1 0 0 1 0 1 1		16
+	0115,		// 0 1 0 0 1 1 0 1		17
+	0116,		// 0 1 0 0 1 1 1 0		18
+	0123,		// 0 1 0 1 0 0 1 1		19
+
+	0125,		// 0 1 0 1 0 1 0 1		20
+	0126,		// 0 1 0 1 0 1 1 0		21
+	0131,		// 0 1 0 1 1 0 0 1		22
+	0132,		// 0 1 0 1 1 0 1 0		23
+	0134,		// 0 1 0 1 1 1 0 0		24
+	0143,		// 0 1 1 0 0 0 1 1		25
+	0145,		// 0 1 1 0 0 1 0 1		26
+	0146,		// 0 1 1 0 0 1 1 0		27
+	0151,		// 0 1 1 0 1 0 0 1		28	
+	0152,		// 0 1 1 0 1 0 1 0		29
+
+	0154,		// 0 1 1 0 1 1 0 0		30
+	0161,		// 0 1 1 1 0 0 0 1		31
+	0162,		// 0 1 1 1 0 0 1 0		32
+	0164,		// 0 1 1 1 0 1 0 0		33
+	0170,		// 0 1 1 1 1 0 0 0		34
+	0207,		// 1 0 0 0 0 1 1 1		35
+	0213,		// 1 0 0 0 1 0 1 1		36
+	0215,		// 1 0 0 0 1 1 0 1		37
+	0216,		// 1 0 0 0 1 1 1 0		38
+	0223,		// 1 0 0 1 0 0 1 1		39
+
+	0225,		// 1 0 0 1 0 1 0 1		40
+	0226,		// 1 0 0 1 0 1 1 0		41
+	0231,		// 1 0 0 1 1 0 0 1		42
+	0232,		// 1 0 0 1 1 0 1 0		43
+	0234,		// 1 0 0 1 1 1 0 0		44
+	0243,		// 1 0 1 0 0 0 1 1		45
+	0245,		// 1 0 1 0 0 1 0 1		46
+	0246,		// 1 0 1 0 0 1 1 0		47
+	0251,		// 1 0 1 0 1 0 0 1		48
+	0252,		// 1 0 1 0 1 0 1 0		49
+
+	0254,		// 1 0 1 0 1 1 0 0		50
+	0261,		// 1 0 1 1 0 0 0 1		51
+	0262,		// 1 0 1 1 0 0 1 0		52
+	0264,		// 1 0 1 1 0 1 0 0		53
+	0270,		// 1 0 1 1 1 0 0 0		54
+	0303,		// 1 1 0 0 0 0 1 1		55
+	0305,		// 1 1 0 0 0 1 0 1		56
+	0306,		// 1 1 0 0 0 1 1 0		57
+	0311,		// 1 1 0 0 1 0 0 1		58
+	0312,		// 1 1 0 0 1 0 1 0		59
+
+	0314,		// 1 1 0 0 1 1 0 0		60
+	0321,		// 1 1 0 1 0 0 0 1		61
+	0322,		// 1 1 0 1 0 0 1 0		62
+	0324,		// 1 1 0 1 0 1 0 0		63
+	0330,		// 1 1 0 1 1 0 0 0		64
+	0341,		// 1 1 1 0 0 0 0 1		65
+	0342,		// 1 1 1 0 0 0 1 0		66
+	0344,		// 1 1 1 0 0 1 0 0		67
+	0350,		// 1 1 1 0 1 0 0 0		68
+	0360		// 1 1 1 1 0 0 0 0		69
 };
 
-#define	SECTION_SIZE	192
-#define	NR_SECTIONS	4
-
-	TII_Detector::TII_Detector (uint8_t dabMode,
-	                               phaseTable *theTable) :
-	                                     params (dabMode),
-	                                     T_u (params.get_T_u()),
-	                                     T_g (params. get_T_g ()),
-                                             carriers (params. get_carriers ()),
-                                             my_fftHandler (params. get_T_u (),
-                                                            false) {
-	nullSymbolBuffer.resize (T_u);
-	carrierDelete	= false;
-	table_2. resize (carriers / 2);
-	int teller = 0;
-	for (int carrier = - carriers / 2;
-	               carrier < carriers / 2; carrier += 2) {
-	   int index	= carrier < 0 ? carrier + T_u : carrier + 1;
-	   table_2 [teller ++] = theTable -> refTable [index] *
-	                         conj (theTable -> refTable [index + 1]);
-	}
-	reset();
+		TII_Detector::TII_Detector (uint8_t dabMode) :
+	                                      params (dabMode),
+	                                      T_u (params. get_T_u ()),
+	                                      T_g (params. get_T_g ()),
+	                                      carriers (params. get_carriers ()),
+	                                      my_fftHandler (params. get_T_u (),
+	                                                    false) {
+	nullSymbolBuffer. resize (T_u);
 }
 
-	TII_Detector::~TII_Detector () { }
-
+		TII_Detector::~TII_Detector () {
+}
 
 void	TII_Detector::resetBuffer	() {
-	memset (nullSymbolBuffer. data (), 0, T_u * sizeof (Complex));
-//	for (int i = 0; i < T_u; i++)
-//	   nullSymbolBuffer[i] = Complex (0, 0);
+	for (int i = 0; i < T_u; i ++)
+	   nullSymbolBuffer [i] = Complex (0, 0);
 }
 
 void	TII_Detector::reset		() {
-	resetBuffer();
-	memset (decodedBuffer, 0, carriers / 2 * sizeof (Complex));
-//	for (int i = 0; i < carriers / 2; i++)
-//	   decodedBuffer[i] = Complex (0, 0);
+	resetBuffer ();
 }
 
-//	To reduce noise in the input signal, we might
+//	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (const std::vector<Complex> &v) {
-Complex buffer [T_u];
+void	TII_Detector::addBuffer (const std::vector<Complex>  &v) {
+Complex tempBuffer [T_u];
 
-	memcpy (buffer, &(v [T_g]), T_u * sizeof (Complex));
-	my_fftHandler. fft (buffer);
-	for (int i = 0; i < T_u; i++)
-	   nullSymbolBuffer [i] += buffer [i];
+	memcpy (tempBuffer, &(v [T_g]), T_u * sizeof (Complex));
+	my_fftHandler. fft (tempBuffer);
+	for (int i = 0; i < T_u; i ++)
+	   nullSymbolBuffer [i] += tempBuffer [i];
 }
 
-//	we map the "K" carriers (complex values) onto
-//	a collapsed vector of "K / 8" length,
-//	considered to consist of 8 segments of 24 values
-//	Each "value" is the sum of 4 pairs of subsequent carriers,
-//	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
-void	TII_Detector::collapse (const Complex *inVec,
-	                        Complex *etsiVec, Complex *nonetsiVec,
-	                        bool tiiFilter) {
-Complex buffer [carriers / 2];
 
-	memcpy (buffer, inVec, carriers / 2 * sizeof (Complex));
-
-	int nrSections	= tiiFilter ? 2 : 4;
-//	a single carrier cannot be a TII carrier.
-	if (carrierDelete) {
-	   for (int i = 0; i < SECTION_SIZE; i++) {
-	      float x [4];
-	      float max = 0;
-	      float sum = 0;
-	      int index = 0;
-	      for (int j = 0; j < nrSections; j++) {
-	         x [j] = abs (buffer [i + j * SECTION_SIZE]);
-		 sum += x [j];
-		 if (x [j] > max) {
-	            max = x[j];
-	            index = j;
-	         }
-	      }
-
-	      float min = (sum - max) / 3;
-	      if (sum < max * 1.5 && max > 0.0) {
-	         buffer [i + index * SECTION_SIZE] *= min / max;
-	      }
-	   }
-	}
-
-	for (int i = 0; i < SECTION_SIZE; i++) {
-	   etsiVec [i]	= Complex (0, 0);
-	   nonetsiVec [i] =  Complex (0, 0);
-	   for (int j = 0; j < nrSections; j++) {
-	      Complex x = buffer [i + j * SECTION_SIZE];
-	      etsiVec [i] += x;
-	      nonetsiVec [i] += x * conj (table_2 [i + j * SECTION_SIZE]);
-	   }
-	}
+QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db,
+                                              uint8_t selected_subId,
+                                              bool tiiFilter) {
+	(void)threshold_db;
+	(void)selected_subId,
+	(void)tiiFilter;
 }
 
-//	We determine first the offset of the "best fit",
-//	the offset indicates the subId
-static uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
-
-// Sort the elemtnts accordibg to their strength
-static
-int	fcmp (const void *a, const void *b) {
-	tiiData *element1 = (tiiData *)a;
-	tiiData *element2 = (tiiData *)b;
-	if (element1 -> strength > element2 -> strength)
-	   return -1;
-	else
-	if (element1 -> strength < element2 -> strength)
-	   return 1;
-	else
-	   return 0;
+uint16_t	TII_Detector::getPattern (int n) {
+	return patternTable [n];
 }
 
-QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db, 
-	                                    uint8_t selected_subId,
-	                                    bool tiiFilter) {
-//	collapsed ETSI float values
-float	etsi_floatTable [NUM_GROUPS * GROUPSIZE];	
-//	collapsed non-ETSI float values
-float	nonetsi_floatTable [NUM_GROUPS * GROUPSIZE];
-//	collapsed ETSI complex values
-Complex etsiTable [NUM_GROUPS * GROUPSIZE];
-//	collapsed non-ETSI complex values
-
-Complex nonetsiTable [NUM_GROUPS * GROUPSIZE];
-float	max = 0;		// abs value of the strongest carrier
-float	noise = 1e9;	// noise level
-QVector<tiiData> theResult;		// results
-
-float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
-int Teller = 0;
-
-	for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
-	   const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
-	   decodedBuffer [Teller++] += 
-	       nullSymbolBuffer [fftIdx] * conj (nullSymbolBuffer [fftIdx + 1]);
-	}
-
-	collapse (decodedBuffer, etsiTable, nonetsiTable, tiiFilter);
-
-// fill the float tables, determine the abs value of the strongest carrier
-	for (int i = 0; i < NUM_GROUPS * GROUPSIZE; i++) {
-	   float x = abs (etsiTable [i]);
-	   etsi_floatTable [i] = x;
-	   if (x > max)
-	      max = x;
-	   x = abs (nonetsiTable [i]);
-	   nonetsi_floatTable [i] = x;
-	   if (x > max)
-	      max = x;
-	}
-
-//	determine the noise level by taking the level of the lowest group
-	for (int subId = 0; subId < GROUPSIZE; subId++) {
-	   float avg = 0;
-	   for (int i = 0; i < NUM_GROUPS; i++)
-	      avg += etsi_floatTable [subId + i * GROUPSIZE];
-	   avg /= NUM_GROUPS;
-	   if (avg < noise)
-	      noise = avg;
-	}
-
-	for (int subId = 0; subId < GROUPSIZE; subId++) {
-	   tiiData element;
-	   Complex sum		= Complex (0,0);
-	   Complex etsi_sum	= Complex (0,0);
-	   Complex nonetsi_sum	= Complex (0,0);
-	   int count		= 0;
-	   int etsi_count	= 0;
-	   int nonetsi_count	= 0;
-	   int pattern		= 0;
-	   int etsi_pattern	= 0;
-	   int nonetsi_pattern	= 0;
-	   int mainId		= 0;
-	   bool norm		= false;
-	   Complex *cmplx_ptr	= nullptr;;
-	   float *float_ptr	= nullptr;
-	   bool found_one	= false;
-//	The number of times the limit is reached in the group is counted
-	   for (int i = 0; i < NUM_GROUPS; i++) {
-	      if (etsi_floatTable [subId + i * GROUPSIZE] >
-	                                          noise * threshold) {
-	         etsi_count++;
-	         etsi_pattern	|= bits [i];
-	         etsi_sum	+= etsiTable [subId + GROUPSIZE * i]; 
-	      }
-	      if (nonetsi_floatTable [subId + i * GROUPSIZE] >
-	                                          noise * threshold) {
-	         nonetsi_count++;
-	         nonetsi_pattern |= bits [i];
-	         nonetsi_sum += nonetsiTable [subId + GROUPSIZE * i];
-	      }
-	   }
-//
-	   if ((etsi_count >= 4) || (nonetsi_count >= 4))  {
-	      if (abs (nonetsi_sum) > abs (etsi_sum)) {
-	         norm		= true;
-	         sum		= nonetsi_sum;
-	         cmplx_ptr	= nonetsiTable;
-	         float_ptr	= nonetsi_floatTable;
-	         count		= nonetsi_count;
-	         pattern	= nonetsi_pattern;
-	      }
-	      else {
-	         sum		= etsi_sum;
-	         cmplx_ptr	= etsiTable;
-	         float_ptr	= etsi_floatTable;
-	         count		= etsi_count;
-	         pattern	= etsi_pattern;
-	      }
-	   }
-
-//	Find the Main Id that matches the pattern
-	   if (count == 4) {
-	      for (; mainId < (int)sizeof (patternTable); mainId++)
-	         if (patternTable [mainId] == pattern)
-	            break;
-	   }
-
-//	Find the best match. We extract the four max values as bits
-	   else
-	   if (count > 4) {
-	      float mm = 0;
-	      for (int k = 0; k < (int)sizeof (patternTable); k++) {
-	         Complex val = Complex (0, 0);
-	         for (int i = 0; i < NUM_GROUPS; i++) {
-	            if (patternTable [k] & bits [i]) {
-	               val += cmplx_ptr [subId + GROUPSIZE * i];
-	            }
-	         }
-
-	         if (abs (val) > mm) {
-	            mm = abs (val);
-	            sum = val;
-	            mainId = k;
-	            found_one = true;
-	         }
-	      }
-	   }	// end if (count > 4),  List the result
-
-	   if (count >= 4) {
-	      element. mainId	= mainId;
-	      element. subId	= subId;
-	      element. strength = abs (sum) / max / (tiiFilter ? 2 : 4);
-	      element. phase	= arg (sum) * F_DEG_PER_RAD;
-	      element. norm	= norm;
-	      element. collision	= false;
-	      element. pattern	= patternTable [mainId];
-	      theResult. push_back (element);
-	   }
-//
-//	Collisions still to be done
-	   if ((count > 4) && (selected_subId != 0)) {
-	      sum = Complex (0,0);
-
-//	Calculate the level of the second main ID
-	      for (int i = 0; i < NUM_GROUPS; i++) {
-	         if ((patternTable [mainId] & bits [i]) == 0) {
-	            int index = subId + GROUPSIZE * i;
-	            if (float_ptr [index] > noise * threshold)
-	               sum += cmplx_ptr [index];
-	         }
-	      }
-
-	      if (subId == selected_subId) { // List all possible main IDs
-	         for (int k = 0; k < (int)sizeof (patternTable); k++) {
-	            int pattern2 = patternTable [k] & pattern;
-	            int count2 = 0;
-	            for (int i = 0; i < NUM_GROUPS; i++)
-	               if (pattern2 & bits [i])
-	                  count2++;
-	            if ((count2 == 4) && (k != mainId)) {
-	               element. mainId		= k;
-	               element. subId		= selected_subId;
-	               element. strength	= abs(sum) / max / (count - 4);
-	               element. phase		= arg(sum) * F_DEG_PER_RAD;
-	               element. norm		= norm;
-	               element. collision	= true;
-	               element. pattern		= patternTable [mainId];
-	               theResult. push_back (element);
-	            }
-	         }
-	      }
-	      else { // List only additional main ID 99
-//	         element. mainId = 99;
-//	         element. strength = abs(sum)/max/(count-4);
-//	         element. phase = arg(sum) * F_DEG_PER_RAD;
-//	         element. norm = norm;
-//	         theResult.push_back(element);
-	      }
-	   }
-	}
-//	fprintf(stderr, "max =%.0f, noise = %.1fdB\n", max, 10 * log10(noise/max));
-	if (max > 4000)
-//	if (max > 4000000)
-	   for (int i = 0; i < carriers / 2; i++)
-	      decodedBuffer [i] *= 0.9;
-	resetBuffer();
-	qsort (theResult. data (), theResult. size(),
-	                     sizeof (tiiData), &fcmp);
-	return theResult;
+uint16_t	TII_Detector::nrPatterns () {
+	return (uint16_t)sizeof (patternTable);
 }
+
+

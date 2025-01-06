@@ -256,7 +256,7 @@ QString h;
 
 	connect (folder_shower, SIGNAL (clicked ()),
 	         this, SLOT (handle_folderButton ()));
-        bool dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
+        dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
                                                 S_DX_MODE, 0) != 0;
 	tiiButton -> setText (dxMode ? "tii local" : "dx display");
 	connect (tiiButton, SIGNAL (clicked ()),
@@ -1091,7 +1091,7 @@ void	RadioInterface::changeinConfiguration (const QStringList &notInOld,
 	if (channel. etiActive)
 	   theOFDMHandler -> reset_etiGenerator ();
 	for (uint16_t i = 0; i < channel. backgroundServices. size (); i ++)
-	   theOFDMHandler -> stop_service (channel. backgroundServices. at (i). subChId,
+	   theOFDMHandler -> stopService (channel. backgroundServices. at (i). subChId,
 	                                   BACK_GROUND);
 
 //	we rebuild the services list from the fib and
@@ -1140,14 +1140,14 @@ void	RadioInterface::changeinConfiguration (const QStringList &notInOld,
 	      if (ad. defined) {
 	         FILE *f = channel. backgroundServices. at (i). fd;
 	         theOFDMHandler -> 
-	                   set_audioChannel (ad, &theAudioBuffer, f, BACK_GROUND);	       
+	                   setAudioChannel (ad, &theAudioBuffer, f, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId  = ad. subchId;
 	      }
 	      else {
 	         packetdata pd;
 	         theOFDMHandler -> data_for_packetservice (ss, pd, 0);
 	         theOFDMHandler -> 
-	                   set_dataChannel (pd, &theDataBuffer, BACK_GROUND);	       
+	                   setDataChannel (pd, &theDataBuffer, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId     = pd. subchId;
 	      }
 	   }
@@ -1367,7 +1367,7 @@ deviceHandler	*inputDevice = theDeviceChoser.
 	   inputDevice -> setVisibility (true);
 	else
 	   inputDevice -> setVisibility (false);
-	theNewDisplay. set_bitDepth (inputDevice -> bitDepth ());
+	theNewDisplay. setBitDepth (inputDevice -> bitDepth ());
 	return inputDevice;
 }
 //
@@ -1516,7 +1516,7 @@ void	RadioInterface::show_ficBER	(float ber) {
 	if (!running. load ())
 	   return;
 	if (!theNewDisplay. isHidden ())
-	   theNewDisplay. show_ficBER (ber);
+	   theNewDisplay. showFICBER (ber);
 }
 //
 //	called from the PAD handler
@@ -1534,7 +1534,7 @@ static bool old_mot = false;
 	
 //	just switch a color, called from the dabprocessor
 void	RadioInterface::set_synced	(bool b) {
-	theNewDisplay. set_syncLabel (b);
+	theNewDisplay. setSyncLabel (b);
 }
 //
 //	called from the PAD handler
@@ -2052,7 +2052,7 @@ void	RadioInterface::stopService	(dabService &s) {
 
 //	stop "secondary services" - if any - as well
 	if (s. valid) {
-	   theOFDMHandler -> stop_service (s. subChId, FORE_GROUND);
+	   theOFDMHandler -> stopService (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
 	      soundOut_p -> suspend ();
 	      for (int i = 0; i < 5; i ++) {
@@ -2060,7 +2060,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	         theOFDMHandler -> data_for_packetservice (s. serviceName,
 	                                                        pd, i);
 	         if (pd. defined) {
-	            theOFDMHandler -> stop_service (pd. subchId, FORE_GROUND);
+	            theOFDMHandler -> stopService (pd. subchId, FORE_GROUND);
 	            break;
 	         }
 	      }
@@ -2126,7 +2126,7 @@ QString serviceName	= s. serviceName;
 //
 void	RadioInterface::startAudioservice (audiodata &ad) {
 //	channel. currentService. valid	= true;
-	(void)theOFDMHandler -> set_audioChannel (ad, &theAudioBuffer,
+	(void)theOFDMHandler -> setAudioChannel (ad, &theAudioBuffer,
 	                                            nullptr, FORE_GROUND);
 //
 //	check the other components for this service (if any)
@@ -2138,7 +2138,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 //	   fprintf (stderr, "pd for comp %d is %s defined\n", i,
 //	                                  pd. defined ? " " : "not");
 	   if (pd. defined) {
-	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, FORE_GROUND);
+	      theOFDMHandler -> setDataChannel (pd, &theDataBuffer, FORE_GROUND);
 	      break;
 	   }
 	}
@@ -2164,7 +2164,7 @@ packetdata pd;
 	   return;
 	}
 
-	if (!theOFDMHandler -> set_dataChannel (pd,
+	if (!theOFDMHandler -> setDataChannel (pd,
 	                                         &theDataBuffer, FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
@@ -2180,7 +2180,7 @@ packetdata pd;
 	   packetdata lpd;
 	   theOFDMHandler -> data_for_packetservice (pd. serviceName, lpd, i);
 	   if (lpd. defined) {
-	      theOFDMHandler -> set_dataChannel (lpd, &theDataBuffer, FORE_GROUND);
+	      theOFDMHandler -> setDataChannel (lpd, &theDataBuffer, FORE_GROUND);
 //	      fprintf (stderr, "adding %s (%d) as subservice\n",
 //	                            lpd. serviceName. toUtf8 (). data (),
 //	                            lpd. subchId);
@@ -2334,8 +2334,8 @@ int	tunedFrequency	=
 
 	distanceLabel		-> setText ("");
 	theDXDisplay. cleanUp ();
-	theNewDisplay. clean_tii	();
-	theNewDisplay. show_transmitters (channel. transmitters);
+	theNewDisplay. cleanTII	();
+	theNewDisplay. showTransmitters (channel. transmitters);
 	if (mapHandler != nullptr)
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
 
@@ -2403,7 +2403,7 @@ void	RadioInterface::stopChannel	() {
 //	soundOut_p	-> suspend ();
 
 	for (auto s : channel. backgroundServices) {
-	   theOFDMHandler -> stop_service (s. subChId, BACK_GROUND);
+	   theOFDMHandler -> stopService (s. subChId, BACK_GROUND);
 	   if (s. fd != nullptr)
 	      fclose (s. fd);
 	}
@@ -3215,7 +3215,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 //	LOG hidden service starts
 	      fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. toUtf8 (). data ());
-	      theOFDMHandler -> set_dataChannel (pd, &theDataBuffer, BACK_GROUND);
+	      theOFDMHandler -> setDataChannel (pd, &theDataBuffer, BACK_GROUND);
 	      dabService s;
 	      s. channel     = pd. channel;
 	      s. serviceName = pd. serviceName;
@@ -3417,7 +3417,7 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-	theOFDMHandler	-> handle_decoderSelector (decoder);
+	theOFDMHandler	-> handleDecoderSelector (decoder);
 }
 
 void	RadioInterface:: set_streamSelector (int k) {
@@ -3642,8 +3642,8 @@ std::vector<Complex> inBuffer (2048);
 	theSpectrumBuffer. getDataFromBuffer (inBuffer. data (), 2048);
 	theSpectrumBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
-	           (theNewDisplay. get_tab () == SHOW_SPECTRUM))
-	   theNewDisplay. show_spectrum (inBuffer, channel. tunedFrequency);
+	           (theNewDisplay. getTab () == SHOW_SPECTRUM))
+	   theNewDisplay. showSpectrum (inBuffer, channel. tunedFrequency);
 }
 
 void	RadioInterface::handle_tiiThreshold	(int v) {
@@ -3660,11 +3660,11 @@ std::vector<Complex> inBuffer (2048);
 	theTIIBuffer. getDataFromBuffer (inBuffer. data (), 2048);
 	theTIIBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
-	           (theNewDisplay. get_tab () == SHOW_TII))
-	   theNewDisplay. show_tii (inBuffer, channel. tunedFrequency);
+	           (theNewDisplay. getTab () == SHOW_TII))
+	   theNewDisplay. showTII (inBuffer, channel. tunedFrequency);
 }
 
-void	RadioInterface::show_correlation	(int s, int g,
+void	RadioInterface::showCorrelation	(int s, int g,
 	                                         QVector<int> maxVals) {
 std::vector<float> inBuffer (s);
 
@@ -3672,8 +3672,8 @@ std::vector<float> inBuffer (s);
 	theResponseBuffer. getDataFromBuffer (inBuffer. data (), s);
 	theResponseBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden ()) {
-	   if (theNewDisplay. get_tab () == SHOW_CORRELATION)
-	      theNewDisplay. show_correlation (inBuffer,
+	   if (theNewDisplay. getTab () == SHOW_CORRELATION)
+	      theNewDisplay. showCorrelation (inBuffer,
 	                                       maxVals,
 	                                       g,
 	                                       channel. transmitters);
@@ -3684,8 +3684,8 @@ void	RadioInterface::show_null		(int amount, int startIndex) {
 Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	theNULLBuffer. getDataFromBuffer (inBuffer, amount);
 	if (!theNewDisplay. isHidden ())
-	   if (theNewDisplay. get_tab () ==  SHOW_NULL)
-	      theNewDisplay. show_null (inBuffer, amount, startIndex);
+	   if (theNewDisplay. getTab () ==  SHOW_NULL)
+	      theNewDisplay. showNULL (inBuffer, amount, startIndex);
 }
 
 void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
@@ -3712,8 +3712,6 @@ bool	need_to_print	= true;
 	if (r. size () == 0)
 	   return;
 
-	bool dxMode	= value_i (dabSettings_p, CONFIG_HANDLER, 
-	                                        S_DX_MODE, 0) != 0;
 	if (!dxMode) {
 	   if (!theDXDisplay. isHidden ())
 	      theDXDisplay. hide ();
@@ -3918,21 +3916,21 @@ std::vector<Complex> Values (amount);
 
 void	RadioInterface::show_Corrector (int h, float l) {
 	if (!theNewDisplay. isHidden ())
-	   theNewDisplay. show_corrector (h, l);
+	   theNewDisplay. showCorrector (h, l);
 }
 
 void	RadioInterface::show_stdDev	(int amount) {
 std::vector<float>Values (amount);
 	stdDevBuffer. getDataFromBuffer (Values. data (), amount);
 	if (!theNewDisplay. isHidden ())
-	   theNewDisplay. show_stdDev (Values);
+	   theNewDisplay. showStdDev (Values);
 }
 
 void	RadioInterface::show_snr		(float snr) {
 QPixmap p;
 
 	if (!theNewDisplay. isHidden ())
-	   theNewDisplay. show_snr (snr);
+	   theNewDisplay. showSNR (snr);
 	channel. snr	= snr;
 
 	if (snr < 5) 
@@ -3968,7 +3966,7 @@ void	RadioInterface::show_quality	(float q,
 	                                 float sco, float freqOffset) {
 	if (!running. load () || theNewDisplay. isHidden ())
 	   return;
-	theNewDisplay. show_quality (q, sco, freqOffset); 
+	theNewDisplay. showQuality (q, sco, freqOffset); 
 }
 //
 //	called from the MP4 decoder
@@ -3984,7 +3982,7 @@ void	RadioInterface::show_clock_error	(int d) {
 	if (!running. load ())
 	   return;
 	if (!theNewDisplay. isHidden ()) {
-	   theNewDisplay. show_clock_err (d);
+	   theNewDisplay. showClock_err (d);
 	}
 }
 
@@ -3993,23 +3991,23 @@ std::vector<Complex> v (n);
 	theChannelBuffer. getDataFromBuffer (v. data (), n);
 	theChannelBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
-	           (theNewDisplay. get_tab () == SHOW_CHANNEL))
-	   theNewDisplay. show_channel (v);
+	           (theNewDisplay. getTab () == SHOW_CHANNEL))
+	   theNewDisplay. showChannel (v);
 }
 	                                 
 bool	RadioInterface::channelOn () {
 	return (!theNewDisplay. isHidden () &&
-	           (theNewDisplay. get_tab () == SHOW_CHANNEL));
+	           (theNewDisplay. getTab () == SHOW_CHANNEL));
 }
 
 bool	RadioInterface::devScopeOn () {
 	return !theNewDisplay. isHidden () &&
-	           (theNewDisplay. get_tab () == SHOW_STDDEV);
+	           (theNewDisplay. getTab () == SHOW_STDDEV);
 }
 
 void	RadioInterface::handle_iqSelector () {
 	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> handle_iqSelector ();
+	   theOFDMHandler -> handleIQSelector ();
 }
 
 void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
@@ -4072,7 +4070,7 @@ audiodata ad;
 	     i < channel. backgroundServices. size (); i ++) {
 	   if (channel. backgroundServices. at (i). serviceName ==
 	                                                      service) {
-	      theOFDMHandler -> stop_service (ad. subchId, BACK_GROUND);
+	      theOFDMHandler -> stopService (ad. subchId, BACK_GROUND);
 	      if (channel. backgroundServices. at (i). fd != nullptr)
 	         fclose (channel. backgroundServices. at (i). fd);
 	      channel. backgroundServices. erase
@@ -4088,7 +4086,7 @@ audiodata ad;
 //	fprintf (stderr, "starting a background job %s\n",
 //	                             ad. serviceName. toLatin1 (). data ());
 	(void)theOFDMHandler ->
-	                   set_audioChannel (ad, &theAudioBuffer, f, BACK_GROUND);
+	                   setAudioChannel (ad, &theAudioBuffer, f, BACK_GROUND);
 	dabService s;
 	s. channel	= ad. channel;
 	s. serviceName	= ad. serviceName;
@@ -4116,7 +4114,7 @@ QColor	labelColor;
 }
 
 void	RadioInterface::show_dcOffset (float dcOffset) {
-	theNewDisplay. show_dcOffset (dcOffset);
+	theNewDisplay. showDCOffset (dcOffset);
 }
 
 void	RadioInterface::handle_techFrame_closed () {
@@ -4157,7 +4155,7 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 	bool b =  configHandler_p -> get_correlationSelector ();
 	store (dabSettings_p, DAB_GENERAL, S_CORRELATION_ORDER, b ? 1 : 0);
 	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> set_correlationOrder (b);
+	   theOFDMHandler -> setCorrelationOrder (b);
 }
 
 void	RadioInterface::channelSignal (const QString &channel) {
@@ -4263,8 +4261,6 @@ bool exists	= false;
 }
 
 void	RadioInterface::handle_tiiButton () {
-	bool dxMode	= value_i (dabSettings_p, CONFIG_HANDLER, 
-	                                        S_DX_MODE, 0) != 0;
 	dxMode	= !dxMode;
 	store (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, dxMode ? 1 : 0);
 	if (theOFDMHandler == nullptr)
@@ -4280,7 +4276,7 @@ void	RadioInterface::handle_tiiButton () {
 	   theDXDisplay. show ();
 	   tiiButton	-> setText ("tii local");
 	}
-	theOFDMHandler -> set_dxMode (dxMode);
+	theOFDMHandler -> setDXMode (dxMode);
 }
 
 void	RadioInterface::handle_tiiCollisions     (int b) {
@@ -4291,4 +4287,7 @@ void	RadioInterface::handle_tiiFilter         (bool b) {
 	theOFDMHandler	-> set_tiiFilter	(b);
 }
 
+void	RadioInterface::process_tiiSelector	(bool b) {
+	theOFDMHandler	-> select_TII (b ? 1 : 0);
+}
 

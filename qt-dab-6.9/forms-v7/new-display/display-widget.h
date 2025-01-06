@@ -57,36 +57,36 @@ public:
 		displayWidget	(RadioInterface *,
 	                         QSettings *);
 		~displayWidget	();
-	int	get_tab		();
-	void	set_bitDepth	(int);
+	int	getTab		();
+	void	setBitDepth	(int);
 
 	void	setSilent	();
-	void	show_spectrum	(std::vector<Complex> &, int);
-	void	show_null	(Complex *, int, int);
-	void	show_correlation	(const std::vector<float> &,
+	void	showSpectrum	(std::vector<Complex> &, int);
+	void	showNULL	(Complex *, int, int);
+	void	showCorrelation	(const std::vector<float> &,
 	                                 QVector<int> &, int,
 	                                 std::vector<transmitterDesc> &);
-	void	show_tii	(std::vector<Complex>, int);
-	void	show_channel	(const std::vector<Complex>);
-	void	show_stdDev	(const std::vector<float>);
+	void	showTII	(std::vector<Complex>, int);
+	void	showChannel	(const std::vector<Complex>);
+	void	showStdDev	(const std::vector<float>);
 
 	void	showIQ		(const std::vector<Complex>);
 
-	void	show_ficBER	(float);
-	void	show_quality	(float, float, float);
-	void	show_corrector	(int, float);
-	void	show_snr	(float);
-	void	show_correction	(int);
-	void	show_clock_err	(int);
+	void	showFICBER	(float);
+	void	showQuality	(float, float, float);
+	void	showCorrector	(int, float);
+	void	showSNR		(float);
+	void	showCorrection	(int);
+	void	showClock_err	(int);
 	void	showFrequency	(const QString &, int);
 
-	void	clean_tii	();
-	void	show_cpuLoad	(float);
-	void	show_transmitters	(std::vector<transmitterDesc> &);
+	void	cleanTII	();
+	void	showCPULoad	(float);
+	void	showTransmitters	(std::vector<transmitterDesc> &);
 
-	void	show_dcOffset	(float);
-	void	set_dcRemoval	(bool);
-	void	set_syncLabel	(bool);
+	void	showDCOffset	(float);
+	void	setDCRemoval	(bool);
+	void	setSyncLabel	(bool);
 	void	show		();
 	void	hide		();
 	bool	isHidden	();
@@ -109,10 +109,10 @@ private:
 	int			ncpScope;
 	bool			setMarkers;
 private slots:
-	void		switch_tab	(int);
+	void		switch_tab		(int);
 	void		rightMouseClick		();
-	void		handle_ncpScope_checkBox (int);
-	void		handle_marksButton	();
+	void		handleNcpScope_checkBox (int);
+	void		handleMarksButton	();
 signals:
 	void		mouseClick	();
 	void		frameClosed	();

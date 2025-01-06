@@ -51,9 +51,11 @@
 	                            bool		backgroundFlag,
 	                            FILE		*dump):
 	                                my_padhandler (mr, backgroundFlag),
- 	                                my_rsDecoder (8, 0435, 0, 1, 10) {
+ 	                                my_rsDecoder (8, 0435, 0, 1, 10),
+	                                aacDecoder (mr, b) {
 
 	myRadioInterface	= mr;
+	this	-> bitRate	= bitRate;	// input rate
 	this	-> frameBuffer	= frameBuffer;
 	this	-> dump		= dump;
 	connect (this, &mp4Processor::show_frameErrors,
@@ -70,12 +72,6 @@
 	         mr, &RadioInterface::show_rsCorrections);
 	connect (this, &mp4Processor::show_emptyLabel,
 	         mr, &RadioInterface::show_label);
-#ifdef	__WITH_FDK_AAC__
-	aacDecoder		= new fdkAAC (mr, b);
-#else
-	aacDecoder		= new faadDecoder (mr, b);
-#endif
-	this	-> bitRate	= bitRate;	// input rate
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;
@@ -92,14 +88,10 @@
 	rsErrors		= 0;
 	totalCorrections	= 0;
 	goodFrames		= 0;
-
-//	superframe_sync		= 0;
 }
 
 	mp4Processor::~mp4Processor () {
-	delete aacDecoder;
 }
-
 /**
   *	\brief addtoFrame
   *
@@ -334,7 +326,7 @@ stream_parms    streamParameters;
 //
 //	then handle the audio
 #ifdef	__WITH_FDK_AAC__
-	         tmp = aacDecoder -> MP42PCM (&streamParameters, 
+	         tmp = aacDecoder. MP42PCM (&streamParameters, 
 	                                      fileBuffer. data (), 
 	                                      segmentSize);
 #else
@@ -344,7 +336,7 @@ stream_parms    streamParameters;
 	                    &outVector [au_start [i]], aac_frame_length);
 	         memset (&theAudioUnit [aac_frame_length], 0, 10);
 
-	         tmp = aacDecoder -> MP42PCM (&streamParameters,
+	         tmp = aacDecoder. MP42PCM (&streamParameters,
 	                                      theAudioUnit,
 	                                      aac_frame_length);
 #endif

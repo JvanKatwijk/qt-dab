@@ -51,8 +51,8 @@ float	Phi_k;
 
 	framesperSecond		= INPUT_RATE / params. get_T_F();
 	displayCounter		= 0;
-	connect (this, &correlator::show_correlation,
-	         mr, &RadioInterface::show_correlation);
+	connect (this, &correlator::showCorrelation,
+	         mr, &RadioInterface::showCorrelation);
 }
 
 	correlator::~correlator () {
@@ -169,7 +169,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (lbuf, T_u / 2);
-	      show_correlation (T_u / 2, T_g, indices);
+	      showCorrelation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }
 	}

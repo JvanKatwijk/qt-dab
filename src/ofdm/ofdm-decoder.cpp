@@ -75,19 +75,6 @@ float Length	= jan_abs (V);
 	this	-> nrBlocks		= params. get_L		();
 	this	-> carriers		= params. get_carriers	();
 
-//	refTable.		resize (T_u);
-//	for (int i = 0; i < T_u; i ++)
-//	   refTable [i] = Complex (0, 0);
-////
-////	generate the refence values using the format we have after
-////	doing an FFT
-//	for (int i = 1; i <= params. get_carriers() / 2; i ++) {
-//	   DABFLOAT Phi_k =  theTable. get_Phi (i);
-//	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
-//	   Phi_k = theTable. get_Phi (-i);
-//	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
-//	}
-
 	repetitionCounter	= 8;
 	this	-> T_g		= T_s - T_u;
 	phaseReference		.resize (T_u);
@@ -140,10 +127,6 @@ float	ofdmDecoder::processBlock_0 (
 	                                      T_u * sizeof (Complex));
 
 	Complex temp	= Complex (0, 0);;
-//	for (int carrier = -carriers / 2; carrier < carriers; carrier ++) {
-//	   int index = carrier < 0 ? T_u + carrier : carrier + 1;
-//	   temp += phaseReference [index] * conj (refTable [index]);
-//	}
 	if (withTII) {
 	   return arg (temp);
 	}
@@ -238,7 +221,7 @@ float sum = 0;
 	           compute_avg (offsetVector [index], phaseOffset, Alpha);
 //
 	   amplitudeVector [index]	= 
-	            compute_avg ( amplitudeVector [index], ab1, Alpha);
+	            compute_avg (amplitudeVector [index], ab1, Alpha);
 	   carrierCenters [index] =
 	            Complex (
 	                    compute_avg (real (carrierCenters [index]),

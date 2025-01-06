@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2023
+ *    Copyright (C) 2013 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -58,18 +58,17 @@ public:
 	                                         logger		*);
 			~mscHandler		();
 	void		processBlock_0		(Complex *);
-	void		process_Msc		(std::vector<Complex> &,
+	void		processMsc		(std::vector<Complex> &,
 	                                                  int, int);
-	void		process_mscBlock	(std::vector<int16_t> &,
+	void		processMscBlock		(std::vector<int16_t> &,
 	                                                  int16_t);
-	bool		set_Channel		(descriptorType &,
+	bool		setChannel		(descriptorType &,
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);
-	void		reset_Channel		();
-	void		stop_service		(descriptorType *, int);
-	void		stop_service		(int, int);
-	void		reset_Buffers		();
+	void		resetChannel		();
+	void		stopService		(int, int);
+	void		resetBuffers		();
 private:
 
 	dabParams	params;

@@ -107,7 +107,7 @@ void	mscHandler::processBlock_0 (Complex *b) {
 }
 
 #ifdef	__MSC_THREAD__
-void	mscHandler::process_Msc	(std::vector<Complex> &b,
+void	mscHandler::processMsc	(std::vector<Complex> &b,
 	                                   int offset,  int blkno) {
 	bufferSpace. acquire (1);
         memcpy (command [blkno]. data (), &(b. data ())[offset],
@@ -170,7 +170,7 @@ int	carriers	= params. get_carriers ();
         }
 }
 #else
-void	mscHandler::process_Msc	(std::vector<Complex> &b,
+void	mscHandler::processMsc	(std::vector<Complex> &b,
 	                                      int offset, int blkno) {
 	(void)b;
 	(void)offset;
@@ -184,8 +184,8 @@ void	mscHandler::process_Msc	(std::vector<Complex> &b,
 //	so, a little bit of locking seems wise while
 //	the actual changing of the settings is done in the
 //	thread executing process_mscBlock
-void	mscHandler::reset_Buffers	() {
-	reset_Channel ();
+void	mscHandler::resetBuffers	() {
+	resetChannel ();
 #ifdef	__MSC_THREAD__
 	running. store (false);
 	while (isRunning ())
@@ -194,7 +194,7 @@ void	mscHandler::reset_Buffers	() {
 	start ();
 #endif
 }
-void	mscHandler::reset_Channel () {
+void	mscHandler::resetChannel () {
 	fprintf (stderr, "channel reset: all services will be stopped\n");
 	locker. lock ();
 	for (auto const &b : theBackends) {
@@ -205,24 +205,7 @@ void	mscHandler::reset_Channel () {
 	locker. unlock ();
 }
 
-void	mscHandler::stop_service	(descriptorType *d, int flag) {
-	fprintf (stderr, "obsolete function stopService\n");
-	locker. lock ();
-	for (int i = 0; i < (int)theBackends. size (); i ++) {
-	   Backend *b = theBackends. at (i);
-	   if ((b -> subChId == d -> subchId) && (b -> borf == flag)) {
-	      fprintf (stderr, "stopping (sub)service at subchannel %d\n",
-	                                    d -> subchId);
-	      b -> stopRunning ();
-	      delete b;
-	      theBackends. erase (theBackends. begin () + i);
-	      break;
-	   }
-	}
-	locker. unlock ();
-}
-
-void	mscHandler::stop_service	(int subchId, int flag) {
+void	mscHandler::stopService	(int subchId, int flag) {
 	locker. lock ();
 	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
@@ -237,10 +220,10 @@ void	mscHandler::stop_service	(int subchId, int flag) {
 	locker. unlock ();
 }
 
-bool	mscHandler::set_Channel (descriptorType &d,
-	                         RingBuffer<std::complex<int16_t>> *audioBuffer,
-	                         RingBuffer<uint8_t> *dataBuffer,
-	                         FILE *dump, int flag) {
+bool	mscHandler::setChannel (descriptorType &d,
+	                        RingBuffer<std::complex<int16_t>> *audioBuffer,
+	                        RingBuffer<uint8_t> *dataBuffer,
+	                        FILE *dump, int flag) {
 	fprintf (stderr, "going to open %s\n",
 	                d. serviceName. toLatin1 (). data ());
 	theBackends. push_back (new Backend (myRadioInterface,
@@ -264,7 +247,7 @@ bool	mscHandler::set_Channel (descriptorType &d,
 //	gui thread, so some locking is added
 //
 
-void	mscHandler::process_mscBlock	(std::vector<int16_t> &fbits,
+void	mscHandler::processMscBlock	(std::vector<int16_t> &fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk	= (blkno - 4) % numberofblocksperCIF;
 

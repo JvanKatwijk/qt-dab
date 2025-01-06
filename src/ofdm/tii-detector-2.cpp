@@ -26,224 +26,97 @@
 #include	<cinttypes>
 #include	<cstring>
 #include	<QSettings>
-#include	"settingNames.h"
-#include	"settings-handler.h"
 
 #ifndef M_PI
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
-static
-uint8_t table [] = {
-	0017,		// 0 0 0 0 1 1 1 1		0
-	0027,		// 0 0 0 1 0 1 1 1		1
-	0033,		// 0 0 0 1 1 0 1 1		2
-	0035,		// 0 0 0 1 1 1 0 1		3
-	0036,		// 0 0 0 1 1 1 1 0		4
-	0047,		// 0 0 1 0 0 1 1 1		5
-	0053,		// 0 0 1 0 1 0 1 1		6
-	0055,		// 0 0 1 0 1 1 0 1		7
-	0056,		// 0 0 1 0 1 1 1 0		8
-	0063,		// 0 0 1 1 0 0 1 1		9
-
-	0065,		// 0 0 1 1 0 1 0 1		10
-	0066,		// 0 0 1 1 0 1 1 0		11
-	0071,		// 0 0 1 1 1 0 0 1		12
-	0072,		// 0 0 1 1 1 0 1 0		13
-	0074,		// 0 0 1 1 1 1 0 0		14
-	0107,		// 0 1 0 0 0 1 1 1		15
-	0113,		// 0 1 0 0 1 0 1 1		16
-	0115,		// 0 1 0 0 1 1 0 1		17
-	0116,		// 0 1 0 0 1 1 1 0		18
-	0123,		// 0 1 0 1 0 0 1 1		19
-
-	0125,		// 0 1 0 1 0 1 0 1		20
-	0126,		// 0 1 0 1 0 1 1 0		21
-	0131,		// 0 1 0 1 1 0 0 1		22
-	0132,		// 0 1 0 1 1 0 1 0		23
-	0134,		// 0 1 0 1 1 1 0 0		24
-	0143,		// 0 1 1 0 0 0 1 1		25
-	0145,		// 0 1 1 0 0 1 0 1		26
-	0146,		// 0 1 1 0 0 1 1 0		27
-	0151,		// 0 1 1 0 1 0 0 1		28	
-	0152,		// 0 1 1 0 1 0 1 0		29
-
-	0154,		// 0 1 1 0 1 1 0 0		30
-	0161,		// 0 1 1 1 0 0 0 1		31
-	0162,		// 0 1 1 1 0 0 1 0		32
-	0164,		// 0 1 1 1 0 1 0 0		33
-	0170,		// 0 1 1 1 1 0 0 0		34
-	0207,		// 1 0 0 0 0 1 1 1		35
-	0213,		// 1 0 0 0 1 0 1 1		36
-	0215,		// 1 0 0 0 1 1 0 1		37
-	0216,		// 1 0 0 0 1 1 1 0		38
-	0223,		// 1 0 0 1 0 0 1 1		39
-
-	0225,		// 1 0 0 1 0 1 0 1		40
-	0226,		// 1 0 0 1 0 1 1 0		41
-	0231,		// 1 0 0 1 1 0 0 1		42
-	0232,		// 1 0 0 1 1 0 1 0		43
-	0234,		// 1 0 0 1 1 1 0 0		44
-	0243,		// 1 0 1 0 0 0 1 1		45
-	0245,		// 1 0 1 0 0 1 0 1		46
-	0246,		// 1 0 1 0 0 1 1 0		47
-	0251,		// 1 0 1 0 1 0 0 1		48
-	0252,		// 1 0 1 0 1 0 1 0		49
-
-	0254,		// 1 0 1 0 1 1 0 0		50
-	0261,		// 1 0 1 1 0 0 0 1		51
-	0262,		// 1 0 1 1 0 0 1 0		52
-	0264,		// 1 0 1 1 0 1 0 0		53
-	0270,		// 1 0 1 1 1 0 0 0		54
-	0303,		// 1 1 0 0 0 0 1 1		55
-	0305,		// 1 1 0 0 0 1 0 1		56
-	0306,		// 1 1 0 0 0 1 1 0		57
-	0311,		// 1 1 0 0 1 0 0 1		58
-	0312,		// 1 1 0 0 1 0 1 0		59
-
-	0314,		// 1 1 0 0 1 1 0 0		60
-	0321,		// 1 1 0 1 0 0 0 1		61
-	0322,		// 1 1 0 1 0 0 1 0		62
-	0324,		// 1 1 0 1 0 1 0 0		63
-	0330,		// 1 1 0 1 1 0 0 0		64
-	0341,		// 1 1 1 0 0 0 0 1		65
-	0342,		// 1 1 1 0 0 0 1 0		66
-	0344,		// 1 1 1 0 0 1 0 0		67
-	0350,		// 1 1 1 0 1 0 0 0		68
-	0360		// 1 1 1 1 0 0 0 0		69
-};
-
 		TII_Detector_B::TII_Detector_B (uint8_t dabMode,
-	                                       QSettings	*dabSettings):
-	                                      theTable (dabMode),
-	                                      params (dabMode),
-	                                      T_u (params. get_T_u ()),
-	                                      carriers (params. get_carriers ()),
-	                                      my_fftHandler (params. get_T_u (),
-	                                                    false) {
+	                                       QSettings *dabSettings):
+	                                       TII_Detector (dabMode) {
 	this	-> dabSettings	= dabSettings;
-	theBuffer. resize	(T_u);
-	window. resize 		(T_u);
-	for (int i = 0; i < T_u; i ++)
-	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
-
-	refTable.               resize (T_u);
-        for (int i = 0; i < T_u; i ++)
-           refTable [i] = Complex (0, 0);
-//
-//      generate the refence values using the format we have after
-//      doing an FFT
-        for (int i = 1; i <= carriers / 2; i ++) {
-           float Phi_k = theTable. get_Phi (i);
-           refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
-           Phi_k = theTable. get_Phi (-i);
-           refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
-        }
-
 	memset (invTable, 0x377, 256);
 	for (int i = 0; i < 70; ++i) 
-	    invTable [table [i]] = i;
-	detectMode_new	= false;
-//	detectMode_new	= true;
-	tiiThreshold	= value_i (dabSettings, CONFIG_HANDLER, 
-	                                     "tiiThreshold", 4);
+	   invTable [getPattern (i)] = i;
 }
 
 		TII_Detector_B::~TII_Detector_B () {
 }
 
-void	TII_Detector_B::setMode	(bool b) {
-	detectMode_new = b;
-}
-
 void	TII_Detector_B::reset	() {
-	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] = Complex (0, 0);
+	memset (nullSymbolBuffer. data (), 0, T_u * sizeof (Complex));
 }
 
-void	TII_Detector_B::set_tiiThreshold	(int t) {
-	tiiThreshold = t;
-}
-
-
-//	To eliminate (reduce?) noise in the input signal, we might
-//	add a few spectra before computing (up to the user)
-void	TII_Detector_B::addBuffer (std::vector<Complex> v) {
-
-	for (int i = 0; i < T_u; i ++)
-	   v [i] = v [i] *  window [i];
-	my_fftHandler. fft (v);
-
-	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] += v [i];
-}
-//
 //	Note that the input is fft output, not yet reordered
-void	TII_Detector_B::collapse (std::vector<Complex> &inVec, float *outVec) {
+void	TII_Detector_B::collapse (std::vector<Complex> &inVec,
+	                          float *outVec, bool tiiFilter) {
+int	teller = 0;
+    for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
+           const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
+           decodedBuffer [teller++]  +=
+               inVec [fftIdx] * conj (inVec [fftIdx + 1]);
+        }
 
-	for (int i = 0; i < carriers / 8; i ++) {	
-	   int carr = - carriers / 2 + 2 * i;
+	int nrSections	= tiiFilter ? 2 : 4;
+//	for (int i = 0; i < 192; i ++) {
+//	   float x [4];
+//	   float max = 0;
+//	   float sum = 0;
+//	   int index = 0;
+//	   for (int j = 0; j < nrSections; j++) {
+//	      x [j] = abs (decodedBuffer [i + j * 192]);
+//	      sum += x [j];
+//	      if (x [j] > max) {
+//	         max = x[j];
+//	         index = j;
+//	      }
+//	   }
+//
+//	   float min = (sum - max) / 3;
+//	   if (sum < max * 1.5 && max > 0.0) {
+//	     decodedBuffer [i + index * 192] *= min / max;
+//	   }
+//	}
 
-	   outVec [i] = abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
-	   carr	= - carriers / 2 + 1 * carriers / 4 + 2 * i;
-	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
-	   carr	= - carriers / 2 + 2 * carriers / 4 + 2 * i + 1;
-	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
-
-	   carr	= - carriers / 2 + 3 * carriers / 4 + 2 * i + 1;
-	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
+	for (int i = 0; i < 192; i ++) {
+	   outVec [i] = 0;
+	   for (int j = 0; j < nrSections; j ++)
+	      outVec [i] += abs (decodedBuffer [i + j * 192]);
 	}
 }
 
-bool	TII_Detector_B::isPeak (const Complex *v, int index, float avg) {
-	if (abs (v [index]) < 2 * avg)
-	   return false;
-	if (abs(v [index + 1]) < 2 * avg)
-	   return false;
-	return true;
-	if (index > 2)
-	   if (abs (v [index - 2]) > 0.75 * abs (v [index]))
-	      return false;
-	if (abs (v [index + 1 + 2]) > 0.75 * abs (v [index + 1]))
-	   return false;
-	return true;
-}
-	
 static
 uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 //
 //	We determine first the offset of the "best fit", the offset
 //	indicates the subId
-#define	NUM_GROUPS	8
-#define	GROUPSIZE	24
-
-QVector<tiiData>	TII_Detector_B::processNULL () {
+QVector<tiiData>	TII_Detector_B::processNULL (int16_t threshold,
+	                                             uint8_t selected_subId,
+	                                             bool tiiFilter) {
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
 float	C_table		[GROUPSIZE];		  // contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
-
+float	max		= 0;
 QVector<tiiData> theResult;
+
+	(void)selected_subId;
 	bool dxMode	= true;
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
 //	Each "value" is the sum of 4 pairs of subsequent carriers,
 //	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
-	collapse (theBuffer, hulpTable);
+	collapse (nullSymbolBuffer, hulpTable, tiiFilter);
 
 //	since the "energy levels" in the different GROUPSIZE'd values
 //	may differ, we compute an average for each of the
 //	NUM_GROUPS GROUPSIZE - value groups. 
 
-	int tiiThreshold	=
-	                   value_i (dabSettings, DAB_GENERAL,
-	                                      "tiiThreshold", 4);
+	for (int i = 0; i < 192; i ++)
+	   if (hulpTable [i] > max)
+	      max = hulpTable [i];
 	while (true) {
 	   memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 
@@ -274,7 +147,7 @@ QVector<tiiData> theResult;
 //	We only use the C and D table to locate the start offset
 	   for (int i = 0; i < GROUPSIZE; i ++) {
 	      for (int j = 0; j < NUM_GROUPS; j ++) {
-	         if (hulpTable [j * GROUPSIZE + i] > tiiThreshold * avgTable [j]) {
+	         if (hulpTable [j * GROUPSIZE + i] > threshold / 2 * avgTable [j]) {
 	            C_table [i] += hulpTable [j * GROUPSIZE + i];
 	            D_table [i] ++;
 	         }
@@ -298,8 +171,13 @@ QVector<tiiData> theResult;
 	      }
 	   }
 
-	   if (maxIndex < 0)
+	   if (maxIndex < 0) {
+	      if (max > 4000) 
+	         for (int i = 0; i < 192; i ++)
+	            decodedBuffer [i] *= 0.9;
+	      resetBuffer ();
 	      return theResult;
+	   }
 
 	float strength = 10 * log10 (maxTable / (4 * newAvg));
 //	The - almost - final step is then to figure out which
@@ -314,65 +192,39 @@ QVector<tiiData> theResult;
 
 //	find the best match
 	   int finInd = -1;
-	   if (detectMode_new) {
-	      float mm = 0;
-	      for (int k = 0; k < (int)(sizeof (table)); k ++) {
-	         float val = 0;
-	         for (int l = 0; l < NUM_GROUPS; l ++)
-	            if (table [k] & (bits [l] != 0))
-	               val += x [l];
-	         if  (val > mm) {
-	            mm = val;
-	            finInd = k;
-	         }
-	      }
-	      if (finInd != -1) {
-	         tiiData v;
-	         v. subId	= maxIndex;
-	         v. mainId	= finInd;
-	         v. strength	= strength;
-	         theResult. push_back (v);
-	         for (int i = 0; i < 8; i ++) {
-	            if (table [finInd] & bits [i]) {
-	               int index = maxIndex + i * 24;
-	               hulpTable [index] = 0;
-	            }
-	         }
-	      }
-	   }
-	   else {		// detectMode_new is false
 ////	we extract the four max values as bits
-	      float theStrength = 0;
-	      uint16_t pattern	= 0;
-	      for (int i = 0; i < 4; i ++) {
-	         float mmax	= 0;
-	         int ind	= -1;
-	         for (int k = 0; k < NUM_GROUPS; k ++) {
-	            if (x [k] > mmax) {
-	               mmax = x [k];
-	               ind  = k;
-	            }
-	         }
-	         if (ind != -1) {
-	            x [ind] = 0;
-	            pattern |= bits [ind];
+	   float theStrength = 0;
+	   uint16_t pattern	= 0;
+	   for (int i = 0; i < 4; i ++) {
+	      float mmax	= 0;
+	      int ind	= -1;
+	      for (int k = 0; k < NUM_GROUPS; k ++) {
+	         if (x [k] > mmax) {
+	            mmax = x [k];
+	            ind  = k;
 	         }
 	      }
-	      finInd = invTable [pattern];
-	      for (int i = 0; i < 8; i ++) {
-	         if (pattern & bits [i]) {
-	            int index = maxIndex + i * 24;
-	             hulpTable [index] = 0;
-	         }
+	      if (ind != -1) {
+	         x [ind] = 0;
+	         pattern |= bits [ind];
 	      }
-	      tiiData v;
-	      v. subId		= maxIndex;
-	      v. mainId		= finInd;	
-	      v. strength	= strength;
-	      theResult. push_back (v);
 	   }
-	   if (!dxMode)
-	      break;
+	   finInd = invTable [pattern];
+	   for (int i = 0; i < 8; i ++) {
+	      if (pattern & bits [i]) {
+	         int index = maxIndex + i * 24;
+	         hulpTable [index] = 0;
+	      }
+	   }
+	   tiiData v;
+	   v. subId	= maxIndex;
+	   v. mainId	= finInd;	
+	   v. strength	= strength;
+	   v. pattern	= pattern;
+	   v. phase	= 0;
+	   v. norm	= false;
+	   v. collision	= 0;
+	   theResult. push_back (v);
 	}
 	return theResult;
 }

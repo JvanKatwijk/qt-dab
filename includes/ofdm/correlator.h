@@ -65,7 +65,7 @@ private:
 
 
 signals:
-	void		show_correlation	(int, int, QVector<int>);
+	void		showCorrelation	(int, int, QVector<int>);
 };
 //#endif
 

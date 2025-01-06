@@ -20,6 +20,16 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
+      <widget class="QCheckBox" name="tiiSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB supports two different implementations for detecting TII values.&lt;/p&gt;&lt;p&gt;The &amp;quot;new&amp;quot; one (selected if checked) is very sensitive and if your antenna is too good might give too many false TII's&lt;/p&gt;&lt;p&gt;The old one is less senstive, but then, gives less false positives&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The new algorithm shows also phase data, with which an estimate is (can be) made what the delay of the signal is, and it supports looking for collisions with given subIds.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The old one is less fancy, shows only 0 for phase and does not support collisions.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>new tii detector</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="orderServiceIds">
        <property name="text">
         <string>serviceIds</string>

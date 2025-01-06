@@ -53,6 +53,7 @@ public:
 	int	get_serviceOrder	();
 	int	switchDelayValue	();
 	int	muteValue		();
+	
 	bool	closeDirect_active	();
 	bool	utcSelector_active	();
 	bool	epg_automatic_active	();
@@ -135,6 +136,8 @@ private slots:
 	void	handle_tiiCollisions		(int);
 	void	handle_tiiFilter		(int);
 
+	void	handle_tiiSelector		(int);
+
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);
@@ -151,6 +154,8 @@ signals:
 
 	void	process_tiiCollisions	(int);
 	void	process_tiiFilter	(bool);
+
+	void	process_tiiSelector	(bool);
 
 };
 

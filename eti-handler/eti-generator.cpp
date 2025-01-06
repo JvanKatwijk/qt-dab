@@ -184,7 +184,7 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 
 	if (blkno == 4) {	// import fibBits
 	   bool ficValid [4];
-	   my_ficHandler -> get_fibBits (fibBits, ficValid);
+	   my_ficHandler -> getFIBBits (fibBits, ficValid);
 	   for (int i = 0; i < 4; i ++) {
 	      fibValid [index_Out + i] = ficValid [i];
 	      for (int j = 0; j < 96; j ++) {

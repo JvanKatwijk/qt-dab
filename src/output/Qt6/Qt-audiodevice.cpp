@@ -57,9 +57,6 @@ void	Qt_AudioDevice::start () {
 	if (running. load ())
 	   return;
 	bool b = open (QIODevice::ReadOnly);
-	fprintf (stderr, "Opening QIODevice %s\n", b ? "ok" : "error");
-	fprintf (stderr, "current channel %d %d\n",
-	                        currentReadChannel (), currentWriteChannel ());
 	running. store (true);
 }
 

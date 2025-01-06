@@ -129,9 +129,9 @@
 	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
 	         this, SLOT (rightMouseClick ()));
 	connect (ncpScope_checkBox, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_ncpScope_checkBox (int)));
+	         this, SLOT (handleNcpScope_checkBox (int)));
 	connect (show_marksButton, &QPushButton::clicked,
-	         this, &displayWidget::handle_marksButton);
+	         this, &displayWidget::handleMarksButton);
 //
 	for (int i = 0; i < 2048; i ++)
 	   workingBuffer [i] =  0; 
@@ -171,7 +171,7 @@ void	displayWidget::switch_tab	(int t) {
 	   workingBuffer [i] =  0;
 }
 
-int	displayWidget::get_tab		() {
+int	displayWidget::getTab		() {
 	return currentTab == 0 ? SHOW_SPECTRUM :
 	       currentTab == 1 ? SHOW_CORRELATION :
 	       currentTab == 2 ? SHOW_NULL : 
@@ -185,7 +185,7 @@ int	displayWidget::get_tab		() {
 //
 //	for "spectrum" we get a segment of 2048 timedomain samples
 //	we take the fft and average a little
-void	displayWidget::show_spectrum	(std::vector<Complex> &v, int freq) {
+void	displayWidget::showSpectrum	(std::vector<Complex> &v, int freq) {
 int	l	= v. size ();
 floatQwt  X_axis [512];
 floatQwt  Y_value [512];
@@ -220,7 +220,7 @@ static floatQwt avg [4 * 512];
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
 //	and a list of transmitters
-void	displayWidget::show_correlation	(const std::vector<float> &v,
+void	displayWidget::showCorrelation	(const std::vector<float> &v,
 	                                 QVector<int> &maxVals,
 	                                 int T_g,
 	                                 std::vector<transmitterDesc> &theTr) {
@@ -288,7 +288,7 @@ std::vector<corrElement> showData;
 //	for "null" we get a segment of 1024 timedomain samples
 //	(the amplitudes!)
 //	that can be displayed directly
-void	displayWidget::show_null	(Complex *v, int amount,
+void	displayWidget::showNULL	(Complex *v, int amount,
 	                                      int startIndex) {
 	if  (currentTab != SHOW_NULL)
 	   return;
@@ -316,7 +316,7 @@ void	displayWidget::show_null	(Complex *v, int amount,
 //	for "tii" we get a segment of 2048 time domain samples,
 //	data is from the NULL period with TII data, after the
 //	FFT, we collapse to 192 "bin"s
-void	displayWidget::show_tii	(std::vector<Complex> v, int freq) {
+void	displayWidget::showTII	(std::vector<Complex> v, int freq) {
 floatQwt	X_axis [512];
 floatQwt	Y_value [512];
 
@@ -359,7 +359,7 @@ floatQwt	Y_value [512];
 	                                    96);
 }
 
-void	displayWidget::show_channel	(const std::vector<Complex> Values) {
+void	displayWidget::showChannel	(const std::vector<Complex> Values) {
 floatQwt	amplitudeValues	[NR_TAPS];
 floatQwt	phaseValues	[NR_TAPS];
 floatQwt	X_axis		[NR_TAPS];
@@ -395,7 +395,7 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	                                    0);
 }
 
-void	displayWidget::show_stdDev	(const std::vector<float> stdDevVector) {
+void	displayWidget::showStdDev	(const std::vector<float> stdDevVector) {
 floatQwt X_axis [512];
 floatQwt Y_value [512];
 
@@ -437,7 +437,7 @@ std::vector<Complex> tempDisplay (512);
            IQDisplay_p -> display_centerPoints (Values, sliderValue * 2);
 }
 
-void	displayWidget:: show_quality (float q, float timeOffset,	
+void	displayWidget:: showQuality (float q, float timeOffset,	
 	                              float freqOffset) {
 	if (myFrame. isHidden ())
 	   return;
@@ -450,28 +450,27 @@ void	displayWidget:: show_quality (float q, float timeOffset,
 	                                   arg (freqOffset, 0, 'f', 2));
 }
 
-void	displayWidget::show_corrector (int coarseOffset, float fineOffset) {
+void	displayWidget::showCorrector (int coarseOffset, float fineOffset) {
 	if (myFrame. isHidden ())
 	   return;
 	coarse_correctorDisplay	-> display (coarseOffset + fineOffset);
-//	fine_correctorDisplay	-> display (fineOffset);
 }
 
 	
-void	displayWidget::show_snr	(float snr) {
+void	displayWidget::showSNR	(float snr) {
 	if (myFrame. isHidden ())
 	   return;
 	snrDisplay		-> display (QString ("%1").arg (snr, 0, 'f', 2));
 }
 
-void	displayWidget::show_correction	(int c) {
+void	displayWidget::showCorrection	(int c) {
 	if (myFrame. isHidden ())
 	   return;
 	(void)c;
 //	correctorDisplay	-> display (c);
 }
 
-void	displayWidget::show_clock_err	(int e) {
+void	displayWidget::showClock_err	(int e) {
 	if (!myFrame. isHidden ())
 	   clock_errorDisplay -> display (e);
 }
@@ -489,11 +488,11 @@ void	displayWidget::showFrequency (const QString &channel, int freq) {
 	channelDisplay		-> setText (channel);
 }
 
-void	displayWidget::show_cpuLoad	(float use) {
+void	displayWidget::showCPULoad	(float use) {
 	(void)use;
 }
 
-void	displayWidget::show_transmitters (std::vector<transmitterDesc> &tr) {
+void	displayWidget::showTransmitters (std::vector<transmitterDesc> &tr) {
 QString textList;
 	for (uint16_t i = 0; i < tr. size (); i ++) {
 	   uint16_t mainId	= tr [i]. theTransmitter. mainId;
@@ -505,18 +504,18 @@ QString textList;
 	tiiLabel -> setText (textList);
 }
 
-void	displayWidget::set_syncLabel	(bool b) {
+void	displayWidget::setSyncLabel	(bool b) {
 	if (b)
 	   syncLabel    -> setStyleSheet ("QLabel {background-color : green}");
 	else
 	   syncLabel    -> setStyleSheet ("QLabel {background-color : yellow}");              
 }
 
-void	displayWidget::show_dcOffset	(float dcOffset) {
+void	displayWidget::showDCOffset	(float dcOffset) {
 	dcOffset_display	-> display (dcOffset);
 }
 
-void	displayWidget::set_dcRemoval	(bool b) {
+void	displayWidget::setDCRemoval	(bool b) {
 	if (b) {
 	   dcOffset_display	-> show ();
 	   dcOffset_label	-> show ();
@@ -527,7 +526,7 @@ void	displayWidget::set_dcRemoval	(bool b) {
 	}
 }
 
-void	displayWidget::show_ficBER	(float ber) {
+void	displayWidget::showFICBER	(float ber) {
 	ber_display	-> display (ber);
 }
 
@@ -547,11 +546,11 @@ void	displayWidget::rightMouseClick () {
 	emit mouseClick ();
 }
 
-void	displayWidget::set_bitDepth	(int d) {
+void	displayWidget::setBitDepth	(int d) {
 	spectrumScope_p	-> set_bitDepth (d);
 }
 
-void	displayWidget::handle_ncpScope_checkBox	(int d) {
+void	displayWidget::handleNcpScope_checkBox	(int d) {
 	(void)d;
 	ncpScope	= ncpScope_checkBox -> isChecked ();
 	
@@ -578,7 +577,7 @@ void	displayWidget::setSilent	() {
 	   devScope_p		-> clean ();
 }
 
-void	displayWidget::handle_marksButton	() {
+void	displayWidget::handleMarksButton	() {
 	setMarkers = !setMarkers;
 	if (setMarkers)
 	   show_marksButton	-> setText ("no markers");
@@ -588,7 +587,7 @@ void	displayWidget::handle_marksButton	() {
 	                          "setMarkers", setMarkers ? 1 : 0);
 }
 
-void	displayWidget::clean_tii	() {
+void	displayWidget::cleanTII	() {
 	waterfallScope_p	-> cleanUp ();
 	for (int i = 0; i < 2048; i ++)
 	   workingBuffer [i] =  0;

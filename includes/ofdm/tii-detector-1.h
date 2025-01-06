@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -23,29 +23,32 @@
 
 #pragma once
 
-#include	"tii-detector.h"
+#include	<tii-detector.h>
 #include	<cstdint>
 #include	"dab-params.h"
 #include	<complex>
 #include	<vector>
 #include	"dab-constants.h"
+//#include	"fft-handler.h"
+#include	"phasetable.h"
+#include	<QVector>
 class	QSettings;
 
-class	TII_Detector_B : public TII_Detector {
+class	TII_Detector_A : public TII_Detector {
 public:
-			TII_Detector_B	(uint8_t dabMode, QSettings *);
-			~TII_Detector_B	();
+			TII_Detector_A	(uint8_t dabMode, phaseTable *theTable);
+			~TII_Detector_A	();
 	void		reset		();
-	QVector<tiiData>	processNULL	(int16_t threshold,
-	                                         uint8_t, bool);
+	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
 private:
-	QSettings	*dabSettings;
-	void		collapse (std::vector<Complex> &inVec,
-	                                 float *outVec, bool);
-	uint8_t		invTable [256];
-	Complex		decodedBuffer[768];
-	float		max;
+	std::vector<Complex> table_2;
+	bool		carrierDelete;
+	Complex		decodedBuffer [768];
+	void		collapse	(const Complex *, 
+	                                 Complex *, Complex *, bool);
+
+	int		tiiThreshold;
 };
 
 

@@ -45,13 +45,13 @@ Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler		();
-	void	process_ficBlock	(std::vector<int16_t> &, int16_t);
+	void	processFICBlock		(std::vector<int16_t> &, int16_t);
 	void	stop			();
 	void	restart			();
-	void	start_ficDump		(FILE *);
-	void	stop_ficDump		();
-	void	get_fibBits		(uint8_t *, bool *);
-	int	get_ficQuality		();
+	void	startFICDump		(FILE *);
+	void	stopFICDump		();
+	void	getFIBBits		(uint8_t *, bool *);
+	int	getFICQuality		();
 private:
 	dabParams	params;
 	viterbiSpiral	myViterbi;
@@ -62,7 +62,7 @@ private:
 	bool		ficValid	[4];
 	uint8_t		ficBuffer	[256];
 	uint8_t		PRBS		[768];
-	void		process_ficInput	(int16_t, bool *);
+	void		processFICInput	(int16_t, bool *);
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;
@@ -77,7 +77,7 @@ private:
 	int		successRatio;
 	int		fibCounter;
 signals:
-	void		show_ficQuality	(int, int);
-	void		show_ficBER	(float);
+	void		showFICQuality	(int, int);
+	void		showFICBER	(float);
 };
 
