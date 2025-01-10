@@ -69,8 +69,8 @@ Of course, as for previous versions, for the current version,
 *Qt-DAB-6.0*, predefined executables and installers are available.
 For Windows  **three** installers are available, and for Linux there is an x64 AppImage.
 
-![6.9](/res/read_me/Qt_DAB-6.9-1.png?raw=true)
-![6.9](/res/read_me/Qt_DAB-6.9-2.png?raw=true)
+![6.9](/res/read_me/Qt_DAB-6.9.1.png?raw=true)
+![6.9](/res/read_me/Qt_DAB-6.9.2.png?raw=true)
 
 Table of Contents
 =================================================================
@@ -155,7 +155,7 @@ Not implemented:
 Widgets and scopes
 =======================================================================
 
-![6.8](/res/read_me/Qt_DAB-6.9-2.png)
+![6.9](/res/read_me/Qt_DAB-6.9.2.png)
 
 The full GUI for Qt-DAB-6.8 is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
 
@@ -408,6 +408,8 @@ For installing the support software for the Adalm Pluto I followed the instructi
 
 Building an executable for Qt-DAB: a few notes
 =================================================================
+
+ * This sections still refers to using Qt5
 
 It is strongly advised to use qmake/make for the compilation process,
 the *qt-dab-RC.pro* file contains (much) more configuration options
