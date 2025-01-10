@@ -15,28 +15,48 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="programName">
-         <property name="font">
-          <font>
-           <pointsize>14</pointsize>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service long label&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>programName</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QLabel" name="programName">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service long label&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>programName</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="smallPushButton" name="framedumpButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ audio services are encoded in an AAC format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to store the AAC frames into a file.&lt;/p&gt;&lt;p&gt;As usual, touching the button again will close the output file. Programs like vlc can handle such files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>save AAC</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="timeTable_button">
+      <widget class="smallPushButton" name="audiodumpButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audio output can be saved as a file in uncompressed PCM format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to save the PCM data into a file.&lt;/p&gt;&lt;p&gt;The output is a regular &amp;quot;.wav&amp;quot; file which can be handled by many other audio programs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>save WAV</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="timeTable_button">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - opens a new windows with SPI (formerly called EPG) preview.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note that this is still work in progress.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -49,38 +69,14 @@
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout_2">
-     <item row="0" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="smallPushButton" name="framedumpButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ audio services are encoded in an AAC format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to store the AAC frames into a file.&lt;/p&gt;&lt;p&gt;As usual, touching the button again will close the output file. Programs like vlc can handle such files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>save AAC</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="smallPushButton" name="audiodumpButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audio output can be saved as a file in uncompressed PCM format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to save the PCM data into a file.&lt;/p&gt;&lt;p&gt;The output is a regular &amp;quot;.wav&amp;quot; file which can be handled by many other audio programs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>save WAV</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
+     <item row="0" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>serviceId</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item row="0" column="1">
       <widget class="QLCDNumber" name="serviceIdDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -93,14 +89,14 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Start Address of CU</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="1" column="1">
       <widget class="QLCDNumber" name="startAddressDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -110,14 +106,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Used CUs</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="2" column="1">
       <widget class="QLCDNumber" name="lengthDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
@@ -127,14 +123,14 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Subchannel ID</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QLCDNumber" name="subChIdDisplay">
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>

@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml multimedia
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 
 win32 {
@@ -75,7 +75,7 @@ DEPENDPATH += . \
 	      ../includes/output \
 	      ../includes/support \
 	      ../includes/support/buttons \
-	      ../includes/scopes-qwt6 \
+#	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/new-reader \
@@ -108,7 +108,7 @@ INCLUDEPATH += . \
 	      ../includes/support/buttons \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
-	      ../includes/scopes-qwt6 \
+#	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -523,20 +523,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9V3
-#	}
-#	else {
-#	   TARGET		= qt-dab32-qt6-6.9V3
-#	}
-	CONFIG		+= dabstick-win-v3
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9
+	   TARGET		= qt-dab32-qt5-6.9V3
 	}
 	else {
-	   TARGET		= qt-dab32-qt6-6.9
+	   TARGET		= qt-dab32-qt6-6.9V3
 	}
-	CONFIG		+= dabstick-win-v4
+	CONFIG		+= dabstick-win-v3
+#	equals (QT_MAJOR_VERSION, 5) {
+#	   TARGET		= qt-dab32-qt5-6.9
+#	}
+#	else {
+#	   TARGET		= qt-dab32-qt6-6.9
+#	}
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

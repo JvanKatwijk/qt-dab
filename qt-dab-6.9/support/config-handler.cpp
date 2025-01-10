@@ -185,14 +185,20 @@ int	index_for_key (int key) {
 	                                 "decoders", DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	
-	int v = value_i (dabSettings, CONFIG_HANDLER,
+
+	int v = value_i (dabSettings, CONFIG_HANDLER, "tii-detector", 1);
+	this	-> tiiSelector	-> setChecked (v != 0);
+	if (v == 0) {
+	   tiiCollisions -> setEnabled (false);
+	   tiiThreshold_setter -> setMinimum (4);
+	}
+	else
+	   tiiThreshold_setter -> setMinimum (6);
+
+	v = value_i (dabSettings, CONFIG_HANDLER,
 	                             TII_THRESHOLD, 12);
 	this -> tiiThreshold_setter -> setValue (v);
 
-	v = value_i (dabSettings, CONFIG_HANDLER, "tii-detector", 1);
-	this	-> tiiSelector	-> setChecked (v != 0);
-	if (v == 0)
-	   tiiCollisions -> setEnabled (false);
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 	connect (this, &configHandler::process_tiiCollisions,
@@ -840,6 +846,8 @@ void	configHandler::show_streamSelector	(bool b) {
 }
 
 void	configHandler::fill_streamTable	(const QStringList &sl) {
+	for (int i = streamoutSelector -> count () - 1; i >= 0; i --)
+	   streamoutSelector -> removeItem (i);
 	for (auto sle : sl)
 	   streamoutSelector -> addItem (sle);
 }
@@ -935,6 +943,10 @@ bool	x 	= tiiSelector	-> isChecked ();
 	(void)state;
 	store (dabSettings, CONFIG_HANDLER, "tii-detector", x ? 1 : 0);
 	tiiCollisions -> setEnabled (x);
+	if (x) 
+	   tiiThreshold_setter -> setMinimum (6);
+	else
+	   tiiThreshold_setter -> setMinimum (4);
 	process_tiiSelector (x);
 }
 

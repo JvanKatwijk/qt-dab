@@ -32,13 +32,12 @@
 //	Create a "device"
 Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	                        RingBuffer<char>* Buffer_i,
-	                        QObject* parent)
-	                               : QIODevice (parent),
+	                        QObject* parent):
+	                                 QIODevice (parent),
 	                                 Buffer (Buffer_i) {
 
 	totalBytes_l	= 0;
 	missedBytes_l	= 0;
-	running. store (false);
 	connect (this, SIGNAL (readyRead ()),
 	         this, SLOT (print_readyRead ()));
 	connect (this, SIGNAL (readChannelFinished ()),
@@ -51,13 +50,11 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 }
 
 Qt_AudioDevice::~Qt_AudioDevice () {
+	close ();
 }
 
 void	Qt_AudioDevice::start () {
-	if (running. load ())
-	   return;
 	bool b = open (QIODevice::ReadOnly);
-	running. store (true);
 }
 
 //	we always return "maxSize" bytes
@@ -79,8 +76,8 @@ qint64	amount = 0;
 void	Qt_AudioDevice::stop () {
 	Buffer -> FlushRingBuffer();
 	close ();
-	running. store (false);
 }
+
 void	Qt_AudioDevice::samplesMissed (int &total, int &too_short) {
 	total		= totalBytes_l / (2 * sizeof (float));
 	too_short	= missedBytes_l / (2 * sizeof (float));
@@ -98,18 +95,23 @@ qint64	Qt_AudioDevice::writeData (const char* data, qint64 len) {
 }
 
 void	Qt_AudioDevice::print_readyRead () {
-	fprintf (stderr, "signal was readyRead\n");
 }
 
 void	Qt_AudioDevice::print_readChannelFinished () {
-	fprintf (stderr, "signal was readChannelFinished\n");
 }
 
 void	Qt_AudioDevice::print_channelReadyRead (int channel) {
-	fprintf (stderr, "signal was channelReadyRead for channel %d\n", channel);
 }
 
 void	Qt_AudioDevice::print_aboutToClose () {
-	fprintf (stderr, "signal was aboutTiClose\n");
 }
+
+qint64  Qt_AudioDevice::bytesAvailable  () const {
+        return  32768;
+}
+
+qint64  Qt_AudioDevice::size            () const {
+        return 32768;
+}
+
 

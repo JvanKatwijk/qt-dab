@@ -49,6 +49,7 @@ protected:
 	uint16_t	getPattern	(int);
 	uint16_t	nrPatterns	();
 	std::vector<Complex >	nullSymbolBuffer;
+	std::vector<DABFLOAT>	window;
 	int16_t		T_u;
 	int16_t		T_g;
 	int16_t		carriers;	

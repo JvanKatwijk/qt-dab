@@ -120,6 +120,11 @@ uint8_t patternTable [] = {
 	                                      my_fftHandler (params. get_T_u (),
 	                                                    false) {
 	nullSymbolBuffer. resize (T_u);
+	window. resize (T_u);
+	for (int i = 0; i < T_u; i ++)
+	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
+ 
+
 }
 
 		TII_Detector::~TII_Detector () {
@@ -137,12 +142,13 @@ void	TII_Detector::reset		() {
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
 void	TII_Detector::addBuffer (const std::vector<Complex>  &v) {
-Complex tempBuffer [T_u];
+Complex tmpBuffer [T_u];
 
-	memcpy (tempBuffer, &(v [T_g]), T_u * sizeof (Complex));
-	my_fftHandler. fft (tempBuffer);
 	for (int i = 0; i < T_u; i ++)
-	   nullSymbolBuffer [i] += tempBuffer [i];
+           tmpBuffer [i] = v [T_g + i];
+	my_fftHandler. fft (tmpBuffer);
+	for (int i = 0; i < T_u; i ++)
+	   nullSymbolBuffer [i] += tmpBuffer [i];
 }
 
 

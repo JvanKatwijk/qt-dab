@@ -126,13 +126,16 @@ float	etsi_floatTable [NUM_GROUPS * GROUPSIZE];
 //	collapsed non-ETSI float values
 float	nonetsi_floatTable [NUM_GROUPS * GROUPSIZE];
 //	collapsed ETSI complex values
+
 Complex etsiTable [NUM_GROUPS * GROUPSIZE];
 //	collapsed non-ETSI complex values
-
 Complex nonetsiTable [NUM_GROUPS * GROUPSIZE];
+
 float	max = 0;		// abs value of the strongest carrier
 float	noise = 1e9;	// noise level
 QVector<tiiData> theResult;		// results
+float	avg_etsi	[NUM_GROUPS];
+float	avg_nonetsi	[NUM_GROUPS];
 
 float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 int Teller = 0;
@@ -144,6 +147,7 @@ int Teller = 0;
 	}
 
 	collapse (decodedBuffer, etsiTable, nonetsiTable, tiiFilter);
+
 
 // fill the float tables, determine the abs value of the strongest carrier
 	for (int i = 0; i < NUM_GROUPS * GROUPSIZE; i++) {
@@ -157,6 +161,16 @@ int Teller = 0;
 	      max = x;
 	}
 
+	for (int group = 0; group < NUM_GROUPS; group ++) {
+	   avg_etsi [group] = 0;
+	   avg_nonetsi [group] = 0;
+	   for (int j = 0; j < GROUPSIZE; j ++) {
+	      avg_etsi [group] += etsi_floatTable [group * GROUPSIZE + j];
+	      avg_nonetsi [group] += nonetsi_floatTable [group * GROUPSIZE + j];
+	   }
+	   avg_etsi [group] /= GROUPSIZE;
+	   avg_nonetsi [group] /= GROUPSIZE;
+	}
 //	determine the noise level by taking the level of the lowest group
 	for (int subId = 0; subId < GROUPSIZE; subId++) {
 	   float avg = 0;
@@ -185,14 +199,16 @@ int Teller = 0;
 	   bool found_one	= false;
 //	The number of times the limit is reached in the group is counted
 	   for (int i = 0; i < NUM_GROUPS; i++) {
+	      float etsi_noiseLevel = tiiFilter ? avg_etsi [i] : noise;
+	      float nonetsi_noiseLevel = tiiFilter ? avg_nonetsi [i] : noise;
 	      if (etsi_floatTable [subId + i * GROUPSIZE] >
-	                                          noise * threshold) {
+	                                      etsi_noiseLevel * threshold) {
 	         etsi_count++;
 	         etsi_pattern	|= bits [i];
 	         etsi_sum	+= etsiTable [subId + GROUPSIZE * i]; 
 	      }
 	      if (nonetsi_floatTable [subId + i * GROUPSIZE] >
-	                                          noise * threshold) {
+	                                    nonetsi_noiseLevel * threshold) {
 	         nonetsi_count++;
 	         nonetsi_pattern |= bits [i];
 	         nonetsi_sum += nonetsiTable [subId + GROUPSIZE * i];

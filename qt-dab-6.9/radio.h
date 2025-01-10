@@ -569,4 +569,6 @@ public slots:
 	void			handle_aboutLabel		();
 	void			handle_tiiCollisions		(int);
 	void			handle_tiiFilter		(bool);
+
+	void			deviceListChanged		();
 };

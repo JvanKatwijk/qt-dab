@@ -44,8 +44,10 @@ public:
 	void	start		();
 	void	stop		();
 	void	samplesMissed	(int &, int &);
-	qint64	readData	(char *data, qint64 maxlen);
-	qint64	writeData	(const char *data, qint64 len);
+	qint64	readData	(char *data, qint64 maxlen) override;
+	qint64	writeData	(const char *data, qint64 len) override;
+	qint64	bytesAvailable	() const;
+	qint64	size		() const;
 
 private:
 	RingBuffer<char> *Buffer;

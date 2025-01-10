@@ -1,44 +1,24 @@
-# Qt-DAB-6.8
+# Qt-DAB-6.9
 
 -------------------------------------------------------------------
 
-![6.8](/res/read_me/front-picture.png?raw=true)
+![6.9](/res/read_me/front-picture.png?raw=true)
 
 -------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-From Qt5 to Qt6: Qt-DAB-qt5-6.9 and Qt-DAB-qt6-6.9
-------------------------------------------------------------------------
-
-![6.9](/res/read_me/qt-dab-6.9.png?raw=true)
 
 As the name suggests, Qt-DAB uses the Qt libraries as framework for (a.o) the GUI and the GUI handling. QT5 was the version were most of the developments
 were done with so far. Since Qt6 - a newer version of the Qt library system -
 is there now for quite a while, it is inevitable to move over
-to using Qt6. While the differences between Qt5 and Qt6 are manageable,
-the audio subsyste (Qt_audio) had undergone a major redesign and rewrite,
-reflected in the rewrite of the Qt_Audio driver in Qt-DAB.
+to using Qt6.
 
 Fedora 41 - my development ennvironment - supports both Qt5 and Qt6
 with Qwt 6.20 as qwt library, the library used for the various
 scopes and displays.
 (The versions of Qt and qwt used can be found on the description one sees when clicking on the copyright symbol on the main widget).
 
-Unfortunately, AppImages require  "old" library versions to be used.
-The AppImage is built on Ubuntu 20 (which is indeed rather old), but
-for building AppImages, Ubuntu 22 is "too new".
-While it is possible to install a Qt 6 version on U20, and to build
-a qet library for it, the appimage builder does not build the right appImage.
 
-So, while Qt-DAB is still compiled on the old U20 system,
-for the AppImage Qt5 is still needed. 
-
-Another issue - still to be solved = is that there are still problems
-with the Qt Audio from Qt6 on Windows, so the Windows versions will
-be precompiled using Qt5 as well.
-
-We need a sourcetree that can be compiled with Qt5 as well as
-with Qt6, and indeed, the current sourcetree can be compiled with either.
+The current sourcetree for Qt-DAB is parameterized on the Qt version,
+so both Qt5 and Qt6 versions of Qt-DAB can be generated.
 
 Anyway, while preparing the sources for Qt6, some more changes were made, so
 the version number was increased and is 6.9.
@@ -62,20 +42,13 @@ mainId subId combination. The scope widget jas a button to select or de-select t
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 
- * if the "dxMode" is "on" the tii data, as appearing on the dxDisplay, is now written - extended with the coordinates of the transmitters - in a ".csv" file.
+ * if the "dxMode" is "on" (selectable by a button on the main widget), the tii data, as appearing on the dxDisplay, is now written - extended with the coordinates of the transmitters - in a ".csv" file.
 
 ![6.9](/res/read_me/tiifile.png?raw=true)
 
  * Some checkboxes on the configuration widget were obsolete and are removed
 
  * the SDRplay device selector now shows - when an RSPDuo is recognized - a tuner selector that seems to work.
-
-The Qt6 based version for Linux works fine, there are, however, some issues
-with the (cross compiled) Windows versions, probably caused by problems with some incompatible dll's.
-The windows versions for Qt_DAB 6.9 are therefore - for the time being - still compiled with Qt5 (as is the AppImage).
-
-While development for Qt-DAB-qtX-6.9 is not yet fully completed,
-experimental versions of the Qt-DAB-qt5-6.9 (an installer for W64 and an AppImage for Linux) are included in the 6.8 release
 
 A Beta version of Qt_DAB-6.9 is available in the releases section
 
@@ -92,23 +65,12 @@ its use and its structure.  And indeed, it continuously shows that it is fairly 
 That explains e.g. why the GUI has a single main widget that
 contains essentially all that is needed when just selecting a service and listening, while other widgets, visible under user control, if made visible show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
 
-Of course, as for previous versions, for the current stable version,  *Qt-DAB-6.8*, predefined executables and installers are available.
+Of course, as for previous versions, for the current version,
+*Qt-DAB-6.0*, predefined executables and installers are available.
 For Windows  **three** installers are available, and for Linux there is an x64 AppImage.
 
-![6.8](/res/read_me/Qt_DAB-6.X-1.png?raw=true)
-![6.8](/res/read_me/Qt_DAB-6.X-2.png?raw=true)
-
-What changed in Qt_DAB-6.8
-================================================================
-
-In Qt_DAB-6.8 the "ini" file was reorganized, the old one was a little
-messy. The "ini" file is named differently, which has has positive
-effect that running older versions is not affected, as negative effect
-that it is "empty"
-
-A seemingly minor change from the user's point of view is that now
-on selecting any channel, the service that was last used on that channel
-is started. 
+![6.9](/res/read_me/Qt_DAB-6.9-1.png?raw=true)
+![6.9](/res/read_me/Qt_DAB-6.9-2.png?raw=true)
 
 Table of Contents
 =================================================================
@@ -193,7 +155,7 @@ Not implemented:
 Widgets and scopes
 =======================================================================
 
-![6.8](/res/read_me/Qt_DAB-6.X-2.png)
+![6.8](/res/read_me/Qt_DAB-6.9-2.png)
 
 The full GUI for Qt-DAB-6.8 is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
 
@@ -292,8 +254,7 @@ the first samples *with* data of a DAB frame.
 
 ![6.8](/res/read_me/qt-dab-tii-data.png)
 
-In reality the NULL period is not completely without signal, it contains an encoding of the TII data. The *TII scope* shows the spectrum of the data in the NULL
-period.
+In reality the NULL period is not completely without signal, it contains an encoding of the TII data. The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 5 out of 8 code as the picture clearly shows.
 This TII data - when decoded leads to 2 2 digit numbers -  is used to
 identify the transmitter of the signal received, these numbers can be mapped upon a name and location of the transmitter.
 
@@ -363,7 +324,7 @@ DAB transmissions are usually  transmitted by an SFN (Single Frequency Network),
 with unique TII data).
 If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
 
-![6.8](/res/read_me/transmitters.png?raw=true)
+![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 
 The picture shows that in my environment, on channel 12C, the national network,
 I can identify a couple of different transmitters in the received signal.
@@ -371,7 +332,7 @@ The left column in the widget shows the transmitter whose data is the data
 being processed. New is the addition of a "compass" to show the direction
 from which the signal comes from the selected transmitter.
 
-If the DX mode is set, Qt-DAB-6.8 will save the transmitters that
+If the DX mode is set, Qt-DAB-6.9 will save the transmitters that
 are identified in a text file, in Windows the file in the Qt-DAB-files folder in the home folder, in Linux the file is stored in the Qt-DAB-files folder in the "/tmp" directory.
 Name of the file is *tii-files.txt*.
 
@@ -399,7 +360,7 @@ Documentation
 
 An extensive *user's guide* - in PDF format - for Qt-DAB-6.8 can be found in the "docs" directory in the repository. The manual contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
 
-![Qt-DAB documentation](/qt-dab-6-manual.png?raw=true)
+![Qt-DAB documentation](/res/read_me/qt-dab-6-manual.png?raw=true)
 
 Installation on Windows
 =================================================================

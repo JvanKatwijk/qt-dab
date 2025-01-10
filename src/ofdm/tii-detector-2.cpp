@@ -58,25 +58,27 @@ int	teller = 0;
         }
 
 	int nrSections	= tiiFilter ? 2 : 4;
-//	for (int i = 0; i < 192; i ++) {
-//	   float x [4];
-//	   float max = 0;
-//	   float sum = 0;
-//	   int index = 0;
-//	   for (int j = 0; j < nrSections; j++) {
-//	      x [j] = abs (decodedBuffer [i + j * 192]);
-//	      sum += x [j];
-//	      if (x [j] > max) {
-//	         max = x[j];
-//	         index = j;
-//	      }
-//	   }
-//
-//	   float min = (sum - max) / 3;
-//	   if (sum < max * 1.5 && max > 0.0) {
-//	     decodedBuffer [i + index * 192] *= min / max;
-//	   }
-//	}
+	if (tiiFilter) {
+	   for (int i = 0; i < 192; i ++) {
+	      float x [4];
+	      float max = 0;
+	      float sum = 0;
+	      int index = 0;
+	      for (int j = 0; j < nrSections; j++) {
+	         x [j] = abs (decodedBuffer [i + j * 192]);
+	         sum += x [j];
+	         if (x [j] > max) {
+	            max = x[j];
+	            index = j;
+	         }
+	      }
+
+	      float min = (sum - max) / 3;
+	      if (sum < max * 1.5 && max > 0.0) {
+	        decodedBuffer [i + index * 192] *= min / max;
+	      }
+	   }
+	}
 
 	for (int i = 0; i < 192; i ++) {
 	   outVec [i] = 0;
@@ -91,7 +93,7 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 //
 //	We determine first the offset of the "best fit", the offset
 //	indicates the subId
-QVector<tiiData>	TII_Detector_B::processNULL (int16_t threshold,
+QVector<tiiData>	TII_Detector_B::processNULL (int16_t threshold_db,
 	                                             uint8_t selected_subId,
 	                                             bool tiiFilter) {
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
@@ -100,6 +102,8 @@ int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
 float	max		= 0;
 QVector<tiiData> theResult;
+
+float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 
 	(void)selected_subId;
 	bool dxMode	= true;
@@ -127,6 +131,11 @@ QVector<tiiData> theResult;
 
 	      avgTable [i] /= GROUPSIZE;
 	   }
+	   float noise = 100000.0;
+	   for (int i = 0; i < NUM_GROUPS; i ++)
+	      if (avgTable [i] < noise)
+	         noise = avgTable [i];
+
 //
 //	Determining the offset is then easy, look at the corresponding
 //	elements in the NUM_GROUPS sections and mark the highest ones.
@@ -147,7 +156,8 @@ QVector<tiiData> theResult;
 //	We only use the C and D table to locate the start offset
 	   for (int i = 0; i < GROUPSIZE; i ++) {
 	      for (int j = 0; j < NUM_GROUPS; j ++) {
-	         if (hulpTable [j * GROUPSIZE + i] > threshold / 2 * avgTable [j]) {
+//	         if (hulpTable [j * GROUPSIZE + i] > threshold * noise) {
+	         if (hulpTable [j * GROUPSIZE + i] > threshold * avgTable [j]) {
 	            C_table [i] += hulpTable [j * GROUPSIZE + i];
 	            D_table [i] ++;
 	         }
@@ -172,10 +182,9 @@ QVector<tiiData> theResult;
 	   }
 
 	   if (maxIndex < 0) {
-	      if (max > 4000) 
-	         for (int i = 0; i < 192; i ++)
-	            decodedBuffer [i] *= 0.9;
 	      resetBuffer ();
+	      for (int i = 0; i < carriers / 2; i ++)
+	         decodedBuffer [i] *= 0.0;
 	      return theResult;
 	   }
 

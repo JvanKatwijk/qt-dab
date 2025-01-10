@@ -49,7 +49,8 @@ class		RadioInterface;
 class	Qt_Audio: public audioPlayer {
 Q_OBJECT
 public:
-			Qt_Audio	(RadioInterface *, QSettings *);
+			Qt_Audio	(RadioInterface *,
+	                                  QSettings *);
 			~Qt_Audio	();
 	void		stop		();
 	void		restart		();
@@ -63,18 +64,24 @@ public:
 	void		samplesMissed	(int &, int &);
 private:
 	RingBuffer<char> tempBuffer;
+	Qt_AudioDevice	theIODevice;
 	QSettings	*audioSettings;
 	std::atomic<bool> working;
         int             newDeviceIndex;
 	RadioInterface	*mr;
-	Qt_AudioDevice	*theIODevice;
+        QScopedPointer<QAudioSink> m_audioSink;
+
 	QAudioFormat	m_settings;
+	QMediaDevices		*deviceList;
 	QList<QAudioDevice>     outputDevices;
-	QAudioSink	*m_audioSink;
         int32_t         outputRate;
+
+	QAudioDevice 	currentDevice;
 public slots:
 	void		state_changed		(const QAudio::State);
 	void		updateAudioDevices	();
-public slots:
 	void		setVolume	(int);
+	void		updateDeviceList	();
+signals:
+	void		deviceListChanged	();
 };

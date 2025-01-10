@@ -4291,3 +4291,11 @@ void	RadioInterface::process_tiiSelector	(bool b) {
 	theOFDMHandler	-> select_TII (b ? 1 : 0);
 }
 
+void	RadioInterface::deviceListChanged	() {
+#ifndef	TCP_STREAMER
+QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
+	configHandler_p -> fill_streamTable (streams);
+	configHandler_p -> show_streamSelector (true);
+#endif
+}
+
