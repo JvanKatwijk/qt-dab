@@ -3786,6 +3786,7 @@ bool	need_to_print	= true;
 	      theTransmitter. phase	= r [i]. phase;
 	      theTransmitter. norm	= r [i]. norm;
 	      theTransmitter. transmitterName	= "not in database";
+	      theTransmitter. distance	=  -1;
 	      theTransmitter. strength	= r [i]. strength;
 	      transmitterDesc t = {false,  false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	

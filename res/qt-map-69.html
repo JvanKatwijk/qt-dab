@@ -193,23 +193,44 @@
 	      let yy = document. getElementById ('selCount');
 	      yy. innerHTML = '<span style=\"font-weight:bold;">' + 'Number of transmitters' + '</span>' + ' ' + transmitterIndex + '<br>';
 
-	      if  (target. type == MAP_MAX_TRANS) {
-	         let aa = document. getElementById ('distance');
-	         aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
-	                       target. channel + '=>' +
-	                       target. dateTime + '<br>' +
-	                       target. name  + ' (' +
-	                       (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
-	                       "alt " + target. altitude + ' m' + '<br>' +
-	                       "height " + target. height + ' m' + '<br>' +
-	                       (target. direction == "??" ?  " " :
-	                             ("dir :" + target. direction + '<br>')) +
-	                       coords + '<br>' +
-	                       'Distance to home ' +
-	                       target. dist + 'km ' + 
-	                       target. azimuth + '&#xb0' + '<br><br>';
+//	      if  (target. type == MAP_MAX_TRANS) {
+//	         let aa = document. getElementById ('distance');
+//	         aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
+//	                       target. channel + '=>' +
+//	                       target. dateTime + '<br>' +
+//	                       target. name  + ' (' +
+//	                       (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
+//	                       "alt " + target. altitude + ' m' + '<br>' +
+//	                       "height " + target. height + ' m' + '<br>' +
+//	                       (target. direction == "??" ?  " " :
+//	                             ("dir :" + target. direction + '<br>')) +
+//	                       coords + '<br>' +
+//	                       'Distance to home ' +
+//	                       target. dist + 'km ' + 
+//	                       target. azimuth + '&#xb0' + '<br><br>';
+//	           
+//	      }
+	   }
+
+	   function updateFurthest (target) {
+	      let coords = '<span style=\"font-style: italic;\">' +
+	                          target. lat + ' ' +
+	                          target. lon +  '</span>';
+	      let aa = document. getElementById ('distance');
+	      aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
+	                    target. channel + '=>' +
+	                    target. dateTime + '<br>' +
+	                     target. name  + ' (' +
+	                    (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
+	                    "alt " + target. altitude + ' m' + '<br>' +
+	                    "height " + target. height + ' m' + '<br>' +
+	                    (target. direction == "??" ?  " " :
+	                          ("dir :" + target. direction + '<br>')) +
+	                    coords + '<br>' +
+	                    'Distance to home ' + target. dist + 'km ' + 
+	                    target. azimuth + '&#xb0' +
+	                    '<br><br>';
 	           
-	      }
 	   }
 
 	   function addTransmitter (target) {
@@ -330,12 +351,13 @@
 	               clearCurrent ();	// always good
 	               if (seenAlready (target)) {
 	                  updateCurrent (target);
-	                  continue;
 	               }
-	               else {
-	                  if (target. type == MAP_MAX_TRANS) 
-	                     clearPreviousFurthest ();
+	               else
 	                  addTransmitter (target);
+	               if (target. type == MAP_MAX_TRANS) {
+	
+	                  clearPreviousFurthest ();
+	                  updateFurthest (target);
 	               }
 	            }
 	         }
