@@ -57,7 +57,7 @@ So, the **load Table** button is replaced by a **refresh datavase* button, pushi
 
  * To load a fresh instance of the database, a separate small tool was developed
 
-![6.9](/res/read-me/db-loader.png?raw=true)
+![6.9](/res/read_me/db-loader.png?raw=true)
 
 
 ------------------------------------------------------------------------
