@@ -70,8 +70,8 @@
 	         mr, &RadioInterface::newFrame);
 	connect (this, &mp4Processor::show_rsCorrections,
 	         mr, &RadioInterface::show_rsCorrections);
-	connect (this, &mp4Processor::show_emptyLabel,
-	         mr, &RadioInterface::show_label);
+//	connect (this, &mp4Processor::show_emptyLabel,
+//	         mr, &RadioInterface::show_label);
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;

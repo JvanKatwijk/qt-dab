@@ -361,7 +361,7 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::handle_set_coordinatesButton );
 	connect (loadTableButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_loadTable);
-//
+	loadTableButton	-> setText ("refresh table");
 //	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
 	connect (dumpButton, &QPushButton::clicked,

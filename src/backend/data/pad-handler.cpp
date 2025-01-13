@@ -132,7 +132,7 @@ int16_t	i;
 	                                  ((char *)(dynamicLabelText. data()),
 	                                  (CharacterSet)charSet,
 	                                  dynamicLabelText. size());
-	               show_label (displayText);
+	               show_label (displayText, (int)charSet);
 	            }
 	            dynamicLabelText = "";
 	         }
@@ -148,7 +148,7 @@ int16_t	i;
 	         }
 
 	         if ((still_to_go <= 0) && (shortpadData. size() > 1)) {
-	             shortpadData. push_back (0);
+//	             shortpadData. push_back (0);
 	             dynamicLabelText. append ((const char *)shortpadData. data (),
 	                                       shortpadData. size ());
 	             shortpadData. resize (0);
@@ -166,7 +166,7 @@ int16_t	i;
 
 //	at the end of a frame
 	   if ((still_to_go <= 0) && (shortpadData. size() > 0)) {
-	      shortpadData . push_back (0);
+//	      shortpadData . push_back (0);
 //
 //	just to avoid doubling by unsollicited shortpads
 	      dynamicLabelText. append ((const char *)shortpadData. data (),
@@ -181,7 +181,7 @@ int16_t	i;
 	                               (const char *)dynamicLabelText. data (),
 	                               (CharacterSet) charSet,
 	                               dynamicLabelText. size ());
-	            show_label (displayText);
+	            show_label (displayText, (int)charSet);
 	         }
 	         dynamicLabelText. clear();
 	      }
@@ -362,7 +362,7 @@ int16_t  dataLength                = 0;
 	                              (const char *) dynamicLabelText. data (),
 	                              (CharacterSet) charSet,
 	                              dynamicLabelText. size ());
-	            show_label (displayText);
+	            show_label (displayText, (int)charSet);
 	            segmentno = -1;
 	         }
 	         else
@@ -391,7 +391,7 @@ int16_t  dataLength                = 0;
 	                                  ((char *)(dynamicLabelText. data()),
 	                                  (CharacterSet)charSet,
 	                                  dynamicLabelText. size());
-	             show_label (displayText);
+	             show_label (displayText, (int)charSet);
 	   }
 	}
 }

@@ -431,7 +431,7 @@ public slots:
 	void			show_ficQuality		(int, int);
 	void			show_ficBER		(float);
 	void			set_synced		(bool);
-	void			show_label		(const QString &);
+	void			show_label		(const QString &, int);
 	void			handle_motObject	(QByteArray,
 	                                                 QString,
 	                                                 int, bool, bool);

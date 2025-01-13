@@ -513,8 +513,11 @@ QString h;
 	connect (snrLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_snrLabel);
 
-//	if (theTIIProcessor. has_tiiFile ())
-	   configHandler_p -> enable_loadLib ();
+	if (theTIIProcessor. has_tiiFile ()) 
+	   fprintf (stderr, "table is loaded\n");
+	else
+	   fprintf (stderr, "waar is the rable\n");
+	configHandler_p -> enable_loadLib ();
 //	else
 //	   httpButton	-> setEnabled (false);
 
@@ -1540,11 +1543,12 @@ void	RadioInterface::set_synced	(bool b) {
 //	called from the PAD handler
 
 
-void	RadioInterface::show_label	(const QString &s) {
+void	RadioInterface::show_label	(const QString &s, int charset) {
 #ifdef	HAVE_PLUTO_RXTX
 	if ((streamerOut_p != nullptr) && (s != ""))
 	   streamerOut_p -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
+	
 	if (running. load()) {
 	   dynamicLabel	-> setStyleSheet (labelStyle);
 	   dynamicLabel	-> setText (s);
@@ -2190,14 +2194,14 @@ packetdata pd;
 
 	switch (pd. DSCTy) {
 	   default:
-	      show_label (QString ("unimplemented Data"));
+	      show_label (QString ("unimplemented Data"), 1);
 	      break;
 	   case 5:
 //	      fprintf (stderr, "selected apptype %d\n", pd. appType);
-	      show_label (QString ("Transp. Channel partially implemented"));
+	      show_label (QString ("Transp. Channel partially implemented"), 1);
 	      break;
 	   case 60:
-	      show_label (QString ("MOT"));
+	      show_label (QString ("MOT"), 1);
 	      break;
 	   case 59: {
 #ifdef	_SEND_DATAGRAM_
@@ -2206,14 +2210,14 @@ packetdata pd;
 	      text. append (" ");
 	      QString n = QString::number (port);
 	      text. append (n);
-	      show_label (text);
+	      show_label (text, 1);
 #else
-	      show_label ("Embedded IP not supported ");
+	      show_label ("Embedded IP not supported ", 1);
 #endif
 	   }
 	      break;
 	   case 44:
-	      show_label (QString ("Journaline"));
+	      show_label (QString ("Journaline"), 1);
 	      break;
 	}
 }
@@ -3350,16 +3354,18 @@ coordinates theCoordinator (dabSettings_p);
 //
 //	called from the configHandler
 void	RadioInterface::handle_loadTable	 () {
-dbLoader theLoader (dabSettings_p);
-	if (theLoader. load_db ()) {
-	   QMessageBox::information (this, tr ("success"),
-	                            tr ("Loading and installing database complete\n"));
 	   theTIIProcessor. reload ();
-	}
-	else {
-	   QMessageBox::information (this, tr ("fail"),
-	                            tr ("Loading database failed\n"));
-	}
+//dbLoader theLoader (dabSettings_p);
+//	
+//	if (theLoader. load_db ()) {
+//	   QMessageBox::information (this, tr ("success"),
+//	                            tr ("Loading and installing database complete\n"));
+//	   theTIIProcessor. reload ();
+//	}
+//	else {
+//	   QMessageBox::information (this, tr ("fail"),
+//	                            tr ("Loading database failed\n"));
+//	}
 }
 
 void	RadioInterface::stopSourcedumping	() {

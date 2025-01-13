@@ -52,6 +52,14 @@ mainId subId combination. The scope widget jas a button to select or de-select t
 
 A Beta version of Qt_DAB-6.9 is available in the releases section
 
+ * One of the things on the todo list was decoupling of downloading a fresh instance of the database from Qt-DAB, especially when Qt-DAB was running.
+So, the **load Table** button is replaced by a **refresh datavase* button, pushing that button instructs the software to reread the data from the locally stored database.
+
+ * To load a fresh instance of the database, a separate small tool was developed
+
+![6.9](/res/read-me/db-loader.png?raw=true)
+
+
 ------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------
