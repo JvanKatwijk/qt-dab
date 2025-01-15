@@ -228,7 +228,11 @@ char	manufac [256], product [256], serial [256];
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
 	         this, &rtlsdrHandler_win::set_ExternalGain);
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &rtlsdrHandler_win::set_autogain);
 	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &rtlsdrHandler_win::set_ppmCorrection);
@@ -236,9 +240,17 @@ char	manufac [256], product [256], serial [256];
 	         this, &rtlsdrHandler_win::set_xmlDump);
 	connect (iq_dumpButton, &QPushButton::clicked,
 	         this, &rtlsdrHandler_win::set_iqDump);
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+	connect (biasControl, &QCheckBox::checkStateChanged,
+#else
 	connect (biasControl, &QCheckBox::stateChanged,
+#endif
 	         this, &rtlsdrHandler_win::set_biasControl);
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+	connect (filterSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (filterSelector, &QCheckBox::stateChanged,
+#endif
 	         this, &rtlsdrHandler_win::set_filter);
 //
 //	and for saving/restoring the gain setting:
@@ -261,8 +273,9 @@ char	manufac [256], product [256], serial [256];
 	   _I_Buffer. FlushRingBuffer();
 	   delete	workerHandle;
 	   workerHandle	= nullptr;
-//	   rtlsdr_clode (theDevice);
+//	   rtlsdr_close (theDevice);	// will crash if activated
 	}
+
 	QString gainText	= gainControl -> currentText ();
 	store_widget_position (rtlsdrSettings, &myFrame, "rtlsdrSettings");
 	store (rtlsdrSettings, "rtlsdrSettings",

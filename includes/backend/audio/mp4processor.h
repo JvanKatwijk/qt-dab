@@ -55,10 +55,11 @@ public:
 	                                 bool,
 	                                 FILE *);
 			~mp4Processor	();
-	void		addtoFrame	(const std::vector<uint8_t>);
+	void		addtoFrame	(const std::vector<uint8_t> &);
 private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;
+	reedSolomon	my_rsDecoder;
 #ifdef	__WITH_FDK_AAC__
 	fdkAAC		aacDecoder;
 #else
@@ -97,13 +98,12 @@ private:
 	int16_t		RSDims;
 	int16_t		au_start	[10];
 	firecode_checker	fc;
-	reedSolomon	my_rsDecoder;
 //	and for the aac decoder
-#ifdef	__WITH_FDK_AAC__
+//#ifdef	__WITH_FDK_AAC__
 //	fdkAAC		*aacDecoder;
-#else
+//#else
 //	faadDecoder	*aacDecoder;
-#endif
+//#endif
 signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);

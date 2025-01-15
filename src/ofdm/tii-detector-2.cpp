@@ -44,7 +44,7 @@
 }
 
 void	TII_Detector_B::reset	() {
-	memset (nullSymbolBuffer. data (), 0, T_u * sizeof (Complex));
+	memset ((void *)nullSymbolBuffer. data (), 0, T_u * sizeof (Complex));
 }
 
 //	Note that the input is fft output, not yet reordered
@@ -65,7 +65,7 @@ int	teller = 0;
 	      float sum = 0;
 	      int index = 0;
 	      for (int j = 0; j < nrSections; j++) {
-	         x [j] = abs (decodedBuffer [i + j * 192]);
+	         x [j] = jan_abs (decodedBuffer [i + j * 192]);
 	         sum += x [j];
 	         if (x [j] > max) {
 	            max = x[j];
@@ -83,7 +83,7 @@ int	teller = 0;
 	for (int i = 0; i < 192; i ++) {
 	   outVec [i] = 0;
 	   for (int j = 0; j < nrSections; j ++)
-	      outVec [i] += abs (decodedBuffer [i + j * 192]);
+	      outVec [i] += jan_abs (decodedBuffer [i + j * 192]);
 	}
 }
 
@@ -106,7 +106,6 @@ QVector<tiiData> theResult;
 float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 
 	(void)selected_subId;
-	bool dxMode	= true;
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
@@ -202,7 +201,6 @@ float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 //	find the best match
 	   int finInd = -1;
 ////	we extract the four max values as bits
-	   float theStrength = 0;
 	   uint16_t pattern	= 0;
 	   for (int i = 0; i < 4; i ++) {
 	      float mmax	= 0;

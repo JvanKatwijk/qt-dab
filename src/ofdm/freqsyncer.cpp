@@ -32,7 +32,7 @@
 	                                     params (p -> dabMode),
 	                                     fft_forward (params. get_T_u (), false) {
 int32_t	i;
-float	Phi_k;
+//float	Phi_k;
 
 	(void)mr;
 	this	-> diff_length	= p -> diff_length;
@@ -70,7 +70,7 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
-	      abs (arg (v [i % T_u] *
+	      jan_abs (arg (v [i % T_u] *
 	                      conj (v [(i + 1) % T_u])));
 	}
 

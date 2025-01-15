@@ -43,7 +43,7 @@ bool    isValid (QChar c) {
 void	findfileNames::save_dirName (const QString key, const QString path) {
 	QString	dumper	= QDir::fromNativeSeparators (path);
 	int x           = dumper. lastIndexOf ("/");
-	QString saveDir	= dumper. remove (x, dumper. count () - x);
+	QString saveDir	= dumper. remove (x, dumper. size () - x);
 	store (dabSettings, DAB_GENERAL, key, saveDir);
 }
 
@@ -255,7 +255,7 @@ QString	findfileNames::find_xmlName	(const QString &deviceName,
 QString	saveDir	=  basicPath ();
 QDate	theDate;
 QTime	theTime;
-uint8_t t	= 0;
+
 	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
 	QString suggestedFilename	= 
 	                     saveDir + deviceName + "-" + channel + "-" + timeString;

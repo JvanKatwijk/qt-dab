@@ -32,6 +32,8 @@
 	adv_dataHandler::adv_dataHandler (RadioInterface *mr,
 	                                  RingBuffer<uint8_t> *dataBuffer,
 	                                  int appType) {
+	(void)mr;
+	(void)appType;
 	this	-> dataBuffer		= dataBuffer;
 }
 
@@ -46,18 +48,18 @@ bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
 bool	segmentFlag	= getBits_1 (data, 2) != 0;
 bool	userAccessFlag	= getBits_1 (data, 3) != 0;
-uint8_t dataGroupType	= getBits_1 (data, 4);
+//uint8_t dataGroupType	= getBits_1 (data, 4);
 uint8_t cntIdx		= getBits_4 (data, 8);
-uint8_t repInd		= getBits_4 (data, 12);
-uint16_t extField	=
+//uint8_t repInd		= getBits_4 (data, 12);
+//uint16_t extField	=
 	 extensionFlag ? getBits   (data, 16, 16) : 0;
 int	next		= extensionFlag ? 32 : 16; 
 
-bool	LastSegment	= 0;
+//bool	LastSegment	= 0;
 uint16_t segmentNumber	= 0;
 
 	if (segmentFlag)  {
-	   LastSegment = getBits   (data, next, 15);
+//	   LastSegment = getBits   (data, next, 15);
 	   segmentNumber = getBits_1 (data, next ++);
 	   fprintf (stderr, "segment %d\n", segmentNumber);
 	   next = next + 15;
@@ -76,13 +78,14 @@ uint16_t segmentNumber	= 0;
 	   return;
 	}
 
-	int dataLength	= msc. size () / 8 - 2 - next / 8;
+//	int dataLength	= msc. size () / 8 - 2 - next / 8;
 //	fprintf (stderr, "%d datalength %d\n",
 //	         cntIdx, msc. size () / 8 - 2 - next / 8);
 	uint8_t x0, x1, x2;
 	x0	= getBits (data, next + 8 * 0, 8);	
 	x1	= getBits (data, next + 8 * 1, 8);	
 	x2	= getBits (data, next + 8 * 2, 8);	
+	(void)x2;
 	if (x0 == 0xd3 && x1 == 0) {
 	   for (int i = 0; i < 25; i ++) {
 	      uint8_t xx = getBits (data, next + 8 * i, 8);

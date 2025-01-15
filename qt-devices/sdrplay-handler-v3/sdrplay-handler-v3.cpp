@@ -41,7 +41,6 @@
 #include	"RspDuo-handler.h"
 #include	"RspDx-handler.h"
 
-
 #include	"device-exceptions.h"
 #define SDRPLAY_RSP1_   1
 #define SDRPLAY_RSP1A_  255

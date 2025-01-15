@@ -110,7 +110,7 @@ int16_t	i;
 	      offset = handleFrame_type_0 (data, offset + 7 * 8, length);
 	   else
 	   if (frametypeIndicator == 1) {
-	      if (8 * length + offset + 7 * 8 < m. size ())
+	      if (8 * length + offset + 7 * 8 < (int)m. size ())
 	         offset = handleFrame_type_1 (data, offset + 7 * 8, length);
 	      else
 	         offset  += length;
@@ -157,7 +157,7 @@ int	llengths = length - 4;
 	if (getBits (data, offset + 24, 8) == 0) {	// no encryption
 	   lOffset	= offset + 4 * 8;
 	   do {
-	      int compInd	= getBits (data, lOffset, 8);	
+//	      int compInd	= getBits (data, lOffset, 8);	
 	      int flength	= getBits (data, lOffset + 8, 16);
 //	      int crc		= getBits (data, lOffset + 3 * 8, 8);
 #if 0

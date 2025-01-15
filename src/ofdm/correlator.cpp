@@ -41,7 +41,7 @@
 	                             fft_backwards (params. get_T_u (), true),
 	                             response (p -> responseBuffer) {
 	                    
-float	Phi_k;
+//float	Phi_k;
 
 	this	-> theTable	= theTable;
 	this	-> depth	= p -> echo_depth;
@@ -133,7 +133,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 	   return (- abs (Max / sum) - 1);
 	}
 
-	for (int i = 0; i < workList. size (); i ++)
+	for (uint16_t i = 0; i < workList. size (); i ++)
 	   indices. push_back (workList [i]. index);
 
 //	while (workList. size () > 0) {

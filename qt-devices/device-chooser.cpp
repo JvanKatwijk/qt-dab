@@ -100,6 +100,7 @@
 #endif
 
 #include	"xml-filereader.h"
+//	wavfiles is replaced by newfiles
 //#include	"wavfiles.h"
 #include	"newfiles.h"
 #include	"rawfiles.h"
@@ -206,7 +207,6 @@ deviceHandler	*inputDevice;
 deviceHandler	*deviceChooser::_createDevice (const QString &s,
 	                                       const QString &version,
 	                                       logger *theLogger) {
-deviceHandler	*inputDevice_p	= nullptr;
 int	deviceNumber	= getDeviceIndex (s);
 
 	if (deviceNumber < 0)
@@ -347,7 +347,7 @@ QString fileName =
 	dabSettings	-> setValue ("lastFileType", selectedType);
 	QString dumper  = QDir::fromNativeSeparators (fileName);
         int x           = dumper. lastIndexOf ("/");
-        QString saveDir = dumper. remove (x, dumper. count () - x);
+        QString saveDir = dumper. remove (x, dumper. size () - x);
         dabSettings     -> setValue ("lastFileDir", saveDir);
 	dabSettings	-> endGroup ();
 	

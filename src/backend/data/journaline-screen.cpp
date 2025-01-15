@@ -161,7 +161,7 @@ void	journalineScreen::display_List (NML::News_t &element) {
 }
 
 int	journalineScreen::findIndex	(int key) {
-	for (int i = 0; i < table -> size (); i ++)
+	for (uint16_t i = 0; i < table -> size (); i ++)
 	   if ((*table) [i]. key == key)
 	      return i;
 	return -1;

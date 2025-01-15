@@ -67,8 +67,11 @@ static QString dayName [] = {
 	layOut	-> addWidget (&readyBox);
 	setWindowTitle (tr("time select"));
 	setLayout (layOut);
-
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (&readyBox, &QCheckBox::checkStateChanged,
+#else
 	connect (&readyBox, &QCheckBox::stateChanged,
+#endif
 	         this, &elementSelector::collectData);
 }
 

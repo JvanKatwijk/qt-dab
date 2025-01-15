@@ -55,8 +55,6 @@ public:
 			sdrplayHandler_v3	(QSettings *,
 	                                         const QString &, logger *);
 			~sdrplayHandler_v3	();
-//	int32_t		getVFOFrequency		();
-	int32_t		defaultFrequency	();
 
 	bool		restartReader		(int32_t);
 	void		stopReader		();
@@ -66,6 +64,8 @@ public:
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 	QString		deviceName		();
+//	int32_t		getVFOFrequency		();
+//	int32_t		defaultFrequency	();
 
 	void            update_PowerOverload (
 	                                 sdrplay_api_EventParamsT *params);

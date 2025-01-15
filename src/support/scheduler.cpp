@@ -374,7 +374,7 @@ QDate startDate;
 	      std::string service;
 	      QString temp	= QString::fromStdString (str);
 	      QStringList ss = temp. split ('|');
-	      fprintf (stderr, "split count %d\n", ss. count ());
+//	      fprintf (stderr, "split count %d\n",  (int)ss. count ());
 	      for (int i = 0; i < ss. count (); i ++)
 	         fprintf (stderr, "%s \n", ss. at (i). toUtf8 (). data ());
 	      if (ss. count () != 3)

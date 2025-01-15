@@ -401,7 +401,8 @@ int	snrCount	= 0;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
 	            FreqCorr +=
 	                      ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-	            cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
+	            cLevel += jan_abs (ofdmBuffer [i]) +
+	                                  jan_abs (ofdmBuffer [i - T_u]);
 	         }
 	         cCount += 2 * T_g;
 //
@@ -478,7 +479,7 @@ int	snrCount	= 0;
 	      else {	// compute SNR
 	         float sum	= 0;
 	         for (int i = 0; i < T_null; i ++)
-	            sum += abs (ofdmBuffer [i]);
+	            sum += jan_abs (ofdmBuffer [i]);
 	         sum /= T_null;
 	         float snrV	=
 	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));

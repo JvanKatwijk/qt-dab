@@ -75,7 +75,7 @@ float Length	= jan_abs (V);
 	this	-> nrBlocks		= params. get_L		();
 	this	-> carriers		= params. get_carriers	();
 
-	repetitionCounter	= 8;
+	repetitionCounter	= 10;
 	this	-> T_g		= T_s - T_u;
 	phaseReference		.resize (T_u);
 	offsetVector.		resize (T_u);
@@ -93,7 +93,7 @@ float Length	= jan_abs (V);
 	   avgNullPower		[i] = 0;
 	}
 
-	meanValue		- 1.0f;
+	meanValue		= 1.0f;
 	iqSelector		= SHOW_DECODED;
 	decoder			= DECODER_1;
 }
@@ -230,7 +230,6 @@ float sum = 0;
 	                                         abs (imag (r1)), Alpha));
 	   DABFLOAT	weight_x = 0;
 	   DABFLOAT	weight_y = 0;
-	   float	weight	= 0;
 
 	   const float X_Offset =
                   (std::abs (real (r1)) - amplitudeVector [index] * M_SQRT1_2);
@@ -242,8 +241,8 @@ float sum = 0;
 	
 	   avgSigmaSqPerBin [index] =
 	           compute_avg (avgSigmaSqPerBin [index], sigmaSqPerBin, Alpha);
-	   avgPowerPerBin [index] =
-	           compute_avg (avgPowerPerBin [index], ab1 * ab1, Alpha);
+//	   avgPowerPerBin [index] =
+//	           compute_avg (avgPowerPerBin [index], ab1 * ab1, Alpha);
 
 	   switch (decoder) {
 //
@@ -288,7 +287,8 @@ float sum = 0;
 
 	      case DECODER_4:
 	         r1 = r1 * abs (fft_buffer [index]); // input power
-//	         r1 = r1 * abs (phaseReference [index]); // input power
+	         avgPowerPerBin [index] =
+	              compute_avg (avgPowerPerBin [index], ab1 * ab1, Alpha);
 	         r1 = r1 / (DABFLOAT)(avgSigmaSqPerBin [index] *
 	                       avgNullPower [index] / avgPowerPerBin [index] + 2);
 	         sum += abs (r1);

@@ -35,8 +35,6 @@
 	                                                  false),
 	                                     fft_backwards (params. get_T_u (),
 	                                                    true) {
-float	Phi_k;
-Complex temp [params. get_T_u ()];
 	(void)mr;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();

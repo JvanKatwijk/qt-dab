@@ -158,6 +158,8 @@ QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db,
 	(void)threshold_db;
 	(void)selected_subId,
 	(void)tiiFilter;
+	QVector<tiiData> result;
+	return result;
 }
 
 uint16_t	TII_Detector::getPattern (int n) {

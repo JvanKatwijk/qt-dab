@@ -569,6 +569,7 @@ void	httpHandler::putData	(uint8_t	type,
 	                         const QString		&theTime,
 	                         const QString		&channelName,
 	                         float	 snr) {
+	(void)snr;
 	float latitude	= theTr -> theTransmitter. latitude;
 	float longitude	= theTr -> theTransmitter. longitude;
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)

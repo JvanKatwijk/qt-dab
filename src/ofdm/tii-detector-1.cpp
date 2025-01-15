@@ -50,7 +50,7 @@ constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
 
 void	TII_Detector_A::reset		() {
 	resetBuffer();
-	memset (decodedBuffer, 0, carriers / 2 * sizeof (Complex));
+	memset ((void *)decodedBuffer, 0, carriers / 2 * sizeof (Complex));
 }
 
 //	we map the "K" carriers (complex values) onto
@@ -74,7 +74,7 @@ Complex buffer [carriers / 2];
 	      float sum = 0;
 	      int index = 0;
 	      for (int j = 0; j < nrSections; j++) {
-	         x [j] = abs (buffer [i + j * SECTION_SIZE]);
+	         x [j] = jan_abs (buffer [i + j * SECTION_SIZE]);
 		 sum += x [j];
 		 if (x [j] > max) {
 	            max = x[j];
@@ -151,11 +151,11 @@ int Teller = 0;
 
 // fill the float tables, determine the abs value of the strongest carrier
 	for (int i = 0; i < NUM_GROUPS * GROUPSIZE; i++) {
-	   float x = abs (etsiTable [i]);
+	   float x = jan_abs (etsiTable [i]);
 	   etsi_floatTable [i] = x;
 	   if (x > max)
 	      max = x;
-	   x = abs (nonetsiTable [i]);
+	   x = jan_abs (nonetsiTable [i]);
 	   nonetsi_floatTable [i] = x;
 	   if (x > max)
 	      max = x;
@@ -196,7 +196,6 @@ int Teller = 0;
 	   bool norm		= false;
 	   Complex *cmplx_ptr	= nullptr;;
 	   float *float_ptr	= nullptr;
-	   bool found_one	= false;
 //	The number of times the limit is reached in the group is counted
 	   for (int i = 0; i < NUM_GROUPS; i++) {
 	      float etsi_noiseLevel = tiiFilter ? avg_etsi [i] : noise;
@@ -216,7 +215,7 @@ int Teller = 0;
 	   }
 //
 	   if ((etsi_count >= 4) || (nonetsi_count >= 4))  {
-	      if (abs (nonetsi_sum) > abs (etsi_sum)) {
+	      if (jan_abs (nonetsi_sum) > jan_abs (etsi_sum)) {
 	         norm		= true;
 	         sum		= nonetsi_sum;
 	         cmplx_ptr	= nonetsiTable;
@@ -252,11 +251,10 @@ int Teller = 0;
 	            }
 	         }
 
-	         if (abs (val) > mm) {
-	            mm = abs (val);
+	         if (jan_abs (val) > mm) {
+	            mm = jan_abs (val);
 	            sum = val;
 	            mainId = k;
-	            found_one = true;
 	         }
 	      }
 	   }	// end if (count > 4),  List the result
@@ -264,7 +262,7 @@ int Teller = 0;
 	   if (count >= 4) {
 	      element. mainId	= mainId;
 	      element. subId	= subId;
-	      element. strength = abs (sum) / max / (tiiFilter ? 2 : 4);
+	      element. strength = jan_abs (sum) / max / (tiiFilter ? 2 : 4);
 	      element. phase	= arg (sum) * F_DEG_PER_RAD;
 	      element. norm	= norm;
 	      element. collision	= false;
@@ -295,7 +293,7 @@ int Teller = 0;
 	            if ((count2 == 4) && (k != mainId)) {
 	               element. mainId		= k;
 	               element. subId		= selected_subId;
-	               element. strength	= abs(sum) / max / (count - 4);
+	               element. strength	= jan_abs(sum) / max / (count - 4);
 	               element. phase		= arg(sum) * F_DEG_PER_RAD;
 	               element. norm		= norm;
 	               element. collision	= true;

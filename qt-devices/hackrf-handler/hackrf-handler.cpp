@@ -46,10 +46,10 @@
 	hackrfHandler::hackrfHandler  (QSettings *s,
 	                               const QString &recVersion,
 	                               logger	*theLogger) : // dummy for now
+	                                  _I_Buffer (4 * 1024 * 1024),
 	                                  hackrfSettings (s),
-	                                  recorderVersion (recVersion),
-	                                  _I_Buffer (4 * 1024 * 1024) {
-
+	                                  recorderVersion (recVersion) {
+	(void)theLogger;
         setupUi (&myFrame);
 	set_position_and_size (s, &myFrame, HACKRF_SETTINGS);
 	this	-> inputRate		= Khz (2048);
@@ -152,9 +152,17 @@
 	         this, &hackrfHandler::handle_LNAGain);
 	connect (vgaGainSlider, &QSlider::valueChanged,
 	         this, &hackrfHandler::handle_VGAGain);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (biasT_button, &QCheckBox::checkStateChanged,
+#else
 	connect (biasT_button, &QCheckBox::stateChanged,
+#endif
 	         this, &hackrfHandler::handle_biasT);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (AmpEnableButton, &QCheckBox::checkStateChanged,
+#else
 	connect (AmpEnableButton, &QCheckBox::stateChanged,
+#endif
 	         this, &hackrfHandler::handle_Ampli);
 	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &hackrfHandler::handle_ppmCorrection);
@@ -164,7 +172,10 @@
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
-	   serialNumber	= serial;
+	   if (serial != nullptr) 
+	      serialNumber	= serial;
+	   else
+	      serialNumber	= "???";
 	   serial_number_display -> setText (serial);
 	   enum hackrf_usb_board_id board_id =
 	                 deviceList -> usb_board_ids [0];
@@ -294,7 +305,7 @@ static std::complex<int8_t>buffer [32 * 32768];
 static
 int	callback (hackrf_transfer *transfer) {
 hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
-int8_t *p	= reinterpret_cast<int8_t * const>(transfer -> buffer);
+int8_t *p	= reinterpret_cast<int8_t *>(transfer -> buffer);
 RingBuffer<std::complex<int8_t> > * q = & (ctx -> _I_Buffer);
 int	bufferIndex	= 0;
 
