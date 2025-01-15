@@ -226,6 +226,8 @@ void	ensembleHandler::selectNextService	() {
 	}
 	if (selectedService < 0)
 	   return;
+
+	this -> clearSelection ();
 	unSelect ();
 	ensembleList [selectedService]. selected = false;
 	selectedService = (selectedService + 1) % ensembleList. size ();
@@ -250,6 +252,8 @@ void	ensembleHandler::selectPrevService	() {
 	}
 	if (selectedService < 0)
 	   return;
+	
+	this -> clearSelection ();
 	unSelect ();
 	ensembleList [selectedService]. selected = false;
 	selectedService = (selectedService - 1 + ensembleList. size ()) %	

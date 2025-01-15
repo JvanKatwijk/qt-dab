@@ -1544,6 +1544,7 @@ void	RadioInterface::set_synced	(bool b) {
 
 
 void	RadioInterface::show_label	(const QString &s, int charset) {
+	(void)charset;
 #ifdef	HAVE_PLUTO_RXTX
 	if ((streamerOut_p != nullptr) && (s != ""))
 	   streamerOut_p -> addRds (std::string (s. toUtf8 (). data ()));
@@ -3713,8 +3714,9 @@ cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 }
 
 void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
-bool	need_to_print	= true;
+//bool	need_to_print	= true;
 
+	(void)ind;
 	if (r. size () == 0)
 	   return;
 
@@ -3748,7 +3750,7 @@ bool	need_to_print	= true;
 	}
 
 //	The data in the vector is sorted on signal strength
-	int strongest = (r [0]. mainId << 8) | r [0]. subId;
+//	int strongest = (r [0]. mainId << 8) | r [0]. subId;
 
 //	first step
 //	see whether or not the data is already in the list
@@ -3768,7 +3770,7 @@ bool	need_to_print	= true;
 	      }
  	      else {
 	         to -> strength = r [i]. strength;
-	         need_to_print = false;
+//	         need_to_print = false;
 	         continue;
 	      }
 	   }
@@ -3782,7 +3784,7 @@ bool	need_to_print	= true;
 //	if the (mainId, subId) is alreay known but without a name found
 //	and we see now a good element, throuw the old one out
 //	we have to add the entry to the list
-	   need_to_print = true;
+//	   need_to_print = true;
 	   cacheElement theTransmitter = *tr;
 	   theTransmitter. strength	= r [i]. strength;
 	   if (theTransmitter. mainId == 255) {	// apparently not found
@@ -3813,17 +3815,17 @@ bool	need_to_print	= true;
 	   }
 	   if (dxMode)
 	      addtoLogFile (&theTransmitter);
-	   need_to_print = true;
+//	   need_to_print = true;
 	}
 
 //
-	uint8_t mainId = strongest >> 8;
-	uint8_t subId  = strongest  & 0xFF;
+//	uint8_t mainId = strongest >> 8;
+//	uint8_t subId  = strongest  & 0xFF;
 	int	bestIndex = -1;
 
 	float Strength	= 0;
 //	Now the list is updated, see whether or not the strongest is ...
-	for (int i = 0; i < channel. transmitters. size (); i ++) {
+	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
 	   if (channel. transmitters [i]. theTransmitter. strength > Strength) {
 	      bestIndex = i;
 	      Strength  = channel. transmitters [i]. theTransmitter. strength;
@@ -3851,7 +3853,7 @@ bool	need_to_print	= true;
 	if (dxMode) {
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
-	   for (int i = 0; i < channel. transmitters. size (); i ++) {
+	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
 	      theDXDisplay. addRow (&channel. transmitters [i]. theTransmitter,
 	                              bestIndex == i);
 	   }
@@ -3901,9 +3903,9 @@ bool	need_to_print	= true;
 	   configHandler_p -> utcSelector_active () ?
 	                              QDateTime::currentDateTimeUtc () :
 	                              QDateTime::currentDateTime ();
-	   position thePosition; 
-	   thePosition. latitude        = theTr. theTransmitter. latitude;
-	   thePosition. longitude       = theTr. theTransmitter. longitude;
+//	   position thePosition; 
+//	   thePosition. latitude        = theTr. theTransmitter. latitude;
+//	   thePosition. longitude       = theTr. theTransmitter. longitude;
  
 	   mapHandler -> putData (key,
 	                          &theTr,
@@ -4160,7 +4162,7 @@ void	RadioInterface::handle_snrLabel	() {
 void	RadioInterface::handle_correlationSelector	(int d) {
 	(void)d;
 	bool b =  configHandler_p -> get_correlationSelector ();
-	store (dabSettings_p, DAB_GENERAL, S_CORRELATION_ORDER, b ? 1 : 0);
+	store (dabSettings_p, CONFIG_HANDLER, S_CORRELATION_ORDER, b ? 1 : 0);
 	if (theOFDMHandler != nullptr)
 	   theOFDMHandler -> setCorrelationOrder (b);
 }
@@ -4205,9 +4207,9 @@ QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
 	                        = transmitter -> transmitterName;
 	float	theDistance	= transmitter -> distance;
         float	theAzimuth	= transmitter -> azimuth;
-	int	theAltitude	= transmitter -> altitude;
-        int	theHeight	= transmitter -> height;
-        float	thePower	= transmitter -> power;
+//	int	theAltitude	= transmitter -> altitude;
+//	int	theHeight	= transmitter -> height;
+//	float	thePower	= transmitter -> power;
 
 QString labelText = "(" + QString::number (mainId) + ","
 	               + QString::number (subId) + ") ";

@@ -152,6 +152,22 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
+        <widget class="clickablelabel" name="serviceButton">
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon controls the visibility of the so-called technical widget. The technical widget shows all details of the currently selected (audio)service.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>tt</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="clickablelabel" name="folder_shower">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon insrtructs the software to start a shell and run the explorer (or the Linux equivalent)  showing the folder/directory where Qt-DAB stores its files&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -205,22 +221,6 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="clickablelabel" name="serviceButton">
-         <property name="maximumSize">
-          <size>
-           <width>51</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon controls the visibility of the so-called technical widget. The technical widget shows all details of the currently selected (audio)service.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>tt</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="clickablelabel" name="serviceLabel">
          <property name="toolTip">
