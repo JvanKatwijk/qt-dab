@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -20,14 +20,13 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 //
-//	simple writer to write a "riff/wav" file with
-//	48000 as samplerate,
-//	2 channels
-//	16 bit ints
-//	PCM format
-//
+//	The RIFF writer writes the input samples into a "wav" file
+//	with the samplerate of 2048000, as 16 bit int's, and a "chunk"
+//	(chunk Id "freq") is added that contains the frequency
 #include	"wavWriter.h"
+
 static
 const char	* riff	= "RIFF";
 static
@@ -35,16 +34,20 @@ const char	* wave	= "WAVE";
 static
 const char	* fmt	= "fmt ";
 static
+const char	* aux1	= "freq";
+static
+const char	* aux2	= "bits";
+static
 const char	* data	= "data";
 
 	wavWriter::wavWriter	() {
 	isValid = false;
-	filePointer	= nullptr;
 }
 
 	wavWriter::~wavWriter	() {}
 
-bool	wavWriter::init		(const QString &fileName) {
+bool	wavWriter::init	(const QString &fileName, const int sampleRate, 
+	                 const int frequency, const int bitDepth) {
 	isValid			= false;
 	filePointer		= fopen (fileName. toUtf8 (). data (), "wb");
 	if (filePointer == nullptr)
@@ -70,7 +73,7 @@ bool	wavWriter::init		(const QString &fileName) {
 	uint16_t	nrChannels	= 2;
 	fwrite (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	locationCounter		+= 2;
-	uint32_t	samplingRate	= 48000;
+	uint32_t	samplingRate	= sampleRate;
 	fwrite (&samplingRate, 1, sizeof (uint32_t), filePointer);
 	locationCounter		+= 4;
 	uint32_t	bytesperSecond	= 4 * samplingRate;
@@ -82,6 +85,28 @@ bool	wavWriter::init		(const QString &fileName) {
 	uint16_t bitsperSample		= 16;
 	fwrite (&bitsperSample, 1, sizeof (uint16_t), filePointer);
 	locationCounter		+= 2;
+//
+//	the "freq" chunk
+	if (frequency > 0) {
+	   fwrite (aux1, 1, 4, filePointer);
+	   locationCounter		+= 4;
+	   int freqLen	= sizeof (int32_t);
+	   fwrite (&freqLen, 1, 4, filePointer);
+	   locationCounter		+= 4;
+	   fwrite (&frequency, 1, 4, filePointer);
+	   locationCounter		+= 4;
+	}
+//
+//	the "bitdepth" chunk
+	if (bitDepth > 0) {
+	   fwrite (aux2, 1, 4, filePointer);
+	   locationCounter		+= 4;
+	   int bitDepthLen	= 4;
+	   fwrite (&bitDepthLen, 1, 4, filePointer);
+	   locationCounter		+= 4;
+	   fwrite (&bitDepth, 1, 4, filePointer);
+	   locationCounter		+= 4;
+	}
 //
 //	start of the "data" chunk
 	fwrite (data, 1, 4, filePointer);
@@ -114,11 +139,10 @@ void	wavWriter::close	() {
 	fclose (filePointer);
 }
 
-void	wavWriter::write (const int16_t *buf, int samples) {
+void	wavWriter::write (int16_t *buff, int samples) {
 	if (!isValid)
 	   return;
-
-	fwrite (buf, 2 * sizeof (int16_t), samples, filePointer);
+	fwrite (buff, 2 * sizeof (int16_t), samples, filePointer);
 	nrElements	+= samples;
 }
 

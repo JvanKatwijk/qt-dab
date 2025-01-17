@@ -63,7 +63,7 @@ public:
 	void		stop			();
 
 	void		select_TII		(uint8_t);
-	void		start_dumping		(const QString &, int);
+	void		start_dumping		(const QString &, int, int);
 	void		stop_dumping		();
 	bool		start_etiGenerator	(const QString &);
 	void		stop_etiGenerator	();

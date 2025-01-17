@@ -25,11 +25,21 @@
 #include	<stdint.h>
 #include	"riff-reader.h"
 
+static inline
+float	value_for (int bitDepth) {
+int res	= 1;
+	while (--bitDepth > 0)
+	   res <<= 1;
+	return (float)res;
+}
+
 	riffReader::riffReader (const QString &fileName) {
 uint32_t segmentSize;
 char header [5];
 
+	bitDepth	= 15;
 	tunedFrequency	= -1;
+	denominator	= 0;
         header [4] = 0;
 	filePointer     = fopen (fileName. toLatin1 (). data (), "rb");
         if (filePointer == nullptr) {
@@ -106,6 +116,9 @@ char header [5];
 	   if (QString (header) == "freq")
 	      fread (&tunedFrequency, 1, 4, filePointer);
 	   else
+	   if (QString (header) == "bits")
+	      fread (&bitDepth, 1, 4, filePointer);
+	   else
 	      fseek (filePointer, segmentSize, SEEK_CUR);
 	   fread (header, 1, 4, filePointer);
 //	   fprintf (stderr, "Now we read %s\n", header);
@@ -116,6 +129,7 @@ char header [5];
            }
 	}
 
+	denominator	= value_for (bitDepth);
 	if (QString (header) != "data") {	// should not happen
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -127,7 +141,7 @@ char header [5];
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = xxx / blockAlign;
 	remainingElements	= nrElements;
-	fprintf (stderr, "nrElements %lld\n", nrElements);
+	fprintf (stderr, "nrElements %lld\n", (int64_t)nrElements);
 	std::fgetpos (filePointer, &baseofData);
 }
 
@@ -139,7 +153,7 @@ void	riffReader::reset	() {
 	remainingElements = nrElements;
 }
 
-int	riffReader::read (std::complex<float> *buffer, int nrSamples) {
+int	riffReader::read (std::complex<float> *buffer, uint64_t nrSamples) {
 int16_t lBuf [2 * nrSamples];
 
 	if (nrSamples > remainingElements) {
@@ -148,8 +162,9 @@ int16_t lBuf [2 * nrSamples];
 	}
 	int n =  fread (lBuf, sizeof (int16_t), 2 * nrSamples, filePointer);
 	for (int i = 0; i < nrSamples; i ++)
-	   buffer [i] = std::complex<float> ((float)(lBuf [2 * i]) / 2048.0,
-	                                     (float)(lBuf [2 * i + 1]) / 2048.0);
+	   buffer [i] =
+	      std::complex<float> ((float)(lBuf [2 * i]) / denominator,
+	                           (float)(lBuf [2 * i + 1]) /denominator);
 	if (remainingElements != 0)
 	   remainingElements -= nrSamples;
 	return nrSamples;

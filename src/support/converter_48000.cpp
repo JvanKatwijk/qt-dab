@@ -53,7 +53,7 @@ int	converter_48000::convert (complex16 *V,
 }
 
 void	converter_48000::start_audioDump         (const QString &fileName) {
-	theWriter. init (fileName);
+	theWriter. init (fileName, 48000);
 }
 
 void	converter_48000::stop_audioDump          () {

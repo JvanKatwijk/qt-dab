@@ -176,7 +176,11 @@ lms_info_str_t limedevices [10];
 	         this, &limeHandler::set_xmlDump);
 	connect (this, &limeHandler::new_gainValue,
 	         gainSelector, &QSpinBox::setValue);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (filterSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (filterSelector, &QCheckBox::stateChanged,
+#endif
 	         this, &limeHandler::set_filter);
 	dumping. store (false);
 	running. store (false);

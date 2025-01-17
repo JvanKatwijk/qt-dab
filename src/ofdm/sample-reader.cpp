@@ -76,6 +76,7 @@ int	i;
 	corrector	= 0;
 	dumpIndex	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
+	fprintf (stderr, "bitDepth %d, scale %d\n", theRig -> bitDepth (), dumpScale);
 	connect (this, &sampleReader::show_spectrum,
 	         mr,  &RadioInterface::show_spectrum);
 	connect (this, &sampleReader::show_dcOffset,
@@ -184,8 +185,9 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	}
 }
 
-void	sampleReader::startDumping (const QString &fileName, int freq) {
-	sourceDumper. init (fileName, freq);
+void	sampleReader::startDumping (const QString &fileName,
+	                                      int freq, int bitDepth) {
+	sourceDumper. init (fileName, 2048000, freq, bitDepth);
 }
 
 void	sampleReader::stopDumping() {

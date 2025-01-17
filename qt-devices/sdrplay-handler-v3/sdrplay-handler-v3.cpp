@@ -154,17 +154,33 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_v3::set_ifgainReduction);
 	connect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::set_lnagainReduction);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &sdrplayHandler_v3::set_agcControl);
 	connect (ppmControl, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::set_ppmControl);
 	connect (dumpButton, &QPushButton::clicked,
                  this, &sdrplayHandler_v3::set_xmlDump);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (biasT_selector, &QCheckBox::stateChanged,	
+#else
+	connect (biasT_selector, &QCheckBox::stateChanged,	
+#endif
 	         this, &sdrplayHandler_v3::set_biasT);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (notch_selector, &QCheckBox::stateChanged,	
+#else
+	connect (notch_selector, &QCheckBox::stateChanged,	
+#endif
 	         this, &sdrplayHandler_v3::set_notch);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (this, &sdrplayHandler_v3::overload_state_changed,
+#else
+	connect (this, &sdrplayHandler_v3::overload_state_changed,
+#endif
 	         this, &sdrplayHandler_v3::report_overload_state);
 
 	lastFrequency	= MHz (220);

@@ -48,7 +48,7 @@
 #include	"mapport.h"
 #include	"techdata.h"
 #include	"aboutdialog.h"
-#include	"db-loader.h"
+//#include	"db-loader.h"
 #include	"cacheElement.h"
 #include	"distances.h"
 #include	"position-handler.h"
@@ -3379,7 +3379,8 @@ void	RadioInterface::stopSourcedumping	() {
 }
 
 void	RadioInterface::startSourcedumping () {
-QString deviceName	= inputDevice_p -> deviceName ();
+QString deviceName	= inputDevice_p -> deviceName	();
+int	bitDepth	= inputDevice_p	-> bitDepth	();
 QString channelName	= channel. channelName;
 	if (theSCANHandler. active ())
 	   return;
@@ -3392,7 +3393,8 @@ QString channelName	= channel. channelName;
 	theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
 	                                     deviceName, channelName);
 	configHandler_p	-> mark_dumpButton (true);
-	theOFDMHandler -> start_dumping (rawDumpName, channel. tunedFrequency);
+	theOFDMHandler -> start_dumping (rawDumpName,
+	                            channel. tunedFrequency, bitDepth);
 	sourceDumping = true;
 }
 

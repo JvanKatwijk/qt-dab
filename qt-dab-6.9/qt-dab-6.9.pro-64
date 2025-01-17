@@ -244,7 +244,6 @@ HEADERS += ./radio.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
-	   ../qt-devices/riffWriter.h \
 	   ../qt-devices/filereaders/new-reader/newfiles.h \
            ../qt-devices/filereaders/new-reader/new-reader.h \
            ../qt-devices/filereaders/new-reader/riff-reader.h \
@@ -380,7 +379,6 @@ SOURCES += ./main.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
-	   ../qt-devices/riffWriter.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
 	   ../qt-devices/filereaders/new-reader/newfiles.cpp \
@@ -460,8 +458,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+# we now use a separate database loader
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment

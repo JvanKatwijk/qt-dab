@@ -241,7 +241,7 @@ char	manufac [256], product [256], serial [256];
 
 //	and attach the buttons/sliders to the actions
 	connect (gainControl,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
 	         qOverload<const QString &>(&QComboBox::textActivated),
 #else
 	         qOverload<const QString &>(&QComboBox::activated),
@@ -265,7 +265,7 @@ char	manufac [256], product [256], serial [256];
 	connect (biasControl, &QCheckBox::stateChanged,
 #endif
 	         this, &rtlsdrHandler::set_biasControl);
-#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (filterSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (filterSelector, &QCheckBox::stateChanged,

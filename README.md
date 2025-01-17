@@ -16,15 +16,13 @@ with Qwt 6.20 as qwt library, the library used for the various
 scopes and displays.
 (The versions of Qt and qwt used can be found on the description one sees when clicking on the copyright symbol on the main widget).
 
-
 The current sourcetree for Qt-DAB is parameterized on the Qt version,
 so both Qt5 and Qt6 versions of Qt-DAB can be generated.
 
 Anyway, while preparing the sources for Qt6, some more changes were made, so
 the version number was increased and is 6.9.
 
- * the spectrum widget is slightly enlarged, to get a better view on the different "scopes". Additionally, the NULL scope has a marker, telling here the software "thinks" the first datablock in the input samplestream starts (ideally this is sample 504). Furthermore, on the correlation scope, the software will also show a (rough) estimate of which peak in the correlation matches with which
-mainId subId combination. The scope widget jas a button to select or de-select that feature.
+ * the spectrum widget is slightly enlarged, to get a better view on the different "scopes". Additionally, the NULL scope has a marker, telling here the software "thinks" the first datablock in the input samplestream starts (ideally this is sample 504).
 
  * the audio strength meter and the "mot" indicator are placed on the main widget, which seems to make more sense
 
@@ -38,7 +36,12 @@ mainId subId combination. The scope widget jas a button to select or de-select t
 
  * Some selectors were removed from the configuration and control widget.
 
- * the dxDisplay now shows more data on the transmitters that are identified in the current channel. The "etsi" label tells whether ot not the encoding of the TII data is done correct or not (some older transmitters use an incorrect encoding scheme that makes it more complex to estimate the delay in the arrival of the data)
+ * With a selector on the configuration widget one can choose the "old" or a "new" version of a tii decoder. The new one is much more sensitive and its use may lead to overload.
+
+ * the configuration widget contains a selector for applying a partly other
+approach to he new tii detector, leading to less, but in general more reliable tii data
+
+ * the dxDisplay now shows more data on the transmitters that are identified in the current channel. 
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 

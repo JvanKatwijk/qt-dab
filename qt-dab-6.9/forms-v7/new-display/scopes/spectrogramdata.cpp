@@ -23,8 +23,8 @@
  */
 #include	"spectrogramdata.h"
 //
-	spectrogramData::spectrogramData (double *data, int left,
-	                                  int width, int height,
+	spectrogramData::spectrogramData (double *data, float left,
+	                                  float width, int height,
 	                                  int datawidth, double max):
 	                                                 QwtRasterData () {
 	this	-> data		= data;

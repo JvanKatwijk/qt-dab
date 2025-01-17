@@ -256,13 +256,21 @@ mir_sdr_DeviceT devDesc [4];
 	}
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (debugControl, &QCheckBox::checkStateChanged,
+#else
 	connect (debugControl, &QCheckBox::stateChanged,
+#endif
 	         this, &sdrplayHandler_v2::handle_debugControl);
 	connect (ppmControl, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v2::handle_ppmControl);
 	connect (dumpButton, &QPushButton::clicked,
 	         this, &sdrplayHandler_v2::handle_xmlDump);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (biasT_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (biasT_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &sdrplayHandler_v2::handle_biasT_selector);
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
@@ -442,8 +450,11 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	if (err != mir_sdr_Success)
            fprintf (stderr, "error = %s\n",
                         errorCodes (err). toLatin1(). data());
-
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &sdrplayHandler_v2::handle_agcControl);
 	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v2::handle_ifgainReduction);
@@ -468,7 +479,11 @@ mir_sdr_ErrT err;
 	            this, &sdrplayHandler_v2::handle_ifgainReduction);
 	disconnect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
 	            this, &sdrplayHandler_v2::handle_lnagainReduction);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	disconnect (agcControl, &QCheckBox::stateChanged,
+#else
+	disconnect (agcControl, &QCheckBox::stateChanged,
+#endif
 	            this, &sdrplayHandler_v2::handle_agcControl);
 	if (save_gainSettings)
 	   record_gainSettings	(lastFrequency / MHz (1));

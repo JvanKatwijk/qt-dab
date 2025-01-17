@@ -170,7 +170,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/output/Qt6
-	           ../includes/scopes-qwt6
+#	           ../includes/scopes-qwt6
 	           ../qt-devices
 	           ../qt-devices/filereaders/
 	           ../qt-devices/filereaders/new-reader
@@ -202,6 +202,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/waterfall-scope.h 
              ./forms-v7/new-display/scopes/iqdisplay.h 
 	     ./forms-v7/new-display/scopes/audio-display.h
+	     ./forms-v7/new-displat/scopes/spectrogram-data.h
 	     ./forms-v7/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
@@ -307,11 +308,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/buttons/verysmallpushbutton.h 
              ../includes/support/buttons/smallqlistview.h 
              ../includes/support/buttons/smallspinbox.h 
-	     ../includes/scopes-qwt6/spectrogramdata.h
+#	     ../includes/scopes-qwt6/spectrogramdata.h
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devicces/xml-filewriter.h
-	     ../qt-devicces/riffWriter.h
 	)
 
 	set (${objectName}_SRCS
@@ -338,6 +338,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/waterfall-scope.cpp 
              ./forms-v7/new-display/scopes/iqdisplay.cpp 
 	     ./forms-v7/new-display/scopes/audio-display.cpp
+	     ./forms-v7/new-display/scopes/spectrogramdata.cpp
 	     ./forms-v7/snr-viewer/snr-viewer.cpp
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
@@ -429,10 +430,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/buttons/verysmallpushbutton.cpp
 	     ../src/support/buttons/smallqlistview.cpp
 	     ../src/support/buttons/smallspinbox.cpp
-	     ../src/scopes-qwt6/spectrogramdata.cpp
-	     ../src/scopes-qwt6/spectrogramdata.cpp 
+#	     ../src/scopes-qwt6/spectrogramdata.cpp
+#	     ../src/scopes-qwt6/spectrogramdata.cpp 
 	     ../qt-devices/xml-filewriter.cpp
-	     ../qt-devices/riffWriter.cpp
 	)
 
 	set (${objectName}_MOCS

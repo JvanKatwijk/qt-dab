@@ -78,8 +78,8 @@ void    waterfallScope::display (const floatQwt *X_axis,
 	                         const floatQwt *Y1_value,
 	                         floatQwt  amp,
 	                         int32_t marker) {
-int     orig    = (int)(X_axis [0]);
-int     width   = (int)(X_axis [displaySize - 1] - orig);
+float	orig	= X_axis [0];
+float	width	= X_axis [displaySize - 1] - orig;
 
 /*
  *      shift one row, faster with memmove than writing out
