@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,6 +24,10 @@
 #include	<string>
 #include	<stdint.h>
 #include	"riff-reader.h"
+
+#define	READ4BYTES	0
+#define	READ6BYTES	1
+#define	READ8BYTES	2
 
 static inline
 float	value_for (int bitDepth) {
@@ -87,7 +91,7 @@ char header [5];
 	fread (&formatTag, 1, sizeof (uint16_t), filePointer);
 	fread (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	fread (&samplingRate, 1, 4, filePointer);
-//	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
+	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
 	if ((formatTag != 01) ||
 	    (nrChannels != 02) || (samplingRate != 2048000)) {
 	   QString val =
@@ -100,12 +104,24 @@ char header [5];
 //	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
 
 	fread (&blockAlign, 1, 2, filePointer);
-	if (blockAlign != 4) {
+	if (blockAlign == 4) 
+	   readBytes	= READ4BYTES;
+	else
+	if (blockAlign == 6)
+	   readBytes	= READ6BYTES;
+	else
+	if (blockAlign == 8) {
+	   readBytes	= READ8BYTES;
 	   QString val =
-                   QString ("File '%1' is no valid SDR file").arg(fileName);
+	           QString ("File '%1' has unsupported 32 bit elements"). arg (fileName);
+	   throw device_exception (val. toStdString ());
+	}
+	else {
+	   QString val =
+                   QString ("File '%1' has unsupported elements").arg(fileName);
            throw device_exception (val. toStdString ());
         }
-//	fprintf (stderr, "blockAlign %d\n", blockAlign);
+
 	fsetpos (filePointer, &pos);
 	fseek (filePointer, segmentSize, SEEK_CUR);
 
@@ -154,6 +170,24 @@ void	riffReader::reset	() {
 }
 
 int	riffReader::read (std::complex<float> *buffer, uint64_t nrSamples) {
+
+	switch (readBytes) {
+	   case READ4BYTES:
+	      return read4Bytes (buffer, nrSamples);
+
+	   case READ6BYTES:
+	      return read6Bytes (buffer, nrSamples);
+
+	   case READ8BYTES:
+	      return read8Bytes (buffer, nrSamples);
+
+	   default:	// cannot happen
+	      return 0;
+	}
+}
+
+int	riffReader::read4Bytes (std::complex<float> *buffer,
+	                                    uint64_t nrSamples) {
 int16_t lBuf [2 * nrSamples];
 
 	if (nrSamples > remainingElements) {
@@ -168,6 +202,35 @@ int16_t lBuf [2 * nrSamples];
 	if (remainingElements != 0)
 	   remainingElements -= nrSamples;
 	return nrSamples;
+}
+
+int	riffReader::read6Bytes (std::complex<float> *buffer,
+	                                    uint64_t nrSamples) {
+int8_t lBuf [3 * 2 * nrSamples];
+int	next	= 0;
+
+	if (nrSamples > remainingElements) {
+	   nrSamples = remainingElements;
+	   remainingElements	= 0;
+	}
+	int n =  fread (lBuf, 1, 6 * nrSamples, filePointer);
+	float scaler = 8388607.0 / 512;
+	for (int i = 0; i < n; i += 6) {
+	   int32_t re = 
+	          lBuf [i] << 24 | lBuf [i + 1] << 16 | lBuf [i + 2] << 8;
+	   int32_t im =
+	          lBuf [i + 3] << 24 | lBuf [i + 4] << 16 | lBuf [i + 5] << 8;
+	   buffer [next ++] = std::complex<float> (re / scaler, im / scaler);
+	}
+	if (remainingElements != 0)
+           remainingElements -= nrSamples;
+
+	return nrSamples;
+}
+
+int	riffReader::read8Bytes (std::complex<float> *buffer,
+	                                    uint64_t nrSamples) {
+	return 0;
 }
 
 uint64_t	riffReader::elementCount	() {

@@ -39,6 +39,9 @@ public:
 
 	int	getVFOFrequency	();
 private:
+	int	read4Bytes	(std::complex<float> *, uint64_t);
+	int	read6Bytes	(std::complex<float> *, uint64_t);
+	int	read8Bytes	(std::complex<float> *, uint64_t);
 	FILE	*filePointer;
 	uint64_t	remainingElements;
 	uint64_t	nrElements;
@@ -47,4 +50,6 @@ private:
 	int		tunedFrequency;
 	int		bitDepth;
 	float		denominator;
+
+	int		readBytes;
 };

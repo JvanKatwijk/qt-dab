@@ -418,7 +418,6 @@ mac {
 }
 
 CONFIG		+= link_pkgconfig
-#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
@@ -427,7 +426,6 @@ LIBS      	+= -ldl
 }
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
-#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
