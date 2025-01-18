@@ -26,6 +26,7 @@
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 #include	"ui_airspy-widget.h"
+#include	<QLibrary>
 #ifndef	__MINGW32__
 #include	"libairspy/airspy.h"
 #else
@@ -157,10 +158,8 @@ private:
 	pfn_airspy_board_partid_serialno_read
 		                   my_airspy_board_partid_serialno_read;
 //
-	HINSTANCE	Handle_usb;
-	HINSTANCE	Handle;
+	QLibrary	*library_p;
 	bool		success;
-	void		releaseLibrary	();
 	std::atomic<bool>	running;
 	bool		lna_agc;
 	bool		mixer_agc;

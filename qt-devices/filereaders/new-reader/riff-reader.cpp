@@ -157,7 +157,6 @@ char header [5];
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = xxx / blockAlign;
 	remainingElements	= nrElements;
-	fprintf (stderr, "nrElements %lld\n", (int64_t)nrElements);
 	std::fgetpos (filePointer, &baseofData);
 }
 
@@ -195,7 +194,7 @@ int16_t lBuf [2 * nrSamples];
 	   remainingElements	= 0;
 	}
 	int n =  fread (lBuf, sizeof (int16_t), 2 * nrSamples, filePointer);
-	for (int i = 0; i < nrSamples; i ++)
+	for (int i = 0; i < n / 2; i ++)
 	   buffer [i] =
 	      std::complex<float> ((float)(lBuf [2 * i]) / denominator,
 	                           (float)(lBuf [2 * i + 1]) /denominator);
@@ -228,8 +227,10 @@ int	next	= 0;
 	return nrSamples;
 }
 
-int	riffReader::read8Bytes (std::complex<float> *buffer,
+int	riffReader::read8Bytes (std::complex<float> *Buffer,
 	                                    uint64_t nrSamples) {
+	(void)Buffer;
+	(void)nrSamples;
 	return 0;
 }
 

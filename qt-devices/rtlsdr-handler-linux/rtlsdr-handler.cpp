@@ -121,6 +121,7 @@ QString	temp;
 int	k;
 char	manufac [256], product [256], serial [256];
 
+	(void)theLogger;
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);

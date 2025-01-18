@@ -36,6 +36,7 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	                                 QIODevice (parent),
 	                                 Buffer (Buffer_i) {
 
+	(void)mr;
 	totalBytes_l	= 0;
 	missedBytes_l	= 0;
 	connect (this, SIGNAL (readyRead ()),
@@ -54,7 +55,7 @@ Qt_AudioDevice::~Qt_AudioDevice () {
 }
 
 void	Qt_AudioDevice::start () {
-	bool b = open (QIODevice::ReadOnly);
+	(void)open (QIODevice::ReadOnly);
 }
 
 //	we always return "maxSize" bytes
@@ -101,6 +102,7 @@ void	Qt_AudioDevice::print_readChannelFinished () {
 }
 
 void	Qt_AudioDevice::print_channelReadyRead (int channel) {
+	(void)channel;
 }
 
 void	Qt_AudioDevice::print_aboutToClose () {

@@ -300,6 +300,7 @@ void	ensembleHandler::clearTable	() {
 
 void	ensembleHandler::reset	() {
 	clearTable ();
+	this -> clearSelection ();
 	ensembleList. resize (0);
 }
 

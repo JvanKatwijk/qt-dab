@@ -207,13 +207,25 @@ int	index_for_key (int key) {
 	         myRadioInterface, &RadioInterface::handle_tiiFilter);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (auto_http, &QCheckBox::checkStateChanged,
+#else
 	connect (auto_http, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_auto_http);
 	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_tiiCollisions);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (tiiFilter, &QCheckBox::checkStateChanged,
+#else
 	connect (tiiFilter, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_tiiFilter);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (tiiSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (tiiSelector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_tiiSelector);
 	connect (this, &configHandler::process_tiiSelector,
 	         myRadioInterface, &RadioInterface::process_tiiSelector);
@@ -371,46 +383,90 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (audioServices_only, &QCheckBox::checkStateChanged,
+#else
 	connect (audioServices_only, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_audioServices_only);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (correlationSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (correlationSelector, &QCheckBox::stateChanged,
+#endif
 	         myRadioInterface, &RadioInterface::handle_correlationSelector);
 //
 //	second line
 	int upload = value_i (dabSettings, CONFIG_HANDLER,
 	                              "UPLOAD_ENABLED", 0);
 	if (upload != 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	   connect (upload_selector, &QCheckBox::checkStateChanged,
+#else
 	   connect (upload_selector, &QCheckBox::stateChanged,
+#endif
 	            this, &configHandler::handle_upload_selector);
 	else
 	   upload_selector -> setEnabled (false);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (logger_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (logger_selector, &QCheckBox::stateChanged,
+#endif
 	         myRadioInterface, &RadioInterface::handle_LoggerButton);
 //	the epg2xmlSelector is just polled, no need to react on an event
 
 //	third line
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (utc_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (utc_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_utc_selector);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (onTop, &QCheckBox::checkStateChanged,
+#else
 	connect (onTop, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_onTop);
 //
 //	fourthline
 //	here we expect the close without asking
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (epg_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (epg_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_epgSelector);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (localBrowserSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (localBrowserSelector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_localBrowser);
 //
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (etiActivated_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (etiActivated_selector, &QCheckBox::stateChanged,
+#endif
 	         myRadioInterface, &RadioInterface::handle_eti_activeSelector);
 //
 //	fifh line
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (clearScan_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (clearScan_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_clearScan_Selector);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (saveSlides, &QCheckBox::checkStateChanged,
+#else
 	connect (saveSlides, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_saveSlides);
 //
 //	botton row

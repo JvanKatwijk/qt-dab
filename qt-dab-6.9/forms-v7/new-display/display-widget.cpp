@@ -320,13 +320,14 @@ void	displayWidget::showTII	(std::vector<Complex> v, int freq) {
 floatQwt	X_axis [512];
 floatQwt	Y_value [512];
 
+	(void)freq;
 	if (currentTab != SHOW_TII)
 	   return;
 
 	theFFT. fft (v);
 //
 //	smoothen the data a little
-	for (int i = 0; i < v. size (); i ++)
+	for (uint32_t i = 0; i < v. size (); i ++)
 	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.8) +
 	                       abs (v [i]) * DABFLOAT (0.2);
 //

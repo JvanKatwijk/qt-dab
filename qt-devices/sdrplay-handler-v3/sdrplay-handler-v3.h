@@ -26,6 +26,7 @@
 #include	<QThread>
 #include	<QSettings>
 #include	<QSemaphore>
+#include	<QLibrary>
 #include	<atomic>
 #include	<stdio.h>
 #include	<queue>
@@ -40,13 +41,6 @@ class	Rsp_device;
 class	generalCommand;
 class	xml_fileWriter;
 class	logger;
-
-#ifdef __MINGW32__
-//#include	"dlfcn.h"
-#define GETPROCADDRESS  GetProcAddress
-#else
-#define GETPROCADDRESS  dlsym
-#endif
 
 class	sdrplayHandler_v3 final:
 	           public deviceHandler, public Ui_sdrplayWidget_v3 {
@@ -64,8 +58,6 @@ public:
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 	QString		deviceName		();
-//	int32_t		getVFOFrequency		();
-//	int32_t		defaultFrequency	();
 
 	void            update_PowerOverload (
 	                                 sdrplay_api_EventParamsT *params);
@@ -105,7 +97,6 @@ public:
 
 	QString			recorderVersion;
 	
-	int32_t			vfoFrequency;
 	int16_t			hwVersion;
 	QSettings		*sdrplaySettings;
 	bool			agcMode;
@@ -113,7 +104,6 @@ public:
 	int			lna_upperBound;
 	float			apiVersion;
 	QString			serial;
-	bool			has_antennaSelect;
 	QString			deviceModel;
 	int			GRdBValue;
 	int			lnaState;
@@ -126,8 +116,7 @@ public:
 	std::atomic<bool>	dumping;
 	std::queue<generalCommand *>	server_queue;
 	QSemaphore		serverjobs;
-	HINSTANCE		fetchLibrary		();
-	void			releaseLibrary		();
+	QLibrary		*library_p;
 	bool			loadFunctions		();
 	int			errorCode;
 	int			set_antennaSelect	(int);

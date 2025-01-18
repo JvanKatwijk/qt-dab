@@ -111,7 +111,7 @@ void	IQDisplay::display_centerPoints (const std::vector<Complex> &z,
 void	IQDisplay::set_fatPoint (Complex V, int amount, float scale) {
 int x	= (int)scale * real (V);
 int y	= (int)scale * imag (V);
-
+	(void)amount;
 	for (int i = 0; i < 12; i ++) {
 	   int yy = y - 6 + i;
            constrain (yy, RADIUS - 1);
@@ -221,7 +221,7 @@ int amounts [4] = {0};
 	for (int i = 0; i < 4; i ++) 
 	   out [i] = Complex (0, 0);
 
-	for (int i = 0; i < V. size (); i ++) {
+	for (uint16_t i = 0; i < V. size (); i ++) {
 	   Complex W = V [i];
 	   if ((real (W) > 0) && (imag (W) > 0)) {
 	      out [0] += W;

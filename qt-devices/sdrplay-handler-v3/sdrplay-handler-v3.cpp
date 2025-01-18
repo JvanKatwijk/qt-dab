@@ -96,6 +96,7 @@ std::string errorMessage (int errorCode) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
 	this	-> recorderVersion	= recorderVersion;
+	(void)theLogger;
         setupUi (&myFrame);
 	QString	groupName	= SDRPLAY_SETTINGS;
 	set_position_and_size (s, &myFrame, groupName);
@@ -165,13 +166,13 @@ std::string errorMessage (int errorCode) {
 	connect (dumpButton, &QPushButton::clicked,
                  this, &sdrplayHandler_v3::set_xmlDump);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
-	connect (biasT_selector, &QCheckBox::stateChanged,	
+	connect (biasT_selector, &QCheckBox::checkStateChanged,	
 #else
 	connect (biasT_selector, &QCheckBox::stateChanged,	
 #endif
 	         this, &sdrplayHandler_v3::set_biasT);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
-	connect (notch_selector, &QCheckBox::stateChanged,	
+	connect (notch_selector, &QCheckBox::checkStateChanged,	
 #else
 	connect (notch_selector, &QCheckBox::stateChanged,	
 #endif
@@ -546,8 +547,12 @@ int	deviceIndex	= 0;
 	denominator		= 2048.0f;		// default
 	nrBits			= 12;		// default
 
-	Handle			= fetchLibrary ();
-	if (Handle == nullptr) {
+	const char *libraryString	= "sdrplay_api";
+	library_p		= new QLibrary (libraryString);
+	library_p	-> load ();
+	if (!library_p -> isLoaded ()) {
+//	Handle			= fetchLibrary ();
+//	if (Handle == nullptr) {
 	   failFlag. store (true);
 	   errorCode	= 1;
 	   return;
@@ -557,7 +562,7 @@ int	deviceIndex	= 0;
 	bool success	= loadFunctions ();
 	if (!success) {
 	   failFlag. store (true);
-	   releaseLibrary ();
+	   delete library_p;
 	   errorCode	= 2;
 	   return;
         }
@@ -569,7 +574,7 @@ int	deviceIndex	= 0;
 	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 	   failFlag. store (true);
-	   releaseLibrary ();
+	   delete library_p;
 	   errorCode	= 3;
 	   return;
 	}
@@ -876,7 +881,7 @@ normal_exit:
 	   fprintf (stderr, "sdrplay_api_Close failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 
-	releaseLibrary			();
+	delete library_p;
 	fprintf (stderr, "library released, ready to stop thread\n");
 	msleep (200);
 	return;
@@ -887,7 +892,7 @@ closeAPI:
 	failFlag. store (true);
 	sdrplay_api_ReleaseDevice       (chosenDevice);
         sdrplay_api_Close               ();
-	releaseLibrary	();
+	delete library_p;
 	fprintf (stderr, "De taak is gestopt\n");
 }
 
@@ -895,178 +900,115 @@ closeAPI:
 //	handling the library
 /////////////////////////////////////////////////////////////////////////////
 
-HINSTANCE	sdrplayHandler_v3::fetchLibrary () {
-HINSTANCE	Handle	= nullptr;
-#ifdef	__MINGW32__
-HKEY APIkey;
-wchar_t APIkeyValue [256];
-ULONG APIkeyValue_length = 255;
-
-	wchar_t *libname = (wchar_t *)L"sdrplay_api.dll";
-	Handle	= LoadLibrary (libname);
-//	fprintf (stderr, "loadLib is gewoon gelukt ? %d\n",
-//	                                 Handle != nullptr);
-	if (Handle == nullptr) {
-	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
-//	                   TEXT ("Software\\MiricsSDR\\API"),
-	                   TEXT ("Software\\SDRplay\\Service\\API"),
-	                   &APIkey) != ERROR_SUCCESS) {
-              fprintf (stderr,
-	           "failed to locate API registry entry, error = %d\n",
-	           (int)GetLastError());
-	   }
-	   else {
-	      RegQueryValueEx (APIkey,
-	                       (wchar_t *)L"Install_Dir",
-	                       nullptr,
-	                       nullptr,
-	                       (LPBYTE)&APIkeyValue,
-	                       (LPDWORD)&APIkeyValue_length);
-//	Ok, make explicit it is in the 32/64 bits section
-	      wchar_t *x =
-#ifndef __BITS64__
-	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\sdrplay_api.dll");
-#else
-	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\sdrplay_api.dll");
-#endif
-	      RegCloseKey (APIkey);
-
-	      Handle	= LoadLibrary (x);
-//	      fprintf (stderr, "Met de key is het gelukt? %d\n", 
-//	                                               Handle != nullptr);
-	   }
-	   if (Handle == nullptr) {
-	      fprintf (stderr, "Failed to open sdrplay_api.dll\n");
-	      return nullptr;
-	   }
-	}
-#else
-	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
-	Handle		= dlopen ("libsdrplay_api.so", RTLD_NOW);
-	if (Handle == nullptr) {
-	   fprintf (stderr, "error report %s\n", dlerror());
-	   return nullptr;
-	}
-#endif
-	return Handle;
-}
-
-void	sdrplayHandler_v3::releaseLibrary () {
-#ifdef __MINGW32__
-        FreeLibrary (Handle);
-#else
-	dlclose (Handle);
-#endif
-}
-
 bool	sdrplayHandler_v3::loadFunctions () {
+
 	sdrplay_api_Open	= (sdrplay_api_Open_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_Open");
+	                 library_p -> resolve ("sdrplay_api_Open");
 	if ((void *)sdrplay_api_Open == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_Open\n");
 	   return false;
 	}
 
 	sdrplay_api_Close	= (sdrplay_api_Close_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_Close");
+	                 library_p -> resolve ("sdrplay_api_Close");
 	if (sdrplay_api_Close == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_Close\n");
 	   return false;
 	}
 
 	sdrplay_api_ApiVersion	= (sdrplay_api_ApiVersion_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_ApiVersion");
+	                 library_p -> resolve ("sdrplay_api_ApiVersion");
 	if (sdrplay_api_ApiVersion == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_ApiVersion\n");
 	   return false;
 	}
 
 	sdrplay_api_LockDeviceApi	= (sdrplay_api_LockDeviceApi_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_LockDeviceApi");
+	                 library_p -> resolve ("sdrplay_api_LockDeviceApi");
 	if (sdrplay_api_LockDeviceApi == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_LockdeviceApi\n");
 	   return false;
 	}
 
 	sdrplay_api_UnlockDeviceApi	= (sdrplay_api_UnlockDeviceApi_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_UnlockDeviceApi");
+	                 library_p -> resolve ("sdrplay_api_UnlockDeviceApi");
 	if (sdrplay_api_UnlockDeviceApi == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_UnlockdeviceApi\n");
 	   return false;
 	}
 
 	sdrplay_api_GetDevices		= (sdrplay_api_GetDevices_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_GetDevices");
+	                 library_p -> resolve ("sdrplay_api_GetDevices");
 	if (sdrplay_api_GetDevices == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_GetDevices\n");
 	   return false;
 	}
 
 	sdrplay_api_SelectDevice	= (sdrplay_api_SelectDevice_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_SelectDevice");
+	                 library_p -> resolve ("sdrplay_api_SelectDevice");
 	if (sdrplay_api_SelectDevice == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_SelectDevice\n");
 	   return false;
 	}
 
 	sdrplay_api_ReleaseDevice	= (sdrplay_api_ReleaseDevice_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_ReleaseDevice");
+	                 library_p -> resolve ("sdrplay_api_ReleaseDevice");
 	if (sdrplay_api_ReleaseDevice == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_ReleaseDevice\n");
 	   return false;
 	}
 
 	sdrplay_api_GetErrorString	= (sdrplay_api_GetErrorString_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_GetErrorString");
+	                 library_p -> resolve ("sdrplay_api_GetErrorString");
 	if (sdrplay_api_GetErrorString == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_GetErrorString\n");
 	   return false;
 	}
 
 	sdrplay_api_GetLastError	= (sdrplay_api_GetLastError_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_GetLastError");
+	                 library_p -> resolve ("sdrplay_api_GetLastError");
 	if (sdrplay_api_GetLastError == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_GetLastError\n");
 	   return false;
 	}
 
 	sdrplay_api_DebugEnable		= (sdrplay_api_DebugEnable_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_DebugEnable");
+	                 library_p -> resolve ("sdrplay_api_DebugEnable");
 	if (sdrplay_api_DebugEnable == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_DebugEnable\n");
 	   return false;
 	}
 
 	sdrplay_api_GetDeviceParams	= (sdrplay_api_GetDeviceParams_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_GetDeviceParams");
+	                 library_p -> resolve ("sdrplay_api_GetDeviceParams");
 	if (sdrplay_api_GetDeviceParams == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_GetDeviceParams\n");
 	   return false;
 	}
 
 	sdrplay_api_Init		= (sdrplay_api_Init_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_Init");
+	                 library_p -> resolve ("sdrplay_api_Init");
 	if (sdrplay_api_Init == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_Init\n");
 	   return false;
 	}
 
 	sdrplay_api_Uninit		= (sdrplay_api_Uninit_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_Uninit");
+	                 library_p -> resolve ("sdrplay_api_Uninit");
 	if (sdrplay_api_Uninit == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_Uninit\n");
 	   return false;
 	}
 
 	sdrplay_api_Update		= (sdrplay_api_Update_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_Update");
+	                 library_p -> resolve ("sdrplay_api_Update");
 	if (sdrplay_api_Update == nullptr) {
 	   fprintf (stderr, "Could not find sdrplay_api_Update\n");
 	   return false;
 	}
 
 	sdrplay_api_SwapRspDuoActiveTuner = (sdrplay_api_SwapRspDuoActiveTuner_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_SwapRspDuoActiveTuner");
+	                 library_p -> resolve ("sdrplay_api_SwapRspDuoActiveTuner");
 	if (sdrplay_api_SwapRspDuoActiveTuner == nullptr) {
 	   fprintf (stderr, "could not find sdrplay_api_SwapRspDuoActiveTuner\n");
 	   return false;

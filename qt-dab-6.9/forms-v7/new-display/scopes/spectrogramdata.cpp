@@ -71,5 +71,5 @@ int32_t index_y = (int32_t)(y / height * (dataheight - 1));
 	   index_y = 0;
 	if (index_y > dataheight)
 	   index_y = dataheight;
-	   return data [index_y * datawidth + index_x];
+	return data [index_y * datawidth + index_x];
 }

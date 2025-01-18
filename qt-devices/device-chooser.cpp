@@ -135,9 +135,7 @@
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 #endif
 #endif
-#ifdef	HAVE_AIRSPY
-	deviceList. push_back (deviceItem ("airspy", AIRSPY_DEVICE));
-#elif	HAVE_AIRSPY_2
+#ifdef	HAVE_AIRSPY_2
 	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
 #endif
 #ifdef	HAVE_HACKRF

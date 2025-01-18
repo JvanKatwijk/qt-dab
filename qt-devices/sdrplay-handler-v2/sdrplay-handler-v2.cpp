@@ -75,6 +75,7 @@ mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
 
+	(void)theLogger;
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
@@ -480,7 +481,7 @@ mir_sdr_ErrT err;
 	disconnect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
 	            this, &sdrplayHandler_v2::handle_lnagainReduction);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
-	disconnect (agcControl, &QCheckBox::stateChanged,
+	disconnect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	disconnect (agcControl, &QCheckBox::stateChanged,
 #endif

@@ -418,6 +418,7 @@ mac {
 }
 
 CONFIG		+= link_pkgconfig
+#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
@@ -426,6 +427,7 @@ LIBS      	+= -ldl
 }
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
+#PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
@@ -465,7 +467,6 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
@@ -555,7 +556,6 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= lime
 	CONFIG		+= pluto
 	CONFIG		+= NO_SSE
-#	CONFIG		+= preCompiled
 	CONFIG		+= tiiLib
 #
 #	end of 32/64 specifics
@@ -870,11 +870,11 @@ local-audio {
 
 	equals (QT_MAJOR_VERSION, 5) {
 	INCLUDEPATH	+= ../includes/output/Qt5
-	HEADERS		+= ../includes/output/Qt5/Qt-audio.h \
-#	                   ../includes/output/Qt5/Qt-audiodevice.h \
+	HEADERS		+= ../includes/output/Qt5/Qt-audio.h \	
+	                   ../includes/output/Qt5/Qt-audiodevice.h \
 	                   ../includes/output/audiosink.h 
-	SOURCES		+= ../src/output/Qt5/Qt-audio.cpp 
-#	                   ../src/output/Qt5/Qt-audiodevice.cpp \
+	SOURCES		+= ../src/output/Qt5/Qt-audio.cpp \
+	                   ../src/output/Qt5/Qt-audiodevice.cpp \
 	                   ../src/output/audiosink.cpp 
 	LIBS		+= -lportaudio
 	} else {
@@ -975,10 +975,10 @@ preCompiled {
 tiiLib	{
 	INCLUDEPATH	+= ../src/support/tii-library
 	HEADERS		+= ../src/support/tii-library/tii-reader.h
-#	HEADERS		+= ../src/support/tii-library/db-loader.h
+	HEADERS		+= ../src/support/tii-library/db-loader.h
 	HEADERS		+= ../src/support/tii-library/uploader.h
 	SOURCES		+= ../src/support/tii-library/tii-reader.cpp
-#	SOURCES		+= ../src/support/tii-library/db-loader.cpp
+	SOURCES		+= ../src/support/tii-library/db-loader.cpp
 	SOURCES		+= ../src/support/tii-library/uploader.cpp
 }
 

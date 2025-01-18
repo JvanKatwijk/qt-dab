@@ -124,7 +124,7 @@ void	tcp_client::send_data (uint8_t *data, int length) {
 
 char	tempBuffer_16 [1000000];
 void	tcp_client:: run	() {
-uint64_t bytesAvailable	= 0;
+//uint64_t bytesAvailable	= 0;
 int	received	= 0;
 struct timeval m_timeInterval;
 fd_set m_readFds;
@@ -144,8 +144,7 @@ fd_set m_readFds;
 	   if (m_receivingStatus == 0) {
 	      int amount = outBuffer. GetRingBufferReadAvailable ();
 	      if (amount > 0) {
-	         int outRead =
-	            outBuffer. getDataFromBuffer (tempBuffer_16, amount);
+	         (void)outBuffer. getDataFromBuffer (tempBuffer_16, amount);
 	         send (SendingSocket, (char *)tempBuffer_16, amount, MSG_NOSIGNAL);
 	      }
 	   }	
@@ -158,6 +157,7 @@ fd_set m_readFds;
 #endif
 	      unsigned long bytesAvailable = 0;
 	      int ret = ioctlsocket (SendingSocket, FIONREAD, &bytesAvailable);
+	      (void)ret;
 	      received = recvfrom (SendingSocket, (char *)tempBuffer_16,
 	                                             bytesAvailable, 0, &t, &tt);
 	      inBuffer -> putDataIntoBuffer (tempBuffer_16, received);
