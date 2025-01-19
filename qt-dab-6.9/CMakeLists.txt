@@ -296,9 +296,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
 	     ../includes/support/fir-filters.h
-	     ../includes/support/tii-mapper.h
              ../src/support/tii-library/tii-reader.h
-             ../src/support/tii-library/db-loader.h
+	     ../src/support/tii-library/tii-mapper.h
              ../src/support/tii-library/uploader.h
 	     ../includes/support/font-chooser.h 
 	     ../includes/support/buttons/smallcombobox.h 
@@ -416,13 +415,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/skin-handler.cpp
 	     ../src/support/mapport.cpp
 	     ../src/support/tii-library/tii-reader.cpp
-             ../src/support/tii-library/db-loader.cpp
              ../src/support/tii-library/uploader.cpp
+	     ../src/support/tii-library/tii-mapper.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/bandpass-filter.cpp
 	     ../src/support/fir-filters.cpp
 	     ../src/support/font-chooser.cpp
-	     ../src/support/tii-mapper.cpp
 	     ../src/support/buttons/smallcombobox.cpp
 	     ../src/support/buttons/newpushbutton.cpp
 	     ../src/support/buttons/normalpushbutton.cpp

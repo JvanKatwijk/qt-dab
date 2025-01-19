@@ -26,7 +26,6 @@
 #include	<QThread>
 #include	<QSettings>
 #include	<QSemaphore>
-#include	<QLibrary>
 #include	<atomic>
 #include	<stdio.h>
 #include	<queue>
@@ -41,6 +40,13 @@ class	Rsp_device;
 class	generalCommand;
 class	xml_fileWriter;
 class	logger;
+
+#ifdef __MINGW32__
+//#include      "dlfcn.h"
+#define GETPROCADDRESS  GetProcAddress
+#else
+#define GETPROCADDRESS  dlsym
+#endif
 
 class	sdrplayHandler_v3 final:
 	           public deviceHandler, public Ui_sdrplayWidget_v3 {
@@ -107,8 +113,8 @@ public:
 	QString			deviceModel;
 	int			GRdBValue;
 	int			lnaState;
-	double			ppmValue;
 	HINSTANCE		Handle;
+	double			ppmValue;
 	bool			biasT;
 	xml_fileWriter		*xmlWriter;
 	bool			setup_xmlDump		();
@@ -116,7 +122,8 @@ public:
 	std::atomic<bool>	dumping;
 	std::queue<generalCommand *>	server_queue;
 	QSemaphore		serverjobs;
-	QLibrary		*library_p;
+	HINSTANCE               fetchLibrary            ();
+	void                    releaseLibrary          ();
 	bool			loadFunctions		();
 	int			errorCode;
 	int			set_antennaSelect	(int);

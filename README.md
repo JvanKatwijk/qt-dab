@@ -7,7 +7,7 @@
 -------------------------------------------------------------------------
 
 As the name suggests, Qt-DAB uses the Qt libraries as framework for (a.o) the GUI and the GUI handling. QT5 was the version were most of the developments
-were done with so far. Since Qt6 - a newer version of the Qt library system -
+were done with so far. Since Qt6 - a newer version of the Qt frameworj -
 is there now for quite a while, it is inevitable to move over
 to using Qt6.
 
@@ -26,22 +26,21 @@ the version number was increased and is 6.9.
 
  * the audio strength meter and the "mot" indicator are placed on the main widget, which seems to make more sense
 
- * the Spectrum widget has a "BER" (Bit Error Rate) indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of the decoded samples, the picture below show a value of 0.015, indicating that (on average) 15 input bits per 1000  needed correction when decoding the FIC data.
+ * the Spectrum widget shows at the bottom a "BER" (Bit Error Rate) indicator for the FIC segments, this indicator shows the ratio between bits that are modified in the Viterbi decoder, vs the total amount of bits. As such this indicator gives a good idea on the real quality of the decoded samples, the picture above show a value of 0.003, indicating that (on average) 3 input bits per 1000  needed correction when decoding the FIC data.
 
  * the Quality indicator on the spectrum widget shows now the Modulation quality as defined in ETSI TR 101 290 V1.3.1. 
 
  * having the "BER" as measure for the quality of the decoding, some more experiments with decoders (i.e. the mapping from the result of the DPSK in the carriers  in the FFT bins to bits). Three of them are based on work of others (see the tooltip).
 
- * There were questions why not to restrict the visible services in the list to audioservices only. The configuration and control widget has a selector for that. (There is a small problem that is still to be addressed: skipping through the list, with the "+" and "-" buttons does not exclude the data services).
-
+ * There were questions why not to restrict the visible services in the list to audioservices only. The configuration and control widget has a selector for that.
  * Some selectors were removed from the configuration and control widget.
 
- * With a selector on the configuration widget one can choose the "old" or a "new" version of a tii decoder. The new one is much more sensitive and its use may lead to overload.
-
- * the configuration widget contains a selector for applying a partly other
-approach to he new tii detector, leading to less, but in general more reliable tii data
+ * A new tii detector was installed (not my own work), that is more sensotive than the one that there was already. Drawback is that if the threshold is set too low, the number of false too reports is (too) large and sometimes even lead to overload of the system. Therefore, an option was created to select between the new of the old version,
+furthermore, an option is included to set some internal oarameters, raising the noise floot, and limiting the output of the new tii detector.
 
  * the dxDisplay now shows more data on the transmitters that are identified in the current channel. 
+
+ * the RII view on the spectrum scope was altered, rather than showing the spectrum of the full NULL period, it now shows the data as it is seen by the tii decoder.
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 
@@ -77,7 +76,7 @@ That explains e.g. why the GUI has a single main widget that
 contains essentially all that is needed when just selecting a service and listening, while other widgets, visible under user control, if made visible show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-6.0*, predefined executables and installers are available.
+*Qt-DAB-6.9*, predefined executables and installers are available.
 For Windows  **three** installers are available, and for Linux there is an x64 AppImage.
 
 ![6.9](/res/read_me/Qt_DAB-6.9.1.png?raw=true)
@@ -112,6 +111,8 @@ using the excellent Mingw64 toolset - for Windows. For Windows,
 installers are available,  two installers for 32 bit  versions and one
 for a 64 bit version. For Linux, an AppImage, available for x64 Linux, is
 available, built under an older version of Ubuntu (right now Ubuntu 20, Ubuntu 22 is too new for an AppImage).
+
+To mark the transition for using Qt5 as framework to using Qt6, the releases section contains two sets of precompiled versions, one compiled with Qt5 and one with Qt6.
 
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 
@@ -154,21 +155,18 @@ Features
   * Qt-DAB supports handling *ip* output from data packets,
   * Qt-DAB supports sending *TPEG output* - when configured - as datagrams to port 8888,
   * Qt-DAB supports (automatic) *EPG* detection and building up a time table,
-  * Qt-DAB-6.8 supports decoding and displaying  *journaline* when transmitted as subservice,
+  * Qt-DAB supports decoding and displaying  *journaline* when transmitted as subservice,
   * Qt-DAB offers *scheduling* of some operations on services for up to 7 days;
   * Qt-DAB allows running an arbitrary amount of services from tne current ensemble as *background service*. with the output sent to a file,
   * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
   * The Qt-DAB implementation provides a clean device interface, it is easy to add other devices.
-
-Not implemented:
-  * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 Widgets and scopes
 =======================================================================
 
 ![6.9](/res/read_me/Qt_DAB-6.9.2.png)
 
-The full GUI for Qt-DAB-6.8 is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
+The full GUI for Qt-DAB-6.9 is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
 
 The *mainWidget* (see picture) is the one widget that is always visible
 as long as the program is running, it contains settings for controlling the visibility of other widgets.
@@ -178,14 +176,14 @@ On the right half of the widget is shows the dynamic label, and the slides - if 
 * touching the *ensemble name* (NPO (8001) in the picture) makes the
 *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a ".csv" format. If  the data is visible, touching will hide it;
  * touching the small icon left of the name of the selected service (here left
-of the bold text NPO Radio 5), will show (or hide) the *technical widget*,
+of the bold text NPO Radio 2), will show (or hide) the *technical widget*,
 a widget showing all technical details as well as strength indicators and 
 a spectrum of the audio of the selected service;
  * touching the small icon on top of the latter, the folder/directory in which the slides, the tii log and the log file are written is shown;
  * touching the icon showing a *speaker* controls muting the signal,
 if no audio is generated, or if the signal is muted, the icon will show this;
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
- * touching *with the right hand mouse button* the text of the dynamic label (Steely Dan - Reeling In The Years) shows a small menu to put the text on the clipboard;
+ * touching *with the right hand mouse button* the text of the dynamic label (Alannah Myles - Black Velvet) shows a small menu to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map )with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
@@ -197,7 +195,7 @@ of the scan list, i.e the list of services seen at the most recent scan.
 
 (Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
 
-Qt-DAB supports **Favourites**, i.e. a list of (channel, service pairs),
+As mentioned, Qt-DAB supports **Favourites**, i.e. a list of (channel, service pairs),
 the list is maintained between program invocations. 
 The *services list* is shown in one of two modes, selectable by the button (in the picture labeled favourites). In *ensemble view* mode, the services in the current ensemble are shown, in the *favourites view* mode, the favourites are shown.
 In both views, selecting a service is just by clicking on the service name.
@@ -223,8 +221,7 @@ The three progress bars (quality indicators) for DAB+ give success rates of
 resp. detecting a DAB+ frame, the RS error repair and the AAC decoding.
 (For "old" DAB transmissions only a single quality indicator appears).
 
-The - in the picture red - label with text "mot available" turns green
-if in the selected service mot data (usually slides or text) is detected.
+Below the progress bars the *rsCorrections/100* indicator show how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames. Of course, the parity bits used by the RS decoding may contain bit errors themselves, the second indicator shows the amount of CRC errors detected after thecorrection by the RS decosing.
 
 ![6.8](/res/read_me/spectrum-scope.png)
 
@@ -236,8 +233,7 @@ app 1.5 MHz (1536 KHz to be precise). To the right of this spectrum, one
 sees the *signal constellation*,
 i.e. the mapping from the complex signals onto their real
 and imaginary components. If the selector labeled
-"ncp" is set - as in the picture - the centerpoints of the 4
-lobs is shown. 
+"ncp" is set, the centerpoints of the 4 lobs is shown. 
 
 On the right hand side the widget shows some quality indicators of the DAB signal, such as applied frequency correction, remaining frequency error, SNR, some clock offsets and an estimate of the signal quality (for the latter, higher is better).
 
@@ -265,7 +261,8 @@ the first samples *with* data of a DAB frame.
 
 ![6.8](/res/read_me/qt-dab-tii-data.png)
 
-In reality the NULL period is not completely without signal, it contains an encoding of the TII data. The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 5 out of 8 code as the picture clearly shows.
+In reality the NULL period is not completely without signal, each second NULL period may contain an encoding of the TII data. The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 4 out of 8 code as the picture clearly shows.
+The picture clearly shows twice the pattern 0x1e.
 This TII data - when decoded leads to 2 2 digit numbers -  is used to
 identify the transmitter of the signal received, these numbers can be mapped upon a name and location of the transmitter.
 
@@ -288,7 +285,7 @@ The *configuration and control* widget contains  checkboxes, spinboxes and
 buttons with which the configuration of the decoding process can be
 influenced.
 
-At starting up Qt-DAB-6.8 for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
+At starting up Qt-DAB for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
 
 For a detailed description of all selectors, see the manual (or read the tooltips).
 
@@ -321,6 +318,9 @@ A separate widget - visible under control of the *scan* button on the
 main widget - provides full control on scanning. Qt-DAB provides different scanning modes, with single scannning and continuous scanning.
 
 To allow skipping over given channels when scanning, Qt-DAB supports the notion of a *skiptable*, in which channels to be skipped can be marked.
+Next to a default skiptable, skiptables can be created as separate files and
+read-in when required.
+
 The *show* button controls the visibility of the *skiptable*, skiptables
 can be loaded and stored in either the ".ini" file (use the "...default" buttons, or can be kept as xml file on a user defined place (the other load/store buttons).
 
@@ -332,7 +332,7 @@ Displaying TII data
 As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses a database to map the decoded TII data to name and location of the transmitter.
 
 DAB transmissions are usually  transmitted by an SFN (Single Frequency Network), where all transmitters transmit the same content on the same frequency (each 
-with unique TII data).
+with unique TII data). As was shown in the correlation view in the spectrum widget, one may receive a signal from more than one transmitter.
 If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
@@ -344,13 +344,9 @@ being processed. New is the addition of a "compass" to show the direction
 from which the signal comes from the selected transmitter.
 
 If the DX mode is set, Qt-DAB-6.9 will save the transmitters that
-are identified in a text file, in Windows the file in the Qt-DAB-files folder in the home folder, in Linux the file is stored in the Qt-DAB-files folder in the "/tmp" directory.
-Name of the file is *tii-files.txt*.
+are identified in a text file. BY default files are placed in a folder (directory)  *Qt-DAB-files*, a folder that is to be found in the user's home folder.
 
 ![6.8](/res/read_me/QTmap.png?raw=true)
-
-As seen in the table above, distances to the transmitters can be
-computed. In Qt-DAB the transmitters can be made visible on a map.
 
 Qt-DAB has - on the main widget -  a button labeled *http*,
 when touched, a small webserver starts that shows
@@ -369,7 +365,8 @@ See the manual for entering the home position to Qt-DAB.
 Documentation
 =================================================================
 
-An extensive *user's guide* - in PDF format - for Qt-DAB-6.8 can be found in the "docs" directory in the repository. The manual contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
+An extensive *user's guide* - in PDF format - for Qt-DAB-6.9 can be found in the "docs" directory in the repository and as a document in the releases section.
+The manual contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
 
 ![Qt-DAB documentation](/res/read_me/qt-dab-6-manual.png?raw=true)
 
@@ -378,11 +375,16 @@ Installation on Windows
 
 For Windows  *installer*s can be found in the releases section of this repository
  * https://github.com/JvanKatwijk/qt-dab/releases.
-Such an installer will install the executable as well as required libraries.
+Such an installer will install the executable as well as required libraries,
+although for both SDRplay devices (when used) or for the Adaml Pluto (whens
+used), one has to install libraries from the provoder of the device.
 
 :information_source: The releases section contains 3 Windows installers. One for a 64 bit version, and 2 for a 32 bit version. The 2 versions for 32 bit differ in theit support for RTLSDR type devices. It seems that the support library for the V4 versions of the RTLSDR dongle makes Qt-DAB rather deaf when used with a V3 dongle.  The V3 version therefore is equipped with an older version of the support library, and the other version with the library for the V4 version of the dongle.  The 64 bit version has support for the V4 stick.
 
 :information_source: Note that the device libraries for the SDRplay devices and the Adalm Pluto device library are **NOT** included in the installer, they require - if used - a separate installation. See below for details.
+
+:information_source: The 64 bit installers now contain the required dll's for 
+both the hackrf amd the lime devices. As the title on the main window already suggested, the configuration for the 64 bit versions (noth Qt5 and Qt6) contains the settings for the rtlsdr V4 library.
 
 Installation on Linux-x64
 =================================================================
@@ -494,10 +496,10 @@ and install the libfaad package
 A note on Qt_Audio
 -----------------------------------------------------------------
 
-Qt_DAB-6.8 allows selection between two audio subsystems, i.e. portaudio and
-Qt_Audio. It turns out that Qt_Audio does not work well on Ubuntu 20
-(it does on Fedora and Ubuntu 24 though). Since the AppImage is built
-on Ubuntu 20, selecting the Qt_Audio subsystem is ignored.
+Qt_DAB-6.9 allows selection between two audio subsystems, i.e. portaudio and
+Qt_Audio. It turns out that Qt_Audio does not work well on Ubuntu 20 when
+being compiled with Qt5, it works fine when using Qt6.
+In the Qt5 vased appImage the Qt Audio sunsystem is ingored.
 
 Step 2
 -----------------------------------------------------------------
@@ -516,8 +518,6 @@ HackRf and Adalm Pluto can be included in the configuration *even if no support 
 
 - :information_source: The Soapy library used in Ubuntu 20 (used for building the AppImage) seems incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *Soapy* is **NOT** configured
 for inclusion in the AppImage.
-
-- :information_source: Choosee *CONFIG += tiiLib* rather than *CONFIG += preCompiled* (see step 4), *CONFIG+=preCompiled* will **NOT** work since the required sources are **NOT** open source and not included in the source tree.
 
 - :information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
  

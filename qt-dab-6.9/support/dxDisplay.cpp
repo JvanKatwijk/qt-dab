@@ -46,31 +46,31 @@ uint16_t	secondDigit (v % 10);
 	myWidget	-> setWidgetResizable (true);
 
 	tableWidget 	= new QTableWidget (0, 14);
-	tableWidget	-> setColumnWidth (0, 30);
-	tableWidget	-> setColumnWidth (1, 50);
-	tableWidget	-> setColumnWidth (2, 50);
-	tableWidget	-> setColumnWidth (3, 50);
-	tableWidget	-> setColumnWidth (4, 60);
-	tableWidget	-> setColumnWidth (5, 80);
-	tableWidget	-> setColumnWidth (6, 100);
-	tableWidget	-> setColumnWidth (7, 200);
-	tableWidget	-> setColumnWidth (8, 70);
-	tableWidget	-> setColumnWidth (9, 70);
-	tableWidget	-> setColumnWidth (10, 70);
-	tableWidget	-> setColumnWidth (11, 70);
-	tableWidget	-> setColumnWidth (12, 70);
-	tableWidget	-> setColumnWidth (13, 70);
+	tableWidget	-> setColumnWidth (0, 30);	// mark
+	tableWidget	-> setColumnWidth (1, 40);	// pattern
+	tableWidget	-> setColumnWidth (2, 50);	// tii value
+	tableWidget	-> setColumnWidth (3, 50);	// phase
+	tableWidget	-> setColumnWidth (4, 50);	// strength
+	tableWidget	-> setColumnWidth (5, 40);	// channel
+	tableWidget	-> setColumnWidth (6, 150);	// ensemble
+	tableWidget	-> setColumnWidth (7, 200);	// transmitter
+	tableWidget	-> setColumnWidth (8, 70);	// distamce
+	tableWidget	-> setColumnWidth (9, 70);	// azimuth
+	tableWidget	-> setColumnWidth (10, 70);	// power
+	tableWidget	-> setColumnWidth (11, 70);	// altitude
+	tableWidget	-> setColumnWidth (12, 70);	// height
+	tableWidget	-> setColumnWidth (13, 70);	// direction
 
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
 //	headerView	-> resizeSection (0, 50);
 	tableWidget 	-> setHorizontalHeaderLabels (
-	                QStringList () << tr ("x") << tr ("pattern") <<
+	                QStringList () << tr ("x") << tr ("pat") <<
 	                tr ("tii") << tr ("phase") << tr ("strength") <<
 	                tr ("channel") <<tr ("ensemble") <<
 	                tr ("transmitter") << tr ("dist") <<
 	                tr ("azimuth")  << tr ("power") <<
-	                tr ("alt") << tr ("height") << tr ("direction"));
+	                tr ("alt") << tr ("height") << tr ("dir"));
 
 	theDial		= new QwtCompass ();
 	theDial		-> setLineWidth (8);

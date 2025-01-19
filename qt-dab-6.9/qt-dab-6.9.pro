@@ -60,6 +60,7 @@ DEPENDPATH += . \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
+	      ../src/support/tii-library \
 	      ../src/support/buttons \
 	      ../src/support/viterbi-jan \
 	      ../src/support/viterbi-spiral \
@@ -74,6 +75,7 @@ DEPENDPATH += . \
 	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
+	      ../src/support/tii-library \
 	      ../includes/support/buttons \
 #	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
@@ -105,6 +107,7 @@ INCLUDEPATH += . \
 	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
+	      ../src/support/tii-library \
 	      ../includes/support/buttons \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
@@ -232,7 +235,9 @@ HEADERS += ./radio.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
-	   ../includes/support/tii-mapper.h \
+	   ../src/support/tii-library/tii-mapper.h \
+	   ../src/support/tii-library/tii-reader.h \
+	   ../src/support/tii-library/uploader.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -368,7 +373,9 @@ SOURCES += ./main.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
-	   ../src/support/tii-mapper.cpp \
+	   ../src/support/tii-library/tii-mapper.cpp \
+	   ../src/support/tii-library/tii-reader.cpp \
+	   ../src/support/tii-library/uploader.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -467,7 +474,6 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -556,7 +562,6 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= lime
 	CONFIG		+= pluto
 	CONFIG		+= NO_SSE
-	CONFIG		+= tiiLib
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -953,33 +958,6 @@ fdk-aac {
         HEADERS         += ../includes/backend/audio/fdk-aac.h
         SOURCES         += ../src/backend/audio/fdk-aac.cpp
         PKGCONFIG       += fdk-aac
-}
-
-preCompiled {
-	win32 {
-	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
-	}
-	unix {
-	LIBS		+= -lcurl
-	}
-#	INCLUDEPATH	+= /home/jan/curl
-	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/tii-reader.h
-	HEADERS		+= ../../TII-CODES/db-loader.h
-	HEADERS		+= ../../TII-CODES/uploader.h
-	SOURCES		+= ../../TII-CODES/tii-reader.cpp
-	SOURCES		+= ../../TII-CODES/db-loader.cpp
-	SOURCES		+= ../../TII-CODES/uploader.cpp
-}
-
-tiiLib	{
-	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/tii-reader.h
-	HEADERS		+= ../src/support/tii-library/db-loader.h
-	HEADERS		+= ../src/support/tii-library/uploader.h
-	SOURCES		+= ../src/support/tii-library/tii-reader.cpp
-	SOURCES		+= ../src/support/tii-library/db-loader.cpp
-	SOURCES		+= ../src/support/tii-library/uploader.cpp
 }
 
 mapserver {
