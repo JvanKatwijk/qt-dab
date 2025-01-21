@@ -561,7 +561,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= hackrf
 	CONFIG		+= lime
 	CONFIG		+= pluto
-	CONFIG		+= NO_SSE
+#	CONFIG		+= NO_SSE
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include

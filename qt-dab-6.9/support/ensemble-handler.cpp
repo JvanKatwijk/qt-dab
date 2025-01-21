@@ -51,6 +51,7 @@
 	   fontColor		= 
 	           value_s (ensembleSettings, ENSEMBLE, "fontColor", "white");
 	   normalFont	= QFont (theFont, fontSize, -1, false);
+//	   markedFont	= QFont (theFont, fontSize, -1, true);
 	   markedFont	= QFont (theFont, fontSize + 2, -1, true);
 	   channelFont	= QFont (theFont, fontSize - 2, -1, false);
 
@@ -186,6 +187,7 @@ void	ensembleHandler::click_on_service	(int row, int column) {
 	   else {	// column is column 0, start
 	      unSelect ();
 	      int index = inEnsembleList (theService);
+	      this -> clearSelection ();
 	      selectService (ensembleList [index]. name,
 	                     ensembleList [index]. channel);
 	      if (index >= 0) {		// should not happen
@@ -202,9 +204,11 @@ void	ensembleHandler::click_on_service	(int row, int column) {
 	if (index < 0)
 	   return;
 
-	if (column == 0)
+	if (column == 0) {
+	   this -> clearSelection ();
 	   selectService (favorites [index]. name,
                           favorites [index]. channel);
+	}
 	else {
 	   service theService = favorites [index];
 	   favorites. erase (favorites. begin () + index);
@@ -579,9 +583,10 @@ int	ensembleHandler::get_serviceCount	() {
 }
 
 void	ensembleHandler::setFont (int mark, int index) {
+	this	-> item (index, 0) -> setTextAlignment (Qt::AlignLeft);
 	if (mark == MARKED) {
 	   this -> item (index, 0) -> setFont (markedFont);
-	   this -> setCurrentItem (this -> item (index, 0), QItemSelectionModel::Select);
+//	   this -> setCurrentItem (this -> item (index, 0), QItemSelectionModel::Select);
 	}
 	else
 	   this -> item (index, 0) -> setFont (normalFont);

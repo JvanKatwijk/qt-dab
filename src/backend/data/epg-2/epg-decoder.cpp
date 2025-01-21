@@ -559,8 +559,8 @@ int length	= v [index + 1];
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_476_p (v, index, &p -> ident);
-	         fprintf (stderr, "In serviceS cope %s\n",
-	                                          p -> ident. toLatin1 (). data ());
+//	         fprintf (stderr, "In serviceS cope %s\n",
+//	                                          p -> ident. toLatin1 (). data ());
 	         break;
 
 	      default:

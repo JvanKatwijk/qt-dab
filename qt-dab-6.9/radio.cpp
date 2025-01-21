@@ -2268,7 +2268,7 @@ void	RadioInterface::setPresetService () {
 
 	if (nextService. channel != channel. channelName)
 	   return;
-
+	
 	if (channel. Eid == 0) {
 	   dynamicLabel -> setText ("ensemblename not yet found\n");
 	   return;
@@ -2371,8 +2371,8 @@ int	tunedFrequency	=
 	      nextService. SId		= 0;
 	      nextService. SCIds	= 0;
 	      presetTimer. setSingleShot (true);
-	      presetTimer. setInterval (switchDelay);
-	      presetTimer. start (switchDelay);
+	      presetTimer. setInterval	(switchDelay);
+	      presetTimer. start	(switchDelay);
 	   }
 	}
 
