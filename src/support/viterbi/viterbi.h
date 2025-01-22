@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -19,38 +19,31 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *      Main program
  */
+
 #pragma once
 
-#include	<cmath>
-#include	<complex>
-#include	<cstdint>
-#include	<unistd.h>
-#include	<vector>
-#include	<limits>
-#include	<samplerate.h>
-#include	"dab-constants.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <memory>
+#include <vector>
 
-class	newConverter {
-private:
-	int32_t		inRate;
-	int32_t		outRate;
-	double		ratio;
-	int32_t		outputLimit;
-	int32_t		inputLimit;
-	SRC_STATE	*converter;
-	SRC_DATA	src_data;
-	std::vector<float> inBuffer;
-	std::vector<float> outBuffer;
-	int32_t		inp;
+class DAB_Viterbi_Decoder_Internal;
+
+class viterbi {
 public:
-		newConverter (int32_t inRate, int32_t outRate, 
-	                      int32_t inSize);
+	static constexpr size_t m_constraint_length = 7;
+	static constexpr size_t m_code_rate = 4;
+	viterbi		(int, bool f = false);
+    	~viterbi	();
+void	deconvolve	(const int16_t *, uint8_t *);
+void	convolve	(uint8_t *input, uint8_t *out, int blockLength);
 
-		~newConverter();
-
-	bool	convert (Complex v, Complex *out, int32_t *amount);
-
-	int32_t	getOutputsize();
+private:
+	std::unique_ptr<DAB_Viterbi_Decoder_Internal> m_decoder;
+	uint64_t m_accumulated_error;
+	int	frameBits;
+	int	nrInputValues;
 };
-

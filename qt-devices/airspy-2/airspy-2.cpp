@@ -32,9 +32,6 @@
 #define	TAB_SETTINGS	"tabSettings"
 #define	CONV_QUALITY	"convQuality"
 
-static int qualityTable [] = {
-	SRC_SINC_BEST_QUALITY, SRC_SINC_MEDIUM_QUALITY,
-	SRC_SINC_FASTEST, SRC_ZERO_ORDER_HOLD, SRC_LINEAR};
 static
 const	int	EXTIO_NS	=  8192;
 static
@@ -44,7 +41,7 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 	                    const QString  &recorderVersion,
 	                    logger	*theLogger) :	// dummy for now
                                          _I_Buffer (4 * 1024 * 1024) {
-int	result, i;
+int	result;
 int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
@@ -125,7 +122,7 @@ uint32_t samplerateCount;
 	                            sampleRates. data(), samplerateCount);
 
 	selectedRate	= 0;
-	for (i = 0; i < (int)samplerateCount; i ++) {
+	for (int i = 0; i < (int)samplerateCount; i ++) {
 	   fprintf (stderr, "%d \n", sampleRates [i]);
 	   if (abs ((int)sampleRates [i] - 2048000) < distance) {
 	      distance	= abs ((int)sampleRates [i] - 2048000);
@@ -146,26 +143,24 @@ uint32_t samplerateCount;
 	   throw (device_exception
 	             (my_airspy_error_name ((enum airspy_error)result)));
 	}
-	double ratio		= (double)2048000 / selectedRate;
-	inputLimit		= 4096;
-	outputLimit		= inputLimit * ratio;
-	int err;
-	
-	int xxx		= value_i (airspySettings, AIRSPY_SETTINGS,
-	                                     CONV_QUALITY, 0);
-	int convQuality		= 4;
-	if ((0 <= xxx) && (xxx < 5)) {
-	   convQuality_setter -> setValue (xxx);
-	   convQuality		= qualityTable [4 - xxx];
-	}
-	converter		= src_new (convQuality, 2, &err);
-	inBuffer. resize (2 * inputLimit + 20);
-	outBuffer. resize (2 * outputLimit + 20);
-	src_data. data_in	= inBuffer. data ();
-	src_data. data_out	= outBuffer. data ();
-	src_data. src_ratio	= ratio;
-	src_data. end_of_input	= 0;
-	inp			= 0;
+	filterDepth		= value_i (airspySettings, AIRSPY_SETTINGS,
+	                                     CONV_QUALITY, 7);
+	convQuality_setter	-> setValue (filterDepth);
+        theFilter       = new LowPassFIR (filterDepth,
+	                                  1536000 / 2, selectedRate);
+
+//      The sizes of the mapTables follow from the input and output rate
+//      (selectedRate / 1000) vs (2048000 / 1000)
+//      so we end up with buffers with 1 msec content
+        convBufferSize          = selectedRate / 1000;
+        for (int i = 0; i < 2048; i ++) {
+           float inVal  = float (selectedRate / 1000);
+           mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
+           mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
+        }
+        convIndex       = 0;
+        convBuffer. resize (convBufferSize + 1);
+
 //
 	restore_gainSettings (tab);
 	connect (linearitySlider, &QSlider::valueChanged,
@@ -202,8 +197,6 @@ uint32_t samplerateCount;
 	         this, &airspy_2::set_xmlDump);
 	connect (this, &airspy_2::new_tabSetting,
 	         tabWidget, &QTabWidget::setCurrentIndex);
-	connect (convQuality_setter, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &airspy_2::handle_convQuality);
 //
 	displaySerial	-> setText (getSerial());
 	running. store (false);
@@ -216,7 +209,6 @@ uint32_t samplerateCount;
 	airspy_2::~airspy_2 () {
 	stopReader ();
 	myFrame. hide ();
-	src_delete	(converter);
 	store_widget_position (airspySettings, &myFrame, AIRSPY_SETTINGS);
 	store (airspySettings, AIRSPY_SETTINGS, TAB_SETTINGS,
 	                                   tabWidget -> currentIndex ());
@@ -329,33 +321,36 @@ airspy_2 *p;
 int 	airspy_2::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
-std::complex<float> temp [4096];
+std::complex<float> temp [2048];
 
 	if (dumping. load ())
 	   xmlWriter -> add ((std::complex<int16_t> *)sbuf, nSamples);
+	if (convQuality_setter -> value () != filterDepth) {
+	   filterDepth = convQuality_setter -> value ();
+	   theFilter -> resize (filterDepth);
+	   store  (airspySettings, AIRSPY_SETTINGS,
+                                             CONV_QUALITY, filterDepth);
+	}
+
 	for (int i = 0; i < nSamples; i ++) {
-	   inBuffer [2 * inp]		= sbuf [2 * i] / 2048.0f;
-	   inBuffer [2 * inp + 1]	= sbuf [2 * i + 1] / 2048.0f;
-	   inp ++;
-	   if (inp < inputLimit)
-	      continue;
-	   src_data.       input_frames    = inputLimit;
-	   src_data.       output_frames   = outputLimit;
-	   locker. lock ();
-	   int res	= src_process (converter, &src_data);
-	   locker. unlock ();
-	   if (res != 0) {
-	      fprintf (stderr, "error %s\n", src_strerror (res));
-	   }
-	   for (inp = 0;
-	        inp < inputLimit - src_data. input_frames_used;
-	            inp ++)
-	      inBuffer [inp] = inBuffer [src_data. input_frames_used + inp];
-	   int framesOut       = src_data. output_frames_gen;
-	   for (int i = 0; i < framesOut; i ++)
-	      temp [i] = std::complex<float> (outBuffer [2 * i],
-	                                      outBuffer [2 * i + 1]);
-	   _I_Buffer. putDataIntoBuffer (temp, framesOut);
+	    convBuffer [convIndex ++] = theFilter -> Pass (
+                                             std::complex<float> (
+                                                sbuf [2 * i] / (float)2048,
+                                                sbuf [2 * i + 1] / (float)2048));
+
+	   if (convIndex > convBufferSize) {
+	      for (int j = 0; j < 2048; j ++) {
+	         int16_t  inpBase    = mapTable_int [j];
+	         float    inpRatio   = mapTable_float [j];
+	         temp [j]    = convBuffer [inpBase + 1] * inpRatio +
+	                       convBuffer [inpBase] * (1 - inpRatio);
+	      }
+	      _I_Buffer. putDataIntoBuffer (temp, 2048);
+//	shift the sample at the end to the beginning, it is needed
+//	as the starting sample for the next time
+	      convBuffer [0] = convBuffer [convBufferSize];
+	      convIndex = 1;
+           }
 	}
 	return 0;
 }
@@ -935,14 +930,5 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	   printf("airspy_set_rf_bias() failed: %s (%d)\n",
 	           my_airspy_error_name ((airspy_error)result), result);
 	}
-}
-
-void	airspy_2::handle_convQuality	(int convQuality) {
-	store (airspySettings, AIRSPY_SETTINGS,CONV_QUALITY, convQuality);
-	int err;
-	locker. lock ();
-	src_delete	(converter);
-	converter		= src_new (4 - convQuality, 2, &err);
-	locker. unlock ();
 }
 

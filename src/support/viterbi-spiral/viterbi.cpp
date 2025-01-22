@@ -22,7 +22,7 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	"mm_malloc.h"
-#include	"viterbi-spiral.h"
+#include	"viterbi.h"
 #include	<cstring>
 #ifdef  __MINGW32__
 #include	<intrin.h>
@@ -81,7 +81,7 @@ static uint8_t Partab [] =
 //	One could create the table above, i.e. a 256 entry
 //	odd-parity lookup table by the following function
 //	It is now precomputed
-void	viterbiSpiral::partab_init (void){
+void	viterbi::partab_init (void){
 int16_t i,cnt,ti;
 
 	for (i = 0; i < 256; i++){
@@ -95,7 +95,7 @@ int16_t i,cnt,ti;
 	}
 }
 
-int 	viterbiSpiral::parity (int x){
+int 	viterbi::parity (int x){
 	/* Fold down to one byte */
 	x ^= (x >> 16);
 	x ^= (x >> 8);
@@ -122,8 +122,7 @@ int32_t	i;
 //	There are (in mode 1) 3 ofdm blocks, giving 4 FIC blocks
 //	There all have a predefined length. In that case we use the
 //	"fast" (i.e. spiral) code, otherwise we use the generic code
-	viterbiSpiral::viterbiSpiral (int16_t wordLength,
-	                               bool spiral) {
+	viterbi::viterbi (int16_t wordLength, bool spiral) {
 int polys [RATE] = POLYS;
 int16_t	i, state;
 #ifdef	__MINGW32__
@@ -173,7 +172,7 @@ uint32_t	size;
 }
 
 
-	viterbiSpiral::~viterbiSpiral	(void) {
+	viterbi::~viterbi	() {
 #ifdef	__MINGW32__
 	_aligned_free (vp. decisions);
 	_aligned_free (data);
@@ -219,7 +218,7 @@ uint8_t getbit (uint8_t v, int32_t o) {
 //	Note that our DAB environment maps the softbits to -127 .. 127
 //	we have to map that onto 0 .. 255
 
-void	viterbiSpiral::deconvolve	(int16_t *input, uint8_t *output) {
+void	viterbi::deconvolve	(int16_t *input, uint8_t *output) {
 uint32_t	i;
 
 	init_viterbi (&vp, 0);
@@ -241,7 +240,7 @@ uint32_t	i;
 }
 
 /* C-language butterfly */
-void	viterbiSpiral::BFLY (int i, int s, COMPUTETYPE * syms,
+void	viterbi::BFLY (int i, int s, COMPUTETYPE * syms,
 	                   struct v * vp, decision_t * d) {
 int32_t j, decision0, decision1;
 COMPUTETYPE metric,m0,m1,m2,m3;
@@ -273,7 +272,7 @@ COMPUTETYPE metric,m0,m1,m2,m3;
  * Note that nbits is the number of decoded data bits, not the number
  * of symbols!
  */
-void	viterbiSpiral::update_viterbi_blk_GENERIC (struct v *vp,
+void	viterbi::update_viterbi_blk_GENERIC (struct v *vp,
 					            COMPUTETYPE *syms,
 	                                            int16_t nbits){
 decision_t *d = (decision_t *)vp -> decisions;
@@ -310,7 +309,7 @@ void FULL_SPIRAL_no_sse (int,
 	                 COMPUTETYPE *Branchtab);
 }
 
-void	viterbiSpiral::update_viterbi_blk_SPIRAL (struct v *vp,
+void	viterbi::update_viterbi_blk_SPIRAL (struct v *vp,
 					           COMPUTETYPE *syms,
 					           int16_t nbits){
 decision_t *d = (decision_t *)vp -> decisions;
@@ -334,7 +333,7 @@ int32_t s;
 
 //
 /* Viterbi chainback */
-void	viterbiSpiral::chainback_viterbi (struct v *vp,
+void	viterbi::chainback_viterbi (struct v *vp,
 	                            uint8_t *data, /* Decoded output data */
 	                            int16_t nbits, /* Number of data bits */
 	                            uint16_t endstate){ /*Terminal encoder state */
@@ -361,7 +360,7 @@ decision_t *d = vp -> decisions;
 }
 
 /* Initialize Viterbi decoder for start of new frame */
-void 	viterbiSpiral::init_viterbi (struct v *p, int16_t starting_state){
+void 	viterbi::init_viterbi (struct v *p, int16_t starting_state){
 struct v *vp = p;
 int32_t i;
 
@@ -374,7 +373,7 @@ int32_t i;
 	vp -> old_metrics-> t[starting_state & (NUMSTATES-1)] = 0;
 }
 
-void	viterbiSpiral::convolve (uint8_t *input,
+void	viterbi::convolve (uint8_t *input,
 	                         uint8_t *out, int blockLength) {
 uint8_t a0, a1 = 0,
 	    a2 = 0, 

@@ -32,7 +32,8 @@
 #include	<cstdint>
 #include	<vector>
 #include	<atomic>
-#include	"viterbi-spiral.h"
+//#include	"viterbi-spiral.h"
+#include	"viterbi.h"
 #include	"dab-params.h"
 #include	"fib-decoder.h"
 
@@ -54,7 +55,8 @@ public:
 	int	getFICQuality		();
 private:
 	dabParams	params;
-	viterbiSpiral	myViterbi;
+	viterbi		myViterbi;
+//	viterbiSpiral	myViterbi;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	uint8_t		punctureTable	[3072 + 24];

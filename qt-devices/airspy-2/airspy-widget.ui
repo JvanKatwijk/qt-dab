@@ -45,7 +45,7 @@
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="sensitivity_lnaDisplay">
@@ -58,13 +58,13 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="digitCount">
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="sensitivity_mixerDisplay">
@@ -77,13 +77,13 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="digitCount">
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="sensitivity_vgaDisplay">
@@ -96,13 +96,13 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="digitCount">
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_5">
@@ -157,7 +157,7 @@
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
    </widget>
@@ -181,7 +181,7 @@
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="linearityDisplay">
@@ -197,7 +197,7 @@
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="linearity_lnaDisplay">
@@ -210,13 +210,13 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="digitCount">
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="linearity_mixerDisplay">
@@ -229,13 +229,13 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="digitCount">
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="linearity_vgaDisplay">
@@ -248,13 +248,13 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="digitCount">
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_8">
@@ -317,7 +317,7 @@
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label">
@@ -346,7 +346,7 @@
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QSlider" name="mixerSlider">
@@ -365,7 +365,7 @@
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="mixerDisplay">
@@ -381,7 +381,7 @@
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -413,7 +413,7 @@
       <number>10</number>
      </property>
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
@@ -442,7 +442,7 @@
       <number>2</number>
      </property>
      <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
+      <enum>QLCDNumber::SegmentStyle::Flat</enum>
      </property>
     </widget>
     <widget class="QCheckBox" name="lnaButton">
@@ -540,8 +540,11 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality level for samplerate conversion. Note that AN airSPY DEVICE emits either 2.5 Ms/s or 3 Ms/s and we need 2048000, so samplerate conversion is required.&lt;/p&gt;&lt;p&gt;For the Down sampling we use the &amp;quot;libsamplerate&amp;quot; library (all rights reserved) and that library provides a choice between 5 quality levels.&lt;/p&gt;&lt;p&gt;Level 0  - the default here - is merely a linear interpolation, level 4is based on sinc interpolation and pretty good. Of course, higher quality requires more computation. Levels 2 and 3 work fine, level 4  might require too much cpu cycles, resulting in data loss,&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
    <property name="maximum">
-    <number>4</number>
+    <number>11</number>
    </property>
    <property name="value">
     <number>4</number>

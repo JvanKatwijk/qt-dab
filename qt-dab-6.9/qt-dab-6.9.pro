@@ -18,12 +18,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 unix {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -62,8 +62,6 @@ DEPENDPATH += . \
 	      ../src/support \
 	      ../src/support/tii-library \
 	      ../src/support/buttons \
-	      ../src/support/viterbi-jan \
-	      ../src/support/viterbi-spiral \
 	      ../includes/ofdm \
 	      ../includes/protection \
 	      ../includes/backend \
@@ -109,8 +107,6 @@ INCLUDEPATH += . \
 	      ../includes/support \
 	      ../src/support/tii-library \
 	      ../includes/support/buttons \
-	      ../includes/support/viterbi-jan \
-	      ../includes/support/viterbi-spiral \
 #	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
@@ -201,7 +197,6 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/logger.h \
@@ -213,8 +208,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/wavWriter.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
-	   ../includes/support/viterbi-jan/viterbi-handler.h \
-	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/dab-tables.h \
@@ -344,7 +337,6 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/logger.cpp \
@@ -352,8 +344,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/position-handler.cpp \
 	   ../src/support/wavWriter.cpp \
 	   ../src/support/converter_48000.cpp \
-	   ../src/support/viterbi-jan/viterbi-handler.cpp \
-	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 	   ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/dab-tables.cpp \
@@ -426,7 +416,7 @@ mac {
 
 CONFIG		+= link_pkgconfig
 #PKGCONFIG	+= sndfile
-PKGCONFIG	+= samplerate
+#PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
 !mac {
@@ -435,7 +425,7 @@ LIBS      	+= -ldl
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
 #PKGCONFIG	+= sndfile
-PKGCONFIG	+= samplerate
+#PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
 INCLUDEPATH	+= /usr/local/include
@@ -484,9 +474,9 @@ CONFIG		+= datastreamer
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-CONFIG		+= PC
-#CONFIG		+= NO_SSE
-#CONFIG		+= RPI
+CONFIG		+= viterbi-new
+#CONFIG		+= spiral-sse
+#CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
@@ -522,7 +512,9 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= sdrplay-v3
 ##	CONFIG		+= hackrf
 ##	CONFIG		+= lime
-#	CONFIG		+= NO_SSE
+#	CONFIG		+= viterbi-new
+#	CONFIG		+= spiral-sse
+#	CONFIG		+= spiral-no-sse
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
@@ -561,13 +553,15 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= hackrf
 	CONFIG		+= lime
 	CONFIG		+= pluto
-#	CONFIG		+= NO_SSE
+	CONFIG		+= viterbi-new
+#	CONFIG		+= spiral-sse
+#	CONFIG		+= spiral-no-sse
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lportaudio
 #LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
-LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
+#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
@@ -903,44 +897,32 @@ datastreamer	{
 	SOURCES		+= ../server-thread/tcp-server.cpp
 }
 
-# for RPI use:
-RPI	{
-	DEFINES		+= __MSC_THREAD__
-	DEFINES		+= __THREADED_BACKEND
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
+viterbi-new {
+	DEPENDPATH	+= ../src/support/viterbi
+	#DEFINES	+= __ARCH_X86__
+	#DEFINES	+= __SSE4_1__
+	#DEFINES	+= __AVX2__
+	#DEFINES	+= __ARCH_AARCH64__
+	INCLUDEPATH	+= ../src/support/viterbi
+	HEADERS		+= ../src/support/viterbi/viterbi.h 
+	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
 }
 
-# for RPI2 use:	... doesnot seem to work
-RPI_2	{
-	DEFINES		+= __MSC_THREAD__
-	DEFINES		+= __THREADED_BACKEND
-	DEFINES		+= NEON_AVAILABLE
-	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-neon.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-neon.c
-}
-
-# for RPI3 use:		.. does not work on my buster rpi
-NEON_RPI3	{
-	DEFINES		+= __MSC_THREAD__
-	DEFINES		+= __THREADED_BACKEND
-	DEFINES		+= NEON_AVAILABLE
-#	QMAKE_CFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-#	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-neon.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-neon.c
-}
-
-PC	{
-	DEFINES		+= __THREADED_BACKEND
+spiral-sse	{
+	DEPENDPATH     +=  ../src/support/viterbi-spiral 
+	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
 	DEFINES		+= SSE_AVAILABLE
+	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
+	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-sse.h
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-sse.c
 }
 
-NO_SSE	{
+siral-no-sse	{
+	DEPENDPATH     +=  ../src/support/viterbi-spiral 
+	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
+	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
+	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
 }

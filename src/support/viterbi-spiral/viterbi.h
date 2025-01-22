@@ -39,10 +39,10 @@ struct v {
 	decision_t *decisions;   /* decisions */
 };
 
-class	viterbiSpiral {
+class	viterbi {
 public:
-		viterbiSpiral	(int16_t, bool spiral = false);
-		~viterbiSpiral	(void);
+		viterbi		(int16_t, bool spiral = false);
+		~viterbi	();
 	void	deconvolve	(int16_t *, uint8_t *);
 	void	convolve	(uint8_t *, uint8_t *, int);
 private:

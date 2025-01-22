@@ -37,7 +37,6 @@
 #include	<QTcpSocket>
 #include	<QDir>
 #include	"dab-constants.h"
-#include	<samplerate.h>
 #include	"device-exceptions.h"
 #include	"spyserver-client.h"
 
@@ -194,18 +193,19 @@ QString theAddress	= QHostAddress (s). toString ();
 	   theServer	= nullptr;
 	   return;
 	}
+	selectedRate	= INPUT_RATE;
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
-	   uint32_t cand_rate = (uint32_t)(max_samp_rate / (1 << i));
-	   if (cand_rate == INPUT_RATE) {
+	     selectedRate = (uint32_t)(max_samp_rate / (1 << i));
+	   if (selectedRate == INPUT_RATE) {
 	      desired_decim_stage = i;
-	      resample_ratio = INPUT_RATE / (double)cand_rate;
+	      resample_ratio = 1;
 	      break;
 	   } else
-	   if (cand_rate > INPUT_RATE) {
+	   if (selectedRate > INPUT_RATE) {
 //	remember the next-largest rate that is available
 	      desired_decim_stage = i;
-	      resample_ratio = INPUT_RATE / (double)cand_rate;
-	      settings. sample_rate = cand_rate;
+	      resample_ratio = INPUT_RATE / (double)selectedRate;
+	      settings. sample_rate = selectedRate;
 	   }
 
 	   if (desired_decim_stage < 0) {
@@ -246,24 +246,18 @@ QString theAddress	= QHostAddress (s). toString ();
 	                      (float)(theServer -> get_sample_rate ()));
 	theState	-> setText ("connected");
 //	start ();		// start the reader
-	in_f		= nullptr;
-	out_f	= nullptr;
-	inputLimit	= settings. batchSize;
-	outputLimit	= settings. batchSize;
-	resampler	= nullptr;
-	totalSamples	= 0;
 //	Since we are down sampling, creating an outputbuffer with the
 //	same size as the input buffer is OK
 	if (settings. resample_ratio != 1.0 ) {
-	   int error;
-	   in_f	= new float [inputLimit * 2];
-	   out_f = new float [outputLimit * 2];
-	   data. data_in = in_f;
-	   data. data_out = out_f;
-	   data. end_of_input = 0;
-	   data. src_ratio = settings. resample_ratio;
-	   data. output_frames = settings. batchSize * data. src_ratio;
-	   resampler	= src_new (settings. resample_quality, 2 , &error);
+//	we process chunks of 1 msec
+	   convBufferSize          = selectedRate / 1000;
+	   convBuffer. resize (convBufferSize + 1);
+	   for (int i = 0; i < 2048; i ++) {
+	      float inVal  = float (selectedRate / 1000);
+	      mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
+	      mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
+	   }
+	   convIndex       = 0;
 	}
 }
 
@@ -351,24 +345,23 @@ static int fillP	= 0;
 	      continue;
 
 	   if (settings. resample_ratio != 1) {
-	      for (uint32_t i = 0; i < 2 * samps; i ++) {
-	         in_f [fillP ++] =
-	                  (float) (buffer_16 [i])/ 32768.0;
-	         if (fillP <  2 * inputLimit) 
-	            continue;
-	         data. input_frames = inputLimit;
-	         error = src_process (resampler, &data);
-	         if (error != 0) {
-	            std::cerr << "Resampler process error: " <<
-	                                       src_strerror(error) << std::endl;
-	            continue;
-	         }
-	         _I_Buffer. putDataIntoBuffer ((std::complex<float> *)out_f,
-	                                         data. output_frames);
-	         for (fillP = 0; 
-	              fillP < 2 * (inputLimit - data. input_frames_used); fillP ++) {
-	            in_f [fillP] = in_f [2 * data. input_frames_used + fillP];
-	            fillP ++;
+	      std::complex<float> temp [2048];
+	      for (uint32_t i = 0; i < samps; i ++) {
+	         convBuffer [convIndex ++] =
+	                     std::complex<float> (
+                                          buffer_16 [2 * i] / 32768.0,
+                                          buffer_16 [2 * i + 1] / 32768.0);
+
+	         if (convIndex > convBufferSize) { 
+	            for (int j = 0; j < 2048; j ++) {
+	               int16_t  inpBase    = mapTable_int [j];
+	               float    inpRatio   = mapTable_float [j];
+	               temp [j]    = convBuffer [inpBase + 1] * inpRatio +
+	                             convBuffer [inpBase] * (1 - inpRatio);
+	            }
+	            _I_Buffer. putDataIntoBuffer (temp, 2048);
+	            convBuffer [0] = convBuffer [convBufferSize];
+	            convIndex = 1;
 	         }
 	      }
 	   }
