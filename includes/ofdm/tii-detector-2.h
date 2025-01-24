@@ -31,18 +31,29 @@
 #include	"dab-constants.h"
 class	QSettings;
 
+typedef struct {
+	int index;
+	float value;
+	bool	norm;
+} resultPair;
+
 class	TII_Detector_B : public TII_Detector {
 public:
-			TII_Detector_B	(uint8_t dabMode, QSettings *);
+			TII_Detector_B	(uint8_t dabMode,
+	                                 phaseTable *, QSettings *);
 			~TII_Detector_B	();
 	void		reset		();
 	QVector<tiiData>	processNULL	(int16_t threshold,
 	                                         uint8_t, bool);
 
 private:
+	
 	QSettings	*dabSettings;
 	void		collapse (std::vector<Complex> &inVec,
-	                                 float *outVec, bool);
+	                                 std::complex<float> *,
+	                                 std::complex<float> *, bool);
+	resultPair	findBestIndex	(std::complex<float> *,
+	                                 float *, float);
 	uint8_t		invTable [256];
 	Complex		decodedBuffer[768];
 	float		max;

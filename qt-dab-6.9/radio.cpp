@@ -443,8 +443,8 @@ QString h;
 	                                        S_EPG_PATH, tempPath);
 	epgPath			= checkDir (epgPath);
 
-	connect (&epgProcessor, &epgDecoder::set_epgData,
-	         this, &RadioInterface::set_epgData);
+//	connect (&epgProcessor, &epgDecoder::set_epgData,
+//	         this, &RadioInterface::set_epgData);
 //	timer for autostart epg service
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, &QTimer::timeout,

@@ -36,11 +36,13 @@ the version number was increased and is 6.9.
  * Some selectors were removed from the configuration and control widget.
 
  * A new tii detector was installed (not my own work), that is more sensotive than the one that there was already. Drawback is that if the threshold is set too low, the number of false too reports is (too) large and sometimes even lead to overload of the system. Therefore, an option was created to select between the new of the old version,
-furthermore, an option is included to set some internal oarameters, raising the noise floot, and limiting the output of the new tii detector.
+furthermore, an option is included to set some internal parameters (computing the noise floor differently), limiting the false output of the new tii detector.
+
+ * the configuration widget has a selector for selecting either the "old" or the "mew" tii detector.
 
  * the dxDisplay now shows more data on the transmitters that are identified in the current channel. 
 
- * the RII view on the spectrum scope was altered, rather than showing the spectrum of the full NULL period, it now shows the data as it is seen by the tii decoder.
+ * the TII view on the spectrum scope was altered, rather than showing the full  spectrum of the whole NULL period, it now shows the collapsed data - 192 carriers - as it is seen by the tii decoder.
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 
@@ -60,7 +62,6 @@ So, the **load Table** button is replaced by a **refresh datavase* button, pushi
  * To load a fresh instance of the database, a separate small tool was developed
 
 ![6.9](/res/read_me/db-loader.png?raw=true)
-
 
 ------------------------------------------------------------------------
 About Qt-DAB
@@ -102,8 +103,8 @@ Table of Contents
 Introduction
 =================================================================
 
-*Qt-DAB* is designed to be used  with different SDR devices in mind.
-A simple and clean interface is used and Qt-DAB-6.X  has support for a
+*Qt-DAB* is designed to be used  with different SDR devices.
+A simple and clean interface is used and Qt-DAB-6.9  has support for a
 DABsticks, all models of the SDRplay, Airspy, HackRF, LimeSDR, Adalm Pluto etc.
 
 *Qt-DAB* is being developed under Fedora, and cross compiled -
@@ -461,13 +462,14 @@ For building the AppImage on Ubuntu 20, I load the required libraries as given b
  *   sudo apt-get install mesa-common-dev
  *   sudo apt-get install libgl1-mesa-dev
  *   sudo apt-get install libqt5opengl5-dev
- *   sudo apt-get install libsndfile1-dev
- *   sudo apt-get install libsamplerate0-dev
  *   sudo apt-get install libqwt-qt5-dev
  *   sudo apt-get install qtmultimedia5-dev
  *   sudo apt-get install qtbase5-dev
  *   sudo apt-get install libqt5svg5-dev
  *   sudo apt-get install libcurl4-openssl-dev
+
+Note that the recent versions use neither libsamplerate not libsndfile
+anymore, the dependency on external kibraries should be as small as possible.
 
 Installing cmake is optional, I used it for compiling fdk-aac and the rtlsdr library.
 

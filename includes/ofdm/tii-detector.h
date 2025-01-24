@@ -30,6 +30,7 @@
 #include	<vector>
 #include	"dab-constants.h"
 #include	"fft-handler.h"
+#include	"phasetable.h"
 #include	<QVector>
 
 #define	NUM_GROUPS	8
@@ -37,7 +38,8 @@
 
 class	TII_Detector {
 public:
-			TII_Detector	(uint8_t dabMode);
+			TII_Detector	(uint8_t dabMode,
+	                                   phaseTable *theTable);
 virtual			~TII_Detector	();
 virtual	void		reset		();
 	void		addBuffer	(const std::vector<Complex> &);
@@ -45,6 +47,7 @@ virtual	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
 protected:
 	dabParams	params;
+	std::vector<Complex> table_2;
 	void		resetBuffer	();
 	uint16_t	getPattern	(int);
 	uint16_t	nrPatterns	();

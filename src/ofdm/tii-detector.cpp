@@ -112,7 +112,8 @@ uint8_t patternTable [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
-		TII_Detector::TII_Detector (uint8_t dabMode) :
+		TII_Detector::TII_Detector (uint8_t dabMode,
+	                                      phaseTable *theTable):
 	                                      params (dabMode),
 	                                      T_u (params. get_T_u ()),
 	                                      T_g (params. get_T_g ()),
@@ -123,8 +124,15 @@ uint8_t patternTable [] = {
 	window. resize (T_u);
 	for (int i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
- 
 
+	table_2. resize (carriers / 2);
+	int teller = 0;
+        for (int carrier = - carriers / 2;
+                       carrier < carriers / 2; carrier += 2) {
+	   int index    = carrier < 0 ? carrier + T_u : carrier + 1;
+           table_2 [teller ++] = theTable -> refTable [index] *
+                                 conj (theTable -> refTable [index + 1]);
+        }
 }
 
 		TII_Detector::~TII_Detector () {

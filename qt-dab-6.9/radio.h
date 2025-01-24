@@ -51,7 +51,8 @@
 #endif
 #include	"scan-handler.h"
 #include	"epgdec.h"
-#include	"epg-decoder.h"
+//#include	"epg-decoder.h"
+#include	"epg-compiler.h"
 
 #include	"device-chooser.h"
 #include	"display-widget.h"
@@ -288,6 +289,7 @@ private:
 #endif
 	CEPGDecoder		epgHandler;
 	epgDecoder		epgProcessor;
+//	epgDecoder		epgProcessor;
 	QString			epgPath;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;

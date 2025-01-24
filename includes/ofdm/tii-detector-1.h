@@ -42,7 +42,7 @@ public:
 	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
 private:
-	std::vector<Complex> table_2;
+//	std::vector<Complex> table_2;
 	bool		carrierDelete;
 	Complex		decodedBuffer [768];
 	void		collapse	(const Complex *, 

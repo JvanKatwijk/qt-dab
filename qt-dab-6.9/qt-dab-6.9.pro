@@ -16,14 +16,14 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-#QMAKE_CFLAGS	+=  -O3 -ffast-math
-#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+QMAKE_CFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 #QMAKE_CXXFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -ffast-math -flto
 #QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -197,6 +197,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
+#	   ../includes/backend/data/epg-2/epg-compiler.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/logger.h \
@@ -337,6 +338,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
+#	   ../src/backend/data/epg-2/epg-compiler.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/logger.cpp \

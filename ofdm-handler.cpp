@@ -196,7 +196,7 @@ void	ofdmHandler::run	() {
 int32_t		startIndex;
 timeSyncer	myTimeSyncer (&theReader);
 phaseTable	theTable (p -> dabMode);
-TII_Detector_B	theTIIDetector_OLD (p -> dabMode, settings_p);
+TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
 freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
 estimator	myEstimator  (radioInterface_p, p, &theTable);

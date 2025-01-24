@@ -32,16 +32,9 @@ constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
 
 	TII_Detector_A::TII_Detector_A (uint8_t dabMode,
 	                                phaseTable *theTable) :
-	                                     TII_Detector (dabMode) {
+	                                     TII_Detector (dabMode,
+	                                                   theTable) {
 	carrierDelete	= false;
-	table_2. resize (carriers / 2);
-	int teller = 0;
-	for (int carrier = - carriers / 2;
-	               carrier < carriers / 2; carrier += 2) {
-	   int index	= carrier < 0 ? carrier + T_u : carrier + 1;
-	   table_2 [teller ++] = theTable -> refTable [index] *
-	                         conj (theTable -> refTable [index + 1]);
-	}
 	reset();
 }
 
