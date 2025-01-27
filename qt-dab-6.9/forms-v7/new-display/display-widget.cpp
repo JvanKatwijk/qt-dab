@@ -22,6 +22,7 @@
  */
 
 #include	<QSettings>
+#include	<QDir>
 #include	"display-widget.h"
 #include	"spectrum-scope.h"
 #include	"null-scope.h"
@@ -50,6 +51,8 @@
 	                           DISPLAY_WIDGET_SETTINGS);
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ())); 
+	connect (&myFrame, &superFrame::makePicture, 
+                 this, &displayWidget::handle_mouseClicked);
 //
 	myFrame. hide ();
 
@@ -594,3 +597,14 @@ void	displayWidget::cleanTII	() {
 	   workingBuffer [i] =  0;
 }
 
+void	displayWidget::handle_mouseClicked () {
+QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
+        tempPath                =
+               value_s (dabSettings_p, "CONFIG_HANDLER", S_FILE_PATH, tempPath);
+        if (!tempPath. endsWith ('/'))
+           tempPath             += '/';
+	QDir::fromNativeSeparators (tempPath);
+	QString fileName	= tempPath + "spectrum-scope.png";
+	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
+	myFrame. grab (). save (fileName);
+}

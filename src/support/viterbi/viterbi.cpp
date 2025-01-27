@@ -138,10 +138,11 @@ uint8_t dataOut [(frameBits + K - 1) / 8 + 1];
 	m_decoder -> reset ();
 //	fprintf (stderr, "nrInputValues %d\n", nrInputValues);
 	m_accumulated_error +=
-	              Decoder::update<uint64_t> (*m_decoder.get(),
+	              Decoder::update<uint64_t> (*m_decoder.get (),
 	                                         inputValues, nrInputValues);
 	m_decoder -> chainback (dataOut, frameBits, 0);
-	const uint64_t error = m_accumulated_error + uint64_t(m_decoder->get_error());
+	const uint64_t error =
+	          m_accumulated_error + uint64_t(m_decoder -> get_error ());
 	for (int i = 0; i < this -> frameBits; i ++)
 	   outVector [i] = (dataOut [i >> 3] & bits [i & 07]) != 0 ? 1 : 0;
 }

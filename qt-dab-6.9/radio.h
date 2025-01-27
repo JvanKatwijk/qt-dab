@@ -51,8 +51,8 @@
 #endif
 #include	"scan-handler.h"
 #include	"epgdec.h"
-//#include	"epg-decoder.h"
-#include	"epg-compiler.h"
+#include	"epg-decoder.h"
+//#include	"epg-compiler.h"
 
 #include	"device-chooser.h"
 #include	"display-widget.h"

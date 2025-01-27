@@ -138,6 +138,7 @@ private slots:
 
 	void	handle_tiiSelector		(int);
 
+	void	handle_mouseClicked		();
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);

@@ -50,9 +50,9 @@ private:
 	
 	QSettings	*dabSettings;
 	void		collapse (std::vector<Complex> &inVec,
-	                                 std::complex<float> *,
-	                                 std::complex<float> *, bool);
-	resultPair	findBestIndex	(std::complex<float> *,
+	                                 Complex *,
+	                                 Complex *, bool);
+	resultPair	findBestIndex	(Complex *,
 	                                 float *, float);
 	uint8_t		invTable [256];
 	Complex		decodedBuffer[768];

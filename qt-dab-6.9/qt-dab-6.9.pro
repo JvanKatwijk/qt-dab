@@ -16,11 +16,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -O3 -ffast-math 
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+#QMAKE_LFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -520,20 +521,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3
-	}
-	else {
-	   TARGET		= qt-dab32-qt6-6.9V3
-	}
-	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9
+#	   TARGET		= qt-dab32-qt5-6.9V3
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9
+#	   TARGET		= qt-dab32-qt6-6.9V3
 #	}
-#	CONFIG		+= dabstick-win-v4
+#	CONFIG		+= dabstick-win-v3
+	equals (QT_MAJOR_VERSION, 5) {
+	   TARGET		= qt-dab32-qt5-6.9
+	}
+	else {
+	   TARGET		= qt-dab32-qt6-6.9
+	}
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
@@ -901,8 +902,11 @@ datastreamer	{
 
 viterbi-new {
 	DEPENDPATH	+= ../src/support/viterbi
-	#DEFINES	+= __ARCH_X86__
-	#DEFINES	+= __SSE4_1__
+	QMAKE_CFLAGS    +=  -march=x86-64-v2 
+	QMAKE_CXXFLAGS  +=  -march=x86-64-v2 
+	QMAKE_LFLAGS    +=  -march=x86-64-v2 
+	DEFINES		+= __ARCH_X86__
+	DEFINES		+= __SSE4_1__
 	#DEFINES	+= __AVX2__
 	#DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi
@@ -913,7 +917,7 @@ viterbi-new {
 spiral-sse	{
 	DEPENDPATH     +=  ../src/support/viterbi-spiral 
 	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
-	DEFINES		+= SSE_AVAILABLE
+	DEFINES		+=  SSE_AVAILABLE
 	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
 	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-sse.h

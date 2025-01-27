@@ -52,8 +52,8 @@ void	TII_Detector_B::reset	() {
 
 //	Note that the input is fft output, not yet reordered
 void	TII_Detector_B::collapse (std::vector<Complex> &inVec,
-	                          std::complex <float> *outVec_etsi,
-	                          std::complex <float> *outVec_nonetsi,
+	                          Complex *outVec_etsi,
+	                          Complex *outVec_nonetsi,
 	                          bool tiiFilter) {
 int	teller = 0;
     for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
@@ -86,10 +86,10 @@ int	teller = 0;
 	}
 
 	for (int i = 0; i < 192; i ++) {
-	   outVec_etsi [i] = std::complex<float> (0, 0);
-	   outVec_nonetsi [i] = std::complex<float> (0, 0);
+	   outVec_etsi [i] = Complex (0, 0);
+	   outVec_nonetsi [i] = Complex (0, 0);
 	   for (int j = 0; j < nrSections; j ++) {
-	      std::complex<float> X = decodedBuffer [i + j * 192];
+	      Complex X = decodedBuffer [i + j * 192];
 	      outVec_etsi [i] += X ;
 	      outVec_nonetsi [i] += X * conj (table_2 [i + j * 192]);
 	   }
@@ -100,12 +100,12 @@ static
 uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 
-resultPair TII_Detector_B::findBestIndex (std::complex<float> *vector_192,
+resultPair TII_Detector_B::findBestIndex (Complex *vector_192,
 	                                  float *avgTable, float threshold) {
-std::complex<float> C_table [GROUPSIZE];
+Complex C_table [GROUPSIZE];
 int	D_table [GROUPSIZE];
 resultPair	bestPair;
-	memset (C_table, 0, GROUPSIZE * sizeof (std::complex<float>));
+	memset (C_table, 0, GROUPSIZE * sizeof (Complex));
 	memset (D_table, 0, GROUPSIZE * sizeof (int));
 //
 //	We only use the C and D table to locate the start offset
@@ -114,7 +114,7 @@ resultPair	bestPair;
 	      if (jan_abs (vector_192 [j * GROUPSIZE + i]) >
 	                                     threshold * avgTable [j]) {
 	         C_table [i] +=
-	            vector_192 [j * GROUPSIZE + i] / (threshold * avgTable [j]);
+	            vector_192 [j * GROUPSIZE + i] / (DABFLOAT) (threshold * avgTable [j]);
 	         D_table [i] ++;
 	      }
 	   }
@@ -141,9 +141,9 @@ QVector<tiiData>	TII_Detector_B::processNULL (int16_t threshold_db,
 	                                             uint8_t selected_subId,
 	                                             bool tiiFilter) {
 // collapses values:
-std::complex<float>	collapsed_etsi	[NUM_GROUPS * GROUPSIZE];
+Complex	collapsed_etsi	[NUM_GROUPS * GROUPSIZE];
 // collapses values
-std::complex<float>	collapsed_nonetsi	[NUM_GROUPS * GROUPSIZE];
+Complex	collapsed_nonetsi	[NUM_GROUPS * GROUPSIZE];
 float	avgTable	[NUM_GROUPS];
 QVector<tiiData> theResult;
 
@@ -189,7 +189,7 @@ float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 	   }
 
 	   resultPair result;
-	   std::complex<float> *collapsed = nullptr;
+	   Complex *collapsed = nullptr;
 	   if (result_2. value > result_1. value) {
 	      result = result_2;
 	      result. norm = true;
@@ -231,13 +231,13 @@ float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
 	      }
 	   }
 	   finInd = invTable [pattern];
-	   std::complex<float> phaseHolder = std::complex<float> (0, 0);
+	   Complex phaseHolder = std::complex<float> (0, 0);
 	   for (int i = 0; i < 8; i ++) {
 	      if (pattern & bits [i]) {
 	         int index = result. index + i * 24;
 	         phaseHolder += collapsed [index];
-	         collapsed_etsi [index] = std::complex<float> (0, 0);
-	         collapsed_nonetsi [index] = std::complex<float> (0, 0);
+	         collapsed_etsi [index] = Complex (0, 0);
+	         collapsed_nonetsi [index] = Complex (0, 0);
 	      }
 	   }
 	   tiiData v;

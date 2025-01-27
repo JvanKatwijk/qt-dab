@@ -113,6 +113,7 @@ private slots:
 	void		rightMouseClick		();
 	void		handleNcpScope_checkBox (int);
 	void		handleMarksButton	();
+	void		handle_mouseClicked	();
 signals:
 	void		mouseClick	();
 	void		frameClosed	();

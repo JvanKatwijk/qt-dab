@@ -25,6 +25,7 @@
 #include	<QStringList>
 #include	<QStringListModel>
 #include	<QColorDialog>
+#include	<QDir>
 #include	"dab-constants.h"
 #include	"config-handler.h"
 #include	"mapport.h"
@@ -90,6 +91,8 @@ int	index_for_key (int key) {
 	hide ();
 	connect (&myFrame, &superFrame::frameClosed,
 	         this, &configHandler::frameClosed);
+	connect (&myFrame, &superFrame::makePicture,
+	         this, &configHandler::handle_mouseClicked);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
 	
@@ -963,7 +966,7 @@ QString dir	=
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
 	if (dir != "")
-	   store (dabSettings, CONFIG_HANDLER, "filePath", dir);
+	   store (dabSettings, DAB_GENERAL,  S_FILE_PATH, dir);
 }
 
 bool	configHandler::get_audioServices_only () {
@@ -1004,5 +1007,17 @@ bool	x 	= tiiSelector	-> isChecked ();
 	else
 	   tiiThreshold_setter -> setMinimum (4);
 	process_tiiSelector (x);
+}
+
+void	configHandler::handle_mouseClicked () {
+QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
+        tempPath                =
+               value_s (dabSettings, "CONFIG_HANDLER", S_FILE_PATH, tempPath);
+        if (!tempPath. endsWith ('/'))
+           tempPath             += '/';
+	QDir::fromNativeSeparators (tempPath);
+	QString fileName	= tempPath + "config-handler.png";
+	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
+	myFrame. grab (). save (fileName);
 }
 

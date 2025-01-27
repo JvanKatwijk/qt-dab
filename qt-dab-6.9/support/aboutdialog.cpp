@@ -46,10 +46,11 @@
 
 	ui -> libraries -> setText (tr("Qt-DAB uses following libraries (and greatly acknowledges the copyright):")+
                            "<ul>"
-	                   "<li>The excellent Qwt library (version 6.2) by Uwe Rathmann</li>"
+	                   "<li>The excellent Qt framework by Qt, and the Qwt library (version 6.2) by Uwe Rathmann</li>"
                            "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>"
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solonon</a> by Phil Karn, KA9Q</li>"
-                           "<li><a href=\"https://github.io/libsamplerate\">libsndfile</a> by Erik de Castro Lopo</li>"
+                           "<li><a href=\"https://www.spiral.net/software/viterbi.html\">viterbi code generator</a> by the Spiral project</li>"
+                           "<li><a href=\"https://github.com/williamyang98/ViterbiDecoderCpp\"> the excellent header only viterbi library</a> by  William Yang, based on Phil Karn's library</li>"
                            "<li><a href=\"www.portaudio.com/\">Portaudio</a> by Ross Bencina, Phil Burke and many others</li>"
                            "<li>An MP2 decoder by Martin J Fiedler (martin.fiedler@gmx.net)</li>"
 	                  "<li>\"NewsService Journaline(R) Decoder\", CopyRight (c) 2003, 2001-2014 Fraunhofer IID, Erlangen, Germany</li>"

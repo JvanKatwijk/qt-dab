@@ -65,6 +65,8 @@
 #include	"settingNames.h"
 #include	"uploader.h"
 
+#include	<QScreen>
+
 static float peakLeftDamped = 0;
 static float peakRightDamped = 0;
 #if defined (__MINGW32__) || defined (_WIN32)
@@ -1882,7 +1884,16 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	     the_ensembleHandler -> add_favorite_from_scanList (service);
 	   }
 	}
-
+	else
+	if (event -> type () == QEvent::MouseButtonPress) {
+	   QPixmap originalPixmap;
+	   QScreen *screen = QGuiApplication::primaryScreen();
+           originalPixmap = screen -> grabWindow(this -> winId());
+	   QString format = "png";
+	   QString fileName = path_for_pictures + "main-widget";
+	   fileName = fileName;
+	   originalPixmap. save (fileName, format.toLatin1 ());
+	}
 	return QWidget::eventFilter (obj, event);
 }
 
