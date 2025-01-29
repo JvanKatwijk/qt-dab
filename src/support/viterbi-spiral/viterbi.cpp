@@ -81,7 +81,7 @@ static uint8_t Partab [] =
 //	One could create the table above, i.e. a 256 entry
 //	odd-parity lookup table by the following function
 //	It is now precomputed
-void	viterbi::partab_init (void){
+void	viterbi::partab_init () {
 int16_t i,cnt,ti;
 
 	for (i = 0; i < 256; i++){
@@ -122,7 +122,7 @@ int32_t	i;
 //	There are (in mode 1) 3 ofdm blocks, giving 4 FIC blocks
 //	There all have a predefined length. In that case we use the
 //	"fast" (i.e. spiral) code, otherwise we use the generic code
-	viterbi::viterbi (int16_t wordLength, bool spiral) {
+	viterbi::viterbi (int16_t wordLength, bool spiral, uint8_t cpuSupport) {
 int polys [RATE] = POLYS;
 int16_t	i, state;
 #ifdef	__MINGW32__
@@ -131,6 +131,7 @@ uint32_t	size;
 
 	this	-> frameBits	= wordLength;
 	this	-> spiral	= spiral;
+	(void)cpuSupport;	// only used in the other viterbi decoder
 //	partab_init	();
 
 // B I G N O T E	The spiral code uses (wordLength + (K - 1) * sizeof ...

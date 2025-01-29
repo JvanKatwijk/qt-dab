@@ -55,7 +55,8 @@ public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
 	                                         RingBuffer<uint8_t> *,
-	                                         logger		*);
+	                                         logger		*,
+	                                         uint8_t);
 			~mscHandler		();
 	void		processBlock_0		(Complex *);
 	void		processMsc		(std::vector<Complex> &,
@@ -76,6 +77,7 @@ private:
 	RadioInterface		*myRadioInterface;
 	RingBuffer<uint8_t>	*frameBuffer;
 	logger		*theLogger;
+	uint8_t		cpuSupport;
 #ifdef	__MSC_THREAD__
 	fftHandler	fft;
         QSemaphore      bufferSpace;

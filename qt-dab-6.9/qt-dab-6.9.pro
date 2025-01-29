@@ -16,12 +16,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-#QMAKE_CFLAGS	+=  -O3 -ffast-math 
-#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-#QMAKE_LFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
+QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -58,6 +58,7 @@ DEPENDPATH += . \
 	      ../src/backend/audio \
 	      ../src/backend/data \
 	      ../src/backend/data/mot \
+	      ../src/backend/data/epg-2 \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
@@ -902,11 +903,11 @@ datastreamer	{
 
 viterbi-new {
 	DEPENDPATH	+= ../src/support/viterbi
-	QMAKE_CFLAGS    +=  -march=x86-64-v2 
-	QMAKE_CXXFLAGS  +=  -march=x86-64-v2 
-	QMAKE_LFLAGS    +=  -march=x86-64-v2 
+	QMAKE_CFLAGS    +=  -mavx2 -msse4
+	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
+	QMAKE_LFLAGS    +=  -mavx2
 	DEFINES		+= __ARCH_X86__
-	DEFINES		+= __SSE4_1__
+	#DEFINES	+= __SSE4_1__
 	#DEFINES	+= __AVX2__
 	#DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi

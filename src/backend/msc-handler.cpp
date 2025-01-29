@@ -45,7 +45,8 @@ static int cifTable [] = {18, 72, 0, 36};
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 RingBuffer<uint8_t> *frameBuffer_i,
-	                                 logger		*theLogger):
+	                                 logger		*theLogger,
+	                                 uint8_t 	cpuSupport):
 	                                       params (dabMode),
 	                                       myMapper (dabMode),
 	                                       myRadioInterface (mr),
@@ -56,6 +57,7 @@ static int cifTable [] = {18, 72, 0, 36};
 #endif		                            
 {
 	this	-> theLogger	= theLogger;
+	this	-> cpuSupport	= cpuSupport;
 	cifVector. resize (55296);
 	BitsperBlock		= 2 * params. get_carriers();
 	ibits. resize (BitsperBlock);
@@ -233,7 +235,8 @@ bool	mscHandler::setChannel (descriptorType &d,
 	                                     dataBuffer,
 	                                     frameBuffer,
 	                                     dump,
-	                                     flag)); 
+	                                     flag,
+	                                     cpuSupport)); 
 	fprintf (stderr, "we have now %d backends running\n",
 	                        (int)(theBackends. size ()));
 	return true;

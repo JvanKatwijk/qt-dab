@@ -229,6 +229,7 @@ private:
 	RingBuffer<std::complex<int16_t>>	theAudioBuffer;
 	RingBuffer<float>	stdDevBuffer;
 
+	uint8_t			cpuSupport;
 	displayWidget		theNewDisplay;
 	snrViewer		theSNRViewer;
 //	QFrame			theDataDisplay;

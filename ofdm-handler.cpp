@@ -54,14 +54,16 @@
 	                                 deviceHandler	*inputDevice,
 	                                 processParams	*p,
 	                                 QSettings	*dabSettings,
-	                                 logger		*theLogger):
+	                                 logger		*theLogger,
+	                                 uint8_t	cpuSupport):
 	                                    radioInterface_p (mr),
 	                                    params (p -> dabMode),
 	                                    settings_p (dabSettings),
 	                                    theReader (mr,
 	                                              inputDevice,
 	                                              p -> spectrumBuffer),
-	                                    theFicHandler (mr, p -> dabMode),
+	                                    theFicHandler (mr, p -> dabMode,
+	                                                      cpuSupport),
 	                                    theEtiGenerator (p -> dabMode,
 	                                                  &theFicHandler),
 	                                    theOfdmDecoder (mr,
@@ -71,10 +73,12 @@
 	                                                 p -> iqBuffer),
 	                                    theMscHandler (mr, p -> dabMode,
 	                                                p -> frameBuffer,
-	                                                theLogger) {
+	                                                theLogger,
+	                                                cpuSupport) {
 
 	this	-> p			= p;
 	this	-> theLogger		= theLogger;
+	this	-> cpuSupport		= cpuSupport;
 	this	-> threshold		= p -> threshold;
 	this	-> tiiBuffer_p		= p -> tiiBuffer;
 	this	-> nullBuffer_p		= p -> nullBuffer;

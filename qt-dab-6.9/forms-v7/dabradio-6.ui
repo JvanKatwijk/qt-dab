@@ -469,6 +469,13 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_13">
        <item>
+        <widget class="QLabel" name="cpuLabel">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="distanceLabel">
          <property name="font">
           <font>

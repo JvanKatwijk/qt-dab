@@ -605,6 +605,15 @@ QString h;
 //	we wait until one is selected
 	connectGUI ();
 //
+	this	-> cpuSupport	= 0;
+#ifdef	__ARCH_X86__
+	__builtin_cpu_init ();
+	int has_avg2	=
+	          __builtin_cpu_supports ("avx2") != 0 ? AVX_SUPPORT : 0;
+	int has_sse4
+	        = __builtin_cpu_supports ("sse4.1") != 0 ? SSE_SUPPORT : 0;
+	cpuSupport	= has_avg2 + has_sse4;
+#endif
 //	Just check whether the ini file is used before
 	bool iniExists	=
 	           value_i (dabSettings_p, DAB_GENERAL, "EXISTS", 0) != 0;
@@ -625,8 +634,6 @@ QString h;
 	configHandler_p		-> show ();
 	configHandler_p		-> connectDevices ();
 	qApp	-> installEventFilter (this);
-//
-//	and just wait to see what device is selected
 }
 //
 //	doStart (QString) is called when - on startup - NO device
@@ -645,7 +652,7 @@ void	RadioInterface::doStart (const QString &dev) {
 //	device, check for a preset name
 void	RadioInterface::startDirect	() {
 	disconnect (channelSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	            qOverload<const QString &> (&QComboBox::textActivated),
 #else
 	            qOverload<const QString &> (&QComboBox::activated),
@@ -656,11 +663,23 @@ void	RadioInterface::startDirect	() {
 	int k = channelSelector -> findText (startingChannel);
 	if (k != -1) 	
 	   channelSelector -> setCurrentIndex (k);
+#ifdef	__ARCH_X86__
+	if (cpuSupport & AVX_SUPPORT)
+	   cpuLabel -> setText ("avx2");
+	else
+	if (cpuSupport & SSE_SUPPORT)
+	   cpuLabel -> setText ("sse4.1");
+	else
+	   cpuLabel -> setText ("scalar");
+#else
+	cpuLabel -> setText ("");
+#endif
 	theLogger. log (logger::LOG_RADIO_STARTS, inputDevice_p -> deviceName (),
 	                                 channelSelector -> currentText ());
 	theOFDMHandler	= new ofdmHandler  (this,
 	                                    inputDevice_p,
-	                                    &globals, dabSettings_p, &theLogger);
+	                                    &globals, dabSettings_p,
+	                                    &theLogger, this -> cpuSupport);
 	channel. cleanChannel ();
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());

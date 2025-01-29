@@ -33,6 +33,7 @@
 #include	<stdint.h>
 #include	<stdio.h>
 #include	<limits>
+#include	"dab-constants.h"
 #include	<memory>
 
 #include <emmintrin.h>
@@ -80,20 +81,26 @@ static const auto decoder_branch_table =
 
 // Wrap compile time selected decoder for forward declaration
 	#if defined(__ARCH_X86__)
-	   #if defined(__AVX2__)
-	      #pragma message("DAB_VITERBI_DECODER using x86 AVX2")
 	      #include "viterbi-includes/x86/viterbi_decoder_avx_u16.h"
-	      using Decoder = ViterbiDecoder_AVX_u16<K,R>;
-	   #elif defined(__SSE4_1__)
-	      #pragma message("DAB_VITERBI_DECODER using x86 SSE4.1")
-	      #include	<emmintrin.h>
-	      #include "viterbi-includes/x86/viterbi_decoder_sse_u16.h"
-	      using Decoder = ViterbiDecoder_SSE_u16<K,R>;
-	   #else
-	      #pragma message("DAB_VITERBI_DECODER using x86 SCALAR")
+	      using Decoder_avx = ViterbiDecoder_AVX_u16<K,R>;
+	      #include "viterbi-includes/x86/viterbi_decoder_avx_u16.h"
+	      using Decoder_sse = ViterbiDecoder_AVX_u16<K,R>;
 	      #include "viterbi-includes/viterbi_decoder_scalar.h"
-	      using Decoder = ViterbiDecoder_Scalar<K,R,uint16_t,int16_t>;
-	   #endif
+	      using Decoder_scalar = ViterbiDecoder_Scalar<K,R,uint16_t,int16_t>;
+//	   #if defined(__AVX2__)
+//	      #pragma message("DAB_VITERBI_DECODER using x86 AVX2")
+//	      #include "viterbi-includes/x86/viterbi_decoder_avx_u16.h"
+//	      using Decoder = ViterbiDecoder_AVX_u16<K,R>;
+//	   #elif defined(__SSE4_1__)
+//	      #pragma message("DAB_VITERBI_DECODER using x86 SSE4.1")
+//	      #include	<emmintrin.h>
+//	      #include "viterbi-includes/x86/viterbi_decoder_sse_u16.h"
+//	      using Decoder = ViterbiDecoder_SSE_u16<K,R>;
+//	   #else
+//	      #pragma message("DAB_VITERBI_DECODER using x86 SCALAR")
+//	      #include "viterbi-includes/viterbi_decoder_scalar.h"
+//	      using Decoder = ViterbiDecoder_Scalar<K,R,uint16_t,int16_t>;
+//	   #endif
 	#elif defined(__ARCH_AARCH64__)
 	   #pragma message("DAB_VITERBI_DECODER using ARM AARCH64 NEON")
 	   #include "viterbi-includes/arm/viterbi_decoder_neon_u16.h"
@@ -101,7 +108,7 @@ static const auto decoder_branch_table =
 	#else
 	   #pragma message("DAB_VITERBI_DECODER using crossplatform SCALAR")
 	   #include "viterbi-includes/viterbi_decoder_scalar.h"
-	   using Decoder = ViterbiDecoder_Scalar<K,R,uint16_t,int16_t>;
+	   using Decoder_scalar = ViterbiDecoder_Scalar<K,R,uint16_t,int16_t>;
 	#endif
 
 	using Core = ViterbiDecoder_Core<K,R,uint16_t,int16_t>;
@@ -112,9 +119,10 @@ public:
     DAB_Viterbi_Decoder_Internal(U&& ... args): Core(std::forward<U>(args)...) {}
 };
 
-	viterbi::viterbi (int frameBits, bool f):
+	viterbi::viterbi (int frameBits, bool f, uint8_t cpuSupport):
 	                              m_accumulated_error(0) {
 	(void)f;
+	this	-> cpuSupport = cpuSupport;
 	m_decoder =
 	          std::make_unique<DAB_Viterbi_Decoder_Internal>(
 	                                           decoder_branch_table,
@@ -137,9 +145,32 @@ uint8_t dataOut [(frameBits + K - 1) / 8 + 1];
 
 	m_decoder -> reset ();
 //	fprintf (stderr, "nrInputValues %d\n", nrInputValues);
-	m_accumulated_error +=
+
+#if defined(__ARCH_X86__)
+	if (cpuSupport & AVX_SUPPORT) {
+	   m_accumulated_error +=
+	              Decoder_avx::update<uint64_t> (*m_decoder.get (),
+	                                         inputValues, nrInputValues);
+	}
+	else
+	if (cpuSupport & SSE_SUPPORT) {
+	   m_accumulated_error +=
+	              Decoder_sse::update<uint64_t> (*m_decoder.get (),
+	                                         inputValues, nrInputValues);
+	}
+	else
+	   m_accumulated_error +=
+	              Decoder_scalar::update<uint64_t> (*m_decoder.get (),
+	                                         inputValues, nrInputValues);
+#elif defined(__ARCH_AARCH64__)
+	   m_accumulated_error +=
 	              Decoder::update<uint64_t> (*m_decoder.get (),
 	                                         inputValues, nrInputValues);
+#else
+	   m_accumulated_error +=
+	              Decoder_scalar::update<uint64_t> (*m_decoder.get (),
+	                                         inputValues, nrInputValues);
+#endif
 	m_decoder -> chainback (dataOut, frameBits, 0);
 	const uint64_t error =
 	          m_accumulated_error + uint64_t(m_decoder -> get_error ());

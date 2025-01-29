@@ -27,8 +27,9 @@
 #include	"protection.h"
 #include	<cstring>
 
-       protection::protection  (int16_t bitRate, int16_t protLevel):
-                                        viterbi (24 * bitRate, true),
+       protection::protection  (int16_t bitRate,
+	                        int16_t protLevel, uint8_t cpuSupport):
+                                       viterbi (24 * bitRate, true, cpuSupport),
 //                                        viterbiSpiral (24 * bitRate, true),
                                         outSize (24 * bitRate),
 	                                indexTable   (outSize * 4 + 24),

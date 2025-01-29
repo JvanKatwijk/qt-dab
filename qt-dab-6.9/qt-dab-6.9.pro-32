@@ -900,13 +900,15 @@ datastreamer	{
 	SOURCES		+= ../server-thread/tcp-server.cpp
 }
 
+#
+# for the arm based devices the spec shoyld be adapted
 viterbi-new {
 	DEPENDPATH	+= ../src/support/viterbi
-	QMAKE_CFLAGS    +=  -march=x86-64-v2 
-	QMAKE_CXXFLAGS  +=  -march=x86-64-v2 
-	QMAKE_LFLAGS    +=  -march=x86-64-v2 
+	QMAKE_CFLAGS    +=  -mavx2 -msse4
+	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
+	QMAKE_LFLAGS    +=  -mavx2 -msse4
 	DEFINES		+= __ARCH_X86__
-	DEFINES		+= __SSE4_1__
+	#DEFINES	+= __SSE4_1__
 	#DEFINES	+= __AVX2__
 	#DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi

@@ -30,7 +30,7 @@
 
 	class uep_protection: public protection {
 public:
-		uep_protection (int16_t, int16_t);
+		uep_protection (int16_t, int16_t, uint8_t);
 		~uep_protection	();
 };
 

@@ -49,10 +49,11 @@
   */
 
 		ficHandler::ficHandler (RadioInterface *mr,
-	                                uint8_t dabMode):
+	                                uint8_t dabMode,
+	                                uint8_t cpuSupport):
 	                                    fibDecoder (mr),
 	                                    params (dabMode),
-	                                    myViterbi (768, true) {
+	                                    myViterbi (768, true, cpuSupport) {
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	index		= 0;

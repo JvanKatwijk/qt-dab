@@ -33,8 +33,9 @@
   *	define the puncturing table
   */
 	eep_protection::eep_protection (int16_t bitRate,
-	                                int16_t protLevel):
-	                                     protection (bitRate, protLevel) {
+	                                int16_t protLevel, uint8_t cpuSupport):
+	                                     protection (bitRate,
+	                                                 protLevel, cpuSupport) {
 int16_t	viterbiCounter	= 0;
 int16_t	L1 = 0,
         L2 = 0;

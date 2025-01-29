@@ -394,10 +394,10 @@ std::vector<parameter *> theParameters;
 	      if (protTable [i] == nullptr) {
 	         if (t -> uepFlag)
 	            protTable [i] = new uep_protection (t -> bitRate,
-	                                                    t -> protLevel);
+	                                                t -> protLevel, 0);
 	         else
 	            protTable [i] = new eep_protection (t -> bitRate,
-	                                                    t -> protLevel);
+	                                                t -> protLevel, 0);
 	         
 	         memset (shiftRegister, 1, 9);
 	         descrambler [i] = new uint8_t [24 * t -> bitRate];

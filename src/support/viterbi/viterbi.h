@@ -36,7 +36,7 @@ class viterbi {
 public:
 	static constexpr size_t m_constraint_length = 7;
 	static constexpr size_t m_code_rate = 4;
-	viterbi		(int, bool f = false);
+	viterbi		(int, bool f = false, uint8_t cpuSupport = 0);
     	~viterbi	();
 void	deconvolve	(const int16_t *, uint8_t *);
 void	convolve	(uint8_t *input, uint8_t *out, int blockLength);
@@ -46,4 +46,5 @@ private:
 	uint64_t m_accumulated_error;
 	int	frameBits;
 	int	nrInputValues;
+	uint8_t	cpuSupport;
 };

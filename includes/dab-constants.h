@@ -40,6 +40,11 @@
 //#include	<malloc.h>
 #endif
 
+#ifdef	__ARCH_X86__
+#define	AVX_SUPPORT	0100
+#define	SSE_SUPPORT	0200
+#endif
+
 #if defined (__MINGW32__) || defined (__WIN32)
 //#include	"iostream.h"
 #include	"windows.h"

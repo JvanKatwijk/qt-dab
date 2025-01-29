@@ -37,8 +37,9 @@
 	                         RingBuffer<std::complex<int16_t>> *audiobuffer,
 	                         RingBuffer<uint8_t> *databuffer,	
 	                         RingBuffer<uint8_t> *frameBuffer,
-	                         FILE *dump, int flag):
-	                                    deconvolver (d),
+	                         FILE *dump, int flag,
+	                         uint8_t	cpuSupport):
+	                                    deconvolver (d, cpuSupport),
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr,
 	                                            theLogger, 

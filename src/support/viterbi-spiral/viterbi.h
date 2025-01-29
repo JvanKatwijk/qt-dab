@@ -41,7 +41,8 @@ struct v {
 
 class	viterbi {
 public:
-		viterbi		(int16_t, bool spiral = false);
+		viterbi		(int16_t, bool spiral = false,
+	                                        uint8_t cpuSupport = 0);
 		~viterbi	();
 	void	deconvolve	(int16_t *, uint8_t *);
 	void	convolve	(uint8_t *, uint8_t *, int);

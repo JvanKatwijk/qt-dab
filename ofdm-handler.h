@@ -56,7 +56,8 @@ public:
 	                         deviceHandler *,
 	                         processParams *,
 	                         QSettings	*,
-	                         logger		*);
+	                         logger		*,
+	                         uint8_t);
 		~ofdmHandler			();
 	void		start			();
 //	void		start			(int32_t);
@@ -119,6 +120,7 @@ private:
 	dabParams		params;
 	QSettings		*settings_p;
 	logger			*theLogger;
+	uint8_t			cpuSupport;
 	sampleReader		theReader;
 	ficHandler		theFicHandler;
 	etiGenerator		theEtiGenerator;
