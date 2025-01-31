@@ -122,10 +122,11 @@ uint8_t	theVector [6144];
 //	Note CIF counts from 0 .. 3
 //
 		etiGenerator::etiGenerator	(uint8_t   dabMode,
-	                                        ficHandler *my_ficHandler):
+	                                        ficHandler *my_ficHandler,
+	                                        uint8_t		cpuSupport):
 	                                            params (dabMode) {
 	this	-> my_ficHandler	= my_ficHandler;
-
+	this	-> cpuSupport	= cpuSupport;
 	index_Out		= 0;
 	BitsperBlock		= 2 * params. get_carriers ();
 	numberofblocksperCIF	= 18;	// mode I
@@ -394,10 +395,12 @@ std::vector<parameter *> theParameters;
 	      if (protTable [i] == nullptr) {
 	         if (t -> uepFlag)
 	            protTable [i] = new uep_protection (t -> bitRate,
-	                                                t -> protLevel, 0);
+	                                                t -> protLevel,
+	                                                cpuSupport);
 	         else
 	            protTable [i] = new eep_protection (t -> bitRate,
-	                                                t -> protLevel, 0);
+	                                                t -> protLevel,
+	                                                cpuSupport);
 	         
 	         memset (shiftRegister, 1, 9);
 	         descrambler [i] = new uint8_t [24 * t -> bitRate];

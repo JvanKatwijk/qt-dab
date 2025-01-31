@@ -424,7 +424,7 @@ QString h;
 	techWindow_p		-> hide		();
 #endif
 //
-//	some MOT, tetx and other data is stored in the Qt-DAB-files directory
+//	some MOT, text and other data is stored in the Qt-DAB-files directory
 //	in home or tmp dir
 	QString tempPath	= theFilenameFinder. basicPath ();
 	path_for_tiiFile	=
@@ -1910,8 +1910,12 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
            originalPixmap = screen -> grabWindow(this -> winId());
 	   QString format = "png";
 	   QString fileName = path_for_pictures + "main-widget";
-	   fileName = fileName;
-	   originalPixmap. save (fileName, format.toLatin1 ());
+#ifdef	__MINGW32__
+	   fileName = fileName + ".png";
+	   originalPixmap. save (fileName);
+#else
+	   originalPixmap. save (fileName, format.toLatin1 (). data ());
+#endif
 	}
 	return QWidget::eventFilter (obj, event);
 }
@@ -3794,7 +3798,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 //
 //	It the new TII data make sense and there is already
 //	an item in the transmitterList, then just check whether
-//	or not that item as recorgnized
+//	or not that item as recognized
 	   cacheElement *to = inList (r [i]. mainId, r [i]. subId);
 	   if (to != nullptr) {
 	      if (to -> transmitterName == "not in database") {
