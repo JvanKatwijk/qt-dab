@@ -435,23 +435,18 @@ for inclusion in the AppImage.
 Step 3
 -----------------------------------------------------------------
 
-Run *qmake* (variants of the name are *qmake6*, qt6-qmake) which generates a *Makefile* and then run *make*. Compiling may take some time.
+Run *qmake* (variants of the name are *qmake6*, *qt6-qmake*) which generates a *Makefile* and then run *make*.  *Compiling may take some time*.
 Use *make -j XX* for speeding up the build process, with XX the amount
 of parallel threads used. Of course, qmake will complain if not all
 required libraries can be found.
 
 Step 4
 -----------------------------------------------------------------
-Otherwise, unpack the file *tiiFile.zip*, and copy the resulting file *.txdata.tii* to the home directory (home folder). (The unpacked file contains a copy of the database for finding the transmitter's name and location.) Identifying transmitters using TII data will work, but no database update can be performed.
+Use the database downloader (for Windows and Linux available as
+precompiled item) to download a fresh copy of the database. Or download a
+copy of the database from the repository.
 
 If Qt-DAB does not *see* the database, it will just function without mapping TII data onto names and locations.
-
-:information_source: Building a version on a fresh install of "bullseye" on the RPI gave a version that wouldn't run: The `Qt_PLUGIN_PATH` was not set. Setting it as given below solved - for me - the problem:
-
-```
-	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
-	export QT_PLUGIN_PATH=$Qt_5/plugins
-```
 
 Using user specified bands
 =================================================================
