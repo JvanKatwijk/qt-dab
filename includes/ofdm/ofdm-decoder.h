@@ -85,12 +85,7 @@ private:
 	std::vector<Complex>	carrierCenters;
 	std::vector<Complex>	conjVector;
 	std::vector<Complex>	fft_buffer;
-	
 	std::vector<float>	offsetVector;
-	std::vector<float>	amplitudeVector;
-        std::vector<float>	avgSigmaSqPerBin;
-	std::vector<float>	avgPowerPerBin;
-	std::vector<float>	avgNullPower;
 
 	std::vector<Complex>	refTable;
 	float		meanValue;

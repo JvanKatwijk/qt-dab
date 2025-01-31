@@ -67,9 +67,6 @@ static struct {
 } decoders []  = {
 {"decoder_a", DECODER_1},
 {"decoder_b", DECODER_2},
-{"decoder_c", DECODER_3},
-{"decoder_d", DECODER_4},
-{"decoder_e", DECODER_5},
 {"", 0}
 };
 
