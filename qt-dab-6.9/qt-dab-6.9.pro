@@ -202,11 +202,12 @@ HEADERS += ./radio.h \
 #	   ../includes/backend/data/epg-2/epg-compiler.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/time-converter.h \
 	   ../includes/support/logger.h \
 	   ../includes/support/settings-handler.h \
 	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
-	   ../includes/support/settingnames.h \
+	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/wavWriter.h \
 	   ../includes/support/converter_48000.h \
@@ -343,6 +344,7 @@ SOURCES += ./main.cpp \
 #	   ../src/backend/data/epg-2/epg-compiler.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/time-converter.cpp \
 	   ../src/support/logger.cpp \
 	   ../src/support/settings-handler.cpp \
 	   ../src/support/position-handler.cpp \
@@ -522,20 +524,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9V3
-#	}
-#	else {
-#	   TARGET		= qt-dab32-qt6-6.9V3
-#	}
-#	CONFIG		+= dabstick-win-v3
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9
+	   TARGET		= qt-dab32-qt5-6.9V3
 	}
 	else {
-	   TARGET		= qt-dab32-qt6-6.9
+	   TARGET		= qt-dab32-qt6-6.9V3
 	}
-	CONFIG		+= dabstick-win-v4
+	CONFIG		+= dabstick-win-v3
+#	equals (QT_MAJOR_VERSION, 5) {
+#	   TARGET		= qt-dab32-qt5-6.9
+#	}
+#	else {
+#	   TARGET		= qt-dab32-qt6-6.9
+#	}
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

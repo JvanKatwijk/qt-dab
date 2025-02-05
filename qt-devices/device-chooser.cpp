@@ -196,7 +196,7 @@ deviceHandler	*inputDevice;
 	   return nullptr;
 	}
 	catch (...) {
-	   QMessageBox::warning (nullptr, "Warning", "unkknown excpetion");
+	   QMessageBox::warning (nullptr, "Warning", "unknown exception");
 	   return nullptr;
 	}
 	return inputDevice;

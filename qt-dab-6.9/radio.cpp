@@ -912,14 +912,16 @@ QString realName;
 
 	         std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-//	         uint32_t ensembleId =
-//	                     theOFDMHandler -> get_ensembleId ();
+	         uint32_t ensembleId =
+	                     theOFDMHandler -> get_ensembleId ();
 	         uint32_t currentSId =
 	                     the_ensembleHandler -> extract_SId  (objectName);
 	         uint32_t julianDate	=
 	                     theOFDMHandler -> julianDate ();
 	         int subType = 
 	                  getContentSubType ((MOTContentType)contentType);
+//	         epgProcessor. process_epg (epgData,
+//	                      QDir::toNativeSeparators (objectName));
 	         epgProcessor. process_epg (epgData. data (), 
 	                                    epgData. size (), currentSId,
 	                                    subType,
@@ -2355,11 +2357,11 @@ int	tunedFrequency	=
 //	the channel frequency in their data
 	if (inputDevice_p -> isFileInput ()) {
 	   channelSelector		-> setEnabled (false);
-	   int freq	= inputDevice_p -> getVFOFrequency ();
+	   int freq			= inputDevice_p -> getVFOFrequency ();
 	   QString realChannel = theSCANHandler. getChannel (freq);
 	   if (realChannel != "") {
 	      int k = channelSelector -> findText (realChannel);
-	      channelSelector -> setCurrentIndex (k);
+	      channelSelector		-> setCurrentIndex (k);
 	      channel. channelName	= realChannel;
 	      channel. tunedFrequency	= freq;
 	      theNewDisplay. showFrequency (realChannel,

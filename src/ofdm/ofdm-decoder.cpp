@@ -199,48 +199,44 @@ float sum = 0;
 	   conjVector	[index] = r1;
 
 	   DABFLOAT ab1	= jan_abs (r1);
-
-	   DABFLOAT fftPhase	= 
-	            arg (Complex (abs (real (r1)),  abs (imag (r1))));
-	   DABFLOAT phaseOffset	= M_PI_4 - fftPhase;
-	   offsetVector [index] = 
-	           compute_avg (offsetVector [index], phaseOffset, Alpha);
+	   Complex r1_fq	=
+	             Complex (abs (real (r1)), abs (imag (r1)));
 	   carrierCenters [index] =
 	            Complex (
 	                    compute_avg (real (carrierCenters [index]),
 	                                         abs (real (r1)), Alpha),
 	                    compute_avg (imag (carrierCenters [index]),
 	                                         abs (imag (r1)), Alpha));
-	   DABFLOAT	weight_x = 0;
-	   DABFLOAT	weight_y = 0;
-//
+	   offsetVector [index] =
+	            compute_avg (offsetVector [index], 
+	                         arg (r1_fq * conj (carrierCenters [index])),
+	                         Alpha);
 	   switch (decoder) {
-//
-//	Decoder 1 is the most simple one,  just compute the relative strength of
-//	x and y coordinate, related to a fictitious midddle
-	      case DECODER_1:
-	      default:		// should not happen
-	         weight_x	= MAX_VITERBI / ab1;
-	         weight_y	= MAX_VITERBI / ab1;
-	         ibits [i]	= -sign (real (r1)) *
-	                                abs (real (r1)) * weight_x; 
-	         ibits [carriers + i]	= -sign (imag (r1)) *
-	                                abs (imag (r1)) * weight_y; 
-	      break;
-
 	      case DECODER_2:
-//	here we look at the error of the sample wrt a filtered "centerpoint"
-//	and give the X and Y the error as penalty
-//	works actually as best of the three
-	      {	 Complex   base	= carrierCenters [index];
-	         weight_x	= MAX_VITERBI / real (base);
-	         weight_y	= MAX_VITERBI / imag (base);
-	         ibits [i]	= -sign (real (r1)) *
-	                                abs (real (r1)) * weight_x; 
-	         ibits [carriers + i]	= -sign (imag (r1)) *
-	                                abs (imag (r1)) * weight_y; 
+	      default:		// should not happen
+//	DPSK decoding is just depending on the phase, so the "quality"
+//	is directly related to the error in the phase. 
+//	The offsetVector contains the phase errors, related to the
+//	average phase value
+//	Experiments show that this approach is almost as good as
+//	approach in DECODER_1
+	      {	 float quality =	// between 0 .. 1
+	              abs (M_PI_4 - abs (offsetVector [index])) / M_PI_4;
+	         DABFLOAT weight =
+	               quality * quality *  quality * MAX_VITERBI;
+	         ibits [i]	= -sign (real (r1)) * weight;
+	         ibits [carriers + i]	= -sign (imag (r1)) * weight;
 	         break;
 	      }
+//	Decoder 2 is the most simple one. It outperforms all others
+//	just compute the relative strength of
+//	x and y coordinate, related to a fictitious midddle
+	      case DECODER_1:
+	         ibits [i]	= -sign (real (r1)) *
+	                                abs (real (r1)) / ab1 * MAX_VITERBI; 
+	         ibits [carriers + i]	= -sign (imag (r1)) *
+	                                abs (imag (r1)) / ab1 * MAX_VITERBI;
+	      break;
 	   }
 	}
 

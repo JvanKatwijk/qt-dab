@@ -34,6 +34,8 @@
 #include	"fib-table.h"
 #include	<QStringList>
 #include	"dab-tables.h"
+
+#include	"time-converter.h"
 //
 //
 	fibDecoder::fibDecoder (RadioInterface *mr) {
@@ -1765,29 +1767,31 @@ void	adjustTime (int32_t *dateTime) {
 void fibDecoder::FIG0Extension10 (uint8_t *dd) {
 int16_t		offset = 16;
 this	->	mjd	= getLBits (dd, offset + 1, 17);
+uint16_t	theTime	[6];
 
-//	Modified Julian Date (recompute according to wikipedia)
-int32_t J	= mjd + 2400001;
-int32_t j	= J + 32044;
-int32_t g	= j / 146097; 
-int32_t	dg	= j % 146097;
-int32_t c	= ((dg / 36524) + 1) * 3 / 4; 
-int32_t dc	= dg - c * 36524;
-int32_t b	= dc / 1461;
-int32_t db	= dc % 1461;
-int32_t a	= ((db / 365) + 1) * 3 / 4; 
-int32_t da	= db - a * 365;
-int32_t y	= g * 400 + c * 100 + b * 4 + a;
-int32_t m	= ((da * 5 + 308) / 153) - 2;
-int32_t d	= da - ((m + 4) * 153 / 5) + 122;
-int32_t Y	= y - 4800 + ((m + 2) / 12); 
-int32_t M	= ((m + 2) % 12) + 1; 
-int32_t D	= d + 1;
-int32_t	theTime	[6];
+	convertTime (mjd, theTime);
+////	Modified Julian Date (recompute according to wikipedia)
+//int32_t J	= mjd + 2400001;
+//int32_t j	= J + 32044;
+//int32_t g	= j / 146097; 
+//int32_t	dg	= j % 146097;
+//int32_t c	= ((dg / 36524) + 1) * 3 / 4; 
+//int32_t dc	= dg - c * 36524;
+//int32_t b	= dc / 1461;
+//int32_t db	= dc % 1461;
+//int32_t a	= ((db / 365) + 1) * 3 / 4; 
+//int32_t da	= db - a * 365;
+//int32_t y	= g * 400 + c * 100 + b * 4 + a;
+//int32_t m	= ((da * 5 + 308) / 153) - 2;
+//int32_t d	= da - ((m + 4) * 153 / 5) + 122;
+//int32_t Y	= y - 4800 + ((m + 2) / 12); 
+//int32_t M	= ((m + 2) % 12) + 1; 
+//int32_t D	= d + 1;
+//int32_t	theTime	[6];
 
-	theTime [0] = Y;	// Year
-	theTime [1] = M;	// Month
-	theTime [2] = D;	// Day
+//	theTime [0] = Y;	// Year
+//	theTime [1] = M;	// Month
+//	theTime [2] = D;	// Day
 	theTime [3] = getBits_5 (dd, offset + 21); // Hours
 	theTime [4] = getBits_6 (dd, offset + 26); // Minutes
 
