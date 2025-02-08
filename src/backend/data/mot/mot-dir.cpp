@@ -143,7 +143,6 @@ uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         -1,
 	                                         false,
 	                                         backgroundFlag);
-
 	   
 	   currentBase		+= 2 + handle -> get_headerSize();
 	   setHandle (handle, transportId);

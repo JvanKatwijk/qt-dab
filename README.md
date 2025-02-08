@@ -335,6 +335,12 @@ For installing the support software for the Adalm Pluto I followed the instructi
 Building an executable for Qt-DAB: a few notes
 =================================================================
 
+Note:
+I work on Linux, creating both AppImages for Linux and Cross-compiled versions
+for Windows. While it is most likely possible to build an executable
+on and for Windows, do not ask me, I do not know anything about windows.
+=====================================================================
+
 It is strongly advised to use qmake/make for the compilation process,
 the *qt-dab-RC.pro* file contains (much) more configuration options
 than the *CMakeLists.txt* file that is used with cmake.
@@ -448,6 +454,71 @@ copy of the database from the repository.
 
 If Qt-DAB does not *see* the database, it will just function without mapping TII data onto names and locations.
 
+Some comments
+================================================================
+
+A user compiled Qt-DAB-6.9  ond and for an RPI, met the follwoing issues:
+
+Once I had downloaded the qt-dab-master from the code page,
+installed all the libraries listed in the Readme on the code page,
+and then installed the new qwt 6.30 as instructed,
+I had a problem getting the .pro file to recognise the new qwt version.
+This was because on the pi it installs to /usr/include.
+
+So I changed the .pro file as follows:
+Line 433
+INCLUDEPATH += /usr/include
+!mac {
+INCLUDEPATH += /usr/include/qwt-6.3.0/lib
+#correct this for the correct path to the qwt6 library on your system
+#LIBS += -lqwt
+equals (QT_MAJOR_VERSION, 6) {
+LIBS += -lqwt-qt6
+}else{ LIBS += -lqwt-qt5
+
+However I still could not get the qwt recognised so further changes were needed, this time to the Modules folder.
+
+To do this, I went to the qt-dab-6.9 folder in the qt-dab-master, and then opened the folder cmake. Then Modules.
+Found the relevant FindQwt file and made the following changes:
+
+find_path(QWT_INCLUDE_DIRS
+NAMES qwt_global.h
+HINTS
+${CMAKE_INSTALL_PREFIX}/include/qwt
+${CMAKE_INSTALL_PREFIX}/include/qwt-qt6
+PATHS
+/usr/local/include/qwt-qt6
+/usr/local/include/qwt
+/usr/include/qwt6
+/usr/include/qwt6-qt6
+/usr/include/qt6/qwt
+/opt/local/include/qwt
+/usr/include/qwt-6.3.0
+/sw/include/qwt
+/usr/local/lib/qwt.framework/Headers
+/usr/local/lib/qwt-qt5/lib/framework/Headers
+/usr/include/qwt-6.3.0/include
+)
+if (APPLE)
+set(CMAKE_FIND_LIBRARY_SUFFIXES " " " .dylib" ".so" ".a ")
+endif (APPLE)
+
+find_library (QWT_LIBRARIES
+NAMES qwt6 qwt6-qt6 qwt-qt6 qwt
+HINTS
+${CMAKE_INSTALL_PREFIX}/lib
+${CMAKE_INSTALL_PREFIX}/lib64
+PATHS
+/usr/local/lib
+/usr/lib
+/opt/local/lib
+/sw/lib
+/usr/local/lib/qwt.framework
+/usr/local/lib/qwt-qt6/lib/framework
+/usr/include/qwt-6.3.0/lib
+)
+With these settings Qt-DAB could be compiled
+
 Using user specified bands
 =================================================================
 
@@ -467,41 +538,6 @@ xml-files and support
 
 *Clemens Schmidt*, author of the QiRX program (https://qirx.softsyst.com/) and me defined a format for storing and exchanging "raw" data: `.xml`-files for
 easier echange of recordings. Such an xml file contains in the first bytes - up to 5000 - a description in xml - as source - of the data contents. This xml description describes in detail the coding of the elements. 
-
-As an example, a description of data obtained by dumping Airspy input: 
- ```
-	<?xml version="1.0" encoding="utf-8"?>
-	<SDR>
-	  <Recorder Name="Qt-DAB" Version="6.X"/>
-	  <Device Name="AIRspy" Model="I"/>
-	  <Time Value="Wed Dec 18 12:39:34 2019" Unit="UTC"/>
-	  <!--The Sample information holds for the whole recording-->
-	  <Sample>
-	    <Samplerate Value="2500000" Unit="Hz"/>
-	    <Channels Bits="12" Container="int16" Ordering="LSB">
-	      <Channel Value="I"/>
-	      <Channel Value="Q"/>
-	    </Channels>
-	  </Sample>
-	  <!--Here follow one or more data blocks-->
-	  <Datablocks>
-	    <Datablock Number="1" Count="375783424" Unit="Channel">
-	      <Frequency Value="227360" Unit="KHz"/>
-	      <Modulation Value="DAB"/>
-	    </Datablock>
-	  </Datablocks>
-	</SDR>
-
- ```
-
-The device handlers in Qt-DAB support both generating and reading
-such an `.xml` file.
-
-While the current implementation for reading such files is limited to a single data block, the reader contains a *cont* button that, when touched while playing the data, will cause continuous playing of the data in the data block.
-
-![6.8](/res/read_me/qt-dab-xmlfiles.png?raw=true)
-
-The picture shows the reader when reading a file, generated from raw data emitted by an AIRspy device.
 
 Copyright
 =================================================================

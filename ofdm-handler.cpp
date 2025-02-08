@@ -496,6 +496,7 @@ int	snrCount	= 0;
 	            snrCount = 0;
 	            show_snr (snr);
 	         }
+	         theOfdmDecoder. setPowerLevel (sum / T_u);
 	      }
 /**
   *	The first sample to be found for the next frame should be T_g

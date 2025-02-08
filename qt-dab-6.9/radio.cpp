@@ -871,7 +871,6 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  bool dirElement,
 	                                  bool backgroundFlag) {
 QString realName;
-
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -920,7 +919,7 @@ QString realName;
 	                     theOFDMHandler -> julianDate ();
 	         int subType = 
 	                  getContentSubType ((MOTContentType)contentType);
-//	         epgProcessor. process_epg (epgData,
+//	         epgProcessor. process_epg (epgData, ensembleId,
 //	                      QDir::toNativeSeparators (objectName));
 	         epgProcessor. process_epg (epgData. data (), 
 	                                    epgData. size (), currentSId,

@@ -53,7 +53,7 @@ QString	colorString;
 	colorString = dabSettings -> value ("curveColor",
 	                                            "#f9f06b").toString();
 	this	-> curveColor = QColor (colorString);
-	brush	= dabSettings -> value ("brush", 1).toInt() == 1;
+	brush	= dabSettings -> value ("brush", 0).toInt() == 1;
 	displaySize = dabSettings->value("displaySize", displaySize).toInt();
 	dabSettings	-> endGroup ();
 

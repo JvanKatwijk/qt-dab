@@ -185,7 +185,7 @@ QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
 //	fprintf (stderr,
-//	"Handling complete %X %s, type %d\n",
+//	"Handling complete %X %s, type %X\n",
 //	                  transportId, name. toLatin1 (). data (),
 //	                                                  (int)contentType);
 	if (name == "")

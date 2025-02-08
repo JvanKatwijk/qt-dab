@@ -905,13 +905,13 @@ datastreamer	{
 
 viterbi-new {
 	DEPENDPATH	+= ../src/support/viterbi
-	QMAKE_CFLAGS    +=  -mavx2 -msse4
-	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
-	QMAKE_LFLAGS    +=  -mavx2
-	DEFINES		+= __ARCH_X86__
-	#DEFINES	+= __SSE4_1__
-	#DEFINES	+= __AVX2__
-	#DEFINES	+= __ARCH_AARCH64__
+#	QMAKE_CFLAGS    +=  -mavx2 -msse4
+#	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
+#	QMAKE_LFLAGS    +=  -mavx2
+#	DEFINES		+= __ARCH_X86__
+	##DEFINES	+= __SSE4_1__
+	##DEFINES	+= __AVX2__
+	##DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi
 	HEADERS		+= ../src/support/viterbi/viterbi.h 
 	SOURCES		+= ../src/support/viterbi/viterbi.cpp 

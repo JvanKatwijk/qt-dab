@@ -152,7 +152,7 @@ char header [5];
            throw device_exception (val. toStdString ());
         }
 
-	int xxx;
+	uint32_t xxx;
 	fread (&xxx, 1, 4, filePointer);
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = xxx / blockAlign;

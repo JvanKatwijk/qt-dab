@@ -36,9 +36,9 @@
 #include	"dab-constants.h"
 #include	<memory>
 
-#include <emmintrin.h>
-#include <xmmintrin.h>
-#include <mmintrin.h>
+//#include <emmintrin.h>
+//#include <xmmintrin.h>
+//#include <mmintrin.h>
 
 #include	"viterbi-includes/convolutional_encoder_lookup.h"
 #include	"viterbi-includes/viterbi_branch_table.h"
