@@ -49,7 +49,7 @@ public:
 	                 descriptorType	*d,
 	                 RingBuffer<std::complex<int16_t>> *,
 	                 RingBuffer<uint8_t> *,
-	                 RingBuffer<uint8_t> *, FILE *, int);
+	                 RingBuffer<uint8_t> *, FILE *, int, uint8_t);
 		~Backend();
 	int32_t	process		(int16_t *, int16_t);
 	void	stopRunning();

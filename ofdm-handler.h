@@ -40,7 +40,8 @@
 #include	"ofdm-decoder.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	"tii-detector.h"
+//#include	"tii-detector-1.h"
+//#include	"tii-detector-2.h"
 #include	"eti-generator.h"
 
 class	RadioInterface;
@@ -55,19 +56,26 @@ public:
 	                         deviceHandler *,
 	                         processParams *,
 	                         QSettings	*,
-	                         logger		*);
+	                         logger		*,
+	                         uint8_t);
 		~ofdmHandler			();
 	void		start			();
 //	void		start			(int32_t);
 	void		stop			();
-	void		start_dumping		(const QString &, int);
+
+	void		select_TII		(uint8_t);
+	void		start_dumping		(const QString &, int, int);
 	void		stop_dumping		();
 	bool		start_etiGenerator	(const QString &);
 	void		stop_etiGenerator	();
 	void		reset_etiGenerator	();
-	void		set_tiiThreshold	(int16_t);
 	void		set_scanMode		(bool);
 	void		get_frameQuality	(int *, int*, int *);
+//
+//	for the tii settings
+	void		set_tiiThreshold	(int16_t);
+	void		set_tiiCollisions	(bool);
+	void		set_tiiFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
 	QString		find_service		(uint32_t, int);
@@ -94,36 +102,37 @@ public:
 	void		stop_ficDump		();
 //
 //	for the mscHandler
-	void		reset_services		();
-	void		stop_service		(descriptorType *, int);
-	void		stop_service		(int, int);
-	bool		set_audioChannel	(audiodata &,
+//	void		resetServices		();
+//	void		stopService		(descriptorType *, int);
+	void		stopService		(int, int);
+	bool		setAudioChannel		(audiodata &,
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         FILE *, int);
-	bool		set_dataChannel		(packetdata &,
+	bool		setDataChannel		(packetdata &,
 	                                         RingBuffer<uint8_t> *, int);
-//	void		set_tiiDetectorMode	(bool);
-	void		handle_iqSelector	();
-	void		handle_decoderSelector	(int);
-	void		set_correlationOrder	(bool);
-	void		set_dxMode		(bool);
+	void		handleIQSelector	();
+	void		handleDecoderSelector	(int);
+	void		setCorrelationOrder	(bool);
+	void		setDXMode		(bool);
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;
-//	deviceHandler		*device_p;
 	dabParams		params;
 	QSettings		*settings_p;
 	logger			*theLogger;
+	uint8_t			cpuSupport;
 	sampleReader		theReader;
 	ficHandler		theFicHandler;
 	etiGenerator		theEtiGenerator;
-	TII_Detector		theTIIDetector;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 
-	int16_t			tiiThreshold;
+	uint8_t			selected_TII;
 
-//	deviceHandler		*inputDevice;
+	int16_t			tiiThreshold;
+	bool			tiiCollisions_active;
+	bool			tiiFilter_active;
+
 	int			decoder;
 	int			threshold;
 	int			totalFrames;

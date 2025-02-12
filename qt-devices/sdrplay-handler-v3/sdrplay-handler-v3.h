@@ -42,7 +42,7 @@ class	xml_fileWriter;
 class	logger;
 
 #ifdef __MINGW32__
-//#include	"dlfcn.h"
+//#include      "dlfcn.h"
 #define GETPROCADDRESS  GetProcAddress
 #else
 #define GETPROCADDRESS  dlsym
@@ -55,8 +55,6 @@ public:
 			sdrplayHandler_v3	(QSettings *,
 	                                         const QString &, logger *);
 			~sdrplayHandler_v3	();
-//	int32_t		getVFOFrequency		();
-	int32_t		defaultFrequency	();
 
 	bool		restartReader		(int32_t);
 	void		stopReader		();
@@ -105,7 +103,6 @@ public:
 
 	QString			recorderVersion;
 	
-	int32_t			vfoFrequency;
 	int16_t			hwVersion;
 	QSettings		*sdrplaySettings;
 	bool			agcMode;
@@ -113,12 +110,11 @@ public:
 	int			lna_upperBound;
 	float			apiVersion;
 	QString			serial;
-	bool			has_antennaSelect;
 	QString			deviceModel;
 	int			GRdBValue;
 	int			lnaState;
-	double			ppmValue;
 	HINSTANCE		Handle;
+	double			ppmValue;
 	bool			biasT;
 	xml_fileWriter		*xmlWriter;
 	bool			setup_xmlDump		();
@@ -126,8 +122,8 @@ public:
 	std::atomic<bool>	dumping;
 	std::queue<generalCommand *>	server_queue;
 	QSemaphore		serverjobs;
-	HINSTANCE		fetchLibrary		();
-	void			releaseLibrary		();
+	HINSTANCE               fetchLibrary            ();
+	void                    releaseLibrary          ();
 	bool			loadFunctions		();
 	int			errorCode;
 	int			set_antennaSelect	(int);

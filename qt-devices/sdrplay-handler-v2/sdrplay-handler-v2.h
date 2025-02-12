@@ -32,7 +32,6 @@
 #include	"device-handler.h"
 #include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
-#include	<QLibrary>
 class		logger;
 //
 //
@@ -56,13 +55,14 @@ typedef	void	(*mir_sdr_GainChangeCallback_t)(uint32_t	gRdB,
 	                                        uint32_t	lnaGRdB,
 	                                        void		*cbContext);
 
+class	xml_fileWriter;
+
+
 #ifdef __MINGW32__
 #define	GETPROCADDRESS	GetProcAddress
 #else
-#define	GETPROCADDRESS	dlsym
+#define  GETPROCADDRESS  dlsym
 #endif
-
-class	xml_fileWriter;
 
 // Dll and ".so" function prototypes
 typedef	mir_sdr_ErrT (*pfn_mir_sdr_StreamInit) (int *gRdB,

@@ -1,11 +1,12 @@
 
 
 epg (0x02) : tokenTable (0x04) 
+	     defaultLanguage (0x06)
 	     programmeGroups (0x20)
 	     schedule (0x21)
-	     defaultLanguage (0x06)
 
-serviceInformation (0x03): tokenTable (0x04)
+serviceInformation (0x03):
+	    tokenTable (0x04)
 	    defaultLanguage (0x06)
 	    ensemble (0x26) 
 	    service (0x28)
@@ -15,7 +16,9 @@ serviceInformation (0x03): tokenTable (0x04)
 	   originator	(0x82)		// 4.4.0
 	   serviceProvider (0x83) 	// 4.4.0
 
-programGroups (0x20): programGroup (0x23)
+programGroups (0x20):
+	   programGroup (0x23)
+
 	   version (0x80)		// 4.8.3
 	   creationTime (0x81)		// 4.7.4
 	   originator (0x82)		// 4.4.0
@@ -23,6 +26,7 @@ programGroups (0x20): programGroup (0x23)
 programGroup (0x23): shortName (0x10)
 	      mediumName (0x11)
 	      longName (0x12)
+	      shortName	(??)
 	      mediaDescription (0x13)
 	      genre (0x14)
 	      keywords (0x16)
@@ -36,7 +40,8 @@ programGroup (0x23): shortName (0x10)
 	      type (0x83)		// 4.6
 	      numofItems (0x84)		// 4.8.4
 
-schedule (0x21): program (0x1C)
+schedule (0x21):
+	      programme (0x1C)
 	      scope (0x24)
 
 	      version (0x80)		// 4.8.3

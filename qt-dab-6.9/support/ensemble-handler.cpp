@@ -51,6 +51,7 @@
 	   fontColor		= 
 	           value_s (ensembleSettings, ENSEMBLE, "fontColor", "white");
 	   normalFont	= QFont (theFont, fontSize, -1, false);
+//	   markedFont	= QFont (theFont, fontSize, -1, true);
 	   markedFont	= QFont (theFont, fontSize + 2, -1, true);
 	   channelFont	= QFont (theFont, fontSize - 2, -1, false);
 
@@ -186,6 +187,7 @@ void	ensembleHandler::click_on_service	(int row, int column) {
 	   else {	// column is column 0, start
 	      unSelect ();
 	      int index = inEnsembleList (theService);
+	      this -> clearSelection ();
 	      selectService (ensembleList [index]. name,
 	                     ensembleList [index]. channel);
 	      if (index >= 0) {		// should not happen
@@ -202,9 +204,11 @@ void	ensembleHandler::click_on_service	(int row, int column) {
 	if (index < 0)
 	   return;
 
-	if (column == 0)
+	if (column == 0) {
+	   this -> clearSelection ();
 	   selectService (favorites [index]. name,
                           favorites [index]. channel);
+	}
 	else {
 	   service theService = favorites [index];
 	   favorites. erase (favorites. begin () + index);
@@ -226,6 +230,8 @@ void	ensembleHandler::selectNextService	() {
 	}
 	if (selectedService < 0)
 	   return;
+
+	this -> clearSelection ();
 	unSelect ();
 	ensembleList [selectedService]. selected = false;
 	selectedService = (selectedService + 1) % ensembleList. size ();
@@ -250,6 +256,8 @@ void	ensembleHandler::selectPrevService	() {
 	}
 	if (selectedService < 0)
 	   return;
+	
+	this -> clearSelection ();
 	unSelect ();
 	ensembleList [selectedService]. selected = false;
 	selectedService = (selectedService - 1 + ensembleList. size ()) %	
@@ -296,6 +304,7 @@ void	ensembleHandler::clearTable	() {
 
 void	ensembleHandler::reset	() {
 	clearTable ();
+	this -> clearSelection ();
 	ensembleList. resize (0);
 }
 
@@ -306,8 +315,8 @@ bool	isAudio (uint32_t v) {
 
 void	ensembleHandler::updateList	() {
 int currentRow	= 0;
-bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
-	                                        "audioServices_only", 1);
+//bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
+//	                                        "audioServices_only", 1);
 	clearTable ();
 	if (ensembleMode == SHOW_ENSEMBLE) {
 	   this -> setHorizontalHeaderLabels (
@@ -315,8 +324,6 @@ bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
 	                                             tr ("fav"));
 	   for (uint16_t i = 0; i < ensembleList. size (); i ++) {
 	      bool toMark = false;
-	      if (audioOnly && !isAudio (ensembleList [i]. SId))
-	         continue;
 	      if (handlePresets)
 	         toMark = inFavorites (ensembleList [i]. name) >= 0;
 	      addRow (ensembleList [i]. name,
@@ -401,10 +408,17 @@ void	ensembleHandler::add_to_favorites (const QString &s, const QString &c) {
 //	This one is called many times, e.g. after (a while) selecting a
 //	service from the favorites, so here we have to check on being
 //	selected
-bool	ensembleHandler::add_to_ensemble (serviceId &ed) {
+
+bool	ensembleHandler::alreadyIn	(serviceId &ed) {
 	for (auto &s:ensembleList)
 	   if (s. name == ed. name)
-	      return false;
+	      return true;
+	return false;
+}
+
+bool	ensembleHandler::add_to_ensemble (serviceId &ed) {
+	if (alreadyIn (ed))
+	   return false;
 
 	if (handlePresets) {
 	   int index = inFavorites (ed. name);
@@ -569,9 +583,10 @@ int	ensembleHandler::get_serviceCount	() {
 }
 
 void	ensembleHandler::setFont (int mark, int index) {
+	this	-> item (index, 0) -> setTextAlignment (Qt::AlignLeft);
 	if (mark == MARKED) {
 	   this -> item (index, 0) -> setFont (markedFont);
-	   this -> setCurrentItem (this -> item (index, 0), QItemSelectionModel::Select);
+//	   this -> setCurrentItem (this -> item (index, 0), QItemSelectionModel::Select);
 	}
 	else
 	   this -> item (index, 0) -> setFont (normalFont);

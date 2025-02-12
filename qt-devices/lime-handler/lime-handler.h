@@ -34,13 +34,8 @@
 #include	"device-handler.h"
 #include	"lime-widget.h"
 #include	"fir-filters.h"
+#include	<QLibrary>
 class		logger;
-
-#ifdef __MINGW32__
-#define GETPROCADDRESS  GetProcAddress
-#else
-#define GETPROCADDRESS  dlsym
-#endif
 
 class	xml_fileWriter;
 
@@ -117,11 +112,11 @@ private:
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
+	QLibrary	*library_p;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
 	bool		load_limeFunctions();
-	HINSTANCE	Handle;
 	bool		libraryLoaded;
 	lms_stream_meta_t meta;
         lms_stream_t    stream;

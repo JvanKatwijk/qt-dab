@@ -25,7 +25,9 @@
 
 #include	<cstdio>
 #include	<cstdint>
+#include	<vector>
 #include	"dab-constants.h"
+#include	"dab-params.h"
 
 struct phasetableElement {
 	int32_t	kmin, kmax;
@@ -38,9 +40,11 @@ class phaseTable {
 public:
 		phaseTable 	(int16_t);
 		~phaseTable();
+	std::vector<std::complex<float>>	refTable;
 	float	get_Phi		(int32_t);
 private:
-
+	dabParams	params;
+	int		T_u;
 	struct phasetableElement	*currentTable;
 	int16_t		Mode;
 	int32_t		h_table (int32_t i, int32_t j);

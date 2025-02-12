@@ -39,13 +39,13 @@ Q_OBJECT
 public:
 			newFiles	(const QString &);
 	       		~newFiles	();
-	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples		();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
+	int32_t		getSamples	(std::complex<float> *, int32_t);
+	int32_t		Samples		();
+	QString		deviceName	();
 	bool		isFileInput	();
 	int		getVFOFrequency	();
-	QString		deviceName	();
 private:
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;

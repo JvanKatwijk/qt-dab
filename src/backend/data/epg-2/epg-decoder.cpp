@@ -1,4 +1,5 @@
 #
+#
 /*
  *    Copyright (C) 2013 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -545,7 +546,6 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-	int oldIndex;
 #ifdef	__EPG_TRACE__
 	oldIndex = index;
 	fprintf (stderr, "in process_servicescope with length %d\n", length);
@@ -560,7 +560,8 @@ int length	= v [index + 1];
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_476_p (v, index, &p -> ident);
-	         fprintf (stderr, "In serviceS cope %X\n", p -> ident);
+//	         fprintf (stderr, "In serviceS cope %s\n",
+//	                                          p -> ident. toLatin1 (). data ());
 	         break;
 
 	      default:
@@ -2128,7 +2129,7 @@ int length	= v [index + 1];
 	   index += 2;
 
 //	return index + length;
-	uint8_t ensFlag = getBit (v, 8 * index + 1);
+//	uint8_t ensFlag = getBit (v, 8 * index + 1);
 	uint8_t sidFlag = getBit (v, 8 * index + 3);
 	
 	if (sidFlag == 0)
@@ -2155,10 +2156,10 @@ int length	= v [index + 1];
 
 //	fprintf (stderr, "section 476 with length %d\n", length);
 //	return index + length;
-	uint8_t ensFlag = getBit (v, 8 * index + 1);	// not used anymore
+//	uint8_t ensFlag = getBit (v, 8 * index + 1);	// not used anymore
 	uint8_t sidFlag = getBit (v, 8 * index + 3);
 
-	uint16_t res;
+//	uint16_t res;
 	uint16_t res1	= getBits (v, 8 * index, 16);
 	uint16_t res2	= getBits (v, 8 * index + 16, 16);
 	uint32_t res3	= getBits (v, 8 * index + 32, 16);
@@ -2222,7 +2223,7 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-	int numbers = (v [index] << 8) | v [index + 1];
+//	int numbers = (v [index] << 8) | v [index + 1];
 //	fprintf (stderr, "Version %d\n", numbers);
 	return index + length;
 }

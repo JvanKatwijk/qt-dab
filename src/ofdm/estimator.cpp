@@ -28,39 +28,22 @@
 
 //
 		estimator::estimator (RadioInterface *mr,
-	                                processParams	*p):
-	                                     phaseTable (p -> dabMode),
+	                                processParams	*p,
+	                                phaseTable	*theTable):
 	                                     params (p -> dabMode),
 	                                     fft_forward (params. get_T_u (),
 	                                                  false),
 	                                     fft_backwards (params. get_T_u (),
 	                                                    true) {
-float	Phi_k;
-Complex temp [params. get_T_u ()];
 	(void)mr;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
 	fftSize			= T_u;
 	refTable.		resize (T_u);
-
-//
-//	The reftanle takes the role of the pilots, i.e. we
-//	know what there value should be
-	for (int i = 0; i < T_u; i ++)
-	   refTable [i] = std::complex<float> (0, 0);
-//
-//	The reference values
-	for (int i = 1; i <= carriers / 2; i ++) {
-	   Phi_k =  get_Phi (i);
-	   temp [i] = Complex (cos (Phi_k), sin (Phi_k));
-	   Phi_k = get_Phi (-i);
-	   temp [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
-	}
-//
 //	and organized as -inf ..0 .. inf
 	for (int i = 0; i < T_u; i ++) {
-	   refTable [i] = temp [(T_u / 2 + i) % T_u];
+	   refTable [i] = theTable -> refTable [(T_u / 2 + i) % T_u];
 	}
 }
 

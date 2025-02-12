@@ -69,6 +69,7 @@ void	logger::log	(logType t) {
 	   case LOG_RADIO_STOPS:
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
 	                                                 "radio stops");
+	      break;
 	   case LOG_FRAMEDUMP_STOPS:
 	      fprintf (logFile, "%s\t: %s\n", theTime. toLatin1 (). data (),
 	                                                 "framedump stops");

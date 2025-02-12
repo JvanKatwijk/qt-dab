@@ -26,14 +26,13 @@
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 #include	"ui_airspy-widget.h"
+#include	<QLibrary>
 #ifndef	__MINGW32__
 #include	"libairspy/airspy.h"
 #else
 #include	"libairspy/airspy.h"
 #endif
-
-#include	<samplerate.h>
-
+#include	"fir-filters.h"
 class	xml_fileWriter;
 class	logger;
 
@@ -115,6 +114,9 @@ private:
 	void		restore_gainSliders	(int, int);
 	void		restore_gainSettings	(int);
 	QSettings	*airspySettings;
+
+	LowPassFIR	*theFilter;
+	int		filterDepth;
 private slots:
 	void		set_linearity		(int value);
 	void		set_sensitivity		(int value);
@@ -126,7 +128,6 @@ private slots:
 	void		set_rf_bias		(int);
 	void		switch_tab		(int);
 	void		set_xmlDump		();
-	void		handle_convQuality	(int);
 signals:
 	void		new_tabSetting		(int);
 private:
@@ -157,10 +158,8 @@ private:
 	pfn_airspy_board_partid_serialno_read
 		                   my_airspy_board_partid_serialno_read;
 //
-	HINSTANCE	Handle_usb;
-	HINSTANCE	Handle;
+	QLibrary	*library_p;
 	bool		success;
-	void		releaseLibrary	();
 	std::atomic<bool>	running;
 	bool		lna_agc;
 	bool		mixer_agc;
@@ -171,20 +170,16 @@ const	char*		board_id_name();
 	int16_t		mixerGain;
 	int16_t		lnaGain;
 	int32_t		selectedRate;
+	int16_t         convBufferSize;
+        int16_t         convIndex;
+        std::vector <std::complex<float> >      convBuffer;
+        int16_t         mapTable_int   [4 * 512];
+        float           mapTable_float [4 * 512];
 	int32_t		inputRate;
-	std::mutex	locker;
-	SRC_STATE       *converter;
-        SRC_DATA        src_data;
-	int		inputLimit;
-	int		outputLimit;
-        std::vector<float> inBuffer;
-        std::vector<float> outBuffer;
         int32_t         inp;
-	float		ratio;
-
 	struct airspy_device* device;
 	uint64_t 	serialNumber;
-	char		serial[128];
+	char		serial [128];
 static
 	int		callback(airspy_transfer_t *);
 	int		data_available (void *buf, int buf_size);

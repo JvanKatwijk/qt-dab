@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -52,6 +52,7 @@ public:
 	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
+	void	setPowerLevel		(DABFLOAT);
 	float	processBlock_0		(std::vector<Complex>, bool);
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
@@ -69,30 +70,28 @@ private:
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
 	float		computeQuality		(Complex *);
-        float		compute_timeOffset      (Complex *,
-                                                 Complex *);
-        float		compute_clockOffset     (Complex *,
-                                                 Complex *);
-        float		compute_frequencyOffset (Complex *,
-                                                 Complex *);
+	float		compute_timeOffset      (Complex *,
+	                                         Complex *);
+	float		compute_clockOffset     (Complex *,
+	                                         Complex *);
+	float		compute_frequencyOffset (Complex *,
+	                                         Complex *);
 	int32_t		T_s;
 	int32_t		T_u;
 	int32_t		T_g;
 	int32_t		nrBlocks;
 	int32_t		carriers;
+	DABFLOAT	nullPower;
 	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>	ibits;
-	std::vector<Complex>	carrierCenters;
 	std::vector<Complex>	conjVector;
 	std::vector<Complex>	fft_buffer;
+	std::vector<DABFLOAT>	stdDevVector;
+	std::vector<DABFLOAT> 	IntegAbsPhaseVector;
+//	std::vector<DABFLOAT>	meanLevelVector;
+//	std::vector<DABFLOAT>	meanPowerVector;
+//	std::vector<DABFLOAT>	meanSigmaSqVector;
 	
-	std::vector<float>	offsetVector;
-	std::vector<float>	amplitudeVector;
-        std::vector<float>	avgSigmaSqPerBin;
-	std::vector<float>	avgPowerPerBin;
-	std::vector<float>	avgNullPower;
-
-	std::vector<Complex>	refTable;
 	float		meanValue;
 	int		iqSelector;
 	int		decoder;

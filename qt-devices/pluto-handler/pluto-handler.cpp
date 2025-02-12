@@ -196,6 +196,7 @@ int	ret;
 	                             logger	*theLogger):	// dummy for now
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
+	(void)theLogger;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	set_position_and_size (s, &myFrame, PLUTO_SETTINGS);
@@ -336,7 +337,11 @@ int	ret;
 //	and be prepared for future changes in the settings
 	connect (gainControl, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &plutoHandler::set_gainControl);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &plutoHandler::set_agcControl);
 	connect (debugButton, &QPushButton::clicked,
 	         this, &plutoHandler::toggle_debugButton);
@@ -418,11 +423,19 @@ struct iio_channel *chn;
 	         fprintf (stderr, "could not change gain control to manual");
 	      return;
 	   }
-	   
+
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	   disconnect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	   disconnect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &plutoHandler::set_agcControl);
 	   agcControl -> setChecked (false);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	   connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	   connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &plutoHandler::set_agcControl);
 	}
 

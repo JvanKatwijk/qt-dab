@@ -26,282 +26,182 @@
 #include	<cinttypes>
 #include	<cstring>
 #include	<QSettings>
-#include	"settingNames.h"
-#include	"settings-handler.h"
 
 #ifndef M_PI
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
-
-static
-uint8_t table [] = {
-	0017,		// 0 0 0 0 1 1 1 1		0
-	0027,		// 0 0 0 1 0 1 1 1		1
-	0033,		// 0 0 0 1 1 0 1 1		2
-	0035,		// 0 0 0 1 1 1 0 1		3
-	0036,		// 0 0 0 1 1 1 1 0		4
-	0047,		// 0 0 1 0 0 1 1 1		5
-	0053,		// 0 0 1 0 1 0 1 1		6
-	0055,		// 0 0 1 0 1 1 0 1		7
-	0056,		// 0 0 1 0 1 1 1 0		8
-	0063,		// 0 0 1 1 0 0 1 1		9
-
-	0065,		// 0 0 1 1 0 1 0 1		10
-	0066,		// 0 0 1 1 0 1 1 0		11
-	0071,		// 0 0 1 1 1 0 0 1		12
-	0072,		// 0 0 1 1 1 0 1 0		13
-	0074,		// 0 0 1 1 1 1 0 0		14
-	0107,		// 0 1 0 0 0 1 1 1		15
-	0113,		// 0 1 0 0 1 0 1 1		16
-	0115,		// 0 1 0 0 1 1 0 1		17
-	0116,		// 0 1 0 0 1 1 1 0		18
-	0123,		// 0 1 0 1 0 0 1 1		19
-
-	0125,		// 0 1 0 1 0 1 0 1		20
-	0126,		// 0 1 0 1 0 1 1 0		21
-	0131,		// 0 1 0 1 1 0 0 1		22
-	0132,		// 0 1 0 1 1 0 1 0		23
-	0134,		// 0 1 0 1 1 1 0 0		24
-	0143,		// 0 1 1 0 0 0 1 1		25
-	0145,		// 0 1 1 0 0 1 0 1		26
-	0146,		// 0 1 1 0 0 1 1 0		27
-	0151,		// 0 1 1 0 1 0 0 1		28	
-	0152,		// 0 1 1 0 1 0 1 0		29
-
-	0154,		// 0 1 1 0 1 1 0 0		30
-	0161,		// 0 1 1 1 0 0 0 1		31
-	0162,		// 0 1 1 1 0 0 1 0		32
-	0164,		// 0 1 1 1 0 1 0 0		33
-	0170,		// 0 1 1 1 1 0 0 0		34
-	0207,		// 1 0 0 0 0 1 1 1		35
-	0213,		// 1 0 0 0 1 0 1 1		36
-	0215,		// 1 0 0 0 1 1 0 1		37
-	0216,		// 1 0 0 0 1 1 1 0		38
-	0223,		// 1 0 0 1 0 0 1 1		39
-
-	0225,		// 1 0 0 1 0 1 0 1		40
-	0226,		// 1 0 0 1 0 1 1 0		41
-	0231,		// 1 0 0 1 1 0 0 1		42
-	0232,		// 1 0 0 1 1 0 1 0		43
-	0234,		// 1 0 0 1 1 1 0 0		44
-	0243,		// 1 0 1 0 0 0 1 1		45
-	0245,		// 1 0 1 0 0 1 0 1		46
-	0246,		// 1 0 1 0 0 1 1 0		47
-	0251,		// 1 0 1 0 1 0 0 1		48
-	0252,		// 1 0 1 0 1 0 1 0		49
-
-	0254,		// 1 0 1 0 1 1 0 0		50
-	0261,		// 1 0 1 1 0 0 0 1		51
-	0262,		// 1 0 1 1 0 0 1 0		52
-	0264,		// 1 0 1 1 0 1 0 0		53
-	0270,		// 1 0 1 1 1 0 0 0		54
-	0303,		// 1 1 0 0 0 0 1 1		55
-	0305,		// 1 1 0 0 0 1 0 1		56
-	0306,		// 1 1 0 0 0 1 1 0		57
-	0311,		// 1 1 0 0 1 0 0 1		58
-	0312,		// 1 1 0 0 1 0 1 0		59
-
-	0314,		// 1 1 0 0 1 1 0 0		60
-	0321,		// 1 1 0 1 0 0 0 1		61
-	0322,		// 1 1 0 1 0 0 1 0		62
-	0324,		// 1 1 0 1 0 1 0 0		63
-	0330,		// 1 1 0 1 1 0 0 0		64
-	0341,		// 1 1 1 0 0 0 0 1		65
-	0342,		// 1 1 1 0 0 0 1 0		66
-	0344,		// 1 1 1 0 0 1 0 0		67
-	0350,		// 1 1 1 0 1 0 0 0		68
-	0360		// 1 1 1 1 0 0 0 0		69
-};
+constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
 
 		TII_Detector_B::TII_Detector_B (uint8_t dabMode,
-	                                       QSettings	*dabSettings):
-	                                      theTable (dabMode),
-	                                      params (dabMode),
-	                                      T_u (params. get_T_u ()),
-	                                      carriers (params. get_carriers ()),
-	                                      my_fftHandler (params. get_T_u (),
-	                                                    false) {
+	                                       phaseTable *theTable,
+	                                       QSettings *dabSettings):
+	                                       TII_Detector (dabMode,
+	                                                     theTable) {
 	this	-> dabSettings	= dabSettings;
-	theBuffer. resize	(T_u);
-	window. resize 		(T_u);
-	for (int i = 0; i < T_u; i ++)
-	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
-
-	refTable.               resize (T_u);
-        for (int i = 0; i < T_u; i ++)
-           refTable [i] = Complex (0, 0);
-//
-//      generate the refence values using the format we have after
-//      doing an FFT
-        for (int i = 1; i <= carriers / 2; i ++) {
-           float Phi_k = theTable. get_Phi (i);
-           refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
-           Phi_k = theTable. get_Phi (-i);
-           refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
-        }
-
 	memset (invTable, 0x377, 256);
 	for (int i = 0; i < 70; ++i) 
-	    invTable [table [i]] = i;
-	detectMode_new	= false;
-//	detectMode_new	= true;
-	tiiThreshold	= value_i (dabSettings, CONFIG_HANDLER, 
-	                                     "tiiThreshold", 4);
+	   invTable [getPattern (i)] = i;
 }
 
 		TII_Detector_B::~TII_Detector_B () {
 }
 
-void	TII_Detector_B::setMode	(bool b) {
-	detectMode_new = b;
-}
-
 void	TII_Detector_B::reset	() {
-	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] = Complex (0, 0);
+	memset ((void *)nullSymbolBuffer. data (), 0, T_u * sizeof (Complex));
 }
 
-void	TII_Detector_B::set_tiiThreshold	(int t) {
-	tiiThreshold = t;
-}
-
-
-//	To eliminate (reduce?) noise in the input signal, we might
-//	add a few spectra before computing (up to the user)
-void	TII_Detector_B::addBuffer (std::vector<Complex> v) {
-
-	for (int i = 0; i < T_u; i ++)
-	   v [i] = v [i] *  window [i];
-	my_fftHandler. fft (v);
-
-	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] += v [i];
-}
-//
 //	Note that the input is fft output, not yet reordered
-void	TII_Detector_B::collapse (std::vector<Complex> &inVec, float *outVec) {
+void	TII_Detector_B::collapse (std::vector<Complex> &inVec,
+	                          Complex *outVec_etsi,
+	                          Complex *outVec_nonetsi,
+	                          bool tiiFilter) {
+int	teller = 0;
+    for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
+           const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
+           decodedBuffer [teller++]  +=
+               inVec [fftIdx] * conj (inVec [fftIdx + 1]);
+        }
 
-	for (int i = 0; i < carriers / 8; i ++) {	
-	   int carr = - carriers / 2 + 2 * i;
+	int nrSections	= tiiFilter ? 2 : 4;
+	if (tiiFilter) {
+	   for (int i = 0; i < 192; i ++) {
+	      float x [4];
+	      float max = 0;
+	      float sum = 0;
+	      int index = 0;
+	      for (int j = 0; j < nrSections; j++) {
+	         x [j] = jan_abs (decodedBuffer [i + j * 192]);
+	         sum += x [j];
+	         if (x [j] > max) {
+	            max = x[j];
+	            index = j;
+	         }
+	      }
 
-	   outVec [i] = abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
-	   carr	= - carriers / 2 + 1 * carriers / 4 + 2 * i;
-	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
-	   carr	= - carriers / 2 + 2 * carriers / 4 + 2 * i + 1;
-	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
+	      float min = (sum - max) / 3;
+	      if (sum < max * 1.5 && max > 0.0) {
+	        decodedBuffer [i + index * 192] *= min / max;
+	      }
+	   }
+	}
 
-	   carr	= - carriers / 2 + 3 * carriers / 4 + 2 * i + 1;
-	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
-	                            conj (inVec [(T_u + carr + 1) % T_u])));
+	for (int i = 0; i < 192; i ++) {
+	   outVec_etsi [i] = Complex (0, 0);
+	   outVec_nonetsi [i] = Complex (0, 0);
+	   for (int j = 0; j < nrSections; j ++) {
+	      Complex X = decodedBuffer [i + j * 192];
+	      outVec_etsi [i] += X ;
+	      outVec_nonetsi [i] += X * conj (table_2 [i + j * 192]);
+	   }
 	}
 }
 
-bool	TII_Detector_B::isPeak (const Complex *v, int index, float avg) {
-	if (abs (v [index]) < 2 * avg)
-	   return false;
-	if (abs(v [index + 1]) < 2 * avg)
-	   return false;
-	return true;
-	if (index > 2)
-	   if (abs (v [index - 2]) > 0.75 * abs (v [index]))
-	      return false;
-	if (abs (v [index + 1 + 2]) > 0.75 * abs (v [index + 1]))
-	   return false;
-	return true;
-}
-	
 static
 uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
+
+resultPair TII_Detector_B::findBestIndex (Complex *vector_192,
+	                                  float *avgTable, float threshold) {
+Complex C_table [GROUPSIZE];
+int	D_table [GROUPSIZE];
+resultPair	bestPair;
+	memset (C_table, 0, GROUPSIZE * sizeof (Complex));
+	memset (D_table, 0, GROUPSIZE * sizeof (int));
 //
+//	We only use the C and D table to locate the start offset
+	for (int i = 0; i < GROUPSIZE; i ++) {
+	   for (int j = 0; j < NUM_GROUPS; j ++) {
+	      if (jan_abs (vector_192 [j * GROUPSIZE + i]) >
+	                                     threshold * avgTable [j]) {
+	         C_table [i] +=
+	            vector_192 [j * GROUPSIZE + i] / (DABFLOAT) (threshold * avgTable [j]);
+	         D_table [i] ++;
+	      }
+	   }
+	}
+//	we extract from this result the highest values that
+//	meet the constraint of 4 values being sufficiently high
+	float	maxTable	= 0;
+	int	maxIndex	= -1;
+	
+	for (int j = 0; j < GROUPSIZE; j ++) {
+	   if ((D_table [j] >= 4) && (jan_abs (C_table [j]) > maxTable)) {
+	      maxTable = jan_abs (C_table [j]);
+	      maxIndex = j;
+	      break;
+	   }
+	}
+	bestPair. index = maxIndex;
+	bestPair. value	= maxTable;
+	return bestPair;;
+}
 //	We determine first the offset of the "best fit", the offset
 //	indicates the subId
-#define	NUM_GROUPS	8
-#define	GROUPSIZE	24
-
-QVector<tiiData>	TII_Detector_B::processNULL () {
-float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
-float	C_table		[GROUPSIZE];		  // contains the values
-int	D_table		[GROUPSIZE];	// count of indices in C_table with data
+QVector<tiiData>	TII_Detector_B::processNULL (int16_t threshold_db,
+	                                             uint8_t selected_subId,
+	                                             bool tiiFilter) {
+// collapses values:
+Complex	collapsed_etsi	[NUM_GROUPS * GROUPSIZE];
+// collapses values
+Complex	collapsed_nonetsi	[NUM_GROUPS * GROUPSIZE];
 float	avgTable	[NUM_GROUPS];
-
 QVector<tiiData> theResult;
-	bool dxMode	= true;
+
+float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
+
+	(void)selected_subId;
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
 //	Each "value" is the sum of 4 pairs of subsequent carriers,
 //	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
-	collapse (theBuffer, hulpTable);
+	collapse (nullSymbolBuffer,
+	                 collapsed_etsi, collapsed_nonetsi, tiiFilter);
 
 //	since the "energy levels" in the different GROUPSIZE'd values
 //	may differ, we compute an average for each of the
 //	NUM_GROUPS GROUPSIZE - value groups. 
 
-	int tiiThreshold	=
-	                   value_i (dabSettings, DAB_GENERAL,
-	                                      "tiiThreshold", 4);
 	while (true) {
 	   memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 
 	   for (int i = 0; i < NUM_GROUPS; i ++) {
 	      avgTable [i] = 0;
 	      for (int j = 0; j < GROUPSIZE; j ++) 
-	         avgTable [i] += hulpTable [i * GROUPSIZE + j];
-
+	         avgTable [i] += jan_abs (collapsed_etsi [i * GROUPSIZE + j]);
 	      avgTable [i] /= GROUPSIZE;
 	   }
-//
-//	Determining the offset is then easy, look at the corresponding
-//	elements in the NUM_GROUPS sections and mark the highest ones.
-//	The summation of the high values are stored in the C_table,
-//	the number of times the limit is reached in the group
-//	is recorded in the D_table
-//
-//	So, basically we look into GROUPSIZE colums of NUMGROUPS
-//	values and look for the maximum
-//	Threshold 4 * avgTable is 6 dB, we consider that a minimum
-//	measurement shows that that is a reasonable value,
-//	alternatively, we could take the "minValue" as reference
-//	and "raise" the threshold. However, that might be
-//	too  much for 8-bit incoming values
-	   memset (D_table, 0, GROUPSIZE * sizeof (int));
-	   memset (C_table, 0, GROUPSIZE * sizeof (float));
-//
-//	We only use the C and D table to locate the start offset
-	   for (int i = 0; i < GROUPSIZE; i ++) {
-	      for (int j = 0; j < NUM_GROUPS; j ++) {
-	         if (hulpTable [j * GROUPSIZE + i] > tiiThreshold * avgTable [j]) {
-	            C_table [i] += hulpTable [j * GROUPSIZE + i];
-	            D_table [i] ++;
-	         }
-	      }
-	   }
-	   float newAvg	= 0;
-	   for (int i = 0; i < NUM_GROUPS; i ++)
-	      newAvg += avgTable [i];
-	   newAvg /= NUM_GROUPS;
 
-//	we extract from this result the highest values that
-//	meet the constraint of 4 values being sufficiently high
-	   float	maxTable	= 0;
-	   int		maxIndex	= -1;
+//
+//	first we look to where we could start best, both for
+//	the "local" and the transformed vectors
+
+	   resultPair result_1 =
+	           findBestIndex (collapsed_etsi, avgTable, threshold);
+	   resultPair result_2 =
+	           findBestIndex (collapsed_nonetsi, avgTable, threshold);
 	
-	   for (int j = 0; j < GROUPSIZE; j ++) {
-	      if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
-	         maxTable = C_table [j];
-	         maxIndex = j;
-	         break;
-	      }
+	   if ((result_1. index < 0) && (result_2. index < 0)) {
+	      resetBuffer ();
+	      for (int i = 0; i < carriers / 2; i ++)
+	         decodedBuffer [i] *= 0.0;
+	      return theResult;
 	   }
 
-	   if (maxIndex < 0)
-	      return theResult;
-
-	float strength = 10 * log10 (maxTable / (4 * newAvg));
+	   resultPair result;
+	   Complex *collapsed = nullptr;
+	   if (result_2. value > result_1. value) {
+	      result = result_2;
+	      result. norm = true;
+	      collapsed = collapsed_nonetsi;
+	   }
+	   else {
+	      result = result_1;
+	      collapsed = collapsed_etsi;
+	      result. norm = false;
+	   }
+	
+	float strength = 10 * log10 (result. value / 4);
 //	The - almost - final step is then to figure out which
 //	group contributed most, obviously only where maxIndex  > 0
 //	we start with collecting the values of the correct
@@ -309,70 +209,46 @@ QVector<tiiData> theResult;
 
 	   float x [NUM_GROUPS];
 	   for (int i = 0; i < NUM_GROUPS; i ++) {
-	      x [i] = hulpTable [maxIndex + GROUPSIZE * i];
+	      x [i] = jan_abs (collapsed [result. index + GROUPSIZE * i]);
 	   }
 
 //	find the best match
 	   int finInd = -1;
-	   if (detectMode_new) {
-	      float mm = 0;
-	      for (int k = 0; k < (int)(sizeof (table)); k ++) {
-	         float val = 0;
-	         for (int l = 0; l < NUM_GROUPS; l ++)
-	            if (table [k] & (bits [l] != 0))
-	               val += x [l];
-	         if  (val > mm) {
-	            mm = val;
-	            finInd = k;
-	         }
-	      }
-	      if (finInd != -1) {
-	         tiiData v;
-	         v. subId	= maxIndex;
-	         v. mainId	= finInd;
-	         v. strength	= strength;
-	         theResult. push_back (v);
-	         for (int i = 0; i < 8; i ++) {
-	            if (table [finInd] & bits [i]) {
-	               int index = maxIndex + i * 24;
-	               hulpTable [index] = 0;
-	            }
-	         }
-	      }
-	   }
-	   else {		// detectMode_new is false
 ////	we extract the four max values as bits
-	      float theStrength = 0;
-	      uint16_t pattern	= 0;
-	      for (int i = 0; i < 4; i ++) {
-	         float mmax	= 0;
-	         int ind	= -1;
-	         for (int k = 0; k < NUM_GROUPS; k ++) {
-	            if (x [k] > mmax) {
-	               mmax = x [k];
-	               ind  = k;
-	            }
-	         }
-	         if (ind != -1) {
-	            x [ind] = 0;
-	            pattern |= bits [ind];
+	   uint16_t pattern	= 0;
+	   for (int i = 0; i < 4; i ++) {
+	      float mmax	= 0;
+	      int ind	= -1;
+	      for (int k = 0; k < NUM_GROUPS; k ++) {
+	         if (x [k] > mmax) {
+	            mmax = x [k];
+	            ind  = k;
 	         }
 	      }
-	      finInd = invTable [pattern];
-	      for (int i = 0; i < 8; i ++) {
-	         if (pattern & bits [i]) {
-	            int index = maxIndex + i * 24;
-	             hulpTable [index] = 0;
-	         }
+	      if (ind != -1) {
+	         x [ind] = 0;
+	         pattern |= bits [ind];
 	      }
-	      tiiData v;
-	      v. subId		= maxIndex;
-	      v. mainId		= finInd;	
-	      v. strength	= strength;
-	      theResult. push_back (v);
 	   }
-	   if (!dxMode)
-	      break;
+	   finInd = invTable [pattern];
+	   Complex phaseHolder = std::complex<float> (0, 0);
+	   for (int i = 0; i < 8; i ++) {
+	      if (pattern & bits [i]) {
+	         int index = result. index + i * 24;
+	         phaseHolder += collapsed [index];
+	         collapsed_etsi [index] = Complex (0, 0);
+	         collapsed_nonetsi [index] = Complex (0, 0);
+	      }
+	   }
+	   tiiData v;
+	   v. subId	= result. index;
+	   v. mainId	= finInd;	
+	   v. strength	= strength;
+	   v. pattern	= pattern;
+	   v. phase	= arg (phaseHolder) * F_DEG_PER_RAD;
+	   v. norm	= result. norm;
+	   v. collision	= 0;
+	   theResult. push_back (v);
 	}
 	return theResult;
 }

@@ -77,7 +77,7 @@ static std::vector<uint8_t> buffer (64 * 1024);
 	   readHeader	(theHeader);
 	   if (theHeader. SequenceNumber != volgNummer + 1) {
 	      fprintf (stderr, "%d %d\n",
-	                  theHeader. SequenceNumber, volgNummer);
+	                  (int)theHeader. SequenceNumber, volgNummer);
 //	      fprintf (stderr, "Buffer space = %d\n",
 //	               inBuffer. GetRingBufferReadAvailable ());
 	   }
@@ -104,7 +104,7 @@ static std::vector<uint8_t> buffer (64 * 1024);
 bool	spyHandler_8::readHeader	(struct MessageHeader &header) {
 	while (running. load () &&
 	       (inBuffer. GetRingBufferReadAvailable () <
-	                             sizeof (struct MessageHeader)))
+	                             (int)sizeof (struct MessageHeader)))
 	    std::this_thread::sleep_for (std::chrono::milliseconds (1));
 	if (!running. load ())
 	   return false;
@@ -284,6 +284,8 @@ std::vector<uint32_t> param (1);
 }
 
 bool	spyHandler_8::set_gain_mode	(bool automatic, size_t chan) {
+	(void)automatic;
+	(void)chan;
 	return 0;
 }
 

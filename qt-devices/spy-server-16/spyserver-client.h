@@ -33,7 +33,6 @@
 #include	<QHostAddress>
 #include	<QByteArray>
 #include	<cstdio>
-#include	<samplerate.h>
 #include	"dab-constants.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
@@ -90,15 +89,12 @@ private:
 	FILE		*dumpfilePointer;
 	std::atomic<bool>	onConnect;
 	bool		timedOut;
-
-	float*     	in_f;
-	float*		out_f;
-	int		inputLimit;
-	int		outputLimit;
-	SRC_DATA	data;
-	int		error;
-	SRC_STATE	*resampler;
-	int		totalSamples;
+	int16_t         convBufferSize;
+        int16_t         convIndex;
+        std::vector <std::complex<float> >      convBuffer;
+        int16_t         mapTable_int   [4 * 512];
+        float           mapTable_float [4 * 512];
+	int		selectedRate;
 };
 
 

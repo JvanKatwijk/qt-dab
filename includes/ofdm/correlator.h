@@ -36,16 +36,18 @@
 
 class	RadioInterface;
 
-class correlator : public QObject, public phaseTable {
+class correlator : public QObject {
 Q_OBJECT
 public:
 			correlator 		(RadioInterface *,
-	                                         processParams *);
+	                                         processParams *,
+	                                         phaseTable *);
 			~correlator		();
 	int32_t		findIndex		(std::vector<Complex>,
 	                                         bool,  int);
 //	This one is used in the ofdm decoder
 private:
+	phaseTable	*theTable;
 	dabParams	params;
 	fftHandler	fft_forward;
 	fftHandler	fft_backwards;
@@ -63,7 +65,7 @@ private:
 
 
 signals:
-	void		show_correlation	(int, int, QVector<int>);
+	void		showCorrelation	(int, int, QVector<int>);
 };
 //#endif
 

@@ -34,8 +34,6 @@
 	baudRate        = 48000;
 	connect (this, &faadDecoder::newAudio,
 	         mr, &RadioInterface::newAudio);
-//	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
-//	          mr, SLOT (newAudio (int, int, bool, bool)));
 }
 
 	faadDecoder::~faadDecoder	() {

@@ -38,6 +38,7 @@ public:
 	QString		location;
 	uint16_t 	Eid;
 	uint8_t		mainId;
+	uint16_t	pattern;
 	uint8_t		subId;
 	QString		transmitterName;
 	float		latitude;
@@ -56,6 +57,7 @@ public:
 	float		azimuth;
 	float		phase;
 	bool		norm;
+	bool		collision;
 	
 	cacheElement	() {
 	   valid		= false;
@@ -76,6 +78,7 @@ public:
 	   direction		= "";
 	   phase		= 0;
 	   norm			= false;
+	   collision		= false;
 	}
 	~cacheElement	()	{}
 };

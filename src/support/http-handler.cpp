@@ -569,13 +569,16 @@ void	httpHandler::putData	(uint8_t	type,
 	                         const QString		&theTime,
 	                         const QString		&channelName,
 	                         float	 snr) {
+	(void)snr;
 	float latitude	= theTr -> theTransmitter. latitude;
 	float longitude	= theTr -> theTransmitter. longitude;
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
 	   if ((transmitterList [i]. coords. latitude == latitude) &&
-	       (transmitterList [i]. coords. longitude == longitude))
+	       (transmitterList [i]. coords. longitude == longitude ) &&
+	       (transmitterList [i]. type == type))
 	      return;
 
+	         
 	httpData t;
 	t. type			= type;
 //	t. ensemble		= theTr -> ensemble;
@@ -604,7 +607,9 @@ void	httpHandler::putData	(uint8_t	type,
 	   if ((transmitterVector. at (i). transmitterName ==
 	               t. transmitterName) &&
 	       (transmitterVector. at (i). channelName ==
-	               t. channelName)) {
+	               t. channelName) &&
+	       (transmitterVector. at (i). type ==
+	                         t. type)) {
 	      return;
 	   }
 	}

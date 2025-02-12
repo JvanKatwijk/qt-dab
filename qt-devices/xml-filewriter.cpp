@@ -53,7 +53,7 @@ uint8_t t	= 0;
 	xmlFile		= fopen (fileName. toUtf8 (). data (), "w+b");
 	if (xmlFile == nullptr)
 	   throw (21);
-	fprintf (stderr, "file is open\n");
+//	fprintf (stderr, "file is open\n");
 	this	-> nrBits	= nrBits;
 	this	-> container	= container;
 	this	-> sampleRate	= sampleRate;

@@ -46,6 +46,7 @@ public:
 		~ensembleHandler	();
 	void	reset			();
 	bool	add_to_ensemble		(serviceId &);
+	bool	alreadyIn		(serviceId &);
 	void	add_favorite_from_scanList	(const QString &);
 
 	void	handle_scheduledSelect	(const QString &, const QString &);

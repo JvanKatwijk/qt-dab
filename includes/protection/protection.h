@@ -26,14 +26,16 @@
 
 #include	<cstdint>
 #include        <vector>
-#include        "viterbi-spiral.h"
+//#include        "viterbi-spiral.h"
+#include        "viterbi.h"
 
 extern uint8_t	PI_X [];
 
-class   protection: public viterbiSpiral {
+//class   protection: public viterbiSpiral {
+class   protection: public viterbi {
 public:
-                protection      (int16_t, int16_t);
-virtual         ~protection();
+                protection      (int16_t, int16_t, uint8_t);
+virtual         ~protection	();
 virtual bool    deconvolve      (int16_t *, int32_t, uint8_t *);
 protected:
         int16_t         bitRate;

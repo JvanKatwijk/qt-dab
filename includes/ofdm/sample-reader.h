@@ -33,7 +33,7 @@
 #include	<vector>
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	"riffWriter.h"
+#include	"wavWriter.h"
 //
 //      Note:
 //      It was found that enlarging the buffersize to e.g. 8192
@@ -50,15 +50,15 @@ public:
 
 	      	~sampleReader		();
 	      void	setRunning	(bool b);
-	      float	get_sLevel	();
-	      Complex	get_sample	(float);
-	      void	get_samples	(std::vector<Complex> &v,
+	      float	getSLevel	();
+	      Complex	getSample	(float);
+	      void	getSamples	(std::vector<Complex> &v,
 	                                 int index,
 	                                 int32_t n, int32_t phase, bool saving);
-	      void	start_dumping	(const QString &, int);
-	      void	stop_dumping();
+	      void	startDumping	(const QString &, int, int);
+	      void	stopDumping();
 private:
-	      riffWriter	sourceDumper;
+	      wavWriter		sourceDumper;
 	      RadioInterface	*myRadioInterface;
 	      deviceHandler	*theRig;
 	      RingBuffer<Complex> *spectrumBuffer;

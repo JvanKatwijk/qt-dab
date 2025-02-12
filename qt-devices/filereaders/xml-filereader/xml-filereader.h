@@ -42,14 +42,14 @@ Q_OBJECT
 public:
 				xml_fileReader	(const QString &);
                 		~xml_fileReader	();
+	bool			restartReader	(int32_t);
+	void			stopReader	();
 	int32_t			getSamples	(std::complex<float> *,
 	                                                         int32_t);
 	int32_t			Samples		();
-	bool			restartReader	(int32_t);
-	void			stopReader	();
+	QString			deviceName	();
 	bool			isFileInput	();
 	int			getVFOFrequency	();
-	QString			deviceName	();
 private:
 	std::atomic<bool>	running;
 	QString			fileName;

@@ -26,9 +26,11 @@
 /*
  */
 	converter_48000::converter_48000 (RadioInterface *mr):
-	                                mapper_16 (16000, 48000, 2 * 1600),
-	                                mapper_24 (24000, 48000, 2 * 2400),
-	                                mapper_32 (32000, 48000, 2 * 3200) {
+	                                   filter_16_48 (5, 8000, 48000),
+	                                   filter_24_48 (5, 12000, 89000),
+	                                   filter_32_96 (5, 16000, 96000) {
+	(void)mr;
+	buffer_32_96. resize (0);
 	                              
 }
 
@@ -52,7 +54,7 @@ int	converter_48000::convert (complex16 *V,
 }
 
 void	converter_48000::start_audioDump         (const QString &fileName) {
-	theWriter. init (fileName);
+	theWriter. init (fileName, 48000);
 }
 
 void	converter_48000::stop_audioDump          () {
@@ -63,27 +65,25 @@ void	converter_48000::stop_audioDump          () {
 
 //	scale up from 16 -> 48
 //	amount gives number of pairs
-int	converter_48000::convert_16000	(complex16 *V,
-	                                 int amount,
+int	converter_48000::convert_16000  (complex16 *V, int amount,
 	                                 std::vector<float> &out) {
-Complex buffer [mapper_16. getOutputsize ()];
 int	teller = 0;
-	out. resize (0);
+
+	out. resize (2 * 3 * amount);
 	for (int i = 0; i < amount; i ++) {
-	   int	result;
-	   if (mapper_16.
-	            convert (Complex (real (V [i]) / 32767.0,
-	                              imag (V [i]) / 32767.0),
-	                                           buffer, &result)) {
-	      
-	      dump (buffer, result);
-	      out. resize (out. size () + 2 * result);
-	      for (int j = 0; j < result; j ++) {
-	         out [teller ++] = real (buffer [j]);
-	         out [teller ++] = imag (buffer [j]);
-	      }
-	   }
+	   std::complex<float> X = std::complex<float> (real (V [i]) / 32767.0,
+	                                                imag (V [i]) / 32767.0);
+	   X = filter_16_48. Pass (X);
+	   out [teller ++] = 3 * real (X); 
+	   out [teller ++] = 3 * imag (X);
+	   X = filter_16_48. Pass (std::complex<float> (0, 0));
+	   out [teller ++] = real (X); 
+	   out [teller ++] = imag (X);
+	   X = filter_16_48. Pass (std::complex<float> (0, 0));
+	   out [teller ++] = real (X); 
+	   out [teller ++] = imag (X);
 	}
+	dump (out. data (), teller / 2);
 	return teller;
 }
 
@@ -92,23 +92,19 @@ int	teller = 0;
 int	converter_48000::convert_24000	(complex16 *V,
 	                                 int amount,
 	                                 std::vector<float> &out) {
-Complex buffer	[mapper_24. getOutputsize ()];
-int	teller	= 0;
-
-	out. resize (2 * mapper_24. getOutputsize ());
+int teller	= 0;
+	out. resize (2 * 2 * amount);
 	for (int i = 0; i < amount; i ++) {
-	   int	result;
-	   if (mapper_24.
-	            convert (Complex (real (V [i]) / 32767.0,
-	                              imag (V [i]) / 32767.0),
-	                                           buffer, &result)) {
-	      dump (buffer, result);
-	      for (int j = 0; j < result; j ++) {
-	         out [teller ++] = real (buffer [j]);
-	         out [teller ++] = imag (buffer [j]);
-	      }
-	   }
+	   std::complex<float> X = std::complex<float> (real (V [i]) / 32767.0,
+	                                                imag (V [i]) / 32767.0);
+	   X = filter_24_48. Pass (X);
+	   out [teller ++] = real (X); 
+	   out [teller ++] = imag (X);
+	   X = filter_24_48. Pass (std::complex<float> (0, 0));
+	   out [teller ++] = real (X); 
+	   out [teller ++] = imag (X);
 	}
+	dump (out. data (), teller / 2);
 	return teller;
 }
 
@@ -117,23 +113,28 @@ int	teller	= 0;
 int	converter_48000::convert_32000	(complex16 *V,
 	                                 int amount,
 	                                 std::vector<float> &out) {
-Complex      buffer	[mapper_32. getOutputsize()];
-int	teller	= 0;
-
-	out. resize (2 * mapper_32. getOutputsize ());
+int teller	= 0;
+	out. resize (3 * amount);
 	for (int i = 0; i < amount; i ++) {
-	   int	result;
-	   if (mapper_32.
-	            convert (Complex (real (V [i]) / 32767.0,
-	                              imag (V [i]) / 32767.0),
-	                                           buffer, &result)) {
-	      dump (buffer, result);
-	      for (int j = 0; j < result; j ++) {
-	         out [teller ++] = real (buffer [j]);
-	         out [teller ++] = imag (buffer [j]);
-	      }
+	   std::complex<float> X = std::complex<float> (real (V [i]) / 32768.0,
+                                                        imag (V [i]) / 32768.0);
+	   X = filter_32_96. Pass (X * 3.f);
+	   buffer_32_96. push_back (X);
+	   X = filter_32_96. Pass (std::complex<float> (0, 0));
+	   buffer_32_96. push_back (X * 3.f);
+	   X = filter_32_96. Pass  (std::complex<float> (0, 0));
+	   buffer_32_96. push_back (X * 3.f); 
+	   if (buffer_32_96. size () >= 6) {	// should be 0 .. 6
+	      out [teller ++] = real (buffer_32_96 [0]);
+	      out [teller ++] = imag (buffer_32_96 [0]);
+	      out [teller ++] = real (buffer_32_96 [2]);
+	      out [teller ++] = imag (buffer_32_96 [2]);
+	      out [teller ++] = real (buffer_32_96 [4]);
+	      out [teller ++] = imag (buffer_32_96 [4]);
+	      buffer_32_96. resize (0);
 	   }
 	}
+	dump (out. data (), teller / 2);
 	return teller;
 }
 
@@ -150,6 +151,17 @@ Complex buffer [amount];
 	}
 	dump (V, amount);
 	return 2 * amount;
+}
+
+void	converter_48000::dump (const float *buffer, int amount) {
+	if (!theWriter. isActive ())
+	   return;
+	int16_t lBuf [2 * amount];
+	for (int i = 0; i < 2 * amount; i ++)
+	   lBuf [i] = buffer [i] * 32768;
+	locker. lock ();
+	theWriter. write (lBuf, amount / 2);
+	locker. unlock ();
 }
 
 void	converter_48000::dump (const Complex *buffer, int nrSamples) {

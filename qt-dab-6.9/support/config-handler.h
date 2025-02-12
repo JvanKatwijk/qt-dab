@@ -53,6 +53,7 @@ public:
 	int	get_serviceOrder	();
 	int	switchDelayValue	();
 	int	muteValue		();
+	
 	bool	closeDirect_active	();
 	bool	utcSelector_active	();
 	bool	epg_automatic_active	();
@@ -132,6 +133,12 @@ private slots:
 	void	handle_audioServices_only	(int);
 	void	handle_auto_http		(int);
 
+	void	handle_tiiCollisions		(int);
+	void	handle_tiiFilter		(int);
+
+	void	handle_tiiSelector		(int);
+
+	void	handle_mouseClicked		();
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);
@@ -145,6 +152,11 @@ signals:
 	void	set_serviceOrder	(int);
 	void	set_dcRemoval		(bool);
 	void	frameClosed		();
+
+	void	process_tiiCollisions	(int);
+	void	process_tiiFilter	(bool);
+
+	void	process_tiiSelector	(bool);
 
 };
 

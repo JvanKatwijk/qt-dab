@@ -70,8 +70,8 @@ public:
 	QString		getChannel	(int frequency);
 
 private:
-	scantableHandler	scanTable;
 	QScrollArea	myWidget;
+	scantableHandler	scanTable;
 	QString		channel;
 	findfileNames	filenameFinder;
 	RadioInterface	*theRadio;

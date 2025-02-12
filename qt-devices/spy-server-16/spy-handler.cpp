@@ -105,7 +105,7 @@ static std::vector<uint8_t> buffer (64 * 1024);
 bool	spyHandler::readHeader	(struct MessageHeader &header) {
 	while (running. load () &&
 	       (inBuffer. GetRingBufferReadAvailable () <
-	                             sizeof (struct MessageHeader)))
+	                             (int)sizeof (struct MessageHeader)))
 	    std::this_thread::sleep_for (std::chrono::milliseconds (1));
 	if (!running. load ())
 	   return false;

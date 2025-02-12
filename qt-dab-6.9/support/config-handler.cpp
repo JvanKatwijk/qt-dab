@@ -25,6 +25,7 @@
 #include	<QStringList>
 #include	<QStringListModel>
 #include	<QColorDialog>
+#include	<QDir>
 #include	"dab-constants.h"
 #include	"config-handler.h"
 #include	"mapport.h"
@@ -66,9 +67,6 @@ static struct {
 } decoders []  = {
 {"decoder_a", DECODER_1},
 {"decoder_b", DECODER_2},
-{"decoder_c", DECODER_3},
-{"decoder_d", DECODER_4},
-{"decoder_e", DECODER_5},
 {"", 0}
 };
 
@@ -90,6 +88,8 @@ int	index_for_key (int key) {
 	hide ();
 	connect (&myFrame, &superFrame::frameClosed,
 	         this, &configHandler::frameClosed);
+	connect (&myFrame, &superFrame::makePicture,
+	         this, &configHandler::handle_mouseClicked);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
 	
@@ -167,6 +167,10 @@ int	index_for_key (int key) {
 
 	b = value_i (dabSettings, CONFIG_HANDLER, "auto_http", 9) != 0;
 	this	-> auto_http -> setChecked (b);
+	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0);
+	this	-> tiiCollisions -> setValue (c);
+	b = value_i (dabSettings, CONFIG_HANDLER, "tiiFilter", 1) != 0;
+	this	-> tiiFilter -> setChecked (b);
 
 
 #ifndef	__MSC_THREAD__
@@ -181,15 +185,50 @@ int	index_for_key (int key) {
 	                                 "decoders", DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	
-	int v = value_i (dabSettings, CONFIG_HANDLER,
-	                             TII_THRESHOLD, 4);
+
+	int v = value_i (dabSettings, CONFIG_HANDLER, "tii-detector", 1);
+	this	-> tiiSelector	-> setChecked (v != 0);
+	if (v == 0) {
+	   tiiCollisions -> setEnabled (false);
+	   tiiThreshold_setter -> setMinimum (4);
+	}
+	else
+	   tiiThreshold_setter -> setMinimum (6);
+
+	v = value_i (dabSettings, CONFIG_HANDLER,
+	                             TII_THRESHOLD, 12);
 	this -> tiiThreshold_setter -> setValue (v);
+
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
+	connect (this, &configHandler::process_tiiCollisions,
+	         myRadioInterface, &RadioInterface::handle_tiiCollisions);
+	connect (this, &configHandler::process_tiiFilter,
+	         myRadioInterface, &RadioInterface::handle_tiiFilter);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (auto_http, &QCheckBox::checkStateChanged,
+#else
 	connect (auto_http, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_auto_http);
+	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_tiiCollisions);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (tiiFilter, &QCheckBox::checkStateChanged,
+#else
+	connect (tiiFilter, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_tiiFilter);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (tiiSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (tiiSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_tiiSelector);
+	connect (this, &configHandler::process_tiiSelector,
+	         myRadioInterface, &RadioInterface::process_tiiSelector);
 	set_Colors ();
 }
 
@@ -334,7 +373,7 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::handle_set_coordinatesButton );
 	connect (loadTableButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_loadTable);
-//
+	loadTableButton	-> setText ("refresh table");
 //	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
 	connect (dumpButton, &QPushButton::clicked,
@@ -344,46 +383,90 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (audioServices_only, &QCheckBox::checkStateChanged,
+#else
 	connect (audioServices_only, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_audioServices_only);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (correlationSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (correlationSelector, &QCheckBox::stateChanged,
+#endif
 	         myRadioInterface, &RadioInterface::handle_correlationSelector);
 //
 //	second line
 	int upload = value_i (dabSettings, CONFIG_HANDLER,
 	                              "UPLOAD_ENABLED", 0);
 	if (upload != 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	   connect (upload_selector, &QCheckBox::checkStateChanged,
+#else
 	   connect (upload_selector, &QCheckBox::stateChanged,
+#endif
 	            this, &configHandler::handle_upload_selector);
 	else
 	   upload_selector -> setEnabled (false);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (logger_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (logger_selector, &QCheckBox::stateChanged,
+#endif
 	         myRadioInterface, &RadioInterface::handle_LoggerButton);
 //	the epg2xmlSelector is just polled, no need to react on an event
 
 //	third line
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (utc_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (utc_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_utc_selector);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (onTop, &QCheckBox::checkStateChanged,
+#else
 	connect (onTop, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_onTop);
 //
 //	fourthline
 //	here we expect the close without asking
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (epg_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (epg_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_epgSelector);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (localBrowserSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (localBrowserSelector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_localBrowser);
 //
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (etiActivated_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (etiActivated_selector, &QCheckBox::stateChanged,
+#endif
 	         myRadioInterface, &RadioInterface::handle_eti_activeSelector);
 //
 //	fifh line
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (clearScan_selector, &QCheckBox::checkStateChanged,
+#else
 	connect (clearScan_selector, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_clearScan_Selector);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (saveSlides, &QCheckBox::checkStateChanged,
+#else
 	connect (saveSlides, &QCheckBox::stateChanged,
+#endif
 	         this, &configHandler::handle_saveSlides);
 //
 //	botton row
@@ -819,6 +902,8 @@ void	configHandler::show_streamSelector	(bool b) {
 }
 
 void	configHandler::fill_streamTable	(const QStringList &sl) {
+	for (int i = streamoutSelector -> count () - 1; i >= 0; i --)
+	   streamoutSelector -> removeItem (i);
 	for (auto sle : sl)
 	   streamoutSelector -> addItem (sle);
 }
@@ -878,13 +963,7 @@ QString dir	=
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
 	if (dir != "")
-	   store (dabSettings, CONFIG_HANDLER, "filePath", dir);
-}
-
-void	configHandler::handle_audioServices_only	(int state) {
-uint8_t x	= audioServices_only -> isChecked ();
-	(void)state;
-	store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
+	   store (dabSettings, DAB_GENERAL,  S_FILE_PATH, dir);
 }
 
 bool	configHandler::get_audioServices_only () {
@@ -896,3 +975,46 @@ uint8_t x	= auto_http -> isChecked ();
 	(void)state;
 	store (dabSettings, CONFIG_HANDLER, "auto_http", x);
 }
+
+void	configHandler::handle_audioServices_only	(int state) {
+uint8_t x       = audioServices_only -> isChecked ();
+        (void)state;
+        store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
+}
+
+void	configHandler::handle_tiiCollisions     (int value) {
+        store (dabSettings, CONFIG_HANDLER, "tiiCollisions", value);
+	process_tiiCollisions (value);
+}
+
+void	configHandler::handle_tiiFilter         (int state) {
+bool    x       = tiiFilter     -> isChecked ();
+        (void)state;
+        store (dabSettings, CONFIG_HANDLER, "tiiFilter", x ? 1 : 0);
+	process_tiiFilter (x);
+}
+
+void	configHandler::handle_tiiSelector	(int state) {
+bool	x 	= tiiSelector	-> isChecked ();
+	(void)state;
+	store (dabSettings, CONFIG_HANDLER, "tii-detector", x ? 1 : 0);
+	tiiCollisions -> setEnabled (x);
+	if (x) 
+	   tiiThreshold_setter -> setMinimum (6);
+	else
+	   tiiThreshold_setter -> setMinimum (4);
+	process_tiiSelector (x);
+}
+
+void	configHandler::handle_mouseClicked () {
+QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
+        tempPath                =
+               value_s (dabSettings, "CONFIG_HANDLER", S_FILE_PATH, tempPath);
+        if (!tempPath. endsWith ('/'))
+           tempPath             += '/';
+	QDir::fromNativeSeparators (tempPath);
+	QString fileName	= tempPath + "config-handler.png";
+	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
+	myFrame. grab (). save (fileName);
+}
+

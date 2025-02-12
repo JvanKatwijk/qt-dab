@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -25,13 +25,16 @@
 #include        "uep-protection.h"
 
 
-	backendDeconvolver::backendDeconvolver (descriptorType *d) {
+	backendDeconvolver::backendDeconvolver (descriptorType *d,
+	                                               uint8_t cpuSupport) {
         if (d -> shortForm) 
 	   protectionHandler    = new uep_protection (d -> bitRate,
-                                                      d -> protLevel);
+                                                      d -> protLevel,
+	                                              cpuSupport);
         else 
            protectionHandler    = new eep_protection (d -> bitRate,
-                                                      d -> protLevel);
+                                                      d -> protLevel,
+	                                              cpuSupport);
 }
 
 	backendDeconvolver::~backendDeconvolver() {

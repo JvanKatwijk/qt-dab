@@ -22,6 +22,7 @@
  */
 
 #include	<QSettings>
+#include	<QDir>
 #include	"display-widget.h"
 #include	"spectrum-scope.h"
 #include	"null-scope.h"
@@ -44,13 +45,14 @@
 	                                         theFFT (4 * 512, false),
 	                                         dabSettings_p (dabSettings) {
 	(void)mr;
-int	sliderValue;
 	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
 	setupUi (&myFrame);
 	set_position_and_size (dabSettings_p, &myFrame, 
 	                           DISPLAY_WIDGET_SETTINGS);
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ())); 
+	connect (&myFrame, &superFrame::makePicture, 
+                 this, &displayWidget::handle_mouseClicked);
 //
 	myFrame. hide ();
 
@@ -64,7 +66,7 @@ int	sliderValue;
 	correlationScope_p	= new correlationScope (correlationDisplay,
 	                                                256, dabSettings_p);
 	TII_Scope_p		= new spectrumScope	(tiiDisplay,
-	                                                512, dabSettings_p);
+	                                                192, dabSettings_p);
 	channelScope_p		= new channelScope	(channelPlot,
 	                                                 NR_TAPS,
 	                                                 dabSettings_p);
@@ -75,7 +77,7 @@ int	sliderValue;
 	                                                512, 50);
 //
 //	and the settings for the sliders:
-	sliderValue		= value_i (dabSettings_p,
+	int sliderValue		= value_i (dabSettings_p,
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "spectrumSlider", 30);
 	spectrumSlider		-> setValue (sliderValue);
@@ -117,22 +119,25 @@ int	sliderValue;
 	setMarkers		= value_i (dabSettings_p,
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "setMarkers", 0) != 0;
-	show_marksButton	-> setStyleSheet ("color:yellow");
-	QString qss = QString ("background-color: QColor (Qt::yellow), QColor(Qt::black)");
-	show_marksButton -> setStyleSheet (qss);
+	show_marksButton	-> 
+	          setStyleSheet (
+	                "background-color : green; color: white");
 	if (setMarkers)
 	   show_marksButton	-> setText ("no markers");
 	else
 	   show_marksButton	-> setText ("set markers");
+//
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
 	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
 	         this, SLOT (rightMouseClick ()));
 	connect (ncpScope_checkBox, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_ncpScope_checkBox (int)));
+	         this, SLOT (handleNcpScope_checkBox (int)));
 	connect (show_marksButton, &QPushButton::clicked,
-	         this, &displayWidget::handle_marksButton);
-
+	         this, &displayWidget::handleMarksButton);
+//
+	for (int i = 0; i < 2048; i ++)
+	   workingBuffer [i] =  0; 
 }
 
 	displayWidget::~displayWidget () {
@@ -165,9 +170,11 @@ void	displayWidget::switch_tab	(int t) {
 	currentTab	= t;
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS, "tabSettings", t);
 	waterfallScope_p	-> cleanUp ();
+	for (int i = 0; i < 2048; i ++)
+	   workingBuffer [i] =  0;
 }
 
-int	displayWidget::get_tab		() {
+int	displayWidget::getTab		() {
 	return currentTab == 0 ? SHOW_SPECTRUM :
 	       currentTab == 1 ? SHOW_CORRELATION :
 	       currentTab == 2 ? SHOW_NULL : 
@@ -181,8 +188,7 @@ int	displayWidget::get_tab		() {
 //
 //	for "spectrum" we get a segment of 2048 timedomain samples
 //	we take the fft and average a little
-void	displayWidget::show_spectrum	(std::vector<Complex> &v,
-	                                                   int freq) {
+void	displayWidget::showSpectrum	(std::vector<Complex> &v, int freq) {
 int	l	= v. size ();
 floatQwt  X_axis [512];
 floatQwt  Y_value [512];
@@ -214,15 +220,10 @@ static floatQwt avg [4 * 512];
 	                                    freq / 1000);
 }
 
-std::vector<corrElement> sort (std::vector<corrElement> in) {
-std::vector<corrElement> res;
-	return res;
-}
-
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
 //	and a list of transmitters
-void	displayWidget::show_correlation	(const std::vector<float> &v,
+void	displayWidget::showCorrelation	(const std::vector<float> &v,
 	                                 QVector<int> &maxVals,
 	                                 int T_g,
 	                                 std::vector<transmitterDesc> &theTr) {
@@ -230,6 +231,8 @@ std::vector<corrElement> showData;
 	if (currentTab != SHOW_CORRELATION)
 	   return;
 
+	(void)maxVals;
+	
 	for (auto &theTransm : theTr) {
 	   corrElement t;
 	   t. mainId	= theTransm. theTransmitter. mainId;
@@ -243,7 +246,7 @@ std::vector<corrElement> showData;
 	}
 	float max	= 0;
 	int maxInd	= -1;
-	for (int i = 0; i < showData. size (); i ++) {
+	for (uint16_t i = 0; i < showData. size (); i ++) {
 	   if (showData [i]. strength > max) {
 	      maxInd = i;
 	      max = showData [i]. strength;
@@ -260,6 +263,7 @@ std::vector<corrElement> showData;
 	}
 	if (!setMarkers) 
 	   showData. resize (0);
+
 	correlationScope_p	-> display (v, T_g,
 	                                    correlationLength -> value (),
 	                                    correlationSlider -> value (),
@@ -279,14 +283,15 @@ std::vector<corrElement> showData;
 	}
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] *= 50.0 / MMax;
+
 	waterfallScope_p -> display (X_axis, Y_value, 
-	                              waterfallSlider -> value (),
+	                              0.1 * waterfallSlider -> value (),
 	                              v. size () / 2);
 }
 //	for "null" we get a segment of 1024 timedomain samples
 //	(the amplitudes!)
 //	that can be displayed directly
-void	displayWidget::show_null	(Complex *v, int amount,
+void	displayWidget::showNULL	(Complex *v, int amount,
 	                                      int startIndex) {
 	if  (currentTab != SHOW_NULL)
 	   return;
@@ -312,40 +317,53 @@ void	displayWidget::show_null	(Complex *v, int amount,
 }
 //
 //	for "tii" we get a segment of 2048 time domain samples,
-//	we take an FFT, do some averaging and display
-void	displayWidget::show_tii	(std::vector<Complex> v, int freq) {
-int	l	= v. size ();
+//	data is from the NULL period with TII data, after the
+//	FFT, we collapse to 192 "bin"s
+void	displayWidget::showTII	(std::vector<Complex> v, int freq) {
 floatQwt	X_axis [512];
-floatQwt  Y_value [512];
+floatQwt	Y_value [512];
 
-static floatQwt avg [4 * 512];
+	(void)freq;
 	if (currentTab != SHOW_TII)
 	   return;
 
 	theFFT. fft (v);
-	for (int i = 0; i < (int)(v. size ()) / 2; i ++) {
-	   avg [i] = 0.5 * avg [i] + 0.5 * abs (v [l / 2 + i]);
-	   avg [l / 2 + i] = 0.5 * avg [l / 2 + i] + 0.5 * abs (v [i]);
+//
+//	smoothen the data a little
+	for (uint32_t i = 0; i < v. size (); i ++)
+	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.8) +
+	                       abs (v [i]) * DABFLOAT (0.2);
+//
+//	in the regular scope we just show the data the tii decoder will
+//	be working on
+	floatQwt resVec [192];
+	for (int i = 0; i < 192; i ++) {
+	   resVec [i] = 0;
+	   for (int j = 0; j < 2; j ++) {
+	      int index = (1024 + 2 * i + j * 384) % 1024;
+	      resVec [i] += 2 * abs (workingBuffer [index] + workingBuffer [index + 1]);
+	   }
+	   X_axis [i] = i;
 	}
 
-	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = (freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000000.0;
-	   Y_value [i] = 0;
-	   for (int j = 0; j < 4; j ++) 
-	      Y_value [i] +=  avg [4 * i + j];
-	   Y_value [i]	=  get_db (Y_value [i]);
-	}
-
-	TII_Scope_p		-> display (X_axis, Y_value, freq / 1000, 
+	TII_Scope_p		-> display (X_axis, resVec, 96, 
 	                                      tiiSlider -> value ());
+//
+//	for the waterfall we upsample from 192 -> 512
+	for (int i = 0; i < 512; i ++) {
+	   int index = (int)((float)i / 512 * 192);
+	   Y_value [i] = resVec [index];
+	   X_axis [i] = index;
+	}
+
 	for (int i = 0; i < 512; i ++)
-	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
+	   Y_value [i] = 4 * (Y_value [i] - get_db (0)) / 8;
 	waterfallScope_p	-> display (X_axis, Y_value, 
-	                                    waterfallSlider -> value (),
-	                                    freq / 1000);
+	                                    1.5 * waterfallSlider -> value (),
+	                                    96);
 }
 
-void	displayWidget::show_channel	(const std::vector<Complex> Values) {
+void	displayWidget::showChannel	(const std::vector<Complex> Values) {
 floatQwt	amplitudeValues	[NR_TAPS];
 floatQwt	phaseValues	[NR_TAPS];
 floatQwt	X_axis		[NR_TAPS];
@@ -381,7 +399,7 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	                                    0);
 }
 
-void	displayWidget::show_stdDev	(const std::vector<float> stdDevVector) {
+void	displayWidget::showStdDev	(const std::vector<float> stdDevVector) {
 floatQwt X_axis [512];
 floatQwt Y_value [512];
 
@@ -423,7 +441,7 @@ std::vector<Complex> tempDisplay (512);
            IQDisplay_p -> display_centerPoints (Values, sliderValue * 2);
 }
 
-void	displayWidget:: show_quality (float q, float timeOffset,	
+void	displayWidget:: showQuality (float q, float timeOffset,	
 	                              float freqOffset) {
 	if (myFrame. isHidden ())
 	   return;
@@ -436,28 +454,27 @@ void	displayWidget:: show_quality (float q, float timeOffset,
 	                                   arg (freqOffset, 0, 'f', 2));
 }
 
-void	displayWidget::show_corrector (int coarseOffset, float fineOffset) {
+void	displayWidget::showCorrector (int coarseOffset, float fineOffset) {
 	if (myFrame. isHidden ())
 	   return;
 	coarse_correctorDisplay	-> display (coarseOffset + fineOffset);
-//	fine_correctorDisplay	-> display (fineOffset);
 }
 
 	
-void	displayWidget::show_snr	(float snr) {
+void	displayWidget::showSNR	(float snr) {
 	if (myFrame. isHidden ())
 	   return;
 	snrDisplay		-> display (QString ("%1").arg (snr, 0, 'f', 2));
 }
 
-void	displayWidget::show_correction	(int c) {
+void	displayWidget::showCorrection	(int c) {
 	if (myFrame. isHidden ())
 	   return;
 	(void)c;
 //	correctorDisplay	-> display (c);
 }
 
-void	displayWidget::show_clock_err	(int e) {
+void	displayWidget::showClock_err	(int e) {
 	if (!myFrame. isHidden ())
 	   clock_errorDisplay -> display (e);
 }
@@ -475,13 +492,13 @@ void	displayWidget::showFrequency (const QString &channel, int freq) {
 	channelDisplay		-> setText (channel);
 }
 
-void	displayWidget::show_cpuLoad	(float use) {
+void	displayWidget::showCPULoad	(float use) {
 	(void)use;
 }
 
-void	displayWidget::show_transmitters (std::vector<transmitterDesc> &tr) {
+void	displayWidget::showTransmitters (std::vector<transmitterDesc> &tr) {
 QString textList;
-	for (int i = 0; i < tr. size (); i ++) {
+	for (uint16_t i = 0; i < tr. size (); i ++) {
 	   uint16_t mainId	= tr [i]. theTransmitter. mainId;
 	   uint16_t subId	= tr [i]. theTransmitter. subId;
 	   QString trId = QString ("(") + QString::number (mainId) +
@@ -491,18 +508,18 @@ QString textList;
 	tiiLabel -> setText (textList);
 }
 
-void	displayWidget::set_syncLabel	(bool b) {
+void	displayWidget::setSyncLabel	(bool b) {
 	if (b)
 	   syncLabel    -> setStyleSheet ("QLabel {background-color : green}");
 	else
 	   syncLabel    -> setStyleSheet ("QLabel {background-color : yellow}");              
 }
 
-void	displayWidget::show_dcOffset	(float dcOffset) {
+void	displayWidget::showDCOffset	(float dcOffset) {
 	dcOffset_display	-> display (dcOffset);
 }
 
-void	displayWidget::set_dcRemoval	(bool b) {
+void	displayWidget::setDCRemoval	(bool b) {
 	if (b) {
 	   dcOffset_display	-> show ();
 	   dcOffset_label	-> show ();
@@ -513,7 +530,7 @@ void	displayWidget::set_dcRemoval	(bool b) {
 	}
 }
 
-void	displayWidget::show_ficBER	(float ber) {
+void	displayWidget::showFICBER	(float ber) {
 	ber_display	-> display (ber);
 }
 
@@ -533,11 +550,11 @@ void	displayWidget::rightMouseClick () {
 	emit mouseClick ();
 }
 
-void	displayWidget::set_bitDepth	(int d) {
+void	displayWidget::setBitDepth	(int d) {
 	spectrumScope_p	-> set_bitDepth (d);
 }
 
-void	displayWidget::handle_ncpScope_checkBox	(int d) {
+void	displayWidget::handleNcpScope_checkBox	(int d) {
 	(void)d;
 	ncpScope	= ncpScope_checkBox -> isChecked ();
 	
@@ -564,7 +581,7 @@ void	displayWidget::setSilent	() {
 	   devScope_p		-> clean ();
 }
 
-void	displayWidget::handle_marksButton	() {
+void	displayWidget::handleMarksButton	() {
 	setMarkers = !setMarkers;
 	if (setMarkers)
 	   show_marksButton	-> setText ("no markers");
@@ -572,4 +589,22 @@ void	displayWidget::handle_marksButton	() {
 	   show_marksButton	-> setText ("set markers");
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
 	                          "setMarkers", setMarkers ? 1 : 0);
+}
+
+void	displayWidget::cleanTII	() {
+	waterfallScope_p	-> cleanUp ();
+	for (int i = 0; i < 2048; i ++)
+	   workingBuffer [i] =  0;
+}
+
+void	displayWidget::handle_mouseClicked () {
+QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
+        tempPath                =
+               value_s (dabSettings_p, "CONFIG_HANDLER", S_FILE_PATH, tempPath);
+        if (!tempPath. endsWith ('/'))
+           tempPath             += '/';
+	QDir::fromNativeSeparators (tempPath);
+	QString fileName	= tempPath + "spectrum-scope.png";
+	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
+	myFrame. grab (). save (fileName);
 }

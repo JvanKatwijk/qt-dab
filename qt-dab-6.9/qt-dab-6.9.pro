@@ -16,14 +16,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g 
-#QMAKE_CXXFLAGS	+=  -g 
-#QMAKE_LFLAGS	+=  -g 
+#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -60,12 +58,12 @@ DEPENDPATH += . \
 	      ../src/backend/audio \
 	      ../src/backend/data \
 	      ../src/backend/data/mot \
+	      ../src/backend/data/epg-2 \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
+	      ../src/support/tii-library \
 	      ../src/support/buttons \
-	      ../src/support/viterbi-jan \
-	      ../src/support/viterbi-spiral \
 	      ../includes/ofdm \
 	      ../includes/protection \
 	      ../includes/backend \
@@ -77,8 +75,9 @@ DEPENDPATH += . \
 	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
+	      ../src/support/tii-library \
 	      ../includes/support/buttons \
-	      ../includes/scopes-qwt6 \
+#	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/new-reader \
@@ -108,10 +107,9 @@ INCLUDEPATH += . \
 	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
+	      ../src/support/tii-library \
 	      ../includes/support/buttons \
-	      ../includes/support/viterbi-jan \
-	      ../includes/support/viterbi-spiral \
-	      ../includes/scopes-qwt6 \
+#	      ../includes/scopes-qwt6 \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -157,6 +155,8 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
 	   ../includes/ofdm/tii-detector.h \
+	   ../includes/ofdm/tii-detector-1.h \
+	   ../includes/ofdm/tii-detector-2.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
@@ -199,20 +199,20 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/output/newconverter.h \
+	   ../includes/backend/data/epg-2/epg-compiler.h \
+	   ../includes/backend/data/epg-2/xml-extractor.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/time-converter.h \
 	   ../includes/support/logger.h \
 	   ../includes/support/settings-handler.h \
 	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
-	   ../includes/support/settingnames.h \
+	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/wavWriter.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
-	   ../includes/support/viterbi-jan/viterbi-handler.h \
-	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/dab-tables.h \
@@ -233,7 +233,9 @@ HEADERS += ./radio.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
-	   ../includes/support/tii-mapper.h \
+	   ../src/support/tii-library/tii-mapper.h \
+	   ../src/support/tii-library/tii-reader.h \
+	   ../src/support/tii-library/uploader.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -246,7 +248,6 @@ HEADERS += ./radio.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
-	   ../qt-devices/riffWriter.h \
 	   ../qt-devices/filereaders/new-reader/newfiles.h \
 	   ../qt-devices/filereaders/new-reader/new-reader.h \
 	   ../qt-devices/filereaders/new-reader/riff-reader.h \
@@ -302,6 +303,8 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
 	   ../src/ofdm/tii-detector.cpp \
+	   ../src/ofdm/tii-detector-1.cpp \
+	   ../src/ofdm/tii-detector-2.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
@@ -339,16 +342,16 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/output/newconverter.cpp \
+	   ../src/backend/data/epg-2/epg-compiler.cpp \
+	   ../src/backend/data/epg-2/xml-extractor.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/time-converter.cpp \
 	   ../src/support/logger.cpp \
 	   ../src/support/settings-handler.cpp \
 	   ../src/support/position-handler.cpp \
 	   ../src/support/wavWriter.cpp \
 	   ../src/support/converter_48000.cpp \
-	   ../src/support/viterbi-jan/viterbi-handler.cpp \
-	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 	   ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/dab-tables.cpp \
@@ -368,7 +371,9 @@ SOURCES += ./main.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
-	   ../src/support/tii-mapper.cpp \
+	   ../src/support/tii-library/tii-mapper.cpp \
+	   ../src/support/tii-library/tii-reader.cpp \
+	   ../src/support/tii-library/uploader.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -380,7 +385,6 @@ SOURCES += ./main.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
-	   ../qt-devices/riffWriter.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
 	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
            ../qt-devices/filereaders/new-reader/newfiles.cpp \
@@ -420,7 +424,7 @@ mac {
 
 CONFIG		+= link_pkgconfig
 #PKGCONFIG	+= sndfile
-PKGCONFIG	+= samplerate
+#PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
 !mac {
@@ -429,7 +433,7 @@ LIBS      	+= -ldl
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
 #PKGCONFIG	+= sndfile
-PKGCONFIG	+= samplerate
+#PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 !mac {
 INCLUDEPATH	+= /usr/local/include
@@ -468,8 +472,6 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -480,9 +482,9 @@ CONFIG		+= datastreamer
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-CONFIG		+= PC
-#CONFIG		+= NO_SSE
-#CONFIG		+= RPI
+CONFIG		+= viterbi-new
+#CONFIG		+= spiral-sse
+#CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
@@ -518,7 +520,9 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= sdrplay-v3
 ##	CONFIG		+= hackrf
 ##	CONFIG		+= lime
-#	CONFIG		+= NO_SSE
+#	CONFIG		+= viterbi-new
+#	CONFIG		+= spiral-sse
+#	CONFIG		+= spiral-no-sse
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
@@ -530,10 +534,10 @@ isEmpty(GITHASHSTRING) {
 	}
 	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab-qt5-6.9
+#	   TARGET		= qt-dab32-qt5-6.9
 #	}
 #	else {
-#	   TARGET		= qt-dab-qt6-6.9
+#	   TARGET		= qt-dab32-qt6-6.9
 #	}
 #	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
@@ -557,15 +561,15 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= hackrf
 	CONFIG		+= lime
 	CONFIG		+= pluto
-	CONFIG		+= NO_SSE
-	CONFIG		+= preCompiled
-#	CONFIG		+= tiiLib
+	CONFIG		+= viterbi-new
+#	CONFIG		+= spiral-sse
+#	CONFIG		+= spiral-no-sse
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lportaudio
 #LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
-LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
+#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
@@ -901,44 +905,35 @@ datastreamer	{
 	SOURCES		+= ../server-thread/tcp-server.cpp
 }
 
-# for RPI use:
-RPI	{
-	DEFINES		+= __MSC_THREAD__
-	DEFINES		+= __THREADED_BACKEND
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
+viterbi-new {
+	DEPENDPATH	+= ../src/support/viterbi
+	QMAKE_CFLAGS    +=  -mavx2 -msse4
+	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
+	QMAKE_LFLAGS    +=  -mavx2
+	DEFINES		+= __ARCH_X86__
+	##DEFINES	+= __SSE4_1__
+	##DEFINES	+= __AVX2__
+	##DEFINES	+= __ARCH_AARCH64__
+	INCLUDEPATH	+= ../src/support/viterbi
+	HEADERS		+= ../src/support/viterbi/viterbi.h 
+	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
 }
 
-# for RPI2 use:	... doesnot seem to work
-RPI_2	{
-	DEFINES		+= __MSC_THREAD__
-	DEFINES		+= __THREADED_BACKEND
-	DEFINES		+= NEON_AVAILABLE
-	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-neon.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-neon.c
-}
-
-# for RPI3 use:		.. does not work on my buster rpi
-NEON_RPI3	{
-	DEFINES		+= __MSC_THREAD__
-	DEFINES		+= __THREADED_BACKEND
-	DEFINES		+= NEON_AVAILABLE
-#	QMAKE_CFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-#	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-neon.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-neon.c
-}
-
-PC	{
-	DEFINES		+= __THREADED_BACKEND
-	DEFINES		+= SSE_AVAILABLE
+spiral-sse	{
+	DEPENDPATH     +=  ../src/support/viterbi-spiral 
+	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
+	DEFINES		+=  SSE_AVAILABLE
+	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
+	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-sse.h
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-sse.c
 }
 
-NO_SSE	{
+siral-no-sse	{
+	DEPENDPATH     +=  ../src/support/viterbi-spiral 
+	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
+	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
+	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
 }
@@ -956,33 +951,6 @@ fdk-aac {
         HEADERS         += ../includes/backend/audio/fdk-aac.h
         SOURCES         += ../src/backend/audio/fdk-aac.cpp
         PKGCONFIG       += fdk-aac
-}
-
-preCompiled {
-	win32 {
-	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
-	}
-	unix {
-	LIBS		+= -lcurl
-	}
-#	INCLUDEPATH	+= /home/jan/curl
-	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/tii-reader.h
-	HEADERS		+= ../../TII-CODES/db-loader.h
-	HEADERS		+= ../../TII-CODES/uploader.h
-	SOURCES		+= ../../TII-CODES/tii-reader.cpp
-	SOURCES		+= ../../TII-CODES/db-loader.cpp
-	SOURCES		+= ../../TII-CODES/uploader.cpp
-}
-
-tiiLib	{
-	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/tii-reader.h
-	HEADERS		+= ../src/support/tii-library/db-loader.h
-	HEADERS		+= ../src/support/tii-library/uploader.h
-	SOURCES		+= ../src/support/tii-library/tii-reader.cpp
-	SOURCES		+= ../src/support/tii-library/db-loader.cpp
-	SOURCES		+= ../src/support/tii-library/uploader.cpp
 }
 
 mapserver {

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -49,10 +49,11 @@
   */
 
 		ficHandler::ficHandler (RadioInterface *mr,
-	                                uint8_t dabMode):
+	                                uint8_t dabMode,
+	                                uint8_t cpuSupport):
 	                                    fibDecoder (mr),
 	                                    params (dabMode),
-	                                    myViterbi (768, true) {
+	                                    myViterbi (768, true, cpuSupport) {
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	index		= 0;
@@ -108,9 +109,9 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	   local ++;
 	}
 
-	connect (this, &ficHandler::show_ficQuality,
+	connect (this, &ficHandler::showFICQuality,
 	         mr, &RadioInterface::show_ficQuality);
-	connect (this, &ficHandler::show_ficBER,
+	connect (this, &ficHandler::showFICBER,
 	         mr, &RadioInterface::show_ficBER);
 
 	ficPointer	= 0;
@@ -136,7 +137,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
   *	The function is called with a blkno. This should be 1, 2 or 3
   *	for each time 2304 bits are in, we call process_ficInput
   */
-void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
+void	ficHandler::processFICBlock (std::vector<int16_t> &data,
 	                              int16_t blkno) {
 	if (blkno == 1) {
 	   index = 0;
@@ -147,7 +148,7 @@ void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
 	   for (int i = 0; i < BitsperBlock; i ++) {
 	      ofdm_input [index ++] = data [i];
 	      if (index >= FIC_INPUT) {
-	         process_ficInput (ficno, &ficValid [ficno]);
+	         processFICInput (ficno, &ficValid [ficno]);
 	         index = 0;
 	         ficno ++;
 	      }
@@ -168,7 +169,7 @@ void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
   *	In the next coding step, we will combine this function with the
   *	one above
   */
-void	ficHandler::process_ficInput (int16_t ficno, bool *valid) {
+void	ficHandler::processFICInput (int16_t ficno, bool *valid) {
 static
 int16_t	viterbiBlock [FIC_BLOCKSIZE + FIC_RESIDU] = {0};
 static
@@ -204,7 +205,7 @@ int16_t	inputCount	= 0;
 	ficBits		+= FIC_BLOCKSIZE + FIC_RESIDU;
 	ficBlocks ++;
 	if (ficBlocks >= 40) {	// 4 blocks per frame, app 10 frames per sec
-	   emit show_ficBER ((float)ficErrors / ficBits);
+	   emit showFICBER ((float)ficErrors / ficBits);
 	   ficBlocks	 = 0;
 	   ficErrors	 /= 2;
 	   ficBits	 /= 2;
@@ -243,7 +244,7 @@ int16_t	inputCount	= 0;
 	      if (successRatio > 0)
 	         successRatio --;	
 	      if (fibCounter == 0)
-	         show_ficQuality (successRatio, 100 / 50);
+	         showFICQuality (successRatio, 100 / 50);
 	      continue;
 	   }
 
@@ -263,7 +264,7 @@ int16_t	inputCount	= 0;
 	   if (successRatio < RANGE)
 	      successRatio ++;
 	   if (fibCounter == 0)
-	      show_ficQuality (successRatio, 100 / RANGE);
+	      showFICQuality (successRatio, 100 / RANGE);
 	   fibDecoder::process_FIB (p, ficno);
 	}
 }
@@ -280,26 +281,26 @@ void	ficHandler::restart	() {
 	running. store (true);
 }
 
-void	ficHandler::start_ficDump	(FILE *f) {
+void	ficHandler::startFICDump	(FILE *f) {
 	if (ficDumpPointer != nullptr)
 	   return;
 	ficDumpPointer = f;
 }
 
-void	ficHandler::stop_ficDump	() {
+void	ficHandler::stopFICDump	() {
 	ficLocker. lock ();
 	ficDumpPointer = nullptr;
 	ficLocker. unlock ();
 }
 
 
-void	ficHandler::get_fibBits		(uint8_t *v, bool *b) {
+void	ficHandler::getFIBBits		(uint8_t *v, bool *b) {
 	for (int i = 0; i < 4 * 768; i ++)
 	   v [i] = fibBits [i];
 	for (int i = 0; i < 4; i ++)
 	    b [i] = ficValid [i];
 }
 
-int	ficHandler::get_ficQuality	() {
+int	ficHandler::getFICQuality	() {
 	return successRatio * 100 / RANGE;
 }

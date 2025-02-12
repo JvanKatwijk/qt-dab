@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2023
+ *    Copyright (C) 2013 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -28,6 +28,7 @@
 #include	<QStringList>
 #include	<QScrollArea>
 #include	<QStandardItemModel>
+#include	<QDomDocument>
 #ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
 #endif
@@ -52,6 +53,8 @@
 #include	"scan-handler.h"
 #include	"epgdec.h"
 #include	"epg-decoder.h"
+#include	"epg-compiler.h"
+#include	"xml-extractor.h"
 
 #include	"device-chooser.h"
 #include	"display-widget.h"
@@ -162,7 +165,7 @@ public:
 	int		snr;
 	std::vector<transmitterDesc>	transmitters;
 	position	targetPos;
-//	QByteArray	transmitters;
+	QDate		theDate;
 	int8_t		mainId;
 	int8_t		subId;
 	QString		transmitterName;
@@ -228,6 +231,7 @@ private:
 	RingBuffer<std::complex<int16_t>>	theAudioBuffer;
 	RingBuffer<float>	stdDevBuffer;
 
+	uint8_t			cpuSupport;
 	displayWidget		theNewDisplay;
 	snrViewer		theSNRViewer;
 //	QFrame			theDataDisplay;
@@ -272,6 +276,7 @@ private:
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	deviceHandler		*inputDevice_p;
+	bool			dxMode;
 //
 	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
@@ -287,6 +292,8 @@ private:
 #endif
 	CEPGDecoder		epgHandler;
 	epgDecoder		epgProcessor;
+	epgCompiler		epgVertaler;
+	xmlExtractor		xmlHandler;
 	QString			epgPath;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
@@ -301,7 +308,7 @@ private:
 	bool			sourceDumping;
 	bool			audioDumping;
 	void			set_Colors		();
-	void			set_channelButton	(int);
+	void			setChannelButton	(int);
 
 	void			displaySlide	(const QPixmap &,	
 	                                              const QString &t = "");
@@ -324,18 +331,18 @@ private:
 	size_t			previous_idle_time;
 	size_t			previous_total_time;
 
-	QPixmap			fetch_announcement (int id);
+	QPixmap			fetchAnnouncement (int id);
 
 	QString			convertTime		(int, int, int, int, int);
 	QString			convertTime		(struct theTime &);
-	void			set_buttonColors	(QPushButton *,
+	void			setButtonColors		(QPushButton *,
 	                                                 const QString &);
 	QString			footText		();
 	QString			presetText		();
 	void			cleanScreen		();
 	void			hideButtons		();
 	void			showButtons		();
-	deviceHandler		*create_device		(const QString &,
+	deviceHandler		*createDevice		(const QString &,
 	                                                             logger *);
 	timeTableHandler	*my_timeTable;
 
@@ -347,13 +354,13 @@ private:
 	void			startPacketservice	(const QString &);
 	void			startAudiodumping	();
 	void			stopAudiodumping	();
-	void			scheduled_audioDumping	();
-	void			scheduled_dlTextDumping ();
-	void			scheduled_ficDumping	();
+	void			scheduledAudioDumping	();
+	void			scheduledDLTextDumping ();
+	void			scheduledFICDumping	();
 	FILE			*ficDumpPointer;
 
-	void			start_sourcedumping	();
-	void			stop_sourcedumping	();
+	void			startSourcedumping	();
+	void			stopSourcedumping	();
 	void			startFramedumping	();
 	void			stopFramedumping	();
 	void			scheduled_frameDumping	(const QString &);
@@ -366,44 +373,49 @@ private:
 	                                                 const QString &s);
 	void			scheduleSelect		(const QString &s);
 
-	QString			build_headLine		();
+	QString			buildHeadLine		();
 	QString			build_cont_addLine	(transmitterDesc &);
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 
-	void			doStart_direct		();
-	void			save_MOTObject		(QByteArray &,
+	void			startDirect		();
+	void			saveMOTObject		(QByteArray &,
 	                                                 QString);
 
-	void			save_MOTtext		(QByteArray &, int,
+	void			saveMOTtext		(QByteArray &, int,
 	                                                 const QString &);
-	void			show_MOTlabel		(QByteArray &, int,
+	void			showMOTlabel		(QByteArray &, int,
 	                                                 const QString &,
 	                                                 int, bool);
-	void			stop_muting		();
+	void			stopMuting		();
 
 
 //	short hands
-	void                    new_channelIndex        (int);
+	void                    newChannelIndex        (int);
 
 	std::mutex		locker;
-	void			set_soundLabel		(bool);
+	void			setSoundLabel		(bool);
 
-	void			start_scan_to_data	();
-	void			start_scan_single	();
-	void			start_scan_continuous	();
-	void			next_for_scan_to_data	();
-	void			next_for_scan_single	();
-	void			next_for_scan_continuous	();
-	void			stop_scan_to_data	();
-	void			stop_scan_single	();
-	void			stop_scan_continuous	();
-	void			peakLevel	(const std::vector<float> &);
+	void			startScan_to_data	();
+	void			startScan_single	();
+	void			startScan_continuous	();
+	void			nextFor_scan_to_data	();
+	void			nextFor_scan_single	();
+	void			nextFor_scan_continuous	();
+	void			stopScan_to_data	();
+	void			stopScan_single	();
+	void			stopScan_continuous	();
+	void			setPeakLevel	(const std::vector<float> &);
 
 	QString			create_tiiLabel (const cacheElement *);
 	void			addtoLogFile	(const cacheElement *);
 	void			removeFromList	(uint8_t, uint8_t);
 	cacheElement		*inList		(uint8_t, uint8_t);
+
+	void			extractSchedule	(QDomDocument &, uint32_t);
+	void			process_schedule (QDomElement &theSchedule,
+	                                                      uint32_t);
+
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();
@@ -430,7 +442,7 @@ public slots:
 	void			show_ficQuality		(int, int);
 	void			show_ficBER		(float);
 	void			set_synced		(bool);
-	void			show_label		(const QString &);
+	void			show_label		(const QString &, int);
 	void			handle_motObject	(QByteArray,
 	                                                 QString,
 	                                                 int, bool, bool);
@@ -477,7 +489,7 @@ public slots:
 	void			show_snr		(float);
 	void			show_null		(int, int);
 	void			showIQ			(int);
-	void			show_correlation	(int, int,
+	void			showCorrelation		(int, int,
 	                                                 QVector<int> );
 	void			show_stdDev		(int);
 	void			showPeakLevel		(float, float);
@@ -498,6 +510,8 @@ public slots:
 	void			scheduler_timeOut	(const QString &);
 	void			show_changeLabel (const QStringList notInOld,
                                           	  const QStringList notInNew);
+
+	void			process_tiiSelector	(bool);
  
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -562,5 +576,10 @@ public slots:
 	void			handle_eti_activeSelector	(int);
 	void			handle_loadTable		();
 	void			selectDecoder			(int);
+	
 	void			handle_aboutLabel		();
+	void			handle_tiiCollisions		(int);
+	void			handle_tiiFilter		(bool);
+
+	void			deviceListChanged		();
 };

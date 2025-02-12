@@ -34,15 +34,16 @@
   */
 
 	correlator::correlator (RadioInterface *mr,
-	                        processParams	*p):
-	                             phaseTable (p -> dabMode),
+	                        processParams	*p,
+	                        phaseTable 	*theTable) :
 	                             params (p -> dabMode),
 	                             fft_forward (params. get_T_u (), false),
 	                             fft_backwards (params. get_T_u (), true),
 	                             response (p -> responseBuffer) {
 	                    
-float	Phi_k;
+//float	Phi_k;
 
+	this	-> theTable	= theTable;
 	this	-> depth	= p -> echo_depth;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
@@ -50,22 +51,8 @@ float	Phi_k;
 
 	framesperSecond		= INPUT_RATE / params. get_T_F();
 	displayCounter		= 0;
-	
-	refTable.		resize (T_u);
-	for (int i = 0; i < T_u; i ++)
-	   refTable [i] = Complex (0, 0);
-//
-//	generate the refence values using the format we have after
-//	doing an FFT
-	for (int i = 1; i <= params. get_carriers() / 2; i ++) {
-	   Phi_k =  get_Phi (i);
-	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
-	   Phi_k = get_Phi (-i);
-	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
-	}
-
-	connect (this, &correlator::show_correlation,
-	         mr, &RadioInterface::show_correlation);
+	connect (this, &correlator::showCorrelation,
+	         mr, &RadioInterface::showCorrelation);
 }
 
 	correlator::~correlator () {
@@ -96,7 +83,9 @@ const	int SEARCH_OFFSET = T_g / 2;
 //
 //	into the frequency domain, now correlate
 	for (i = 0; i < T_u; i ++) 
-	   v [i] = v [i] * conj (refTable [i]);
+//	   v [i] = v [i] * conj (theTable -> refTable [i]);
+	   v [i] = v [i] * Complex (real (theTable -> refTable [i]),
+	                           -imag (theTable -> refTable [i]));
 
 //	and, again, back into the time domain
 	fft_backwards. fft (v);
@@ -144,7 +133,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 	   return (- abs (Max / sum) - 1);
 	}
 
-	for (int i = 0; i < workList. size (); i ++)
+	for (uint16_t i = 0; i < workList. size (); i ++)
 	   indices. push_back (workList [i]. index);
 
 //	while (workList. size () > 0) {
@@ -180,7 +169,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (lbuf, T_u / 2);
-	      show_correlation (T_u / 2, T_g, indices);
+	      showCorrelation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }
 	}

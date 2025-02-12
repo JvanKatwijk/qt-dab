@@ -120,7 +120,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	search_for_library (QWT Qwt)
 	search_for_library (ZLIB zlib)
-	search_for_library (LIBSAMPLERATE samplerate)
 
 	find_package(FFTW3f)
         if (NOT FFTW3F_FOUND)
@@ -166,11 +165,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/support
 	           ../src/support/tii-library
 	           ../includes/support/buttons
-	           ../includes/support/viterbi-jan
-	           ../includes/support/viterbi-spiral
+	           ../src/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/output/Qt6
-	           ../includes/scopes-qwt6
 	           ../qt-devices
 	           ../qt-devices/filereaders/
 	           ../qt-devices/filereaders/new-reader
@@ -202,6 +199,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/waterfall-scope.h 
              ./forms-v7/new-display/scopes/iqdisplay.h 
 	     ./forms-v7/new-display/scopes/audio-display.h
+	     ./forms-v7/new-displat/scopes/spectrogram-data.h
 	     ./forms-v7/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
@@ -220,6 +218,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/fib-table.h
 	     ../includes/ofdm/fic-handler.h
 	     ../includes/ofdm/tii-detector.h
+	     ../includes/ofdm/tii-detector-1.h
+	     ../includes/ofdm/tii-detector-2.h
 	     ../includes/ofdm/timesyncer.h
 	     ../includes/ofdm/estimator.h
 	     ../includes/protection/protTables.h
@@ -260,7 +260,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/mot/mot-dir.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
-	     ../includes/output/newconverter.h
 	     ../includes/support/distances.h 
 	     ../includes/support/logger.h 
 	     ../includes/support/position-handler.h 
@@ -274,8 +273,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
 	     ../includes/support/dab-tables.h
-	     ../includes/support/viterbi-jan/viterbi-handler.h
-	     ../includes/support/viterbi-spiral/viterbi-spiral.h
+	     ../includes/support/viterbi-spiral/viterbi.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/scanlist-handler.h
@@ -293,9 +291,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
 	     ../includes/support/fir-filters.h
-	     ../includes/support/tii-mapper.h
              ../src/support/tii-library/tii-reader.h
-             ../src/support/tii-library/db-loader.h
+	     ../src/support/tii-library/tii-mapper.h
              ../src/support/tii-library/uploader.h
 	     ../includes/support/font-chooser.h 
 	     ../includes/support/buttons/smallcombobox.h 
@@ -305,11 +302,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/buttons/verysmallpushbutton.h 
              ../includes/support/buttons/smallqlistview.h 
              ../includes/support/buttons/smallspinbox.h 
-	     ../includes/scopes-qwt6/spectrogramdata.h
+#	     ../includes/scopes-qwt6/spectrogramdata.h
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devicces/xml-filewriter.h
-	     ../qt-devicces/riffWriter.h
 	)
 
 	set (${objectName}_SRCS
@@ -336,6 +332,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/waterfall-scope.cpp 
              ./forms-v7/new-display/scopes/iqdisplay.cpp 
 	     ./forms-v7/new-display/scopes/audio-display.cpp
+	     ./forms-v7/new-display/scopes/spectrogramdata.cpp
 	     ./forms-v7/snr-viewer/snr-viewer.cpp
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
@@ -348,6 +345,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
 	     ../src/ofdm/tii-detector.cpp
+	     ../src/ofdm/tii-detector-1.cpp
+	     ../src/ofdm/tii-detector-2.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/ofdm/estimator.cpp
 	     ../src/protection/protTables.cpp
@@ -385,7 +384,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/data/mot/mot-dir.cpp
 	     ../src/backend/data/data-processor.cpp
 	     ../src/output/audio-player.cpp
-	     ../src/output/newconverter.cpp
 	     ../src/support/distances.cpp
 	     ../src/support/logger.cpp
 	     ../src/support/position-handler.cpp
@@ -393,8 +391,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/fft-handler.cpp
 	     ../src/support/wavWriter.cpp
 	     ../src/support/converter_48000.cpp
-	     ../src/support/viterbi-jan/viterbi-handler.cpp
-	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
+	     ../src/support/viterbi-spiral/viterbi.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
@@ -411,13 +408,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/skin-handler.cpp
 	     ../src/support/mapport.cpp
 	     ../src/support/tii-library/tii-reader.cpp
-             ../src/support/tii-library/db-loader.cpp
              ../src/support/tii-library/uploader.cpp
+	     ../src/support/tii-library/tii-mapper.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/bandpass-filter.cpp
 	     ../src/support/fir-filters.cpp
 	     ../src/support/font-chooser.cpp
-	     ../src/support/tii-mapper.cpp
 	     ../src/support/buttons/smallcombobox.cpp
 	     ../src/support/buttons/newpushbutton.cpp
 	     ../src/support/buttons/normalpushbutton.cpp
@@ -425,10 +421,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/buttons/verysmallpushbutton.cpp
 	     ../src/support/buttons/smallqlistview.cpp
 	     ../src/support/buttons/smallspinbox.cpp
-	     ../src/scopes-qwt6/spectrogramdata.cpp
-	     ../src/scopes-qwt6/spectrogramdata.cpp 
+#	     ../src/scopes-qwt6/spectrogramdata.cpp
+#	     ../src/scopes-qwt6/spectrogramdata.cpp 
 	     ../qt-devices/xml-filewriter.cpp
-	     ../qt-devices/riffWriter.cpp
 	)
 
 	set (${objectName}_MOCS

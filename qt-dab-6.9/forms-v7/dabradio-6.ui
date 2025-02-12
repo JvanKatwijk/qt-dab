@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>612</width>
-    <height>329</height>
+    <height>267</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -63,7 +63,7 @@
              <x>0</x>
              <y>0</y>
              <width>224</width>
-             <height>153</height>
+             <height>91</height>
             </rect>
            </property>
           </widget>
@@ -152,6 +152,22 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
+        <widget class="clickablelabel" name="serviceButton">
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon controls the visibility of the so-called technical widget. The technical widget shows all details of the currently selected (audio)service.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>tt</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="clickablelabel" name="folder_shower">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon insrtructs the software to start a shell and run the explorer (or the Linux equivalent)  showing the folder/directory where Qt-DAB stores its files&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -205,22 +221,6 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="clickablelabel" name="serviceButton">
-         <property name="maximumSize">
-          <size>
-           <width>51</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon controls the visibility of the so-called technical widget. The technical widget shows all details of the currently selected (audio)service.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>tt</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="clickablelabel" name="serviceLabel">
          <property name="toolTip">
@@ -469,6 +469,13 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_13">
        <item>
+        <widget class="QLabel" name="cpuLabel">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="distanceLabel">
          <property name="font">
           <font>
@@ -498,6 +505,9 @@
        </item>
        <item>
         <widget class="smallPushButton" name="tiiButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This button controls the visibility of the so-called &amp;quot;dxDisplay&amp;quot;. If the dxScope is enabled - and the tii database is loaded (and your location is set), the dxDisplay shows the tii data, decoded in the current channel. This data encompasses not only the mainId and the subId, but also the name of the transmitter, and the distance from your specified location to that transmitter.&lt;/p&gt;&lt;p&gt;If the dxDisplay is NOT enabled, and the tii database is loaded, then the data on the transmitter whose data you are currently receiving is shown on the line to the left.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>tii disply</string>
          </property>

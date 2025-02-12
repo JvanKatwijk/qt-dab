@@ -45,7 +45,7 @@ void my_callBack (
 	hetNieuws. copyNml (&nmlSize, buffer);
 	theBuffer. nml_len	= nmlSize;
 	theBuffer. extended_header_len = 0;
-	for (int i = 0; i < len; i ++)
+	for (uint16_t  i = 0; i < len; i ++)
 	   theBuffer. nml [i] = buffer [i];
 	RemoveNMLEscapeSequences theRemover;
 	NMLFactory xxx;
@@ -86,7 +86,7 @@ void	journaline_dataHandler::init_dataBase 	() {
 }
 
 void	journaline_dataHandler::destroy_dataBase	() {
-	for (int i = 0; i < table. size (); i ++)
+	for (uint16_t i = 0; i < table. size (); i ++)
 	   delete table [i]. element;
 }
 
@@ -130,7 +130,7 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 }
 
 int	journaline_dataHandler::findIndex (int key) {
-	for (int i = 0; i < table. size (); i ++)
+	for (uint16_t i = 0; i < table. size (); i ++)
 	   if (table [i]. key == key)
 	      return i;
 	return -1;

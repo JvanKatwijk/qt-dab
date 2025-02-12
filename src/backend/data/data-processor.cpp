@@ -59,7 +59,6 @@
 	   FEC_table [i] = false;
 
 	fillPointer	= 0;
-	fprintf (stderr, "** DBG: dataProcessor: appType=%d FEC=%d DSCTy=%d (", pd -> appType, FEC_scheme, pd -> DSCTy);
 	switch (DSCTy) {
 	   default:
 	      fprintf (stderr, "DSCTy %d not supported\n", DSCTy);
@@ -105,15 +104,15 @@
 	delete		my_dataHandler;
 }
 
-void	dataProcessor::addtoFrame (std::vector<uint8_t>  outV) {
+void	dataProcessor::addtoFrame (const std::vector<uint8_t>  &outV) {
 //	There is - obviously - some exception, that is
 //	when the DG flag is on and there are no datagroups for DSCTy5
-
+std::vector<uint8_t> VV = outV;
 	if ((this -> DSCTy == 5) &&
 	    (this -> DGflag))	// no datagroups
-	      handleTDCAsyncstream (outV. data (), 24 * bitRate);
+	      handleTDCAsyncstream (VV. data (), 24 * bitRate);
 	   else
-	      handlePackets (outV. data (), 24 * bitRate);
+	      handlePackets (VV. data (), 24 * bitRate);
 }
 //
 void	dataProcessor::handlePackets (uint8_t *dataL, int16_t length) {
@@ -267,7 +266,7 @@ int	dataProcessor::addPacket (uint8_t *vec,
 	int16_t	packetLength	= (getBits_2 (vec, 0) + 1) * 24;
 //
 //	Assert theBuffer. size () == RSDIMS * FRAMESIZE
-	if (fillPointer + packetLength > theBuffer. size ()) {
+	if (fillPointer + packetLength > (int)theBuffer. size ()) {
 	   clear_FECtable ();
 	   return 0;
 	}
@@ -369,7 +368,7 @@ uint8_t rsOut	[FRAMESIZE];
 	   table [i % RSDIMS] [FRAMESIZE + i / RSDIMS] = RSdata [i];
 
 	for (int i = 0; i < RSDIMS; i ++) {
-	   int xx = my_rsDecoder. dec (table [i], rsOut, 51);
+	   (void) my_rsDecoder. dec (table [i], rsOut, 51);
 //	   fprintf (stderr, "rs decoder says %d\n", xx);
 	   for (int j = 0; j < FRAMESIZE; j ++)
 	      table [i][j] = rsOut [j];

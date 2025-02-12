@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__WAV_WRITER__
-#define	__WAV_WRITER__
+#pragma once
 
 #include	<QString>
 #include	<stdio.h>
@@ -32,15 +31,16 @@ class wavWriter {
 public:
 		wavWriter	();
 		~wavWriter	();
-	bool	init		(const QString &);
-	void	write		(const int16_t *, int);
+	bool	init		(const QString &, int,
+	                               int bitDepth = 0, int frequency = 0);
+	void	write		(int16_t *buff, int samples);
 	void	close		();
 	bool	isActive	();
 private:
 	FILE	*filePointer;
 	int	nrElements;
+	std::fpos_t	dataPos;
 	bool	isValid;
 	int	locationCounter;
 };
 
-#endif

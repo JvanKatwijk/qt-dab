@@ -40,6 +40,11 @@
 //#include	<malloc.h>
 #endif
 
+#ifdef	__ARCH_X86__
+#define	AVX_SUPPORT	0100
+#define	SSE_SUPPORT	0200
+#endif
+
 #if defined (__MINGW32__) || defined (__WIN32)
 //#include	"iostream.h"
 #include	"windows.h"
@@ -80,12 +85,14 @@ enum AudioFlags : uint32_t {
 };
 
 typedef struct  {
-	uint8_t mainId;
-	uint8_t subId;
-	float strength;
-	float phase;
-	bool norm;
-	int	index;
+	uint8_t		mainId;
+	uint8_t		subId;
+	float		strength;
+	float		phase;
+	bool		norm;
+	int		index;
+	bool		collision;
+	uint16_t	pattern;
 } tiiData;
 
 typedef struct {
@@ -159,6 +166,7 @@ public:
 	bool		isAudio;
 	int16_t		programType;
         QString		channel;        // just for presets
+	int16_t		FEC_scheme;
 
 };
 //

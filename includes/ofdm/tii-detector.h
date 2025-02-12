@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C) 2016 .. 2024
@@ -31,36 +32,31 @@
 #include	"fft-handler.h"
 #include	"phasetable.h"
 #include	<QVector>
-class	QSettings;
+
+#define	NUM_GROUPS	8
+#define	GROUPSIZE	24
 
 class	TII_Detector {
 public:
-			TII_Detector	(uint8_t dabMode, QSettings *);
-			~TII_Detector	();
-	void		reset		();
-	void		resetBuffer	();
+			TII_Detector	(uint8_t dabMode,
+	                                   phaseTable *theTable);
+virtual			~TII_Detector	();
+virtual	void		reset		();
 	void		addBuffer	(const std::vector<Complex> &);
-	QVector<tiiData>	processNULL	(int16_t);
+virtual	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
-private:
-	QSettings	*dabSettings;
+protected:
 	dabParams	params;
-	phaseTable	theTable;
 	std::vector<Complex> table_2;
+	void		resetBuffer	();
+	uint16_t	getPattern	(int);
+	uint16_t	nrPatterns	();
+	std::vector<Complex >	nullSymbolBuffer;
+	std::vector<DABFLOAT>	window;
 	int16_t		T_u;
 	int16_t		T_g;
 	int16_t		carriers;	
-	bool		carrierDelete;
-	Complex		decodedBuffer [768];
 	fftHandler	my_fftHandler;
-	void		collapse	(const Complex *, 
-	                                 Complex *, Complex *);
-	void		decode	(std::vector<Complex> &, Complex *);
-//	bool		collisions	= false;
-
-	std::vector<Complex >	nullSymbolBuffer;
-
-	int		tiiThreshold;
 };
 
 

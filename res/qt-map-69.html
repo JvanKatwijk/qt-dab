@@ -46,10 +46,11 @@
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 	<script type="text/javascript">
 	   Map = null;
-	   var homeLatitude = $;
-	   var homeLongitude = $;
-	   var Transmitters = {};
-	   var transmitterIndex	= 0;
+	   var homeLatitude		= $;
+	   var homeLongitude		= $;
+	   var Transmitters		= {};
+	   var transmitterIndex		= 0;
+	   var largestDistance		= 0;
 
 	   const MAP_RESET		= 0;
 	   const MAP_FRAME		= 1;
@@ -193,7 +194,8 @@
 	      let yy = document. getElementById ('selCount');
 	      yy. innerHTML = '<span style=\"font-weight:bold;">' + 'Number of transmitters' + '</span>' + ' ' + transmitterIndex + '<br>';
 
-	      if  (target. type == MAP_MAX_TRANS) {
+	      if (target. dist > largestDistance) {
+	         largestDistance = target. dist
 	         let aa = document. getElementById ('distance');
 	         aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
 	                       target. channel + '=>' +
@@ -210,6 +212,27 @@
 	                       target. azimuth + '&#xb0' + '<br><br>';
 	           
 	      }
+	   }
+
+	   function updateFurthest (target) {
+	      let coords = '<span style=\"font-style: italic;\">' +
+	                          target. lat + ' ' +
+	                          target. lon +  '</span>';
+	      let aa = document. getElementById ('distance');
+	      aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
+	                    target. channel + '=>' +
+	                    target. dateTime + '<br>' +
+	                     target. name  + ' (' +
+	                    (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
+	                    "alt " + target. altitude + ' m' + '<br>' +
+	                    "height " + target. height + ' m' + '<br>' +
+	                    (target. direction == "??" ?  " " :
+	                          ("dir :" + target. direction + '<br>')) +
+	                    coords + '<br>' +
+	                    'Distance to home ' + target. dist + 'km ' + 
+	                    target. azimuth + '&#xb0' +
+	                    '<br><br>';
+	           
 	   }
 
 	   function addTransmitter (target) {
@@ -330,12 +353,12 @@
 	               clearCurrent ();	// always good
 	               if (seenAlready (target)) {
 	                  updateCurrent (target);
-	                  continue;
 	               }
-	               else {
-	                  if (target. type == MAP_MAX_TRANS) 
-	                     clearPreviousFurthest ();
+	               else
 	                  addTransmitter (target);
+	               if (target. type == MAP_MAX_TRANS) {
+	                  clearPreviousFurthest ();
+//	                  updateFurthest (target);
 	               }
 	            }
 	         }

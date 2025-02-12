@@ -23,46 +23,40 @@
 
 #pragma once
 
+#include	"tii-detector.h"
 #include	<cstdint>
 #include	"dab-params.h"
 #include	<complex>
 #include	<vector>
 #include	"dab-constants.h"
-#include	"fft-handler.h"
-#include	"phasetable.h"
 class	QSettings;
 
-class	TII_Detector_B {
+typedef struct {
+	int index;
+	float value;
+	bool	norm;
+} resultPair;
+
+class	TII_Detector_B : public TII_Detector {
 public:
-			TII_Detector_B	(uint8_t dabMode, QSettings *);
+			TII_Detector_B	(uint8_t dabMode,
+	                                 phaseTable *, QSettings *);
 			~TII_Detector_B	();
 	void		reset		();
-	void		setMode		(bool);
-	void		addBuffer	(std::vector<Complex>);
-	void		set_tiiThreshold	(int);
-	QVector<tiiData>	processNULL	();
+	QVector<tiiData>	processNULL	(int16_t threshold,
+	                                         uint8_t, bool);
 
 private:
+	
 	QSettings	*dabSettings;
-	dabParams	params;
-	phaseTable	theTable;
-	std::vector<Complex> refTable;
-	int16_t		T_u;
-	int16_t		carriers;	
-	fftHandler	my_fftHandler;
-	void		resetBuffer	();
-	void		collapse (std::vector<Complex> &inVec, float *outVec);
-
-	bool		isPeak (const Complex *v, int index, float avg);
-
-	bool		collisions	= false;
+	void		collapse (std::vector<Complex> &inVec,
+	                                 Complex *,
+	                                 Complex *, bool);
+	resultPair	findBestIndex	(Complex *,
+	                                 float *, float);
 	uint8_t		invTable [256];
 	Complex		decodedBuffer[768];
-
-	bool	detectMode_new;
-	std::vector<Complex >	theBuffer;
-	std::vector<DABFLOAT>	window;
-	int	tiiThreshold;
+	float		max;
 };
 
 

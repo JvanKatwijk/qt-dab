@@ -35,16 +35,16 @@
 class	spectrogramData: public QwtRasterData {
 public:
 	double	*data;		// pointer to actual data
-	int	left;		// index of left most element in raster
-	int	width;		// raster width
+	float	left;		// index of left most element in raster
+	float	width;		// raster width
 	int	height;		// rasterheigth
 	int	datawidth;	// width of matrix
 	int	dataheight;	// for now == rasterheigth
 	int	bufferSize;
 	double	max;
 
-	spectrogramData (double *data, int left,
-	                 int width, int height,
+	spectrogramData (double *data, float left,
+	                 float width, int height,
 	                 int datawidth, double max);
 
 	~spectrogramData	();

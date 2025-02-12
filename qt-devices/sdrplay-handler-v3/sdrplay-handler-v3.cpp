@@ -41,7 +41,6 @@
 #include	"RspDuo-handler.h"
 #include	"RspDx-handler.h"
 
-
 #include	"device-exceptions.h"
 #define SDRPLAY_RSP1_   1
 #define SDRPLAY_RSP1A_  255
@@ -97,6 +96,7 @@ std::string errorMessage (int errorCode) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
 	this	-> recorderVersion	= recorderVersion;
+	(void)theLogger;
         setupUi (&myFrame);
 	QString	groupName	= SDRPLAY_SETTINGS;
 	set_position_and_size (s, &myFrame, groupName);
@@ -155,17 +155,33 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_v3::set_ifgainReduction);
 	connect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::set_lnagainReduction);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &sdrplayHandler_v3::set_agcControl);
 	connect (ppmControl, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::set_ppmControl);
 	connect (dumpButton, &QPushButton::clicked,
                  this, &sdrplayHandler_v3::set_xmlDump);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (biasT_selector, &QCheckBox::checkStateChanged,	
+#else
 	connect (biasT_selector, &QCheckBox::stateChanged,	
+#endif
 	         this, &sdrplayHandler_v3::set_biasT);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (notch_selector, &QCheckBox::checkStateChanged,	
+#else
 	connect (notch_selector, &QCheckBox::stateChanged,	
+#endif
 	         this, &sdrplayHandler_v3::set_notch);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (this, &sdrplayHandler_v3::overload_state_changed,
+#else
+	connect (this, &sdrplayHandler_v3::overload_state_changed,
+#endif
 	         this, &sdrplayHandler_v3::report_overload_state);
 
 	lastFrequency	= MHz (220);
@@ -531,22 +547,22 @@ int	deviceIndex	= 0;
 	denominator		= 2048.0f;		// default
 	nrBits			= 12;		// default
 
-	Handle			= fetchLibrary ();
-	if (Handle == nullptr) {
-	   failFlag. store (true);
-	   errorCode	= 1;
-	   return;
-	}
-
-//	load the functions
-	bool success	= loadFunctions ();
-	if (!success) {
-	   failFlag. store (true);
-	   releaseLibrary ();
-	   errorCode	= 2;
-	   return;
+	Handle                  = fetchLibrary ();
+        if (Handle == nullptr) {
+           failFlag. store (true);
+           errorCode    = 1;
+           return;
         }
-	fprintf (stderr, "functions loaded\n");
+
+//      load the functions
+        bool success    = loadFunctions ();
+        if (!success) {
+           failFlag. store (true);
+           releaseLibrary ();
+           errorCode    = 2;
+           return;
+        }
+        fprintf (stderr, "functions loaded\n");
 
 //	try to open the API
 	err	= sdrplay_api_Open ();
@@ -554,7 +570,7 @@ int	deviceIndex	= 0;
 	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 	   failFlag. store (true);
-	   releaseLibrary ();
+	   releaseLibrary	();
 	   errorCode	= 3;
 	   return;
 	}
@@ -861,7 +877,7 @@ normal_exit:
 	   fprintf (stderr, "sdrplay_api_Close failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 
-	releaseLibrary			();
+	releaseLibrary	();
 	fprintf (stderr, "library released, ready to stop thread\n");
 	msleep (200);
 	return;
@@ -872,7 +888,7 @@ closeAPI:
 	failFlag. store (true);
 	sdrplay_api_ReleaseDevice       (chosenDevice);
         sdrplay_api_Close               ();
-	releaseLibrary	();
+	releaseLibrary			();
 	fprintf (stderr, "De taak is gestopt\n");
 }
 
@@ -943,7 +959,6 @@ void	sdrplayHandler_v3::releaseLibrary () {
 	dlclose (Handle);
 #endif
 }
-
 bool	sdrplayHandler_v3::loadFunctions () {
 	sdrplay_api_Open	= (sdrplay_api_Open_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Open");
@@ -1050,16 +1065,8 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	   return false;
 	}
 
-	sdrplay_api_SwapRspDuoActiveTuner = (sdrplay_api_SwapRspDuoActiveTuner_t)
-	                 GETPROCADDRESS (Handle, "sdrplay_api_SwapRspDuoActiveTuner");
-	if (sdrplay_api_SwapRspDuoActiveTuner == nullptr) {
-	   fprintf (stderr, "could not find sdrplay_api_SwapRspDuoActiveTuner\n");
-	   return false;
-	}
-
 	return true;
 }
-
 void	sdrplayHandler_v3::report_overload_state (bool b) {
 	if (b)
 	   overloadLabel -> setStyleSheet ("QLabel {background-color : red}");

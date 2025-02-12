@@ -100,6 +100,7 @@
 #endif
 
 #include	"xml-filereader.h"
+//	wavfiles is replaced by newfiles
 //#include	"wavfiles.h"
 #include	"newfiles.h"
 #include	"rawfiles.h"
@@ -134,9 +135,7 @@
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 #endif
 #endif
-#ifdef	HAVE_AIRSPY
-	deviceList. push_back (deviceItem ("airspy", AIRSPY_DEVICE));
-#elif	HAVE_AIRSPY_2
+#ifdef	HAVE_AIRSPY_2
 	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
 #endif
 #ifdef	HAVE_HACKRF
@@ -197,7 +196,7 @@ deviceHandler	*inputDevice;
 	   return nullptr;
 	}
 	catch (...) {
-	   QMessageBox::warning (nullptr, "Warning", "unkknown excpetion");
+	   QMessageBox::warning (nullptr, "Warning", "unknown exception");
 	   return nullptr;
 	}
 	return inputDevice;
@@ -206,7 +205,6 @@ deviceHandler	*inputDevice;
 deviceHandler	*deviceChooser::_createDevice (const QString &s,
 	                                       const QString &version,
 	                                       logger *theLogger) {
-deviceHandler	*inputDevice_p	= nullptr;
 int	deviceNumber	= getDeviceIndex (s);
 
 	if (deviceNumber < 0)
@@ -346,9 +344,7 @@ QString fileName =
 	dabSettings	-> beginGroup ("Filetypes");
 	dabSettings	-> setValue ("lastFileType", selectedType);
 	QString dumper  = QDir::fromNativeSeparators (fileName);
-        int x           = dumper. lastIndexOf ("/");
-        QString saveDir = dumper. remove (x, dumper. count () - x);
-        dabSettings     -> setValue ("lastFileDir", saveDir);
+	dabSettings     -> setValue ("lastFileDir", fileName);
 	dabSettings	-> endGroup ();
 	
 	if ((selectedType == TYPE_XML) || (selectedType == TYPE_UFF))

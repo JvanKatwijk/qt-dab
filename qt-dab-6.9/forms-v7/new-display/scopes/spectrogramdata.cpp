@@ -23,8 +23,8 @@
  */
 #include	"spectrogramdata.h"
 //
-	spectrogramData::spectrogramData (double *data, int left,
-	                                  int width, int height,
+	spectrogramData::spectrogramData (double *data, float left,
+	                                  float width, int height,
 	                                  int datawidth, double max):
 	                                                 QwtRasterData () {
 	this	-> data		= data;
@@ -42,7 +42,7 @@
 #endif
 }
 
-	spectrogramData::~spectrogramData() {
+	spectrogramData::~spectrogramData () {
 }
 
 void	spectrogramData::initRaster (const QRectF &x, const QSize &raster) {
@@ -60,11 +60,16 @@ QwtInterval spectrogramData::interval (Qt::Axis x) const {
 
 
 double	spectrogramData::value (double x, double y) const {
-	   x = x - left;
-	   x = x / width  * (datawidth  - 1);
-	   y = y / height * (dataheight - 1);
-	   int index = (int)y * datawidth + (int)x;
-	   if ((index < 0) || (index >= bufferSize * 256))
-	      return 0;
-	   return data [(int)y * datawidth + (int)x];
+int32_t index_x = (int32_t)((x - left)  / width  * (datawidth  - 1));
+int32_t index_y = (int32_t)(y / height * (dataheight - 1));
+
+	if (index_x < 0)
+	   index_x = 0;
+	if (index_x >= datawidth)
+	   index_x = datawidth;
+	if (index_y < 0)
+	   index_y = 0;
+	if (index_y > dataheight)
+	   index_y = dataheight;
+	return data [index_y * datawidth + index_x];
 }

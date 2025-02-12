@@ -121,6 +121,7 @@ QString	temp;
 int	k;
 char	manufac [256], product [256], serial [256];
 
+	(void)theLogger;
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
@@ -203,7 +204,7 @@ char	manufac [256], product [256], serial [256];
 	}
 
 	if (rtlsdr_set_tuner_bandwidth != nullptr)
-	   rtlsdr_set_tuner_bandwidth (theDevice, KHz (1536));
+	   rtlsdr_set_tuner_bandwidth (theDevice, KHz (1575));
 	rtlsdr_set_tuner_gain_mode (theDevice, 1);
 //
 //	See what the saved values are and restore the GUI settings
@@ -241,13 +242,17 @@ char	manufac [256], product [256], serial [256];
 
 //	and attach the buttons/sliders to the actions
 	connect (gainControl,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
 	         qOverload<const QString &>(&QComboBox::textActivated),
 #else
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
 	         this, &rtlsdrHandler::set_ExternalGain);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &rtlsdrHandler::set_autogain);
 	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &rtlsdrHandler::set_ppmCorrection);
@@ -255,9 +260,17 @@ char	manufac [256], product [256], serial [256];
 	         this, &rtlsdrHandler::set_xmlDump);
 	connect (iq_dumpButton, &QPushButton::clicked,
 	         this, &rtlsdrHandler::set_iqDump);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (biasControl, &QCheckBox::checkStateChanged,
+#else
 	connect (biasControl, &QCheckBox::stateChanged,
+#endif
 	         this, &rtlsdrHandler::set_biasControl);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (filterSelector, &QCheckBox::checkStateChanged,
+#else
 	connect (filterSelector, &QCheckBox::stateChanged,
+#endif
 	         this, &rtlsdrHandler::set_filter);
 //
 //	and for saving/restoring the gain setting:

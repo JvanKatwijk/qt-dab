@@ -25,9 +25,12 @@
  */
 #include	<vector>
 #include	"protection.h"
+#include	<cstring>
 
-       protection::protection  (int16_t bitRate, int16_t protLevel):
-                                        viterbiSpiral (24 * bitRate, true),
+       protection::protection  (int16_t bitRate,
+	                        int16_t protLevel, uint8_t cpuSupport):
+                                       viterbi (24 * bitRate, true, cpuSupport),
+//                                        viterbiSpiral (24 * bitRate, true),
                                         outSize (24 * bitRate),
 	                                indexTable   (outSize * 4 + 24),
                                         viterbiBlock (outSize * 4 + 24){
@@ -51,6 +54,7 @@ int16_t	inputCounter	= 0;
 	for (int i = 0; i < outSize * 4 + 24; i ++)
 	   if (indexTable [i])
 	      viterbiBlock [i] = v [inputCounter ++];
-	viterbiSpiral::deconvolve (viterbiBlock. data(), outBuffer);
+	viterbi::deconvolve (viterbiBlock. data(), outBuffer);
+//	viterbiSpiral::deconvolve (viterbiBlock. data(), outBuffer);
 	return true;
 }

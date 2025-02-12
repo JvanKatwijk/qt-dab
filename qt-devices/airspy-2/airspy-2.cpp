@@ -15,12 +15,6 @@
  *	Lazy Chair Computing
  */
 
-#ifdef	__MINGW32__
-#define	GETPROCADDRESS	GetProcAddress
-#else
-#define	GETPROCADDRESS	dlsym
-#endif
-
 #include	<QPoint>
 #include	<QFileDialog>
 #include	<QTime>
@@ -38,9 +32,6 @@
 #define	TAB_SETTINGS	"tabSettings"
 #define	CONV_QUALITY	"convQuality"
 
-static int qualityTable [] = {
-	SRC_SINC_BEST_QUALITY, SRC_SINC_MEDIUM_QUALITY,
-	SRC_SINC_FASTEST, SRC_ZERO_ORDER_HOLD, SRC_LINEAR};
 static
 const	int	EXTIO_NS	=  8192;
 static
@@ -50,11 +41,12 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 	                    const QString  &recorderVersion,
 	                    logger	*theLogger) :	// dummy for now
                                          _I_Buffer (4 * 1024 * 1024) {
-int	result, i;
+int	result;
 int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
 
+	(void)theLogger;
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
@@ -72,27 +64,26 @@ uint32_t samplerateCount;
 
 #ifdef	__MINGW32__
 	const char *libraryString = "airspy.dll";
-	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
 #else
 	const char *libraryString = "libairspy.so";
-	Handle		= dlopen ("libairspy.so", RTLD_LAZY);
-	if (Handle == nullptr)
-	   Handle	= dlopen ("libairspy.so.0", RTLD_LAZY);
 #endif
+	
+        library_p = new QLibrary (libraryString);
+        library_p -> load();
 
-	if (Handle == nullptr) {
-	   throw (device_exception ("failed to open " +
-	                               std::string (libraryString)));
-	}
+        if (!library_p -> isLoaded ()) {
+           throw (device_exception ("failed to open " +
+                                        std::string (libraryString)));
+        }
 
 	if (!load_airspyFunctions ()) {
-	   releaseLibrary ();
+	   delete library_p;
 	   throw (device_exception ("one or more library functions could not be loaded"));
 	}
 //
 	strcpy (serial,"");
 	if (this -> my_airspy_init () != AIRSPY_SUCCESS) {
-	   releaseLibrary ();
+	   delete library_p;
 	   throw (device_exception ("could not init"));
 	}
 
@@ -101,7 +92,7 @@ uint32_t samplerateCount;
 	int numofDevs = my_airspy_list_devices (deviceList, 4)
 ;
 	if (numofDevs == 0) {
-	   releaseLibrary ();
+	   delete library_p;
 	   throw (device_exception ("No airspy device was detected"));
 	}
 
@@ -118,7 +109,7 @@ uint32_t samplerateCount;
 	
 	result = my_airspy_open (&device, deviceList [deviceIndex]);
 	if (result != AIRSPY_SUCCESS) {
-	   releaseLibrary ();
+	   delete library_p;
 	   throw (device_exception
 	                      (my_airspy_error_name ((airspy_error)result)));
 	}
@@ -131,7 +122,7 @@ uint32_t samplerateCount;
 	                            sampleRates. data(), samplerateCount);
 
 	selectedRate	= 0;
-	for (i = 0; i < (int)samplerateCount; i ++) {
+	for (int i = 0; i < (int)samplerateCount; i ++) {
 	   fprintf (stderr, "%d \n", sampleRates [i]);
 	   if (abs ((int)sampleRates [i] - 2048000) < distance) {
 	      distance	= abs ((int)sampleRates [i] - 2048000);
@@ -140,7 +131,7 @@ uint32_t samplerateCount;
 	}
 
 	if (selectedRate == 0) {
-	   releaseLibrary ();
+	   delete library_p;
 	   throw (device_exception ("Cannot handle the samplerates"));
 	}
 
@@ -148,30 +139,28 @@ uint32_t samplerateCount;
 	result = my_airspy_set_samplerate (device, selectedRate);
 
 	if (result != AIRSPY_SUCCESS) {
-	   releaseLibrary ();
+	   delete library_p;
 	   throw (device_exception
 	             (my_airspy_error_name ((enum airspy_error)result)));
 	}
-	double ratio		= (double)2048000 / selectedRate;
-	inputLimit		= 4096;
-	outputLimit		= inputLimit * ratio;
-	int err;
-	
-	int xxx		= value_i (airspySettings, AIRSPY_SETTINGS,
-	                                     CONV_QUALITY, 0);
-	int convQuality		= 4;
-	if ((0 <= xxx) && (xxx < 5)) {
-	   convQuality_setter -> setValue (xxx);
-	   convQuality		= qualityTable [4 - xxx];
-	}
-	converter		= src_new (convQuality, 2, &err);
-	inBuffer. resize (2 * inputLimit + 20);
-	outBuffer. resize (2 * outputLimit + 20);
-	src_data. data_in	= inBuffer. data ();
-	src_data. data_out	= outBuffer. data ();
-	src_data. src_ratio	= ratio;
-	src_data. end_of_input	= 0;
-	inp			= 0;
+	filterDepth		= value_i (airspySettings, AIRSPY_SETTINGS,
+	                                     CONV_QUALITY, 7);
+	convQuality_setter	-> setValue (filterDepth);
+        theFilter       = new LowPassFIR (filterDepth,
+	                                  1536000 / 2, selectedRate);
+
+//      The sizes of the mapTables follow from the input and output rate
+//      (selectedRate / 1000) vs (2048000 / 1000)
+//      so we end up with buffers with 1 msec content
+        convBufferSize          = selectedRate / 1000;
+        for (int i = 0; i < 2048; i ++) {
+           float inVal  = float (selectedRate / 1000);
+           mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
+           mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
+        }
+        convIndex       = 0;
+        convBuffer. resize (convBufferSize + 1);
+
 //
 	restore_gainSettings (tab);
 	connect (linearitySlider, &QSlider::valueChanged,
@@ -184,11 +173,23 @@ uint32_t samplerateCount;
 	         this, &airspy_2::set_vga_gain);
 	connect (mixerSlider, &QSlider::valueChanged,
 	         this, &airspy_2::set_mixer_gain);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (lnaButton, &QCheckBox::checkStateChanged,
+#else
 	connect (lnaButton, &QCheckBox::stateChanged,
+#endif
 	         this, &airspy_2::set_lna_agc);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (mixerButton, &QCheckBox::checkStateChanged,
+#else
 	connect (mixerButton, &QCheckBox::stateChanged,
+#endif
 	         this, &airspy_2::set_mixer_agc);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (biasButton, &QCheckBox::checkStateChanged,
+#else
 	connect (biasButton, &QCheckBox::stateChanged,
+#endif
 	         this, &airspy_2::set_rf_bias);
 	connect (tabWidget, &QTabWidget::currentChanged,
 	         this, &airspy_2::switch_tab);
@@ -196,8 +197,6 @@ uint32_t samplerateCount;
 	         this, &airspy_2::set_xmlDump);
 	connect (this, &airspy_2::new_tabSetting,
 	         tabWidget, &QTabWidget::setCurrentIndex);
-	connect (convQuality_setter, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &airspy_2::handle_convQuality);
 //
 	displaySerial	-> setText (getSerial());
 	running. store (false);
@@ -210,7 +209,6 @@ uint32_t samplerateCount;
 	airspy_2::~airspy_2 () {
 	stopReader ();
 	myFrame. hide ();
-	src_delete	(converter);
 	store_widget_position (airspySettings, &myFrame, AIRSPY_SETTINGS);
 	store (airspySettings, AIRSPY_SETTINGS, TAB_SETTINGS,
 	                                   tabWidget -> currentIndex ());
@@ -228,7 +226,7 @@ uint32_t samplerateCount;
 	   }
 	}
 	my_airspy_exit();
-	releaseLibrary ();
+	delete library_p;
 }
 
 bool	airspy_2::restartReader	(int32_t freq) {
@@ -323,33 +321,36 @@ airspy_2 *p;
 int 	airspy_2::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
-std::complex<float> temp [4096];
+std::complex<float> temp [2048];
 
 	if (dumping. load ())
 	   xmlWriter -> add ((std::complex<int16_t> *)sbuf, nSamples);
+	if (convQuality_setter -> value () != filterDepth) {
+	   filterDepth = convQuality_setter -> value ();
+	   theFilter -> resize (filterDepth);
+	   store  (airspySettings, AIRSPY_SETTINGS,
+                                             CONV_QUALITY, filterDepth);
+	}
+
 	for (int i = 0; i < nSamples; i ++) {
-	   inBuffer [2 * inp]		= sbuf [2 * i] / 2048.0f;
-	   inBuffer [2 * inp + 1]	= sbuf [2 * i + 1] / 2048.0f;
-	   inp ++;
-	   if (inp < inputLimit)
-	      continue;
-	   src_data.       input_frames    = inputLimit;
-	   src_data.       output_frames   = outputLimit;
-	   locker. lock ();
-	   int res	= src_process (converter, &src_data);
-	   locker. unlock ();
-	   if (res != 0) {
-	      fprintf (stderr, "error %s\n", src_strerror (res));
-	   }
-	   for (inp = 0;
-	        inp < inputLimit - src_data. input_frames_used;
-	            inp ++)
-	      inBuffer [inp] = inBuffer [src_data. input_frames_used + inp];
-	   int framesOut       = src_data. output_frames_gen;
-	   for (int i = 0; i < framesOut; i ++)
-	      temp [i] = std::complex<float> (outBuffer [2 * i],
-	                                      outBuffer [2 * i + 1]);
-	   _I_Buffer. putDataIntoBuffer (temp, framesOut);
+	    convBuffer [convIndex ++] = theFilter -> Pass (
+                                             std::complex<float> (
+                                                sbuf [2 * i] / (float)2048,
+                                                sbuf [2 * i + 1] / (float)2048));
+
+	   if (convIndex > convBufferSize) {
+	      for (int j = 0; j < 2048; j ++) {
+	         int16_t  inpBase    = mapTable_int [j];
+	         float    inpRatio   = mapTable_float [j];
+	         temp [j]    = convBuffer [inpBase + 1] * inpRatio +
+	                       convBuffer [inpBase] * (1 - inpRatio);
+	      }
+	      _I_Buffer. putDataIntoBuffer (temp, 2048);
+//	shift the sample at the end to the beginning, it is needed
+//	as the starting sample for the next time
+	      convBuffer [0] = convBuffer [convBufferSize];
+	      convIndex = 1;
+           }
 	}
 	return 0;
 }
@@ -411,117 +412,109 @@ uint8_t bid;
 	   return "UNKNOWN";
 }
 //
-void    airspy_2::releaseLibrary  () {
-#ifdef __MINGW32__
-        FreeLibrary (Handle);
-#else
-        dlclose (Handle);
-#endif
-}
-
 bool	airspy_2::load_airspyFunctions() {
 //
 //	link the required procedures
 	my_airspy_init	= (pfn_airspy_init)
-	                       GETPROCADDRESS (Handle, "airspy_init");
+	                       library_p -> resolve ("airspy_init");
 	if (my_airspy_init == nullptr) {
 	   fprintf (stderr, "Could not find airspy_init\n");
 	   return false;
 	}
 
 	my_airspy_exit	= (pfn_airspy_exit)
-	                       GETPROCADDRESS (Handle, "airspy_exit");
+	                       library_p -> resolve ("airspy_exit");
 	if (my_airspy_exit == nullptr) {
 	   fprintf (stderr, "Could not find airspy_exit\n");
 	   return false;
 	}
 
 	my_airspy_list_devices	= (pfn_airspy_list_devices)
-	                       GETPROCADDRESS (Handle, "airspy_list_devices");
+	                       library_p -> resolve ("airspy_list_devices");
 	if (my_airspy_list_devices == nullptr) {
 	   fprintf (stderr, "Could not find airspy_list_devices\n");
 	   return false;
 	}
 	
 	my_airspy_open	= (pfn_airspy_open)
-	                       GETPROCADDRESS (Handle, "airspy_open");
+	                       library_p -> resolve ("airspy_open");
 	if (my_airspy_open == nullptr) {
 	   fprintf (stderr, "Could not find airspy_open\n");
 	   return false;
 	}
 
 	my_airspy_close	= (pfn_airspy_close)
-	                       GETPROCADDRESS (Handle, "airspy_close");
+	                       library_p -> resolve ("airspy_close");
 	if (my_airspy_close == nullptr) {
 	   fprintf (stderr, "Could not find airspy_close\n");
 	   return false;
 	}
 
 	my_airspy_get_samplerates	= (pfn_airspy_get_samplerates)
-	                       GETPROCADDRESS (Handle, "airspy_get_samplerates");
+	                       library_p -> resolve ("airspy_get_samplerates");
 	if (my_airspy_get_samplerates == nullptr) {
 	   fprintf (stderr, "Could not find airspy_get_samplerates\n");
 	   return false;
 	}
 
 	my_airspy_set_samplerate	= (pfn_airspy_set_samplerate)
-	                       GETPROCADDRESS (Handle, "airspy_set_samplerate");
+	                       library_p -> resolve ("airspy_set_samplerate");
 	if (my_airspy_set_samplerate == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_samplerate\n");
 	   return false;
 	}
 
 	my_airspy_start_rx	= (pfn_airspy_start_rx)
-	                       GETPROCADDRESS (Handle, "airspy_start_rx");
+	                       library_p -> resolve ("airspy_start_rx");
 	if (my_airspy_start_rx == nullptr) {
 	   fprintf (stderr, "Could not find airspy_start_rx\n");
 	   return false;
 	}
 
 	my_airspy_stop_rx	= (pfn_airspy_stop_rx)
-	                       GETPROCADDRESS (Handle, "airspy_stop_rx");
+	                       library_p -> resolve ("airspy_stop_rx");
 	if (my_airspy_stop_rx == nullptr) {
 	   fprintf (stderr, "Could not find airspy_stop_rx\n");
 	   return false;
 	}
 
 	my_airspy_set_sample_type	= (pfn_airspy_set_sample_type)
-	                       GETPROCADDRESS (Handle, "airspy_set_sample_type");
+	                       library_p -> resolve ("airspy_set_sample_type");
 	if (my_airspy_set_sample_type == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_sample_type\n");
 	   return false;
 	}
 
 	my_airspy_set_freq	= (pfn_airspy_set_freq)
-	                       GETPROCADDRESS (Handle, "airspy_set_freq");
+	                       library_p -> resolve ("airspy_set_freq");
 	if (my_airspy_set_freq == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_freq\n");
 	   return false;
 	}
 
 	my_airspy_set_lna_gain	= (pfn_airspy_set_lna_gain)
-	                       GETPROCADDRESS (Handle, "airspy_set_lna_gain");
+	                       library_p -> resolve ("airspy_set_lna_gain");
 	if (my_airspy_set_lna_gain == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_lna_gain\n");
 	   return false;
 	}
 
 	my_airspy_set_mixer_gain	= (pfn_airspy_set_mixer_gain)
-	                       GETPROCADDRESS (Handle, "airspy_set_mixer_gain");
+	                       library_p -> resolve ("airspy_set_mixer_gain");
 	if (my_airspy_set_mixer_gain == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_mixer_gain\n");
 	   return false;
 	}
 
 	my_airspy_set_vga_gain	= (pfn_airspy_set_vga_gain)
-	                       GETPROCADDRESS (Handle, "airspy_set_vga_gain");
+	                       library_p -> resolve ("airspy_set_vga_gain");
 	if (my_airspy_set_vga_gain == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_vga_gain\n");
 	   return false;
 	}
 	
 	my_airspy_set_linearity_gain = (pfn_airspy_set_linearity_gain)
-	                       GETPROCADDRESS (Handle, "airspy_set_linearity_gain");
+	                       library_p -> resolve ("airspy_set_linearity_gain");
 	if (my_airspy_set_linearity_gain == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_linearity_gain\n");
 	   fprintf (stderr, "You probably did install an old library\n");
@@ -529,7 +522,7 @@ bool	airspy_2::load_airspyFunctions() {
 	}
 
 	my_airspy_set_sensitivity_gain = (pfn_airspy_set_sensitivity_gain)
-	                       GETPROCADDRESS (Handle, "airspy_set_sensitivity_gain");
+	                       library_p -> resolve ("airspy_set_sensitivity_gain");
 	if (my_airspy_set_sensitivity_gain == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_sensitivity_gain\n");
 	   fprintf (stderr, "You probably did install an old library\n");
@@ -537,42 +530,42 @@ bool	airspy_2::load_airspyFunctions() {
 	}
 
 	my_airspy_set_lna_agc	= (pfn_airspy_set_lna_agc)
-	                       GETPROCADDRESS (Handle, "airspy_set_lna_agc");
+	                       library_p -> resolve ("airspy_set_lna_agc");
 	if (my_airspy_set_lna_agc == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_lna_agc\n");
 	   return false;
 	}
 
 	my_airspy_set_mixer_agc	= (pfn_airspy_set_mixer_agc)
-	                       GETPROCADDRESS (Handle, "airspy_set_mixer_agc");
+	                       library_p -> resolve ("airspy_set_mixer_agc");
 	if (my_airspy_set_mixer_agc == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_mixer_agc\n");
 	   return false;
 	}
 
 	my_airspy_set_rf_bias	= (pfn_airspy_set_rf_bias)
-	                       GETPROCADDRESS (Handle, "airspy_set_rf_bias");
+	                       library_p -> resolve ("airspy_set_rf_bias");
 	if (my_airspy_set_rf_bias == nullptr) {
 	   fprintf (stderr, "Could not find airspy_set_rf_bias\n");
 	   return false;
 	}
 
 	my_airspy_error_name	= (pfn_airspy_error_name)
-	                       GETPROCADDRESS (Handle, "airspy_error_name");
+	                       library_p -> resolve ("airspy_error_name");
 	if (my_airspy_error_name == nullptr) {
 	   fprintf (stderr, "Could not find airspy_error_name\n");
 	   return false;
 	}
 
 	my_airspy_board_id_read	= (pfn_airspy_board_id_read)
-	                       GETPROCADDRESS (Handle, "airspy_board_id_read");
+	                       library_p -> resolve ("airspy_board_id_read");
 	if (my_airspy_board_id_read == nullptr) {
 	   fprintf (stderr, "Could not find airspy_board_id_read\n");
 	   return false;
 	}
 
 	my_airspy_board_id_name	= (pfn_airspy_board_id_name)
-	                       GETPROCADDRESS (Handle, "airspy_board_id_name");
+	                       library_p -> resolve ("airspy_board_id_name");
 	if (my_airspy_board_id_name == nullptr) {
 	   fprintf (stderr, "Could not find airspy_board_id_name\n");
 	   return false;
@@ -580,7 +573,7 @@ bool	airspy_2::load_airspyFunctions() {
 
 	my_airspy_board_partid_serialno_read	=
 	                (pfn_airspy_board_partid_serialno_read)
-	                       GETPROCADDRESS (Handle, "airspy_board_partid_serialno_read");
+	                       library_p -> resolve ("airspy_board_partid_serialno_read");
 	if (my_airspy_board_partid_serialno_read == nullptr) {
 	   fprintf (stderr, "Could not find airspy_board_partid_serialno_read\n");
 	   return false;
@@ -734,11 +727,23 @@ QString	def	= "";
 	}
 //
 //	Now the agc settings
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	disconnect (lnaButton, &QCheckBox::checkStateChanged,
+#else
 	disconnect (lnaButton, &QCheckBox::stateChanged,
+#endif
 	            this, &airspy_2::set_lna_agc);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	disconnect (mixerButton, &QCheckBox::checkStateChanged,
+#else
 	disconnect (mixerButton, &QCheckBox::stateChanged,
+#endif
 	            this, &airspy_2::set_mixer_agc);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	disconnect (biasButton, &QCheckBox::checkStateChanged,
+#else
 	disconnect (biasButton, &QCheckBox::stateChanged,
+#endif
 	            this, &airspy_2::set_rf_bias);
 	if (lna != 0)
 	   lnaButton	-> setChecked (true);
@@ -746,11 +751,23 @@ QString	def	= "";
 	   mixerButton	-> setChecked (true);
 	if (bias != 0)
 	   biasButton	-> setChecked (true);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (lnaButton, &QCheckBox::checkStateChanged,
+#else
 	connect (lnaButton, &QCheckBox::stateChanged,
+#endif
 	         this, &airspy_2::set_lna_agc);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (mixerButton, &QCheckBox::checkStateChanged,
+#else
 	connect (mixerButton, &QCheckBox::stateChanged,
+#endif
 	         this, &airspy_2::set_mixer_agc);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (biasButton, &QCheckBox::checkStateChanged,
+#else
 	connect (biasButton, &QCheckBox::stateChanged,
+#endif
 	         this, &airspy_2::set_rf_bias);
 }
 
@@ -913,14 +930,5 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	   printf("airspy_set_rf_bias() failed: %s (%d)\n",
 	           my_airspy_error_name ((airspy_error)result), result);
 	}
-}
-
-void	airspy_2::handle_convQuality	(int convQuality) {
-	store (airspySettings, AIRSPY_SETTINGS,CONV_QUALITY, convQuality);
-	int err;
-	locker. lock ();
-	src_delete	(converter);
-	converter		= src_new (4 - convQuality, 2, &err);
-	locker. unlock ();
 }
 

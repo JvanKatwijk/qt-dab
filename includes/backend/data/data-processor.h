@@ -43,7 +43,7 @@ public:
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 bool backendFlag);
 	~dataProcessor	();
-void	addtoFrame	(std::vector<uint8_t>);
+void	addtoFrame	(const std::vector<uint8_t> &);
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;

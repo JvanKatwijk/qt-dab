@@ -29,7 +29,6 @@
 	journalineScreen::journalineScreen (std::vector<tableElement> &table):
 	                                        myFrame (nullptr) {
 
-	fprintf (stderr, "Screen aangeroepen\n");
 	this	-> table = &table;
 	pathVector. resize (0);
 	resetButton	= new QPushButton ("reset");
@@ -66,7 +65,6 @@
 
 void	journalineScreen::handle_resetButton	() {
 	pathVector. resize (0);
-//	fprintf (stderr, "Tablesize %d\n", (int)((*table). size ()));
 	for (int i = 0; i < (int)((*table). size ()); i ++) {
 	   if ((*table) [i]. key == 0) {
 	      displayElement (*((*table) [i].element));
@@ -92,7 +90,6 @@ void	journalineScreen::select_sub (QModelIndex ind) {
 	int t = pathVector. back ();
 	int currentIndex	= findIndex (t);
 	if (currentIndex < 0) {
-//	   fprintf (stderr, "Current element missing\n");
 	   return;
 	}
 	NML::News_t *currentElement	= (*table) [currentIndex]. element;
@@ -103,8 +100,6 @@ void	journalineScreen::select_sub (QModelIndex ind) {
 	NML::Item_t item	= currentElement -> item [ind. row ()];
 	if (true) {
 //	if (item. link_id_available) {
-//	   fprintf (stderr, "link for element %d is %d\n",
-//	                               ind. row (), item. link_id);
 	   int ind = findIndex (item. link_id);
 	   if (ind < 0) {
 //	      fprintf (stderr, "Link %d not found\n", item. link_id);
@@ -119,8 +114,6 @@ void	journalineScreen::select_sub (QModelIndex ind) {
 }
 
 void	journalineScreen::displayElement (NML::News_t &element) {
-	fprintf (stderr, "Display een element met type %d\n",
-	                              element. object_type);
 	switch (element. object_type) {
 	   case NML::MENU:
 	      display_Menu (element);
@@ -168,7 +161,7 @@ void	journalineScreen::display_List (NML::News_t &element) {
 }
 
 int	journalineScreen::findIndex	(int key) {
-	for (int i = 0; i < table -> size (); i ++)
+	for (uint16_t i = 0; i < table -> size (); i ++)
 	   if ((*table) [i]. key == key)
 	      return i;
 	return -1;

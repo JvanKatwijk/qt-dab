@@ -132,6 +132,7 @@ int	input	= v. size ();
 	   int x_coord = (int)(x. phase / 360 * 2048 + 400);
 	   if ((x_coord < X_axis [0]) || (x_coord >= X_axis [0] + amount))
 	      continue;
+
 	   QwtPlotMarker *marker  = new QwtPlotMarker (x. Name);
 	   marker -> setXValue (x_coord);  
 	   marker -> setYValue (200);  

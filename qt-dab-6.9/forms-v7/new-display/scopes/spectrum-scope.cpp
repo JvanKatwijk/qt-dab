@@ -97,10 +97,10 @@ bool	brush;
 	}
 	spectrumCurve. attach (plotgrid);
 	
-	Marker		= new QwtPlotMarker();
-	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-	Marker		-> setLinePen (QPen (Qt::red));
-	Marker		-> attach (plotgrid);
+//	Marker		= new QwtPlotMarker();
+//	Marker		-> setLineStyle (QwtPlotMarker::VLine);
+//	Marker		-> setLinePen (QPen (Qt::red));
+//	Marker		-> attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	bitDepth	= 12;
 	normalizer	= valueFor (bitDepth);
@@ -108,7 +108,7 @@ bool	brush;
 
 	spectrumScope::~spectrumScope	() {
 
-	delete		Marker;
+//	delete		Marker;
 	delete		grid;
 }
 
@@ -116,7 +116,7 @@ void	spectrumScope::display		(floatQwt *X_axis,
 	                                 floatQwt *Y_value,
 	                                 int freq, int Amp) {
 	(void)freq;
-	float Max	= Amp / 100.0 * (-get_db (0));
+	float Max	= Amp / 50.0 * (-get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (floatQwt)X_axis [0],
 				         X_axis [displaySize - 1]);
@@ -128,8 +128,8 @@ void	spectrumScope::display		(floatQwt *X_axis,
 	Y_value [0]		= get_db (0);
 	Y_value [displaySize - 1] = get_db (0);
 
-	spectrumCurve. setSamples (X_axis, Y_value, 512);
-	Marker		-> setXValue (0);
+	spectrumCurve. setSamples (X_axis, Y_value, displaySize);
+//	Marker		-> setXValue (0);
 	plotgrid	-> replot (); 
 }
 

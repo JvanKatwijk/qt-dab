@@ -41,8 +41,8 @@
 	                                           GRdB,
 	                                           biasT,
 	                                           ppmValue) {
-//	set_antenna (antennaValue);
-//	set_tuner  (tunerValue)
+	(void)antennaValue;
+	(void)tuner;
 	this	-> parent		= parent;
 	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";

@@ -42,7 +42,7 @@ struct timeval  tv;
 	this	-> theReader	= theReader;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= theReader -> elementCount ();
-	fprintf (stderr, "fileLength = %lld\n", fileLength);
+	fprintf (stderr, "fileLength = %ld\n",  (int64_t)fileLength);
 	theReader	-> reset ();
 	period          = (32768 * 1000) / (2048);  // full IQś read
 	fprintf (stderr, "Period = %ld\n", period);

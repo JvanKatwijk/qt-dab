@@ -27,11 +27,12 @@
 #include	"wavWriter.h"
 #include	"dab-constants.h"
 #include	<cstdio>
-#include	<samplerate.h>
 #include	<mutex>
 #include	<QObject>
-#include	"newconverter.h"
 #include	"ringbuffer.h"
+#include	"fir-filters.h"
+#include	<vector>
+#include	<complex>
 
 class	RadioInterface;
 
@@ -56,10 +57,12 @@ private:
 	int		convert_48000		(complex16 *,
 	                                         int, std::vector<float> &);
 	wavWriter	theWriter;
-	newConverter	mapper_16;
-	newConverter	mapper_24;
-	newConverter	mapper_32;
+	std::vector<std::complex<float>>	buffer_32_96;
+	LowPassFIR	filter_16_48;
+	LowPassFIR	filter_24_48;
+	LowPassFIR	filter_32_96;
 	std::mutex	locker;
+	void		dump			(const float *, int);
 	void		dump			(const Complex *, int);
 	void		dump			(const complex16 *, int);
 };

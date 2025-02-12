@@ -27,3 +27,10 @@ void	superFrame::closeEvent (QCloseEvent * event) {
 	frameClosed ();
 	QFrame::closeEvent (event);
 }
+
+void	superFrame::mousePressEvent (QMouseEvent *event) {
+	if (event -> button () == Qt::LeftButton) {
+	   emit makePicture ();
+	}
+}
+

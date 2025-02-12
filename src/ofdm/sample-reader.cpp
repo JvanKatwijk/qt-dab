@@ -76,6 +76,7 @@ int	i;
 	corrector	= 0;
 	dumpIndex	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
+	fprintf (stderr, "bitDepth %d, scale %d\n", theRig -> bitDepth (), dumpScale);
 	connect (this, &sampleReader::show_spectrum,
 	         mr,  &RadioInterface::show_spectrum);
 	connect (this, &sampleReader::show_dcOffset,
@@ -90,18 +91,18 @@ void	sampleReader::setRunning (bool b) {
 	running. store (b);
 }
 
-float	sampleReader::get_sLevel () {
+float	sampleReader::getSLevel () {
 	return sLevel;
 }
 
-Complex	sampleReader::get_sample (float phaseOffset) {
+Complex	sampleReader::getSample (float phaseOffset) {
 std::vector<Complex> buffer (1);
 
-	get_samples (buffer, 0, 1, phaseOffset, false);
+	getSamples (buffer, 0, 1, phaseOffset, false);
 	return buffer [0];
 }
 
-void	sampleReader::get_samples (std::vector<Complex>  &v_out,
+void	sampleReader::getSamples (std::vector<Complex>  &v_out,
 	                           int index,
 	                           int32_t nrSamples,
 	                           int32_t phaseOffset, bool saving) {
@@ -184,11 +185,12 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	}
 }
 
-void	sampleReader::start_dumping (const QString &fileName, int freq) {
-	sourceDumper. init (fileName, freq);
+void	sampleReader::startDumping (const QString &fileName,
+	                                      int freq, int bitDepth) {
+	sourceDumper. init (fileName, 2048000, freq, bitDepth);
 }
 
-void	sampleReader::stop_dumping() {
+void	sampleReader::stopDumping() {
 	sourceDumper.close ();
 }
 
