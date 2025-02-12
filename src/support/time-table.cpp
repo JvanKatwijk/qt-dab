@@ -25,25 +25,109 @@
 #include	"time-table.h"
 #include	"radio.h"
 
-	timeTableHandler::timeTableHandler (RadioInterface *radio):
-	                                             QListView (nullptr) {
+	timeTableHandler::timeTableHandler (RadioInterface *radio) {
 	this	-> radio	= radio;
 //
-//	start with an empty list, waiting ...
-	timeTableList. clear ();
-	displayList. setStringList (timeTableList);
-	this	-> setModel (&displayList);
+	myWidget        = new QScrollArea (nullptr);
+        myWidget        -> setWidgetResizable (true);
+
+        programDisplay	= new QTableWidget (0, 4);
+        programDisplay	-> setColumnWidth (0, 250);
+        programDisplay	-> setColumnWidth (3, 350);
+        myWidget        -> setWidget (programDisplay);
+        programDisplay	-> setHorizontalHeaderLabels (
+                                  QStringList () << "program");
+	addRow ();
 }
 
 	timeTableHandler::~timeTableHandler   () {
+	clear ();
+	delete	programDisplay;
+	delete	myWidget;
 }
 
 void	timeTableHandler::display	(const scheduleDescriptor &schedule) {
+	fprintf (stderr, "we gaan voor %X\n", schedule. Sid);
+	fprintf (stderr, "en we hebben %d elementen\n",
+	                          schedule. thePrograms. size ());
+	addHeader (schedule);
+	for (auto &program : schedule. thePrograms)
+	   addProgram (program);
+	show ();
+}
+
+void	timeTableHandler::addHeader	(const scheduleDescriptor &schedule) {
+int	row	= programDisplay -> rowCount ();
+QString name	= schedule. name;
+QString start	= schedule. startTime. toString ();
+QString stop	= schedule. stopTime. toString ();
+	programDisplay	-> insertRow (row);
+	QTableWidgetItem *item0 = new QTableWidgetItem;
+	item0	-> setTextAlignment (Qt::AlignLeft);
+	item0	-> setText (name);
+	programDisplay -> setItem (row, 0, item0);
+	QTableWidgetItem *item1 = new QTableWidgetItem;
+	item1	-> setTextAlignment (Qt::AlignLeft);
+	item1	-> setText (QString::number (schedule. Sid, 16));
+	programDisplay -> setItem (row, 1, item1);
+	QTableWidgetItem *item2 = new QTableWidgetItem;
+	item2	-> setTextAlignment (Qt::AlignLeft);
+	item2	-> setText (start);
+	programDisplay -> setItem (row, 2, item2);
+	QTableWidgetItem *item3 = new QTableWidgetItem;
+	item3	-> setTextAlignment (Qt::AlignLeft);
+	item3	-> setText (stop);
+	programDisplay -> setItem (row, 3, item3);
+}
+
+void	timeTableHandler::addProgram (const programDescriptor &program) {
+int	row	= programDisplay -> rowCount ();
+QString start		= program. startTime. toString ();
+QString duration	= QString::number (program. duration) + "min";
+	programDisplay	-> insertRow (row);
+	QTableWidgetItem *item0 = new QTableWidgetItem;
+	item0	-> setTextAlignment (Qt::AlignLeft);
+	item0	-> setText (start);
+	programDisplay -> setItem (row, 0, item0);
+	QTableWidgetItem *item1 = new QTableWidgetItem;
+	item1	-> setTextAlignment (Qt::AlignLeft);
+	item1	-> setText (duration);
+	programDisplay -> setItem (row, 1, item1);
+	QTableWidgetItem *item2 = new QTableWidgetItem;
+	item2	-> setTextAlignment (Qt::AlignLeft);
+	item2	-> setText ("");
+	programDisplay -> setItem (row, 2, item2);
+	QTableWidgetItem *item3 = new QTableWidgetItem;
+	item3	-> setTextAlignment (Qt::AlignLeft);
+	item3	-> setText (program. program);
+	programDisplay -> setItem (row, 3, item3);
+}
+
+void	timeTableHandler::addRow	() {	// add empty row
+int	row	= programDisplay -> rowCount ();
+	programDisplay	-> insertRow (row);
+	for (int i = 0; i < 4; i ++) {
+	   QTableWidgetItem *item = new QTableWidgetItem;
+	   item	-> setText ("");
+	   programDisplay -> setItem (row, i, item);
+	}
 }
 
 void	timeTableHandler::clear () {
-        timeTableList. clear ();
-        displayList. setStringList (timeTableList);
-        this    -> setModel (&displayList);
+int	rows    = programDisplay -> rowCount ();
+        for (int i = rows; i > 0; i --)
+           programDisplay -> removeRow (i - 1);
+}
+
+void	timeTableHandler::show      () {
+        myWidget        -> show ();
+}
+
+void	timeTableHandler::hide      () {
+        myWidget        -> hide ();
+}
+
+bool	timeTableHandler::isVisible () {
+        return !myWidget -> isHidden ();
 }
 

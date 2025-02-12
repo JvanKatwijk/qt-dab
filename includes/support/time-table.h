@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
@@ -23,25 +23,31 @@
 
 #pragma once
 
-//#include	"radio.h"
-#include	<QListView>
-#include	<QStringList>
-#include	<QStringListModel>
-#include	<QModelIndex>
+#include        <QWidget>
+#include        <QObject>
+#include        <QScrollArea>
+#include        <QTableWidget>
+#include        <QStringList>
+#include        <QTableWidgetItem>
 #include	"xml-extractor.h"
 
 class	RadioInterface;
 
-class	timeTableHandler:public QListView {
-Q_OBJECT
+class	timeTableHandler {
 public:
 		timeTableHandler	(RadioInterface *radio);
 		~timeTableHandler	();
 	void	display			(const scheduleDescriptor &);
 	void	clear			();
+	void    show            ();
+        void    hide            ();
+        bool    isVisible       ();
 private:
-	QStringList		timeTableList;
-	QStringListModel	displayList;
+	void		addRow		();
+	void		addHeader	(const scheduleDescriptor &);
+	void		addProgram	(const programDescriptor &);
 	RadioInterface	*radio;
+	QScrollArea     *myWidget;
+        QTableWidget    *programDisplay;
 };
 

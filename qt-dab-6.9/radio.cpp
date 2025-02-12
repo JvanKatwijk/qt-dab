@@ -1268,6 +1268,7 @@ float	absPeakRight	= 0;
 void	RadioInterface::TerminateProcess () {
 	running. store	(false);
 	theSCANHandler. hide ();
+	my_timeTable. hide ();
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
@@ -3288,7 +3289,7 @@ void	RadioInterface::set_epgData (int SId, int theTime,
 
 void	RadioInterface::handle_timeTable	() {
 int	epgWidth;
-	if (!my_timeTable. isHidden ()) {
+	if (my_timeTable. isVisible ()) {
 	   my_timeTable. hide ();
 	   return;
 	}
@@ -4387,11 +4388,13 @@ scheduleDescriptor theDescriptor = xmlHandler.
 	for (int i = 0; i < channel. programGuides. size (); i ++)
 	if (channel. programGuides [i]. Sid == theDescriptor. Sid)
 	   return;
+	QString serviceName =
+	               theOFDMHandler -> find_service (theDescriptor. Sid, 0);
+	theDescriptor. name = serviceName;
 	channel. programGuides. push_back (theDescriptor);
 	if (theDescriptor. Sid == channel. currentService.SId)
 	   techWindow_p -> show_timetableButton (true);
-//	QString serviceName =
-//	               theOFDMHandler -> find_service (theDescriptor. Sid, 0);
+	
 //	fprintf (stderr, "a schedule for %s (%X) contains %d elements\n",
 //	                             serviceName. toLatin1 (). data (),
 //	                             theDescriptor. Sid, 
