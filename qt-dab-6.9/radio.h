@@ -28,6 +28,7 @@
 #include	<QStringList>
 #include	<QScrollArea>
 #include	<QStandardItemModel>
+#include	<QDomDocument>
 #ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
 #endif
@@ -52,7 +53,8 @@
 #include	"scan-handler.h"
 #include	"epgdec.h"
 #include	"epg-decoder.h"
-//#include	"epg-compiler.h"
+#include	"epg-compiler.h"
+#include	"xml-extractor.h"
 
 #include	"device-chooser.h"
 #include	"display-widget.h"
@@ -163,7 +165,7 @@ public:
 	int		snr;
 	std::vector<transmitterDesc>	transmitters;
 	position	targetPos;
-//	QByteArray	transmitters;
+	QDate		theDate;
 	int8_t		mainId;
 	int8_t		subId;
 	QString		transmitterName;
@@ -290,7 +292,8 @@ private:
 #endif
 	CEPGDecoder		epgHandler;
 	epgDecoder		epgProcessor;
-//	epgDecoder		epgProcessor;
+	epgCompiler		epgVertaler;
+	xmlExtractor		xmlHandler;
 	QString			epgPath;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
@@ -408,6 +411,11 @@ private:
 	void			addtoLogFile	(const cacheElement *);
 	void			removeFromList	(uint8_t, uint8_t);
 	cacheElement		*inList		(uint8_t, uint8_t);
+
+	void			extractSchedule	(QDomDocument &, uint32_t);
+	void			process_schedule (QDomElement &theSchedule,
+	                                                      uint32_t);
+
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();

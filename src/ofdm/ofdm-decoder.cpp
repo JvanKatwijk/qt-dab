@@ -258,7 +258,7 @@ DABFLOAT sum = 0;
 //	   meanPowerVector [index] =
 //	            compute_avg (meanPowerVector [index],
 //	                                 binAbsLevel * binAbsLevel, ALPHA);
-//	   DABFLOAT meanLevelPerBin	= meanLevelVector [index] * sqrt (2);
+//	   DABFLOAT meanLevelPerBin	= meanLevelVector [index] / sqrt (2);
 //
 ////	x distance to reference point
 //	   DABFLOAT x_distance		= 
@@ -307,8 +307,9 @@ DABFLOAT sum = 0;
 	   ibits [carriers + i]	= (int16_t)(imag (R1) * weight);
 
 	   sum += jan_abs (R1);
-	   meanValue	= sum / carriers;
 	}	// end of decode loop
+
+	meanValue	= sum / carriers;
 
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {

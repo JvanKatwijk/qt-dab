@@ -257,7 +257,7 @@ char	manufac [256], product [256], serial [256];
 	connect (this, &rtlsdrHandler_win::new_gainIndex,
 	         gainControl, &QComboBox::setCurrentIndex);
 	connect (this, &rtlsdrHandler_win::new_agcSetting,
-	         agcControl, QCheckBox::setChecked);
+	         agcControl, &QCheckBox::setChecked);
 	iqDumper	= nullptr;
 	xmlWriter	= nullptr;
 	iq_dumping. store (false);

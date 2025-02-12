@@ -344,9 +344,7 @@ QString fileName =
 	dabSettings	-> beginGroup ("Filetypes");
 	dabSettings	-> setValue ("lastFileType", selectedType);
 	QString dumper  = QDir::fromNativeSeparators (fileName);
-        int x           = dumper. lastIndexOf ("/");
-        QString saveDir = dumper. remove (x, dumper. size () - x);
-        dabSettings     -> setValue ("lastFileDir", saveDir);
+	dabSettings     -> setValue ("lastFileDir", fileName);
 	dabSettings	-> endGroup ();
 	
 	if ((selectedType == TYPE_XML) || (selectedType == TYPE_UFF))

@@ -10,8 +10,6 @@ qt-dab-6.9/build
 qt-dab-6.9/Makefile
 qt-dab-6.9/Output
 qt-dab-6.9/todo
-includes/backend/data/epg-2/epg-compiler.h
-src/backend/data/epg-2/epg-compiler.cpp
 
 
 

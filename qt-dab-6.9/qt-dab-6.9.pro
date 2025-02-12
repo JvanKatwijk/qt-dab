@@ -199,7 +199,8 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-#	   ../includes/backend/data/epg-2/epg-compiler.h \
+	   ../includes/backend/data/epg-2/epg-compiler.h \
+	   ../includes/backend/data/epg-2/xml-extractor.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/time-converter.h \
@@ -341,7 +342,8 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-#	   ../src/backend/data/epg-2/epg-compiler.cpp \
+	   ../src/backend/data/epg-2/epg-compiler.cpp \
+	   ../src/backend/data/epg-2/xml-extractor.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/time-converter.cpp \
@@ -905,10 +907,10 @@ datastreamer	{
 
 viterbi-new {
 	DEPENDPATH	+= ../src/support/viterbi
-#	QMAKE_CFLAGS    +=  -mavx2 -msse4
-#	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
-#	QMAKE_LFLAGS    +=  -mavx2
-#	DEFINES		+= __ARCH_X86__
+	QMAKE_CFLAGS    +=  -mavx2 -msse4
+	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
+	QMAKE_LFLAGS    +=  -mavx2
+	DEFINES		+= __ARCH_X86__
 	##DEFINES	+= __SSE4_1__
 	##DEFINES	+= __AVX2__
 	##DEFINES	+= __ARCH_AARCH64__

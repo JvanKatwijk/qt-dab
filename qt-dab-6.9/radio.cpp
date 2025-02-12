@@ -66,6 +66,7 @@
 #include	"uploader.h"
 
 #include	<QScreen>
+#include	<QDomElement>
 
 static float peakLeftDamped = 0;
 static float peakRightDamped = 0;
@@ -919,16 +920,25 @@ QString realName;
 	                     theOFDMHandler -> julianDate ();
 	         int subType = 
 	                  getContentSubType ((MOTContentType)contentType);
-//	         epgProcessor. process_epg (epgData, ensembleId,
-//	                      QDir::toNativeSeparators (objectName));
+
+	         if (configHandler_p -> epg2_active ()) {
+	            QDomDocument epgDocument;
+	            epgVertaler. process_epg (epgDocument, epgData);
+	            QFile file (QDir::toNativeSeparators (objectName));
+	            if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
+	               QTextStream stream (&file);
+	               stream << epgDocument. toString ();
+	               file. close ();
+	            }
+	            extractSchedule (epgDocument, ensembleId);
+	         }
+	         else
 	         epgProcessor. process_epg (epgData. data (), 
 	                                    epgData. size (), currentSId,
 	                                    subType,
 	                                    julianDate);
-	         if (configHandler_p -> epg2_active ()) {
-	            epgHandler. decode (epgData,
-	                      QDir::toNativeSeparators (objectName));
-	         }
+//	         epgHandler. decode (epgData,
+//	                      QDir::toNativeSeparators (objectName));
 	      }
 	      return;
 
@@ -1464,6 +1474,8 @@ void	RadioInterface::clockTime (int year, int month, int day,
 	else
 	   result	= convertTime (year, month, day,
 	                                     hours, minutes);
+	QDate theDate (year, month, day);
+	channel. theDate = theDate;
 	localTimeDisplay -> setText (result);
 }
 
@@ -4343,5 +4355,42 @@ QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 	configHandler_p -> fill_streamTable (streams);
 	configHandler_p -> show_streamSelector (true);
 #endif
+}
+
+void	RadioInterface::extractSchedule (QDomDocument &doc, uint32_t ensembleId) {
+QDomElement root = doc. firstChildElement ("epg");
+	for (QDomElement theSchedule = root. firstChildElement ("schedule");
+	     !theSchedule. isNull ();
+	     theSchedule = theSchedule. nextSiblingElement ("schedule")) { 
+	   process_schedule (theSchedule, ensembleId);
+	}
+}
+
+void	RadioInterface::process_schedule (QDomElement &theSchedule,
+	                                  uint32_t ensembleId) {
+serviceDescriptor theDescriptor = xmlHandler.
+	                          getScheduleDescriptor (theSchedule);
+	if (!theDescriptor. valid)
+	   return;
+	if (theDescriptor. Eid != ensembleId)
+	   return;
+	QDate startDate	= theDescriptor. startTime. date ();
+	QDate stopDate	= theDescriptor. stopTime. date ();
+	if ((startDate > channel. theDate) || (stopDate < channel. theDate))
+	   return;
+	for (QDomElement child = theSchedule. firstChildElement ("programme");
+	     !child. isNull ();
+	     child = child. nextSiblingElement ("programme")) {
+	   programDescriptor res = xmlHandler. process_programme (child);
+	   if (!res. valid)
+	      continue;
+	  theDescriptor.thePrograms. push_back (res);
+	}
+	QString serviceName =
+	               theOFDMHandler -> find_service (theDescriptor. Sid, 0);
+	fprintf (stderr, "a schedule for %s (%X) contains %d elements\n",
+	                             serviceName. toLatin1 (). data (),
+	                             theDescriptor. Sid, 
+	                             theDescriptor. thePrograms. size ());
 }
 
