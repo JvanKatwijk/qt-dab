@@ -196,6 +196,8 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
+	   ../includes/backend/data/epg-2/epg-compiler.h \
+	   ../includes/backend/data/epg-2/epg-extractor.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/logger.h \
@@ -335,6 +337,8 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
+	   ../src/backend/data/epg-2/epg-compiler.cpp \
+	   ../src/backend/data/epg-2/epg-extractor.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/logger.cpp \

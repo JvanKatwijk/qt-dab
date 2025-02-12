@@ -59,7 +59,6 @@
 #include	"Qt-audio.h"
 #include	"audiosink.h"
 #endif
-#include	"time-table.h"
 
 #include	"device-exceptions.h"
 #include	"settingNames.h"
@@ -179,7 +178,8 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theDeviceChoser (Si),
 	                                        theDXDisplay (this, Si),
 	                                        theLogger	(Si),
-	                                        theSCANHandler (this, Si, freqExtension) {
+	                                        theSCANHandler (this, Si, freqExtension),
+	                                        my_timeTable (this) {
 int16_t k;
 QString h;
 
@@ -456,8 +456,7 @@ QString h;
 	connect (&pauzeTimer, &QTimer::timeout,
 	         this, &RadioInterface::show_pauzeSlide);
 
-	my_timeTable		= new timeTableHandler (this);
-	my_timeTable		-> hide ();
+	my_timeTable. hide ();
 
 	connect (&theScanlistHandler, &scanListHandler::handle_scanListSelect,
 	         this, &RadioInterface::handle_scanListSelect);
@@ -1335,7 +1334,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete	inputDevice_p;
 	delete		soundOut_p;
 	theScanlistHandler. hide ();
-	delete	my_timeTable;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -2146,7 +2144,7 @@ QString serviceName	= s. serviceName;
 	   channel. currentService. valid	= true;
 	   channel. currentService. is_audio	= true;
 	   channel. currentService. subChId	= ad. subchId;
-	   if (theOFDMHandler -> has_timeTable (ad. SId))
+	   if  (has_timeTable (ad. SId))
 	      techWindow_p -> show_timetableButton (true);
 	   startAudioservice (ad);
 	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
@@ -3290,26 +3288,25 @@ void	RadioInterface::set_epgData (int SId, int theTime,
 
 void	RadioInterface::handle_timeTable	() {
 int	epgWidth;
-	if (!my_timeTable -> isHidden ()) {
-	   my_timeTable -> hide ();
+	if (!my_timeTable. isHidden ()) {
+	   my_timeTable. hide ();
 	   return;
 	}
 	if (!channel. currentService. valid ||
 	                     !channel. currentService. is_audio)
 	   return;
 
-	my_timeTable	-> clear ();
+	my_timeTable. clear ();
 	epgWidth	= value_i (dabSettings_p, DAB_GENERAL, "epgWidth", 70);
 	if (epgWidth < 50)
 	   epgWidth = 50;
-	std::vector<epgElement> res =
-	           theOFDMHandler -> find_epgData (channel. currentService. SId);
-	for (const auto& element: res)
-	   my_timeTable -> addElement (element. theTime,
-	                               epgWidth,
-	                               element. theText,
-	                               element. theDescr);
-	my_timeTable	-> show ();
+	for (auto &schedule: channel. programGuides) {
+	   if (schedule. Sid == channel. currentService. SId) {
+	      my_timeTable. display (schedule);
+	      break;
+	   }
+	}
+	my_timeTable. show ();
 }
 
 //----------------------------------------------------------------------
@@ -4357,7 +4354,8 @@ QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 #endif
 }
 
-void	RadioInterface::extractSchedule (QDomDocument &doc, uint32_t ensembleId) {
+void	RadioInterface::extractSchedule (QDomDocument &doc,
+	                                       uint32_t ensembleId) {
 QDomElement root = doc. firstChildElement ("epg");
 	for (QDomElement theSchedule = root. firstChildElement ("schedule");
 	     !theSchedule. isNull ();
@@ -4368,7 +4366,7 @@ QDomElement root = doc. firstChildElement ("epg");
 
 void	RadioInterface::process_schedule (QDomElement &theSchedule,
 	                                  uint32_t ensembleId) {
-serviceDescriptor theDescriptor = xmlHandler.
+scheduleDescriptor theDescriptor = xmlHandler.
 	                          getScheduleDescriptor (theSchedule);
 	if (!theDescriptor. valid)
 	   return;
@@ -4386,11 +4384,24 @@ serviceDescriptor theDescriptor = xmlHandler.
 	      continue;
 	  theDescriptor.thePrograms. push_back (res);
 	}
-	QString serviceName =
-	               theOFDMHandler -> find_service (theDescriptor. Sid, 0);
-	fprintf (stderr, "a schedule for %s (%X) contains %d elements\n",
-	                             serviceName. toLatin1 (). data (),
-	                             theDescriptor. Sid, 
-	                             theDescriptor. thePrograms. size ());
+	for (int i = 0; i < channel. programGuides. size (); i ++)
+	if (channel. programGuides [i]. Sid == theDescriptor. Sid)
+	   return;
+	channel. programGuides. push_back (theDescriptor);
+	if (theDescriptor. Sid == channel. currentService.SId)
+	   techWindow_p -> show_timetableButton (true);
+//	QString serviceName =
+//	               theOFDMHandler -> find_service (theDescriptor. Sid, 0);
+//	fprintf (stderr, "a schedule for %s (%X) contains %d elements\n",
+//	                             serviceName. toLatin1 (). data (),
+//	                             theDescriptor. Sid, 
+//	                             theDescriptor. thePrograms. size ());
+}
+
+bool	RadioInterface::has_timeTable (uint32_t Sid) {
+	for (auto &service : channel. programGuides) 
+	   if (service. Sid == Sid)
+	      return true;
+	return false;
 }
 

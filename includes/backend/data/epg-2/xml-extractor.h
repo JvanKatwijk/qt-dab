@@ -37,10 +37,10 @@ typedef struct {
 } programDescriptor;
 
 
-class	serviceDescriptor {
+class	scheduleDescriptor {
 public:
-		serviceDescriptor	();
-		~serviceDescriptor	();
+		scheduleDescriptor	();
+		~scheduleDescriptor	();
 bool		valid;
 int		Version;
 QDateTime	startTime;
@@ -55,7 +55,7 @@ class	xmlExtractor {
 public:
 		xmlExtractor	();
 		~xmlExtractor	();
-	serviceDescriptor	getScheduleDescriptor	(const QDomElement &);
+	scheduleDescriptor	getScheduleDescriptor	(const QDomElement &);
 	int			getVersion		(const QDomElement &);
 	programDescriptor	process_programme	(const QDomElement &);
 

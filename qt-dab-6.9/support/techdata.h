@@ -50,6 +50,7 @@ public:
 	bool	isHidden		();
 	void	is_DAB_plus		(bool);
 	void	hide_missedLabel	();
+	void	show_timetableButton	(bool);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
@@ -65,7 +66,6 @@ public slots:
 	void		show_aacErrors		(int);
 	void		show_rsErrors		(int);
 	void		show_rsCorrections	(int, int);
-	void		show_timetableButton	(bool);
 	void		show_frameDumpButton	(bool);
 	void		show_serviceName	(const QString &,
 	                                         const QString &);

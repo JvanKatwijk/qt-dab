@@ -23,11 +23,12 @@
 
 #pragma once
 
-#include	"radio.h"
+//#include	"radio.h"
 #include	<QListView>
 #include	<QStringList>
 #include	<QStringListModel>
 #include	<QModelIndex>
+#include	"xml-extractor.h"
 
 class	RadioInterface;
 
@@ -36,7 +37,7 @@ Q_OBJECT
 public:
 		timeTableHandler	(RadioInterface *radio);
 		~timeTableHandler	();
-	void	addElement		(int,  int, const QString &, const QString &);
+	void	display			(const scheduleDescriptor &);
 	void	clear			();
 private:
 	QStringList		timeTableList;

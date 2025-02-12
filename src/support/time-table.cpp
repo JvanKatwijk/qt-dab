@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -38,48 +38,7 @@
 	timeTableHandler::~timeTableHandler   () {
 }
 
-void	timeTableHandler::addElement (int theTime,
-	                              int	epgWidth,
-	                              const QString &theText,
-	                              const QString &theDescr) {
-//int	hours	= theTime / 60;
-//int	minutes	= theTime % 60;
-char t [10];
-
-	if (theTime >= 24 * 60)
-	   theTime -= 24 * 60;
-	sprintf (t, "%.2d:%.2d", theTime / 60, theTime % 60);
-	timeTableList. append (QString (t) + " -- " + theText);
-
-	QString listElement;
-	if (theDescr != "")
-	   listElement = " \n\t-- " + theDescr;
-
-	bool tooLong = false;
-	if  (listElement. size () > epgWidth) {
-	   int breaker = listElement. indexOf (' ', epgWidth - 10);
-	   if (breaker > 0) {
-	      tooLong = true;
-	      QString L = listElement. left (breaker);
-	      listElement = listElement. mid (breaker, -1);
-	      timeTableList. append (L);
-	      while (listElement. size () > epgWidth) {
-	         breaker = listElement. indexOf (' ', epgWidth - 10);
-	         if (breaker < 0)
-	         break;
-	         QString L2 = listElement. left (breaker);
-	         listElement = listElement. mid (breaker, -1);
-	         timeTableList. append ("\t   " + L2);
-	      }
-	   }
-	}
-	if (tooLong)
-	   timeTableList. append ("\t    " + listElement + "\n");
-	else
-	   timeTableList. append (listElement + "\n");
-	
-	displayList. setStringList (timeTableList);
-	this	-> setModel (&displayList);
+void	timeTableHandler::display	(const scheduleDescriptor &schedule) {
 }
 
 void	timeTableHandler::clear () {

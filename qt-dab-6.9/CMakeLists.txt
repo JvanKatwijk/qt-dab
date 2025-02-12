@@ -253,6 +253,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/journaline/NML.h
 	     ../includes/backend/data/epg/epgdec.h
 	     ../includes/backend/data/epg-2/epg-decoder.h
+	     ../includes/backend/data/epg-2/epg-compiler.h
 	     ../includes/backend/data/virtual-datahandler.h
 	     ../includes/backend/data/pad-handler.h
 	     ../includes/backend/data/mot/mot-handler.h
@@ -376,6 +377,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/data/journaline/newsobject.cpp
 	     ../src/backend/data/journaline/NML.cpp
 	     ../src/backend/data/epg-2/epg-decoder.cpp
+	     ../src/backend/data/epg-2/epg-compiler.cpp
+	     ../src/backend/data/epg-2/xml-extractor.cpp
 	     ../src/backend/data/epg/epgdec.cpp
 	     ../src/backend/data/tdc-datahandler.cpp
 	     ../src/backend/data/pad-handler.cpp
@@ -473,6 +476,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/journaline-screen.h
 	     ../includes/backend/data/epg-2/epg-decoder.h
+	     ../includes/backend/data/epg-2/xml-extractor.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
 	     ../includes/support/converter_48000.h

@@ -60,6 +60,7 @@
 #include	"display-widget.h"
 #include	"snr-viewer.h"
 
+#include	"time-table.h"
 #include	"findfilenames.h"
 
 #include	"scheduler.h"
@@ -173,8 +174,10 @@ public:
 	float		distance;
 	float		azimuth;
 	bool		audioActive;
+	std::vector<scheduleDescriptor> programGuides;
 
 	void	cleanChannel () {
+	programGuides. resize (0);
 	realChannel	= true;
 	serviceCount	= -1;
 	nrServices	= -1;
@@ -247,6 +250,7 @@ private:
 	dxDisplay		theDXDisplay;
 	logger			theLogger;
 	scanHandler		theSCANHandler;
+	timeTableHandler	my_timeTable;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 	QLabel			*dxDisplayText;
@@ -294,6 +298,7 @@ private:
 	epgDecoder		epgProcessor;
 	epgCompiler		epgVertaler;
 	xmlExtractor		xmlHandler;
+	bool			has_timeTable	(uint32_t);
 	QString			epgPath;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
@@ -344,7 +349,6 @@ private:
 	void			showButtons		();
 	deviceHandler		*createDevice		(const QString &,
 	                                                             logger *);
-	timeTableHandler	*my_timeTable;
 
 	void			start_etiHandler	();
 	void			stop_etiHandler		();

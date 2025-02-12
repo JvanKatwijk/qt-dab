@@ -52,8 +52,8 @@ uint32_t res = 0;
 }
 
 
-	serviceDescriptor::serviceDescriptor	() {}
-	serviceDescriptor::~serviceDescriptor	() {}
+	scheduleDescriptor::scheduleDescriptor	() {}
+	scheduleDescriptor::~scheduleDescriptor	() {}
 	xmlExtractor::xmlExtractor	()	{}
 	xmlExtractor::~xmlExtractor	()	{}
 
@@ -138,9 +138,9 @@ int	xmlExtractor::getVersion (const QDomElement &node) {
 	return toIntFrom (version, 10);
 }
 
-serviceDescriptor xmlExtractor::
+scheduleDescriptor xmlExtractor::
 	                 getScheduleDescriptor (const QDomElement &node) {
-serviceDescriptor result;
+scheduleDescriptor result;
 QDomElement scope = node. firstChildElement ("scope");
 	result. valid = false;
 	if (scope. isNull ())
