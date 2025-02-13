@@ -62,17 +62,10 @@ public:
 	int32_t		get_CIFcount		();	
 	void		get_CIFcount		(int16_t *, int16_t *);
 	uint32_t	julianDate		();
-	void		set_epgData		(uint32_t, int32_t,
-	                                         const QString &,
-	                                             const QString &);
-	std::vector<epgElement> get_timeTable	(uint32_t);
-	std::vector<epgElement> get_timeTable	(const QString &);
-	bool		has_timeTable	(uint32_t SId);
-	std::vector<epgElement>	find_epgData	(uint32_t);
 	QStringList	basicPrint 		();
 	int		scanWidth		();
 protected:
-	void	process_FIB		(uint8_t *, uint16_t);
+	void		process_FIB		(uint8_t *, uint16_t);
 private:
 	std::vector<serviceId> insert (std::vector<serviceId> &l,
                                           serviceId n, int order);

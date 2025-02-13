@@ -1824,69 +1824,6 @@ uint16_t	theTime	[6];
 	}
 }
 
-void	fibDecoder::set_epgData	(uint32_t SId, int32_t theTime, 
-	                         const QString &theText,
-	                         const QString &theDescr) {
-	for (int i = 0; i < 64; i ++) {
-	   if (ensemble -> services [i]. inUse &&
-	       ensemble -> services [i]. SId == SId) {
-	   
-	      service *S = &(ensemble -> services [i]);
-	      for (uint16_t j = 0; j < S -> epgData. size (); j ++) {
-	         if (S -> epgData. at (j). theTime == theTime)  {
-	            S -> epgData.at (j). theText = theText;
-	            S -> epgData.at (j). theDescr = theDescr;
-	            return;	
-	         }
-	      }
-	      epgElement ep;
-	      ep. theTime	= theTime;
-	      ep. theText	= theText;
-	      ep. theDescr	= theDescr;
-	      S -> epgData. push_back (ep);
-	      return;
-	   }
-	}
-}
-
-std::vector<epgElement> fibDecoder::get_timeTable (uint32_t SId) {
-std::vector<epgElement> res;
-int	index	= find_service (SId);
-	if (index == -1)
-	   return res;
-	 return ensemble -> services [index]. epgData;
-}
-
-std::vector<epgElement> fibDecoder::get_timeTable (const QString &service) {
-std::vector<epgElement> res;
-int	index	= find_service (service);
-	if (index == -1)
-	   return res;
-	 return ensemble -> services [index]. epgData;
-}
-
-bool	fibDecoder::has_timeTable	(uint32_t SId) {
-int index	= find_service (SId);
-std::vector<epgElement> t;
-	if (index == -1)
-	   return false;
-	t = ensemble -> services [index]. epgData;
-	return t. size () > 2;
-}
-
-std::vector<epgElement>	fibDecoder::find_epgData	(uint32_t SId) {
-int index	= find_service (SId);
-std::vector<epgElement> res;
-
-	if (index == -1)
-	   return res;
-
-	service *s = &(ensemble -> services [index]);
-
-	res = s -> epgData;
-	return res;
-}
-
 
 //	the generic print function generates - using the component descriptors
 //	as index - a QStringList as a model for a csv file

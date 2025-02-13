@@ -32,7 +32,6 @@
 #include	<cstdint>
 #include	<vector>
 #include	<atomic>
-//#include	"viterbi-spiral.h"
 #include	"viterbi.h"
 #include	"dab-params.h"
 #include	"fib-decoder.h"

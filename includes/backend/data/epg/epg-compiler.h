@@ -125,8 +125,6 @@ private:
 
 	void	process_obsolete	(const std::vector<uint8_t> &v, int &index);
 
-	QString	getCData		(const std::vector<uint8_t> &v, int &index);
-
 	void    process_forgotten	(const QString s, 
 	                                const std::vector<uint8_t> &v,
 	                                int &index);

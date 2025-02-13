@@ -70,7 +70,7 @@ int day		= toIntFrom (temp [2], 10);
 }
 
 QDateTime xmlExtractor::stringToDateTime (const QString &date) {
-int index = date. lastIndexOf ('T');
+int index	= date. lastIndexOf ('T');
 QString pureDate = date. first (index);
 QString pureTime = date. last (date. size () - index - 1);
 QStringList temp = splitter (pureDate, QString ("-"));
@@ -84,7 +84,6 @@ QDate datum (year, month, day);
 QTime time (hours, minutes);
 	return QDateTime (datum, time);
 }
-
 //
 //	duration has the form PTXXHXXM of PTXXM
 int	xmlExtractor::durationToInt (const QString &dur) {
@@ -121,8 +120,7 @@ programDescriptor res;
 	res. startTime = stringToDateTime (tt);
 	QString dd = time. attribute ("duration");
 	res. duration = durationToInt (dd);
-	QDomElement name =
-	              node. firstChildElement ("longName");
+	QDomElement name = node. firstChildElement ("longName");
 	if (name. isNull ())
 	   name = node. firstChildElement ("mediumName");
 	res. program = name. attribute ("xml:lang");

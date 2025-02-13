@@ -446,8 +446,6 @@ QString h;
 	                                        S_EPG_PATH, tempPath);
 	epgPath			= checkDir (epgPath);
 
-//	connect (&epgProcessor, &epgDecoder::set_epgData,
-//	         this, &RadioInterface::set_epgData);
 //	timer for autostart epg service
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, &QTimer::timeout,
@@ -911,31 +909,31 @@ QString realName;
 
 	         std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-	         uint32_t ensembleId =
-	                     theOFDMHandler -> get_ensembleId ();
-	         uint32_t currentSId =
-	                     the_ensembleHandler -> extract_SId  (objectName);
-	         uint32_t julianDate	=
-	                     theOFDMHandler -> julianDate ();
-	         int subType = 
-	                  getContentSubType ((MOTContentType)contentType);
+//	         uint32_t ensembleId =
+//	                     theOFDMHandler -> get_ensembleId ();
+//	         uint32_t currentSId =
+//	                     the_ensembleHandler -> extract_SId  (objectName);
+//	         uint32_t julianDate	=
+//	                     theOFDMHandler -> julianDate ();
+//	         int subType = 
+//	                  getContentSubType ((MOTContentType)contentType);
 
+	         QDomDocument epgDocument;
+	         epgVertaler. process_epg (epgDocument, epgData);
 	         if (configHandler_p -> epg2_active ()) {
-	            QDomDocument epgDocument;
-	            epgVertaler. process_epg (epgDocument, epgData);
 	            QFile file (QDir::toNativeSeparators (objectName));
 	            if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
 	               QTextStream stream (&file);
 	               stream << epgDocument. toString ();
 	               file. close ();
 	            }
-	            extractSchedule (epgDocument, ensembleId);
 	         }
-	         else
-	         epgProcessor. process_epg (epgData. data (), 
-	                                    epgData. size (), currentSId,
-	                                    subType,
-	                                    julianDate);
+	         extractSchedule (epgDocument, channel. Eid);
+//	         else
+//	         epgProcessor. process_epg (epgData. data (), 
+//	                                    epgData. size (), currentSId,
+//	                                    subType,
+//	                                    julianDate);
 //	         epgHandler. decode (epgData,
 //	                      QDir::toNativeSeparators (objectName));
 	      }
@@ -2087,7 +2085,8 @@ void	RadioInterface::stopService	(dabService &s) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
 	}
-
+	my_timeTable. hide ();
+	my_timeTable. clear ();
 //	stop "dumpers"
 	if (channel. currentService. frameDumper != nullptr) {
 	   stopFramedumping ();
@@ -3277,14 +3276,6 @@ void	RadioInterface::epgTimer_timeOut	() {
 	      channel. backgroundServices. push_back (s);
 	   }
 	}
-}
-
-void	RadioInterface::set_epgData (int SId, int theTime,
-	                             const QString &theText,
-	                             const QString &theDescr) {
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> set_epgData (SId, theTime,
-	                                   theText, theDescr);
 }
 
 void	RadioInterface::handle_timeTable	() {

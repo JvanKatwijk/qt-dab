@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2023
+ *    Copyright (C) 2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -90,11 +90,6 @@ public:
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();
 	QString		get_ensembleName	();
-	void		set_epgData		(int32_t, int32_t,
-	                                         const QString &,
-	                                         const QString &);
-	bool		has_timeTable		(uint32_t);
-	std::vector<epgElement>	find_epgData	(uint32_t);
 	uint32_t	julianDate		();
 	QStringList	basicPrint		();
 	int		scanWidth		();

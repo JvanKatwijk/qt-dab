@@ -50,7 +50,6 @@ void	reset		() {
 	programType	= 0;
 	is_shown	= false;
 	fmFrequency	= -1;
-	epgData. resize (0);
 }
 bool		inUse;
 uint32_t	SId;
@@ -63,7 +62,6 @@ int		language;
 int		programType;
 bool		is_shown;
 int32_t		fmFrequency;
-std::vector<epgElement> epgData;
 };
 
 class ensembleDescriptor {

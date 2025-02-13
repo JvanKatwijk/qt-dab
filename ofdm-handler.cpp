@@ -593,20 +593,6 @@ QString ofdmHandler::get_ensembleName	() {
 	return theFicHandler. get_ensembleName();
 }
 
-void	ofdmHandler::set_epgData	(int SId, int32_t theTime,
-	                                 const QString &s,
-	                                 const QString &d) {
-	theFicHandler. set_epgData (SId, theTime, s, d);
-}
-
-bool	ofdmHandler::has_timeTable	(uint32_t SId) {
-	return theFicHandler. has_timeTable (SId);
-}
-
-std::vector<epgElement>	ofdmHandler::find_epgData	(uint32_t SId) {
-	return theFicHandler. find_epgData (SId);
-}
-
 QStringList ofdmHandler::basicPrint	() {
 	return theFicHandler. basicPrint ();
 }

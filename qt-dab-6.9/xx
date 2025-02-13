@@ -1,0 +1,4860 @@
+file is  open
+Socket createdI am now accepting connections ...
+Socket createdI am now accepting connections ...
+qt.multimedia.ffmpeg: Using Qt multimedia with FFmpeg version 7.1 GPL version 3 or later
+qt.multimedia.ffmpeg: Available HW decoding frameworks:
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+libva info: VA-API version 1.22.0
+libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_22
+libva info: va_openDriver() returns 0
+libva info: VA-API version 1.22.0
+libva info: Trying to open /usr/lib64/dri-nonfree/iHD_drv_video.so
+libva info: Found init function __vaDriverInit_1_22
+libva info: va_openDriver() returns 0
+qt.multimedia.ffmpeg:      vaapi
+qt.multimedia.ffmpeg:      qsv
+qt.multimedia.ffmpeg:      vulkan
+qt.multimedia.ffmpeg: Available HW encoding frameworks:
+qt.multimedia.ffmpeg:      vaapi
+qt.multimedia.ffmpeg:      qsv
+qt.multimedia.ffmpeg:      vulkan
+channel is  Default ALSA Output (currently PipeWire Media Server)
+deviceIndex 0 (0)
+Going for a restart
+Errorcode 0
+table is loaded
+ALSA lib pcm.c:8772:(snd_pcm_recover) underrun occurred
+bitDepth 10, scale 512
+fileLength = 876085248
+Period = 8000
+channel reset: all services will be stopped
+ALSA lib pcm.c:8772:(snd_pcm_recover) underrun occurred
+Starting hidden service BR EPG          
+going to open BR EPG          
+SPI/EPG handling is under construction
+we have now 1 backends running
+transportId 9260, dirSize 4243, numObjects 73, segmentSize 949
+in process_token 1 8 53
+added to 1 Schlager
+in process_token 2 f 44
+added to 2 Der BR Schlager
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 44
+added to 4 Die Schlagernach
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 f 44
+in 481 44 65 72
+string is er BR  Morgen
+longName er BR  Morgen
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Treff
+longName er BR  Treff
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  pur
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 13 44
+in 481 44 65 72
+string is er BR  Feierabend
+longName er BR  Feierabend
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Abend
+longName er BR  Abend
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in process_token 1 3 6d
+added to 1 mit
+in process_token 2 4 50
+added to 2 PULS
+in process_token 3 5 52
+added to 3 Radio
+in process_token 4 a 50
+added to 4 PULS Radio
+in process_token 5 10 50
+added to 5 PULS Radio mit A
+in process_token 6 10 50
+added to 6 PULS Radio mit M
+in process_token 7 10 50
+added to 7 PULS Radio mit S
+in 481 2 20 3
+in 481 2 20 3
+1 12 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in 481 2 20 3
+1 14 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+1 16 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in process_token 1 6 42
+added to 1 Bayern
+in process_token 2 9 72
+added to 2 radioWelt
+in process_token 3 b 72
+added to 3 radioWissen
+in process_token 4 10 4e
+added to 4 Nachrichten, Wet
+in process_token 5 10 44
+added to 5 Das ARD-Nachtkon
+in process_token 6 10 45
+added to 6 Eins zu Eins. De
+in process_token 7 10 42
+added to 7 Bayern 2-regiona
+in process_token 8 10 72
+added to 8 radioWissen am N
+in process_token b 10 49
+added to 11 IQ - Wissenschaf
+in process_token c 10 42
+added to 12 Bayern 2-Betthup
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5 12 b
+1 9 5
+in 481 5 7a 65
+longName Das ARD-Nachtkon
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5 12 c
+1 a 5
+in 481 5 7a 65
+longName Das ARD-Nachtkon
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5 12 d
+1 b 5
+in 481 5 7a 65
+longName Das ARD-Nachtkon
+in 481 49 6d 70
+string is mpressum
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-Heimatspiegel
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 6b 75 6c
+string is ulturWelt
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 3 19 d
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 4e 6f 74
+string is otizbuch
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 54 61 67
+string is agesgespräch
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 1 20 32
+1 10 1
+in 481 1 20 32
+longName Bayern
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 72 61 64
+string is adioReisen
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 3 20 61
+1 f 3
+in 481 3 20 61
+longName radioWissen
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 6 12 9
+1 7 6
+in 481 6 72 20
+longName Eins zu Eins. De
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 b 12 12
+1 10 b
+in 481 b 74 20
+longName IQ - Wissenschaf
+in 481 72 61 64
+string is adioMikro
+in 481 1 20 32
+1 f 1
+in 481 1 20 32
+longName Bayern
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5a c3 bc
+string is ündfunk
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 48 c3 b6
+string is örspiel
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 54 68 65
+string is heo.Logik
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 6 12 9
+1 7 6
+in 481 6 72 20
+longName Eins zu Eins. De
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 4e 61 63
+string is achtmix
+in process_token 1 6 42
+added to 1 BAYERN
+in process_token 2 c 4e
+added to 2 Nachrichten,
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 4e
+added to 4 Nachrichten, Reg
+in process_token 5 10 44
+added to 5 Die Nacht auf BA
+in process_token 6 10 5a
+added to 6 Zum Programmschl
+in process_token 7 10 42
+added to 7 BAYERN 1 am Morg
+in process_token 8 10 42
+added to 8 BAYERN 1 am Vorm
+in process_token b 10 42
+added to 11 BAYERN 1 Mittags
+in process_token c 10 42
+added to 12 BAYERN 1 am Nach
+in process_token e 10 42
+added to 14 BAYERN 1 Das Bay
+in process_token f 10 42
+added to 15 BAYERN 1 am Aben
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 6 12 6
+1 4 6
+in 481 6 75 73
+longName Zum Programmschl
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 d 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 10 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 12 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 11 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 15 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 42 6c 61
+string is laue Couch
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 c 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in process_token 1 10 50
+added to 1 Programm wie BR2
+in 481 4e 61 63
+string is achrichten
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 1 12 4
+1 2 1
+in 481 1 34 19
+longName Programm wie BR2
+in process_token 1 6 48
+added to 1 Heimat
+in process_token 2 f 42
+added to 2 BR Heimat - Auf
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 42
+added to 4 BR Heimat - Nach
+in process_token 5 10 42
+added to 5 BR Heimat - Obac
+in process_token 6 10 42
+added to 6 BR-Heimatspiegel
+in process_token 7 10 42
+added to 7 BR Heimat - Volk
+in process_token 8 10 42
+added to 8 BR Heimat - Habe
+in process_token b 10 42
+added to 11 BR Heimat aktuel
+in process_token c 10 42
+added to 12 BR Heimat - Serv
+in process_token e 10 42
+added to 14 BR Heimat - Blas
+in process_token f 11 42
+added to 15 BR Heimat - Frän
+in process_token 10 10 42
+added to 16 BR Heimat - Feie
+in process_token 11 10 42
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Volk
+1 1e 42
+in 481 42 52 20
+string is R  - Volksmusik am Vormittag
+longName R  - Volksmusik am Vormittag
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Habe
+1 15 42
+in 481 42 52 20
+string is R  - Habe die Ehre!
+longName R  - Habe die Ehre!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  aktuel
+1 c 42
+in 481 42 52 20
+string is R  aktuell
+longName R  aktuell
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Serv
+1 e 42
+in 481 42 52 20
+string is R  - Servus!
+longName R  - Servus!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Blas
+1 10 42
+in 481 42 52 20
+string is R  - Blasmusik
+longName R  - Blasmusik
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Frän
+1 17 42
+in 481 42 52 20
+string is R  - Fränkisch vor 7
+longName R  - FrÃ¤nkisch vor 7
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Feie
+1 11 42
+in 481 42 52 20
+string is R  - Feierabend
+longName R  - Feierabend
+in 481 42 65 74
+string is etthupferl
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Auf
+1 12 42
+in 481 42 52 20
+string is R  - Auf d'Nacht
+longName R  - Auf d'Nacht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Aufd
+1 f 42
+in 481 42 52 20
+string is R  - Aufdraht
+longName R  - Aufdraht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in process_token 1 3 44
+added to 1 Die
+in process_token 2 10 41
+added to 2 Alle Hits von he
+in process_token 3 11 44
+added to 3 Die Frühaufdrehe
+in process_token 4 11 44
+added to 4 Die Zwei für eur
+in 481 1 20 4e
+in 481 1 20 46
+1 10 1
+in 481 1 20 46
+longName Die
+in 481 2 12 15
+1 13 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 55 70 64
+string is pdate
+in 481 2 12 16
+1 14 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 1 20 5a
+1 1c 1
+in 481 1 20 5a
+longName Die
+in 481 57 61 73
+string is as geht?!
+in 481 2 12 11
+1 f 2
+in 481 2 75 74
+longName Alle Hits von he
+in process_token 1 3 44
+added to 1 Das
+in process_token 2 a 42
+added to 2 BR-KLASSIK
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 44
+added to 4 Das ARD-Nachtkon
+in process_token 5 10 42
+added to 5 BR-KLASSIK - All
+in process_token 6 10 42
+added to 6 BR-KLASSIK - Phi
+in process_token 7 10 42
+added to 7 BR-KLASSIK - Mit
+in process_token 8 10 42
+added to 8 BR-KLASSIK - Pan
+in process_token b 10 42
+added to 11 BR-KLASSIK - Lep
+in process_token c 10 42
+added to 12 BR-KLASSIK - Kla
+in process_token e 10 42
+added to 14 BR-KLASSIK - Das
+in process_token f 10 42
+added to 15 BR-KLASSIK - Kon
+in process_token 10 10 42
+added to 16 BR-KLASSIK - Hor
+in process_token 11 10 42
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 16 1
+in 481 1 20 41
+longName Das
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 17 1
+in 481 1 20 41
+longName Das
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 18 1
+in 481 1 20 41
+longName Das
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 17 1
+in 481 1 20 41
+longName Das
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 b 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 57 65 72
+string is erbung
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 10 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 10 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 c 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 d 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 11 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 13 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 10 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 d 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 c 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in process_token 1 4 42
+added to 1 BR24
+in process_token 2 6 42
+added to 2 Börse
+in process_token 3 6 57
+added to 3 Wissen
+in process_token 4 7 6b
+added to 4 kompakt
+in process_token 5 9 49
+added to 5 Infoblock
+in process_token 6 a 42
+added to 6 BR24 Sport
+in process_token 7 b 42
+added to 7 BR24 Börse
+in process_token 8 b 4e
+added to 8 Nachrichten
+in process_token b b 42
+added to 11 BR24 Bayern
+in process_token c b 42
+added to 12 BR24 Kultur
+in process_token e f 42
+added to 14 BR24 Wirtschaft
+in process_token f 10 56
+added to 15 Verkehr und Wett
+in process_token 10 10 42
+added to 16 BR24 Hintergrund
+in process_token 11 10 42
+in process_token 12 10 57
+in process_token 13 11 42
+in 481 8 19 d
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+1 12 1
+in 481 1 20 2
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 21 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in process_token 1 8 53
+added to 1 Schlager
+in process_token 2 f 44
+added to 2 Der BR Schlager
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 44
+added to 4 Die Schlagernach
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 f 44
+in 481 44 65 72
+string is er BR  Morgen
+longName er BR  Morgen
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Treff
+longName er BR  Treff
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  pur
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 13 44
+in 481 44 65 72
+string is er BR  Feierabend
+longName er BR  Feierabend
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Abend
+longName er BR  Abend
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in process_token 1 3 6d
+added to 1 mit
+in process_token 2 4 50
+added to 2 PULS
+in process_token 3 5 52
+added to 3 Radio
+in process_token 4 a 50
+added to 4 PULS Radio
+in process_token 5 10 50
+added to 5 PULS Radio mit A
+in process_token 6 10 50
+added to 6 PULS Radio mit M
+in process_token 7 10 50
+added to 7 PULS Radio mit S
+in 481 2 20 3
+in 481 2 20 3
+1 12 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in 481 2 20 3
+1 14 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+1 16 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in process_token 1 6 42
+added to 1 Bayern
+in process_token 2 9 72
+added to 2 radioWelt
+in process_token 3 b 72
+added to 3 radioWissen
+in process_token 4 10 4e
+added to 4 Nachrichten, Wet
+in process_token 5 10 44
+added to 5 Das ARD-Nachtkon
+in process_token 6 10 45
+added to 6 Eins zu Eins. De
+in process_token 7 10 43
+added to 7 Concerto bavares
+in process_token 8 10 42
+added to 8 Bayern 2-regiona
+in process_token b 10 42
+added to 11 Bayern 2-Favorit
+in process_token c 10 72
+added to 12 radioWissen am N
+in process_token e 10 49
+added to 14 IQ - Wissenschaf
+in process_token f 10 42
+added to 15 Bayern 2-Betthup
+in process_token 10 10 72
+added to 16 radioTexte am Di
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 52 65 66
+string is eflexionen
+in 481 7 12 15
+1 13 7
+in 481 7 65 20
+longName Concerto bavares
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5 12 c
+1 a 5
+in 481 5 7a 65
+longName Das ARD-Nachtkon
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5 12 d
+1 b 5
+in 481 5 7a 65
+longName Das ARD-Nachtkon
+in 481 49 6d 70
+string is mpressum
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-Heimatspiegel
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 6b 75 6c
+string is ulturWelt
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 3 19 d
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 4e 6f 74
+string is otizbuch
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 54 61 67
+string is agesgespräch
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 1 20 32
+1 10 1
+in 481 1 20 32
+longName Bayern
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 1 20 32
+1 d 1
+in 481 1 20 32
+longName Bayern
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 3 20 61
+1 f 3
+in 481 3 20 61
+longName radioWissen
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 6 12 9
+1 7 6
+in 481 6 72 20
+longName Eins zu Eins. De
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 e 12 12
+1 10 e
+in 481 e 74 20
+longName IQ - Wissenschaf
+in 481 72 61 64
+string is adioMikro
+in 481 1 20 32
+1 f 1
+in 481 1 20 32
+longName Bayern
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 5a c3 bc
+string is ündfunk
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 4e 61 63
+string is achtstudio
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 10 12 9
+string is 
+1 7 10
+in 481 10 65 6e
+string is enstag
+longName enstag
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 6 12 9
+1 7 6
+in 481 6 72 20
+longName Eins zu Eins. De
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 4e 61 63
+string is achtmix
+going to open BR-KLASSIK      
+we have now 2 backends running
+in process_token 1 6 42
+added to 1 BAYERN
+in process_token 2 c 4e
+added to 2 Nachrichten,
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 4e
+added to 4 Nachrichten, Reg
+in process_token 5 10 44
+added to 5 Die Nacht auf BA
+in process_token 6 10 5a
+added to 6 Zum Programmschl
+in process_token 7 10 42
+added to 7 BAYERN 1 am Morg
+in process_token 8 10 42
+added to 8 BAYERN 1 am Vorm
+in process_token b 10 42
+added to 11 BAYERN 1 Mittags
+in process_token c 10 42
+added to 12 BAYERN 1 am Nach
+in process_token e 10 42
+added to 14 BAYERN 1 Das Bay
+in process_token f 10 42
+added to 15 BAYERN 1 am Aben
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 6 12 6
+1 4 6
+in 481 6 75 73
+longName Zum Programmschl
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 d 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 10 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 12 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 11 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 15 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 42 6c 61
+string is laue Couch
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 c 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in process_token 1 10 50
+added to 1 Programm wie BR2
+in 481 4e 61 63
+string is achrichten
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 1 12 4
+1 2 1
+in 481 1 34 19
+longName Programm wie BR2
+in process_token 1 6 48
+added to 1 Heimat
+in process_token 2 f 42
+added to 2 BR Heimat - Auf
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 42
+added to 4 BR Heimat - Nach
+in process_token 5 10 42
+added to 5 BR Heimat - Obac
+in process_token 6 10 42
+added to 6 BR-Heimatspiegel
+in process_token 7 10 42
+added to 7 BR Heimat - Volk
+in process_token 8 10 42
+added to 8 BR Heimat - Habe
+in process_token b 10 42
+added to 11 BR Heimat aktuel
+in process_token c 10 42
+added to 12 BR Heimat - Serv
+in process_token e 10 42
+added to 14 BR Heimat - Blas
+in process_token f 11 42
+added to 15 BR Heimat - Frän
+in process_token 10 10 42
+added to 16 BR Heimat - Feie
+in process_token 11 10 42
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Volk
+1 1e 42
+in 481 42 52 20
+string is R  - Volksmusik am Vormittag
+longName R  - Volksmusik am Vormittag
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Habe
+1 15 42
+in 481 42 52 20
+string is R  - Habe die Ehre!
+longName R  - Habe die Ehre!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  aktuel
+1 c 42
+in 481 42 52 20
+string is R  aktuell
+longName R  aktuell
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Serv
+1 e 42
+in 481 42 52 20
+string is R  - Servus!
+longName R  - Servus!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Blas
+1 10 42
+in 481 42 52 20
+string is R  - Blasmusik
+longName R  - Blasmusik
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Frän
+1 17 42
+in 481 42 52 20
+string is R  - Fränkisch vor 7
+longName R  - FrÃ¤nkisch vor 7
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Feie
+1 11 42
+in 481 42 52 20
+string is R  - Feierabend
+longName R  - Feierabend
+in 481 42 65 74
+string is etthupferl
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Auf
+1 12 42
+in 481 42 52 20
+string is R  - Auf d'Nacht
+longName R  - Auf d'Nacht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Aufd
+1 f 42
+in 481 42 52 20
+string is R  - Aufdraht
+longName R  - Aufdraht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in 481 42 52 11
+string is R
+in 481 42 52 28
+string is R
+in 481 42 41 59
+string is AYERN 3
+in 481 42 41 59
+string is AYERN 3
+in 481 42 52 2d
+string is R-KLASS
+in 481 42 52 2d
+string is R-KLASSIK
+in 481 42 52 32
+string is R24
+in 481 42 52 32
+string is R24
+in 481 42 52 53
+string is RSchlgr
+in 481 42 52 20
+string is R Schlager
+in 481 50 55 4c
+string is ULS
+in 481 50 55 4c
+string is ULS
+in 481 42 61 79
+string is ayern2S
+in 481 42 61 79
+string is ayern 2 Sued
+in 481 42 31 20
+string is 1 NbOpf
+in 481 42 41 59
+string is AYERN 1 Nby/Opf
+in 481 42 52 32
+string is R24live
+in 481 42 52 32
+string is R24live
+in 481 42 52 48
+string is RHeimat
+in 481 42 52 20
+string is R Heimat
+in process_token 1 3 44
+added to 1 Die
+in process_token 2 10 41
+added to 2 Alle Hits von he
+in process_token 3 11 44
+added to 3 Die Frühaufdrehe
+in process_token 4 11 44
+added to 4 Die Zwei für eur
+in 481 1 20 4e
+in 481 1 20 46
+1 10 1
+in 481 1 20 46
+longName Die
+in 481 2 12 15
+1 13 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 55 70 64
+string is pdate
+in 481 2 12 16
+1 14 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 1 20 5a
+1 1c 1
+in 481 1 20 5a
+longName Die
+in 481 57 61 73
+string is as geht?!
+in 481 2 12 11
+1 f 2
+in 481 2 75 74
+longName Alle Hits von he
+in process_token 1 a 42
+added to 1 BR-KLASSIK
+in process_token 2 10 4e
+added to 2 Nachrichten, Wet
+in process_token 3 10 44
+added to 3 Das ARD-Nachtkon
+in process_token 4 10 42
+added to 4 BR-KLASSIK - All
+in process_token 5 10 42
+added to 5 BR-KLASSIK - Phi
+in process_token 6 10 42
+added to 6 BR-KLASSIK - Mit
+in process_token 7 10 42
+added to 7 BR-KLASSIK - Pan
+in process_token 8 10 42
+added to 8 BR-KLASSIK - Lep
+in process_token b 10 42
+added to 11 BR-KLASSIK - Kla
+in process_token c 10 42
+added to 12 BR-KLASSIK - Cla
+in process_token e 10 42
+added to 14 BR-KLASSIK - Kon
+in process_token f 10 42
+added to 15 BR-KLASSIK - Der
+in process_token 10 10 42
+added to 16 BR-KLASSIK - Jaz
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 c
+1 a 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 d
+1 b 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 c
+1 a 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 f
+1 d 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 b 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 57 65 72
+string is erbung
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 10 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 10 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 c 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 f
+1 d 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 d 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 11 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 1a 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 10 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 26 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 c 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in process_token 1 4 42
+added to 1 BR24
+in process_token 2 6 42
+added to 2 Börse
+in process_token 3 6 57
+added to 3 Wissen
+in process_token 4 7 6b
+added to 4 kompakt
+in process_token 5 9 49
+added to 5 Infoblock
+in process_token 6 a 42
+added to 6 BR24 Sport
+in process_token 7 b 42
+added to 7 BR24 Börse
+in process_token 8 b 4e
+added to 8 Nachrichten
+in process_token b b 42
+added to 11 BR24 Bayern
+in process_token c b 42
+added to 12 BR24 Kultur
+in process_token e f 42
+added to 14 BR24 Wirtschaft
+in process_token f 10 56
+added to 15 Verkehr und Wett
+in process_token 10 10 42
+added to 16 BR24 Hintergrund
+in process_token 11 10 42
+in process_token 12 10 57
+in process_token 13 10 44
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 13 12 4
+string is 
+1 2 13
+in 481 13 67 19
+string is g
+longName g
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 46 75 c3
+string is ußball Champion
+1 41 46
+in 481 46 75 c3
+string is ußball Champions League - Viertelfinale der Frauen (Rückspiel)
+longName uÃŸball Champions League - Viertelfinale der Frauen (RÃ¼ckspiel)
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+1 12 1
+in 481 1 20 2
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 21 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in process_token 1 8 53
+added to 1 Schlager
+in process_token 2 f 44
+added to 2 Der BR Schlager
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 44
+added to 4 Die Schlagernach
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 f 44
+in 481 44 65 72
+string is er BR  Morgen
+longName er BR  Morgen
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Treff
+longName er BR  Treff
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  pur
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 13 44
+in 481 44 65 72
+string is er BR  Feierabend
+longName er BR  Feierabend
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Abend
+longName er BR  Abend
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in process_token 1 3 6d
+added to 1 mit
+in process_token 2 4 50
+added to 2 PULS
+in process_token 3 5 52
+added to 3 Radio
+in process_token 4 a 50
+added to 4 PULS Radio
+in process_token 5 10 50
+added to 5 PULS Radio mit M
+in process_token 6 10 50
+added to 6 PULS Radio mit A
+in process_token 7 10 50
+added to 7 PULS Radio mit P
+in 481 2 20 3
+in 481 2 20 3
+1 15 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in 481 2 20 3
+1 1e 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+1 16 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in process_token 1 6 42
+added to 1 Bayern
+in process_token 2 9 72
+added to 2 radioWelt
+in process_token 3 9 4e
+added to 3 Notizbuch
+in process_token 4 b 72
+added to 4 radioWissen
+in process_token 5 10 4e
+added to 5 Nachrichten, Wet
+in process_token 6 10 44
+added to 6 Das ARD-Nachtkon
+in process_token 7 10 45
+added to 7 Eins zu Eins. De
+in process_token 8 10 4e
+added to 8 Notizbuch - Gesu
+in process_token b 10 42
+added to 11 Bayern 2-regiona
+in process_token c 10 72
+added to 12 radioWissen am N
+in process_token e 10 49
+added to 14 IQ - Wissenschaf
+in process_token f 10 42
+added to 15 Bayern 2-Betthup
+in 481 5 12 6
+1 4 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 6 12 c
+1 a 6
+in 481 6 7a 65
+longName Das ARD-Nachtkon
+in 481 5 12 6
+1 4 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 6 12 d
+1 b 6
+in 481 6 7a 65
+longName Das ARD-Nachtkon
+in 481 49 6d 70
+string is mpressum
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-Heimatspiegel
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 6b 75 6c
+string is ulturWelt
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 3 20 2d
+1 18 3
+in 481 3 20 2d
+longName Notizbuch
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 3 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 54 61 67
+string is agesgespräch
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 1 20 32
+1 10 1
+in 481 1 20 32
+longName Bayern
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 42 72 65
+string is reitengrad
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4 20 61
+1 f 4
+in 481 4 20 61
+longName radioWissen
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 7 12 9
+1 7 7
+in 481 7 72 20
+longName Eins zu Eins. De
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 e 12 12
+1 10 e
+in 481 e 74 20
+longName IQ - Wissenschaf
+in 481 72 61 64
+string is adioMikro
+in 481 1 20 32
+1 f 1
+in 481 1 20 32
+longName Bayern
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 5a c3 bc
+string is ündfunk
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 48 c3 b6
+string is örspiel
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 44 6f 73
+string is ossier Politik
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 7 12 9
+1 7 7
+in 481 7 72 20
+longName Eins zu Eins. De
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4e 61 63
+string is achtmix
+in process_token 1 6 42
+added to 1 BAYERN
+in process_token 2 c 4e
+added to 2 Nachrichten,
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 4e
+added to 4 Nachrichten, Reg
+in process_token 5 10 44
+added to 5 Die Nacht auf BA
+in process_token 6 10 42
+added to 6 BAYERN 1 am Morg
+in process_token 7 10 42
+added to 7 BAYERN 1 am Vorm
+in process_token 8 10 42
+added to 8 BAYERN 1 Mittags
+in process_token b 10 42
+added to 11 BAYERN 1 am Nach
+in process_token c 10 42
+added to 12 BAYERN 1 Das Bay
+in process_token e 10 42
+added to 14 BAYERN 1 am Aben
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 d 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 10 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 12 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 11 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 15 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 42 6c 61
+string is laue Couch
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 c 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in process_token 1 10 50
+added to 1 Programm wie BR2
+in process_token 2 11 46
+added to 2 Fußball Champion
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 1 12 4
+1 2 1
+in 481 1 34 19
+longName Programm wie BR2
+in 481 2 12 33
+1 31 2
+in 481 2 73 20
+longName FuÃŸball Champion
+in 481 1 12 4
+1 2 1
+in 481 1 34 19
+longName Programm wie BR2
+stopping subchannel 9
+going to open BAYERN 3        
+we have now 2 backends running
+in process_token 1 6 48
+added to 1 Heimat
+in process_token 2 f 42
+added to 2 BR Heimat - Auf
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 42
+added to 4 BR Heimat - Nach
+in process_token 5 10 42
+added to 5 BR Heimat - Obac
+in process_token 6 10 42
+added to 6 BR-Heimatspiegel
+in process_token 7 10 42
+added to 7 BR Heimat - Volk
+in process_token 8 10 42
+added to 8 BR Heimat - Habe
+in process_token b 10 42
+added to 11 BR Heimat aktuel
+in process_token c 10 42
+added to 12 BR Heimat - Serv
+in process_token e 10 42
+added to 14 BR Heimat - Blas
+in process_token f 11 42
+added to 15 BR Heimat - Frän
+in process_token 10 10 42
+added to 16 BR Heimat - Feie
+in process_token 11 10 42
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Volk
+1 1e 42
+in 481 42 52 20
+string is R  - Volksmusik am Vormittag
+longName R  - Volksmusik am Vormittag
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Habe
+1 15 42
+in 481 42 52 20
+string is R  - Habe die Ehre!
+longName R  - Habe die Ehre!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  aktuel
+1 c 42
+in 481 42 52 20
+string is R  aktuell
+longName R  aktuell
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Serv
+1 e 42
+in 481 42 52 20
+string is R  - Servus!
+longName R  - Servus!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Blas
+1 10 42
+in 481 42 52 20
+string is R  - Blasmusik
+longName R  - Blasmusik
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Frän
+1 17 42
+in 481 42 52 20
+string is R  - Fränkisch vor 7
+longName R  - FrÃ¤nkisch vor 7
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Feie
+1 11 42
+in 481 42 52 20
+string is R  - Feierabend
+longName R  - Feierabend
+in 481 42 65 74
+string is etthupferl
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Auf
+1 12 42
+in 481 42 52 20
+string is R  - Auf d'Nacht
+longName R  - Auf d'Nacht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Aufd
+1 f 42
+in 481 42 52 20
+string is R  - Aufdraht
+longName R  - Aufdraht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in process_token 1 3 44
+added to 1 Die
+in process_token 2 10 41
+added to 2 Alle Hits von he
+in process_token 3 11 44
+added to 3 Die Frühaufdrehe
+in process_token 4 11 44
+added to 4 Die Zwei für eur
+in 481 1 20 4e
+in 481 1 20 46
+1 10 1
+in 481 1 20 46
+longName Die
+in 481 2 12 15
+1 13 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 55 70 64
+string is pdate
+in 481 2 12 16
+1 14 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 1 20 5a
+1 1c 1
+in 481 1 20 5a
+longName Die
+in 481 57 61 73
+string is as geht?!
+in 481 2 12 11
+1 f 2
+in 481 2 75 74
+longName Alle Hits von he
+ALSA lib pcm.c:8772:(snd_pcm_recover) underrun occurred
+in process_token 1 a 42
+added to 1 BR-KLASSIK
+in process_token 2 10 4e
+added to 2 Nachrichten, Wet
+in process_token 3 10 44
+added to 3 Das ARD-Nachtkon
+in process_token 4 10 42
+added to 4 BR-KLASSIK - Kla
+in process_token 5 10 42
+added to 5 BR-KLASSIK - All
+in process_token 6 10 42
+added to 6 BR-KLASSIK - Phi
+in process_token 7 10 42
+added to 7 BR-KLASSIK - Mit
+in process_token 8 10 42
+added to 8 BR-KLASSIK - Pan
+in process_token b 10 42
+added to 11 BR-KLASSIK - Lep
+in process_token c 10 4b
+added to 12 Kammerkonzert mi
+in process_token e 10 42
+added to 14 BR-KLASSIK - Hor
+in process_token f 10 42
+added to 15 BR-KLASSIK - Jaz
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 b
+1 9 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 c
+1 a 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 d
+1 b 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 3 12 c
+1 a 3
+in 481 3 7a 65
+longName Das ARD-Nachtkon
+in 481 2 12 f
+1 d 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 b 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 57 65 72
+string is erbung
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 10 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 10 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 c 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 f
+1 d 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 d 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 11 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 f 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 c 12 3f
+1 3d c
+in 481 c 74 20
+longName Kammerkonzert mi
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 d 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in 481 2 12 6
+1 4 2
+in 481 2 74 65
+longName Nachrichten, Wet
+in 481 1 20 2d
+1 c 1
+in 481 1 20 2d
+longName BR-KLASSIK
+in process_token 1 4 42
+added to 1 BR24
+in process_token 2 6 42
+added to 2 Börse
+in process_token 3 6 57
+added to 3 Wissen
+in process_token 4 7 6b
+added to 4 kompakt
+in process_token 5 9 49
+added to 5 Infoblock
+in process_token 6 a 42
+added to 6 BR24 Sport
+in process_token 7 b 42
+added to 7 BR24 Börse
+in process_token 8 b 4e
+added to 8 Nachrichten
+in process_token b b 42
+added to 11 BR24 Bayern
+in process_token c b 42
+added to 12 BR24 Kultur
+in process_token e f 42
+added to 14 BR24 Wirtschaft
+in process_token f 10 56
+added to 15 Verkehr und Wett
+in process_token 10 10 42
+added to 16 BR24 Hintergrund
+in process_token 11 10 42
+in process_token 12 10 57
+in process_token 13 11 42
+in 481 8 19 d
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 8 19 d
+in 481 44 6f 73
+string is ossier Politik
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+1 12 1
+in 481 1 20 2
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 21 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in process_token 1 3 44
+added to 1 Die
+in process_token 2 8 53
+added to 2 Schlager
+in process_token 3 f 44
+added to 3 Der BR Schlager
+in process_token 4 10 4e
+added to 4 Nachrichten, Wet
+in process_token 5 10 44
+added to 5 Die Schlagernach
+in process_token 6 10 44
+added to 6 Die Deutsche Sch
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 1 20 2
+1 17 1
+in 481 1 20 2
+longName Die
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 f 44
+in 481 44 65 72
+string is er BR  Morgen
+longName er BR  Morgen
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Treff
+longName er BR  Treff
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  pur
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 13 44
+in 481 44 65 72
+string is er BR  Feierabend
+longName er BR  Feierabend
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 1 20 44
+1 12 1
+in 481 1 20 44
+longName Die
+in 481 4 12 6
+1 4 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Abend
+longName er BR  Abend
+in 481 4 12 f
+1 d 4
+in 481 4 74 65
+longName Nachrichten, Wet
+in 481 1 20 2
+1 17 1
+in 481 1 20 2
+longName Die
+in process_token 1 3 6d
+added to 1 mit
+in process_token 2 4 50
+added to 2 PULS
+in process_token 3 5 52
+added to 3 Radio
+in process_token 4 a 50
+added to 4 PULS Radio
+in process_token 5 10 50
+added to 5 PULS Radio mit M
+in process_token 6 10 50
+added to 6 PULS Radio mit A
+in process_token 7 10 50
+added to 7 PULS Radio mit P
+in 481 2 20 3
+in 481 2 20 3
+1 15 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in 481 2 20 3
+1 1e 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+1 16 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in process_token 1 6 42
+added to 1 Bayern
+in process_token 2 9 72
+added to 2 radioWelt
+in process_token 3 b 72
+added to 3 radioWissen
+in process_token 4 b 6b
+added to 4 kulturLeben
+in process_token 5 10 4e
+added to 5 Nachrichten, Wet
+in process_token 6 10 44
+added to 6 Das ARD-Nachtkon
+in process_token 7 10 45
+added to 7 Eins zu Eins. De
+in process_token 8 10 43
+added to 8 Concerto bavares
+in process_token b 10 42
+added to 11 Bayern 2-regiona
+in process_token c 10 72
+added to 12 radioWissen am N
+in process_token e 10 49
+added to 14 IQ - Wissenschaf
+in process_token f 10 42
+added to 15 Bayern 2-Betthup
+in process_token 10 10 72
+added to 16 radioTexte am Do
+in 481 5 12 6
+1 4 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 52 65 66
+string is eflexionen
+in 481 8 12 4
+1 2 8
+in 481 8 65 19
+longName Concerto bavares
+in 481 5 12 6
+1 4 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 6 12 c
+1 a 6
+in 481 6 7a 65
+longName Das ARD-Nachtkon
+in 481 5 12 6
+1 4 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 6 12 d
+1 b 6
+in 481 6 7a 65
+longName Das ARD-Nachtkon
+in 481 49 6d 70
+string is mpressum
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-Heimatspiegel
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 6b 75 6c
+string is ulturWelt
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 3 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4e 6f 74
+string is otizbuch
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 54 61 67
+string is agesgespräch
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 1 20 32
+1 10 1
+in 481 1 20 32
+longName Bayern
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 3 20 61
+1 f 3
+in 481 3 20 61
+longName radioWissen
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 7 12 9
+1 7 7
+in 481 7 72 20
+longName Eins zu Eins. De
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 2 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 e 12 12
+1 10 e
+in 481 e 74 20
+longName IQ - Wissenschaf
+in 481 72 61 64
+string is adioMikro
+in 481 1 20 32
+1 f 1
+in 481 1 20 32
+longName Bayern
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 5a c3 bc
+string is ündfunk
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4 19 d
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 10 12 b
+string is 
+1 9 10
+in 481 10 6e 6e
+string is nnerstag
+longName nnerstag
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 7 12 9
+1 7 7
+in 481 7 72 20
+longName Eins zu Eins. De
+in 481 5 12 f
+1 d 5
+in 481 5 74 65
+longName Nachrichten, Wet
+in 481 4e 61 63
+string is achtmix
+in process_token 1 6 42
+added to 1 BAYERN
+in process_token 2 c 4e
+added to 2 Nachrichten,
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 4e
+added to 4 Nachrichten, Reg
+in process_token 5 10 44
+added to 5 Die Nacht auf BA
+in process_token 6 10 5a
+added to 6 Zum Programmschl
+in process_token 7 10 42
+added to 7 BAYERN 1 am Morg
+in process_token 8 10 42
+added to 8 BAYERN 1 am Vorm
+in process_token b 10 42
+added to 11 BAYERN 1 Mittags
+in process_token c 10 42
+added to 12 BAYERN 1 am Nach
+in process_token e 10 42
+added to 14 BAYERN 1 Das Bay
+in process_token f 10 42
+added to 15 BAYERN 1 am Aben
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 6 12 6
+1 4 6
+in 481 6 75 73
+longName Zum Programmschl
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 d 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 10 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 12 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 11 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 52
+1 1d 2
+in 481 2 20 52
+longName Nachrichten,
+in 481 1 20 31
+1 15 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 42 6c 61
+string is laue Couch
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 1 20 31
+1 c 1
+in 481 1 20 31
+longName BAYERN
+in 481 2 20 57
+1 11 2
+in 481 2 20 57
+longName Nachrichten,
+in 481 5 12 13
+1 11 44
+in 481 44 69 65
+string is ie Nacht auf  1
+longName ie Nacht auf  1
+in process_token 1 10 50
+added to 1 Programm wie BR2
+in 481 4e 61 63
+string is achrichten
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 1 12 4
+1 2 1
+in 481 1 34 19
+longName Programm wie BR2
+in process_token 1 6 48
+added to 1 Heimat
+in process_token 2 f 42
+added to 2 BR Heimat - Auf
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 42
+added to 4 BR Heimat - Nach
+in process_token 5 10 42
+added to 5 BR Heimat - Obac
+in process_token 6 10 42
+added to 6 BR-Heimatspiegel
+in process_token 7 10 42
+added to 7 BR Heimat - Volk
+in process_token 8 10 42
+added to 8 BR Heimat - Habe
+in process_token b 10 42
+added to 11 BR Heimat aktuel
+in process_token c 10 42
+added to 12 BR Heimat - Serv
+in process_token e 10 42
+added to 14 BR Heimat - Blas
+in process_token f 11 42
+added to 15 BR Heimat - Frän
+in process_token 10 10 42
+added to 16 BR Heimat - Feie
+in process_token 11 10 42
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 2d
+string is R-spiegel
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Volk
+1 1e 42
+in 481 42 52 20
+string is R  - Volksmusik am Vormittag
+longName R  - Volksmusik am Vormittag
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Habe
+1 15 42
+in 481 42 52 20
+string is R  - Habe die Ehre!
+longName R  - Habe die Ehre!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  aktuel
+1 c 42
+in 481 42 52 20
+string is R  aktuell
+longName R  aktuell
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Serv
+1 e 42
+in 481 42 52 20
+string is R  - Servus!
+longName R  - Servus!
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Blas
+1 10 42
+in 481 42 52 20
+string is R  - Blasmusik
+longName R  - Blasmusik
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Frän
+1 17 42
+in 481 42 52 20
+string is R  - Fränkisch vor 7
+longName R  - FrÃ¤nkisch vor 7
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Feie
+1 11 42
+in 481 42 52 20
+string is R  - Feierabend
+longName R  - Feierabend
+in 481 42 65 74
+string is etthupferl
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Auf
+1 12 42
+in 481 42 52 20
+string is R  - Auf d'Nacht
+longName R  - Auf d'Nacht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Aufd
+1 f 42
+in 481 42 52 20
+string is R  - Aufdraht
+longName R  - Aufdraht
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Obac
+1 17 42
+in 481 42 52 20
+string is R  - Obacht! Tradimix
+longName R  - Obacht! Tradimix
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  - Nach
+1 11 42
+in 481 42 52 20
+string is R  - Nachtlicht
+longName R  - Nachtlicht
+in process_token 1 3 44
+added to 1 Die
+in process_token 2 10 41
+added to 2 Alle Hits von he
+in process_token 3 11 44
+added to 3 Die Frühaufdrehe
+in process_token 4 11 44
+added to 4 Die Zwei für eur
+in 481 1 20 4e
+in 481 1 20 46
+1 10 1
+in 481 1 20 46
+longName Die
+in 481 2 12 15
+1 13 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 55 70 64
+string is pdate
+in 481 2 12 16
+1 14 2
+in 481 2 75 74
+longName Alle Hits von he
+in 481 1 20 5a
+1 26 1
+in 481 1 20 5a
+longName Die
+in 481 43 68 61
+string is hartshow
+in 481 50 61 72
+string is arty-Hitmix
+in process_token 1 3 44
+added to 1 Das
+in process_token 2 a 42
+added to 2 BR-KLASSIK
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 44
+added to 4 Das ARD-Nachtkon
+in process_token 5 10 42
+added to 5 BR-KLASSIK - All
+in process_token 6 10 42
+added to 6 BR-KLASSIK - Phi
+in process_token 7 10 42
+added to 7 BR-KLASSIK - Mit
+in process_token 8 10 42
+added to 8 BR-KLASSIK - Pan
+in process_token b 10 42
+added to 11 BR-KLASSIK - Lep
+in process_token c 10 42
+added to 12 BR-KLASSIK - Kla
+in process_token e 10 42
+added to 14 BR-KLASSIK - Das
+in process_token f 10 4b
+added to 15 Konzert des Symp
+in process_token 10 10 42
+added to 16 BR-KLASSIK - Org
+in process_token 11 10 42
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 16 1
+in 481 1 20 41
+longName Das
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 17 1
+in 481 1 20 41
+longName Das
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 18 1
+in 481 1 20 41
+longName Das
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 1 20 41
+1 17 1
+in 481 1 20 41
+longName Das
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 b 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 57 65 72
+string is erbung
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 10 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 10 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 c 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 d 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 11 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 13 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 f 12 2c
+1 2a f
+in 481 f 68 6f
+longName Konzert des Symp
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 e 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 2 20 2d
+1 c 2
+in 481 2 20 2d
+longName BR-KLASSIK
+in process_token 1 4 42
+added to 1 BR24
+in process_token 2 6 42
+added to 2 Börse
+in process_token 3 6 57
+added to 3 Wissen
+in process_token 4 7 6b
+added to 4 kompakt
+in process_token 5 9 49
+added to 5 Infoblock
+in process_token 6 a 42
+added to 6 BR24 Sport
+in process_token 7 b 42
+added to 7 BR24 Börse
+in process_token 8 b 4e
+added to 8 Nachrichten
+in process_token b b 42
+added to 11 BR24 Bayern
+in process_token c b 42
+added to 12 BR24 Kultur
+in process_token e f 42
+added to 14 BR24 Wirtschaft
+in process_token f 10 56
+added to 15 Verkehr und Wett
+in process_token 10 10 42
+added to 16 BR24 Hintergrund
+in process_token 11 10 42
+in process_token 12 10 57
+in process_token 13 11 42
+in 481 8 19 d
+in 481 41 52 44
+string is RD-Infonacht
+in 481 49 6d 70
+string is mpressum
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 3 20 4
+1 12 3
+in 481 3 20 4
+longName Wissen
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 43
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 54
+1 11 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 42
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 54
+1 20 1
+in 481 1 20 54
+longName BR24
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 12 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 42
+in 481 1 20 2
+1 12 1
+in 481 1 20 2
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 4b
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in 481 5 19 d
+in 481 1 20 57
+1 21 1
+in 481 1 20 57
+longName BR24
+in 481 8 19 d
+in 481 1 20 48
+in 481 1 20 53
+in 481 f 12 5
+1 3 f
+in 481 f 65 72
+longName Verkehr und Wett
+in process_token 1 8 53
+added to 1 Schlager
+in process_token 2 f 44
+added to 2 Der BR Schlager
+in process_token 3 10 4e
+added to 3 Nachrichten, Wet
+in process_token 4 10 44
+added to 4 Die Schlagernach
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 f 44
+in 481 44 65 72
+string is er BR  Morgen
+longName er BR  Morgen
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Treff
+longName er BR  Treff
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 42 52 20
+string is R  pur
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 13 44
+in 481 44 65 72
+string is er BR  Feierabend
+longName er BR  Feierabend
+in 481 3 12 6
+1 4 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 65 72
+string is er BR 
+1 e 44
+in 481 44 65 72
+string is er BR  Abend
+longName er BR  Abend
+in 481 3 12 f
+1 d 3
+in 481 3 74 65
+longName Nachrichten, Wet
+in 481 44 69 65
+string is ie nach
+1 19 44
+in 481 44 69 65
+string is ie nacht von BR und MDR
+longName ie nacht von BR und MDR
+in process_token 1 3 6d
+added to 1 mit
+in process_token 2 4 50
+added to 2 PULS
+in process_token 3 5 52
+added to 3 Radio
+in process_token 4 a 50
+added to 4 PULS Radio
+in process_token 5 10 50
+added to 5 PULS Radio mit M
+in process_token 6 10 50
+added to 6 PULS Radio mit A
+in process_token 7 10 50
+added to 7 PULS Radio mit P
+in 481 2 20 3
+in 481 2 20 3
+1 15 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+in 481 2 20 3
+1 1e 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+1 16 2
+in 481 2 20 3
+longName PULS
+in 481 2 20 3
+going to close the dataStreamer
+accept failed: Invalid argument
+going to close the clockstreamer
+accept failed: Invalid argument
+taak voor replay eindigt hier
+.. end the radio silences
+back in main program
+radioInterface is deleted
+dumpfile /home/jan/.qt-dab-schedule.ini is opened good
+dumpFile will be closed

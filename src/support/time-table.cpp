@@ -47,9 +47,6 @@
 }
 
 void	timeTableHandler::display	(const scheduleDescriptor &schedule) {
-	fprintf (stderr, "we gaan voor %X\n", schedule. Sid);
-	fprintf (stderr, "en we hebben %d elementen\n",
-	                          schedule. thePrograms. size ());
 	addHeader (schedule);
 	for (auto &program : schedule. thePrograms)
 	   addProgram (program);

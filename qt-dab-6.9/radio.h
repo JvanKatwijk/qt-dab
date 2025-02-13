@@ -51,8 +51,6 @@
 #include	"tcp-server.h"
 #endif
 #include	"scan-handler.h"
-#include	"epgdec.h"
-#include	"epg-decoder.h"
 #include	"epg-compiler.h"
 #include	"xml-extractor.h"
 
@@ -294,8 +292,6 @@ private:
 #ifdef	CLOCK_STREAMER
 	tcpServer		*clockStreamer_p;
 #endif
-	CEPGDecoder		epgHandler;
-	epgDecoder		epgProcessor;
 	epgCompiler		epgVertaler;
 	xmlExtractor		xmlHandler;
 	bool			has_timeTable	(uint32_t);
@@ -473,9 +469,6 @@ public slots:
 	void			stop_announcement	(const QString &, int);
 	void			newFrame		(int);
 
-	void			set_epgData		(int, int,
-	                                                 const QString &,
-	                                                 const QString &);
 	void			epgTimer_timeOut	();
 	void			handle_presetSelect	(const QString &,
 	                                                 const QString &);

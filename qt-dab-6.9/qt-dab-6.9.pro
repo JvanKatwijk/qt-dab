@@ -58,7 +58,7 @@ DEPENDPATH += . \
 	      ../src/backend/audio \
 	      ../src/backend/data \
 	      ../src/backend/data/mot \
-	      ../src/backend/data/epg-2 \
+	      ../src/backend/data/epg \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
@@ -72,7 +72,6 @@ DEPENDPATH += . \
 	      ../includes/backend/data/mot \
 	      ../includes/backend/data/journaline \
 	      ../includes/backend/data/epg \
-	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
 	      ../src/support/tii-library \
@@ -104,7 +103,6 @@ INCLUDEPATH += . \
 	      ../includes/backend/data/mot \
 	      ../includes/backend/data/journaline \
 	      ../includes/backend/data/epg \
-	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
 	      ../src/support/tii-library \
@@ -197,10 +195,8 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/dabdgdec_impl.h \
 	   ../includes/backend/data/journaline/newsobject.h \
 	   ../includes/backend/data/journaline/NML.h \
-	   ../includes/backend/data/epg/epgdec.h \
-	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/backend/data/epg-2/epg-compiler.h \
-	   ../includes/backend/data/epg-2/xml-extractor.h \
+	   ../includes/backend/data/epg/epg-compiler.h \
+	   ../includes/backend/data/epg/xml-extractor.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
 	   ../includes/support/time-converter.h \
@@ -340,10 +336,8 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/dabdgdec_impl.c \
 	   ../src/backend/data/journaline/newsobject.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
-	   ../src/backend/data/epg/epgdec.cpp \
-	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/backend/data/epg-2/epg-compiler.cpp \
-	   ../src/backend/data/epg-2/xml-extractor.cpp \
+	   ../src/backend/data/epg/epg-compiler.cpp \
+	   ../src/backend/data/epg/xml-extractor.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
 	   ../src/support/time-converter.cpp \

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>309</width>
-    <height>695</height>
+    <width>273</width>
+    <height>710</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,17 +55,17 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="smallPushButton" name="timeTable_button">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - opens a new windows with SPI (formerly called EPG) preview.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note that this is still work in progress.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>timeTable</string>
-       </property>
-      </widget>
-     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="smallPushButton" name="timeTable_button">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - opens a new windows with SPI (formerly called EPG) preview.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note that this is still work in progress.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>timeTable</string>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout_2">
