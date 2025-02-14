@@ -415,6 +415,9 @@ private:
 	void			extractSchedule	(QDomDocument &, uint32_t);
 	void			process_schedule (QDomElement &theSchedule,
 	                                                      uint32_t);
+	void			extractServiceInformation (const QDomDocument &,
+	                                                      uint32_t);
+	void			process_ensemble (const QDomElement &, uint32_t);
 
 signals:
 	void			select_ensemble_font	();

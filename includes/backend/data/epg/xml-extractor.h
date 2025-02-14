@@ -59,6 +59,8 @@ public:
 	int			getVersion		(const QDomElement &);
 	programDescriptor	process_programme	(const QDomElement &);
 
+	uint32_t		serviceSid		(const QDomElement &);
+	QString			service_url		(const QDomElement &);
 private:
 	QDate		stringToDate		(const QString &);
 	QDateTime	stringToDateTime	(const QString &);

@@ -26,6 +26,7 @@
 #include	"mot-object.h"
 #include	"radio.h"
 #include	<algorithm>
+#include	"charsets.h"
 
 	   motObject::motObject (RadioInterface *mr,
 	                         bool		dirElement,
@@ -49,14 +50,14 @@ uint16_t	rawContentType = 0;
 	this	-> segmentSize		= -1;
 
 	headerSize     =
-//	   ((segment [3] & 0x0F) << 9) |
+	   ((segment [3] & 0x0F) << 9) |
                    (segment [4] << 1) | ((segment [5] >> 7) & 0x01);
 	bodySize       =
               (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
 
 // Extract the content type
-//	int b	= (segment [5] >> 1) & 0x3F;
+	int b	= (segment [5] >> 1) & 0x3F;
 	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
@@ -65,8 +66,11 @@ uint16_t	rawContentType = 0;
 //	                  headerSize, bodySize, b, transportId,
 //	                  segmentSize, lastFlag);
 //	we are actually only interested in the name, if any
-        while ((uint16_t)pointer < std::min ((int)headerSize, (int)segmentSize)) {
-//	   fprintf (stderr, "%d %d %d\n", pointer, headerSize, segmentSize);
+	int reference = segmentSize == -1 ? headerSize :
+	                 headerSize == -1 ? segmentSize :
+	                  std::min ((int)headerSize, (int)segmentSize);
+	
+        while ((uint16_t)pointer < reference) {
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
            uint16_t     length;
@@ -87,7 +91,8 @@ uint16_t	rawContentType = 0;
                  if ((segment [pointer + 1] & 0200) != 0) {
                     length = (segment [pointer + 1] & 0177) << 8 |
                               segment [pointer + 2];
-                    pointer += 3;
+	            
+                    pointer += 3 ;
                  }
                  else {
                     length = segment [pointer + 1] & 0177;
@@ -95,15 +100,19 @@ uint16_t	rawContentType = 0;
                  }
 	         switch (paramId) {
 	            case 12: {
-                       int16_t i;
-                       for (i = 0; i < length - 1; i ++)
-                          name. append (QChar (segment [pointer + i + 1]));
-                       }
-//	               fprintf (stderr, "Found MOT object name %s\n",
-//	                                       name. toLatin1 (). data ());
+                       uint8_t charSet = segment [pointer] >> 4;
+	               QByteArray nameText;
+                       for (int i = 1; i < length; i ++) {
+                          nameText. append (segment [pointer + i]);
+	               }
+	               name = toQStringUsingCharset (
+	                           (const char *)nameText. data (),
+	                           (CharacterSet) charSet,
+	                           nameText. size ());
+//	               fprintf (stderr, "\n %s\n", name. toLatin1 (). data ());
                        pointer += length;
 	               break;
-
+	            }
 	            case 2:	// creation time
 	            case 3:	// start validity
 	            case 4:	// expiretime
@@ -178,7 +187,6 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	handleComplete ();
 }
 
-
 void	motObject::handleComplete	() {
 QByteArray result;
 
@@ -188,8 +196,8 @@ QByteArray result;
 //	"Handling complete %X %s, type %X\n",
 //	                  transportId, name. toLatin1 (). data (),
 //	                                                  (int)contentType);
-	if (name == "")
-	   name = QString::number (get_transportId (), 16);
+//	if (name == "")
+//	   name = QString::number (get_transportId (), 16);
 	handle_motObject (result, name, (int)contentType,
 	                            dirElement, backgroundFlag);
 }

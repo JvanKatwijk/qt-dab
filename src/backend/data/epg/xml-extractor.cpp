@@ -167,3 +167,25 @@ QDomElement scope = node. firstChildElement ("scope");
 	return result;
 }
 
+QString	xmlExtractor::service_url (const QDomElement &service) {
+	QDomElement multimedia = service. firstChildElement ("multimedia");
+	if (multimedia. isNull ())
+	   return "";
+	if (multimedia. hasAttribute ("url"))
+	   return multimedia. attribute ("url");
+	return "";
+}
+
+uint32_t  xmlExtractor::serviceSid (const QDomElement &service) {
+	QDomElement bearer = service. firstChildElement ("bearer");
+	if (bearer. isNull ())
+	   return 0;
+	if (!bearer. hasAttribute ("id"))
+	   return 0;
+	QString id = bearer. attribute ("id");
+	QStringList t = splitter (id, ":");
+	if (t. size () < 3)
+	   return 0;
+	return toIntFrom (t [2], 16);
+}
+

@@ -869,6 +869,7 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  bool dirElement,
 	                                  bool backgroundFlag) {
 QString realName;
+
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -878,6 +879,7 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeImage:
+//	      fprintf (stderr, "going for %s\n", objectName. toLatin1 (). data ());
 	      showMOTlabel (result, contentType,
 	                       objectName, dirElement, backgroundFlag);
 	      break;
@@ -928,7 +930,8 @@ QString realName;
 	               file. close ();
 	            }
 	         }
-	         extractSchedule (epgDocument, channel. Eid);
+	         extractSchedule		(epgDocument, channel. Eid);
+	         extractServiceInformation	(epgDocument, channel. Eid);
 //	         else
 //	         epgProcessor. process_epg (epgData. data (), 
 //	                                    epgData. size (), currentSId,
@@ -4385,11 +4388,6 @@ scheduleDescriptor theDescriptor = xmlHandler.
 	channel. programGuides. push_back (theDescriptor);
 	if (theDescriptor. Sid == channel. currentService.SId)
 	   techWindow_p -> show_timetableButton (true);
-	
-//	fprintf (stderr, "a schedule for %s (%X) contains %d elements\n",
-//	                             serviceName. toLatin1 (). data (),
-//	                             theDescriptor. Sid, 
-//	                             theDescriptor. thePrograms. size ());
 }
 
 bool	RadioInterface::has_timeTable (uint32_t Sid) {
@@ -4397,5 +4395,35 @@ bool	RadioInterface::has_timeTable (uint32_t Sid) {
 	   if (service. Sid == Sid)
 	      return true;
 	return false;
+}
+
+void	RadioInterface::extractServiceInformation (const QDomDocument &root,
+	                                            uint32_t Eid) {
+	for (QDomElement theEnsemble = root. firstChildElement ("ensemble");
+	    !theEnsemble. isNull ();
+	    theEnsemble = theEnsemble. nextSiblingElement ("ensemble")) {
+	   process_ensemble (theEnsemble, Eid);
+	}
+}
+
+void	RadioInterface::process_ensemble (const QDomElement &node,
+	                                              uint32_t Eid) {
+	QString Ident = node. attribute ("Eid");
+	if (QString::number (Eid, 16) != Ident)
+	   return;
+	QDomElement nameNode = 
+	           node. firstChildElement ("mediumName");
+	QString ensembleName	= nameNode. attribute ("xml:lang");
+	for (QDomElement service = node. firstChildElement ("service");
+	     !service. isNull ();
+	     service = service. nextSiblingElement ("service")) {
+	   uint32_t serviceSid =
+	             xmlHandler. serviceSid (service);
+	   QString url		=
+	             xmlHandler. service_url (service);
+	   fprintf (stderr, "for %s we seek %s\n",
+	                   QString::number(serviceSid, 16),
+	                   url. toLatin1 (). data ());
+	}
 }
 

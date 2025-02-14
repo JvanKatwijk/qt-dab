@@ -160,7 +160,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/backend/data
 	           ../includes/backend/data/journaline
 	           ../includes/backend/data/mot
-	           ../includes/backend/data/epg-2
 	           ../includes/backend/data/epg
 	           ../includes/support
 	           ../src/support/tii-library
@@ -252,8 +251,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/journaline/newsobject.h
 	     ../includes/backend/data/journaline/NML.h
 	     ../includes/backend/data/epg/epgdec.h
-	     ../includes/backend/data/epg-2/epg-decoder.h
-	     ../includes/backend/data/epg-2/epg-compiler.h
+	     ../includes/backend/data/epg/epg-compiler.h
+	     ../includes/backend/data/epg/xml-extractor.h
 	     ../includes/backend/data/virtual-datahandler.h
 	     ../includes/backend/data/pad-handler.h
 	     ../includes/backend/data/mot/mot-handler.h
@@ -262,6 +261,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
 	     ../includes/support/distances.h 
+	     ../includes/support/time-converter.h 
 	     ../includes/support/logger.h 
 	     ../includes/support/position-handler.h 
 	     ../includes/support/cacheElement.h 
@@ -376,10 +376,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/data/journaline/dabdgdec_impl.c
 	     ../src/backend/data/journaline/newsobject.cpp
 	     ../src/backend/data/journaline/NML.cpp
-	     ../src/backend/data/epg-2/epg-decoder.cpp
-	     ../src/backend/data/epg-2/epg-compiler.cpp
-	     ../src/backend/data/epg-2/xml-extractor.cpp
-	     ../src/backend/data/epg/epgdec.cpp
+	     ../src/backend/data/epg/epg-compiler.cpp
+	     ../src/backend/data/epg/xml-extractor.cpp
 	     ../src/backend/data/tdc-datahandler.cpp
 	     ../src/backend/data/pad-handler.cpp
 	     ../src/backend/data/mot/mot-handler.cpp
@@ -388,6 +386,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/backend/data/data-processor.cpp
 	     ../src/output/audio-player.cpp
 	     ../src/support/distances.cpp
+	     ../src/support/time-converter.cpp
 	     ../src/support/logger.cpp
 	     ../src/support/position-handler.cpp
 	     ../src/support/settings-handler.cpp
@@ -475,8 +474,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/journaline-screen.h
-	     ../includes/backend/data/epg-2/epg-decoder.h
-	     ../includes/backend/data/epg-2/xml-extractor.h
+	     ../includes/backend/data/epg/epg-compiler.h
+	     ../includes/backend/data/epg/xml-extractor.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
 	     ../includes/support/converter_48000.h

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2018 .. 2023
+ *    Copyright (C) 2018 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -1011,7 +1011,7 @@ char		label [17];
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
-	if (charSet > 16) 	// does not seem right
+	if (charSet >= 16) 	// does not seem right
 	   return;
 
 	for (i = 0; i < 16; i ++) 
@@ -1021,7 +1021,6 @@ char		label [17];
 	                                  (CharacterSet) charSet);
 	for (int i = dataName. length (); i < 16; i ++)
 	   dataName. append (' ');
-
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)

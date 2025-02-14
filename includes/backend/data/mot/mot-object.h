@@ -60,8 +60,8 @@ private:
 	uint16_t	transportId;
 	int16_t		numofSegments;
 	int32_t		segmentSize;
-	uint32_t	headerSize;
-	uint32_t	bodySize;
+	int32_t		headerSize;
+	int32_t		bodySize;
 	MOTContentType	contentType;
 	QString		name;
 	void		handleComplete	();
