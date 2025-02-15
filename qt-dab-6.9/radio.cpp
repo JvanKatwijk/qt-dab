@@ -355,7 +355,7 @@ QString h;
 #else
 	(void)clockPort;
 #endif
-
+	serviceIcon		= new QLabel;
 	volumeSlider	-> hide ();
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
@@ -805,12 +805,14 @@ QString s;
 	else
 	if (theSCANHandler. active () && theSCANHandler. scan_single ())
 	   theSCANHandler. addEnsemble (channelSelector -> currentText (), v);
-	                           
+	else
+	if (!theSCANHandler. active ()) {
+	   read_servicePictures (id);
 //	... and is we are not scanning, clicking the ensembleName
 //	has effect
-	if (!theSCANHandler. active ())
 	   connect (ensembleId, &clickablelabel::clicked,
 	            this, &RadioInterface::handle_contentButton);
+	}
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -878,8 +880,7 @@ QString realName;
 	      saveMOTtext (result, contentType, objectName);
 	      break;
 
-	   case MOTBaseTypeImage:
-//	      fprintf (stderr, "going for %s\n", objectName. toLatin1 (). data ());
+	   case MOTBaseTypeImage: 
 	      showMOTlabel (result, contentType,
 	                       objectName, dirElement, backgroundFlag);
 	      break;
@@ -911,15 +912,6 @@ QString realName;
 
 	         std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-//	         uint32_t ensembleId =
-//	                     theOFDMHandler -> get_ensembleId ();
-//	         uint32_t currentSId =
-//	                     the_ensembleHandler -> extract_SId  (objectName);
-//	         uint32_t julianDate	=
-//	                     theOFDMHandler -> julianDate ();
-//	         int subType = 
-//	                  getContentSubType ((MOTContentType)contentType);
-
 	         QDomDocument epgDocument;
 	         epgVertaler. process_epg (epgDocument, epgData);
 	         if (configHandler_p -> epg2_active ()) {
@@ -932,13 +924,6 @@ QString realName;
 	         }
 	         extractSchedule		(epgDocument, channel. Eid);
 	         extractServiceInformation	(epgDocument, channel. Eid);
-//	         else
-//	         epgProcessor. process_epg (epgData. data (), 
-//	                                    epgData. size (), currentSId,
-//	                                    subType,
-//	                                    julianDate);
-//	         epgHandler. decode (epgData,
-//	                      QDir::toNativeSeparators (objectName));
 	      }
 	      return;
 
@@ -991,7 +976,6 @@ const char *type;
 	if (!running. load() || (pictureName == QString ("")))
 	   return;
 
-	(void)dirs;
 	switch (static_cast<MOTContentType>(contentType)) {
 	   case MOTCTImageGIF:
 	      type = "GIF";
@@ -1013,20 +997,25 @@ const char *type;
 	        return;
 	}
 
-	if ((value_i (dabSettings_p, CONFIG_HANDLER,
+
+	if (dirs || (value_i (dabSettings_p, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
 	                                         (path_for_pictures != "")) {
-	   QString pict = path_for_pictures + pictureName;
+	   QString pict;
+	   if (!dirs) 
+	      pict = path_for_pictures + pictureName;
+	   else
+	      pict = path_for_pictures + QString::number (channel. Eid, 16) + "/" + pictureName;
 	   QString temp = pict;
 	   temp = temp. left (temp. lastIndexOf (QChar ('/')));
 	   if (!QDir (temp). exists())
 	      QDir (). mkpath (temp);	
-	   pict		= QDir::toNativeSeparators (pict);
+	   pict	= QDir::toNativeSeparators (pict);
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pict. toUtf8 (). data ());
+	                         pict. toUtf8 (). data ());
 	   else {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
 	      (void)fwrite (data. data(), 1, data.length(), x);
@@ -1034,7 +1023,7 @@ const char *type;
 	   }
 	}
 
-	if (backgroundFlag)
+	if (backgroundFlag || dirs)
 	   return;
 
 	if (channel. currentService. valid &&  
@@ -1291,6 +1280,8 @@ void	RadioInterface::TerminateProcess () {
 	channelTimer.	stop	();
 	presetTimer.	stop	();
 	epgTimer.	stop	();
+	serviceIcon	-> hide ();
+	delete serviceIcon;
 	soundOut_p	-> stop ();
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
@@ -2081,6 +2072,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   return;
 	presetTimer. stop ();
 	channelTimer. stop ();
+	serviceIcon	-> hide ();
 	stopMuting	();
 	setSoundLabel (false);
 	channel. audioActive	= false;
@@ -2182,6 +2174,12 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	(void)theOFDMHandler -> setAudioChannel (ad, &theAudioBuffer,
 	                                            nullptr, FORE_GROUND);
 //
+	QPixmap p;
+	if (get_servicePicture (p, ad)) {
+	   serviceIcon -> setPixmap (p);
+	   serviceIcon -> show ();
+	}
+	   
 //	check the other components for this service (if any)
 	int nrComps	=
 	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
@@ -2446,6 +2444,9 @@ void	RadioInterface::stopChannel	() {
 	ensembleId	-> setText ("");
 	stopSourcedumping	();
 	stop_etiHandler	();	// if any
+	if (!theSCANHandler. active ()  &&
+	                       (channel. servicePictures. size () > 0))
+	   write_servicePictures (channel. Eid);
 	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
 	transmitter_country	-> setText	("");
 	theNewDisplay. setSilent	();
@@ -4397,8 +4398,9 @@ bool	RadioInterface::has_timeTable (uint32_t Sid) {
 	return false;
 }
 
-void	RadioInterface::extractServiceInformation (const QDomDocument &root,
+void	RadioInterface::extractServiceInformation (const QDomDocument &doc,
 	                                            uint32_t Eid) {
+QDomElement root = doc. firstChildElement ("serviceInformation");
 	for (QDomElement theEnsemble = root. firstChildElement ("ensemble");
 	    !theEnsemble. isNull ();
 	    theEnsemble = theEnsemble. nextSiblingElement ("ensemble")) {
@@ -4409,6 +4411,8 @@ void	RadioInterface::extractServiceInformation (const QDomDocument &root,
 void	RadioInterface::process_ensemble (const QDomElement &node,
 	                                              uint32_t Eid) {
 	QString Ident = node. attribute ("Eid");
+	fprintf (stderr, "processing ensemble with %s\n",
+	                                Ident. toLatin1 (). data ());
 	if (QString::number (Eid, 16) != Ident)
 	   return;
 	QDomElement nameNode = 
@@ -4421,9 +4425,94 @@ void	RadioInterface::process_ensemble (const QDomElement &node,
 	             xmlHandler. serviceSid (service);
 	   QString url		=
 	             xmlHandler. service_url (service);
+	   bool alreadySeen = false;
+	   for (int i = 0; i < channel. servicePictures. size (); i ++) {
+	      if (channel. servicePictures [i]. serviceId == serviceSid) {
+	         alreadySeen = true;
+	         return;
+	      }
+	   }
+	   serviceSymbol symbol;
+	   symbol. serviceId = serviceSid;
+	   symbol. url	= url;
+	   channel. servicePictures . push_back (symbol);
 	   fprintf (stderr, "for %s we seek %s\n",
-	                   QString::number(serviceSid, 16),
-	                   url. toLatin1 (). data ());
+	                     QString::number(serviceSid, 16). toLatin1 (). data (),
+	                     url. toLatin1 (). data ());
+	}
+}
+
+bool	RadioInterface::get_servicePicture (QPixmap &p, audiodata &ad) {
+bool res = false;
+	for (auto &ss : channel. servicePictures) {
+	   if (ss. serviceId == ad. SId) {
+	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ss. url;
+	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
+	      if (tt == nullptr) 
+	         return false;
+	      fclose (tt);
+	      bool res = p. load (pict, "png");
+	      return res;
+	   }
+	}
+	return res;
+}
+
+void	RadioInterface::write_servicePictures (uint32_t Eid) {
+QString fileName	= path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
+	QDomDocument doc;
+	QDomElement topnode;
+	topnode = doc. createElement ("topnode");
+	doc. appendChild (topnode);
+	for (auto &ss: channel. servicePictures) {
+	   QDomElement element;
+	   element = doc. createElement (QString::number (ss. serviceId, 16));
+	   element. setAttribute ("url", ss. url);
+	   topnode. appendChild (element);
+	}
+	QFile file (QDir::toNativeSeparators (fileName)); 
+	if (file. open (QIODevice::WriteOnly | QIODevice::Text)) {
+	   QTextStream stream (&file);
+	   stream << doc. toString ();
+	   file. close ();
+	}
+}
+
+static inline
+int	numValue (char c) {
+	if (('0' <= c) && (c <= '9'))
+	   return c - (int)('0');
+	if (('a' <= c) && (c <= 'f'))
+	   return (int)c - 'a' + 10;
+	return (int)c - 'A' + 10;
+}
+
+static inline
+uint32_t toIntFrom (const QString &s, int base) {
+uint32_t res = 0;
+	for (int i = 0; i < s. size (); i ++)
+	   res =  res * base + numValue (s [i]. toLatin1 ());
+	return res;
+}
+
+void	RadioInterface::read_servicePictures (uint32_t Eid) {
+QString fileName	= path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
+	QFile f (fileName);
+	if (!f. open (QIODevice::ReadOnly)) 
+	   return;
+	QDomDocument xmlBOM;
+	xmlBOM. setContent (&f);
+	f. close ();
+	QDomElement root	= xmlBOM. documentElement ();
+	QDomElement component	= root. firstChild (). toElement ();
+	while (!component. isNull ()) {
+	   QString key = component. tagName ();
+	   QString url = component. attribute ("url");
+	   serviceSymbol symb;
+	   symb. serviceId	= toIntFrom (key, 16);
+	   symb. url		= url;
+	   channel. servicePictures. push_back (symb);
+	   component = component. nextSibling (). toElement ();
 	}
 }
 

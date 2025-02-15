@@ -106,6 +106,11 @@ class	configHandler;
  *	QWidget and the generated form
  */
 
+typedef struct {
+	uint32_t serviceId;
+	QString url;
+} serviceSymbol;
+
 class dabService {
 public:
 	QString		channel;
@@ -173,7 +178,7 @@ public:
 	float		azimuth;
 	bool		audioActive;
 	std::vector<scheduleDescriptor> programGuides;
-
+	std::vector<serviceSymbol>servicePictures;
 	void	cleanChannel () {
 	programGuides. resize (0);
 	realChannel	= true;
@@ -316,6 +321,10 @@ private:
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
+	QLabel			*serviceIcon;
+	bool			get_servicePicture	(QPixmap &, audiodata &);
+	void			write_servicePictures	(uint32_t);
+	void			read_servicePictures	(uint32_t);
 	QTimer			muteTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;

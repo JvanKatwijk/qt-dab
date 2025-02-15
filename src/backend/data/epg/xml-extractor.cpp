@@ -168,7 +168,12 @@ QDomElement scope = node. firstChildElement ("scope");
 }
 
 QString	xmlExtractor::service_url (const QDomElement &service) {
-	QDomElement multimedia = service. firstChildElement ("multimedia");
+	QDomElement mediaDescription =
+	                    service. firstChildElement ("mediaDescription");
+	if (mediaDescription. isNull ())
+	   return "";
+	QDomElement multimedia =
+	                     mediaDescription. firstChildElement ("multimedia");
 	if (multimedia. isNull ())
 	   return "";
 	if (multimedia. hasAttribute ("url"))
