@@ -62,14 +62,10 @@ uint16_t	rawContentType = 0;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
 
-//	fprintf (stderr, "headerSize %d, bodySize %d. contentType %d, transportId %d, segmentSize %d, lastFlag %d\n",
-//	                  headerSize, bodySize, b, transportId,
-//	                  segmentSize, lastFlag);
 //	we are actually only interested in the name, if any
 	int reference = segmentSize == -1 ? headerSize :
 	                 headerSize == -1 ? segmentSize :
 	                  std::min ((int)headerSize, (int)segmentSize);
-	
         while ((uint16_t)pointer < reference) {
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
@@ -109,7 +105,6 @@ uint16_t	rawContentType = 0;
 	                           (const char *)nameText. data (),
 	                           (CharacterSet) charSet,
 	                           nameText. size ());
-//	               fprintf (stderr, "\n %s\n", name. toLatin1 (). data ());
                        pointer += length;
 	               break;
 	            }
@@ -133,7 +128,6 @@ uint16_t	rawContentType = 0;
               }
 	}
 
-//	fprintf (stderr, "creating mot object %x %d\n", transportId, lastFlag);
 }
 
 	motObject::~motObject () {

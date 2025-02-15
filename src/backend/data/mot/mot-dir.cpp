@@ -42,8 +42,8 @@
 	this	-> dirSize	= dirSize;
 	this	-> numObjects	= objects;
 	this	-> dir_segmentSize	= segmentSize;
-	   fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
-	                             transportId, dirSize, objects, segmentSize);
+//	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
+//	                             transportId, dirSize, objects, segmentSize);
 	dir_segments. resize (dirSize);
 	motComponents. resize (objects);
 	for (int i = 0; i < objects; i ++) {
@@ -125,9 +125,9 @@ uint32_t	currentBase	= 11;	// in bytes
 //uint8_t	*data			= dir_segments;
 uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         dir_segments [currentBase + 1];
-
+	   
 	currentBase += 2 + extensionLength;
-//	fprintf (stderr, "directory with transportId %d\n", transportId); 
+
 	for (int i = 0; i < numObjects; i ++) {
 	   uint16_t transportId	= (dir_segments [currentBase] << 8) |
 	                                    dir_segments [currentBase + 1];

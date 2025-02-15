@@ -427,6 +427,7 @@ private:
 	void			extractServiceInformation (const QDomDocument &,
 	                                                      uint32_t);
 	void			process_ensemble (const QDomElement &, uint32_t);
+	void			process_service	(const QDomElement &);
 
 signals:
 	void			select_ensemble_font	();

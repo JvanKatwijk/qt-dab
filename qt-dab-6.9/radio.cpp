@@ -4401,10 +4401,14 @@ bool	RadioInterface::has_timeTable (uint32_t Sid) {
 void	RadioInterface::extractServiceInformation (const QDomDocument &doc,
 	                                            uint32_t Eid) {
 QDomElement root = doc. firstChildElement ("serviceInformation");
-	for (QDomElement theEnsemble = root. firstChildElement ("ensemble");
-	    !theEnsemble. isNull ();
-	    theEnsemble = theEnsemble. nextSiblingElement ("ensemble")) {
-	   process_ensemble (theEnsemble, Eid);
+	for (QDomElement theElement = root. firstChildElement ("");
+	    !theElement. isNull ();
+	    theElement = theElement. nextSiblingElement ("")) {
+	   if (theElement. tagName () == "ensemble")
+	       process_ensemble (theElement, Eid);
+	   else
+	   if (theElement. tagName () == "service")
+	      process_service (theElement);
 	}
 }
 
@@ -4421,25 +4425,26 @@ void	RadioInterface::process_ensemble (const QDomElement &node,
 	for (QDomElement service = node. firstChildElement ("service");
 	     !service. isNull ();
 	     service = service. nextSiblingElement ("service")) {
-	   uint32_t serviceSid =
-	             xmlHandler. serviceSid (service);
-	   QString url		=
-	             xmlHandler. service_url (service);
-	   bool alreadySeen = false;
-	   for (int i = 0; i < channel. servicePictures. size (); i ++) {
-	      if (channel. servicePictures [i]. serviceId == serviceSid) {
-	         alreadySeen = true;
-	         return;
-	      }
-	   }
-	   serviceSymbol symbol;
-	   symbol. serviceId = serviceSid;
-	   symbol. url	= url;
-	   channel. servicePictures . push_back (symbol);
-	   fprintf (stderr, "for %s we seek %s\n",
-	                     QString::number(serviceSid, 16). toLatin1 (). data (),
-	                     url. toLatin1 (). data ());
+	   process_service (service);
 	}
+}
+
+void	RadioInterface::process_service (const QDomElement &service) {
+	uint32_t serviceSid =
+	             xmlHandler. serviceSid (service);
+	QString url		=
+	             xmlHandler. service_url (service);
+	bool alreadySeen = false;
+	for (int i = 0; i < channel. servicePictures. size (); i ++) {
+	   if (channel. servicePictures [i]. serviceId == serviceSid) {
+	      alreadySeen = true;
+	      return;
+	   }
+	}
+	serviceSymbol symbol;
+	symbol. serviceId = serviceSid;
+	symbol. url	= url;
+	channel. servicePictures . push_back (symbol);
 }
 
 bool	RadioInterface::get_servicePicture (QPixmap &p, audiodata &ad) {
