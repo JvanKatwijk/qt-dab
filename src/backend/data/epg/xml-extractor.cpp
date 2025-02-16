@@ -61,7 +61,7 @@ uint32_t res = 0;
 //	The xml format for date is xxxx-xx-xxTyy:yy
 QDate	xmlExtractor::stringToDate (const QString &date) {
 int index = date. lastIndexOf ('T');
-QString pureDate = date. first (index);
+QString pureDate = date. left (index);
 QStringList temp = splitter (pureDate, QString ("-"));
 int year	= toIntFrom (temp [0], 10);
 int month	= toIntFrom (temp [1], 10);
@@ -71,8 +71,14 @@ int day		= toIntFrom (temp [2], 10);
 
 QDateTime xmlExtractor::stringToDateTime (const QString &date) {
 int index	= date. lastIndexOf ('T');
+#if QT_VERSION >= QT_VERSION_CHECK (6, 1, 1)
 QString pureDate = date. first (index);
 QString pureTime = date. last (date. size () - index - 1);
+#else
+QString pureDate = date. left (index);
+QString pureTime	= date;
+pureTime. remove (0, index);
+#endif
 QStringList temp = splitter (pureDate, QString ("-"));
 int year	= toIntFrom (temp [0], 10);
 int month	= toIntFrom (temp [1], 10);
@@ -92,15 +98,20 @@ int	minutes	= 0;
 	if ((dur [0]. toLatin1 () != 'P') ||
 	    (dur [1]. toLatin1 () != 'T'))
 	   return -1;
+#if QT_VERSION >= QT_VERSION_CHECK (6, 1, 1)
 	QString ss	= dur. last (dur. size () - 2);
+#else
+	QString ss	= dur;
+	ss. remove (0, 2);
+#endif
 	if (ss. contains ('H')) { // hours and may be minutes
 	   QStringList hh = splitter (ss, QString ("H"));
 	   hours = toIntFrom (hh [0], 10);
 	   if (hh [1]. size () > 1)
-	      minutes = toIntFrom (hh [1]. first (hh [1]. size () - 1), 10);
+	      minutes = toIntFrom (hh [1]. left (hh [1]. size () - 1), 10);
 	 }
 	 else
-	   minutes	= toIntFrom (ss. first (ss. size () - 1), 10);
+	   minutes	= toIntFrom (ss. left (ss. size () - 1), 10);
 	return 60 * hours + minutes;
 }
 
@@ -120,10 +131,20 @@ programDescriptor res;
 	res. startTime = stringToDateTime (tt);
 	QString dd = time. attribute ("duration");
 	res. duration = durationToInt (dd);
-	QDomElement name = node. firstChildElement ("longName");
-	if (name. isNull ())
-	   name = node. firstChildElement ("mediumName");
-	res. program = name. attribute ("xml:lang");
+	QDomElement md	= node. firstChildElement ("mediaDescription");
+	QString ps;
+	if (!md. isNull ()) {
+	   QDomElement sd = md. firstChildElement ("shortDescription");
+	   if (!sd. isNull ()) 
+	      ps = sd. attribute ("xml:lang");
+	}
+	if (ps == "") {
+	   QDomElement name = node. firstChildElement ("longName");
+	   if (name. isNull ())
+	      name = node. firstChildElement ("mediumName");
+	   ps = name. attribute ("xml:lang");
+	}
+	res. program = ps;
 	if (res. program != "")
 	   res. valid = true;
 	return res;

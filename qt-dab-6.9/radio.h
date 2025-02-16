@@ -257,6 +257,7 @@ private:
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 	QLabel			*dxDisplayText;
+	bool			dxMode;
 
 //	end of variables that are initalized
 
@@ -283,7 +284,6 @@ private:
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	deviceHandler		*inputDevice_p;
-	bool			dxMode;
 //
 	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
@@ -322,7 +322,8 @@ private:
 	QTimer			channelTimer;
 	QTimer			presetTimer;
 	QLabel			*serviceIcon;
-	bool			get_servicePicture	(QPixmap &, audiodata &);
+	bool			get_servicePicture	(QPixmap &,
+	                                                 const audiodata &);
 	void			write_servicePictures	(uint32_t);
 	void			read_servicePictures	(uint32_t);
 	QTimer			muteTimer;

@@ -3945,10 +3945,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   configHandler_p -> utcSelector_active () ?
 	                              QDateTime::currentDateTimeUtc () :
 	                              QDateTime::currentDateTime ();
-//	   position thePosition; 
-//	   thePosition. latitude        = theTr. theTransmitter. latitude;
-//	   thePosition. longitude       = theTr. theTransmitter. longitude;
- 
+
 	   mapHandler -> putData (key,
 	                          &theTr,
 	                          theTime. toString (Qt::TextDate),
@@ -4266,7 +4263,6 @@ QString labelText = "(" + QString::number (mainId) + ","
 	return labelText;
 }
 
-
 void	RadioInterface::addtoLogFile (const cacheElement *theTransmitter) {
 FILE	*theFile = nullptr;
 bool exists	= false;
@@ -4350,6 +4346,9 @@ QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 #endif
 }
 
+//
+/////////////////////////////////////////////////////////////////////////
+//
 void	RadioInterface::extractSchedule (QDomDocument &doc,
 	                                       uint32_t ensembleId) {
 QDomElement root = doc. firstChildElement ("epg");
@@ -4446,8 +4445,8 @@ void	RadioInterface::process_service (const QDomElement &service) {
 	symbol. url	= url;
 	channel. servicePictures . push_back (symbol);
 }
-
-bool	RadioInterface::get_servicePicture (QPixmap &p, audiodata &ad) {
+//
+bool	RadioInterface::get_servicePicture (QPixmap &p, const audiodata &ad) {
 bool res = false;
 	for (auto &ss : channel. servicePictures) {
 	   if (ss. serviceId == ad. SId) {
@@ -4462,9 +4461,10 @@ bool res = false;
 	}
 	return res;
 }
-
+//
+//	The servicePicture stack is saved between program invocations
 void	RadioInterface::write_servicePictures (uint32_t Eid) {
-QString fileName	= path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
+QString fileName = path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
 	QDomDocument doc;
 	QDomElement topnode;
 	topnode = doc. createElement ("topnode");
@@ -4501,7 +4501,7 @@ uint32_t res = 0;
 }
 
 void	RadioInterface::read_servicePictures (uint32_t Eid) {
-QString fileName	= path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
+QString fileName = path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly)) 
 	   return;

@@ -96,7 +96,10 @@ QString duration	= QString::number (program. duration) + "min";
 	programDisplay -> setItem (row, 2, item2);
 	QTableWidgetItem *item3 = new QTableWidgetItem;
 	item3	-> setTextAlignment (Qt::AlignLeft);
-	item3	-> setText (program. program);
+	QString bodyText	= program. program;
+	if (bodyText. size () >= 35)
+	   bodyText = bodyText. left (35) + "...";
+	item3	-> setText (bodyText);
 	programDisplay -> setItem (row, 3, item3);
 }
 
