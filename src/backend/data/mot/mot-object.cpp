@@ -53,7 +53,7 @@ uint16_t	rawContentType = 0;
 	   ((segment [3] & 0x0F) << 9) |
                    (segment [4] << 1) | ((segment [5] >> 7) & 0x01);
 	bodySize       =
-              (segment [0] << 20) | (segment [1] << 12) |
+	   (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
 
 // Extract the content type
@@ -61,6 +61,10 @@ uint16_t	rawContentType = 0;
 	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
+
+//	fprintf (stderr, "headerSize %d, bodySize %d. contentType %d, transportId %X, segmentSize %d, lastFlag %d\n",
+//	               headerSize, bodySize, b, transportId, 
+//	               segmentSize, lastFlag);
 
 //	we are actually only interested in the name, if any
 	int reference = segmentSize == -1 ? headerSize :
@@ -70,6 +74,7 @@ uint16_t	rawContentType = 0;
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
            uint16_t     length;
+//	   fprintf (stderr, "motobject PLI %d, paramId %d\n", PLI, paramId);
            switch (PLI) {
               case 00:
                  pointer += 1;
@@ -127,7 +132,6 @@ uint16_t	rawContentType = 0;
 	         }
               }
 	}
-
 }
 
 	motObject::~motObject () {
@@ -190,13 +194,13 @@ QByteArray result;
 //	"Handling complete %X %s, type %X\n",
 //	                  transportId, name. toLatin1 (). data (),
 //	                                                  (int)contentType);
-//	if (name == "")
-//	   name = QString::number (get_transportId (), 16);
+	if (name == "")
+	   name = QString::number (get_transportId (), 16);
 	handle_motObject (result, name, (int)contentType,
 	                            dirElement, backgroundFlag);
 }
 
-int	motObject::get_headerSize() {
+int	motObject::get_headerSize	() {
 	return headerSize;
 }
 

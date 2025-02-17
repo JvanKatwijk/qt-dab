@@ -60,9 +60,8 @@ uint32_t res = 0;
 //
 //	The xml format for date is xxxx-xx-xxTyy:yy
 QDate	xmlExtractor::stringToDate (const QString &date) {
-int index = date. lastIndexOf ('T');
-QString pureDate = date. left (index);
-QStringList temp = splitter (pureDate, QString ("-"));
+QStringList t	= splitter (date, "T");
+QStringList temp = splitter (t [0], QString ("-"));
 int year	= toIntFrom (temp [0], 10);
 int month	= toIntFrom (temp [1], 10);
 int day		= toIntFrom (temp [2], 10);
@@ -70,24 +69,23 @@ int day		= toIntFrom (temp [2], 10);
 }
 
 QDateTime xmlExtractor::stringToDateTime (const QString &date) {
-int index	= date. lastIndexOf ('T');
-#if QT_VERSION >= QT_VERSION_CHECK (6, 1, 1)
-QString pureDate = date. first (index);
-QString pureTime = date. last (date. size () - index - 1);
-#else
-QString pureDate = date. left (index);
-QString pureTime	= date;
-pureTime. remove (0, index);
-#endif
+QStringList t	= splitter (date, "T");
+QString	pureDate = t [0];
 QStringList temp = splitter (pureDate, QString ("-"));
 int year	= toIntFrom (temp [0], 10);
 int month	= toIntFrom (temp [1], 10);
 int day		= toIntFrom (temp [2], 10);
-temp		= splitter (pureTime, QString (":"));
-int hours	= toIntFrom (temp [0], 10);
-int minutes	= toIntFrom (temp [1], 10);
-QDate datum (year, month, day);
-QTime time (hours, minutes);
+QDate datum	= QDate (year, month, day);
+QTime time; 
+	if (t. size () < 2) { // should not happen
+	   time = QTime::currentTime ();
+	}
+	else { 
+	   temp		= splitter (t [1], QString (":"));
+	   int hours	= toIntFrom (temp [0], 10);
+	   int minutes	= toIntFrom (temp [1], 10);
+	   time = QTime (hours, minutes);
+	}
 	return QDateTime (datum, time);
 }
 //
@@ -95,8 +93,7 @@ QTime time (hours, minutes);
 int	xmlExtractor::durationToInt (const QString &dur) {
 int	hours	= 0;
 int	minutes	= 0;
-	if ((dur [0]. toLatin1 () != 'P') ||
-	    (dur [1]. toLatin1 () != 'T'))
+	if (!dur. startsWith ("PT"))
 	   return -1;
 #if QT_VERSION >= QT_VERSION_CHECK (6, 1, 1)
 	QString ss	= dur. last (dur. size () - 2);

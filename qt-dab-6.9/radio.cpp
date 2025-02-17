@@ -958,7 +958,7 @@ void	RadioInterface::saveMOTObject (QByteArray  &result,
 	if (path_for_files == "")
 	   return;
 
-	if (name == "") {
+	if (name == "") {	// should not happen
 	   static int counter	= 0;
 	   name = "motObject_" + QString::number (counter);
 	   counter ++;
@@ -1487,18 +1487,19 @@ char minuteString [3];
 }
 
 QString	RadioInterface::convertTime (struct theTime &t) {
-char dayString [3];
-char hourString [3];
-char minuteString [3];
-	sprintf (dayString, "%.2d", t. day);
-	sprintf (hourString, "%.2d", t. hour);
-	sprintf (minuteString, "%.2d", t. minute);
-	QString result = QString::number (t. year) + "-" +
-	                       monthTable [t. month - 1] + "-" +
-	                       QString (dayString) + "  " +
-	                       QString (hourString) + ":" +
-	                       QString (minuteString);
-	return result;
+	return convertTime (t. year, t. month, t. day, t. hour, t. minute);
+//char dayString [3];
+//char hourString [3];
+//char minuteString [3];
+//	sprintf (dayString, "%.2d", t. day);
+//	sprintf (hourString, "%.2d", t. hour);
+//	sprintf (minuteString, "%.2d", t. minute);
+//	QString result = QString::number (t. year) + "-" +
+//	                       monthTable [t. month - 1] + "-" +
+//	                       QString (dayString) + "  " +
+//	                       QString (hourString) + ":" +
+//	                       QString (minuteString);
+//	return result;
 }
 //
 //	called from the MP4 decoder
@@ -3338,6 +3339,9 @@ void	RadioInterface::handle_configButton	() {
 void	RadioInterface::handle_devicewidgetButton	() {
 	if (inputDevice_p == nullptr)
 	   return;
+	bool b1 = value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 0);
+	bool b2 = inputDevice_p -> getVisibility ();
+	fprintf (stderr, "b1 = %d, b2 = %d\n", b1, b2);
 	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
 
 	store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE,

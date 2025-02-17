@@ -51,9 +51,8 @@ struct motTable_ {
 }
 
 	motHandler::~motHandler	() {
-int	i;
 
-	for (i = 0; i < 55; i ++) {
+	for (int i = 0; i < 55; i ++) {
 	   if (motTable [i]. orderNumber > 0) {
 	      if (motTable [i]. motSlide != nullptr) {
 	         delete motTable [i]. motSlide;
@@ -144,7 +143,7 @@ int32_t	i;
 
 	   case 4: {
 	      motObject *h = getHandle (transportId);
-	      if (h == nullptr) {
+	      if ((h == nullptr)  && (segmentNumber == 0)) {
 	         h = new motObject (myRadioInterface,
 	                            false,	// not within a directory
 	                            transportId,
