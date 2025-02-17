@@ -172,7 +172,7 @@ int	sign (DABFLOAT x) {
 	return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-void	limit_symmetrically (float &v, float limit) {
+void	limit_symmetrically (DABFLOAT &v, float limit) {
 	if (v < -limit)
 	   v = -limit;
 	if (v > limit)
@@ -228,7 +228,7 @@ DABFLOAT sum = 0;
 	   IntegAbsPhaseVector [index] +=
 	                           0.2f * ALPHA * (AbsPhaseofBin - M_PI_4);
 	   limit_symmetrically (IntegAbsPhaseVector [index],
-	                                RAD_PER_DEGREE * 20.0f);
+	                                RAD_PER_DEGREE * (DABFLOAT)20.0);
 
 /**
   *	When trying the alternative decoder implementations

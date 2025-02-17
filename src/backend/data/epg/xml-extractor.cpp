@@ -133,13 +133,13 @@ programDescriptor res;
 	if (!md. isNull ()) {
 	   QDomElement sd = md. firstChildElement ("shortDescription");
 	   if (!sd. isNull ()) 
-	      ps = sd. attribute ("xml:lang");
+	      ps = sd. text ();
 	}
 	if (ps == "") {
 	   QDomElement name = node. firstChildElement ("longName");
 	   if (name. isNull ())
 	      name = node. firstChildElement ("mediumName");
-	   ps = name. attribute ("xml:lang");
+	   ps = name. text ();
 	}
 	res. program = ps;
 	if (res. program != "")
@@ -166,7 +166,7 @@ QDomElement scope = node. firstChildElement ("scope");
 	if (name. isNull ())
 	   name = node. firstChildElement ("longName");
 	result. name =
-	             !name. isNull () ? name. attribute ("xml:lang") : "";
+	             !name. isNull () ? name. text () : "";
 	QString startDate	= scope. attribute ("startTime");
 	QString	stopDate	= scope. attribute ("stopTime");
 	result. startTime	= stringToDateTime (startDate);

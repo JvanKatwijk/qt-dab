@@ -198,7 +198,8 @@ int endPoint = setLength (v, index);
 QString res;
 	child = doc. createElement ("shortName");
 	res = process_481 (v, index);
-	child. setAttribute ("xml:lang", res);
+	QDomText t = doc. createTextNode (res);
+	child. appendChild (t);
 	index = endPoint;
 	return child;
 }
@@ -211,7 +212,8 @@ int endPoint = setLength (v, index);
 QString res;
 	child	= doc. createElement ("mediumName");
 	res	= process_481 (v, index);
-	child. setAttribute ("xml:lang", res);
+	QDomText t = doc.createTextNode (res);
+	child. appendChild (t);
 	index = endPoint;
 	return child;
 }
@@ -224,7 +226,8 @@ QString res;
 int endPoint = setLength (v, index);
 	child	= doc. createElement ("longName");
 	res	= process_481 (v, index);
-	child. setAttribute ("xml:lang", res);
+	QDomText t = doc. createTextNode (res);
+	child. appendChild (t);
 	index = endPoint;
 	return child;
 }
@@ -299,7 +302,8 @@ QString s;
 	            s = QString::fromUtf8 (text);
 	         }
 	         index = endPoint;
-	         t. setAttribute ("xml:lang", s);
+	         QDomText tt = doc. createTextNode (s);
+	         t. appendChild (tt);
 	         break;
 	      }
 	      default:
@@ -390,7 +394,8 @@ QDomElement t;
 	      }
 	      case 0x82: {	// xml:lang	481
 	         QString s = process_481 (v, index);
-	         t. setAttribute ("xml:lang", s);
+	         QDomText dt = doc. createTextNode (s);
+	         t. appendChild (dt);
 	        break;
 	      }
 	      case 0x83: {	// description 440
@@ -455,12 +460,13 @@ QDomElement t;
 QString res;
 	t = doc. createElement ("shortDescription");
 	switch (v [index]) {
-	   case 0x80:
+	   case 0x80: {
 	      for (int i = index + 1; i < endPoint; i ++)
 	         res += QChar (v [i]);
-	      t. setAttribute ("sml:lang", res);
+	      QDomText n = doc.createTextNode (res);
+	      t. appendChild (n);;
               break;
-
+	   }
 	   case 0x01: {
 	      QString s;
 	      if (v [index + 1] < 20)
@@ -471,7 +477,8 @@ QString res;
 	            text. push_back (v [i]);
 	         s = QString::fromUtf8 (text);
 	      }
-	      t. setAttribute ("xml:lang", s);
+	      QDomText n = doc. createTextNode (s);
+	      t. appendChild (n);
 	      break;
 	   }
 	   default:
@@ -494,7 +501,8 @@ QString res;
 	      QByteArray text;
 	      for (int i = index + 1; i < endPoint; i ++)
 	         text. push_back (v [i]);
-	      t. setAttribute ("sml:lang", QString::fromUtf8 (text));
+	      QDomText dt = doc. createTextNode (QString::fromUtf8 (text));
+	      t. appendChild (dt);
               break;
 	   }
 	   case 0x01: {
@@ -507,7 +515,8 @@ QString res;
 	            text. push_back (v [i]);
 	         s = QString::fromUtf8 (text);
 	      }
-	      t. setAttribute ("xml:lang", s);
+	      QDomText dt = doc. createTextNode (s);
+	      t. appendChild (dt);
 	      break;
 	   }
 	   default:
@@ -617,7 +626,8 @@ bool	broadcasting	= false;
 	      }
 	      case 0x86: {	// 481, xml:lang
 	         QString s = process_481 (v, index);
-	         program. setAttribute ("xml:lang", s);
+	         QDomText dt = doc. createTextNode (s);
+	         program. appendChild (dt);
 	         break;
 	      }
 	      default:
