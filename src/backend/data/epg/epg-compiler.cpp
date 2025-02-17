@@ -195,10 +195,21 @@ QDomElement  epgCompiler::process_shortName (QDomDocument &doc,
 	                                     int &index) {
 QDomElement child;
 int endPoint = setLength (v, index);
-QString res;
+QString s;
 	child = doc. createElement ("shortName");
-	res = process_481 (v, index);
-	QDomText t = doc. createTextNode (res);
+	if (v [index] == 0x80)
+	   ignore (v, index);
+	if (v [index] == 1) {
+	   QByteArray text;
+	   if (v [index + 1] < 20)
+	      s = stringTable [v [index + 1]];
+	   else {
+	      for (;index < endPoint; index ++)
+	         text. push_back (v [index]);
+	      s = QString::fromUtf8 (text);
+	   }
+	}
+	QDomText t = doc. createTextNode (s);
 	child. appendChild (t);
 	index = endPoint;
 	return child;
@@ -211,8 +222,19 @@ QDomElement child;
 int endPoint = setLength (v, index);
 QString res;
 	child	= doc. createElement ("mediumName");
-	res	= process_481 (v, index);
-	QDomText t = doc.createTextNode (res);
+	if (v [index] == 0x80)
+	   ignore (v, index);
+	if (v [index] == 1) {
+	   QByteArray text;
+	   if (v [index + 1] < 20)
+	      res = stringTable [v [index + 1]];
+	   else {
+	      for (;index < endPoint; index ++)
+	         text. push_back (v [index]);
+	      res = QString::fromUtf8 (text);
+	   }
+	}
+	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
 	return child;
@@ -225,7 +247,18 @@ QDomElement child;
 QString res;
 int endPoint = setLength (v, index);
 	child	= doc. createElement ("longName");
-	res	= process_481 (v, index);
+	if (v [index] == 0x80)
+	   ignore (v, index);
+	if (v [index] == 1) {
+	   QByteArray text;
+	   if (v [index + 1] < 20)
+	      res = stringTable [v [index + 1]];
+	   else {
+	      for (;index < endPoint; index ++)
+	         text. push_back (v [index]);
+	      res = QString::fromUtf8 (text);
+	   }
+	}
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -267,6 +300,10 @@ QDomElement	epgCompiler::process_genre (QDomDocument &doc,
 	                                   const std::vector<uint8_t> &v,
 	                                   int &index) {
 int endPoint	= setLength (v, index);
+static
+const char *genres [] = {
+"IntentionCS", "FormatCS", "CntentCS", "OriginationCS", 
+"IntendedAudienceCS", "ContentAlertCS", "KediaTupeCS", "AtmosphereCS"};
 QDomElement t;
 	t = doc. createElement ("genre");
 QString s;
@@ -278,6 +315,8 @@ QString s;
 	         s = QString::number (v [index]);
 	         for (int i = index + 1; i < localEnd; i ++)
 	            s += "." + QString::number (v [i]);
+	         s = QString ("urn:tva:metadata:cs:") +
+	             QString (genres [v [index]]) +"2008:" + s;
 	         t. setAttribute ("href", s);
 	         index = localEnd;
 	         break;
@@ -319,22 +358,25 @@ QDomElement epgCompiler::process_keyWords (QDomDocument &doc,
 	                                  const std::vector<uint8_t> &v,
 	                                  int &index) {
 int endPoint = setLength (v, index);
-QDomElement t;
+QDomElement child;
 QString res;
-	t = doc. createElement ("keyWords");
-	switch (v [index]) {
-	   case 0x80:
-	      for (int i = index + 1; i < endPoint; i ++)
-	         res += QChar (v [i]);
-	      t. setAttribute ("sml:lang", res);
-              break;
-
-	   default:
-	      process_forgotten ("keywords", v, index);
-	      break;
+	child = doc. createElement ("keyWords");
+	if (v [index] == 0x80)
+	   ignore (v, index);
+	if (v [index] == 1) {
+	   QByteArray text;
+	   if (v [index + 1] < 20)
+	      res = stringTable [v [index + 1]];
+	   else {
+	      for (;index < endPoint; index ++)
+	         text. push_back (v [index]);
+	      res = QString::fromUtf8 (text);
+	   }
 	}
+	QDomText t = doc. createTextNode (res);
+	child. appendChild (t);
 	index = endPoint;
-	return t;
+	return child;
 }
 
 QDomElement epgCompiler::process_memberOf (QDomDocument &doc,
@@ -393,10 +435,8 @@ QDomElement t;
 	         break;
 	      }
 	      case 0x82: {	// xml:lang	481
-	         QString s = process_481 (v, index);
-	         QDomText dt = doc. createTextNode (s);
-	         t. appendChild (dt);
-	        break;
+	         ignore (v, index);
+	         break;
 	      }
 	      case 0x83: {	// description 440
 	         int localEnd = setLength (v, index);
@@ -460,11 +500,8 @@ QDomElement t;
 QString res;
 	t = doc. createElement ("shortDescription");
 	switch (v [index]) {
-	   case 0x80: {
-	      for (int i = index + 1; i < endPoint; i ++)
-	         res += QChar (v [i]);
-	      QDomText n = doc.createTextNode (res);
-	      t. appendChild (n);;
+	   case 0x80: {		// xml:lang, ignore
+	      ignore (v, index);
               break;
 	   }
 	   case 0x01: {
@@ -497,13 +534,8 @@ QDomElement t;
 QString res;
 	t = doc. createElement ("longDescription");
 	switch (v [index]) {
-	   case 0x80: {
-	      QByteArray text;
-	      for (int i = index + 1; i < endPoint; i ++)
-	         text. push_back (v [i]);
-	      QDomText dt = doc. createTextNode (QString::fromUtf8 (text));
-	      t. appendChild (dt);
-              break;
+	   case 0x80: {		// xml:lang
+	      ignore (v, index);
 	   }
 	   case 0x01: {
 	      QString s;
@@ -625,9 +657,7 @@ bool	broadcasting	= false;
 	         break;
 	      }
 	      case 0x86: {	// 481, xml:lang
-	         QString s = process_481 (v, index);
-	         QDomText dt = doc. createTextNode (s);
-	         program. appendChild (dt);
+	         ignore (v, index);
 	         break;
 	      }
 	      default:
@@ -747,6 +777,8 @@ QDomElement schedule;
 	         break;
 	   }
 	}
+	if (!schedule. hasAttribute ("version");
+	   schedule. setAttribute ("version", 1);
 	index	= endPoint;
 	return schedule;
 }
@@ -1059,12 +1091,10 @@ QString s;
 	         multimedia. setAttribute ("mime value", s);
 	         break;
 	      }
-	      case 0x81: {	// xml:lang	481
-	         QString s = process_481 (v, index);
-	         multimedia. setAttribute ("xml:lang", s);
+	      case 0x81: {	// xml:lang	ignore
+	         ignore (v, index);
 	         break;
 	      }
-	      
 	      case 0x82: { 	//440,  url
 	         int localEnd = setLength (v, index);
 	         for (int i = index; i < localEnd; i ++)
@@ -1073,7 +1103,6 @@ QString s;
 	         index = localEnd;
 	         break;
 	      }
-
 	      case 0x83: {	// 46, type
 	         int localEnd = setLength (v, index);
 	         switch (v [index]) {
@@ -1277,8 +1306,7 @@ QDomElement programmeEvent;
 	         break;
 	      }
 	      case 0x86: {	//xml:lang 481
-	         QString s = process_481 (v, index);
-	         programmeEvent. setAttribute ("xml:lang", s);
+	         ignore (v, index);
 	         break;
 	      }
 	      default:
@@ -1565,23 +1593,6 @@ int endPoint	= setLength (v, index);
 	index = endPoint;
 	return result;
 }
-
-//	xml:lang
-QString	epgCompiler::process_481 (const std::vector<uint8_t> &v, int &index) {
-int endPoint	= setLength (v, index);
-QString s;
-	if (v [index] < 20)
-	   s = stringTable [v [index]];
-	else {
-	   QByteArray text;
-	   for (int i = index; i < endPoint; i ++)
-	      text. push_back (v [i]);
-	   s = QString::fromUtf8 (text);
-	}
-	index	= endPoint;
-	return s;
-}
-
 //	index
 QString	epgCompiler::process_482	(const std::vector<uint8_t> &v, int &index) {
 int endPoint	= setLength (v, index);
@@ -1684,5 +1695,10 @@ const char *typeList [] = {
 	   return QString (typeList [valueByte - 2]);
 	else
 	   return "unknown Type";
+}
+
+void	epgCompiler::ignore	(const std::vector<uint8_t> &v, int &index) {
+int endPoint	= setLength (v, index);
+	index	= endPoint;
 }
 

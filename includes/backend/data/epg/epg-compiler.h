@@ -114,7 +114,6 @@ private:
 	QString	process_474		(const std::vector<uint8_t> &v, int &index);
 	QString	process_475		(const std::vector<uint8_t> &v, int &index);
 	QString	process_476		(const std::vector<uint8_t> &v, int &index);
-	QString	process_481		(const std::vector<uint8_t> &v, int &index);
 	QString	process_482		(const std::vector<uint8_t> &v, int &index);
 	QString	process_483		(const std::vector<uint8_t> &v, int &index);
 	QString	process_484		(const std::vector<uint8_t> &v, int &index);
@@ -125,6 +124,8 @@ private:
 
 	void	process_obsolete	(const std::vector<uint8_t> &v, int &index);
 
+	void	ignore			(const std::vector<uint8_t> &v,
+	                                  int &index);
 	void    process_forgotten	(const QString s, 
 	                                const std::vector<uint8_t> &v,
 	                                int &index);
