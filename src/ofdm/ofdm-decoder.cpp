@@ -186,6 +186,12 @@ DABFLOAT toFirstQuadrant (DABFLOAT phase) {
 }
 
 Complex makeComplex (DABFLOAT phase) {
+DABFLOAT p2	= phase * phase;
+DABFLOAT p3	= p2 * phase;
+DABFLOAT p4	= p3 * phase;
+DABFLOAT sine	= phase - p3/ 6;
+DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24;
+	return complex (cosi, sine);
 	return Complex (cos (phase), sin (phase));
 }
 

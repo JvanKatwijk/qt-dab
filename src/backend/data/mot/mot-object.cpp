@@ -43,6 +43,7 @@ uint16_t	rawContentType = 0;
 	this	-> dirElement		= dirElement;
 	this	-> backgroundFlag	= backgroundFlag;
 
+	this	-> name			= "";
 	connect (this, &motObject::handle_motObject,
 	         mr, &RadioInterface::handle_motObject);
 	this	-> transportId		= transportId;
@@ -74,7 +75,6 @@ uint16_t	rawContentType = 0;
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
            uint16_t     length;
-//	   fprintf (stderr, "motobject PLI %d, paramId %d\n", PLI, paramId);
            switch (PLI) {
               case 00:
                  pointer += 1;
@@ -137,7 +137,7 @@ uint16_t	rawContentType = 0;
 	motObject::~motObject () {
 }
 
-uint16_t	motObject::get_transportId() {
+uint16_t	motObject::get_transportId () {
 	return transportId;
 }
 
@@ -191,12 +191,14 @@ QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
 //	fprintf (stderr,
-//	"Handling complete %X %s, type %X\n",
+//	"Handling complete %X %s, type %X, dirElement %d\n",
 //	                  transportId, name. toLatin1 (). data (),
-//	                                                  (int)contentType);
-	if (name == "")
-	   name = QString::number (get_transportId (), 16);
-	handle_motObject (result, name, (int)contentType,
+//	                                                  (int)contentType,
+//	                                dirElement);
+//	if ((name == "") && !dirElement) 
+//	   name = QString::number (get_transportId (), 16);
+	if (name != "")
+	   handle_motObject (result, name, (int)contentType,
 	                            dirElement, backgroundFlag);
 }
 

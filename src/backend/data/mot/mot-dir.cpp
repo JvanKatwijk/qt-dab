@@ -42,8 +42,8 @@
 	this	-> dirSize	= dirSize;
 	this	-> numObjects	= objects;
 	this	-> dir_segmentSize	= segmentSize;
-	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
-	                             transportId, dirSize, objects, segmentSize);
+//	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
+//	                             transportId, dirSize, objects, segmentSize);
 	dir_segments. resize (dirSize);
 	motComponents. resize (objects);
 	for (int i = 0; i < objects; i ++) {
@@ -114,7 +114,7 @@ int16_t	i;
 	         return;
 //	   yes we have all data to build up the directory
 	   analyse_theDirectory();
-	   fprintf (stderr, "Going to inspect the directory\n");
+//	   fprintf (stderr, "Going to inspect the directory\n");
 	}
 }
 //

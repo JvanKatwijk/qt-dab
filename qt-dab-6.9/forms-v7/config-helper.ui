@@ -445,7 +445,7 @@
      <item row="0" column="2">
       <widget class="QCheckBox" name="epg2xmlSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG detector has two components, one collecting data to present as &amp;quot;time table&amp;quot; for today,&lt;/p&gt;&lt;p&gt;the other one - using a library written by Julian Cable from the BBC - to generate textual xml.&lt;/p&gt;&lt;p&gt;If selected, the xml will be generated. Note howevet that we encountered at least one example&lt;/p&gt;&lt;p&gt;where the library generating the textual xml causes a crash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG processor reads and processes the EPG data. In doing so, it extracts the xml description of the EPG/SPI data from binary encoded xml to xml.  If this selector is enabled, the software writes the xml as textual data to files that are stored in the Qt-DAB-files folder (or directory, or map)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string> epg to xml</string>
@@ -465,7 +465,7 @@
      <item row="1" column="1">
       <widget class="QCheckBox" name="epg_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG processor when an EPG service is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>epg automatic</string>

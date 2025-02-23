@@ -132,7 +132,7 @@ int	index	= 0;
 	   while (index < endPoint) {
 	      switch (v [index]) {
 	         case 0x06: {	// default language
-	            QDomElement child =  process_defaultLanguage (doc, v, index);
+	            QDomElement child = process_defaultLanguage (doc, v, index);
 	            serviceInformation. appendChild (child);
 	            break;
 	         }
@@ -167,6 +167,14 @@ int	index	= 0;
 	            serviceInformation. setAttribute ("serviceprovider", s);
 	            break;
 	         }
+	         case 0x84: {	// not used
+	            ignore (v, index);
+	            break;
+	         }
+	         case 0x85: {	// alphabet
+	            ignore (v, index);
+	            break;
+	         }
 	         default:
 	            process_forgotten ("serviceInformation:", v, index);
 	            break;
@@ -184,7 +192,8 @@ QDomElement child;
 	child = doc. createElement ("defaultLanguage");
 	QString res;
 	for (int i = index; i < endPoint; i ++)
-	   res = res + QChar (v [i]);
+	   res += QChar (v [i]);
+	
 	child. setAttribute ("defaultLanguage", res);
 	index	= endPoint;
 	return child;
@@ -197,18 +206,10 @@ QDomElement child;
 int endPoint = setLength (v, index);
 QString s;
 	child = doc. createElement ("shortName");
-	if (v [index] == 0x80)
+	if (v [index] == 0x80) {	// xml:lang
 	   ignore (v, index);
-	if (v [index] == 1) {
-	   QByteArray text;
-	   if (v [index + 1] < 20)
-	      s = stringTable [v [index + 1]];
-	   else {
-	      for (;index < endPoint; index ++)
-	         text. push_back (v [index]);
-	      s = QString::fromUtf8 (text);
-	   }
 	}
+	s = fetchString (v, index, endPoint);
 	QDomText t = doc. createTextNode (s);
 	child. appendChild (t);
 	index = endPoint;
@@ -222,18 +223,9 @@ QDomElement child;
 int endPoint = setLength (v, index);
 QString res;
 	child	= doc. createElement ("mediumName");
-	if (v [index] == 0x80)
+	if (v [index] == 0x80)	// xml:lang
 	   ignore (v, index);
-	if (v [index] == 1) {
-	   QByteArray text;
-	   if (v [index + 1] < 20)
-	      res = stringTable [v [index + 1]];
-	   else {
-	      for (;index < endPoint; index ++)
-	         text. push_back (v [index]);
-	      res = QString::fromUtf8 (text);
-	   }
-	}
+	res = fetchString (v, index, endPoint);
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -247,18 +239,9 @@ QDomElement child;
 QString res;
 int endPoint = setLength (v, index);
 	child	= doc. createElement ("longName");
-	if (v [index] == 0x80)
+	if (v [index] == 0x80)		// xml:lang
 	   ignore (v, index);
-	if (v [index] == 1) {
-	   QByteArray text;
-	   if (v [index + 1] < 20)
-	      res = stringTable [v [index + 1]];
-	   else {
-	      for (;index < endPoint; index ++)
-	         text. push_back (v [index]);
-	      res = QString::fromUtf8 (text);
-	   }
-	}
+	res = fetchString (v, index, endPoint);
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -310,7 +293,6 @@ QString s;
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80: {
-	         int oldIndex = index;
 	         int localEnd = setLength (v, index);
 	         s = QString::number (v [index]);
 	         for (int i = index + 1; i < localEnd; i ++)
@@ -361,18 +343,9 @@ int endPoint = setLength (v, index);
 QDomElement child;
 QString res;
 	child = doc. createElement ("keyWords");
-	if (v [index] == 0x80)
+	if (v [index] == 0x80)	//  xml:lang
 	   ignore (v, index);
-	if (v [index] == 1) {
-	   QByteArray text;
-	   if (v [index + 1] < 20)
-	      res = stringTable [v [index + 1]];
-	   else {
-	      for (;index < endPoint; index ++)
-	         text. push_back (v [index]);
-	      res = QString::fromUtf8 (text);
-	   }
-	}
+	res = fetchString (v, index, endPoint);
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -389,9 +362,7 @@ QDomElement t;
 	   switch (v [index]) {
 	      case  0x80: {	// 4.7.1, id
 	         int localEnd = setLength (v, index);
-	         QString s;
-	         for (int i = index; i < localEnd; i ++)
-	            s += QChar (v [i]);
+	         QString s = fetchString (v, index, endPoint);
 	         t. setAttribute ("id", s);
 	         index = localEnd;
 	         break;
@@ -422,9 +393,10 @@ QDomElement t;
 	   switch (v [index]) {
 	      case 0x80: {	//uri
 	         int localEnd = setLength (v, index);
-	         QString res;
+	         QByteArray text;
 	         for (int i = index; i < localEnd; i ++)
-	            res += QChar (v [i]);
+	            text. push_back (v [i]);
+	         QString res = QString::fromUtf8 (text);
 	         t. setAttribute ("uri", res);
 	         index = localEnd;
 	         break;
@@ -440,14 +412,12 @@ QDomElement t;
 	      }
 	      case 0x83: {	// description 440
 	         int localEnd = setLength (v, index);
-	         QString res;
-	         for (int i = index; i < localEnd; i ++)
-	            res += QChar (v [i]);
+	         QString res = fetchString (v, index, endPoint);
 	         t. setAttribute ("description", res);
 	         index = localEnd;
 	         break;
 	      }
-	      case 0x84: {	//expiry time
+	      case 0x84: {	// expiry time
 	         QString s = process_474 (v, index);
 	         t. setAttribute ("expiryTime", s);
 	         break;
@@ -496,67 +466,32 @@ QDomElement epgCompiler::process_shortDescription (QDomDocument &doc,
 	                                          const std::vector<uint8_t> &v,
 	                                           int &index) {
 int endPoint = setLength (v, index);
-QDomElement t;
+QDomElement child;
 QString res;
-	t = doc. createElement ("shortDescription");
-	switch (v [index]) {
-	   case 0x80: {		// xml:lang, ignore
-	      ignore (v, index);
-              break;
-	   }
-	   case 0x01: {
-	      QString s;
-	      if (v [index + 1] < 20)
-	         s = stringTable [v [index + 1]];
-	      else {
-	         QByteArray text;
-	         for (int i = index + 1; i < endPoint; i ++)
-	            text. push_back (v [i]);
-	         s = QString::fromUtf8 (text);
-	      }
-	      QDomText n = doc. createTextNode (s);
-	      t. appendChild (n);
-	      break;
-	   }
-	   default:
-	      process_forgotten ("shortDescription", v, index);
-	      break;
-        }
+	child = doc. createElement ("shortDescription");
+	if (v [index] == 0x80) // xml:lang
+	   ignore (v, index);
+	QString s = fetchString (v, index, endPoint);
+	QDomText n = doc. createTextNode (res);
+	child. appendChild (n);
 	index = endPoint;
-	return t;
+	return child;
 }
 
 QDomElement epgCompiler::process_longDescription (QDomDocument &doc,
 	                                         const std::vector<uint8_t> &v,
 	                                         int &index) {
 int endPoint = setLength (v, index);
-QDomElement t;
+QDomElement child;
 QString res;
-	t = doc. createElement ("longDescription");
-	switch (v [index]) {
-	   case 0x80: {		// xml:lang
-	      ignore (v, index);
-	   }
-	   case 0x01: {
-	      QString s;
-	      if (v [index + 1] < 20)
-	         s = stringTable [v [index + 1]];
-	      else {
-	         QByteArray text;
-	         for (int i = index + 1; i < endPoint; i ++)
-	            text. push_back (v [i]);
-	         s = QString::fromUtf8 (text);
-	      }
-	      QDomText dt = doc. createTextNode (s);
-	      t. appendChild (dt);
-	      break;
-	   }
-	   default:
-	      process_forgotten ("shortName", v, index);
-	      break;
-        }
+	child = doc. createElement ("longDescription");
+	if (v [index] == 0x80) // xml:lang
+	   ignore (v, index);
+	QString s = fetchString (v, index, endPoint);
+	QDomText n = doc. createTextNode (res);
+	child. appendChild (n);
 	index = endPoint;
-	return t;
+	return child;
 }
 
 QDomElement epgCompiler::process_programme (QDomDocument &doc,
@@ -614,19 +549,21 @@ bool	broadcasting	= false;
 	         program. appendChild (child);
 	         break;
 	      }
-	      case 0x29: {	// bearer
-	         QDomElement child = process_bearer (doc, v, index);
-	         program.  appendChild (child);
-	         break;
-	      }
-	      case 0x31: {	// radiodns
-	         QDomElement child = process_radiodns (doc, v, index); 
+	      case 0x36: {	// onDemand
+	         QDomElement child = process_onDemand (doc, v, index);
 	         program. appendChild (child);
 	         break;
 	      }
-	      case 0x32: {	// geolocation
-	         QDomElement child = process_geolocation (doc, v, index);
-	         program. appendChild (child);
+	      case 0x2A: {	// presentation language
+	         ignore (v, index);
+	         break;
+	      }
+	      case 0x39: {	// alias
+	         ignore (v, index);
+	         break;
+	      }
+	      case 0x3A: {	// phoneme
+	         ignore (v, index);
 	         break;
 	      }
 	      case 0x80: {	// 4.7.1 Id
@@ -661,7 +598,7 @@ bool	broadcasting	= false;
 	         break;
 	      }
 	      default:
-	         process_forgotten ("program::xml:lan", v, index);
+	         process_forgotten ("programme", v, index);
 	         break;
 	   }
 	}
@@ -697,7 +634,6 @@ QString	s;
 	         t. setAttribute ("creationTime", s);
 	         break;
 	      }
-	
 	      case 0x82: {	// originator
 	         QString s = process_440 (v, index);
 	         t. setAttribute ("originator", s);
@@ -708,6 +644,8 @@ QString	s;
 	         process_forgotten ("programGroups", v, index);
 	   }
 	}
+	if (!t. hasAttribute ("version"))
+	   t. setAttribute ("version", 1);
 	index = endPoint;
 	return t;
 }
@@ -718,7 +656,6 @@ QDomElement epgCompiler::process_schedule (QDomDocument &doc,
 int endPoint	= setLength (v, index);
 QDomElement schedule;
 	schedule = doc. createElement ("schedule");
-
 	while (index < endPoint) {
 	   QString s;
 	   switch (v [index]) {
@@ -757,6 +694,10 @@ QDomElement schedule;
 	         schedule. appendChild (t);
 	         break;
 	      }
+	      case 0x2A: {	// presentation language
+	         ignore (v, index);
+	         break;
+	      }
 	      case 0x80: {	// version
 	         QString s = process_483 (v, index);
 	         schedule. setAttribute ("version", s);
@@ -772,12 +713,16 @@ QDomElement schedule;
 	         schedule. setAttribute ("originator", s);
 	         break;
 	      }
+	      case 0x83: {	// alphabet
+	         ignore (v, index);
+	         break;
+	      }
 	      default:
 	         process_forgotten ("schedule", v, index);
 	         break;
 	   }
 	}
-	if (!schedule. hasAttribute ("version");
+	if (!schedule. hasAttribute ("version"))
 	   schedule. setAttribute ("version", 1);
 	index	= endPoint;
 	return schedule;
@@ -860,6 +805,8 @@ QDomElement t;
 	         process_forgotten ("programGroup", v, index);
 	   }
 	}
+	if (!t. hasAttribute ("version"))
+	   t. setAttribute ("version", 1);
 	index = endPoint;
 	return t;
 }
@@ -956,12 +903,16 @@ QDomElement ensemble;
 	         ensemble. appendChild (child);
 	         break;
 	      }
+	      case 0x37: {	// not used anymore
+	         ignore (v, index);
+	         break;
+	      }
 	      case 0x28: {	// service
 	         QDomElement child = process_service (doc, v, index);
 	         ensemble. appendChild (child);
 	         break;
 	      }
-	      case 0x80: {	//id 
+	      case 0x80: {	// id 
 	         int localEnd = setLength (v, index);
 	         int ecc = v [index];
 	         int Eid = (v [index + 1] << 8) | v [index + 2];
@@ -970,8 +921,12 @@ QDomElement ensemble;
 	         index = localEnd;
 	         break;
 	      }
+	      case 0x81: {	// not used
+	         ignore (v, index);
+	         break;
+	      }
 	      default:
-	         process_forgotten ("enemble", v, index);
+	         process_forgotten ("ensemble", v, index);
 	         break;
 	   }
 	}
@@ -1018,6 +973,10 @@ QDomElement service;
 	         service. appendChild (child);
 	         break;
 	      }
+	      case 0x2A: {	// presentation language
+	         ignore (v, index);
+	         break;
+	      }
 	      case 0x29: {	// bearer
 	         QDomElement child = process_bearer (doc, v, index);
 	         service. appendChild (child);
@@ -1031,6 +990,14 @@ QDomElement service;
 	      case 0x32: {	// geolocation
 	         QDomElement child = process_geolocation (doc, v, index);
 	         service. appendChild (child);
+	         break;
+	      }
+	      case 0x39: {	//alias
+	         ignore (v, index);
+	         break;
+	      }
+	      case 0x3A: {	// phoneme
+	         ignore (v, index);
 	         break;
 	      }
 	      case 0x80: {	// version
@@ -1061,9 +1028,7 @@ QDomElement bearer;
 	      }
 	      case 0x82: {	// url, 440
 	         int localEnd = setLength (v, index);
-	         QString s;
-	         for (int i = index; i < endPoint; i ++)
-	            s += QChar (v [i]);
+	         QString s = fetchString (v, index, localEnd);
 	         bearer. setAttribute ("url", s);
 	         index = localEnd;
 	         break;
@@ -1097,8 +1062,10 @@ QString s;
 	      }
 	      case 0x82: { 	//440,  url
 	         int localEnd = setLength (v, index);
+	         QByteArray text;
 	         for (int i = index; i < localEnd; i ++)
-	            s += QChar (v [i]);
+	            text . push_back (v [i]);
+	         s = QString::fromUtf8 (text);
 	         multimedia. setAttribute ("url", s);
 	         index = localEnd;
 	         break;
@@ -1273,9 +1240,21 @@ QDomElement programmeEvent;
 	         programmeEvent. appendChild (s);
 	         break;
 	      }
+	      case 0x2A: {	// presentationLanguage
+	         ignore (v, index);
+	         break;
+	      }
 	      case 0x36: {	// onDemand
 	         QDomElement s = process_onDemand (doc, v, index);
 	         programmeEvent. appendChild (s);
+	         break;
+	      }
+	      case 0x39: {	// alias
+	         ignore (v, index);
+	         break;
+	      }
+	      case 0x3A: {	// phoneme
+	         ignore (v, index);
 	         break;
 	      }
 //
@@ -1324,6 +1303,21 @@ QDomElement epgCompiler::process_radiodns (QDomDocument &doc,
 int endPoint = setLength (v, index);
 QDomElement radiodns;
 	radiodns = doc. createElement ("radiodns");
+	while (index < endPoint) {
+	   switch (v [index]) {
+	      case 0x80: {	// fqdn
+	         ignore (v, index);
+	         break;
+	      }
+	      case 0x81: {	// service identifier
+	         ignore (v, index);
+	         break;
+	      }
+	      default:
+	         process_forgotten ("radiodns", v, index);
+	         break;
+	   }
+	}
 	index = endPoint;
 	return radiodns;
 }
@@ -1342,17 +1336,25 @@ QDomElement geolocation;
 	         break;
 	      }
 	      case 0x34: {	// point
-	         QDomElement t = process_point (doc, v, index);
-	         geolocation. appendChild (t);
+//	         QDomElement t = process_point (doc, v, index);
+//	         geolocation. appendChild (t);
+	         ignore (v, index);	// not yet implemented
 	         break;
 	      }
 	      case 0x35: {	// polygon
-	         QDomElement t = process_polygon (doc, v, index);
-	         geolocation. appendChild (t);
+//	         QDomElement t = process_polygon (doc, v, index);
+//	         geolocation. appendChild (t);
+	         ignore (v, index);	// not yet implemented
 	         break;
 	      }
-	      case 0x80: 	// xml:id
-	      case 0x81:	// ref
+	      case 0x80: { 	// xml:id
+	         ignore (v, index);
+	         break;
+	      }
+	      case 0x81: {	// ref
+	         ignore (v, index);
+	         break;
+	      }
 	      default:
 	         process_forgotten ("geolocation", v, index);
 	         break;
@@ -1366,20 +1368,23 @@ QDomElement epgCompiler::process_country (QDomDocument &doc,
 	                                 const std::vector<uint8_t> &v,
 	                                 int &index) {
 int endPoint = setLength (v, index);
-QDomElement t;
-	t = doc. createElement ("country");
+QDomElement child;
+	child = doc. createElement ("country");
+	QString res =  fetchString (v, index, endPoint);
+	QDomText t = doc. createTextNode (res);
+        child. appendChild (t);
 	index = endPoint;
-	return t;
+	return child;
 }
 
 QDomElement epgCompiler::process_point (QDomDocument &doc,
 	                               const std::vector<uint8_t> &v,
 	                               int &index) {
 int endPoint = setLength (v, index);
-QDomElement t;
-	 t = doc. createElement ("point");
+QDomElement child;
+	child = doc. createElement ("point");
 	index = endPoint;
-	return t;
+	return child;
 }
 
 QDomElement epgCompiler::process_polygon (QDomDocument &doc,
@@ -1485,10 +1490,7 @@ QDomElement t;
 
 QString	epgCompiler::process_440	(const std::vector<uint8_t> &v, int &index) {
 int endPoint	= setLength (v, index);
-
-	QString res;
-	for (int i = index; i < endPoint; i ++)
-	   res += QChar (v [i]);
+QString res 	= fetchString (v, index, endPoint);
 	index = endPoint;
 	return res;
 }
@@ -1496,10 +1498,7 @@ int endPoint	= setLength (v, index);
 //	CRId datatype
 QString	epgCompiler::process_471	(const std::vector<uint8_t> &v, int &index) {
 int endPoint	= setLength (v, index);
-	
-	QString s;
-	for (int i = index; i < endPoint; i ++)
-	   s += QChar (v [i]);
+QString s	= fetchString (v, index, endPoint);
 	index	= endPoint;
 	return s;
 }
@@ -1515,14 +1514,8 @@ uint32_t res = (v [index] << 16) | (v [index + 1] << 8) | v [index + 2];
 QString	epgCompiler::process_473	(const std::vector<uint8_t> &v, int &index) {
 int endPoint	= setLength (v, index);
 QString s;
-	if (v [index] < 20)
-	   s = stringTable [v [index + 1]];
-	else {
-	   QByteArray text;
-	   for (int i = index; i < endPoint; i ++)
-	      text.push_back (v [i]);
-	   s = QString::fromUtf8 (text);
-	}
+
+	s = fetchString (v, index, endPoint);
 	index = endPoint;
 	return s;
 }
@@ -1547,9 +1540,9 @@ QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 	int16_t M	= dateOut [1];
 	int16_t D	= dateOut [2];
 //	we need to know whether it is today or not
-	int ltoFlag	= getBit (v, 8 * index + 19);
-	int utcFlag	= getBit (v, 8 * index + 20);
-	int ltoBase	= utcFlag == 1 ? 48 : 32;
+//	int ltoFlag	= getBit (v, 8 * index + 19);
+//	int utcFlag	= getBit (v, 8 * index + 20);
+//	int ltoBase	= utcFlag == 1 ? 48 : 32;
 	int hours	= getBits (v, 8 * index + 21, 5);
 	int minutes	= getBits (v, 8 * index + 26, 6);
 	index = endPoint;
@@ -1635,15 +1628,13 @@ int endPoint	= setLength (v, index);
 
 void	epgCompiler::process_token (const std::vector<uint8_t> &v,
 	                                             int  &index) {
-uint8_t tag = v [index];
-int endPoint	= index + 2 + v [index + 1];
-int length	= v [index + 1];
-	index += 2;
+uint8_t tag	= v [index];
+int endPoint	= setLength (v, index);
 	QByteArray text;
 	for (int i = index; i < endPoint; i ++) {
 	   text. push_back (v [i]);
 	}
-	if (tag <= 20) {
+	if (tag < 20) {
 	   stringTable [tag] = QString::fromUtf8 (text);
 	}
 	index = endPoint;
@@ -1696,9 +1687,33 @@ const char *typeList [] = {
 	else
 	   return "unknown Type";
 }
-
+//
+//	for the "not Used" and the not yet implemented
 void	epgCompiler::ignore	(const std::vector<uint8_t> &v, int &index) {
 int endPoint	= setLength (v, index);
 	index	= endPoint;
+}
+
+QString	epgCompiler::fetchString (const std::vector<uint8_t> &v,
+	                                          int &index, int endPoint) {
+QString res;
+	if (v [index] != 1) {		// should not happen, but it does
+	   QByteArray text;
+	   for (int i = index; i < endPoint; i ++)
+	      text. push_back (v [i]);
+	   res = QString::fromUtf8 (text);
+	} 
+	else
+	if ((v [index + 1] < 20)) {
+	   res = stringTable [v [index + 1]];
+	}
+	else {
+	   QByteArray text;
+	   for (int i = index + 2; i < endPoint; i ++)
+	      text. push_back (v [i]);
+	   res = QString::fromUtf8 (text);
+	}
+	index = endPoint;
+	return res;
 }
 

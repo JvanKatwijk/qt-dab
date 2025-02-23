@@ -30,32 +30,6 @@
 #include	<QString>
 #include	<QDomElement>
 
-class	epgProgramme {
-public:
-	uint32_t	shortId;
-	QString		shortName;
-	QString		mediumName;
-	QString		longName;
-	struct {
-	   uint32_t startTime;
-	   uint32_t stopTime;
-	} programTime;
-};
-
-class	programSchedule {
-public:
-	uint32_t	time;
-	int version;
-	struct {
-	   uint32_t	Eid;
-	   uint32_t	SId;
-	} identity;
-	QString mediumName;
-	QString longName;
-	QString mediaDescription;
-	QList<epgProgramme> programmes;
-};
-
 class	epgCompiler: public QObject {
 Q_OBJECT
 public:
@@ -124,6 +98,8 @@ private:
 
 	void	process_obsolete	(const std::vector<uint8_t> &v, int &index);
 
+	QString	fetchString		(const std::vector<uint8_t> &v,
+	                                  int &index, int endPoint); 
 	void	ignore			(const std::vector<uint8_t> &v,
 	                                  int &index);
 	void    process_forgotten	(const QString s, 

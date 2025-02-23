@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>612</width>
-    <height>267</height>
+    <height>277</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -63,7 +63,7 @@
              <x>0</x>
              <y>0</y>
              <width>224</width>
-             <height>91</height>
+             <height>101</height>
             </rect>
            </property>
           </widget>
@@ -221,6 +221,13 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="epgLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="clickablelabel" name="serviceLabel">
          <property name="toolTip">

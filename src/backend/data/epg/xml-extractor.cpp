@@ -128,22 +128,18 @@ programDescriptor res;
 	res. startTime = stringToDateTime (tt);
 	QString dd = time. attribute ("duration");
 	res. duration = durationToInt (dd);
+	QDomElement sn	= node. firstChildElement ("shortName");
+	res. shortName	= sn. text ();
+	QDomElement mn	= node. firstChildElement ("mediumName");
+	res. mediumName	= mn. text ();
+	QDomElement ln	= node. firstChildElement ("longName");
+	res. longName	= ln. text ();
 	QDomElement md	= node. firstChildElement ("mediaDescription");
-	QString ps;
-	if (!md. isNull ()) {
-	   QDomElement sd = md. firstChildElement ("shortDescription");
-	   if (!sd. isNull ()) 
-	      ps = sd. text ();
-	}
-	if (ps == "") {
-	   QDomElement name = node. firstChildElement ("longName");
-	   if (name. isNull ())
-	      name = node. firstChildElement ("mediumName");
-	   ps = name. text ();
-	}
-	res. program = ps;
-	if (res. program != "")
-	   res. valid = true;
+	QDomElement sd	= md. firstChildElement ("shortDescriptor");
+	res. shortDescriptor	= sd. text ();
+	QDomElement ld	= md. firstChildElement ("longDescriptor");
+	res. longDescriptor	= ld. text ();
+	res. valid = true;
 	return res;
 }
 

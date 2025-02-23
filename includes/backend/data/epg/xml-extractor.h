@@ -33,7 +33,11 @@ typedef struct {
 	bool	valid;
 	QDateTime	startTime;
 	int	duration;
-	QString program;
+	QString shortName;
+	QString	mediumName;
+	QString	longName;
+	QString	shortDescriptor;
+	QString	longDescriptor;
 } programDescriptor;
 
 

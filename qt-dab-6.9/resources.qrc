@@ -43,5 +43,6 @@
 	<file>../res/globstyle.qss</file>
 	<file>../res/Combinear.qss</file>
 	<file>../res/Diffnes.qss</file>
+	<file>../res/epgLabel.png</file>
     </qresource>
 </RCC>

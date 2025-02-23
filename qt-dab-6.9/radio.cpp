@@ -290,11 +290,11 @@ QString h;
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 #ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("9") + " with RTLSDR-V3";
+	SystemVersion	= QString ("9.1") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("9") + " with RTLSDR-V4";
+	SystemVersion	= QString ("9.1") + " with RTLSDR-V4";
 #else
-	SystemVersion	= QString ("9");
+	SystemVersion	= QString ("9.1");
 #endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion;
@@ -522,7 +522,12 @@ QString h;
 //	   httpButton	-> setEnabled (false);
 
 	channel. etiActive	= false;
-
+	QPixmap epgP;
+        epgP. load (":res/epgLabel.png", "png");
+        epgLabel	-> setPixmap (epgP. scaled (30, 30,
+	                                         Qt::KeepAspectRatio));
+	epgLabel	-> setToolTip ("this icon is visible when the EPG processor runs, in the background");
+	epgLabel	-> hide ();
 	show_pauzeSlide ();
 
 //	and start the timer(s)
@@ -973,7 +978,7 @@ void	RadioInterface::showMOTlabel	(QByteArray  &data,
 	                                 int dirs,
 	                                 bool backgroundFlag) {
 const char *type;
-	if (!running. load() || (pictureName == QString ("")))
+	if (!running. load () || (pictureName == QString ("")))
 	   return;
 
 	switch (static_cast<MOTContentType>(contentType)) {
@@ -997,10 +1002,9 @@ const char *type;
 	        return;
 	}
 
-
-	if (dirs || (value_i (dabSettings_p, CONFIG_HANDLER,
+	if (dirs || ((value_i (dabSettings_p, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
-	                                         (path_for_pictures != "")) {
+	                                         (path_for_pictures != ""))) {
 	   QString pict;
 	   if (!dirs) 
 	      pict = path_for_pictures + pictureName;
@@ -2117,10 +2121,35 @@ void	RadioInterface::stopService	(dabService &s) {
 	cleanScreen	();
 }
 //
+void	RadioInterface::start_epgService (packetdata &pd) {
+	theOFDMHandler -> setDataChannel (pd, &theDataBuffer, BACK_GROUND);
+	dabService s;
+	s. channel     = pd. channel;
+	s. serviceName = pd. serviceName;
+	s. SId         = pd. SId;
+	s. SCIds	     = pd. SCIds;
+	s. subChId     = pd. subchId;
+	s. fd          = nullptr;
+	channel. backgroundServices. push_back (s);
+	epgLabel	-> show ();
+}
+
 //
 void	RadioInterface::startService (dabService &s) {
 QString serviceName	= s. serviceName;
 
+	for (auto bs : channel. backgroundServices) {
+	   if (bs. serviceName == serviceName) {
+	      return;
+	   }
+	}
+	packetdata pd;
+	theOFDMHandler -> data_for_packetservice (s. serviceName, pd, 0);
+	if (pd. defined && pd. appType == 7) {
+	   start_epgService (pd);
+	   return;
+	}
+	   
 	channel. currentService		= s;
 	channel. currentService. frameDumper	= nullptr;
 	channel. currentService. valid	= false;
@@ -2187,8 +2216,6 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
 	   theOFDMHandler -> data_for_packetservice (ad. serviceName, pd, i);
-//	   fprintf (stderr, "pd for comp %d is %s defined\n", i,
-//	                                  pd. defined ? " " : "not");
 	   if (pd. defined) {
 	      theOFDMHandler -> setDataChannel (pd, &theDataBuffer, FORE_GROUND);
 	      break;
@@ -2437,6 +2464,7 @@ void	RadioInterface::stopChannel	() {
 	   return;
 
 	epgTimer. stop		();		// if running
+	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
 	inputDevice_p		-> stopReader ();
@@ -3097,6 +3125,7 @@ QString tiiButton_font	=
 }
 
 void	RadioInterface::color_scanButton	() {
+	fprintf (stderr, "dit moet werken\n");
 	setButtonColors (scanButton, SCAN_BUTTON);
 }
 
@@ -3270,15 +3299,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 //	LOG hidden service starts
 	      fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. toUtf8 (). data ());
-	      theOFDMHandler -> setDataChannel (pd, &theDataBuffer, BACK_GROUND);
-	      dabService s;
-	      s. channel     = pd. channel;
-	      s. serviceName = pd. serviceName;
-	      s. SId         = pd. SId;
-	      s. SCIds	     = pd. SCIds;
-	      s. subChId     = pd. subchId;
-	      s. fd          = nullptr;
-	      channel. backgroundServices. push_back (s);
+	      start_epgService (pd);
 	   }
 	}
 }
@@ -4367,9 +4388,7 @@ void	RadioInterface::process_schedule (QDomElement &theSchedule,
 	                                  uint32_t ensembleId) {
 scheduleDescriptor theDescriptor = xmlHandler.
 	                          getScheduleDescriptor (theSchedule);
-	if (!theDescriptor. valid)
-	   return;
-	if (theDescriptor. Eid != ensembleId)
+	if (!theDescriptor. valid || (theDescriptor. Eid != ensembleId))
 	   return;
 	QDate startDate	= theDescriptor. startTime. date ();
 	QDate stopDate	= theDescriptor. stopTime. date ();
@@ -4383,7 +4402,7 @@ scheduleDescriptor theDescriptor = xmlHandler.
 	      continue;
 	  theDescriptor.thePrograms. push_back (res);
 	}
-	for (int i = 0; i < channel. programGuides. size (); i ++)
+	for (int i = 0; i <  (int)channel. programGuides. size (); i ++)
 	if (channel. programGuides [i]. Sid == theDescriptor. Sid)
 	   return;
 	QString serviceName =
@@ -4437,10 +4456,8 @@ void	RadioInterface::process_service (const QDomElement &service) {
 	             xmlHandler. serviceSid (service);
 	QString url		=
 	             xmlHandler. service_url (service);
-	bool alreadySeen = false;
-	for (int i = 0; i < channel. servicePictures. size (); i ++) {
+	for (int i = 0; i < (int)channel. servicePictures. size (); i ++) {
 	   if (channel. servicePictures [i]. serviceId == serviceSid) {
-	      alreadySeen = true;
 	      return;
 	   }
 	}
@@ -4453,7 +4470,7 @@ void	RadioInterface::process_service (const QDomElement &service) {
 bool	RadioInterface::get_servicePicture (QPixmap &p, const audiodata &ad) {
 bool res = false;
 	for (auto &ss : channel. servicePictures) {
-	   if (ss. serviceId == ad. SId) {
+	   if (ss. serviceId ==  (uint32_t)ad. SId) {
 	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ss. url;
 	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
 	      if (tt == nullptr) 

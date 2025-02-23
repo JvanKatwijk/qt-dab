@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2024
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -32,8 +32,10 @@
         myWidget        -> setWidgetResizable (true);
 
         programDisplay	= new QTableWidget (0, 4);
-        programDisplay	-> setColumnWidth (0, 250);
-        programDisplay	-> setColumnWidth (3, 350);
+        programDisplay	-> setColumnWidth (0, 150);
+        programDisplay	-> setColumnWidth (1, 150);
+        programDisplay	-> setColumnWidth (2, 20);
+        programDisplay	-> setColumnWidth (3, 450);
         myWidget        -> setWidget (programDisplay);
         programDisplay	-> setHorizontalHeaderLabels (
                                   QStringList () << "program");
@@ -56,20 +58,22 @@ void	timeTableHandler::display	(const scheduleDescriptor &schedule) {
 void	timeTableHandler::addHeader	(const scheduleDescriptor &schedule) {
 int	row	= programDisplay -> rowCount ();
 QString name	= schedule. name;
-QString start	= schedule. startTime. toString ();
-QString stop	= schedule. stopTime. toString ();
+QDate	date	= schedule. startTime. date ();
+QString start	= schedule. startTime. date (). toString ();
+QString	stop	= schedule. stopTime. date (). toString ();
 	programDisplay	-> insertRow (row);
 	QTableWidgetItem *item0 = new QTableWidgetItem;
 	item0	-> setTextAlignment (Qt::AlignLeft);
+	name	= name + "(" + QString::number (schedule. Sid, 16) + ")";
 	item0	-> setText (name);
 	programDisplay -> setItem (row, 0, item0);
 	QTableWidgetItem *item1 = new QTableWidgetItem;
-	item1	-> setTextAlignment (Qt::AlignLeft);
-	item1	-> setText (QString::number (schedule. Sid, 16));
+	item1	-> setTextAlignment (Qt::AlignRight);
+	item1	-> setText (date. toString ());
 	programDisplay -> setItem (row, 1, item1);
 	QTableWidgetItem *item2 = new QTableWidgetItem;
 	item2	-> setTextAlignment (Qt::AlignLeft);
-	item2	-> setText (start);
+//	item2	-> setText (start);
 	programDisplay -> setItem (row, 2, item2);
 	QTableWidgetItem *item3 = new QTableWidgetItem;
 	item3	-> setTextAlignment (Qt::AlignLeft);
@@ -79,15 +83,20 @@ QString stop	= schedule. stopTime. toString ();
 
 void	timeTableHandler::addProgram (const programDescriptor &program) {
 int	row	= programDisplay -> rowCount ();
-QString start		= program. startTime. toString ();
-QString duration	= QString::number (program. duration) + "min";
+QString start		= program. startTime. time (). toString ();
+QString duration;
+	if (program. duration < 60)
+	   duration	= QString::number (program. duration) + "M";
+	else
+	   duration	= QString::number (program. duration / 60) + "H " +
+	                  QString::number (program. duration % 60) + "M";
 	programDisplay	-> insertRow (row);
 	QTableWidgetItem *item0 = new QTableWidgetItem;
 	item0	-> setTextAlignment (Qt::AlignLeft);
 	item0	-> setText (start);
 	programDisplay -> setItem (row, 0, item0);
 	QTableWidgetItem *item1 = new QTableWidgetItem;
-	item1	-> setTextAlignment (Qt::AlignLeft);
+	item1	-> setTextAlignment (Qt::AlignRight);
 	item1	-> setText (duration);
 	programDisplay -> setItem (row, 1, item1);
 	QTableWidgetItem *item2 = new QTableWidgetItem;
@@ -96,9 +105,32 @@ QString duration	= QString::number (program. duration) + "min";
 	programDisplay -> setItem (row, 2, item2);
 	QTableWidgetItem *item3 = new QTableWidgetItem;
 	item3	-> setTextAlignment (Qt::AlignLeft);
-	QString bodyText	= program. program;
-	if (bodyText. size () >= 35)
-	   bodyText = bodyText. left (35) + "...";
+	QString bodyText;
+	if (program. longDescriptor. size () >= 10)
+	   bodyText = program. longDescriptor;
+	else
+	if (program. shortDescriptor. size () >= 10)
+	   bodyText = program. shortDescriptor;
+	else
+	if (program. longName. size () >= 10)
+	   bodyText = program. longName;
+	else
+	if (program. mediumName. size () >= 10)
+	   bodyText = program. mediumName;
+	else
+	if (program. longName. size () > 0)
+	   bodyText = program. longName;
+	else
+	if (program. mediumName. size () > 0)
+	   bodyText = program. mediumName;
+	else
+	if (program. shortName. size () > 0)
+	   bodyText = program. shortName;
+	else
+	   bodyText = "No Information";
+	bodyText = bodyText. replace ("\n", " ");
+	if (bodyText. size () >= 45)
+	   bodyText = bodyText. left (55) + "...";
 	item3	-> setText (bodyText);
 	programDisplay -> setItem (row, 3, item3);
 }

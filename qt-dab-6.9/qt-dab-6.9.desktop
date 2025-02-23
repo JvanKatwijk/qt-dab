@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Qt6_DAB-6.9
-Exec=qt-dab-6.9
+Name=Qt6_DAB-6.9.1
+Exec=qt-dab-6.9.1
 Icon=qt-dab-6.9
 Type=Application
 Categories=AudioVideo;

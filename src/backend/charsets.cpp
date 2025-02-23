@@ -79,13 +79,15 @@ uint16_t i;
 	   case UnicodeUcs2:
 	      for (int i = 0; i < size / 2; i ++) {
 	         uint16_t xx = buffer [2 * i + 1] & 0xFF;
-	         for (uint16_t j = 10;
-	              j < sizeof (ebuLatinToUcs2) / sizeof (uint16_t); j ++)
-	              if (ebuLatinToUcs2 [j] == xx) {
-	                 s += QString (char (j));
-	                 break;
-	            }
+	         s += QChar (buffer [2 * i + 1]);
 	      }
+//	         for (uint16_t j = 10;
+//	              j < sizeof (ebuLatinToUcs2) / sizeof (uint16_t); j ++)
+//	              if (ebuLatinToUcs2 [j] == xx) {
+//	                 s += QString (char (j));
+//	                 break;
+//	            }
+//	      }
 //	      s = QString::fromStdWString ((const short *) buffer, size);
 	      break;
 

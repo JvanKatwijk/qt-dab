@@ -51,8 +51,8 @@ public:
                                 int16_t	segmentNumber,
                                 int32_t	segmentSize,
 	                        bool	lastFlag);
-	uint16_t	get_transportId();
-	int		get_headerSize();
+	uint16_t	get_transportId	();
+	int		get_headerSize	();
 private:
 	bool		backgroundFlag;
 	bool		dirElement;

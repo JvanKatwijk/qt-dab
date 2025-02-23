@@ -379,6 +379,7 @@ private:
 	void			stopChannel		();
 	void			stopService		(dabService &);
 	void			startService		(dabService &);
+	void			start_epgService	(packetdata &);
 	void			localSelect		(const QString &c,
 	                                                 const QString &s);
 	void			scheduleSelect		(const QString &s);
