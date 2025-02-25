@@ -55,6 +55,16 @@ QString		name;
 std::vector<programDescriptor> thePrograms;
 };
 
+class	multimediaElement {
+public:
+		multimediaElement	();
+		~multimediaElement	();
+bool		valid;
+QString		url;
+int		width;
+};
+
+	
 class	xmlExtractor {
 public:
 		xmlExtractor	();
@@ -65,6 +75,7 @@ public:
 
 	uint32_t		serviceSid		(const QDomElement &);
 	QString			service_url		(const QDomElement &);
+	multimediaElement	extract_multimedia	(const QDomElement &);
 private:
 	QDate		stringToDate		(const QString &);
 	QDateTime	stringToDateTime	(const QString &);

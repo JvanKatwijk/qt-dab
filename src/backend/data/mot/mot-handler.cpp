@@ -177,10 +177,11 @@ int32_t	i;
 	                           ((segment [2]) <<  8) | segment [3];
 	         uint16_t numObjects
 	                        = (segment [4] << 8) | segment [5];
-//	         int32_t period = (segment [6] << 16) |
-//	                          (segment [7] <<  8) | segment [8];
+	         int32_t period = (segment [6] << 16) |
+	                          (segment [7] <<  8) | segment [8];
 //	         int32_t segSize
 //	                        = ((segment [9] & 0x1F) << 8) | segment [10];
+	         fprintf (stderr, "Period %d\n", period);
 	         theDirectory	= new motDirectory (myRadioInterface,
 	                                            transportId,
 	                                            segmentSize,

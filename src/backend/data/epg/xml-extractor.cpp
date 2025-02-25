@@ -24,6 +24,12 @@
 #include	"xml-extractor.h"
 #include	<QStringList>
 
+	multimediaElement::multimediaElement	() {
+	valid	= false;
+}
+
+	multimediaElement::~multimediaElement	() {}
+
 static inline
 QStringList splitter (const QString &s, QString splitString) {
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
@@ -179,6 +185,23 @@ QDomElement scope = node. firstChildElement ("scope");
 	result. Sid	= toIntFrom (ident [2], 16);
 	result. valid 	= true;
 	return result;
+}
+
+multimediaElement xmlExtractor::extract_multimedia (const QDomElement &multimedia) {
+multimediaElement res;
+	if (multimedia. hasAttribute ("url"))
+	   res. url = multimedia. attribute ("url");
+	else
+	   return res;
+	if (multimedia. hasAttribute ("width")) {
+	   fprintf (stderr, "Has attribute %s\n",
+	                            multimedia. attribute ("width"). toLatin1 (). data ());
+	   res. width = toIntFrom (multimedia. attribute ("width"), 10);
+	}
+	else
+	   res. width = 0;
+	res. valid = true;
+	return res;
 }
 
 QString	xmlExtractor::service_url (const QDomElement &service) {

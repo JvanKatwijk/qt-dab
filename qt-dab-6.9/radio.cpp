@@ -812,7 +812,7 @@ QString s;
 	   theSCANHandler. addEnsemble (channelSelector -> currentText (), v);
 	else
 	if (!theSCANHandler. active ()) {
-	   read_servicePictures (id);
+	   read_pictureMappings (id);
 //	... and is we are not scanning, clicking the ensembleName
 //	has effect
 	   connect (ensembleId, &clickablelabel::clicked,
@@ -904,7 +904,7 @@ QString realName;
 	      break;
 
 	   case  MOTBaseTypeApplication: 	// epg data
-	      if (epgPath == "")
+	      if ((epgPath == "") || (theSCANHandler. active ()))
 	         return;
 
 	      if (objectName == QString (""))
@@ -2473,9 +2473,6 @@ void	RadioInterface::stopChannel	() {
 	ensembleId	-> setText ("");
 	stopSourcedumping	();
 	stop_etiHandler	();	// if any
-	if (!theSCANHandler. active ()  &&
-	                       (channel. servicePictures. size () > 0))
-	   write_servicePictures (channel. Eid);
 	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
 	transmitter_country	-> setText	("");
 	theNewDisplay. setSilent	();
@@ -2685,8 +2682,8 @@ void	RadioInterface::startScan_continuous () {
 	             configHandler_p -> switchDelayValue ();
 	channelTimer. start (2 * switchDelay);
 	startChannel    (channelSelector -> currentText ());
-	fprintf (stderr, "de scan start met  %s\n",
-	              channelSelector -> currentText (). toLatin1 (). data ());
+//	fprintf (stderr, "de scan start met  %s\n",
+//	              channelSelector -> currentText (). toLatin1 (). data ());
 }
 //
 //	stopScanning is called
@@ -3125,7 +3122,6 @@ QString tiiButton_font	=
 }
 
 void	RadioInterface::color_scanButton	() {
-	fprintf (stderr, "dit moet werken\n");
 	setButtonColors (scanButton, SCAN_BUTTON);
 }
 
@@ -3297,8 +3293,8 @@ void	RadioInterface::epgTimer_timeOut	() {
 	      continue;
 	   if (pd. DSCTy == 60) {
 //	LOG hidden service starts
-	      fprintf (stderr, "Starting hidden service %s\n",
-	                                serv. toUtf8 (). data ());
+//	      fprintf (stderr, "Starting hidden service %s\n",
+//	                                serv. toUtf8 (). data ());
 	      start_epgService (pd);
 	   }
 	}
@@ -3362,7 +3358,7 @@ void	RadioInterface::handle_devicewidgetButton	() {
 	   return;
 	bool b1 = value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 0);
 	bool b2 = inputDevice_p -> getVisibility ();
-	fprintf (stderr, "b1 = %d, b2 = %d\n", b1, b2);
+//	fprintf (stderr, "b1 = %d, b2 = %d\n", b1, b2);
 	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
 
 	store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE,
@@ -4259,7 +4255,7 @@ void	RadioInterface::handle_folderButton	() {
 	                                   nullptr, nullptr, SW_SHOWDEFAULT);
 #else
 	std::string x = "xdg-open " + tempPath. toStdString ();
-	fprintf (stderr, "we gaan voor %s\n", x. c_str ());
+//	fprintf (stderr, "we gaan voor %s\n", x. c_str ());
 	(void)system (x. c_str ());
 #endif
 }
@@ -4426,55 +4422,109 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	for (QDomElement theElement = root. firstChildElement ("");
 	    !theElement. isNull ();
 	    theElement = theElement. nextSiblingElement ("")) {
-	   if (theElement. tagName () == "ensemble")
-	       process_ensemble (theElement, Eid);
+	   if (theElement. tagName () == "ensemble") {
+	      QString Ident = theElement. attribute ("Eid");
+	      if (QString::number (Eid, 16) != Ident)
+	         continue;
+	      QString fileName = path_for_files;
+	      if (!fileName. endsWith ("/"))
+	         fileName =  fileName + "/";
+	      fileName += QString::number (Eid, 16) + "/list.xml";
+	      QFile file (QDir::toNativeSeparators (fileName));
+	      if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
+	         QTextStream stream (&file);
+	         stream << doc. toString ();
+	         file. close ();
+	      }
+	      process_ensemble (theElement, Eid);
+	   }
 	   else
 	   if (theElement. tagName () == "service")
 	      process_service (theElement);
 	}
 }
 
-void	RadioInterface::process_ensemble (const QDomElement &node,
+bool	RadioInterface::process_ensemble (const QDomElement &node,
 	                                              uint32_t Eid) {
 	QString Ident = node. attribute ("Eid");
-	fprintf (stderr, "processing ensemble with %s\n",
-	                                Ident. toLatin1 (). data ());
 	if (QString::number (Eid, 16) != Ident)
-	   return;
+	   return false;
 	QDomElement nameNode = 
 	           node. firstChildElement ("mediumName");
-	QString ensembleName	= nameNode. attribute ("xml:lang");
+	QString ensembleName	= nameNode. text ();
 	for (QDomElement service = node. firstChildElement ("service");
 	     !service. isNull ();
 	     service = service. nextSiblingElement ("service")) {
 	   process_service (service);
 	}
+	return true;
+}
+
+bool	containsPicture (mmDescriptor &set, multimediaElement m) {
+	for (auto &mm : set. elements) {
+	   if ((mm. url == m. url) && (mm. width == m. width))
+	      return true;
+	}
+	return false;
 }
 
 void	RadioInterface::process_service (const QDomElement &service) {
-	uint32_t serviceSid =
+mmDescriptor pictures;
+	uint32_t serviceId =
 	             xmlHandler. serviceSid (service);
-	QString url		=
-	             xmlHandler. service_url (service);
-	for (int i = 0; i < (int)channel. servicePictures. size (); i ++) {
-	   if (channel. servicePictures [i]. serviceId == serviceSid) {
-	      return;
+	pictures. serviceId = serviceId;
+	QDomElement mediaDescription =
+	            service. firstChildElement ("mediaDescription");
+	while (!mediaDescription. isNull ()) {
+	   QDomElement multimedia = 
+	             mediaDescription. firstChildElement ("multimedia");
+	   multimediaElement mE = xmlHandler. extract_multimedia (multimedia);
+	   if (mE. valid) {
+	      pictures. elements. push_back (mE);
 	   }
+	
+	   mediaDescription = mediaDescription. nextSiblingElement ("mediaDescription");
 	}
-	serviceSymbol symbol;
-	symbol. serviceId = serviceSid;
-	symbol. url	= url;
-	channel. servicePictures . push_back (symbol);
+
+	for (auto &pictureElement: channel. servicePictures) {
+	   uint32_t serviceId = pictureElement. serviceId;
+	   if (pictures. serviceId != serviceId)
+	      continue;
+	   for (auto &me : pictures. elements) 
+	      if (!containsPicture (pictureElement, me))
+	         pictureElement. elements. push_back (me);
+	   return;
+	}
+	channel. servicePictures. push_back (pictures);
 }
 //
+static
+int	mcmp (const void *a, const void *b) {
+multimediaElement *aa = (multimediaElement *)a;
+multimediaElement *bb = (multimediaElement *)b;
+	if (aa -> width < bb -> width)
+	   return 1;
+	if (aa -> width > bb -> width)
+	   return -1;
+	return 0;
+}
+//
+//	we want the largest pictures, so we sort the list 
 bool	RadioInterface::get_servicePicture (QPixmap &p, const audiodata &ad) {
 bool res = false;
 	for (auto &ss : channel. servicePictures) {
-	   if (ss. serviceId ==  (uint32_t)ad. SId) {
-	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ss. url;
+	   if (ss. serviceId != (uint32_t)ad. SId)
+	      continue;
+	   QVector<multimediaElement> options;
+	   for (auto &ff: ss. elements)
+	      options. push_back (ff);
+	   qsort (options. data (), options. size (),
+	                 sizeof (multimediaElement), &mcmp);
+	   for (auto &ff: options) {
+	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ff. url;
 	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
 	      if (tt == nullptr) 
-	         return false;
+	         continue;
 	      fclose (tt);
 	      bool res = p. load (pict, "png");
 	      return res;
@@ -4483,62 +4533,16 @@ bool res = false;
 	return res;
 }
 //
-//	The servicePicture stack is saved between program invocations
-void	RadioInterface::write_servicePictures (uint32_t Eid) {
-QString fileName = path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
-	QDomDocument doc;
-	QDomElement topnode;
-	topnode = doc. createElement ("topnode");
-	doc. appendChild (topnode);
-	for (auto &ss: channel. servicePictures) {
-	   QDomElement element;
-	   element = doc. createElement (QString::number (ss. serviceId, 16));
-	   element. setAttribute ("url", ss. url);
-	   topnode. appendChild (element);
-	}
-	QFile file (QDir::toNativeSeparators (fileName)); 
-	if (file. open (QIODevice::WriteOnly | QIODevice::Text)) {
-	   QTextStream stream (&file);
-	   stream << doc. toString ();
-	   file. close ();
-	}
-}
-
-static inline
-int	numValue (char c) {
-	if (('0' <= c) && (c <= '9'))
-	   return c - (int)('0');
-	if (('a' <= c) && (c <= 'f'))
-	   return (int)c - 'a' + 10;
-	return (int)c - 'A' + 10;
-}
-
-static inline
-uint32_t toIntFrom (const QString &s, int base) {
-uint32_t res = 0;
-	for (int i = 0; i < s. size (); i ++)
-	   res =  res * base + numValue (s [i]. toLatin1 ());
-	return res;
-}
-
-void	RadioInterface::read_servicePictures (uint32_t Eid) {
-QString fileName = path_for_pictures + QString::number (Eid, 16) + "/" + "list.xml";
+void	RadioInterface::read_pictureMappings (uint32_t Eid) {
+	QString fileName = path_for_files;
+	if (!fileName. endsWith ("/"))
+	   fileName += "/";
+	fileName += QString::number (Eid, 16) + "/list.xml";
+	QDomDocument pictureMappings;
 	QFile f (fileName);
-	if (!f. open (QIODevice::ReadOnly)) 
+	if (!f. open (QIODevice::ReadOnly))
 	   return;
-	QDomDocument xmlBOM;
-	xmlBOM. setContent (&f);
-	f. close ();
-	QDomElement root	= xmlBOM. documentElement ();
-	QDomElement component	= root. firstChild (). toElement ();
-	while (!component. isNull ()) {
-	   QString key = component. tagName ();
-	   QString url = component. attribute ("url");
-	   serviceSymbol symb;
-	   symb. serviceId	= toIntFrom (key, 16);
-	   symb. url		= url;
-	   channel. servicePictures. push_back (symb);
-	   component = component. nextSibling (). toElement ();
-	}
+	pictureMappings. setContent (&f);
+	extractServiceInformation	(pictureMappings, Eid);
 }
 

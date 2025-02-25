@@ -131,6 +131,10 @@ int	index	= 0;
 	   doc. appendChild (serviceInformation);
 	   while (index < endPoint) {
 	      switch (v [index]) {
+	         case 0x04:		// process tokenTable
+	            (void)process_tokenTable (v, index);
+	            break;
+
 	         case 0x06: {	// default language
 	            QDomElement child = process_defaultLanguage (doc, v, index);
 	            serviceInformation. appendChild (child);
@@ -194,8 +198,9 @@ QDomElement child;
 	for (int i = index; i < endPoint; i ++)
 	   res += QChar (v [i]);
 	
-	child. setAttribute ("defaultLanguage", res);
-	index	= endPoint;
+	QDomText t = doc. createTextNode (res);
+	child. appendChild (t);
+	index = endPoint;
 	return child;
 }
 
@@ -403,7 +408,7 @@ QDomElement t;
 	      }
 	      case 0x81: {	// mime value 473
 	         QString s = process_473 (v, index);
-	         t. setAttribute ("mime value", s);
+	         t. setAttribute ("mime_value", s);
 	         break;
 	      }
 	      case 0x82: {	// xml:lang	481
@@ -1053,7 +1058,7 @@ QString s;
 	   switch (v [index]) {
 	      case 0x80: {	// mime value	473
 	         QString s = process_473 (v, index);
-	         multimedia. setAttribute ("mime value", s);
+	         multimedia. setAttribute ("mime_value", s);
 	         break;
 	      }
 	      case 0x81: {	// xml:lang	ignore
@@ -1109,6 +1114,10 @@ QString s;
 	         break;
 	   }
 	}
+//	if (!multimedia. hasAttribute ("height"))
+//	   multimedia. setAttribute ("height", 0);
+//	if (!multimedia. hasAttribute ("width"))
+//	   multimedia. setAttribute ("width", 0);
 	index = endPoint;
 	return multimedia;
 }
@@ -1696,7 +1705,7 @@ int endPoint	= setLength (v, index);
 
 QString	epgCompiler::fetchString (const std::vector<uint8_t> &v,
 	                                          int &index, int endPoint) {
-QString res;
+QString res = "";
 	if (v [index] != 1) {		// should not happen, but it does
 	   QByteArray text;
 	   for (int i = index; i < endPoint; i ++)

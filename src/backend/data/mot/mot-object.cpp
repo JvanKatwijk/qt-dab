@@ -123,6 +123,7 @@ uint16_t	rawContentType = 0;
 	            case 10:	// priority
 	            case 11:	// label
 	            case 15:	// content description
+//	               fprintf (stderr, "Key was %d\n", paramId);
                        pointer += length;
 	               break;
 
