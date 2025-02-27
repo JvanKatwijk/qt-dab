@@ -157,32 +157,70 @@ int	xmlExtractor::getVersion (const QDomElement &node) {
 }
 
 scheduleDescriptor xmlExtractor::
-	                 getScheduleDescriptor (const QDomElement &node) {
+	                 getScheduleDescriptor (const QDomElement &node,
+	                                        QDate  &theDate,
+	                                        uint32_t ensembleId,
+	                                        uint32_t serviceId) {
 scheduleDescriptor result;
-QDomElement scope = node. firstChildElement ("scope");
 	result. valid = false;
-	if (scope. isNull ())
-	   return result;
 	result. Version		= getVersion (node);
 	QDomElement name = node. firstChildElement ("mediumName");
 	if (name. isNull ())
 	   name = node. firstChildElement ("longName");
 	result. name =
 	             !name. isNull () ? name. text () : "";
-	QString startDate	= scope. attribute ("startTime");
-	QString	stopDate	= scope. attribute ("stopTime");
-	result. startTime	= stringToDateTime (startDate);
-	result. stopTime	= stringToDateTime (stopDate);
-	QDomElement serviceScope	=
+//
+	QString startDate;
+	QString stopDate;
+	QString duration;
+//	The german schedule descriptions usually contain the scope element
+	QDomElement scope = node. firstChildElement ("scope");
+	if (!scope. isNull ()) {
+	   if (scope. hasAttribute ("startTime"))
+	      startDate = scope. attribute ("startTime");
+	   if (scope. hasAttribute ("stopTime"))
+	      stopDate	= scope. attribute ("stopTime");
+	   QDomElement serviceScope	=
 	              scope. firstChildElement ("serviceScope");
-	if (serviceScope. isNull ()) 
-	   return result;
-	QString identity	= serviceScope. attribute ("id");
-	QStringList ident	= splitter (identity, QString (":"));
-	if (ident. size () != 3)
-	   return result;
-	result. Eid	= toIntFrom (ident [1], 16);
-	result. Sid	= toIntFrom (ident [2], 16);
+	   if (!serviceScope. isNull ()) {
+	      QString identity	= serviceScope. attribute ("id");
+	      QStringList ident	= splitter (identity, QString (":"));
+	      ensembleId	= toIntFrom (ident [1], 16);
+	      serviceId		= toIntFrom (ident [2], 16);
+	   }
+	}
+	QDomElement location	= node. firstChildElement ("location");
+	if (!location. isNull ()) {
+	   QDomElement time = location. firstChildElement ("time");
+	   if (!time. isNull ()) {
+	      if (time. hasAttribute ("time")) 
+	         startDate = location. attribute ("time");
+	      if (time. hasAttribute ("duration")) 
+	         duration  = location. attribute ("duration");
+	   }
+	}
+	QDateTime startTime;
+	QDateTime stopTime;
+	if (startDate == "") {
+	   QTime beginTime	= QTime (0, 0, 0);
+	   QTime endTime	= QTime (23, 59, 59);
+	   startTime = QDateTime (theDate, beginTime);
+	   stopTime  = QDateTime (theDate, endTime);
+	}
+	else {
+	   startTime	= stringToDateTime (startDate);
+	   if (duration != "") {
+	      int minutes = durationToInt (duration);
+	      stopTime = startTime;
+	      stopTime. addSecs (minutes * 60);
+	   }
+	   else
+	      stopTime = stringToDateTime (stopDate);
+	}
+	result. startTime	= startTime;
+	result. stopTime	= stopTime;
+	result. Eid		= ensembleId;
+	result. Sid		= serviceId;
 	result. valid 	= true;
 	return result;
 }
@@ -194,8 +232,6 @@ multimediaElement res;
 	else
 	   return res;
 	if (multimedia. hasAttribute ("width")) {
-	   fprintf (stderr, "Has attribute %s\n",
-	                            multimedia. attribute ("width"). toLatin1 (). data ());
 	   res. width = toIntFrom (multimedia. attribute ("width"), 10);
 	}
 	else

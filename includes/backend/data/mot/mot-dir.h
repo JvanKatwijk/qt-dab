@@ -25,12 +25,14 @@
  */
 #pragma once
 
+#include	<QObject>
 #include	"mot-object.h"
 #include	<QString>
 #include	<vector>
 class	RadioInterface;
 
-class	motDirectory {
+class	motDirectory: public QObject {
+Q_OBJECT
 public:
 			motDirectory	(RadioInterface *,
 	                                 uint16_t,
@@ -66,5 +68,8 @@ private:
 	   motObject	*motSlide;
 	} motComponentType;
 	std::vector<motComponentType>	motComponents;
+signals:
+	void		report_startDir (int);
+	void		report_completeDir ();
 };
 

@@ -22,7 +22,6 @@
  */
 #include	"epg-compiler.h"
 #include	<QDomDocument>
-//#include	<QFile>
 #include	<QTextStream>
 
 #include	"time-converter.h"
@@ -382,6 +381,9 @@ QDomElement t;
 	         t. setAttribute ("index", s);
 	         break;
 	      }
+	      default:
+	         process_forgotten ("member_of", v, index);
+	         break;
 	   }
 	}
 	index = endPoint;

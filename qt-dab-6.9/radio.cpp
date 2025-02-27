@@ -927,8 +927,14 @@ QString realName;
 	               file. close ();
 	            }
 	         }
-	         extractSchedule		(epgDocument, channel. Eid);
-	         extractServiceInformation	(epgDocument, channel. Eid);
+	         
+	         QDomElement root = epgDocument. firstChildElement ("epg");
+	         if (!root. isNull () && objectName. endsWith (".EHB"))
+	            extractSchedule		(epgDocument,
+	                                         channel. Eid, objectName);
+	         else
+	            extractServiceInformation	(epgDocument,
+	                                          channel. Eid, true);
 	      }
 	      return;
 
@@ -4370,25 +4376,91 @@ QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 //
 /////////////////////////////////////////////////////////////////////////
 //
+
+static
+bool	analyse_title (const QString &title, QDate &date, uint32_t &Sid) {
+QString fileName;
+int yearN, monthN, dayN;
+	if (! (title. endsWith (".EHB") || title. endsWith (".ehb")))
+	   return false;
+	int indexOf = title. lastIndexOf ("/");
+	if (indexOf > 0)
+	   for (int i = indexOf + 1; i < title. size (); i ++)
+	      fileName += QChar (title. at (i));
+	else
+	   fileName = title;
+	QString year;
+	int index;
+	for (index = 0; index < fileName. size (); index ++)
+	   if (QChar ('2') == fileName. at (index))
+	      break;
+	if (index > fileName. size () - 8)
+	   return false;
+	for (int i = index; i < index + 4; i ++)
+	   year += fileName. at (i);
+	bool ok;
+	yearN = year. toInt (&ok);
+	index += 4;
+	if (!ok || !((2000 <= yearN) && (yearN <= 2030)))
+	   return false;
+	QString month;
+	for (int i = index; i < index + 2; i ++)
+	   month += fileName. at (i);
+	monthN = month. toInt (&ok);
+	if (!ok || !((1 <= monthN) && (monthN <= 12)))
+	   return false;
+	index += 2;
+	QString day;
+	for (int i = index; i < index + 2; i ++)
+	   day = fileName. at (i);
+	dayN = day. toInt (&ok);
+	if (!ok || !((1 <= dayN) && (dayN <= 31)))
+	   return false;
+	index += 2;
+	index += 1;
+	QString serviceId;
+	for (int i = index; i < index + 4; i ++)
+	   serviceId += fileName. at (i);
+	Sid = serviceId. toInt (&ok, 16);
+	if (!ok)
+	   return false;
+	date = QDate (yearN, monthN, dayN);
+	return true;
+}
+	   
 void	RadioInterface::extractSchedule (QDomDocument &doc,
-	                                       uint32_t ensembleId) {
+	                                       uint32_t ensembleId,
+	                                       const QString &title) {
 QDomElement root = doc. firstChildElement ("epg");
+QDate theDate;
+uint32_t serviceId = 0;
+	if (!analyse_title (title, theDate, serviceId))
+	   fprintf (stderr, "geen goede title?\n");
+	else
+	fprintf (stderr, "theDate = %s, the serviceId = %X\n",
+	                    theDate. toString (). toLatin1 (). data (), 
+	                                   serviceId);
 	for (QDomElement theSchedule = root. firstChildElement ("schedule");
 	     !theSchedule. isNull ();
 	     theSchedule = theSchedule. nextSiblingElement ("schedule")) { 
-	   process_schedule (theSchedule, ensembleId);
+	   process_schedule (theSchedule, theDate,  ensembleId, serviceId);
 	}
 }
 
 void	RadioInterface::process_schedule (QDomElement &theSchedule,
-	                                  uint32_t ensembleId) {
-scheduleDescriptor theDescriptor = xmlHandler.
-	                          getScheduleDescriptor (theSchedule);
-	if (!theDescriptor. valid || (theDescriptor. Eid != ensembleId))
+	                                  QDate &theDate,
+	                                  uint32_t ensembleId,
+	                                  uint32_t serviceId) {
+scheduleDescriptor theDescriptor =
+	                  xmlHandler. getScheduleDescriptor (theSchedule,
+	                                                     theDate,
+	                                                     ensembleId,
+	                                                     serviceId);
+	if (!theDescriptor. valid)
 	   return;
 	QDate startDate	= theDescriptor. startTime. date ();
 	QDate stopDate	= theDescriptor. stopTime. date ();
-	if ((startDate > channel. theDate) || (stopDate < channel. theDate))
+	if ((startDate > theDate) || (stopDate < theDate))
 	   return;
 	for (QDomElement child = theSchedule. firstChildElement ("programme");
 	     !child. isNull ();
@@ -4417,7 +4489,7 @@ bool	RadioInterface::has_timeTable (uint32_t Sid) {
 }
 
 void	RadioInterface::extractServiceInformation (const QDomDocument &doc,
-	                                            uint32_t Eid) {
+	                                            uint32_t Eid, bool fresh) {
 QDomElement root = doc. firstChildElement ("serviceInformation");
 	for (QDomElement theElement = root. firstChildElement ("");
 	    !theElement. isNull ();
@@ -4426,17 +4498,8 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	      QString Ident = theElement. attribute ("Eid");
 	      if (QString::number (Eid, 16) != Ident)
 	         continue;
-	      QString fileName = path_for_files;
-	      if (!fileName. endsWith ("/"))
-	         fileName =  fileName + "/";
-	      fileName += QString::number (Eid, 16) + "/list.xml";
-	      QFile file (QDir::toNativeSeparators (fileName));
-	      if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
-	         QTextStream stream (&file);
-	         stream << doc. toString ();
-	         file. close ();
-	      }
-	      process_ensemble (theElement, Eid);
+	      if (process_ensemble (theElement, Eid) && fresh)
+	         saveServiceInfo (doc, Eid);
 	   }
 	   else
 	   if (theElement. tagName () == "service")
@@ -4444,8 +4507,23 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	}
 }
 
+void	RadioInterface::saveServiceInfo (const QDomDocument &doc,
+	                                                uint32_t Eid) {
+QString fileName = path_for_files;
+	if (!fileName. endsWith ("/"))
+	   fileName =  fileName + "/";
+	fileName += QString::number (Eid, 16) + "/list.xml";
+	QFile file (QDir::toNativeSeparators (fileName));
+	if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
+	   QTextStream stream (&file);
+	   stream << doc. toString ();
+	   file. close ();
+	}
+}
+
 bool	RadioInterface::process_ensemble (const QDomElement &node,
 	                                              uint32_t Eid) {
+int picturesSeen = 0;
 	QString Ident = node. attribute ("Eid");
 	if (QString::number (Eid, 16) != Ident)
 	   return false;
@@ -4455,9 +4533,9 @@ bool	RadioInterface::process_ensemble (const QDomElement &node,
 	for (QDomElement service = node. firstChildElement ("service");
 	     !service. isNull ();
 	     service = service. nextSiblingElement ("service")) {
-	   process_service (service);
+	    picturesSeen += process_service (service);
 	}
-	return true;
+	return picturesSeen > 0;
 }
 
 bool	containsPicture (mmDescriptor &set, multimediaElement m) {
@@ -4468,7 +4546,7 @@ bool	containsPicture (mmDescriptor &set, multimediaElement m) {
 	return false;
 }
 
-void	RadioInterface::process_service (const QDomElement &service) {
+int	RadioInterface::process_service (const QDomElement &service) {
 mmDescriptor pictures;
 	uint32_t serviceId =
 	             xmlHandler. serviceSid (service);
@@ -4485,17 +4563,19 @@ mmDescriptor pictures;
 	
 	   mediaDescription = mediaDescription. nextSiblingElement ("mediaDescription");
 	}
-
 	for (auto &pictureElement: channel. servicePictures) {
 	   uint32_t serviceId = pictureElement. serviceId;
 	   if (pictures. serviceId != serviceId)
 	      continue;
-	   for (auto &me : pictures. elements) 
-	      if (!containsPicture (pictureElement, me))
+	   for (auto &me : pictures. elements) {
+	      if (!containsPicture (pictureElement, me)) {
 	         pictureElement. elements. push_back (me);
-	   return;
+	         break;
+	      }
+	   }
 	}
 	channel. servicePictures. push_back (pictures);
+	return pictures. elements. size ();
 }
 //
 static
@@ -4543,6 +4623,14 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	if (!f. open (QIODevice::ReadOnly))
 	   return;
 	pictureMappings. setContent (&f);
-	extractServiceInformation	(pictureMappings, Eid);
+	extractServiceInformation	(pictureMappings, Eid, false);
+}
+
+void	RadioInterface::report_startDir	(int objects) {
+	dynamicLabel	-> setText ("Start of grabbing " + QString::number (objects) + "objects for EPG/SPI");
+}
+
+void	RadioInterface::report_completeDir () {
+	dynamicLabel	-> setText ("All EPG/SPI data is now in");
 }
 

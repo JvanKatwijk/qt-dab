@@ -168,7 +168,6 @@ int32_t	i;
 	               break;	// already existing
 	         if (theDirectory != nullptr)	// an old one, replace it
 	            delete theDirectory;
-
 	         int32_t segmentSize = ((motVector [0] & 0x1F) << 8) |
 	                                 motVector [1];
 	         uint8_t *segment = &motVector [2];

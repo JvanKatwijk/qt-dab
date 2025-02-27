@@ -51,6 +51,7 @@ QDateTime	startTime;
 QDateTime	stopTime;
 uint32_t	Eid;
 uint32_t	Sid;
+uint32_t	shortId;
 QString		name;
 std::vector<programDescriptor> thePrograms;
 };
@@ -69,7 +70,9 @@ class	xmlExtractor {
 public:
 		xmlExtractor	();
 		~xmlExtractor	();
-	scheduleDescriptor	getScheduleDescriptor	(const QDomElement &);
+	scheduleDescriptor	getScheduleDescriptor	(const QDomElement &,
+	                                                 QDate &,
+	                                                 uint32_t, uint32_t);
 	int			getVersion		(const QDomElement &);
 	programDescriptor	process_programme	(const QDomElement &);
 

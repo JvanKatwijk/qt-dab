@@ -24,6 +24,7 @@
  *	for handling a MOT directory
  */
 #include	"mot-dir.h"
+#include	"radio.h"
 
 	motDirectory::motDirectory (RadioInterface *mr,
 	                            uint16_t	transportId,
@@ -44,12 +45,17 @@
 	this	-> dir_segmentSize	= segmentSize;
 	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
 	                             transportId, dirSize, objects, segmentSize);
+	connect (this, &motDirectory::report_startDir,
+	         mr, &RadioInterface::report_startDir); 
+	connect (this, &motDirectory::report_completeDir,
+	         mr, &RadioInterface::report_completeDir);
 	dir_segments. resize (dirSize);
 	motComponents. resize (objects);
 	for (int i = 0; i < objects; i ++) {
 	   motComponents [i]. inUse = false;
 	   motComponents [i]. motSlide	= nullptr;
 	}
+	report_startDir (numObjects);
 	dir_segments. resize (segmentSize);
 	memcpy (&dir_segments [0], segment, segmentSize);
 	marked [0] = true;
@@ -114,6 +120,7 @@ int16_t	i;
 	         return;
 //	   yes we have all data to build up the directory
 	   analyse_theDirectory();
+	   
 //	   fprintf (stderr, "Going to inspect the directory\n");
 	}
 }
@@ -126,6 +133,7 @@ uint32_t	currentBase	= 11;	// in bytes
 //uint8_t	*data			= dir_segments;
 uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         dir_segments [currentBase + 1];
+	report_completeDir ();
 	currentBase += 2;
 	int PLI = dir_segments [currentBase] >> 6;
 	int paramId	= dir_segments [currentBase] & 0x3F;

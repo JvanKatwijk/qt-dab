@@ -180,14 +180,15 @@ public:
 	std::vector<scheduleDescriptor> programGuides;
 	std::vector<mmDescriptor>servicePictures;
 	void	cleanChannel () {
+	transmitters. resize (0);
 	programGuides. resize (0);
+	servicePictures. resize (0);
 	realChannel	= true;
 	serviceCount	= -1;
 	nrServices	= -1;
 	tunedFrequency	= -1;
 	ensembleName	=  "";
 	nrTransmitters	= 0;
-	transmitters. resize (0);
 	countryName	= "";
 	has_ecc		= false;
 	Eid		= 0;
@@ -423,13 +424,16 @@ private:
 	void			removeFromList	(uint8_t, uint8_t);
 	cacheElement		*inList		(uint8_t, uint8_t);
 
-	void			extractSchedule	(QDomDocument &, uint32_t);
+	void			extractSchedule	(QDomDocument &,
+	                                         uint32_t, const QString &);
 	void			process_schedule (QDomElement &theSchedule,
-	                                                      uint32_t);
+	                                          QDate &, uint32_t, uint32_t);
 	void			extractServiceInformation (const QDomDocument &,
+	                                                      uint32_t, bool);
+	void			saveServiceInfo	(const QDomDocument &, 
 	                                                      uint32_t);
 	bool			process_ensemble (const QDomElement &, uint32_t);
-	void			process_service	(const QDomElement &);
+	int			process_service	(const QDomElement &);
 
 signals:
 	void			select_ensemble_font	();
@@ -437,6 +441,8 @@ signals:
 	void			select_ensemble_fontColor	();
 
 public slots:
+	void			report_startDir		(int);
+	void			report_completeDir	();
 	void			channelSignal		(const QString &);
 	void			handle_correlationSelector	(int);
 	void			show_dcOffset		(float);
