@@ -4402,20 +4402,20 @@ int yearN, monthN, dayN;
 	yearN = year. toInt (&ok);
 	index += 4;
 	if (!ok || !((2000 <= yearN) && (yearN <= 2030)))
-	   return false;
+	   yearN = 2023;
 	QString month;
 	for (int i = index; i < index + 2; i ++)
 	   month += fileName. at (i);
 	monthN = month. toInt (&ok);
 	if (!ok || !((1 <= monthN) && (monthN <= 12)))
-	   return false;
+	   monthN = 2;
 	index += 2;
 	QString day;
 	for (int i = index; i < index + 2; i ++)
 	   day = fileName. at (i);
 	dayN = day. toInt (&ok);
 	if (!ok || !((1 <= dayN) && (dayN <= 31)))
-	   return false;
+	   day = 15;
 	index += 2;
 	index += 1;
 	QString serviceId;
@@ -4436,10 +4436,6 @@ QDate theDate;
 uint32_t serviceId = 0;
 	if (!analyse_title (title, theDate, serviceId))
 	   fprintf (stderr, "geen goede title?\n");
-	else
-	fprintf (stderr, "theDate = %s, the serviceId = %X\n",
-	                    theDate. toString (). toLatin1 (). data (), 
-	                                   serviceId);
 	for (QDomElement theSchedule = root. firstChildElement ("schedule");
 	     !theSchedule. isNull ();
 	     theSchedule = theSchedule. nextSiblingElement ("schedule")) { 
