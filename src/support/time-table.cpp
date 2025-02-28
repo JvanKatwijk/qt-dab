@@ -24,21 +24,37 @@
 //
 #include	"time-table.h"
 #include	"radio.h"
+#include	"xml-handler.h"
 
 	timeTableHandler::timeTableHandler (RadioInterface *radio) {
 	this	-> radio	= radio;
 //
 	myWidget        = new QScrollArea (nullptr);
-        myWidget        -> setWidgetResizable (true);
 
+        myWidget        -> setWidgetResizable (true);
+	QHBoxLayout *lo	= new QHBoxLayout;
+	left	= new QPushButton ("prev");
+	serviceLabel	= new QLabel ();
+	serviceLogo	= new QLabel ();
+	dateLabel	= new QLabel ();
+	right	= new QPushButton ("next");
+	lo	-> addWidget (left);
+	lo	-> addWidget (serviceLabel);
+	lo	-> addWidget (serviceLogo);
+	lo	-> addWidget (dateLabel);
+	lo	-> addWidget (right);
+	QVBoxLayout	*lv = new QVBoxLayout ();
         programDisplay	= new QTableWidget (0, 4);
         programDisplay	-> setColumnWidth (0, 150);
         programDisplay	-> setColumnWidth (1, 150);
         programDisplay	-> setColumnWidth (2, 20);
         programDisplay	-> setColumnWidth (3, 450);
-        myWidget        -> setWidget (programDisplay);
-        programDisplay	-> setHorizontalHeaderLabels (
-                                  QStringList () << "program");
+	lv		-> addLayout (lo);
+	lv		-> addWidget (programDisplay);
+        myWidget        -> setLayout (lv);
+	
+//	programDisplay	-> setHorizontalHeaderLabels (
+//	                     QStringList () << "program guide");
 	addRow ();
 }
 
@@ -48,8 +64,150 @@
 	delete	myWidget;
 }
 
+static
+QString find_epgFile (QDate& theDate, uint32_t Eid, uint32_t Sid, bool uc) {
+QString fileName        = "/home/jan/Qt-DAB-files";
+        if (!fileName. endsWith ("/"))
+           fileName += "/" + QString::number (Eid, 16) + "/";
+        char temp [40];
+	const char * formatString;
+	if (!uc)
+           formatString = "w%4d%02d%02dd%4xc0.EHB";
+	else
+           formatString = "w%4d%02d%02dd%4Xc0.EHB";
+	
+        sprintf (temp, formatString,
+                         theDate. year (), theDate. month (),
+                         theDate. day (), Sid);
+
+        return fileName + QString (temp);;
+}
+  
+void	timeTableHandler::setUp		(QDate &theDate,
+	                                 uint32_t Eid, uint16_t SId,
+	                                 const QString &serviceName) {
+	disconnect (left, SIGNAL (clicked ()),
+	            this, SLOT (handleLeft ()));
+	disconnect (right, SIGNAL (clicked ()),
+	            this, SLOT (handleRight ()));
+	connect (left, SIGNAL (clicked ()),
+	         this, SLOT (handleLeft ()));
+	connect (right, SIGNAL (clicked ()),
+	         this, SLOT (handleRight ()));
+	fprintf (stderr, "starting with %s at %s\n",
+	                        serviceName. toLatin1 (). data (),
+	                        theDate. toString (). toLatin1 (). data ());
+	startDate	= theDate;
+	ensembleId	= Eid;
+	serviceId	= SId;
+	this	-> serviceName	= serviceName;
+	dateLabel	-> setText (theDate. toString ());
+	serviceLabel	-> setText (serviceName);
+	dateOffset	= 0;
+	start (dateOffset);
+}
+
+void	timeTableHandler::addLogo	(const QPixmap &p) {
+	serviceLogo -> setPixmap (p. scaled (65, 65, Qt::KeepAspectRatio));
+}
+
+void	timeTableHandler::handleLeft	() {
+	dateOffset --;
+	clear ();
+	start (dateOffset);
+}
+	
+void	timeTableHandler::handleRight	() {
+	dateOffset ++;
+	clear ();
+	start (dateOffset);
+}
+
+
+void	timeTableHandler::start (int dateOffset) {
+	QDate currentDate = startDate. addDays (dateOffset);
+	dateLabel	-> setText (currentDate. toString ());
+	serviceLabel	-> setText (serviceName);
+	QString fileName = find_epgFile (currentDate,
+	                                   ensembleId,
+	                                   serviceId, false);
+	FILE * test = fopen (fileName. toLatin1 (). data (), "r");
+	if (test != nullptr)
+	   fclose (test);
+	else 
+	   fileName = find_epgFile (currentDate,
+	                                   ensembleId,
+	                                   serviceId, true);
+	clear ();
+	if (fileName == "") {
+	   serviceLabel -> setText ("no data available");
+	   show ();
+	   return;
+	}
+	QFile f (QDir::toNativeSeparators (fileName));
+        if (!f. open (QIODevice::ReadOnly)) {
+	   serviceLabel -> setText ("no datafile available");
+	   show ();
+	   return;
+	}
+
+	QDomDocument doc;
+        doc. setContent (&f);
+	f. close ();
+	QDomElement root = doc. firstChildElement ("epg");
+	if (root. isNull ()) {
+	   serviceLabel -> setText ("no Information");
+	   show ();
+	   return;
+	}
+	QDomElement theSchedule = root. firstChildElement ("schedule");
+	if (theSchedule. isNull ()) {
+	   serviceLabel -> setText ("No information");
+	   show ();
+	   return;
+	}
+	scheduleDescriptor d =
+	       process_schedule (theSchedule, currentDate, 
+	                         ensembleId, serviceId);
+	if (!d. valid) {
+	   serviceLabel -> setText ("Not enough information");
+	}
+	display (d);
+	show ();
+}
+
+scheduleDescriptor timeTableHandler::
+	            process_schedule (const QDomElement &theSchedule,
+	                              QDate theDate,
+	                              uint32_t &ensembleId,
+	                              uint32_t &serviceId) {
+xmlExtractor xmlHandler;
+scheduleDescriptor theDescriptor =
+	                  xmlHandler. getScheduleDescriptor (theSchedule,
+	                                                     theDate,
+	                                                     ensembleId,
+	                                                     serviceId);
+	if (!theDescriptor. valid)
+	   return theDescriptor;;
+	             
+	QDate startDate	= theDescriptor. startTime. date ();
+	QDate stopDate	= theDescriptor. stopTime. date ();
+	if ((startDate > theDate) || (stopDate < theDate))
+	   return theDescriptor;
+	for (QDomElement child = theSchedule. firstChildElement ("programme");
+	     !child. isNull ();
+	     child = child. nextSiblingElement ("programme")) {
+	   programDescriptor res = xmlHandler. process_programme (child);
+	   if (!res. valid)
+	      continue;
+	  theDescriptor.thePrograms. push_back (res);
+	}
+	theDescriptor. name = serviceName;
+	return theDescriptor;
+}
+
 void	timeTableHandler::display	(const scheduleDescriptor &schedule) {
-	addHeader (schedule);
+//	addHeader (schedule);
 	for (auto &program : schedule. thePrograms)
 	   addProgram (program);
 	show ();

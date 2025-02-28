@@ -909,7 +909,10 @@ QString realName;
 
 	      if (objectName == QString (""))
 	         objectName = "epg file";
-	      objectName  = epgPath + objectName;
+	      objectName  = epgPath +
+	                    QString::number (channel. Eid, 16) +
+	                     "/" + objectName;
+	
 	      {  QString temp = objectName;
 	         temp = temp. left (temp. lastIndexOf (QChar ('/')));
 	         if (!QDir (temp). exists ())
@@ -919,20 +922,19 @@ QString realName;
 	                                                  result. end());
 	         QDomDocument epgDocument;
 	         epgVertaler. process_epg (epgDocument, epgData);
-	         if (configHandler_p -> epg2_active ()) {
+	         
+//	         if (configHandler_p -> epg2_active ()) {
 	            QFile file (QDir::toNativeSeparators (objectName));
 	            if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
 	               QTextStream stream (&file);
 	               stream << epgDocument. toString ();
 	               file. close ();
 	            }
-	         }
-	         
-	         QDomElement root = epgDocument. firstChildElement ("epg");
-	         if (!root. isNull () && objectName. endsWith (".EHB"))
-	            extractSchedule		(epgDocument,
-	                                         channel. Eid, objectName);
-	         else
+//	         }
+//	         QDomElement root = epgDocument. firstChildElement ("epg");
+//	         if (!root. isNull ())	// should not happen
+//	            break;
+	         if (objectName. endsWith (".EIB"))
 	            extractServiceInformation	(epgDocument,
 	                                          channel. Eid, true);
 	      }
@@ -1292,7 +1294,7 @@ void	RadioInterface::TerminateProcess () {
 	epgTimer.	stop	();
 	serviceIcon	-> hide ();
 	delete serviceIcon;
-	soundOut_p	-> stop ();
+//	soundOut_p	-> stop ();
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
 #ifdef	HAVE_PLUTO_RXTX
@@ -2175,10 +2177,13 @@ QString serviceName	= s. serviceName;
 	   channel. currentService. valid	= true;
 	   channel. currentService. is_audio	= true;
 	   channel. currentService. subChId	= ad. subchId;
-	   if  (has_timeTable (ad. SId))
-	      techWindow_p -> show_timetableButton (true);
+	   techWindow_p -> show_timetableButton (true);
 	   startAudioservice (ad);
-	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
+//	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
+	   serviceLabel	-> setText (serviceName);
+	   QPixmap p;
+	   if (get_servicePicture (p, ad)) 
+	      iconLabel -> setPixmap (p. scaled (60, 60, Qt::KeepAspectRatio));
 	   techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
 
 #ifdef	HAVE_PLUTO_RXTX
@@ -3286,9 +3291,9 @@ void	RadioInterface::scheduledFICDumping () {
 void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
 	
-	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
-	   return;
 	if (theSCANHandler. active ())
+	   return;
+	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
 	   return;
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
 	for (auto serv : epgList) {
@@ -3306,9 +3311,23 @@ void	RadioInterface::epgTimer_timeOut	() {
 	}
 }
 
+static
+QString	find_epgFile (QDate& theDate, uint32_t Eid, uint32_t Sid) {
+QString fileName	= "/home/jan/Qt-DAB-files";
+	if (!fileName. endsWith ("/"))
+	   fileName += "/" + QString::number (Eid, 16) + "/";
+	char temp [20];
+	sprintf (temp, "w%4d%02d%02dd%4xc0.EHB",
+	                 theDate. year (), theDate. month (),
+	                 theDate. day (), Sid);
+	
+	return fileName + QString (temp);;
+}
+	
 void	RadioInterface::handle_timeTable	() {
 int	epgWidth;
 	if (my_timeTable. isVisible ()) {
+	   my_timeTable. clear ();
 	   my_timeTable. hide ();
 	   return;
 	}
@@ -3316,17 +3335,16 @@ int	epgWidth;
 	                     !channel. currentService. is_audio)
 	   return;
 
-	my_timeTable. clear ();
-	epgWidth	= value_i (dabSettings_p, DAB_GENERAL, "epgWidth", 70);
-	if (epgWidth < 50)
-	   epgWidth = 50;
-	for (auto &schedule: channel. programGuides) {
-	   if (schedule. Sid == channel. currentService. SId) {
-	      my_timeTable. display (schedule);
-	      break;
-	   }
-	}
-	my_timeTable. show ();
+	audiodata ad;
+	theOFDMHandler -> data_for_audioservice (channel.
+	                             currentService. serviceName, ad);
+	my_timeTable. setUp (channel. theDate, channel. Eid,
+	                     channel. currentService. SId,
+	                     channel. currentService. serviceName);
+	QPixmap p;
+	if (ad. defined) 	// should be
+	   if (get_servicePicture (p, ad)) // this may be
+	      my_timeTable. addLogo (p);
 }
 
 //----------------------------------------------------------------------
@@ -4412,10 +4430,10 @@ int yearN, monthN, dayN;
 	index += 2;
 	QString day;
 	for (int i = index; i < index + 2; i ++)
-	   day = fileName. at (i);
+	   day += fileName. at (i);
 	dayN = day. toInt (&ok);
 	if (!ok || !((1 <= dayN) && (dayN <= 31)))
-	   day = 15;
+	   dayN = 15;
 	index += 2;
 	index += 1;
 	QString serviceId;
@@ -4428,62 +4446,6 @@ int yearN, monthN, dayN;
 	return true;
 }
 	   
-void	RadioInterface::extractSchedule (QDomDocument &doc,
-	                                       uint32_t ensembleId,
-	                                       const QString &title) {
-QDomElement root = doc. firstChildElement ("epg");
-QDate theDate;
-uint32_t serviceId = 0;
-	if (!analyse_title (title, theDate, serviceId))
-	   fprintf (stderr, "geen goede title?\n");
-	for (QDomElement theSchedule = root. firstChildElement ("schedule");
-	     !theSchedule. isNull ();
-	     theSchedule = theSchedule. nextSiblingElement ("schedule")) { 
-	   process_schedule (theSchedule, theDate,  ensembleId, serviceId);
-	}
-}
-
-void	RadioInterface::process_schedule (QDomElement &theSchedule,
-	                                  QDate &theDate,
-	                                  uint32_t ensembleId,
-	                                  uint32_t serviceId) {
-scheduleDescriptor theDescriptor =
-	                  xmlHandler. getScheduleDescriptor (theSchedule,
-	                                                     theDate,
-	                                                     ensembleId,
-	                                                     serviceId);
-	if (!theDescriptor. valid)
-	   return;
-	QDate startDate	= theDescriptor. startTime. date ();
-	QDate stopDate	= theDescriptor. stopTime. date ();
-	if ((startDate > theDate) || (stopDate < theDate))
-	   return;
-	for (QDomElement child = theSchedule. firstChildElement ("programme");
-	     !child. isNull ();
-	     child = child. nextSiblingElement ("programme")) {
-	   programDescriptor res = xmlHandler. process_programme (child);
-	   if (!res. valid)
-	      continue;
-	  theDescriptor.thePrograms. push_back (res);
-	}
-	for (int i = 0; i <  (int)channel. programGuides. size (); i ++)
-	if (channel. programGuides [i]. Sid == theDescriptor. Sid)
-	   return;
-	QString serviceName =
-	               theOFDMHandler -> find_service (theDescriptor. Sid, 0);
-	theDescriptor. name = serviceName;
-	channel. programGuides. push_back (theDescriptor);
-	if (theDescriptor. Sid == channel. currentService.SId)
-	   techWindow_p -> show_timetableButton (true);
-}
-
-bool	RadioInterface::has_timeTable (uint32_t Sid) {
-	for (auto &service : channel. programGuides) 
-	   if (service. Sid == Sid)
-	      return true;
-	return false;
-}
-
 void	RadioInterface::extractServiceInformation (const QDomDocument &doc,
 	                                            uint32_t Eid, bool fresh) {
 QDomElement root = doc. firstChildElement ("serviceInformation");
@@ -4492,7 +4454,11 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	    theElement = theElement. nextSiblingElement ("")) {
 	   if (theElement. tagName () == "ensemble") {
 	      QString Ident = theElement. attribute ("Eid");
-	      if (QString::number (Eid, 16) != Ident)
+	      bool ok = false;
+	      int ensemble = Ident. toInt (&ok, 16);
+	      fprintf (stderr, "We have %X and, from the file %X\n",
+	                        Eid, ensemble);
+	      if (Eid != ensemble)
 	         continue;
 	      if (process_ensemble (theElement, Eid) && fresh)
 	         saveServiceInfo (doc, Eid);

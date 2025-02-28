@@ -177,11 +177,9 @@ public:
 	float		distance;
 	float		azimuth;
 	bool		audioActive;
-	std::vector<scheduleDescriptor> programGuides;
 	std::vector<mmDescriptor>servicePictures;
 	void	cleanChannel () {
 	transmitters. resize (0);
-	programGuides. resize (0);
 	servicePictures. resize (0);
 	realChannel	= true;
 	serviceCount	= -1;
@@ -300,7 +298,6 @@ private:
 #endif
 	epgCompiler		epgVertaler;
 	xmlExtractor		xmlHandler;
-	bool			has_timeTable	(uint32_t);
 	QString			epgPath;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
@@ -424,10 +421,6 @@ private:
 	void			removeFromList	(uint8_t, uint8_t);
 	cacheElement		*inList		(uint8_t, uint8_t);
 
-	void			extractSchedule	(QDomDocument &,
-	                                         uint32_t, const QString &);
-	void			process_schedule (QDomElement &theSchedule,
-	                                          QDate &, uint32_t, uint32_t);
 	void			extractServiceInformation (const QDomDocument &,
 	                                                      uint32_t, bool);
 	void			saveServiceInfo	(const QDomDocument &, 

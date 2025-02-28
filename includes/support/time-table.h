@@ -29,11 +29,15 @@
 #include        <QTableWidget>
 #include        <QStringList>
 #include        <QTableWidgetItem>
+#include	<QPushButton>
+#include	<QPixmap>
+#include	<QLabel>
 #include	"xml-extractor.h"
 
 class	RadioInterface;
 
-class	timeTableHandler {
+class	timeTableHandler: public QObject {
+Q_OBJECT
 public:
 		timeTableHandler	(RadioInterface *radio);
 		~timeTableHandler	();
@@ -42,6 +46,8 @@ public:
 	void    show            ();
         void    hide            ();
         bool    isVisible       ();
+	void	setUp		(QDate &, uint32_t, uint16_t, const QString &);
+	void	addLogo		(const QPixmap &);
 private:
 	void		addRow		();
 	void		addHeader	(const scheduleDescriptor &);
@@ -49,5 +55,24 @@ private:
 	RadioInterface	*radio;
 	QScrollArea     *myWidget;
         QTableWidget    *programDisplay;
+	QPushButton	*left;
+	QPushButton	*right;
+	QLabel		*dateLabel;
+	QLabel		*serviceLabel;
+	QLabel		*serviceLogo;
+	QString		serviceName;
+	QDate		startDate;
+	uint32_t	ensembleId;
+	uint32_t	serviceId;
+	int		dateOffset;
+	void		start		(int);
+	scheduleDescriptor	process_schedule (const QDomElement &,
+	                                          QDate, 
+	                                          uint32_t &ensembleId,
+	                                          uint32_t &serviceId);
+
+private slots:
+	void		handleLeft	();
+	void		handleRight	();
 };
 

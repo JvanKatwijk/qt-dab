@@ -4,6 +4,20 @@
 
 ![6.9](/res/read_me/front-picture.png?raw=true)
 
+--------------------------------------------------------------------------
+Moving towards Qt-DAB-6.9.1
+--------------------------------------------------------------------------
+
+Qt-DAB 6.9 and Qt-DAB 6.9.1 differ in the handling of SPI/EPG in Qt-DAB 6.9.1.
+As the picture shows, program icons are extracted from the SPI data (obviously
+only when transmitted), and - again if an EPG service is part of the ensemble -
+timetables can be made visible.
+
+Since were I live no EPG services are available, all development was done using a few recordings of german WDR and british BBC transmissions.
+
+TQt-DAB 6.9.1 is therefore not yet officially released, although it seems
+to be working, it is "work in progress" .
+
 ------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------
