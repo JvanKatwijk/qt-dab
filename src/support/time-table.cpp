@@ -25,10 +25,31 @@
 #include	"time-table.h"
 #include	"radio.h"
 #include	"xml-handler.h"
-
-	timeTableHandler::timeTableHandler (RadioInterface *radio) {
-	this	-> radio	= radio;
+#include	"settingNames.h"
+#include	"settings-handler.h"
+#include	"findfilenames.h"
+#include	<QFile>
+#include	<QFileInfo>
 //
+//	The timeTableHandler cooperates with the epg handling, in that
+//	the latter puts the SPI/EPG files in a directory, named
+//	after the Eid of the ensemble, the files are coming from
+//	and the timeTablehandler extracts - when a call is made for
+//	showing a time table - the relevant xml file, decodes it
+//	and shows the result.
+//	
+	timeTableHandler::timeTableHandler (RadioInterface *radio,
+	                                    QSettings *dabSettings_p) {
+findfileNames	theFilenameFinder (dabSettings_p);
+QString		tempPath        = theFilenameFinder. basicPath ();
+;
+	this	-> radio	= radio;
+	path_for_files          =
+                              value_s (dabSettings_p, DAB_GENERAL,
+                                                S_FILE_PATH, tempPath);
+	if (!path_for_files. endsWith ("/"))
+           path_for_files += "/";
+	
 	myWidget        = new QScrollArea (nullptr);
 
         myWidget        -> setWidgetResizable (true);
@@ -53,6 +74,10 @@
 	lv		-> addWidget (programDisplay);
         myWidget        -> setLayout (lv);
 	
+	connect (left, &QPushButton::clicked,
+	         this, &timeTableHandler::handleLeft);
+	connect (right, &QPushButton::clicked,
+	         this,  &timeTableHandler::handleRight);
 //	programDisplay	-> setHorizontalHeaderLabels (
 //	                     QStringList () << "program guide");
 	addRow ();
@@ -64,17 +89,13 @@
 	delete	myWidget;
 }
 
-static
-QString find_epgFile (QDate& theDate, uint32_t Eid, uint32_t Sid, bool uc) {
-QString fileName        = "/home/jan/Qt-DAB-files";
-        if (!fileName. endsWith ("/"))
-           fileName += "/" + QString::number (Eid, 16) + "/";
+QString timeTableHandler::find_epgFile (QDate& theDate,
+	                                uint32_t Eid, uint32_t Sid, bool uc) {
+QString fileName;
+	fileName = path_for_files + QString::number (Eid, 16) + "/";
         char temp [40];
 	const char * formatString;
-	if (!uc)
-           formatString = "w%4d%02d%02dd%4xc0.EHB";
-	else
-           formatString = "w%4d%02d%02dd%4Xc0.EHB";
+        formatString = "W%4d%02d%02dD%4XC0.EHB";
 	
         sprintf (temp, formatString,
                          theDate. year (), theDate. month (),
@@ -83,32 +104,26 @@ QString fileName        = "/home/jan/Qt-DAB-files";
         return fileName + QString (temp);;
 }
   
-void	timeTableHandler::setUp		(QDate &theDate,
+void	timeTableHandler::setUp		(const QDate &theDate,
 	                                 uint32_t Eid, uint16_t SId,
 	                                 const QString &serviceName) {
-	disconnect (left, SIGNAL (clicked ()),
-	            this, SLOT (handleLeft ()));
-	disconnect (right, SIGNAL (clicked ()),
-	            this, SLOT (handleRight ()));
-	connect (left, SIGNAL (clicked ()),
-	         this, SLOT (handleLeft ()));
-	connect (right, SIGNAL (clicked ()),
-	         this, SLOT (handleRight ()));
-	fprintf (stderr, "starting with %s at %s\n",
-	                        serviceName. toLatin1 (). data (),
-	                        theDate. toString (). toLatin1 (). data ());
-	startDate	= theDate;
-	ensembleId	= Eid;
-	serviceId	= SId;
+//	fprintf (stderr, "starting with %s at %s\n",
+//	                        serviceName. toLatin1 (). data (),
+//	                        theDate. toString (). toLatin1 (). data ());
+	this	-> startDate	= theDate;
+	this	-> ensembleId	= Eid;
+	this	-> serviceId	= SId;
 	this	-> serviceName	= serviceName;
 	dateLabel	-> setText (theDate. toString ());
 	serviceLabel	-> setText (serviceName);
 	dateOffset	= 0;
 	start (dateOffset);
 }
-
+//
+//	The setup function is called, but it is not certain
+//	that we have a logo, so the logo is handled separately
 void	timeTableHandler::addLogo	(const QPixmap &p) {
-	serviceLogo -> setPixmap (p. scaled (65, 65, Qt::KeepAspectRatio));
+	serviceLogo -> setPixmap (p. scaled (70, 70, Qt::KeepAspectRatio));
 }
 
 void	timeTableHandler::handleLeft	() {
@@ -131,21 +146,14 @@ void	timeTableHandler::start (int dateOffset) {
 	QString fileName = find_epgFile (currentDate,
 	                                   ensembleId,
 	                                   serviceId, false);
-	FILE * test = fopen (fileName. toLatin1 (). data (), "r");
-	if (test != nullptr)
-	   fclose (test);
-	else 
+	QFileInfo fi (QDir::toNativeSeparators (fileName));
+	if (!fi. exists ())
 	   fileName = find_epgFile (currentDate,
 	                                   ensembleId,
 	                                   serviceId, true);
-	clear ();
-	if (fileName == "") {
-	   serviceLabel -> setText ("no data available");
-	   show ();
-	   return;
-	}
-	QFile f (QDir::toNativeSeparators (fileName));
-        if (!f. open (QIODevice::ReadOnly)) {
+	   
+	QFile f = QFile (QDir::toNativeSeparators (fileName));
+	if (!f. open (QIODevice::ReadOnly)) {
 	   serviceLabel -> setText ("no datafile available");
 	   show ();
 	   return;

@@ -34,19 +34,22 @@
 #include	<QLabel>
 #include	"xml-extractor.h"
 
+class	QSettings;
 class	RadioInterface;
 
 class	timeTableHandler: public QObject {
 Q_OBJECT
 public:
-		timeTableHandler	(RadioInterface *radio);
+		timeTableHandler	(RadioInterface *radio,
+	                                 QSettings *);
 		~timeTableHandler	();
 	void	display			(const scheduleDescriptor &);
 	void	clear			();
 	void    show            ();
         void    hide            ();
         bool    isVisible       ();
-	void	setUp		(QDate &, uint32_t, uint16_t, const QString &);
+	void	setUp		(const QDate &, uint32_t,
+	                                uint16_t, const QString &);
 	void	addLogo		(const QPixmap &);
 private:
 	void		addRow		();
@@ -71,6 +74,11 @@ private:
 	                                          uint32_t &ensembleId,
 	                                          uint32_t &serviceId);
 
+	QString		find_epgFile (QDate& theDate,
+                                      uint32_t Eid, uint32_t Sid, bool uc);
+QString fileName;
+
+	QString		path_for_files;
 private slots:
 	void		handleLeft	();
 	void		handleRight	();

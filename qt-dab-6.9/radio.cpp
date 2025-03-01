@@ -179,7 +179,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theDXDisplay (this, Si),
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si, freqExtension),
-	                                        my_timeTable (this) {
+	                                        my_timeTable (this, Si) {
 int16_t k;
 QString h;
 
@@ -911,7 +911,7 @@ QString realName;
 	         objectName = "epg file";
 	      objectName  = epgPath +
 	                    QString::number (channel. Eid, 16) +
-	                     "/" + objectName;
+	                     "/" + objectName. toUpper ();
 	
 	      {  QString temp = objectName;
 	         temp = temp. left (temp. lastIndexOf (QChar ('/')));
@@ -2182,8 +2182,10 @@ QString serviceName	= s. serviceName;
 //	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	   serviceLabel	-> setText (serviceName);
 	   QPixmap p;
-	   if (get_servicePicture (p, ad)) 
-	      iconLabel -> setPixmap (p. scaled (60, 60, Qt::KeepAspectRatio));
+	   if (get_serviceLogo (p, ad)) 
+	      iconLabel -> setPixmap (p. scaled (55, 55, Qt::KeepAspectRatio));
+	   else
+	      iconLabel -> setText (ad. shortName);
 	   techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
 
 #ifdef	HAVE_PLUTO_RXTX
@@ -2216,7 +2218,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	                                            nullptr, FORE_GROUND);
 //
 	QPixmap p;
-	if (get_servicePicture (p, ad)) {
+	if (get_serviceLogo (p, ad)) {
 	   serviceIcon -> setPixmap (p);
 	   serviceIcon -> show ();
 	}
@@ -2312,6 +2314,7 @@ packetdata pd;
 //	the details of a selected service
 void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
+	iconLabel			-> setPixmap (QPixmap ());
 	dynamicLabel			-> setText ("");
 	techWindow_p			-> cleanUp ();
 	stereoLabel			-> setText ("");
@@ -3311,21 +3314,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	}
 }
 
-static
-QString	find_epgFile (QDate& theDate, uint32_t Eid, uint32_t Sid) {
-QString fileName	= "/home/jan/Qt-DAB-files";
-	if (!fileName. endsWith ("/"))
-	   fileName += "/" + QString::number (Eid, 16) + "/";
-	char temp [20];
-	sprintf (temp, "w%4d%02d%02dd%4xc0.EHB",
-	                 theDate. year (), theDate. month (),
-	                 theDate. day (), Sid);
-	
-	return fileName + QString (temp);;
-}
-	
 void	RadioInterface::handle_timeTable	() {
-int	epgWidth;
 	if (my_timeTable. isVisible ()) {
 	   my_timeTable. clear ();
 	   my_timeTable. hide ();
@@ -3343,7 +3332,7 @@ int	epgWidth;
 	                     channel. currentService. serviceName);
 	QPixmap p;
 	if (ad. defined) 	// should be
-	   if (get_servicePicture (p, ad)) // this may be
+	   if (get_serviceLogo (p, ad)) // this may be
 	      my_timeTable. addLogo (p);
 }
 
@@ -3380,11 +3369,7 @@ void	RadioInterface::handle_configButton	() {
 void	RadioInterface::handle_devicewidgetButton	() {
 	if (inputDevice_p == nullptr)
 	   return;
-	bool b1 = value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 0);
-	bool b2 = inputDevice_p -> getVisibility ();
-//	fprintf (stderr, "b1 = %d, b2 = %d\n", b1, b2);
 	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
-
 	store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE,
 	                      inputDevice_p -> getVisibility () ? 1 : 0);
 }
@@ -4395,57 +4380,6 @@ QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 /////////////////////////////////////////////////////////////////////////
 //
 
-static
-bool	analyse_title (const QString &title, QDate &date, uint32_t &Sid) {
-QString fileName;
-int yearN, monthN, dayN;
-	if (! (title. endsWith (".EHB") || title. endsWith (".ehb")))
-	   return false;
-	int indexOf = title. lastIndexOf ("/");
-	if (indexOf > 0)
-	   for (int i = indexOf + 1; i < title. size (); i ++)
-	      fileName += QChar (title. at (i));
-	else
-	   fileName = title;
-	QString year;
-	int index;
-	for (index = 0; index < fileName. size (); index ++)
-	   if (QChar ('2') == fileName. at (index))
-	      break;
-	if (index > fileName. size () - 8)
-	   return false;
-	for (int i = index; i < index + 4; i ++)
-	   year += fileName. at (i);
-	bool ok;
-	yearN = year. toInt (&ok);
-	index += 4;
-	if (!ok || !((2000 <= yearN) && (yearN <= 2030)))
-	   yearN = 2023;
-	QString month;
-	for (int i = index; i < index + 2; i ++)
-	   month += fileName. at (i);
-	monthN = month. toInt (&ok);
-	if (!ok || !((1 <= monthN) && (monthN <= 12)))
-	   monthN = 2;
-	index += 2;
-	QString day;
-	for (int i = index; i < index + 2; i ++)
-	   day += fileName. at (i);
-	dayN = day. toInt (&ok);
-	if (!ok || !((1 <= dayN) && (dayN <= 31)))
-	   dayN = 15;
-	index += 2;
-	index += 1;
-	QString serviceId;
-	for (int i = index; i < index + 4; i ++)
-	   serviceId += fileName. at (i);
-	Sid = serviceId. toInt (&ok, 16);
-	if (!ok)
-	   return false;
-	date = QDate (yearN, monthN, dayN);
-	return true;
-}
-	   
 void	RadioInterface::extractServiceInformation (const QDomDocument &doc,
 	                                            uint32_t Eid, bool fresh) {
 QDomElement root = doc. firstChildElement ("serviceInformation");
@@ -4455,7 +4389,7 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	   if (theElement. tagName () == "ensemble") {
 	      QString Ident = theElement. attribute ("Eid");
 	      bool ok = false;
-	      int ensemble = Ident. toInt (&ok, 16);
+	      uint32_t ensemble = Ident. toInt (&ok, 16);
 	      fprintf (stderr, "We have %X and, from the file %X\n",
 	                        Eid, ensemble);
 	      if (Eid != ensemble)
@@ -4552,7 +4486,7 @@ multimediaElement *bb = (multimediaElement *)b;
 }
 //
 //	we want the largest pictures, so we sort the list 
-bool	RadioInterface::get_servicePicture (QPixmap &p, const audiodata &ad) {
+bool	RadioInterface::get_serviceLogo (QPixmap &p, const audiodata &ad) {
 bool res = false;
 	for (auto &ss : channel. servicePictures) {
 	   if (ss. serviceId != (uint32_t)ad. SId)
@@ -4589,10 +4523,10 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 }
 
 void	RadioInterface::report_startDir	(int objects) {
-	dynamicLabel	-> setText ("Start of grabbing " + QString::number (objects) + "objects for EPG/SPI");
+//	dynamicLabel	-> setText ("Start of grabbing " + QString::number (objects) + "objects for EPG/SPI");
 }
 
 void	RadioInterface::report_completeDir () {
-	dynamicLabel	-> setText ("All EPG/SPI data is now in");
+//	dynamicLabel	-> setText ("All EPG/SPI data is now in");
 }
 

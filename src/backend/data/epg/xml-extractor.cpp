@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015 .. 2024
+ *    Copyright (C)  2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -211,8 +211,7 @@ scheduleDescriptor result;
 	   startTime	= stringToDateTime (startDate);
 	   if (duration != "") {
 	      int minutes = durationToInt (duration);
-	      stopTime = startTime;
-	      stopTime. addSecs (minutes * 60);
+	      stopTime = startTime. addSecs (minutes * 60);
 	   }
 	   else
 	      stopTime = stringToDateTime (stopDate);

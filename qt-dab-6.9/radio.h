@@ -320,7 +320,7 @@ private:
 	QTimer			channelTimer;
 	QTimer			presetTimer;
 	QLabel			*serviceIcon;
-	bool			get_servicePicture	(QPixmap &,
+	bool			get_serviceLogo		(QPixmap &,
 	                                                 const audiodata &);
 	void			write_servicePictures	(uint32_t);
 	void			read_pictureMappings	(uint32_t);

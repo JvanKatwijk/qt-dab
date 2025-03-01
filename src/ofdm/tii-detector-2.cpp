@@ -103,10 +103,10 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 resultPair TII_Detector_B::findBestIndex (Complex *vector_192,
 	                                  float *avgTable, float threshold) {
 Complex C_table [GROUPSIZE];
-int	D_table [GROUPSIZE];
+int	D_table [GROUPSIZE] = {0};
 resultPair	bestPair;
-	memset (C_table, 0, GROUPSIZE * sizeof (Complex));
-	memset (D_table, 0, GROUPSIZE * sizeof (int));
+	for (int i = 0; i < GROUPSIZE; i ++)
+	   C_table [i] = Complex (0, 0);
 //
 //	We only use the C and D table to locate the start offset
 	for (int i = 0; i < GROUPSIZE; i ++) {
