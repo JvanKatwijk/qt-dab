@@ -520,7 +520,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   if (NOT LIBFDK_AAC_FOUND)
 	      message(FATAL_ERROR, "Please install libfdk-aac")
 	   endif ()
-	   include_directories (../specials/fdk-aac)
+	   include_directories (../helpers/specials/fdk-aac)
 	   set($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ../includes/backend/audio/fdk-aac.h

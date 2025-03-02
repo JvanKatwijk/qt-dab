@@ -74,8 +74,8 @@ private:
 	                                          uint32_t &ensembleId,
 	                                          uint32_t &serviceId);
 
-	QString		find_epgFile (QDate& theDate,
-                                      uint32_t Eid, uint32_t Sid, bool uc);
+	QString		find_xmlFile (QDate& theDate,
+                                      uint32_t Eid, uint32_t Sid);
 QString fileName;
 
 	QString		path_for_files;

@@ -89,8 +89,8 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 	delete	myWidget;
 }
 
-QString timeTableHandler::find_epgFile (QDate& theDate,
-	                                uint32_t Eid, uint32_t Sid, bool uc) {
+QString timeTableHandler::find_xmlFile (QDate& theDate,
+	                                uint32_t Eid, uint32_t Sid) {
 QString fileName;
 	fileName = path_for_files + QString::number (Eid, 16) + "/";
         char temp [40];
@@ -105,9 +105,6 @@ QString fileName;
 void	timeTableHandler::setUp		(const QDate &theDate,
 	                                 uint32_t Eid, uint16_t SId,
 	                                 const QString &serviceName) {
-//	fprintf (stderr, "starting with %s at %s\n",
-//	                        serviceName. toLatin1 (). data (),
-//	                        theDate. toString (). toLatin1 (). data ());
 	this	-> startDate	= theDate;
 	this	-> ensembleId	= Eid;
 	this	-> serviceId	= SId;
@@ -141,9 +138,8 @@ void	timeTableHandler::start (int dateOffset) {
 	QDate currentDate = startDate. addDays (dateOffset);
 	dateLabel	-> setText (currentDate. toString ());
 	serviceLabel	-> setText (serviceName);
-	QString fileName = find_epgFile (currentDate,
-	                                   ensembleId,
-	                                   serviceId, false);
+	QString fileName = find_xmlFile (currentDate, ensembleId,
+	                                       serviceId);
 	QFile f = QFile (QDir::toNativeSeparators (fileName));
 	if (!f. open (QIODevice::ReadOnly)) {
 	   serviceLabel -> setText ("no datafile available");

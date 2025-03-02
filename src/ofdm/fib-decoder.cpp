@@ -701,7 +701,7 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	      bitOffset 	+= (11 + 5 + 8 * length);
 	      continue;
 	   }
-
+	
 	   int compIndex =
 	               findServiceComponent (localBase, SId, SCIds);
 	   if (compIndex != -1) {

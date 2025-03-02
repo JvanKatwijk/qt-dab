@@ -61,6 +61,13 @@
                            "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
 #endif
 				   "</ul>");
+	ui -> acknowledgementsLabel -> setText (tr("Special thanks to") +
+                         "<ul>"
+	                 "<li> Herman Wijnants, for continuous suggestions and feedback</li>" +
+	                 "<li> Andreas Mikula, for continuous support </li>" +
+	                 "<li> Rolf Zerr, for an improved TII decoder </li>" +
+	                 "<li> Stefan Poeschel, for providing code for saving AAC </li>" +
+	                 "</ul>");
 //	ui -> configuration -> setTextInteractionFlags (Qt::TextBrowserInteraction);
 	ui -> configuration -> setOpenExternalLinks(true);
 	ui -> configuration -> setText (tr("Qt-DAB is configured with:")+

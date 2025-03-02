@@ -34,7 +34,7 @@
 
 	newFiles::newFiles (const QString &fileName):
 	                               _I_Buffer (__BUFFERSIZE__),
-	                               theReader (fileName) {
+	                                  theReader (fileName) {
 	setupUi (&myFrame);
 	myFrame. show	();
 	this -> fileName	= fileName;

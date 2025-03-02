@@ -60,6 +60,8 @@ uint32_t res = 0;
 
 	scheduleDescriptor::scheduleDescriptor	() {}
 	scheduleDescriptor::~scheduleDescriptor	() {}
+
+
 	xmlExtractor::xmlExtractor	()	{}
 	xmlExtractor::~xmlExtractor	()	{}
 

@@ -29,6 +29,7 @@
 #include	<QString>
 #include	<stdint.h>
 
+
 typedef struct {
 	bool	valid;
 	QDateTime	startTime;
@@ -79,6 +80,10 @@ public:
 	uint32_t		serviceSid		(const QDomElement &);
 	QString			service_url		(const QDomElement &);
 	multimediaElement	extract_multimedia	(const QDomElement &);
+
+	QString			find_xmlFile		(const QDate &,
+	                                                 uint32_t, uint32_t);
+	QString			extractName		(const QString &);
 private:
 	QDate		stringToDate		(const QString &);
 	QDateTime	stringToDateTime	(const QString &);

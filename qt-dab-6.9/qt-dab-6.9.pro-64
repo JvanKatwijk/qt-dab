@@ -909,7 +909,7 @@ faad	{
 
 fdk-aac {
         DEFINES         += __WITH_FDK_AAC__
-        INCLUDEPATH     += ../specials/fdk-aac
+        INCLUDEPATH     += ../helpers/specials/fdk-aac
         HEADERS         += ../includes/backend/audio/fdk-aac.h
         SOURCES         += ../src/backend/audio/fdk-aac.cpp
         PKGCONFIG       += fdk-aac

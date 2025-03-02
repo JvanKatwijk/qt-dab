@@ -113,12 +113,12 @@ uint8_t patternTable [] = {
 };
 
 		TII_Detector::TII_Detector (uint8_t dabMode,
-	                                      phaseTable *theTable):
-	                                      params (dabMode),
-	                                      T_u (params. get_T_u ()),
-	                                      T_g (params. get_T_g ()),
-	                                      carriers (params. get_carriers ()),
-	                                      my_fftHandler (params. get_T_u (),
+	                                     phaseTable *theTable):
+	                                     params (dabMode),
+	                                     T_u (params. get_T_u ()),
+	                                     T_g (params. get_T_g ()),
+	                                     carriers (params. get_carriers ()),
+	                                     my_fftHandler (params. get_T_u (),
 	                                                    false) {
 	nullSymbolBuffer. resize (T_u);
 	window. resize (T_u);

@@ -202,6 +202,9 @@
        </item>
        <item>
         <widget class="clickablelabel" name="aboutLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click on this vopyright symbol to see some details about the implementation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>©</string>
          </property>
@@ -231,7 +234,7 @@
        <item>
         <widget class="clickablelabel" name="serviceLabel">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The service label, i.e. the name of the currently selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>service</string>

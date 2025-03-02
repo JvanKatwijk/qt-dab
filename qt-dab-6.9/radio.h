@@ -254,6 +254,8 @@ private:
 	logger			theLogger;
 	scanHandler		theSCANHandler;
 	timeTableHandler	my_timeTable;
+	xmlExtractor		xmlHandler;
+	epgCompiler		epgVertaler;
 	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 	QLabel			*dxDisplayText;
@@ -297,8 +299,6 @@ private:
 #ifdef	CLOCK_STREAMER
 	tcpServer		*clockStreamer_p;
 #endif
-	epgCompiler		epgVertaler;
-	xmlExtractor		xmlHandler;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
 //	QString			path_for_tiiFile;

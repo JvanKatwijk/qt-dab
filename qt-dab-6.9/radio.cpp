@@ -328,6 +328,7 @@ QString h;
 	font. setBold (true);
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
+	serviceLabel	-> setToolTip ("<font color=\"black\">the label displays the selected service. If a logo can be found, it will be displayed, otherwise the shortname is displayed");
 	motLabel	-> setStyleSheet ("QLabel {color : red}");
 	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
 
@@ -582,7 +583,7 @@ QString h;
 //	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
 //	dynamicLabel	-> setOpenExternalLinks(true);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
-	dynamicLabel    -> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
+	dynamicLabel    -> setToolTip ("<font color=\"black\">The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //
 //	Until the opposite is known to be true:
 	nextService. channel = "";

@@ -14,7 +14,7 @@
    <string>About Qt-DAB</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item alignment="Qt::AlignHCenter">
+   <item alignment="Qt::AlignmentFlag::AlignHCenter">
     <widget class="QLabel" name="appName">
      <property name="font">
       <font>
@@ -26,7 +26,7 @@
      </property>
     </widget>
    </item>
-   <item alignment="Qt::AlignHCenter">
+   <item alignment="Qt::AlignmentFlag::AlignHCenter">
     <widget class="QLabel" name="appIcon">
      <property name="text">
       <string>TextLabel</string>
@@ -99,6 +99,13 @@
        </property>
        <property name="wordWrap">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="acknowledgementsLabel">
+       <property name="text">
+        <string>Acknowledgements</string>
        </property>
       </widget>
      </item>
