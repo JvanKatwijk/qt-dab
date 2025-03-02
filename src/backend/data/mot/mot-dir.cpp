@@ -43,8 +43,8 @@
 	this	-> dirSize	= dirSize;
 	this	-> numObjects	= objects;
 	this	-> dir_segmentSize	= segmentSize;
-	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
-	                             transportId, dirSize, objects, segmentSize);
+//	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
+//	                             transportId, dirSize, objects, segmentSize);
 	connect (this, &motDirectory::report_startDir,
 	         mr, &RadioInterface::report_startDir); 
 	connect (this, &motDirectory::report_completeDir,

@@ -95,13 +95,11 @@ QString fileName;
 	fileName = path_for_files + QString::number (Eid, 16) + "/";
         char temp [40];
 	const char * formatString;
-        formatString = "W%4d%02d%02dD%4XC0.EHB";
-	
+        formatString = "%4d%02d%02d_%4X_SI.xml";
         sprintf (temp, formatString,
                          theDate. year (), theDate. month (),
                          theDate. day (), Sid);
-
-        return fileName + QString (temp);;
+        return fileName + QString (temp);
 }
   
 void	timeTableHandler::setUp		(const QDate &theDate,
@@ -146,12 +144,6 @@ void	timeTableHandler::start (int dateOffset) {
 	QString fileName = find_epgFile (currentDate,
 	                                   ensembleId,
 	                                   serviceId, false);
-	QFileInfo fi (QDir::toNativeSeparators (fileName));
-	if (!fi. exists ())
-	   fileName = find_epgFile (currentDate,
-	                                   ensembleId,
-	                                   serviceId, true);
-	   
 	QFile f = QFile (QDir::toNativeSeparators (fileName));
 	if (!f. open (QIODevice::ReadOnly)) {
 	   serviceLabel -> setText ("no datafile available");

@@ -692,12 +692,19 @@ void	ensembleHandler::set_showMode	(int m) {
 }
 
 uint16_t	ensembleHandler::extract_SId	(const QString &name) {
-	for (auto serv: ensembleList) {
+	for (auto &serv: ensembleList) {
 	   if (name. contains (QString::number (serv. SId, 16),
 	                                   Qt::CaseInsensitive))
 	      return serv. SId;
 	}
 	return 0;
+}
+
+QString		ensembleHandler::extract_name	(uint32_t sid) {
+	for (auto &serv: ensembleList)
+	   if (serv. SId == sid)
+	      return serv. name;
+	return "";
 }
 
 void	ensembleHandler::handle_scheduledSelect (const QString &name,

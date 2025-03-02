@@ -30,6 +30,7 @@
 #include	<QMouseEvent>
 #include	<QDir>
 #include	<QColorDialog>
+#include	<QToolTip>
 #include	<fstream>
 #include	"dab-constants.h"
 #include	"mot-content-types.h"
@@ -256,11 +257,11 @@ QString h;
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
-
+//
 	connect (folder_shower, SIGNAL (clicked ()),
 	         this, SLOT (handle_folderButton ()));
-        dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
-                                                S_DX_MODE, 0) != 0;
+	dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
+	                                        S_DX_MODE, 0) != 0;
 	tiiButton -> setText (dxMode ? "tii local" : "dx display");
 	connect (tiiButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_tiiButton ()));
@@ -328,16 +329,13 @@ QString h;
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
 	motLabel	-> setStyleSheet ("QLabel {color : red}");
+	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
+
 	programTypeLabel	-> setStyleSheet (labelStyle);
 	font      = ensembleId -> font ();
 	font. setPointSize (14);
 	ensembleId      -> setFont (font);
-
-	channel. currentService. valid	= false;
-	channel. serviceCount		= -1;
-
-	channel. targetPos	= position {0, 0};
-	
+	channel. cleanChannel ();
 	localPos. latitude 		=
 	             value_f (dabSettings_p, MAP_HANDLING, HOME_LATITUDE, 0.0);
 	localPos. longitude 		=
@@ -398,13 +396,11 @@ QString h;
 	   soundOut_p	= new audioSink	(latency);
 	   streams	= ((audioSink *)soundOut_p) -> streams ();
 	   temp		=
-	          value_s (dabSettings_p, SOUND_HANDLING, AUDIO_STREAM_NAME,
-	                                                  "default");
+	          value_s (dabSettings_p, SOUND_HANDLING,
+	                                 AUDIO_STREAM_NAME, "default");
 	}
 
 	if (streams. size () > 0) {
-//	   for (auto s: streams)
-//	      fprintf (stderr, "%s\n", s. toLatin1 (). data ());
 	   configHandler_p -> fill_streamTable (streams);
 	   configHandler_p -> show_streamSelector (true);
 	   k	= configHandler_p -> init_streamTable (temp);
@@ -426,25 +422,12 @@ QString h;
 #endif
 //
 //	some MOT, text and other data is stored in the Qt-DAB-files directory
-//	in home or tmp dir
-	QString tempPath	= theFilenameFinder. basicPath ();
-	path_for_tiiFile	=
-	                      value_s (dabSettings_p, DAB_GENERAL,
-	                                             S_TII_PATH, tempPath);
-	path_for_tiiFile	= checkDir (path_for_tiiFile);
-	
-	path_for_pictures	=
-	                      value_s (dabSettings_p, DAB_GENERAL,
-	                                       S_PICTURES_PATH, tempPath);
-	path_for_pictures	= checkDir (path_for_pictures)
-;
+	QString tempPath	= theFilenameFinder. basicPath ();	
 	path_for_files		=
 	                      value_s (dabSettings_p, DAB_GENERAL,
 	                                        S_FILE_PATH, tempPath);
-	epgPath			=
-	                      value_s (dabSettings_p, DAB_GENERAL,
-	                                        S_EPG_PATH, tempPath);
-	epgPath			= checkDir (epgPath);
+	if (path_for_files != "")
+	   path_for_files		= checkDir (path_for_files);
 
 //	timer for autostart epg service
 	epgTimer. setSingleShot (true);
@@ -523,8 +506,8 @@ QString h;
 
 	channel. etiActive	= false;
 	QPixmap epgP;
-        epgP. load (":res/epgLabel.png", "png");
-        epgLabel	-> setPixmap (epgP. scaled (30, 30,
+	epgP. load (":res/epgLabel.png", "png");
+	epgLabel	-> setPixmap (epgP. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
 	epgLabel	-> setToolTip ("this icon is visible when the EPG processor runs, in the background");
 	epgLabel	-> hide ();
@@ -565,18 +548,18 @@ QString h;
 	}
 //
 	peakLeftDamped          = -100;
-        peakRightDamped         = -100;
+	peakRightDamped         = -100;
  
-        leftAudio	-> setFillBrush	(QColor ("white"));
-        rightAudio	-> setFillBrush (QColor ("white"));
+	leftAudio	-> setFillBrush	(QColor ("white"));
+	rightAudio	-> setFillBrush (QColor ("white"));
 	leftAudio	-> setBorderWidth	(0);
 	rightAudio	-> setBorderWidth	(0);
 	leftAudio	-> setValue (-30);
 	rightAudio	-> setValue (-30);
-        leftAudio	-> setAlarmBrush (Qt::red);
-        rightAudio	-> setAlarmBrush (Qt::red);
-        leftAudio	-> setAlarmEnabled (true);  
-        rightAudio	-> setAlarmEnabled(true);
+	leftAudio	-> setAlarmBrush (Qt::red);
+	rightAudio	-> setAlarmBrush (Qt::red);
+	leftAudio	-> setAlarmEnabled (true);  
+	rightAudio	-> setAlarmEnabled(true);
 
 //	do we show controls?
 	bool visible	=
@@ -904,12 +887,13 @@ QString realName;
 	      break;
 
 	   case  MOTBaseTypeApplication: 	// epg data
-	      if ((epgPath == "") || (theSCANHandler. active ()))
+//	      if ((epgPath == "") || (theSCANHandler. active ()))
+	      if ((path_for_files == "") || (theSCANHandler. active ()))
 	         return;
 
 	      if (objectName == QString (""))
 	         objectName = "epg file";
-	      objectName  = epgPath +
+	      objectName  = path_for_files +
 	                    QString::number (channel. Eid, 16) +
 	                     "/" + objectName. toUpper ();
 	
@@ -921,22 +905,26 @@ QString realName;
 	         std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
 	         QDomDocument epgDocument;
-	         epgVertaler. process_epg (epgDocument, epgData);
-	         
-//	         if (configHandler_p -> epg2_active ()) {
-	            QFile file (QDir::toNativeSeparators (objectName));
-	            if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
-	               QTextStream stream (&file);
-	               stream << epgDocument. toString ();
-	               file. close ();
-	            }
-//	         }
-//	         QDomElement root = epgDocument. firstChildElement ("epg");
-//	         if (!root. isNull ())	// should not happen
-//	            break;
-	         if (objectName. endsWith (".EIB"))
+	         uint8_t docType = epgVertaler. process_epg (epgDocument,
+	                                                      epgData);
+	         if (docType == noType)		// should not happen
+	            break;
+
+	         if (docType == serviceInformationType) {
 	            extractServiceInformation	(epgDocument,
 	                                          channel. Eid, true);
+	            return;
+	         }
+	   
+	         QString theName = extractName (objectName);
+	         if (theName == "") 
+	            return;
+	         QFile file (QDir::toNativeSeparators (theName));
+	         if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
+	            QTextStream stream (&file);
+	            stream << epgDocument. toString ();
+	            file. close ();
+	         }
 	      }
 	      return;
 
@@ -944,7 +932,55 @@ QString realName;
 	      break;
 	}
 }
-
+//
+//	In the MOT name, we look for a sequence of 8 digits with
+//	some constraints, and then for a sequence of 4 characters
+//	that match an Sid in this ensemble
+QString RadioInterface::extractName (const QString &motName) {
+QString dateString;
+QString sidString;
+int eos		= 0;
+bool	ok	= false;
+QString env;
+QString realName;
+int base	= motName. lastIndexOf (QChar ('/'));
+	for (int i = 0; i <= base; i ++)
+	   env. push_back (motName. at (i));
+	for (int i = base + 1; i < motName. size (); i ++)
+	   realName . push_back (motName. at (i));
+int dotat	= realName. lastIndexOf (".");
+	if (dotat < 0)
+	   return "";
+	for (int i = 0; i < 4; i ++) {
+	   dateString = "";
+	   for (int j = 0; j < 4; j ++)
+	      dateString . push_back (realName. at (i + j));
+	   int y = dateString. toInt (&ok);
+	   if ((2000 <= y) && (y <= 2030)) {
+	      for (int j = 4; j < 8; j ++)
+	         dateString. push_back (realName. at (i + j));
+	      eos = i + 8;
+	      break;
+	   }
+	}
+	if (eos == 0)
+	   return "";
+	for (int i = eos; i < dotat - 4; i ++) {
+	   sidString = "";
+	   for (int j = i; j < i + 4; j ++)
+	      sidString. push_back (realName. at (j));
+	   
+	   uint32_t sid = sidString. toInt (&ok, 16);
+	   if (ok) {
+	      QString name = the_ensembleHandler -> extract_name (sid);
+	      if (name != "") {
+	         return env + dateString + "_" + sidString + "_SI.xml";
+	      }
+	   }
+	}
+	return "";
+}
+	      
 void	RadioInterface::saveMOTtext (QByteArray &result,
 	                              int contentType,
 	                              const QString &name) {
@@ -959,8 +995,6 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 	   fprintf (stderr, "cannot write file %s\n",
 	                            textName. toUtf8 (). data ());
 	else {
-//	   fprintf (stderr, "going to write file %s\n",
-//	                            textName. toUtf8(). data());
 	   (void)fwrite (result. data (), 1, result.length(), x);
 	   fclose (x);
 	}
@@ -1012,12 +1046,12 @@ const char *type;
 
 	if (dirs || ((value_i (dabSettings_p, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
-	                                         (path_for_pictures != ""))) {
+	                                         (path_for_files != ""))) {
 	   QString pict;
 	   if (!dirs) 
-	      pict = path_for_pictures + pictureName;
+	      pict = path_for_files + pictureName;
 	   else
-	      pict = path_for_pictures + QString::number (channel. Eid, 16) + "/" + pictureName;
+	      pict = path_for_files + QString::number (channel. Eid, 16) + "/" + pictureName;
 	   QString temp = pict;
 	   temp = temp. left (temp. lastIndexOf (QChar ('/')));
 	   if (!QDir (temp). exists())
@@ -1500,18 +1534,6 @@ char minuteString [3];
 
 QString	RadioInterface::convertTime (struct theTime &t) {
 	return convertTime (t. year, t. month, t. day, t. hour, t. minute);
-//char dayString [3];
-//char hourString [3];
-//char minuteString [3];
-//	sprintf (dayString, "%.2d", t. day);
-//	sprintf (hourString, "%.2d", t. hour);
-//	sprintf (minuteString, "%.2d", t. minute);
-//	QString result = QString::number (t. year) + "-" +
-//	                       monthTable [t. month - 1] + "-" +
-//	                       QString (dayString) + "  " +
-//	                       QString (hourString) + ":" +
-//	                       QString (minuteString);
-//	return result;
 }
 //
 //	called from the MP4 decoder
@@ -1924,9 +1946,9 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (event -> type () == QEvent::MouseButtonPress) {
 	   QPixmap originalPixmap;
 	   QScreen *screen = QGuiApplication::primaryScreen();
-           originalPixmap = screen -> grabWindow(this -> winId());
+	   originalPixmap = screen -> grabWindow(this -> winId());
 	   QString format = "png";
-	   QString fileName = path_for_pictures + "main-widget";
+	   QString fileName = path_for_files + "main-widget";
 #ifdef	__MINGW32__
 	   fileName = fileName + ".png";
 	   originalPixmap. save (fileName);
@@ -2217,11 +2239,11 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	(void)theOFDMHandler -> setAudioChannel (ad, &theAudioBuffer,
 	                                            nullptr, FORE_GROUND);
 //
-	QPixmap p;
-	if (get_serviceLogo (p, ad)) {
-	   serviceIcon -> setPixmap (p);
-	   serviceIcon -> show ();
-	}
+//	QPixmap p;
+//	if (get_serviceLogo (p, ad)) {
+//	   serviceIcon -> setPixmap (p);
+//	   serviceIcon -> show ();
+//	}
 	   
 //	check the other components for this service (if any)
 	int nrComps	=
@@ -3772,7 +3794,7 @@ void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
 	   if ((mainId == channel. transmitters [i]. theTransmitter. mainId) &&
 	       (subId == channel. transmitters [i]. theTransmitter. subId)) {
 	          channel. transmitters. erase
-                                 (channel. transmitters. begin () + i);
+	                         (channel. transmitters. begin () + i);
 	         break;
 	   }
 }
@@ -3780,7 +3802,7 @@ void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
 cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 	for (auto &tr: channel. transmitters) 
 	   if ((tr. theTransmitter. mainId == mainId) &&
-               (tr. theTransmitter. subId ==  subId))
+	       (tr. theTransmitter. subId ==  subId))
 	     return &tr. theTransmitter;
 	return nullptr;
 }
@@ -3914,11 +3936,11 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if (bestIndex >= 0) {
 	   cacheElement *ce = &channel. transmitters [bestIndex]. theTransmitter;	
 	   channel. mainId		= ce -> mainId;
-           channel. subId		= ce -> subId;
-           channel. transmitterName	= ce -> transmitterName;
-           channel. height		= ce -> height;
-           channel. distance		= ce -> distance;
-           channel. azimuth		= ce -> azimuth; 
+	   channel. subId		= ce -> subId;
+	   channel. transmitterName	= ce -> transmitterName;
+	   channel. height		= ce -> height;
+	   channel. distance		= ce -> distance;
+	   channel. azimuth		= ce -> azimuth; 
 	}
 
 //	if the list has somehow changed, rewrite it
@@ -3953,7 +3975,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   if (theTr. theTransmitter. distance > maxDistance) {
 	      maxDistance = theTr. theTransmitter. distance;
 	      best =  &theTr;
-           }
+	   }
 	}
 	if (best == nullptr)
 	   return;	// should not happen
@@ -4090,14 +4112,14 @@ void	RadioInterface::handle_iqSelector () {
 
 void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 	auto peak_avr = [](float iPeak, float & ioPeakAvr) -> void {
-           ioPeakAvr = (iPeak > ioPeakAvr ? iPeak : ioPeakAvr - 0.5f /*decay*/);
-        };
+	   ioPeakAvr = (iPeak > ioPeakAvr ? iPeak : ioPeakAvr - 0.5f /*decay*/);
+	};
 
-        peak_avr (iPeakLeft,  peakLeftDamped);
-        peak_avr (iPeakRight, peakRightDamped);
+	peak_avr (iPeakLeft,  peakLeftDamped);
+	peak_avr (iPeakRight, peakRightDamped);
 
-        leftAudio              -> setValue (peakLeftDamped);
-        rightAudio             -> setValue (peakRightDamped);
+	leftAudio              -> setValue (peakLeftDamped);
+	rightAudio             -> setValue (peakRightDamped);
 }
 
 void    RadioInterface::handle_presetButton     () {    
@@ -4275,7 +4297,7 @@ QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
 	const QString & transmitterName
 	                        = transmitter -> transmitterName;
 	float	theDistance	= transmitter -> distance;
-        float	theAzimuth	= transmitter -> azimuth;
+	float	theAzimuth	= transmitter -> azimuth;
 //	int	theAltitude	= transmitter -> altitude;
 //	int	theHeight	= transmitter -> height;
 //	float	thePower	= transmitter -> power;
@@ -4285,8 +4307,8 @@ QString labelText = "(" + QString::number (mainId) + ","
 	labelText += transmitterName;
 	labelText += "  "
 	             + QString::number (theDistance, 'f', 1) + " km " 
-                     + QString::number (theAzimuth, 'f', 1)
-                     + QString::fromLatin1 (" \xb0 ") + ",  ";
+	             + QString::number (theAzimuth, 'f', 1)
+	             + QString::fromLatin1 (" \xb0 ") + ",  ";
 //	             + QString::number (theAltitude) +  "m "
 //	             + QString::number (theHeight) +  "m "
 //	             + QString::number (thePower, 'f', 1) + "kW";
@@ -4301,7 +4323,7 @@ bool exists	= false;
 	                        (theTransmitter -> mainId == 255))
 	   return;
 
-	QString fileName = path_for_tiiFile + "tii-files.csv";
+	QString fileName = path_for_files + "tii-files.csv";
 	theFile = fopen (fileName. toLatin1 (). data (), "r");
 	if (theFile != nullptr) {
 	   exists = true;
@@ -4342,14 +4364,13 @@ void	RadioInterface::handle_tiiButton () {
 	store (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, dxMode ? 1 : 0);
 	if (theOFDMHandler == nullptr)
 	   return;
+	theDXDisplay. cleanUp ();
 	if (!dxMode) {
-	   theDXDisplay. cleanUp ();
 	   theDXDisplay. hide ();
 	   tiiButton	-> setText ("dx display");
 	}
 	if (dxMode) {
 	   distanceLabel	-> setText ("");
-	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
 	   tiiButton	-> setText ("tii local");
 	}
@@ -4497,7 +4518,8 @@ bool res = false;
 	   qsort (options. data (), options. size (),
 	                 sizeof (multimediaElement), &mcmp);
 	   for (auto &ff: options) {
-	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ff. url;
+	      QString pict  = path_for_files + QString::number (channel. Eid, 16) + "/" + ff. url;
+//	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ff. url;
 	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
 	      if (tt == nullptr) 
 	         continue;
@@ -4523,6 +4545,7 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 }
 
 void	RadioInterface::report_startDir	(int objects) {
+	(void)objects;
 //	dynamicLabel	-> setText ("Start of grabbing " + QString::number (objects) + "objects for EPG/SPI");
 }
 

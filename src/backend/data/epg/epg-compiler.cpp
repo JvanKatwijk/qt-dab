@@ -61,7 +61,8 @@ int length	= v [index + 1];
 	}
 	else
 	if (length == 0xFF) {
-	   length = (v [index + 2] << 16) | (v [index + 3] << 8) | v [index + 4];
+	   length = (v [index + 2] << 16) |
+	            (v [index + 3] << 8) | v [index + 4];
 	   index	+= 5;
 	}
 	else
@@ -99,7 +100,7 @@ int	index	= 0;
 	            break;
 
 	         case 0x06: {		// default language
-	            QDomElement child =  process_defaultLanguage (doc, v, index);
+	            QDomElement child = process_defaultLanguage (doc, v, index);
 	            epg. appendChild (child);
 	            break;
 	         }
@@ -122,8 +123,8 @@ int	index	= 0;
 	            break;
 	      }
 	   }
+	   return scheduleType;
 	}
-	else
 	if (tag == SERVICE_TAG)	{	// superfluous test
 	   QDomElement serviceInformation;
 	   serviceInformation = doc. createElement ("serviceInformation");
@@ -183,8 +184,9 @@ int	index	= 0;
 	            break;
 	      }
 	   }
+	   return serviceInformationType;
 	}
-	return endPoint;
+	return noType;
 }
 
 QDomElement epgCompiler::process_defaultLanguage (QDomDocument &doc,

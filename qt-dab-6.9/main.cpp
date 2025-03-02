@@ -131,7 +131,7 @@ QTranslator	theTranslator;
  *      Before we connect control to the gui, we have to
  *      instantiate
  */
-#if QT_VERSION >= 0x050600
+#if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 

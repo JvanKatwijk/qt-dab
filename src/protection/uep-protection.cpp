@@ -156,8 +156,8 @@ int8_t          *PI3;
 int8_t          *PI4;
 int8_t          *PI_X;
 
-	fprintf (stderr, "protLevel %d, bitRate %d outSize = %d\n",
-	                       protLevel, bitRate, outSize);
+//	fprintf (stderr, "protLevel %d, bitRate %d outSize = %d\n",
+//	                       protLevel, bitRate, outSize);
 	index	= findIndex (bitRate, protLevel);
 	if (index == -1) {
 	   fprintf (stderr, "%d (%d) has a problem\n", bitRate, protLevel);

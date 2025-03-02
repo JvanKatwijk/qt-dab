@@ -183,6 +183,7 @@ public:
 	servicePictures. resize (0);
 	realChannel	= true;
 	serviceCount	= -1;
+	currentService. valid	= false;
 	nrServices	= -1;
 	tunedFrequency	= -1;
 	ensembleName	=  "";
@@ -298,11 +299,11 @@ private:
 #endif
 	epgCompiler		epgVertaler;
 	xmlExtractor		xmlHandler;
-	QString			epgPath;
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
-	QString			path_for_tiiFile;
-	QString			path_for_pictures;
+//	QString			path_for_tiiFile;
+//	QString			path_for_pictures;
+//	QString			epgPath;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
@@ -427,6 +428,7 @@ private:
 	                                                      uint32_t);
 	bool			process_ensemble (const QDomElement &, uint32_t);
 	int			process_service	(const QDomElement &);
+	QString			extractName	(const QString &);
 
 signals:
 	void			select_ensemble_font	();

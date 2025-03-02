@@ -64,10 +64,7 @@
 
 #define	S_MAIN_WIDGET		"mainWidget"
 
-#define	S_TII_PATH		"tiiPath"
-#define	S_PICTURES_PATH		"picturesPath"
 #define	S_FILE_PATH		"filePath"
-#define	S_EPG_PATH		"epgPath"
 #define	S_CORRELATION_ORDER	"correlationOrder"
 #define	S_DX_MODE		"dxMode"
 

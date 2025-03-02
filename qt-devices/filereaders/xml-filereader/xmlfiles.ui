@@ -37,7 +37,7 @@
    <item>
     <widget class="QPushButton" name="continuousButton">
      <property name="text">
-      <string>continuous off</string>
+      <string>continuous on</string>
      </property>
     </widget>
    </item>
@@ -49,7 +49,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Current time in the file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
+        <enum>QLCDNumber::SegmentStyle::Flat</enum>
        </property>
       </widget>
      </item>
@@ -59,7 +59,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total recorded time of the file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
+        <enum>QLCDNumber::SegmentStyle::Flat</enum>
        </property>
       </widget>
      </item>
@@ -216,7 +216,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of bits recorded&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
+          <enum>QLCDNumber::SegmentStyle::Flat</enum>
          </property>
         </widget>
        </item>
@@ -226,7 +226,7 @@
           <number>10</number>
          </property>
          <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
+          <enum>QLCDNumber::SegmentStyle::Flat</enum>
          </property>
         </widget>
        </item>
@@ -239,7 +239,7 @@
           <number>8</number>
          </property>
          <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
+          <enum>QLCDNumber::SegmentStyle::Flat</enum>
          </property>
         </widget>
        </item>
@@ -252,7 +252,7 @@
           <number>8</number>
          </property>
          <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
+          <enum>QLCDNumber::SegmentStyle::Flat</enum>
          </property>
         </widget>
        </item>

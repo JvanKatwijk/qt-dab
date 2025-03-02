@@ -180,7 +180,6 @@ int32_t	i;
 	                          (segment [7] <<  8) | segment [8];
 //	         int32_t segSize
 //	                        = ((segment [9] & 0x1F) << 8) | segment [10];
-	         fprintf (stderr, "Period %d\n", period);
 	         theDirectory	= new motDirectory (myRadioInterface,
 	                                            transportId,
 	                                            segmentSize,

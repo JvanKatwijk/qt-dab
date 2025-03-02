@@ -64,7 +64,7 @@ public:
 	int	nrFavorites		();
 	bool	hasFavorite		(const QString &);
 	uint16_t extract_SId		(const QString &);
-
+	QString	extract_name		(uint32_t);
 	int	serviceOrder;
 private	slots:
 	void	click_on_service	(int, int);
@@ -82,7 +82,7 @@ private:
 	QString		favFile;
 	struct	service {
 	   QString	name;
-	   QString channel;
+	   QString	channel;
 	   bool		selected;
 	};
 

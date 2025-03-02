@@ -30,6 +30,9 @@
 #include	<QString>
 #include	<QDomElement>
 
+#define		noType			0
+#define		scheduleType		1
+#define		serviceInformationType	2
 class	epgCompiler: public QObject {
 Q_OBJECT
 public:

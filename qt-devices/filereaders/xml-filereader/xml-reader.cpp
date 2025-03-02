@@ -64,7 +64,7 @@ struct timeval tv;
 //	convBufferSize is a little confusing since the actual 
 //	buffer is one larger
 	convBufferSize		= fd -> sampleRate / 1000;
-	continuous. store (false);
+	continuous. store (true);
 
 	for (int i = 0; i < 2048; i ++) {
 	   float inVal = float (fd -> sampleRate / 1000);
@@ -143,7 +143,7 @@ int	startPoint	= filePointer;
 	      filePointer = startPoint;
 	      fseek (file, filePointer, SEEK_SET);
 	      samplesRead		= 0;
-	   } while (running.load () && continuous. load ());
+	   } while (running. load () && continuous. load ());
 	}
 }
 
