@@ -1074,7 +1074,7 @@ const char *type;
 	   return;
 
 	if (channel. currentService. valid &&  
-	                     channel. currentService. announcement_going)
+	                     channel. announcement_going)
 	   return;
 	QPixmap p;
 	if (p. loadFromData (data, type))
@@ -1976,9 +1976,9 @@ void	RadioInterface::start_announcement (const QString &name,
 
 	(void)subChId;
 	if (name == serviceLabel -> text ()) {
-	   if (!channel. currentService. announcement_going) {
+	   if (!channel. announcement_going) {
 	      serviceLabel	-> setStyleSheet ("QLabel {color : red}");
-	      channel. currentService. announcement_going = true;
+	      channel. announcement_going = true;
 	      QPixmap p = fetchAnnouncement (announcementId);
 	      displaySlide (p);
 	   }
@@ -1990,10 +1990,11 @@ void	RadioInterface::stop_announcement (const QString &name, int subChId) {
 	if (!running. load ())
 	   return;
 
+	channel. announcement_going = false;
 	if (name == channel. currentService. serviceName) {
-	   if (channel. currentService. announcement_going) {
+	   if (channel. announcement_going) {
 	      serviceLabel	-> setStyleSheet (labelStyle);
-	      channel. currentService. announcement_going = false;
+//	      channel. announcement_going = false;
 	      show_pauzeSlide ();
 	   }
 	}
@@ -2058,7 +2059,7 @@ void	RadioInterface::localSelect_SS (const QString &service,
 	                                const QString &theChannel) {
 
 QString serviceName	= service;
-
+	
 	if (theOFDMHandler == nullptr)	// should not happen
 	   return;
 
@@ -2116,6 +2117,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
 	}
+	channel. announcement_going = false;
 	my_timeTable. hide ();
 	my_timeTable. clear ();
 //	stop "dumpers"

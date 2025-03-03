@@ -115,7 +115,7 @@ public:
 	int		subChId;
 	bool		valid;
 	bool		is_audio;
-	bool		announcement_going;
+//	bool		announcement_going;
 	FILE		*fd;
 	FILE		*frameDumper;
 	dabService () {
@@ -125,7 +125,7 @@ public:
 	   frameDumper	= nullptr;
 	   valid	= false;
 	   is_audio	= false;
-	   announcement_going	= false;
+//	   announcement_going	= false;
 	}
 	~dabService	() {}
 };
@@ -167,6 +167,7 @@ public:
 	QString		countryName;
 	int		nrTransmitters;
 	int		snr;
+	bool		announcement_going;
 	std::vector<transmitterDesc>	transmitters;
 	position	targetPos;
 	QDate		theDate;

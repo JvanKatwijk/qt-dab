@@ -37,7 +37,7 @@
 	ui -> appName 		-> setText ("<b>Qt-DAB</b>");
 	ui -> author 		-> setText(tr("Developed by")+" Jan van Katwijk (<a href=\"mailto:J.vanKatwijk@gmail.com\">J.vanKatwijk@gmail.com</a>)");
 	ui -> author		-> setTextInteractionFlags (Qt::TextBrowserInteraction);
-	ui -> version		-> setText (QString("Version-6.%1").arg ("9"));
+	ui -> version		-> setText (QString("Version-6.%1").arg ("9.1"));
 	QString theDate		= QString (__DATE__) + " " + QString (__TIME__);
 	ui -> buildInfo ->	setText (QString ("Built on ") + theDate + QString (", Commit ") + QString (GITHASH));
 	ui -> sourceLocation	-> setText ("Sources are at <a href=\"https://github.com/JvanKatwijk/qt-dab\">github> </a>");
