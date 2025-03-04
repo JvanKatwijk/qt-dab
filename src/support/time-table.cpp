@@ -29,7 +29,8 @@
 #include	"settings-handler.h"
 #include	"findfilenames.h"
 #include	<QFile>
-#include	<QFileInfo>
+#include	<QMessageBox>
+#include	<QDir>
 //
 //	The timeTableHandler cooperates with the epg handling, in that
 //	the latter puts the SPI/EPG files in a directory, named
@@ -45,34 +46,42 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 ;
 	this	-> radio	= radio;
 	path_for_files          =
-                              value_s (dabSettings_p, DAB_GENERAL,
-                                                S_FILE_PATH, tempPath);
+	                      value_s (dabSettings_p, DAB_GENERAL,
+	                                        S_FILE_PATH, tempPath);
 	if (!path_for_files. endsWith ("/"))
-           path_for_files += "/";
+	   path_for_files += "/";
 	
 	myWidget        = new QScrollArea (nullptr);
 
-        myWidget        -> setWidgetResizable (true);
+	myWidget        -> setWidgetResizable (true);
 	QHBoxLayout *lo	= new QHBoxLayout;
 	left	= new QPushButton ("prev");
+	left	-> setToolTip ("set the date one day back");
 	serviceLabel	= new QLabel ();
 	serviceLogo	= new QLabel ();
 	dateLabel	= new QLabel ();
 	right	= new QPushButton ("next");
+	right	-> setToolTip ("set the date on dat forward");
+	rem	= new QPushButton ("remove");
+	QString qss = QString("background-color:red");
+	rem	-> setStyleSheet(qss);
+	rem	-> setToolTip ("remove the xml files for the current date");
 	lo	-> addWidget (left);
 	lo	-> addWidget (serviceLabel);
 	lo	-> addWidget (serviceLogo);
 	lo	-> addWidget (dateLabel);
 	lo	-> addWidget (right);
+	lo	-> addWidget (rem);
+	
 	QVBoxLayout	*lv = new QVBoxLayout ();
-        programDisplay	= new QTableWidget (0, 4);
-        programDisplay	-> setColumnWidth (0, 150);
-        programDisplay	-> setColumnWidth (1, 150);
-        programDisplay	-> setColumnWidth (2, 20);
-        programDisplay	-> setColumnWidth (3, 450);
+	programDisplay	= new QTableWidget (0, 4);
+	programDisplay	-> setColumnWidth (0, 150);
+	programDisplay	-> setColumnWidth (1, 150);
+	programDisplay	-> setColumnWidth (2, 20);
+	programDisplay	-> setColumnWidth (3, 450);
 	lv		-> addLayout (lo);
 	lv		-> addWidget (programDisplay);
-        myWidget        -> setLayout (lv);
+	myWidget        -> setLayout (lv);
 	
 	connect (left, &QPushButton::clicked,
 	         this, &timeTableHandler::handleLeft);
@@ -81,6 +90,8 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 //	programDisplay	-> setHorizontalHeaderLabels (
 //	                     QStringList () << "program guide");
 	addRow ();
+	connect (rem, &QPushButton::clicked,
+	         this, &timeTableHandler::deleteFiles);
 }
 
 	timeTableHandler::~timeTableHandler   () {
@@ -93,19 +104,21 @@ QString timeTableHandler::find_xmlFile (QDate& theDate,
 	                                uint32_t Eid, uint32_t Sid) {
 QString fileName;
 	fileName = path_for_files + QString::number (Eid, 16) + "/";
-        char temp [40];
+	char temp [40];
 	const char * formatString;
-        formatString = "%4d%02d%02d_%4X_SI.xml";
-        sprintf (temp, formatString,
-                         theDate. year (), theDate. month (),
-                         theDate. day (), Sid);
-        return fileName + QString (temp);
+	formatString = "%4d%02d%02d_%4X_SI.xml";
+	sprintf (temp, formatString,
+	                 theDate. year (), theDate. month (),
+	                 theDate. day (), Sid);
+	return fileName + QString (temp);
 }
   
 void	timeTableHandler::setUp		(const QDate &theDate,
 	                                 uint32_t Eid, uint16_t SId,
 	                                 const QString &serviceName) {
 	this	-> startDate	= theDate;
+	this	-> currentDate	= theDate;
+	this	-> currentEid	= Eid;
 	this	-> ensembleId	= Eid;
 	this	-> serviceId	= SId;
 	this	-> serviceName	= serviceName;
@@ -135,7 +148,7 @@ void	timeTableHandler::handleRight	() {
 
 
 void	timeTableHandler::start (int dateOffset) {
-	QDate currentDate = startDate. addDays (dateOffset);
+	currentDate	= startDate. addDays (dateOffset);
 	dateLabel	-> setText (currentDate. toString ());
 	serviceLabel	-> setText (serviceName);
 	QString fileName = find_xmlFile (currentDate, ensembleId,
@@ -146,9 +159,8 @@ void	timeTableHandler::start (int dateOffset) {
 	   show ();
 	   return;
 	}
-
 	QDomDocument doc;
-        doc. setContent (&f);
+	doc. setContent (&f);
 	f. close ();
 	QDomElement root = doc. firstChildElement ("epg");
 	if (root. isNull ()) {
@@ -301,19 +313,58 @@ int	row	= programDisplay -> rowCount ();
 
 void	timeTableHandler::clear () {
 int	rows    = programDisplay -> rowCount ();
-        for (int i = rows; i > 0; i --)
-           programDisplay -> removeRow (i - 1);
+	for (int i = rows; i > 0; i --)
+	   programDisplay -> removeRow (i - 1);
 }
 
 void	timeTableHandler::show      () {
-        myWidget        -> show ();
+	myWidget        -> show ();
 }
 
 void	timeTableHandler::hide      () {
-        myWidget        -> hide ();
+	myWidget        -> hide ();
 }
 
 bool	timeTableHandler::isVisible () {
-        return !myWidget -> isHidden ();
+	return !myWidget -> isHidden ();
+}
+
+QString	subString (const QString &s, int start, int length) {
+QString res;
+	for (int i = start; i < start + length; i ++)
+	   res. push_back (s. at (i));
+	return res;
+}
+
+void	timeTableHandler::deleteFiles () {
+QString dirName = path_for_files + QString::number (currentEid, 16) + "/";
+QDir directory (dirName);
+QStringList files = directory.entryList(QStringList() << "*.xml" ,QDir::Files);
+	
+	QMessageBox::StandardButton reply;
+	reply = QMessageBox::question (nullptr, "delete files", "Are you sure?",
+	                               QMessageBox::Yes|QMessageBox::No);
+	if (reply == QMessageBox::Yes) {
+	   fprintf (stderr, "we gaan deleten\n");
+	} else {
+	   fprintf (stderr, "cancelen\n");
+	   return;
+	}
+	for (auto &s : files) {
+	   bool ok = false;
+	   int year	= subString (s, 0, 4). toInt (&ok);
+	   if (!ok)
+	      continue;
+	   int month	= subString (s, 4, 2). toInt (&ok);
+	   if (!ok)
+	      continue;;
+	   int day	= subString (s, 6, 2). toInt (&ok);
+	   if (!ok)
+	      continue;
+	   if (QDate (year, month, day) == currentDate) {
+//	      fprintf (stderr, "we gaan %s deleten\n", s. toLatin1 (). data ());
+	      directory. remove (s);
+	   }
+	}
 }
 

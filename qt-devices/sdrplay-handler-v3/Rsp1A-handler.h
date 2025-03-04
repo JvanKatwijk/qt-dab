@@ -39,7 +39,6 @@ public:
 
 	int	lnaStates	(int frequency);
 	bool	restart		(int freq);
-	bool	set_agc		(int setPoint, bool on);
 	bool	set_lna		(int lnaState);
 	bool	set_biasT	(bool);
 	bool	set_notch	(bool);

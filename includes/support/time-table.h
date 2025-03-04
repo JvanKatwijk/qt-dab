@@ -33,6 +33,7 @@
 #include	<QPixmap>
 #include	<QLabel>
 #include	"xml-extractor.h"
+#include	<QDate>
 
 class	QSettings;
 class	RadioInterface;
@@ -60,14 +61,17 @@ private:
         QTableWidget    *programDisplay;
 	QPushButton	*left;
 	QPushButton	*right;
+	QPushButton	*rem;
 	QLabel		*dateLabel;
 	QLabel		*serviceLabel;
 	QLabel		*serviceLogo;
 	QString		serviceName;
 	QDate		startDate;
+	QDate		currentDate;
 	uint32_t	ensembleId;
 	uint32_t	serviceId;
 	int		dateOffset;
+	int		currentEid;
 	void		start		(int);
 	scheduleDescriptor	process_schedule (const QDomElement &,
 	                                          QDate, 
@@ -82,5 +86,6 @@ QString fileName;
 private slots:
 	void		handleLeft	();
 	void		handleRight	();
+	void		deleteFiles	();
 };
 
