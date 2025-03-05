@@ -156,6 +156,7 @@ void	timeTableHandler::start (int dateOffset) {
 	QFile f = QFile (QDir::toNativeSeparators (fileName));
 	if (!f. open (QIODevice::ReadOnly)) {
 	   serviceLabel -> setText ("no datafile available");
+	   fprintf (stderr, "Looking for %s\n", fileName. toLatin1 (). data ());
 	   show ();
 	   return;
 	}

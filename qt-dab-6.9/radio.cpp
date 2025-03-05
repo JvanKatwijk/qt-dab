@@ -971,7 +971,7 @@ int base	= motName. lastIndexOf (QChar ('/'));
 	   if (ok) {
 	      QString name = the_ensembleHandler -> extract_name (sid);
 	      if (name != "") {
-	         return env + dateString + "_" + sidString + "_SI.xml";
+	         return env + dateString + "_" + sidString. toUpper () + "_SI.xml";
 	      }
 	   }
 	}

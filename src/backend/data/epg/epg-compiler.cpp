@@ -84,7 +84,7 @@ int	epgCompiler::process_epg	(QDomDocument &doc,
 uint8_t	tag	= v [0];
 int	index	= 0;
 
-	for (int i = 0; i < 20; i ++)
+	for (int i = 0; i < 16; i ++)
 	   stringTable [i] = "";
 	int endPoint = setLength (v, index);
 
@@ -247,11 +247,13 @@ QDomElement child;
 QString res;
 int endPoint = setLength (v, index);
 	child	= doc. createElement ("longName");
-	if (v [index] == 0x80)		// xml:lang
+	if (v [index] == 0x80){	// xml:lang
 	   ignore (v, index);
-	res = fetchString (v, index, endPoint);
+	}
+	res = fetchString (v, index, endPoint, false);
 	if (res == "")
 	   res = " ";
+	
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -415,8 +417,13 @@ QDomElement t;
 	         break;
 	      }
 	      case 0x81: {	// mime value 473
-	         QString s = process_473 (v, index);
-	         t. setAttribute ("mime_value", s);
+	         int localEnd = setLength (v, index);
+	         QByteArray text;
+	         for (int i = index; i < localEnd; i ++)
+                    text. push_back (v [i]);
+                 QString res = QString::fromUtf8 (text);
+	         t. setAttribute ("mime_value", res);
+	         index = localEnd;
 	         break;
 	      }
 	      case 0x82: {	// xml:lang	481
@@ -931,7 +938,6 @@ QDomElement ensemble;
 	         int Eid = (v [index + 1] << 8) | v [index + 2];
 	         ensemble. setAttribute ("ecc", QString::number (ecc, 16));
 	         ensemble. setAttribute ("Eid", QString::number (Eid, 16));
-	         fprintf (stderr, "%X %X\n", ecc, Eid);
 	         index = localEnd;
 	         break;
 	      }
@@ -1066,8 +1072,13 @@ QString s;
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80: {	// mime value	473
-	         QString s = process_473 (v, index);
-	         multimedia. setAttribute ("mime_value", s);
+	         int localEnd = setLength (v, index);
+	         QByteArray text;
+	         for (int i = index; i < localEnd; i ++)
+	            text . push_back (v [i]);
+                 QString res  = QString::fromUtf8 (text);
+                 multimedia. setAttribute ("mime_value", res);
+                 index = localEnd;
 	         break;
 	      }
 	      case 0x81: {	// xml:lang	ignore
@@ -1528,16 +1539,6 @@ uint32_t res = (v [index] << 16) | (v [index + 1] << 8) | v [index + 2];
 	return QString::number (res);
 }
 
-//	MIME type
-QString	epgCompiler::process_473	(const std::vector<uint8_t> &v, int &index) {
-int endPoint	= setLength (v, index);
-QString s;
-
-	s = fetchString (v, index, endPoint);
-	index = endPoint;
-	return s;
-}
-
 QString	twoDigits (int16_t v) {
 	if (v >= 10)
 	   return QString::number (v);
@@ -1648,6 +1649,7 @@ void	epgCompiler::process_token (const std::vector<uint8_t> &v,
 	                                             int  &index) {
 uint8_t tag	= v [index];
 int endPoint	= setLength (v, index);
+int	length	= endPoint - index;
 	QByteArray text;
 	for (int i = index; i < endPoint; i ++) {
 	   text. push_back (v [i]);
@@ -1713,12 +1715,13 @@ int endPoint	= setLength (v, index);
 }
 
 QString	epgCompiler::fetchString (const std::vector<uint8_t> &v,
-	                                          int &index, int endPoint) {
+	                                  int &index, int endPoint, bool p) {
 QString res = "";
 	if (v [index] != 1) {	// should not happen, but it does
 	   QByteArray text;
-	   for (int i = index; i < endPoint; i ++)
+	   for (int i = index; i < endPoint; i ++) {
 	      text. push_back (v [i]);
+	   }
 	   res = QString::fromUtf8 (text);
 	} 
 	else
@@ -1728,8 +1731,19 @@ QString res = "";
 	else {
 	   QByteArray text;
 	   int localEnd = setLength (v, index);
-	   for (int i = index; i < localEnd; i ++)
-	      text. push_back (v [i]);
+	   for (int i = index; i < localEnd; i ++) {
+	      if (p)
+	         fprintf (stderr, "%c %x ", v [i], v [i]);
+	      if (v [i] < 20) {
+	         QString ss = stringTable [v [i]];
+	         for (int j = 0; j < ss. toLatin1 (). data () [j] != 0; j ++)
+	            text. push_back (ss. toLatin1 (). data () [j]);
+	      }
+	      else
+	         text. push_back (v [i]);
+	   }
+	   if (p)
+	      fprintf (stderr, "\n");
 	   res = QString::fromUtf8 (text);
 	}
 	index = endPoint;
