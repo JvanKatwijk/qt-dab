@@ -120,10 +120,6 @@ int	index_for_key (int key) {
 	x =  value_i (dabSettings, CONFIG_HANDLER, LOG_MODE, 1);
 	if (x != 0)
 	   this -> logger_selector -> setChecked (true);
-
-	x =  value_i (dabSettings, CONFIG_HANDLER, EPG2XML_SETTING, 0);
-	if (x != 0)
-	   this -> epg2xmlSelector -> setChecked (true);
 //
 	bool b	= value_i (dabSettings, CONFIG_HANDLER,
                                         UTC_SELECTOR_SETTING, 0) == 1;
@@ -414,7 +410,6 @@ void	configHandler::set_connections () {
 	connect (logger_selector, &QCheckBox::stateChanged,
 #endif
 	         myRadioInterface, &RadioInterface::handle_LoggerButton);
-//	the epg2xmlSelector is just polled, no need to react on an event
 
 //	third line
 
@@ -440,10 +435,11 @@ void	configHandler::set_connections () {
 	connect (epg_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_epgSelector);
+	connect (localBrowserSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
-	connect (localBrowserSelector, &QCheckBox::checkStateChanged,
+	             &QCheckBox::checkStateChanged,
 #else
-	connect (localBrowserSelector, &QCheckBox::stateChanged,
+		     &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_localBrowser);
 //
@@ -854,11 +850,6 @@ bool	configHandler::saveSliders_active	() {
 }
 
 //
-//	Column 3
-bool	configHandler::epg2_active	() {
-	return epg2xmlSelector -> isChecked ();
-}
-
 bool	configHandler::onTop_active	() {
 	return onTop	-> isChecked ();
 }

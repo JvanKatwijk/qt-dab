@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015 .. 2024
+ *    Copyright (C)  2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -138,9 +138,6 @@ QStringList splitter (const QString &s) {
 	return list;
 }
 
-#define	D_PRIV	1
-#define	D_NIX	0
-
 static const
 char	LABEL_STYLE [] = "color:lightgreen";
 
@@ -179,7 +176,8 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theDeviceChoser (Si),
 	                                        theDXDisplay (this, Si),
 	                                        theLogger	(Si),
-	                                        theSCANHandler (this, Si, freqExtension),
+	                                        theSCANHandler (this, Si,
+	                                                        freqExtension),
 	                                        my_timeTable (this, Si) {
 int16_t k;
 QString h;
@@ -233,6 +231,8 @@ QString h;
 //	set on top or not? checked at start up
 	if (value_i (dabSettings_p, DAB_GENERAL, "onTop", 0) == 1) 
 	   setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
+//
+//	signal strength icons
 	for (int i = 0; i < 4; i ++) {
 	   QPixmap p;
 	   QString labelName	=
@@ -240,20 +240,22 @@ QString h;
 	   p. load (labelName, "png");
 	   strengthLabels. push_back (p);
 	}
-
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
-//	and init the up and down button
+//	and init the up and down button, the select for details button ans
+//	the button to show the directory with files 
 	{  QPixmap p;
 	   if (p. load (":res/radio-pictures/up-arrow.png", "png"))
-	      prevChannelButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+	      prevChannelButton -> setPixmap (p. scaled (30, 30,
+	                                                Qt::KeepAspectRatio));
 	   if (p. load (":res/radio-pictures/down-arrow.png", "png"))
-	      nextChannelButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+	      nextChannelButton -> setPixmap (p. scaled (30, 30,
+	                                                Qt::KeepAspectRatio));
 	   if (p. load (":res/radio-pictures/details24.png", "png"))
-	      serviceButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+	      serviceButton -> setPixmap (p. scaled (30, 30,
+	                                                Qt::KeepAspectRatio));
 	   else
 	      fprintf (stderr, "Loading details button failed\n");
-
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
@@ -354,7 +356,7 @@ QString h;
 #else
 	(void)clockPort;
 #endif
-	serviceIcon		= new QLabel;
+//	serviceIcon		= new QLabel;
 	volumeSlider	-> hide ();
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
@@ -887,47 +889,41 @@ QString realName;
 	   case MOTBaseTypeSystem:
 	      break;
 
-	   case  MOTBaseTypeApplication: 	// epg data
-//	      if ((epgPath == "") || (theSCANHandler. active ()))
+	   case  MOTBaseTypeApplication: { 	// epg data
 	      if ((path_for_files == "") || (theSCANHandler. active ()))
 	         return;
 
 	      if (objectName == QString (""))
 	         objectName = "epg file";
-	      objectName  = path_for_files +
-	                    QString::number (channel. Eid, 16) +
-	                     "/" + objectName. toUpper ();
-	
-	      {  QString temp = objectName;
-	         temp = temp. left (temp. lastIndexOf (QChar ('/')));
-	         if (!QDir (temp). exists ())
-	            QDir (). mkpath (temp);	
-
-	         std::vector<uint8_t> epgData (result. begin(),
-	                                                  result. end());
-	         QDomDocument epgDocument;
-	         uint8_t docType = epgVertaler. process_epg (epgDocument,
+	      std::vector<uint8_t> epgData (result. begin(), result. end());
+	      QDomDocument epgDocument;
+	      uint8_t docType = epgVertaler. process_epg (epgDocument,
 	                                                      epgData);
-	         if (docType == noType)		// should not happen
-	            break;
+	      if (docType == noType)		// should not happen
+	         break;
 
-	         if (docType == serviceInformationType) {
-	            extractServiceInformation	(epgDocument,
-	                                          channel. Eid, true);
-	            return;
-	         }
-	   
-	         QString theName = extractName (objectName);
-	         if (theName == "") 
-	            return;
-	         QFile file (QDir::toNativeSeparators (theName));
-	         if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
-	            QTextStream stream (&file);
-	            stream << epgDocument. toString ();
-	            file. close ();
-	         }
+	      if (docType == serviceInformationType) {
+	         extractServiceInformation (epgDocument, channel. Eid, true);
+	         return;
 	      }
-	      return;
+	   
+	      QString theName = extractName (objectName);
+	      if (theName == "") 
+	         return;
+	
+	      QString temp = path_for_files +
+	                          QString::number (channel. Eid, 16) + "/";
+	      if (!QDir (temp). exists ())
+	         QDir (). mkpath (temp);	
+	      theName  = temp + theName;
+	      QFile file (QDir::toNativeSeparators (theName));
+	      if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
+	         QTextStream stream (&file);
+	         stream << epgDocument. toString ();
+	         file. close ();
+	      }
+	   }
+	   return;
 
 	   case MOTBaseTypeProprietary:
 	      break;
@@ -949,7 +945,7 @@ int base	= motName. lastIndexOf (QChar ('/'));
 	   env. push_back (motName. at (i));
 	for (int i = base + 1; i < motName. size (); i ++)
 	   realName . push_back (motName. at (i));
-int dotat	= realName. lastIndexOf (".");
+	int dotat	= realName. lastIndexOf (".");
 	if (dotat < 0)
 	   return "";
 	for (int i = 0; i < 4; i ++) {
@@ -966,11 +962,11 @@ int dotat	= realName. lastIndexOf (".");
 	}
 	if (eos == 0)
 	   return "";
-	for (int i = eos; i < dotat - 4; i ++) {
+	
+	for (int i = eos; i < dotat - 3; i ++) {
 	   sidString = "";
 	   for (int j = i; j < i + 4; j ++)
 	      sidString. push_back (realName. at (j));
-	   
 	   uint32_t sid = sidString. toInt (&ok, 16);
 	   if (ok) {
 	      QString name = the_ensembleHandler -> extract_name (sid);
@@ -1327,8 +1323,8 @@ void	RadioInterface::TerminateProcess () {
 	channelTimer.	stop	();
 	presetTimer.	stop	();
 	epgTimer.	stop	();
-	serviceIcon	-> hide ();
-	delete serviceIcon;
+//	serviceIcon	-> hide ();
+//	delete serviceIcon;
 //	soundOut_p	-> stop ();
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
@@ -1989,14 +1985,16 @@ void	RadioInterface::stop_announcement (const QString &name, int subChId) {
 	(void)subChId;
 	if (!running. load ())
 	   return;
+	
+	if (name == channel. currentService. serviceName) 
+	   announcement_exit ();
+}
 
-	channel. announcement_going = false;
-	if (name == channel. currentService. serviceName) {
-	   if (channel. announcement_going) {
-	      serviceLabel	-> setStyleSheet (labelStyle);
-//	      channel. announcement_going = false;
-	      show_pauzeSlide ();
-	   }
+void	RadioInterface::announcement_exit () {
+	if (channel. announcement_going) {
+	   channel. announcement_going = false;
+	   serviceLabel	-> setStyleSheet (labelStyle);
+	   show_pauzeSlide ();
 	}
 }
 //
@@ -2109,7 +2107,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   return;
 	presetTimer. stop ();
 	channelTimer. stop ();
-	serviceIcon	-> hide ();
+//	serviceIcon	-> hide ();
 	stopMuting	();
 	setSoundLabel (false);
 	channel. audioActive	= false;
@@ -2117,7 +2115,8 @@ void	RadioInterface::stopService	(dabService &s) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
 	}
-	channel. announcement_going = false;
+	if (channel. announcement_going)
+	   announcement_exit ();
 	my_timeTable. hide ();
 	my_timeTable. clear ();
 //	stop "dumpers"
@@ -2125,10 +2124,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   stopFramedumping ();
 	   channel. currentService. frameDumper = nullptr;
 	}
-
-	if (audioDumping) {
-	   stopAudiodumping ();
-	}
+	stopAudiodumping ();
 
 //	and clean up the technical widget
 	techWindow_p	-> cleanUp ();
@@ -2154,6 +2150,8 @@ void	RadioInterface::stopService	(dabService &s) {
 	cleanScreen	();
 }
 //
+//	whether or not the epgService is triggered automatically or manually,
+//	it will run in the background
 void	RadioInterface::start_epgService (packetdata &pd) {
 	theOFDMHandler -> setDataChannel (pd, &theDataBuffer, BACK_GROUND);
 	dabService s;
@@ -2170,7 +2168,9 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 //
 void	RadioInterface::startService (dabService &s) {
 QString serviceName	= s. serviceName;
-
+//
+//	if the servcie is already running as background task,
+//	ignore this call
 	for (auto bs : channel. backgroundServices) {
 	   if (bs. serviceName == serviceName) {
 	      return;
@@ -2191,10 +2191,7 @@ QString serviceName	= s. serviceName;
 	                                         serviceName);
 
 //	mark the selected service in the service list
-//
 //	and display the servicename on the serviceLabel
-	dynamicLabel	-> setText ("");
-	motLabel	-> setStyleSheet ("QLabel {color : red}");
 	the_ensembleHandler -> reportStart (serviceName);
 	audiodata ad;
 	theOFDMHandler -> data_for_audioservice (serviceName, ad);
@@ -2242,12 +2239,6 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	(void)theOFDMHandler -> setAudioChannel (ad, &theAudioBuffer,
 	                                            nullptr, FORE_GROUND);
 //
-//	QPixmap p;
-//	if (get_serviceLogo (p, ad)) {
-//	   serviceIcon -> setPixmap (p);
-//	   serviceIcon -> show ();
-//	}
-	   
 //	check the other components for this service (if any)
 	int nrComps	=
 	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
@@ -2260,7 +2251,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   }
 	}
 //	activate sound
-	soundOut_p -> resume ();
+	soundOut_p		-> resume ();
 	channel. audioActive	= true;
 	setSoundLabel (true);
 	programTypeLabel	-> setText (getProgramType (ad. programType));
@@ -2297,10 +2288,8 @@ packetdata pd;
 	   packetdata lpd;
 	   theOFDMHandler -> data_for_packetservice (pd. serviceName, lpd, i);
 	   if (lpd. defined) {
-	      theOFDMHandler -> setDataChannel (lpd, &theDataBuffer, FORE_GROUND);
-//	      fprintf (stderr, "adding %s (%d) as subservice\n",
-//	                            lpd. serviceName. toUtf8 (). data (),
-//	                            lpd. subchId);
+	      theOFDMHandler -> setDataChannel (lpd, &theDataBuffer,
+	                                                  FORE_GROUND);
 	      break;
 	   }
 	}
@@ -2310,7 +2299,6 @@ packetdata pd;
 	      show_label (QString ("unimplemented Data"), 1);
 	      break;
 	   case 5:
-//	      fprintf (stderr, "selected apptype %d\n", pd. appType);
 	      show_label (QString ("Transp. Channel partially implemented"), 1);
 	      break;
 	   case 60:
@@ -2353,6 +2341,7 @@ void	RadioInterface::cleanScreen	() {
 	stereoSetting			= false;
 	techWindow_p			-> cleanUp ();
 	setStereo	(false);
+	motLabel			-> setStyleSheet ("QLabel {color : red}");
 	distanceLabel			-> setText ("");
 	transmitter_country		-> setText ("");
 	theNewDisplay. ficError_display	-> setValue (0);
@@ -3521,7 +3510,8 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-	theOFDMHandler	-> handleDecoderSelector (decoder);
+	if (theOFDMHandler != nullptr)
+	   theOFDMHandler	-> handleDecoderSelector (decoder);
 }
 
 void	RadioInterface:: set_streamSelector (int k) {
@@ -4403,6 +4393,8 @@ QStringList streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 //
 /////////////////////////////////////////////////////////////////////////
 //
+//	Handling epg/spi
+/////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::extractServiceInformation (const QDomDocument &doc,
 	                                            uint32_t Eid, bool fresh) {
@@ -4414,8 +4406,8 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	      QString Ident = theElement. attribute ("Eid");
 	      bool ok = false;
 	      uint32_t ensemble = Ident. toInt (&ok, 16);
-	      fprintf (stderr, "We have %X and, from the file %X\n",
-	                        Eid, ensemble);
+	      fprintf (stderr, "serviceinfo for %X (%X)\n",	
+	                  ensemble, Eid);
 	      if (Eid != ensemble)
 	         continue;
 	      if (process_ensemble (theElement, Eid) && fresh)
@@ -4481,7 +4473,8 @@ mmDescriptor pictures;
 	      pictures. elements. push_back (mE);
 	   }
 	
-	   mediaDescription = mediaDescription. nextSiblingElement ("mediaDescription");
+	   mediaDescription = mediaDescription.
+	                   nextSiblingElement ("mediaDescription");
 	}
 	for (auto &pictureElement: channel. servicePictures) {
 	   uint32_t serviceId = pictureElement. serviceId;
@@ -4546,7 +4539,8 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	pictureMappings. setContent (&f);
 	extractServiceInformation	(pictureMappings, Eid, false);
 }
-
+//
+//	Unused slots, 
 void	RadioInterface::report_startDir	(int objects) {
 	(void)objects;
 //	dynamicLabel	-> setText ("Start of grabbing " + QString::number (objects) + "objects for EPG/SPI");

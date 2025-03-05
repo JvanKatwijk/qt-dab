@@ -23,6 +23,10 @@
 #include	"audio-player.h"
 #include	<stdio.h>
 
+//
+//	Adioplayer is merely an interface with two derived
+//	real handlers, one using the portaudio library, the
+//	other one using the Qt provided services
 
 	audioPlayer::audioPlayer	() {}
 	audioPlayer::~audioPlayer	() {}

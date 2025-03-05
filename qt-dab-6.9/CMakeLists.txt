@@ -69,7 +69,7 @@ set (TCP_STREAMER OFF)
 option(RTLSDR_LINUX OFF)	# use for Linux type systems
 option(RTLSDR_WIN OFF) 		# only for windows
 option(AIRSPY OFF)  
-option(SDRPLAY_V2 OFF) 
+option(SDRPLAY_V2 ON) 
 option(SDRPLAY_V3 OFF)
 option(HACKRF OFF)
 option(LIMESDR OFF) 

@@ -189,7 +189,7 @@ int16_t	inputCount	= 0;
   */
 	myViterbi. deconvolve (viterbiBlock, bitBuffer_out);
 //
-//	we construct the input as it should have been:
+//	we reconstruct the input as it should have been:
 	myViterbi. convolve (bitBuffer_out, checkBlock, FIC_BLOCKSIZE / 4);
 //
 //	and compute the errors
@@ -292,7 +292,6 @@ void	ficHandler::stopFICDump	() {
 	ficDumpPointer = nullptr;
 	ficLocker. unlock ();
 }
-
 
 void	ficHandler::getFIBBits		(uint8_t *v, bool *b) {
 	for (int i = 0; i < 4 * 768; i ++)

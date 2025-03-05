@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -49,8 +49,6 @@ class	RadioInterface;
         m_settings. setChannelConfig(QAudioFormat::ChannelConfigStereo);
 
 	deviceList	= new QMediaDevices (this);
-//	connect (this, &Qt_Audio::deviceListChanged (),
-//	         mr, &RadioInterface::deviceListChanged ());
         connect (deviceList, &QMediaDevices::audioOutputsChanged,
                  this, &Qt_Audio::updateDeviceList);
 
@@ -99,7 +97,7 @@ void	Qt_Audio::restart	() {
 	m_audioSink	-> setVolume	(linearVolume);
 	m_audioSink	-> start (&theIODevice);
 	QtAudio::Error err = m_audioSink -> error ();
-	fprintf (stderr, "Errorcode %d\n", (int)(err));
+//	fprintf (stderr, "Errorcode %d\n", (int)(err));
 }
 
 void	Qt_Audio::stop	() {
@@ -207,7 +205,6 @@ bool	Qt_Audio::hasMissed	() {
 void	Qt_Audio::samplesMissed	(int &total, int & missed) {
 	theIODevice. samplesMissed (total, missed);
 }
-
 
 void	Qt_Audio::updateDeviceList () {
 bool currentDeviceinList = false;

@@ -232,6 +232,8 @@ QString res;
 	if (v [index] == 0x80)	// xml:lang
 	   ignore (v, index);
 	res = fetchString (v, index, endPoint);
+	if (res == "")
+	   res = " ";
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -239,8 +241,8 @@ QString res;
 }
 
 QDomElement epgCompiler::process_longName (QDomDocument &doc,
-	                                  const std::vector<uint8_t> &v,
-	                                  int &index) {
+	                                   const std::vector<uint8_t> &v,
+	                                   int &index) {
 QDomElement child;
 QString res;
 int endPoint = setLength (v, index);
@@ -248,6 +250,8 @@ int endPoint = setLength (v, index);
 	if (v [index] == 0x80)		// xml:lang
 	   ignore (v, index);
 	res = fetchString (v, index, endPoint);
+	if (res == "")
+	   res = " ";
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -927,6 +931,7 @@ QDomElement ensemble;
 	         int Eid = (v [index + 1] << 8) | v [index + 2];
 	         ensemble. setAttribute ("ecc", QString::number (ecc, 16));
 	         ensemble. setAttribute ("Eid", QString::number (Eid, 16));
+	         fprintf (stderr, "%X %X\n", ecc, Eid);
 	         index = localEnd;
 	         break;
 	      }
@@ -1710,7 +1715,7 @@ int endPoint	= setLength (v, index);
 QString	epgCompiler::fetchString (const std::vector<uint8_t> &v,
 	                                          int &index, int endPoint) {
 QString res = "";
-	if (v [index] != 1) {		// should not happen, but it does
+	if (v [index] != 1) {	// should not happen, but it does
 	   QByteArray text;
 	   for (int i = index; i < endPoint; i ++)
 	      text. push_back (v [i]);
@@ -1722,7 +1727,8 @@ QString res = "";
 	}
 	else {
 	   QByteArray text;
-	   for (int i = index + 2; i < endPoint; i ++)
+	   int localEnd = setLength (v, index);
+	   for (int i = index; i < localEnd; i ++)
 	      text. push_back (v [i]);
 	   res = QString::fromUtf8 (text);
 	}

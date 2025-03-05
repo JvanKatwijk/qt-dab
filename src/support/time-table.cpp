@@ -24,7 +24,6 @@
 //
 #include	"time-table.h"
 #include	"radio.h"
-#include	"xml-handler.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 #include	"findfilenames.h"
@@ -61,7 +60,7 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 	serviceLogo	= new QLabel ();
 	dateLabel	= new QLabel ();
 	right	= new QPushButton ("next");
-	right	-> setToolTip ("set the date on dat forward");
+	right	-> setToolTip ("set the date one day forward");
 	rem	= new QPushButton ("remove");
 	QString qss = QString("background-color:red");
 	rem	-> setStyleSheet(qss);
@@ -103,7 +102,7 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 QString timeTableHandler::find_xmlFile (QDate& theDate,
 	                                uint32_t Eid, uint32_t Sid) {
 QString fileName;
-	fileName = path_for_files + QString::number (Eid, 16) + "/";
+	fileName	= path_for_files + QString::number (Eid, 16) + "/";
 	char temp [40];
 	const char * formatString;
 	formatString = "%4d%02d%02d_%4X_SI.xml";
@@ -124,6 +123,7 @@ void	timeTableHandler::setUp		(const QDate &theDate,
 	this	-> serviceName	= serviceName;
 	dateLabel	-> setText (theDate. toString ());
 	serviceLabel	-> setText (serviceName);
+	serviceLogo	-> setPixmap (QPixmap ());
 	dateOffset	= 0;
 	start (dateOffset);
 }

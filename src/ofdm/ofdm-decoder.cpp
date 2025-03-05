@@ -83,7 +83,7 @@ float Length	= jan_abs (V);
 	this	-> T_u			= params. get_T_u	();
 	this	-> nrBlocks		= params. get_L		();
 	this	-> carriers		= params. get_carriers	();
-	this	-> T_g		= T_s - T_u;
+	this	-> T_g			= T_s - T_u;
 
 	repetitionCounter	= 10;
 
@@ -238,7 +238,7 @@ DABFLOAT sum = 0;
 
 /**
   *	When trying the alternative decoder implementations
-  *	as implemented in DABstar by Rolf Zerr and ThomNeda, I
+  *	as implemented in DABstar by Rolf Zerr and TomNeda, I
   *	decided to do some investigation to get  actual figures.
   *	The different decoders below were tested with an old file
   *	with a recording of a poor signal, that ran for two  minutes
@@ -249,7 +249,7 @@ DABFLOAT sum = 0;
   *	With that setting there turned out to be a marginal difference
   *	in favor of decoder 1 over decoder 4, the decoders 2 and 3 performed
   *	slightly less (roughly speaking app 740000 repairs by
-  *	decoder 1 and 4, and 746000 by decoders 2 and 3.
+  *	decoder 1 and 4, and 746000 by decoders 2 and 3).
   *	Anyway, the contributions of Rolf Zerr and Thomas Neder
   *	for their decoders is greatly acknowledged
   */

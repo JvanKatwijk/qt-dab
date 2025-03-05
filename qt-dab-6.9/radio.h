@@ -430,6 +430,7 @@ private:
 	bool			process_ensemble (const QDomElement &, uint32_t);
 	int			process_service	(const QDomElement &);
 	QString			extractName	(const QString &);
+	void			announcement_exit	();
 
 signals:
 	void			select_ensemble_font	();

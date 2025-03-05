@@ -71,11 +71,12 @@ int	teller = 0;
 
 	out. resize (2 * 3 * amount);
 	for (int i = 0; i < amount; i ++) {
-	   std::complex<float> X = std::complex<float> (real (V [i]) / 32767.0,
-	                                                imag (V [i]) / 32767.0);
+	   std::complex<float> X =
+	                std::complex<float> (3 * real (V [i]) / 32767.0,
+	                                     3 *imag (V [i]) / 32767.0);
 	   X = filter_16_48. Pass (X);
-	   out [teller ++] = 3 * real (X); 
-	   out [teller ++] = 3 * imag (X);
+	   out [teller ++] = real (X); 
+	   out [teller ++] = imag (X);
 	   X = filter_16_48. Pass (std::complex<float> (0, 0));
 	   out [teller ++] = real (X); 
 	   out [teller ++] = imag (X);
@@ -95,8 +96,9 @@ int	converter_48000::convert_24000	(complex16 *V,
 int teller	= 0;
 	out. resize (2 * 2 * amount);
 	for (int i = 0; i < amount; i ++) {
-	   std::complex<float> X = std::complex<float> (real (V [i]) / 32767.0,
-	                                                imag (V [i]) / 32767.0);
+	   std::complex<float> X =
+	              std::complex<float> (2 * real (V [i]) / 32767.0,
+	                                   2 * imag (V [i]) / 32767.0);
 	   X = filter_24_48. Pass (X);
 	   out [teller ++] = real (X); 
 	   out [teller ++] = imag (X);
@@ -116,14 +118,15 @@ int	converter_48000::convert_32000	(complex16 *V,
 int teller	= 0;
 	out. resize (3 * amount);
 	for (int i = 0; i < amount; i ++) {
-	   std::complex<float> X = std::complex<float> (real (V [i]) / 32768.0,
-                                                        imag (V [i]) / 32768.0);
-	   X = filter_32_96. Pass (X * 3.f);
+	   std::complex<float> X =
+	              std::complex<float> (3 * real (V [i]) / 32768.0,
+                                           3 * imag (V [i]) / 32768.0);
+	   X = filter_32_96. Pass (X);
 	   buffer_32_96. push_back (X);
 	   X = filter_32_96. Pass (std::complex<float> (0, 0));
-	   buffer_32_96. push_back (X * 3.f);
+	   buffer_32_96. push_back (X);
 	   X = filter_32_96. Pass  (std::complex<float> (0, 0));
-	   buffer_32_96. push_back (X * 3.f); 
+	   buffer_32_96. push_back (X); 
 	   if (buffer_32_96. size () >= 6) {	// should be 0 .. 6
 	      out [teller ++] = real (buffer_32_96 [0]);
 	      out [teller ++] = imag (buffer_32_96 [0]);
