@@ -130,7 +130,7 @@ QString ids_to_string (int mainId, int subId) {
 
 static inline
 QStringList splitter (const QString &s) {
-#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+#if QT_VERSION > QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
@@ -912,7 +912,7 @@ QString realName;
 	         return;
 	
 	      QString temp = path_for_files +
-	                          QString::number (channel. Eid, 16) + "/";
+	                          QString::number (channel. Eid, 16). toUpper () + "/";
 	      if (!QDir (temp). exists ())
 	         QDir (). mkpath (temp);	
 	      theName  = temp + theName;
@@ -1048,7 +1048,7 @@ const char *type;
 	   if (!dirs) 
 	      pict = path_for_files + pictureName;
 	   else
-	      pict = path_for_files + QString::number (channel. Eid, 16) + "/" + pictureName;
+	      pict = path_for_files + QString::number (channel. Eid, 16). toUpper () + "/" + pictureName;
 	   QString temp = pict;
 	   temp = temp. left (temp. lastIndexOf (QChar ('/')));
 	   if (!QDir (temp). exists())
@@ -4406,8 +4406,6 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	      QString Ident = theElement. attribute ("Eid");
 	      bool ok = false;
 	      uint32_t ensemble = Ident. toInt (&ok, 16);
-	      fprintf (stderr, "serviceinfo for %X (%X)\n",	
-	                  ensemble, Eid);
 	      if (Eid != ensemble)
 	         continue;
 	      if (process_ensemble (theElement, Eid) && fresh)
@@ -4424,7 +4422,7 @@ void	RadioInterface::saveServiceInfo (const QDomDocument &doc,
 QString fileName = path_for_files;
 	if (!fileName. endsWith ("/"))
 	   fileName =  fileName + "/";
-	fileName += QString::number (Eid, 16) + "/list.xml";
+	fileName += QString::number (Eid, 16). toUpper () + "/list.xml";
 	QFile file (QDir::toNativeSeparators (fileName));
 	if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
 	   QTextStream stream (&file);
@@ -4437,7 +4435,9 @@ bool	RadioInterface::process_ensemble (const QDomElement &node,
 	                                              uint32_t Eid) {
 int picturesSeen = 0;
 	QString Ident = node. attribute ("Eid");
-	if (QString::number (Eid, 16) != Ident)
+	bool ok = false;
+	uint32_t attrib = Ident. toInt (&ok, 16);
+	if (!ok || (Eid != attrib))
 	   return false;
 	QDomElement nameNode = 
 	           node. firstChildElement ("mediumName");
@@ -4514,8 +4514,7 @@ bool res = false;
 	   qsort (options. data (), options. size (),
 	                 sizeof (multimediaElement), &mcmp);
 	   for (auto &ff: options) {
-	      QString pict  = path_for_files + QString::number (channel. Eid, 16) + "/" + ff. url;
-//	      QString pict  = path_for_pictures + QString::number (channel. Eid, 16) + "/" + ff. url;
+	      QString pict  = path_for_files + QString::number (channel. Eid, 16). toUpper ()+ "/" + ff. url;
 	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
 	      if (tt == nullptr) 
 	         continue;
@@ -4531,7 +4530,7 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	QString fileName = path_for_files;
 	if (!fileName. endsWith ("/"))
 	   fileName += "/";
-	fileName += QString::number (Eid, 16) + "/list.xml";
+	fileName += QString::number (Eid, 16). toUpper () + "/list.xml";
 	QDomDocument pictureMappings;
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly))

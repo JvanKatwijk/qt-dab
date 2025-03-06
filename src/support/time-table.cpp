@@ -102,7 +102,7 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 QString timeTableHandler::find_xmlFile (QDate& theDate,
 	                                uint32_t Eid, uint32_t Sid) {
 QString fileName;
-	fileName	= path_for_files + QString::number (Eid, 16) + "/";
+	fileName	= path_for_files + QString::number (Eid, 16). toUpper () + "/";
 	char temp [40];
 	const char * formatString;
 	formatString = "%4d%02d%02d_%4X_SI.xml";
@@ -231,7 +231,7 @@ QString	stop	= schedule. stopTime. date (). toString ();
 	programDisplay	-> insertRow (row);
 	QTableWidgetItem *item0 = new QTableWidgetItem;
 	item0	-> setTextAlignment (Qt::AlignLeft);
-	name	= name + "(" + QString::number (schedule. Sid, 16) + ")";
+	name	= name + "(" + QString::number (schedule. Sid, 16). toUpper () + ")";
 	item0	-> setText (name);
 	programDisplay -> setItem (row, 0, item0);
 	QTableWidgetItem *item1 = new QTableWidgetItem;
@@ -338,7 +338,7 @@ QString res;
 }
 
 void	timeTableHandler::deleteFiles () {
-QString dirName = path_for_files + QString::number (currentEid, 16) + "/";
+QString dirName = path_for_files + QString::number (currentEid, 16). toUpper () + "/";
 QDir directory (dirName);
 QStringList files = directory.entryList(QStringList() << "*.xml" ,QDir::Files);
 	
