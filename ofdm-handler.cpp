@@ -149,7 +149,7 @@
 }
 
 	ofdmHandler::~ofdmHandler () {
-	   if (isRunning()) {
+	   if (isRunning ()) {
 	      theReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.

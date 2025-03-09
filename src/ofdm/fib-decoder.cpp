@@ -59,7 +59,7 @@
 	currentConfig	= new dabConfig();
 	nextConfig	= new dabConfig();
 
-	ensemble	= new ensembleDescriptor();
+	ensemble	= new ensembleDescriptor ();
 	CIFcount	= 0;
 	mjd		= 0;
 }

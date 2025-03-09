@@ -158,6 +158,7 @@ typedef struct {
 
 class serviceId {
 public:
+	bool		defined;
 	bool		selected;
 	QString		name;
 	uint32_t	SId;

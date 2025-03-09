@@ -179,12 +179,6 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 	   v = limit;
 }
 
-DABFLOAT toFirstQuadrant (DABFLOAT phase) {
-	if (phase < 0.0f) 
-	   phase += (float)M_PI;
-	return (DABFLOAT)std::fmod (phase, (float)M_PI_2);
-}
-
 Complex makeComplex (DABFLOAT phase) {
 DABFLOAT p2	= phase * phase;
 DABFLOAT p3	= p2 * phase;
@@ -192,7 +186,6 @@ DABFLOAT p4	= p3 * phase;
 DABFLOAT sine	= phase - p3/ 6;
 DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24;
 	return complex (cosi, sine);
-	return Complex (cos (phase), sin (phase));
 }
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
@@ -228,11 +221,17 @@ DABFLOAT sum = 0;
 	   Complex fftBin	= fftBinRaw *
 	                     makeComplex (-IntegAbsPhaseVector [index]);
 //	Get the phase (real and absolute) 
-	   DABFLOAT	binAbsLevel	= jan_abs (fftBin);
-	   DABFLOAT	fftBinPhase	= arg (fftBin);
-	   DABFLOAT	AbsPhaseofBin	= toFirstQuadrant (fftBinPhase);
-	   IntegAbsPhaseVector [index] +=
-	                           0.2f * ALPHA * (AbsPhaseofBin - M_PI_4);
+	   DABFLOAT	re	= real (fftBin);
+	   DABFLOAT	im	= imag (fftBin);
+	   if (re < 0)
+	      re = -re;
+	   if (im < 0)
+	      im = -im;
+	   Complex	fftBin_at_1	=
+	            Complex (re, im);
+	   DABFLOAT	binAbsLevel	= jan_abs (fftBin_at_1);
+	   IntegAbsPhaseVector [index] = 
+	                           0.2f * ALPHA * (arg (fftBin_at_1) - M_PI_4);
 	   limit_symmetrically (IntegAbsPhaseVector [index],
 	                                RAD_PER_DEGREE * (DABFLOAT)20.0);
 

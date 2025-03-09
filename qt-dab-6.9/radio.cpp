@@ -4403,9 +4403,11 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	    !theElement. isNull ();
 	    theElement = theElement. nextSiblingElement ("")) {
 	   if (theElement. tagName () == "ensemble") {
-	      QString Ident = theElement. attribute ("Eid");
 	      bool ok = false;
+	      QString Ident = theElement. attribute ("Eid");
 	      uint32_t ensemble = Ident. toInt (&ok, 16);
+	      fprintf (stderr, "Comparing %X and %X\n", 
+	                          Eid, ensemble);
 	      if (Eid != ensemble)
 	         continue;
 	      if (process_ensemble (theElement, Eid) && fresh)
@@ -4535,6 +4537,7 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly))
 	   return;
+	fprintf (stderr, "de file is open\n");
 	pictureMappings. setContent (&f);
 	extractServiceInformation	(pictureMappings, Eid, false);
 }
