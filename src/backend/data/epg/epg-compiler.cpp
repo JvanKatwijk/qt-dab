@@ -23,7 +23,7 @@
 #include	"epg-compiler.h"
 #include	<QDomDocument>
 #include	<QTextStream>
-
+#include	<QDateTime>
 #include	"time-converter.h"
 
 //	miniparser for epg
@@ -80,10 +80,11 @@ int length	= v [index + 1];
 }
 
 int	epgCompiler::process_epg	(QDomDocument &doc,
-	                                 const std::vector<uint8_t> &v) {
+	                                 const std::vector<uint8_t> &v,
+	                                 int lto) {
 uint8_t	tag	= v [0];
 int	index	= 0;
-
+	this	-> lto = lto;
 	for (int i = 0; i < 16; i ++)
 	   stringTable [i] = "";
 	int endPoint = setLength (v, index);
@@ -227,11 +228,10 @@ QDomElement epgCompiler::process_mediumName (QDomDocument &doc,
 	                                    int &index) {
 QDomElement child;
 int endPoint = setLength (v, index);
-QString res;
 	child	= doc. createElement ("mediumName");
 	if (v [index] == 0x80)	// xml:lang
 	   ignore (v, index);
-	res = fetchString (v, index, endPoint);
+	QString res = fetchString (v, index, endPoint);
 	if (res == "")
 	   res = " ";
 	QDomText t = doc. createTextNode (res);
@@ -244,16 +244,14 @@ QDomElement epgCompiler::process_longName (QDomDocument &doc,
 	                                   const std::vector<uint8_t> &v,
 	                                   int &index) {
 QDomElement child;
-QString res;
 int endPoint = setLength (v, index);
 	child	= doc. createElement ("longName");
 	if (v [index] == 0x80){	// xml:lang
 	   ignore (v, index);
 	}
-	res = fetchString (v, index, endPoint, false);
+	QString res = fetchString (v, index, endPoint, false);
 	if (res == "")
 	   res = " ";
-	
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
 	index = endPoint;
@@ -487,12 +485,11 @@ QDomElement epgCompiler::process_shortDescription (QDomDocument &doc,
 	                                           int &index) {
 int endPoint = setLength (v, index);
 QDomElement child;
-QString res;
 	child = doc. createElement ("shortDescription");
 	if (v [index] == 0x80) // xml:lang
 	   ignore (v, index);
 	QString s = fetchString (v, index, endPoint);
-	QDomText n = doc. createTextNode (res);
+	QDomText n = doc. createTextNode (s);
 	child. appendChild (n);
 	index = endPoint;
 	return child;
@@ -503,12 +500,11 @@ QDomElement epgCompiler::process_longDescription (QDomDocument &doc,
 	                                         int &index) {
 int endPoint = setLength (v, index);
 QDomElement child;
-QString res;
 	child = doc. createElement ("longDescription");
 	if (v [index] == 0x80) // xml:lang
 	   ignore (v, index);
 	QString s = fetchString (v, index, endPoint);
-	QDomText n = doc. createTextNode (res);
+	QDomText n = doc. createTextNode (s);
 	child. appendChild (n);
 	index = endPoint;
 	return child;
@@ -1550,7 +1546,8 @@ QString	twoDigits (int16_t v) {
 QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 	if ((v [index] != 0x80) && (v [index] != 0x81))
 	   return QString ("ik weet het niet");
-	
+
+	int	corrector	= 0;
 	int endPoint = setLength (v, index);
 	uint32_t mjd	= getBits (v, 8 * index + 1, 17);
 	uint16_t dateOut [4];
@@ -1559,11 +1556,24 @@ QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 	int16_t M	= dateOut [1];
 	int16_t D	= dateOut [2];
 //	we need to know whether it is today or not
-//	int ltoFlag	= getBit (v, 8 * index + 19);
-//	int utcFlag	= getBit (v, 8 * index + 20);
-//	int ltoBase	= utcFlag == 1 ? 48 : 32;
+	int ltoFlag	= getBit (v, 8 * index + 19);
+	int utcFlag	= getBit (v, 8 * index + 20);
+	int ltoBase	= utcFlag == 1 ? 48 : 32;
 	int hours	= getBits (v, 8 * index + 21, 5);
 	int minutes	= getBits (v, 8 * index + 26, 6);
+	QDate date (Y, M, D);
+	QTime tim  (hours, minutes, 0);
+	QDateTime dt (date, tim);
+	qint64 tt = dt. toSecsSinceEpoch ();
+	qint64 epochMinutes = tt / 60 + this -> lto;
+	QDateTime rr = QDateTime::fromSecsSinceEpoch (epochMinutes * 60);
+	QDate newDate = rr. date ();
+	QTime newTime = rr. time ();
+	Y	= newDate. year ();
+	M	= newDate. month ();
+	D	= newDate. day ();
+	hours = newTime. hour ();
+	minutes = newTime. minute ();
 	index = endPoint;
 	QString res = QString::number (Y) + "-" +
 	                       QString::number (M) + "-" +
@@ -1720,30 +1730,28 @@ QString res = "";
 	if (v [index] != 1) {	// should not happen, but it does
 	   QByteArray text;
 	   for (int i = index; i < endPoint; i ++) {
-	      text. push_back (v [i]);
-	   }
-	   res = QString::fromUtf8 (text);
-	} 
-	else
-	if ((v [index + 1] < 20)) {
-	   res = stringTable [v [index + 1]];
-	}
-	else {
-	   QByteArray text;
-	   int localEnd = setLength (v, index);
-	   for (int i = index; i < localEnd; i ++) {
-	      if (p)
-	         fprintf (stderr, "%c %x ", v [i], v [i]);
 	      if (v [i] < 20) {
 	         QString ss = stringTable [v [i]];
-	         for (int j = 0; j < ss. toLatin1 (). data () [j] != 0; j ++)
+	         for (int j = 0; ss. toLatin1 (). data () [j] != 0; j ++)
 	            text. push_back (ss. toLatin1 (). data () [j]);
 	      }
 	      else
 	         text. push_back (v [i]);
 	   }
-	   if (p)
-	      fprintf (stderr, "\n");
+	   res = QString::fromUtf8 (text);
+	} 
+	else {
+	   QByteArray text;
+	   int localEnd = setLength (v, index);
+	   for (int i = index; i < localEnd; i ++) {
+	      if (v [i] < 20) {
+	         QString ss = stringTable [v [i]];
+	         for (int j = 0; ss. toLatin1 (). data () [j] != 0; j ++)
+	            text. push_back (ss. toLatin1 (). data () [j]);
+	      }
+	      else
+	         text. push_back (v [i]);
+	   }
 	   res = QString::fromUtf8 (text);
 	}
 	index = endPoint;

@@ -195,6 +195,7 @@ signals:
 	void		start_announcement	(const QString &, int, int);
 	void		stop_announcement	(const QString &, int);
 	void		nrServices		(int);
+	void		lto_ecc			(int, int);
 };
 
 

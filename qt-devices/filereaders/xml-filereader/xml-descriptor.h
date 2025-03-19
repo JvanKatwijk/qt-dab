@@ -35,7 +35,7 @@ public:
 			Blocks		() {}
 			~Blocks		() {}
 	int		blockNumber;
-	int		nrElements;
+	uint64_t	nrElements;
 	QString		typeofUnit;
 	int		frequency;
 	QString		modType;
@@ -67,7 +67,7 @@ public:
 	             	                 QString	byteOrder);
 	void		addChannelOrder (int channelOrder,
 	                                 QString Value);
-	void		add_dataBlock (int currBlock,  int Count,
+	void		add_dataBlock (int currBlock,  uint64_t Count,
                                        int  blockNumber, QString Unit);
 	void		add_freqtoBlock	(int blockno, int freq);
 	void		add_modtoBlock (int blockno, QString modType);

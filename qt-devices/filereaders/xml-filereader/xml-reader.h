@@ -42,7 +42,7 @@ public:
 			xml_Reader (xml_fileReader	*mr,
 	                            FILE		*f,
 	                            xmlDescriptor	*fd,
-	                            uint32_t		filePointer,
+	                            uint64_t		filePointer,
 	                            RingBuffer<std::complex<float>> *b);
 			~xml_Reader	();
 	void		stopReader	();
@@ -51,15 +51,15 @@ private:
 	std::atomic<bool>	continuous;
 	FILE		*file;
 	xmlDescriptor	*fd;
-	uint32_t	filePointer;
+	uint64_t	filePointer;
 	RingBuffer<std::complex<float>> *sampleBuffer;
 	xml_fileReader	*parent;
-	int		nrElements;
-	int		samplesToRead;
+	uint64_t	nrElements;
+	uint64_t	samplesToRead;
 	std::atomic<bool> running;
 	void		run ();
-	int		compute_nrSamples 	(FILE *f, int blockNumber);
-	int		readSamples		(FILE *f, 
+	uint64_t	compute_nrSamples 	(FILE *f, int blockNumber);
+	uint64_t	readSamples		(FILE *f, 
 	                                       void(xml_Reader::*)(FILE *,
 	                                          std::complex<float> *, int));
 	void		readElements_IQ		(FILE *f,

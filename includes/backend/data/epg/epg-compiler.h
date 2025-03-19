@@ -40,7 +40,7 @@ public:
 		~epgCompiler	();
 
 int	process_epg	(QDomDocument &,
-	                 const std::vector<uint8_t> &v);
+	                 const std::vector<uint8_t> &v, int lto);
 private:
 	QString	stringTable [20];
 //
@@ -114,5 +114,7 @@ private:
 	                                 int &index);
 	QString process_groupType	(const std::vector<uint8_t> &v,
 	                                 int &index);
+
+	int lto;
 };
 

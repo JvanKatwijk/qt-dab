@@ -21,6 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 //#include	<QFileDialog>
+#include	<QString>
 #include	"xml-filereader.h"
 #include	<cstdio>
 #include	<cstdlib>
@@ -83,8 +84,8 @@
 	recorderName		-> setText (theDescriptor -> recorderName);
 	recorderVersion		-> setText (theDescriptor -> recorderVersion);
 	recordingTime		-> setText (theDescriptor -> recordingTime);
-
-	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
+	QString res = QString::number (theDescriptor -> blockList [0]. nrElements);
+	nrElementsDisplay	-> display (res);
 	fprintf (stderr, "nrElements = %d\n",
 	             theDescriptor -> blockList [0].nrElements);
 	connect (continuousButton, &QPushButton::clicked,

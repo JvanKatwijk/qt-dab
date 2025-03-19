@@ -252,7 +252,7 @@ DABFLOAT sum = 0;
   *	Anyway, the contributions of Rolf Zerr and Thomas Neder
   *	for their decoders is greatly acknowledged
   */
-	   DABFLOAT	phaseError	= AbsPhaseofBin - M_PI_4;
+	   DABFLOAT	phaseError	= arg (fftBin_at_1) - M_PI_4;
 	   DABFLOAT	stdDev		= phaseError * phaseError;
 	   stdDevVector [index] =
 	        compute_avg (stdDevVector [index], stdDev, ALPHA);

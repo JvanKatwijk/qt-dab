@@ -53,7 +53,7 @@ struct timeval tv;
 	xml_Reader::xml_Reader (xml_fileReader *mr,
 	                        FILE	*f,
 	                        xmlDescriptor *fd,
-	                        uint32_t	filePointer,
+	                        uint64_t	filePointer,
 	                        RingBuffer<std::complex<float>> *b) {
 	this	-> parent	= mr;
 	this	-> file		= f;
@@ -99,7 +99,7 @@ void	xml_Reader::stopReader	() {
 
 static	int cycleCount = 0;
 void	xml_Reader::run () {
-int	samplesRead	= 0;
+uint64_t	samplesRead	= 0;
 uint64_t	nextStop;
 int	startPoint	= filePointer;
 
@@ -152,9 +152,9 @@ bool	xml_Reader::handle_continuousButton  () {
 	return continuous. load ();
 }
 
-int	xml_Reader::compute_nrSamples (FILE *f, int blockNumber) {
-int	nrElements	= fd -> blockList. at (blockNumber). nrElements;
-int	samplesToRead	= 0;
+uint64_t	xml_Reader::compute_nrSamples (FILE *f, int blockNumber) {
+uint64_t	nrElements	= fd -> blockList. at (blockNumber). nrElements;
+uint64_t	samplesToRead	= 0;
 
 	(void)f;
 	if (fd -> blockList. at (blockNumber). typeofUnit == "Channel") {
@@ -172,7 +172,7 @@ int	samplesToRead	= 0;
 	return samplesToRead;
 }
 
-int	xml_Reader::readSamples (FILE *theFile, 
+uint64_t	xml_Reader::readSamples (FILE *theFile, 
 	                         void(xml_Reader::*r)(FILE *theFile,
 	                                    std::complex<float> *, int)) {
 std::complex<float> temp [2048];

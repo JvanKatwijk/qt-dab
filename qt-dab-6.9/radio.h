@@ -164,6 +164,7 @@ public:
 	uint32_t	Eid;
 	bool		has_ecc;
 	uint8_t		ecc_byte;
+	int		lto;
 	QString		countryName;
 	int		nrTransmitters;
 	int		snr;
@@ -438,6 +439,7 @@ signals:
 	void			select_ensemble_fontColor	();
 
 public slots:
+	void			lto_ecc			(int, int);
 	void			report_startDir		(int);
 	void			report_completeDir	();
 	void			channelSignal		(const QString &);

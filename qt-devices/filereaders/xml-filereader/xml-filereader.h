@@ -55,7 +55,7 @@ private:
 	QString			fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	FILE			*theFile;
-	uint32_t		filePointer;
+	uint64_t		filePointer;
 	xmlDescriptor		*theDescriptor;
 	xml_Reader		*theReader;
 public slots:

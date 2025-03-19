@@ -75,7 +75,7 @@ void	xmlDescriptor::addChannelOrder (int channelOrder, QString Value) {
 	   this -> iqOrder = "QI";
 }
 
-void	xmlDescriptor::add_dataBlock (int currBlock,  int Count,
+void	xmlDescriptor::add_dataBlock (int currBlock,  uint64_t Count,
                                       int  blockNumber, QString Unit) {
 Blocks	b;
 	(void)currBlock;
@@ -198,8 +198,9 @@ int	zeroCount = 0;
 	      fprintf (stderr, "Datablocks has %d siblings\n", nodes. count ());
 	         QDomElement Child = nodes. at (j). toElement ();
 	         if (Child. tagName () == "Datablock") {
-	            fprintf (stderr, "weer een block\n");
-	            int Count = (Child. attribute ("Count", "100")). toInt ();
+	            bool ok;
+	            uint64_t Count =
+	                (Child. attribute ("Count", "100")). toULongLong (&ok);
 	            int Number = (Child. attribute ("Number", "10")). toInt ();
 	            QString Unit = Child.  attribute ("Channel", "Channel");
 	            add_dataBlock (currBlock, Count, Number, Unit);

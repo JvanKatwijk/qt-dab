@@ -898,7 +898,8 @@ QString realName;
 	      std::vector<uint8_t> epgData (result. begin(), result. end());
 	      QDomDocument epgDocument;
 	      uint8_t docType = epgVertaler. process_epg (epgDocument,
-	                                                      epgData);
+	                                                      epgData,
+	                                                  channel. lto);
 	      if (docType == noType)		// should not happen
 	         break;
 
@@ -2117,7 +2118,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	}
 	if (channel. announcement_going)
 	   announcement_exit ();
-	my_timeTable. hide ();
+//	my_timeTable. hide ();
 	my_timeTable. clear ();
 //	stop "dumpers"
 	if (channel. currentService. frameDumper != nullptr) {
@@ -2201,13 +2202,23 @@ QString serviceName	= s. serviceName;
 	   channel. currentService. subChId	= ad. subchId;
 	   techWindow_p -> show_timetableButton (true);
 	   startAudioservice (ad);
-//	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	   serviceLabel	-> setText (serviceName);
 	   QPixmap p;
-	   if (get_serviceLogo (p, ad)) 
+	   bool	hasIcon = false;
+	   if (get_serviceLogo (p, ad)) {
+	      hasIcon  = true;
 	      iconLabel -> setPixmap (p. scaled (55, 55, Qt::KeepAspectRatio));
+	   }
 	   else
 	      iconLabel -> setText (ad. shortName);
+
+	   if (my_timeTable. isVisible ()) {
+	      my_timeTable. setUp (channel. theDate, channel. Eid,
+	                           channel. currentService. SId,
+	                           channel. currentService. serviceName); 
+	      if (hasIcon)
+	         my_timeTable. addLogo (p);
+	   }
 	   techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
 
 #ifdef	HAVE_PLUTO_RXTX
@@ -2495,6 +2506,10 @@ void	RadioInterface::stopChannel	() {
 	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
+	if (my_timeTable. isVisible ()) {
+	   my_timeTable. clear ();
+	   my_timeTable. hide ();
+	}
 	inputDevice_p		-> stopReader ();
 	disconnect (ensembleId, &clickablelabel::clicked,
 	            this, &RadioInterface::handle_contentButton);
@@ -3343,7 +3358,7 @@ void	RadioInterface::handle_timeTable	() {
 	                             currentService. serviceName, ad);
 	my_timeTable. setUp (channel. theDate, channel. Eid,
 	                     channel. currentService. SId,
-	                     channel. currentService. serviceName);
+	                     channel. currentService. serviceName); 
 	QPixmap p;
 	if (ad. defined) 	// should be
 	   if (get_serviceLogo (p, ad)) // this may be
@@ -4552,3 +4567,8 @@ void	RadioInterface::report_completeDir () {
 //	dynamicLabel	-> setText ("All EPG/SPI data is now in");
 }
 
+void	RadioInterface::lto_ecc	(int lto, int ecc) {
+	channel. ecc_byte = ecc;
+	channel. has_ecc = true;
+	channel. lto	= lto;
+}

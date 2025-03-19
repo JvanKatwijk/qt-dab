@@ -54,6 +54,8 @@
 	         myRadioInterface, &RadioInterface::stop_announcement);
 	connect (this, &fibDecoder::nrServices,
 	         myRadioInterface, &RadioInterface::nrServices);
+	connect (this, &fibDecoder::lto_ecc,
+	         myRadioInterface, &RadioInterface::lto_ecc);
 //
 //	Note that they may change "roles", 
 	currentConfig	= new dabConfig();
@@ -1705,6 +1707,7 @@ uint8_t ecc;
 	   ensemble -> ecc_byte = ecc;
 	   ensemble -> ecc_Present = true;
 	}
+	lto_ecc (dateTime [7], ecc);
 }
 
 //static
