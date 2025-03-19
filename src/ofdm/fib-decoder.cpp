@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2018 .. 2024
+ *    Copyright (C) 2018 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -30,11 +30,12 @@
 #include	"radio.h"
 #include	"charsets.h"
 #include	"bit-extractors.h"
-#include	"dab-config.h"
+#include	"fib-config.h"
+#include	"ensemble.h"
 #include	"fib-table.h"
 #include	<QStringList>
 #include	"dab-tables.h"
-
+#include	"fib-printer.h"
 #include	"time-converter.h"
 //
 //
@@ -48,20 +49,19 @@
 	         myRadioInterface, &RadioInterface::clockTime);
 	connect (this, &fibDecoder::changeinConfiguration,
 	         myRadioInterface, &RadioInterface::changeinConfiguration);
-	connect (this, &fibDecoder::start_announcement,
-	         myRadioInterface, &RadioInterface::start_announcement);
-	connect (this, &fibDecoder::stop_announcement,
-	         myRadioInterface, &RadioInterface::stop_announcement);
+	connect (this, &fibDecoder::announcement,
+	         myRadioInterface, &RadioInterface::announcement);
 	connect (this, &fibDecoder::nrServices,
 	         myRadioInterface, &RadioInterface::nrServices);
 	connect (this, &fibDecoder::lto_ecc,
 	         myRadioInterface, &RadioInterface::lto_ecc);
+	connect (this, &fibDecoder::setFreqList,
+	         myRadioInterface, &RadioInterface::setFreqList);
 //
 //	Note that they may change "roles", 
-	currentConfig	= new dabConfig();
-	nextConfig	= new dabConfig();
-
-	ensemble	= new ensembleDescriptor ();
+	currentConfig	= new fibConfig();
+	nextConfig	= new fibConfig();
+	theEnsemble	= new ensemble ();
 	CIFcount	= 0;
 	mjd		= 0;
 }
@@ -69,7 +69,7 @@
 	fibDecoder::~fibDecoder () {
 	delete	nextConfig;
 	delete	currentConfig;
-	delete	ensemble;
+	delete	theEnsemble;
 }
 
 //	FIB's are segments of 256 bits. When here, we already
@@ -225,21 +225,6 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 	}
 }
-
-static inline
-bool	alsoIn (std::vector<serviceId> &List, serviceId el) {
-	for (auto theId : List) {
-	   if ((el. name == theId. name) && (el. SId == theId. SId))
-	      return true;
-	}
-	return false;
-}
-
-static inline
-QString	makeString (serviceId el) {
-	return el. name + "(" + QString::number (el. SId, 16) + ")";
-}
-
 //	Ensemble information, 6.4.1
 //	FIG0/0 indicated a change in channel organization
 //	The info is MCI
@@ -266,31 +251,19 @@ static	uint8_t prevChangeFlag	= 0;
 	CIFcount_lo		= lowpart;
 	CIFcount 		= highpart * 250 + lowpart;
 
+
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
-	   fprintf (stderr, "handling change\n");
-	   std::vector<serviceId> oldS = get_services (ID_BASED);
-	   dabConfig 	*temp	= currentConfig;
+	   fibConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;
-	   std::vector<serviceId> newS = get_services (ID_BASED);
 	   nextConfig	->  reset ();
-	   cleanupServiceList ();
-	   QStringList notInOld;
-	   QStringList notInNew;
-	   for (auto theId: oldS) 
-	      if (!alsoIn (newS, theId))
-	         notInNew << makeString (theId);
-	   for (auto theId: newS) 
-	      if (!alsoIn (oldS, theId))
-	         notInOld << makeString (theId);
-	   emit changeinConfiguration (notInOld, notInNew);
+//	   cleanupServiceList ();
+	   emit changeinConfiguration ();
 	}
-
 	prevChangeFlag	= changeFlag;
 //	if (alarmFlag)
 //	   fprintf (stderr, "serious problem\n");
 }
-
 //
 //	Subchannel organization 6.2.1
 //	FIG0 extension 1 creates a mapping between the
@@ -317,66 +290,54 @@ int16_t	bitOffset	= offset * 8;
 int16_t	subChId		= getBits_6 (d, bitOffset);
 int16_t startAdr	= getBits (d, bitOffset + 6, 10);
 int16_t	tabelIndex;
-int16_t	option, protLevel, subChanSize;
-subChannelDescriptor	subChannel;
-dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
+int16_t	option, protLevel, chanSize;
+fibConfig::subChannel	channel;
+fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 static	int table_1 [] = {12, 8, 6, 4};
 static	int table_2 [] = {27, 21, 18, 15};
 
 	(void)OE_bit; (void)PD_bit;
-	subChannel. startAddr	= startAdr;
-	subChannel. inUse	= true;
-	subChannel. Length	= 0;
+	channel. subChId	= subChId;
+	channel. startAddr	= startAdr;
+	channel. Length	= 0;
+	channel. FEC_scheme	= 0;	// corrected later on
 
 	if (getBits_1 (d, bitOffset + 16) == 0) {	// short form
 	   tabelIndex = getBits_6 (d, bitOffset + 18);
-	   subChannel. Length		= ProtLevel [tabelIndex][0];
-	   subChannel. shortForm	= true;		// short form
-	   subChannel. protLevel	= ProtLevel [tabelIndex][1];
-	   subChannel. bitRate		= ProtLevel [tabelIndex][2];
+	   channel. Length	= ProtLevel [tabelIndex][0];
+	   channel. shortForm	= true;		// short form
+	   channel. protLevel	= ProtLevel [tabelIndex][1];
+	   channel. bitRate		= ProtLevel [tabelIndex][2];
 	   bitOffset += 24;
 	}
 	else { 	// EEP long form
-	   subChannel. shortForm	= false;
+	   channel. shortForm	= false;
 	   option = getBits_3 (d, bitOffset + 17);
 	   if (option == 0) { 		// A Level protection
 	      protLevel			= getBits (d, bitOffset + 20, 2);
-	      subChannel. protLevel	= protLevel;
-	      subChanSize		= getBits (d, bitOffset + 22, 10);
-	      subChannel. Length	= subChanSize;
-	      subChannel. bitRate	= subChanSize / table_1 [protLevel] * 8;
+	      channel.	protLevel	= protLevel;
+	      chanSize	= getBits (d, bitOffset + 22, 10);
+	      channel. Length	= chanSize;
+	      channel. bitRate	= chanSize / table_1 [protLevel] * 8;
 	   }
 	   else			// option should be 001
 	   if (option == 001) {		// B Level protection
 	      protLevel			= getBits_2 (d, bitOffset + 20);
-	      subChannel. protLevel	= protLevel + (1 << 2);
-	      subChanSize		= getBits (d, bitOffset + 22, 10);
-	      subChannel. Length	= subChanSize;
-	      subChannel. bitRate	=
-	                           subChanSize / table_2 [protLevel] * 32;
+	      channel. protLevel	= protLevel + (1 << 2);
+	      chanSize		= getBits (d, bitOffset + 22, 10);
+	      channel. Length	= chanSize;
+	      channel. bitRate	= chanSize / table_2 [protLevel] * 32;
 	   }
 	   bitOffset += 32;
 	}
 //
 //	in case the subchannel data was already computed
 //	we merely compute the offset
-	if (localBase -> subChannels [subChId]. inUse)
+	if (localBase -> findIndex_subChannel_table (subChId) >= 0)
 	   return bitOffset / 8;
 //
-//	and here we fill in the structure
-	localBase -> subChannels [subChId]. SubChId	= subChId;
-	localBase -> subChannels [subChId]. inUse       = true;
-	localBase -> subChannels [subChId]. startAddr   =
-	                                    subChannel. startAddr;
-	localBase -> subChannels [subChId]. Length	=
-	                                    subChannel. Length;
-	localBase -> subChannels [subChId]. shortForm =
-	                                    subChannel. shortForm;
-	localBase -> subChannels [subChId]. protLevel =
-	                                    subChannel. protLevel;
-	localBase -> subChannels [subChId]. bitRate	=
-	                                    subChannel. bitRate;
-
+	
+	localBase -> subChannel_table. push_back (channel);
 	return bitOffset / 8;	// we return bytes
 }
 //
@@ -407,6 +368,8 @@ uint8_t		cId;
 uint32_t	SId;
 int16_t		numberofComponents;
 
+fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
+	
 	(void)OE_bit;
 
 	if (PD_bit == 1) {		// long Sid, data
@@ -420,35 +383,46 @@ int16_t		numberofComponents;
 	   SId	= getBits   (d, bitOffset, 16);
 	   bitOffset	+= 16;
 	}
-
-	ensemble -> countryId	= cId;
-	numberofComponents	= getBits_4 (d, bitOffset + 4);
 	
-	int serviceIndex	= find_service (SId);
-	if (serviceIndex != -1)
-	    ensemble -> services [serviceIndex]. nrComps = numberofComponents;
+	numberofComponents	= getBits_4 (d, bitOffset + 4);
+
+	fibConfig::SId_struct SId_element;
+	SId_element. announcing = 0;
+	SId_element. SId = SId;
+	for (auto &ss: localBase -> SId_table) {
+	   if (ss. SId == SId) {
+	      bitOffset += numberofComponents * 16 + 8;
+	      return bitOffset / 8;
+	   }
+	}
 	bitOffset	+= 8;
 	for (i = 0; i < numberofComponents; i ++) {
+	   fibConfig::serviceComp_C comp;
+	   comp. SId	= SId;
+	   comp. compNr	= i;
+	   
 	   uint8_t	TMid	= getBits_2 (d, bitOffset);
+	   comp. TMid = TMid;
 	   if (TMid == 00)  {	// Audio
-	      uint8_t	ASCTy	= getBits_6 (d, bitOffset + 2);
-	      uint8_t	SubChId	= getBits_6 (d, bitOffset + 8);
-	      uint8_t	PS_flag	= getBits_1 (d, bitOffset + 14);
-	      bind_audioService (CN_bit == 0 ? currentConfig : nextConfig,
-	                            TMid, SId, i, SubChId, PS_flag, ASCTy);
+	      comp. 	ASCTy	= getBits_6 (d, bitOffset + 2);
+	      comp.	subChId	= getBits_6 (d, bitOffset + 8);
+	      comp.	PS_flag	= getBits_1 (d, bitOffset + 14);
 	   }
 	   else
 	   if (TMid == 3) { // MSC packet data
-	      int16_t SCId	= getBits   (d, bitOffset + 2, 12);
-	      uint8_t PS_flag	= getBits_1 (d, bitOffset + 14);
-	      uint8_t CA_flag	= getBits_1 (d, bitOffset + 15);
-	      bind_packetService (CN_bit == 0 ? currentConfig : nextConfig,
-	                            TMid, SId, i, SCId, PS_flag, CA_flag);
+	      comp. SCId	= getBits   (d, bitOffset + 2, 12);
+	      comp. PS_flag	= getBits_1 (d, bitOffset + 14);
+//	      uint8_t CA_flag	= getBits_1 (d, bitOffset + 15);
 	   }
 	   else 
 	      {;}
 	   bitOffset += 16;
+	   if (!localBase -> compIsKnown (comp)) {	
+	      SId_element. comps. push_back (localBase -> SC_C_table. size ());
+	      localBase -> SC_C_table. push_back (comp);
+	   }
 	}
+	localBase -> SId_table. push_back (SId_element);
 	return bitOffset / 8;		// in Bytes
 }
 
@@ -462,7 +436,6 @@ int16_t Length  = getBits_5 (d, 3);
 uint8_t CN_bit  = getBits_1 (d, 8 + 0);
 uint8_t OE_bit  = getBits_1 (d, 8 + 1);
 uint8_t PD_bit  = getBits_1 (d, 8 + 2);
-
 
 	while (used < Length)
 	   used = HandleFIG0Extension3 (d, used, CN_bit, OE_bit, PD_bit);
@@ -482,10 +455,7 @@ int16_t DSCTy           = getBits_6 (d, used * 8 + 18);
 int16_t SubChId         = getBits_6 (d, used * 8 + 24);
 int16_t packetAddress   = getBits   (d, used * 8 + 30, 10);
 uint16_t  CAOrg		= 0;
-
-int	serviceCompIndex;
-int	serviceIndex;
-dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
+fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 
 	(void)OE_bit; (void)PD_bit;
 
@@ -496,42 +466,16 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	(void)CAOrg;
 	used += 40 / 8;
 
-	serviceCompIndex = findServiceComponent (localBase, SCId);
-	if (serviceCompIndex == -1)
-	   return used;
-
-//	We want to have the subchannel filled in already
-	if (!localBase -> subChannels [SubChId]. inUse)
-	   return used;
-//
-//	If the component exists, we first look whether is
-//	was already handled
-	if (localBase -> serviceComps [serviceCompIndex]. is_madePublic)
-	   return used;
-//
-//	if the Data Service Component Type == 0, we do not deal
-//	with it
-	if (DSCTy == 0)
-	   return used;
-//
-	serviceIndex =
-	    find_service (localBase -> serviceComps [serviceCompIndex]. SId);
-	if (serviceIndex == -1)
-	   return used;
-
-	QString serviceName =
-	    ensemble -> services [serviceIndex]. serviceLabel;
-
-//	if (!ensemble -> services [serviceIndex]. is_shown) {
-	   add_to_ensemble (serviceName,
-	                  ensemble -> services [serviceIndex]. SId, SubChId);
-//	}
-	ensemble -> services [serviceIndex]. is_shown			= true;
-//	localBase -> serviceComps [serviceCompIndex]. is_madePublic	= true;
-	localBase -> serviceComps [serviceCompIndex]. subchannelId 	= SubChId;
-	localBase -> serviceComps [serviceCompIndex]. DSCTy		= DSCTy;
-	localBase -> serviceComps [serviceCompIndex]. DGflag		= DGflag;
-	localBase -> serviceComps [serviceCompIndex]. packetAddress	= packetAddress;
+	for (auto &comp : localBase ->  SC_P_table)
+	   if (comp. SCId == SCId)
+	      return used;
+	fibConfig::serviceComp_P element;
+	element. SCId  		= SCId;
+	element. subChId  	= SubChId;
+	element. DSCTy		= DSCTy;
+	element. DG_flag	= DGflag;
+	element.  packetAddress	= packetAddress;
+	localBase -> SC_P_table. push_back (element);
 	return used;
 }
 
@@ -553,29 +497,35 @@ int16_t	fibDecoder::HandleFIG0Extension5 (uint8_t* d,
 	                                  uint8_t OE_bit,
 	                                  uint8_t PD_bit, int16_t offset) {
 int16_t	bitOffset	= offset * 8;
-uint8_t	lsFlag	= getBits_1 (d, bitOffset);
-int16_t language;
-dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	(void)OE_bit; (void)PD_bit;
-	if (lsFlag == 0) {	// short form
-	   if (getBits_1 (d, bitOffset + 1) == 0) {
-	      int16_t subChId	= getBits_6 (d, bitOffset + 2);
-	      language	= getBits_8 (d, bitOffset + 8);
-	      localBase -> subChannels [subChId]. language = language;
-	   }
+uint8_t	LS_flag	= getBits_1 (d, bitOffset);
+fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+fibConfig::SC_language comp;
+	(void)OE_bit;
+	(void)PD_bit;
+	comp. LS_flag = LS_flag;
+	if (LS_flag == 0) {
+	   comp. subChId = getBits (d, bitOffset + 2, 6);
+	   for (int i = 0; i < (int) localBase -> language_table. size (); i ++)
+	      if ((localBase -> language_table [i]. LS_flag == 0) &&
+	          (localBase -> language_table [i]. subChId == comp. subChId)) {
+	         bitOffset += 16;
+	         return bitOffset / 8;
+	      }
+	   comp. language = getBits (d, bitOffset + 8, 8);
 	   bitOffset += 16;
 	}
-	else {			// long form
-	   int16_t SCId		= getBits (d, bitOffset + 4, 12);
-	   language		= getBits_8 (d, bitOffset + 16);
-	   int compIndex = findServiceComponent (localBase, SCId);
-
-	   if (compIndex != -1)
-	      localBase -> serviceComps [compIndex]. language = language;
+	else {
+	   comp. SCId = getBits (d, bitOffset + 4, 12);
+	   for (int i = 0; i < (int)localBase ->  language_table. size (); i ++)
+	      if ((localBase -> language_table [i]. LS_flag == 0) &&
+	          (localBase -> language_table [i]. SCId == comp. SCId)) {
+	         bitOffset += 24;
+	         return bitOffset / 8;
+	      }
+	   comp. language = getBits (d, bitOffset + 16, 8);
 	   bitOffset += 24;
 	}
-
+	localBase -> language_table. push_back (comp);
 	return bitOffset / 8;
 }
 
@@ -621,10 +571,11 @@ int16_t	fibDecoder::HandleFIG0Extension8 (uint8_t	*d,
 	                                  uint8_t	PD_bit) {
 int16_t	bitOffset	= used * 8;
 uint32_t	SId	= getLBits (d, bitOffset, PD_bit == 1 ? 32 : 16);
-uint8_t		lsFlag;
+uint8_t		LS_flag;
 uint8_t		extensionFlag;
-dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
+fibConfig::serviceComp_G comp;
 	(void)OE_bit;
 	bitOffset	+= PD_bit == 1 ? 32 : 16;
 	extensionFlag   = getBits_1 (d, bitOffset);
@@ -632,1088 +583,42 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
 //	int serviceIndex = find_service (SId);
 	bitOffset	+= 8;
-	lsFlag		= getBits_1 (d, bitOffset);
+	LS_flag		= getBits_1 (d, bitOffset);
 
-	if (lsFlag == 0) {	// short form
-	   int16_t compIndex;
-	   int16_t subChId	= getBits_6 (d, bitOffset + 2);
-	   if  (localBase -> subChannels [subChId]. inUse) {
-	      compIndex = findComponent (localBase, SId, subChId);
-	      if (compIndex != -1) {
-	         localBase -> serviceComps [compIndex]. SCIds = SCIds;
-	      }
-	   }
+	comp. SId	= SId;
+	comp. SCIds	= SCIds;
+	comp. LS_flag	= LS_flag;
+
+	if (LS_flag == 0) {	// short form
+	   comp. subChId = getBits_6 (d, bitOffset + 2);
 	   bitOffset += 8;
 	}
 	else {			// long form
-	   int SCId	= getBits (d, bitOffset + 4, 12);
-	   int16_t compIndex = findServiceComponent (localBase, SCId);
-	   if (compIndex != -1) {
-	      localBase -> serviceComps [compIndex]. SCIds = SCIds;
-	      localBase -> serviceComps [compIndex]. SCIds = SCId;
-	   }
-	   bitOffset += 8;
+	   comp. SCId	= getBits (d, bitOffset + 4, 12);
+	   bitOffset += 16;
 	}
 	if (extensionFlag)
 	   bitOffset += 8;	// skip Rfa
+	for (auto &el : localBase -> SC_G_table)
+	   if ((el. SId == SId) && (el. SCIds == SCIds))
+	      return bitOffset / 8;
+	localBase -> SC_G_table. push_back (comp);
 	return bitOffset / 8;
 }
-//
-//	User Application Information 6.3.6
-void	fibDecoder::FIG0Extension13 (uint8_t *d) {
+
+//	FIG0/9 Country, LTO and International table, clause 8.1.3.2;
+void	fibDecoder::FIG0Extension9 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
-int16_t	Length		= getBits_5 (d, 3);
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-
-	while (used < Length) 
-	   used = HandleFIG0Extension13 (d, used, CN_bit, OE_bit, PD_bit);
+//int16_t	Length		= getBits_5 (d, 3);
+//uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+//uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+//uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+	uint8_t	LTO	= getBits (d, used * 8 + 2, 6);
+	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
+	theEnsemble	-> eccByte	= ecc;
+	theEnsemble	-> lto		= LTO;
+	lto_ecc (LTO, ecc);
 }
-//
-//	section 6.3.6 User application Data
-int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
-	                                   int16_t used,
-	                                   uint8_t CN_bit,
-	                                   uint8_t OE_bit,
-	                                   uint8_t pdBit) {
-int16_t	bitOffset	= used * 8;
-uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
-uint16_t	SCIds;
-int16_t		NoApplications;
-int16_t		i;
-int16_t		appType;
-dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	(void)OE_bit;
-	bitOffset	+= pdBit == 1 ? 32 : 16;
-	SCIds		= getBits_4 (d, bitOffset);
-	NoApplications	= getBits_4 (d, bitOffset + 4);
-	bitOffset	+= 8;
-
-	int serviceIndex = find_service (SId);
-	if (serviceIndex > 0) {
-	   QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
-	}
-
-	for (i = 0; i < NoApplications; i ++) {
-	   appType		= getBits (d, bitOffset, 11);
-	   int16_t length	= getBits_5 (d, bitOffset + 11);
-	   if (serviceIndex == -1) {
-	      bitOffset 	+= (11 + 5 + 8 * length);
-	      continue;
-	   }
-	
-	   int compIndex =
-	               findServiceComponent (localBase, SId, SCIds);
-	   if (compIndex != -1) {
-	      if (localBase -> serviceComps [compIndex]. TMid == 3)
-	         localBase -> serviceComps [compIndex]. appType = appType;
-	   }
-	   bitOffset 		+= (11 + 5 + 8 * length);
-
-	}
-	return bitOffset / 8;
-}
-
-//	FEC sub-channel organization 6.2.2
-void	fibDecoder::FIG0Extension14 (uint8_t *d) {
-int16_t	Length		= getBits_5 (d, 3);	// in Bytes
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-int16_t	used	= 2;			// in Bytes
-dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	(void)OE_bit; (void)PD_bit;
-	while (used < Length) {
-	   int16_t subChId	= getBits_6 (d, used * 8);
-	   uint8_t FEC_scheme	= getBits_2 (d, used * 8 + 6);
-	   used = used + 1;
-	   if (localBase -> subChannels [subChId]. inUse)
-	      localBase -> subChannels [subChId]. FEC_scheme = FEC_scheme;
-	}
-}
-
-void	fibDecoder::FIG0Extension17 (uint8_t *d) {
-int16_t	length	= getBits_5 (d, 3);
-int16_t	offset	= 16;
-int	serviceIndex;
-
-	while (offset < length * 8) {
-	   uint16_t	SId	= getBits (d, offset, 16);
-	   bool	L_flag	= getBits_1 (d, offset + 18);
-	   bool	CC_flag	= getBits_1 (d, offset + 19);
-	   int16_t type;
-	   int16_t Language = 0x00;	// init with unknown language
-	   serviceIndex	= find_service (SId);
-	   if (L_flag) {		// language field present
-	      Language = getBits_8 (d, offset + 24);
-	      offset += 8;
-	   }
-
-	   type	= getBits_5 (d, offset + 27);
-	   if (CC_flag)			// cc flag
-	      offset += 40;
-	   else
-	      offset += 32;
-	   if (serviceIndex != -1) {
-	      ensemble -> services [serviceIndex]. language	= Language;
-	      ensemble -> services [serviceIndex]. programType	= type;
-	   }
-	}
-}
-//
-//	Announcement support 8.1.6.1
-void	fibDecoder::FIG0Extension18 (uint8_t *d) {
-	(void)d;
-int16_t	Length		= getBits_5 (d, 3);	// in Bytes
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-int16_t	used	= 2;			// in Bytes
-int16_t	bitOffset		= used * 8;
-dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	(void)OE_bit; (void)PD_bit;
-
-	while (bitOffset < Length * 8) {
-	   uint16_t SId		= getBits (d, bitOffset, 16);
-	   int16_t serviceIndex = find_service (SId);
-	   bitOffset		+= 16;
-	   uint16_t asuFlags	= getBits (d, bitOffset, 16);
-	   (void)asuFlags;
-	   bitOffset		+= 16;
-	   uint8_t Rfa		= getBits (d, bitOffset,  5);
-	   (void)Rfa;
-	   uint8_t nrClusters	= getBits (d, bitOffset + 5, 3);
-	   bitOffset		+= 8;
-
-	   for (int i = 0; i < nrClusters; i ++) {
-	      if (getBits (d, bitOffset + 8 * i, 8) == 0)
-	         continue;
-	      if ((serviceIndex != -1) &&
-	          (ensemble -> services [serviceIndex]. hasName))
-	         setCluster (localBase,
-	                     getBits (d, bitOffset + 8 * i, 8),
-	                     serviceIndex, asuFlags);
-	   }
-	   bitOffset	+= nrClusters * 8;
-	}
-}
-
-static inline 
-int	bits (uint s) {
-uint32_t startBit = 01;
-	for (int i = 0; i < 15; i ++) {
-	   if ((s & startBit) != 0)
-	      return i;
-	   startBit <<= 1;
-	}
-	return 0;
-}
-//	Announcement switching 8.1.6.2
-void	fibDecoder::FIG0Extension19 (uint8_t *d) {	
-int16_t	Length		= getBits_5 (d, 3);	// in Bytes
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-int16_t	used		= 2;			// in Bytes
-int16_t	bitOffset	= used * 8;
-dabConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	(void)OE_bit; (void)PD_bit;
-	while (bitOffset < Length * 8) {
-	   uint8_t clusterId	= getBits (d, bitOffset, 8);
-	   bitOffset += 8;
-	   uint16_t AswFlags	= getBits (d, bitOffset, 16);
-	   bitOffset		+= 16;
-
-//	   uint8_t newFlag	= getBits (d, bitOffset, 1);
-	   bitOffset	+= 1;
-	   uint8_t regionFlag	= getBits (d, bitOffset, 1);
-	   bitOffset	+= 1;
-	   uint8_t subChId	= getBits (d, bitOffset, 6);
-	   bitOffset	+= 6;
-	   if (regionFlag == 1) {
-	      bitOffset		+= 2;	// skip Rfa
-	      uint8_t regionId	= getBits (d, bitOffset, 6);
-	      bitOffset 	+= 6;
-	      (void)regionId;
-	   }
-
-	   if (!syncReached ())
-	      return;
-	   Cluster *myCluster = getCluster (localBase, clusterId);
-	   if (myCluster == nullptr) {	// should not happen
-//	      fprintf (stderr, "cluster fout\n");
-	      continue;
-	   }
-
-	   int announcementId = bits (AswFlags);
-	   if ((myCluster -> flags & AswFlags) != 0) {
-	      myCluster -> announcing ++;
-	      if (myCluster -> announcing >= 5) {
-	         for (uint16_t i = 0;
-	                 i < myCluster -> services. size (); i ++) {
-	            const QString name =
-	              ensemble	-> services [myCluster -> services [i]]. serviceLabel;
-	              emit start_announcement (name, subChId, announcementId);
-	         }
-	      }
-	   }
-	   else {	// end of announcement
-	      if (myCluster -> announcing > 0) {
-	         myCluster -> announcing = 0;
-	         for (uint16_t i = 0;
-	                 i < myCluster -> services. size (); i ++) {
-	            const QString name =
-	               ensemble  -> services [myCluster -> services [i]]. serviceLabel;
-	             emit stop_announcement (name, subChId);
-	         }
-	      }
-	   }
-	}
-}
-//
-//	Frequency information (FI) 8.1.8
-void	fibDecoder::FIG0Extension21 (uint8_t *d) {
-int16_t	used		= 2;		// offset in bytes
-int16_t	Length		= getBits_5 (d, 3);
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-
-	while (used < Length) 
-	   used = HandleFIG0Extension21 (d, CN_bit, OE_bit, PD_bit, used);
-}
-
-int16_t	fibDecoder::HandleFIG0Extension21 (uint8_t	*d,
-	                                   uint8_t	CN_bit,
-	                                   uint8_t	OE_bit,
-	                                   uint8_t	PD_bit,
-	                                   int16_t	offset) {
-int16_t	l_offset	= offset * 8;
-int16_t	l	= getBits_5 (d, l_offset + 11);
-int16_t		upperLimit	= l_offset + 16 + l * 8;
-int16_t		base		= l_offset + 16;
-
-	(void)CN_bit; (void)OE_bit, (void)PD_bit;
-
-	while (base < upperLimit) {
-	   uint16_t idField	= getBits (d, base, 16);
-	   uint8_t  RandM	= getBits_4 (d, base + 16);
-	   uint8_t  continuity	= getBits_1 (d, base + 20);
-	   (void)continuity;
-	   uint8_t  length	= getBits_3 (d, base + 21);
-	   if (RandM == 0x08) {
-	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
-	      int32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
-	      int16_t serviceIndex	= find_service (idField);
-	      if (serviceIndex != -1) { 
-	         if ((ensemble -> services [serviceIndex]. hasName) &&
-	             (ensemble -> services [serviceIndex]. fmFrequency == -1))
-	               ensemble -> services [serviceIndex].fmFrequency =
-	                                                        fmFrequency;
-	      }
-	   }
-	   base += 24 + length * 8;
-	}
-	         
-	return upperLimit / 8;
-}
-//	FIG 1 - Cover the different possible labels, section 5.2
-void	fibDecoder::process_FIG1 (uint8_t *d) {
-uint8_t	extension	= getBits_3 (d, 8 + 5); 
-
-	switch (extension) {
-	   case 0:		// ensemble name
-	      FIG1Extension0 (d);
-	      break;
-
-	   case 1:		// service name
-	      FIG1Extension1 (d);
-	      break;
-
-	   case 2:		// obsolete
-	      break;
-
-	   case 3:		// obsolete
-	      break;
-
-	   case 4:		// Service Component Label
-	      FIG1Extension4 (d);
-	      break;
-
-	   case 5:		// Data service label
-	      FIG1Extension5 (d);
-	      break;
-
-	   case 6:		// XPAD label - 8.1.14.4
-	      FIG1Extension6 (d);
-	      break;
-
-	   default:
-	      ;
-	}
-}
-//	Name of the ensemble
-//
-void	fibDecoder::FIG1Extension0 (uint8_t *d) {
-uint8_t		charSet, extension;
-uint8_t		Rfu;
-uint32_t	EId	= 0;
-int16_t		offset	= 0;
-char		label [17];
-
-//      from byte 1 we deduce:
-	charSet         = getBits_4 (d, 8);
-	Rfu             = getBits_1 (d, 8 + 4);
-	extension       = getBits_3 (d, 8 + 5);
-	label [16]      = 0x00;
-	(void)Rfu;
-	(void)extension;
-
-	EId	= getBits (d, 16, 16);
-	offset	= 32;
-	if ((charSet <= 16)) { // EBU Latin based repertoire
-	   for (int i = 0; i < 16; i ++) {
-	      label [i] = getBits_8 (d, offset + 8 * i);
-	   }
-	   const QString name = toQStringUsingCharset (
-	                                        (const char *) label,
-	                                        (CharacterSet) charSet);
-	   QString realName = name;
-	   for (int i = name. length (); i < 16; i ++)
-	      realName. append (' ');
-	   if (!ensemble -> namePresent) {
-	      ensemble ->  ensembleName	= realName;
-	      ensemble ->  ensembleId	= EId;
-	      ensemble ->  namePresent	= true;
-	      name_of_ensemble (EId, name);
-	   }
-	   ensemble	-> isSynced = true;
-	}
-}
-//
-//	Name of service
-void	fibDecoder::FIG1Extension1 (uint8_t *d) {
-uint8_t		charSet, extension;
-uint8_t		Rfu;
-int32_t		SId	= getBits (d, 16, 16);
-int16_t		offset	= 32;
-int		serviceIndex;
-int16_t		i;
-char		label [17];
-
-//      from byte 1 we deduce:
-	charSet         = getBits_4 (d, 8);
-	Rfu             = getBits_1 (d, 8 + 4);
-	extension       = getBits_3 (d, 8 + 5);
-	label [16]      = 0x00;
-	(void)Rfu;
-	(void)extension;
-	if (charSet >= 16) 	// does not seem right
-	   return;
-
-	for (i = 0; i < 16; i ++) 
-	   label [i] = getBits_8 (d, offset + 8 * i);
-	QString dataName = toQStringUsingCharset (
-	                                  (const char *) label,
-	                                  (CharacterSet) charSet);
-	for (int i = dataName. length (); i < 16; i ++)
-	   dataName. append (' ');
-	QString shortName;		
-	for (int i = 0; i < 16; i ++) 
-	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
-	      shortName. append (dataName. at (i));
-
-	serviceIndex	= find_service (dataName);
-	if (serviceIndex == -1) {
-	   createService (dataName, shortName, SId, 0);
-	} else {
-	  ensemble -> services [serviceIndex]. SCIds = 0;
-	  ensemble -> services [serviceIndex]. hasName = true;
-	}
-}
-
-// service component label 8.1.14.3
-void	fibDecoder::FIG1Extension4 (uint8_t *d) {
-uint8_t		PD_bit;
-uint8_t		SCIds;
-uint8_t		Rfu;
-uint32_t	SId;
-int16_t		offset;
-
-	PD_bit	= getBits_1 (d, 16);
-	Rfu	= getBits_3 (d, 17);	(void)Rfu;
-	SCIds	= getBits_4 (d, 20);
-
-	if (PD_bit) {	// 32 bit identifier field for data components
-	   SId		= getLBits (d, 24, 32);
-	   offset	= 56;
-	}
-	else {	// 16 bit identifier field for program components
-	   SId		= getLBits (d, 24, 16);
-	   offset	= 40;
-	}
-
-	char label [17];
-	label [16] = 0;
-	for (int i = 0; i < 16; i ++) {
-	   label [i] = getBits_8 (d, offset + 8 * i);
-	}
-
-	int charSet		= getBits_4 (d, 8);
-	QString dataName	=
-	               toQStringUsingCharset ((const char *) label,
-	                                      (CharacterSet) charSet);
-	for (int i = dataName. length (); i < 16; i ++)
-	   dataName. append (' ');
-	int16_t compIndex =
-	            findServiceComponent (currentConfig, SId, SCIds);
-	if (compIndex > 0) {
-	   if (find_service (dataName) == -1) {
-	      if (currentConfig -> serviceComps [compIndex]. TMid == 0) {
-	         int subChId = 
-	             currentConfig -> serviceComps [compIndex]. subchannelId;
-	         if (subChId >= 0) {
-	            createService (dataName, "",  SId, SCIds);
-	            add_to_ensemble (dataName, SId, subChId);
-	         }
-	      }
-	   }
-	}
-}
-
-//	Data service label - 32 bits 8.1.14.2
-void	fibDecoder::FIG1Extension5 (uint8_t *d) {
-uint8_t		charSet, extension;
-uint8_t		Rfu;
-int		serviceIndex;
-int16_t		i;
-char		label [17];
-
-uint32_t	SId	= getLBits (d, 16, 32);
-int16_t		offset	= 48;
-
-//      from byte 1 we deduce:
-	charSet         = getBits_4 (d, 8);
-	Rfu             = getBits_1 (d, 8 + 4);
-	extension       = getBits_3 (d, 8 + 5);
-	label [16]      = 0x00;
-	(void)Rfu;
-	(void)extension;
-
-	
-	serviceIndex   = find_service (SId);
-	if (serviceIndex != -1)
-	   return;
-
-	if (charSet > 16) 
-	   return;	// something wrong
-
-	for (i = 0; i < 16; i ++) {
-	   label [i] = getBits_8 (d, offset + 8 * i);
-	}
-
- 	QString serviceName = toQStringUsingCharset ((const char *) label,
-	                                             (CharacterSet) charSet);
-	createService (serviceName, "", SId, 0);
-}
-
-//	XPAD label - 8.1.14.4
-void	fibDecoder::FIG1Extension6 (uint8_t *d) {
-uint32_t	SId	= 0;
-uint8_t		Rfu;
-int16_t		offset	= 0;
-uint8_t		PD_bit;
-uint8_t		SCIds;
-uint8_t		XPAD_apptype;
-
-	PD_bit	= getBits_1 (d, 16);
-	Rfu	= getBits_3 (d, 17);	(void)Rfu;
-	SCIds	= getBits_4 (d, 20);
-	if (PD_bit) {	// 32 bits identifier for XPAD label
-	   SId		= getLBits (d, 24, 32);
-	   XPAD_apptype	= getBits_5 (d, 59);
-	   offset 	= 64;
-	}
-	else {	// 16 bit identifier for XPAD label
-	   SId		= getLBits (d, 24, 16);
-	   XPAD_apptype	= getBits_5 (d, 43);
-	   offset		= 48;
-	}
-
-	(void)SId; (void)SCIds; (void)XPAD_apptype; 
-	(void)offset;
-}
-//	Programme Type (PTy) 8.1.5
-/////////////////////////////////////////////////////////////////////////
-//	Support functions
-//
-//	bind_audioService is the main processor for - what the name suggests -
-//	connecting the description of audioservices to a SID
-//	by creating a service Component
-void	fibDecoder::bind_audioService (dabConfig *base,
-	                               int8_t	TMid,
-	                               uint32_t	SId,
-	                               int16_t	compnr,
-	                               int16_t	subChId,
-	                               int16_t	ps_flag,
-	                               int16_t	ASCTy) {
-int16_t	i;
-int16_t	firstFree	= -1;
-int	serviceIndex	= find_service (SId);
-
-	if (serviceIndex == -1)
-	   return;
-
-//	if (ensemble -> services [serviceIndex]. programType == 0)
-//	   return;
-	if (!base -> subChannels [subChId]. inUse)
-	   return;
-
-	for (i = 0; i < 64; i ++) {
-	   if (!base -> serviceComps [i]. inUse) {
-	      if (firstFree == -1)
-	         firstFree = i;
-	      break;
-	   }
-
-	   if ((base -> serviceComps [i]. SId == SId) &&
-	       (base -> serviceComps [i]. componentNr == compnr))
-	      return;
-	}
-
-	
-	QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
-//	if (ensemble -> services [serviceIndex]. is_shown)
-//	   showFlag = false;
-
-	bool	useFlag	 = base -> serviceComps [firstFree]. inUse;
-	if (!useFlag) {
-	   base -> serviceComps [firstFree]. SId		= SId;
-	   base	-> serviceComps [firstFree]. SCIds		= 0;
-	   base	-> serviceComps [firstFree]. TMid		= TMid;
-	   base	-> serviceComps [firstFree]. componentNr	= compnr;
-	   base	-> serviceComps [firstFree]. subchannelId	= subChId;
-	   base	-> serviceComps [firstFree]. PS_flag		= ps_flag;
-	   base	-> serviceComps [firstFree]. ASCTy		= ASCTy;
-	   base	-> serviceComps [firstFree]. inUse		= true;
-	   ensemble -> services [serviceIndex]. SCIds		= 0;
-
-	}
-	add_to_ensemble (dataName, SId, subChId);
-	ensemble -> services [serviceIndex]. is_shown	= true;
-}
-
-//      bind_packetService is the main processor for - what the name suggests -
-//      connecting the service component defining the service to the SId,
-//	So, here we create a service component. Note however,
-//	that FIG0/3 provides additional data, after that we
-//	decide whether it should be visible or not
-void    fibDecoder::bind_packetService (dabConfig *base,
-	                                int8_t	TMid,
-	                                uint32_t SId,
-	                                int16_t	compnr,
-	                                int16_t SCId,
-	                                int16_t ps_flag,
-	                                int16_t CAflag) {
-int serviceIndex;
-int16_t i;
-QString name;
-int	firstFree = -1;
-
-	serviceIndex = find_service (SId);
-	if (serviceIndex == -1) {
-	   return;
-	}
-
-	QString serviceName = ensemble -> services [serviceIndex]. serviceLabel;
-
-	for (i = 0; i < 64; i ++) {
-	   if (!base -> serviceComps [i]. inUse) {
-	      if (firstFree == -1)
-	         firstFree = i;
-	      break;
-	   }
-
-	   if ((base -> serviceComps [i]. SId == SId) &&
-	       (base -> serviceComps [i]. componentNr == compnr))
-	      return;
-	}
-//	fprintf (stderr, "For service %s we bind component %d SCId %d %d\n",
-//	            serviceName. toLatin1 (). data (), compnr, SCId, firstFree);
-
-	if (!base -> serviceComps [firstFree]. inUse) {
-	   base -> serviceComps [firstFree]. inUse		= true;
-	   base -> serviceComps [firstFree]. SId		= SId;
-	   if (compnr == 0)
-	      base -> serviceComps [firstFree]. SCIds		= 0;
-	   else
-	      base -> serviceComps [firstFree]. SCIds		= -1;
-	   base -> serviceComps [firstFree]. SCId		= SCId;
-	   base -> serviceComps [firstFree]. TMid		= TMid;
-	   base -> serviceComps [firstFree]. componentNr	= compnr;
-	   base -> serviceComps [firstFree]. PS_flag		= ps_flag;
-	   base -> serviceComps [firstFree]. CAflag		= CAflag;
-	   base -> serviceComps [firstFree]. is_madePublic	= false;
-	}
-}
-
-static inline
-bool	match (QString s1, QString s2) {
-//	if ((s1. length () != 16) || (s2. length () != 16)) 
-//	   fprintf (stderr, "%s %d %s %d\n",
-//	               s1. toLatin1 (). data (), s1. length (),
-//	               s2. toLatin1 (). data (), s2. length ());
-	return s1. trimmed () == s2. trimmed ();
-}
-//
-int	fibDecoder::find_service	(const QString &s) {
-	for (int i = 0; i < 64; i ++) {
-	   if (!ensemble -> services [i]. inUse)
-	      continue;
-	   if (match (s, ensemble -> services [i]. serviceLabel))
-	      return i;
-	}
-	return -1;
-}
-
-int	fibDecoder::find_service	 (uint32_t SId) {
-	for (int i = 0; i < 64; i ++) {
-	   if (!ensemble -> services [i]. inUse)
-	      return -1;
-	   if (ensemble -> services [i]. SId == SId)
-	      return i;
-	}
-	return -1;
-}
-
-//	find data component using the SCId
-int	fibDecoder::findServiceComponent (dabConfig *db, int16_t SCId) {
-	for (int i = 0; i < 64; i ++)
-	   if (db -> serviceComps [i]. inUse &&
-	       (db -> serviceComps [i]. SCId == SCId))
-	      return i;
-	return -1;
-}
-//
-//	find serviceComponent using the SId and the SCIds
-int	fibDecoder::findServiceComponent (dabConfig *db, 
-	                                   uint32_t SId, uint8_t compnr) {
-
-int serviceIndex = find_service (SId);
-	if (serviceIndex == -1)
-	   return -1;
-
-	for (int i = 0; i < 64; i ++) {
-	   if (!db -> serviceComps [i]. inUse)
-	      return -1;
-	   if ((db -> serviceComps [i]. SId == SId) &&
-	       (db -> serviceComps [i]. componentNr == compnr)) {
-	      return i;
-	   }
-	}
-	return -1;
-}
-
-//	find serviceComponent using the SId and the subchannelId
-int	fibDecoder::findComponent	(dabConfig *db,
-	                                 uint32_t SId, int16_t subChId) {
-	for (int i = 0; i < 64; i ++) {
-	   if (!db -> serviceComps [i]. inUse)
-	      return -1;
-	   if ((db ->serviceComps [i]. SId == SId) &&
-	       (db -> serviceComps [i]. subchannelId == subChId))
-	      return i;
-	}
-	return -1;
-}
-
-void	fibDecoder::createService (const QString &name,
-	                           const QString &shortName,
-	                           uint32_t SId, int SCIds) {
-	for (int i = 0; i < 64; i ++) {
-	   if (ensemble -> services [i]. inUse) {
-	      continue;
-	   }
-	   QString saveName = name;
-	   for (int i = name. length (); i < 16; i ++)
-	      saveName. push_back (" ");
-	      
-	   ensemble	-> services [i]. inUse		= true;
-	   ensemble	-> services [i]. hasName	= true;
-	   ensemble	-> services [i]. serviceLabel	= name;
-	   ensemble	-> services [i]. shortName	= shortName;
-	   ensemble	-> services [i]. SId		= SId;
-	   ensemble	-> services [i]. SCIds		= SCIds;
-	   ensemble	-> services [i]. nrComps	= 0;
-	   return;
-	}
-}
-//
-//	called after a change in configuration to verify
-//	the services health
-//
-void	fibDecoder::cleanupServiceList () {
-	for (int i = 0; i < 64; i ++) {
-	   if (!ensemble -> services [i]. inUse)
-	      continue;
-	   uint32_t SId		= ensemble -> services [i]. SId;
-	   int	    SCIds	= ensemble -> services [i]. SCIds;
-	   if (findServiceComponent (currentConfig, SId, SCIds) == -1) {
-	      ensemble -> services [i]. inUse = false;
-	   }
-	}
-}
-
-QString	fibDecoder::announcements (uint16_t a) {
-	switch (a) {
-	   case 0:
-	   default:
-	      return QString ("Alarm");
-
-	   case 1:
-	      return QString ("Road Traffic Flash");
-
-	   case 2:
-	      return QString ("Traffic Flash");
-
-	   case 4:
-	      return QString ("Warning/Service");
-	
-	   case 8:
-	      return QString ("News Flash");
-
-	   case 16:
-	      return QString ("Area Weather flash");
-
-	   case 32:
-	      return QString ("Event announcement");
-
-	   case 64:
-	      return QString ("Special Event");
-
-	   case 128:
-	      return QString ("Programme Information");
-	}
-}
-
-void	fibDecoder::setCluster (dabConfig *localBase, int clusterId,
-	                        int16_t serviceIndex, uint16_t asuFlags) {
-
-	if (!syncReached ())
-	   return;
-	Cluster *myCluster = getCluster (localBase, clusterId);
-	if (myCluster == nullptr)
-	   return;
-	if (myCluster -> flags != asuFlags) {
-	   myCluster -> flags = asuFlags;
-	}
-
-	for (uint16_t i = 0; i < myCluster -> services. size (); i ++)
-	   if (myCluster -> services [i] == serviceIndex)
-	      return;
-	myCluster -> services. push_back (serviceIndex);
-}
-
-Cluster	*fibDecoder::getCluster (dabConfig *localBase, int16_t clusterId) {
-	for (int i = 0; i < 64; i ++)
-	   if ((localBase -> clusterTable [i]. inUse) &&
-	       (localBase -> clusterTable [i]. clusterId == clusterId))
-	      return &(localBase -> clusterTable [i]);
-
-	for (int i = 0; i < 64; i ++) {
-	   if (!localBase -> clusterTable [i]. inUse) {
-	      localBase -> clusterTable [i]. inUse = true;
-	      localBase -> clusterTable [i]. clusterId = clusterId;
-	      return &(localBase -> clusterTable [i]);
-	   }
-	}
-	return &(localBase -> clusterTable [0]);	// cannot happen
-}
-
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-//	
-//	Implementation of API functions
-//
-void	fibDecoder::clear_ensemble() {
-}
-
-void	fibDecoder::connect_channel () {
-	fibLocker. lock();
-	currentConfig	-> reset ();
-	nextConfig	-> reset ();
-	ensemble	-> reset ();
-	connect (this, &fibDecoder::add_to_ensemble,
-	         myRadioInterface, &RadioInterface::add_to_ensemble);
-	fibLocker. unlock();
-}
-
-void	fibDecoder::disconnect_channel () {
-	fibLocker. lock ();
-	disconnect (this, &fibDecoder::add_to_ensemble,
-	            myRadioInterface, &RadioInterface::add_to_ensemble);
-	currentConfig	-> reset ();
-	nextConfig	-> reset ();
-	ensemble	-> reset ();
-	fibLocker. unlock();
-}
-
-bool	fibDecoder::syncReached() {
-	return  ensemble -> isSynced;
-}
-
-int	fibDecoder::get_nrComps	(uint32_t SId) {
-int serviceIndex	= find_service (SId);
-	if (serviceIndex == -1)
-	   return -1;
-	return ensemble	-> services [serviceIndex]. nrComps;
-}
-
-void	fibDecoder::data_for_audioservice (const QString &s, audiodata &ad) {
-int	serviceIndex;
-
-	ad. defined      = false;	// default
-	serviceIndex	= find_service (s);
-	if (serviceIndex == -1)
-	   return;
-
-	fibLocker. lock();
-
-	int SId		= ensemble	-> services [serviceIndex]. SId;
-	int SCIds	= ensemble	-> services [serviceIndex]. SCIds;
-	QString shortName = ensemble	-> services [serviceIndex]. shortName;
-
-	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
-	if (compIndex == -1) {
-	   fibLocker. unlock ();
-	   return;
-	}
-
-	if (currentConfig -> serviceComps [compIndex]. TMid != 0) {
-	   fibLocker. unlock ();
-	   return;
-	}
-
-	int subChId	=
-	           currentConfig -> serviceComps [compIndex]. subchannelId;
-	if (!currentConfig -> subChannels [subChId]. inUse) {
-	   fibLocker. unlock ();
-	   return;
-	}
-
-	ad.	SId		= SId;
-	ad.	SCIds		= SCIds;
-	ad.	subchId		= subChId;
-	ad.	serviceName	= s;
-	ad.	shortName	= shortName;
-	ad.	startAddr	=
-	                 currentConfig -> subChannels [subChId]. startAddr;
-	ad.	shortForm	=
-	                 currentConfig -> subChannels [subChId]. shortForm;
-	ad.	protLevel	=
-	                 currentConfig -> subChannels [subChId]. protLevel;
-	ad.	length		=
-	                 currentConfig -> subChannels [subChId]. Length;
-	ad.	bitRate		=
-	                 currentConfig -> subChannels [subChId]. bitRate;
-	ad.	ASCTy		= 
-	                 currentConfig -> serviceComps [compIndex]. ASCTy;
-	ad.	language	= 
-	                 ensemble -> services [serviceIndex]. language;
-	ad.	programType	=
-	                 ensemble -> services [serviceIndex]. programType;
-	ad.	fmFrequency	=
-	                 ensemble -> services [serviceIndex]. fmFrequency;
-	ad.	defined		= true;
-
-	fibLocker. unlock();
-}
-
-void	fibDecoder::data_for_packetservice (const QString &s,
-	                                    packetdata &pd, int16_t compNr) {
-int     serviceIndex;
-
-	pd. defined      = false;
-	serviceIndex    = find_service (s);
-	if (serviceIndex == -1)
-	   return;
-
-	fibLocker. lock();
-	
-	int	SId	= ensemble -> services [serviceIndex]. SId;
-	int compIndex	= findServiceComponent (currentConfig, SId, compNr);
-	        
-	if ((compIndex == -1) ||
-	            (currentConfig -> serviceComps [compIndex]. TMid != 3)) {
-	   fibLocker. unlock ();
-	   return;
-	}
-
-	int subchId	=
-	           currentConfig -> serviceComps [compIndex]. subchannelId;
-
-//	fprintf (stderr, "%s has subchId %d compIndex %d\n",
-//	                         s. toLatin1 (). data (), subchId, compIndex);
-	if ((subchId == -1) ||
-	           !currentConfig -> subChannels [subchId]. inUse) {
-	   fibLocker. unlock ();
-	   return;
-	}
-
-	pd. serviceName	= s;
-	pd. shortName	= "";
-	pd. SId		= SId;
-	pd. SCIds	= 
-	           currentConfig -> serviceComps [compIndex]. SCIds;
-	          
-	pd. subchId      = subchId;
-	pd. startAddr    = currentConfig -> subChannels [subchId]. startAddr;
-	pd. shortForm    = currentConfig -> subChannels [subchId]. shortForm;
-	pd. protLevel    = currentConfig -> subChannels [subchId]. protLevel;
-	pd. length       = currentConfig -> subChannels [subchId]. Length;
-	pd. bitRate      = currentConfig -> subChannels [subchId]. bitRate;
-	pd. FEC_scheme   = currentConfig -> subChannels [subchId]. FEC_scheme;
-	pd. DSCTy        = currentConfig -> serviceComps [compIndex]. DSCTy;
-	pd. DGflag       = currentConfig -> serviceComps [compIndex]. DGflag;
-	pd. packetAddress = 
-	                     currentConfig -> serviceComps [compIndex]. packetAddress;
-	pd. compnr       = currentConfig -> serviceComps [compIndex]. componentNr;
-	pd. appType      = currentConfig -> serviceComps [compIndex]. appType;
-	pd. defined      = true;
-
-	fibLocker. unlock();
-}
-
-std::vector<serviceId> fibDecoder::get_services (int order) {
-std::vector<serviceId> services;
-
-	for (int i = 0; i < 64; i ++)
-	   if (ensemble -> services [i]. inUse &&
-	       ensemble -> services [i]. hasName) {
-	      serviceId ed;
-	      ed. name = ensemble -> services [i]. serviceLabel;
-	      ed. SId  = ensemble -> services [i]. SId;
-
-	      services = insert (services, ed, order);
-	   }
-	return services;
-}
-
-std::vector<serviceId>
-	fibDecoder::insert (std::vector<serviceId> &l,
-	                        serviceId n, int order) {
-std::vector<serviceId> k;
-	if (l . size () == 0) {
-	   k. push_back (n);
-	   return k;
-	}
-	int 	baseN		= 0;
-	QString baseS		= "";
-	bool	inserted	= false;
-	for (const auto  &serv : l) {
-	   if (!inserted &&
-	         (order == ID_BASED ?
-	             ((baseN < (int) n. SId) &&
-	                               ((int)n. SId <= (int) (&serv) -> SId)):
-	             ((baseS < n. name) && (n. name < (&serv) -> name)))) {
-	      k. push_back (n);
-	      inserted = true;
-	   }
-	   baseS	= serv. name;
-	   baseN	= serv. SId;
-	   k. push_back (serv);
-	}
-	if (!inserted)
-	   k. push_back (n);
-	return k;
-}
-
-QString	fibDecoder::find_service (uint32_t SId, int SCIds) {
-QString result;
-	for (int i = 0; i < 64; i ++)
-	   if (ensemble -> services [i]. inUse &&
-	       (ensemble -> services [i]. SId == SId) &&
-	       (ensemble -> services [i]. SCIds == SCIds))
-	      return ensemble -> services [i]. serviceLabel;
-	return "";
-}
-
-void	fibDecoder::get_parameters	(const QString &s,
-	                                 uint32_t *p_SId, int *p_SCIds) {
-int	serviceIndex = find_service (s);
-	if (serviceIndex == -1) {
-	   *p_SId	= 0;
-	   *p_SCIds	= 0;
-	}
-	else {
-	   *p_SId	= ensemble -> services [serviceIndex]. SId;
-	   *p_SCIds	= ensemble -> services [serviceIndex]. SCIds;
-	}
-}
-
-int32_t	fibDecoder::get_ensembleId () {
-	if (ensemble -> namePresent)
-	   return ensemble -> ensembleId;
-	else
-	   return 0;
-}
-
-QString	fibDecoder::get_ensembleName () {
-	if (ensemble -> namePresent)
-	   return ensemble -> ensembleName;
-	else
-	   return " ";
-}
-
-int32_t fibDecoder::get_CIFcount() {
-	return CIFcount;
-}
-
-void	fibDecoder::get_CIFcount (int16_t *h, int16_t *l) {
-	*h	= CIFcount_hi;
-	*l	= CIFcount_lo;
-}
-
-uint8_t	fibDecoder::get_ecc	() {
-	if (ensemble -> ecc_Present)
-	   return ensemble -> ecc_byte;
-	return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//	Country, LTO & international table 8.1.3.2
-void fibDecoder::FIG0Extension9 (uint8_t *d) {
-int16_t	offset	= 16;
-uint8_t ecc;
-//
-//	6 indicates the number of hours
-	int	signbit = getBits_1 (d, offset + 2);
-	dateTime [6] = (signbit == 1)?
-	                -1 * getBits_4 (d, offset + 3):
-	                     getBits_4 (d, offset + 3);
-//
-//	7 indicates a possible remaining half our
-	dateTime [7] = (getBits_1 (d, offset + 7) == 1) ? 30 : 0;
-	if (signbit == 1)
-	   dateTime [7] = -dateTime [7];
-	ecc	     = getBits (d, offset + 8, 8);
-	if (!ensemble -> ecc_Present) {
-	   ensemble -> ecc_byte = ecc;
-	   ensemble -> ecc_Present = true;
-	}
-	lto_ecc (dateTime [7], ecc);
-}
-
-//static
-//QString monthTable [] = {
-//"jan", "feb", "mar", "apr", "may", "jun",
-//"jul", "aug", "sep", "oct", "nov", "dec"};
 
 int	monthLength [] {
 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -1762,35 +667,13 @@ void	adjustTime (int32_t *dateTime) {
 	   }
 	}
 }
-
-//	Date and Time
-//	FIG0/10 are copied from the work of
-//	Michael Hoehn
+//	8.1.3.1 Date and time (d&t)
 void fibDecoder::FIG0Extension10 (uint8_t *dd) {
 int16_t		offset = 16;
 this	->	mjd	= getLBits (dd, offset + 1, 17);
 uint16_t	theTime	[6];
 
 	convertTime (mjd, theTime);
-////	Modified Julian Date (recompute according to wikipedia)
-//int32_t J	= mjd + 2400001;
-//int32_t j	= J + 32044;
-//int32_t g	= j / 146097; 
-//int32_t	dg	= j % 146097;
-//int32_t c	= ((dg / 36524) + 1) * 3 / 4; 
-//int32_t dc	= dg - c * 36524;
-//int32_t b	= dc / 1461;
-//int32_t db	= dc % 1461;
-//int32_t a	= ((db / 365) + 1) * 3 / 4; 
-//int32_t da	= db - a * 365;
-//int32_t y	= g * 400 + c * 100 + b * 4 + a;
-//int32_t m	= ((da * 5 + 308) / 153) - 2;
-//int32_t d	= da - ((m + 4) * 153 / 5) + 122;
-//int32_t Y	= y - 4800 + ((m + 2) / 12); 
-//int32_t M	= ((m + 2) % 12) + 1; 
-//int32_t D	= d + 1;
-//int32_t	theTime	[6];
-
 //	theTime [0] = Y;	// Year
 //	theTime [1] = M;	// Month
 //	theTime [2] = D;	// Day
@@ -1826,260 +709,655 @@ uint16_t	theTime	[6];
 	}
 }
 
-
-//	the generic print function generates - using the component descriptors
-//	as index - a QStringList as a model for a csv file
 //
-//	header for audio services
-//	serviceName
-//	serviceId
-//	subChannel
-//	startAddress
-//	length (in CU's)
-//	DAB or DAB+
-//	prot level
-//	code rate
-//	bitrate
-//	language
-//	program type
-//	alternative fm frequency
-//
-//	header for data services
-//	serviceName
-//	serviceId
-//	subChannel
-//	startAddress
-//	length
-//	prot level
-//	code rate
-//	appType
-//	FEC
-//	packet address
-//	comp nr
+//	User Application Information 6.3.6
+void	fibDecoder::FIG0Extension13 (uint8_t *d) {
+int16_t	used	= 2;		// offset in bytes
+int16_t	Length		= getBits_5 (d, 3);
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 
-QStringList	fibDecoder::basicPrint () {
-QStringList out;
-	bool hasContents = false;
-	for (int i = 0; i < 64; i ++) {
-	   if (currentConfig -> serviceComps [i]. inUse) {
-	      if (currentConfig -> serviceComps [i]. TMid != 0) // audio
-	         continue;
-	      if (!hasContents) 
-	         out << audioHeader ();
-	      hasContents = true;
-	      out << audioData (i);
-	   }
+	while (used < Length) 
+	   used = HandleFIG0Extension13 (d, used, CN_bit, OE_bit, PD_bit);
+}
+//
+//	section 6.3.6 User application Data
+int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
+	                                   int16_t used,
+	                                   uint8_t CN_bit,
+	                                   uint8_t OE_bit,
+	                                   uint8_t pdBit) {
+int16_t	bitOffset	= used * 8;
+uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
+uint16_t	SCIds;
+int16_t		NoApplications;
+int16_t		i;
+int16_t		appType;
+fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+
+fibConfig::AppType element;
+	(void)OE_bit;
+	bitOffset	+= pdBit == 1 ? 32 : 16;
+	SCIds		= getBits_4 (d, bitOffset);
+	NoApplications	= getBits_4 (d, bitOffset + 4);
+	bitOffset	+= 8;
+	element. SId	= SId;
+	element. SCIds	= SCIds;
+
+	for (i = 0; i < NoApplications; i ++) {
+	   appType		= getBits (d, bitOffset, 11);
+	   int16_t length	= getBits_5 (d, bitOffset + 11);
+	   element. Apptype	= appType;
+	   bitOffset 		+= (11 + 5 + 8 * length);
 	}
-	hasContents = false;
-	for (int i = 0; i < 64; i ++) {
-	   if (currentConfig -> serviceComps [i]. inUse) {
-	      if (currentConfig -> serviceComps [i]. TMid != 3) // packet
-	         continue;
-	      if (subChannelOf (i) == "")
-	         continue;
-	      if (!hasContents) {
-	         out << "\n";
-	         out << packetHeader ();
+	for (auto &comp : localBase -> AppType_table)
+	   if ((comp. SId == SId) && (comp. SCIds == SCIds))
+	      return bitOffset / 8;
+	localBase -> AppType_table. push_back (element);
+	return bitOffset / 8;
+}
+
+//	FEC sub-channel organization 6.2.2
+void	fibDecoder::FIG0Extension14 (uint8_t *d) {
+int16_t	Length		= getBits_5 (d, 3);	// in Bytes
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+int16_t	used	= 2;			// in Bytes
+fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+
+	(void)OE_bit; (void)PD_bit;
+	while (used < Length) {
+	   
+	   int16_t subChId	= getBits_6 (d, used * 8);
+	   uint8_t FEC_scheme	= getBits_2 (d, used * 8 + 6);
+	   used = used + 1;
+	   for (auto &subC: localBase -> subChannel_table)
+	      if (subC. subChId == subChId)
+	         subC. FEC_scheme = FEC_scheme;
+	}
+}
+//
+//	program type 8.1.5
+void	fibDecoder::FIG0Extension17 (uint8_t *d) {
+int16_t	length	= getBits_5 (d, 3);
+int16_t	offset	= 16;
+
+	while (offset < length * 8) {
+	   uint16_t	SId	= getBits (d, offset, 16);
+	   uint8_t typeCode	= getBits_5 (d, offset + 27);
+	   for (uint16_t i = 0; i < theEnsemble -> primaries. size (); i ++) {
+	      if (theEnsemble -> primaries [i]. SId == SId) {
+	         theEnsemble -> primaries [i]. programType = typeCode;
+	         break;
 	      }
-	      hasContents = true;
-	      out << packetData (i);
+	   }
+	   offset += 32;
+	}
+}
+//
+//	Announcement support 8.1.6.1
+void	fibDecoder::FIG0Extension18 (uint8_t *d) {
+int16_t	Length		= getBits_5 (d, 3);	// in Bytes
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+int16_t	used	= 2;			// in Bytes
+int16_t	bitOffset		= used * 8;
+fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+
+	(void)OE_bit; (void)PD_bit;
+
+	while (bitOffset < Length * 8) {
+	   uint16_t SId		= getBits (d, bitOffset, 16);
+	   bitOffset		+= 16;
+	   uint16_t asuFlags	= getBits (d, bitOffset, 16);
+	   bitOffset		+= 16;
+	   (void)		  getBits (d, bitOffset,  5); // Rfa
+	   uint8_t nrClusters	= getBits (d, bitOffset + 5, 3);
+	   bitOffset		+= 8;
+
+	   for (int i = 0; i < nrClusters; i ++) {
+	      fibConfig::FIG18_cluster aC;
+	      uint8_t clusterId = getBits (d, bitOffset + 8 * i, 8);
+	      if (clusterId == 0)
+	         continue;
+	      bool inTable = false;
+	      for (auto &ACe : localBase -> announcement_table) {
+	         if ((ACe. SId == SId) && (clusterId == ACe. clusterId)) {
+	            inTable = true;
+	            break;
+	         }
+	      }
+	      if (!inTable) {
+	         aC. SId = SId;
+	         aC. asuFlags = asuFlags;
+	         aC. clusterId = clusterId;
+	         localBase -> announcement_table. push_back (aC);
+	      }
+	   }
+	   bitOffset	+= nrClusters * 8;
+	}
+}
+
+//
+void	fibDecoder::FIG0Extension19 (uint8_t *d) {
+int16_t	Length		= getBits_5 (d, 3);	// in Bytes
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+int16_t	used		= 2;			// in Bytes
+int16_t	bitOffset	= used * 8;
+fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+
+	(void)OE_bit; (void)PD_bit;
+	while (bitOffset < Length * 8) {
+	   uint8_t clusterId	= getBits (d, bitOffset, 8);
+	   bitOffset += 8;
+	   uint16_t AswFlags	= getBits (d, bitOffset, 16);
+	   bitOffset		+= 16;
+	   uint8_t newFlag	= getBits (d, bitOffset, 1);
+	   bitOffset		+= 1;
+	   uint8_t Rfa		= getBits (d, bitOffset, 1);
+	   (void)Rfa;
+	   bitOffset		+= 1;
+	   uint8_t subChId	= getBits (d, bitOffset, 6);
+	   bitOffset		+= 6;
+	   for (auto &ac : localBase -> announcement_table) {
+	      if ((ac. clusterId == clusterId) && newFlag)
+	         handle_announcement (ac. SId,
+	                               ac. asuFlags & AswFlags, subChId);
 	   }
 	}
-	return out;
+	return;
+}
+
+//	Frequency information (FI) 8.1.8
+void	fibDecoder::FIG0Extension21 (uint8_t *d) {
+int16_t	used		= 2;		// offset in bytes
+int16_t	Length		= getBits_5 (d, 3);
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+
+	while (used < Length) 
+	   used = HandleFIG0Extension21 (d, CN_bit, OE_bit, PD_bit, used);
+}
+
+int16_t	fibDecoder::HandleFIG0Extension21 (uint8_t	*d,
+	                                   uint8_t	CN_bit,
+	                                   uint8_t	OE_bit,
+	                                   uint8_t	PD_bit,
+	                                   int16_t	offset) {
+int16_t	l_offset	= offset * 8;
+int16_t	l	= getBits_5 (d, l_offset + 11);
+int16_t		upperLimit	= l_offset + 16 + l * 8;
+int16_t		base		= l_offset + 16;
+
+	(void)CN_bit; (void)OE_bit, (void)PD_bit;
+	if (OE_bit == 1)	// this ios not for use
+	   return upperLimit / 8;
+
+	bool newData = false;
+	while (base < upperLimit) {
+	   uint16_t idField	= getBits (d, base, 16);
+	   uint8_t  RandM	= getBits_4 (d, base + 16);
+	   uint8_t  continuity	= getBits_1 (d, base + 20);
+	   (void)continuity;
+	   uint8_t  length	= getBits_3 (d, base + 21);
+	   if (RandM == 0x08) {
+	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
+	      int32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
+	      for (auto &serv : theEnsemble -> primaries) {
+	         if ((serv. SId == idField) && (serv. fmFrequency == -1)) {
+	            serv. fmFrequency = fmFrequency;
+	            newData = true;
+	            break;
+	         }
+	      }
+	   }
+	   base += 24 + length * 8;
+	}
+	if (newData)
+	   emit setFreqList ();
+	         
+	return upperLimit / 8;
 }
 //
-//
-QString	fibDecoder::serviceName		(int index) { 
-int sid	= currentConfig -> serviceComps [index]. SId;
-int serviceIndex	= find_service (sid);
-	if (serviceIndex != -1)
-	   return ensemble -> services [serviceIndex]. serviceLabel;
-	return "";
-}
+//	FIG 1 - Cover the different possible labels, section 5.2
+void	fibDecoder::process_FIG1 (uint8_t *d) {
+uint8_t	extension	= getBits_3 (d, 8 + 5); 
 
-QString	fibDecoder::serviceIdOf		(int index) { 
-	return QString::number (currentConfig -> serviceComps [index]. SId, 16);
-}
+	switch (extension) {
+	   case 0:		// ensemble name
+	      FIG1Extension0 (d);
+	      break;
 
-QString	fibDecoder::subChannelOf 	(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-	if (subChannel < 0)
-	   return "";
-	return QString::number (subChannel);
-}
+	   case 1:		// service name
+	      FIG1Extension1 (d);
+	      break;
 
-QString	fibDecoder::startAddressOf 	(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-int startAddr	= currentConfig -> subChannels [subChannel]. startAddr;
-	return QString::number (startAddr);
-}
+	   case 2:		// obsolete
+	      break;
 
-QString	fibDecoder::lengthOf 		(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-int Length	= currentConfig -> subChannels [subChannel]. Length;
-	return QString::number (Length);
-}
+	   case 3:		// obsolete
+	      break;
 
-QString	fibDecoder::protLevelOf 	(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-bool	shortForm	= currentConfig -> subChannels [subChannel]. shortForm;
-int	protLevel	= currentConfig -> subChannels [subChannel]. protLevel;
-	return getProtectionLevel (shortForm, protLevel);
-}
+	   case 4:		// Service Component Label
+	      FIG1Extension4 (d);
+	      break;
 
-QString	fibDecoder::codeRateOf 		(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-bool	shortForm	= currentConfig -> subChannels [subChannel]. shortForm;
-int	protLevel	= currentConfig -> subChannels [subChannel]. protLevel;
-	return getCodeRate (shortForm, protLevel);
-}
+	   case 5:		// Data service label
+	      FIG1Extension5 (d);
+	      break;
 
-QString	fibDecoder::bitRateOf		(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-int bitRate	= currentConfig -> subChannels [subChannel]. bitRate;
-	return QString::number (bitRate);
-}
+	   case 6:		// XPAD label - 8.1.14.4
+	      break;
 
-QString	fibDecoder::dabType 		(int index) {
-int dabType	= currentConfig -> serviceComps [index]. ASCTy;
-	return dabType == 077 ? "DAB+" : "DAB";
-}
-
-QString	fibDecoder::languageOf 		(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-int language	= currentConfig -> subChannels [subChannel]. language;
-
-	return  getLanguage (language);
-}
-
-QString	fibDecoder::programTypeOf	(int index) {
-int sid = currentConfig -> serviceComps [index]. SId;
-int serviceIndex        = find_service (sid);
-int programType		=  ensemble -> services [serviceIndex]. programType;
-
-	return getProgramType (programType);
-}
-
-QString	fibDecoder::fmFreqOf		(int index) {
-int sid	= currentConfig -> serviceComps [index]. SId;
-int serviceIndex	= find_service (sid);
-	return ensemble -> services [serviceIndex]. fmFrequency != -1 ?
-	      QString::number (ensemble -> services [serviceIndex].fmFrequency):
-	                                      "    ";
-}
-
-QString	fibDecoder::appTypeOf		(int index) {
-int appType	=   currentConfig -> serviceComps [index]. appType;
-	return QString::number (appType);
-}
-
-QString	fibDecoder::FEC_scheme		(int index) {
-int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
-int FEC_scheme	= currentConfig -> subChannels [subChannel]. FEC_scheme;
-	return QString::number (FEC_scheme);
-}
-
-QString	fibDecoder::packetAddress	(int index) {
-int packetAddr = currentConfig -> serviceComps [index]. packetAddress;
-	return QString::number (packetAddr);
-}
-
-QString	fibDecoder::DSCTy		(int index) {
-int DSCTy	= currentConfig -> serviceComps [index]. DSCTy;
-	switch (DSCTy) {
-	   case 60 :
-	      return  "mot data";
-	   case 59:
-	      return "ip data";
-	   case 44 :
-	      return  "journaline data";
-	   case  5 :
-	      return  "tdc data";
 	   default:
-	      return "unknow data";
+	      ;
+	}
+}
+//	Name of the ensemble
+//
+void	fibDecoder::FIG1Extension0 (uint8_t *d) {
+uint8_t		charSet, extension;
+uint8_t		Rfu;
+uint32_t	EId	= 0;
+int16_t		offset	= 0;
+char		label [17];
+
+//      from byte 1 we deduce:
+	charSet         = getBits_4 (d, 8);
+	Rfu             = getBits_1 (d, 8 + 4);
+	extension       = getBits_3 (d, 8 + 5);
+	label [16]      = 0x00;
+	(void)Rfu;
+	(void)extension;
+
+	EId	= getBits (d, 16, 16);
+	offset	= 32;
+	if ((charSet <= 16)) { // EBU Latin based repertoire
+	   for (int i = 0; i < 16; i ++) {
+	      label [i] = getBits_8 (d, offset + 8 * i);
+	   }
+	   const QString name = toQStringUsingCharset (
+	                                        (const char *) label,
+	                                        (CharacterSet) charSet);
+	   QString realName = name;
+	   for (int i = name. length (); i < 16; i ++)
+	      realName. append (' ');
+	   if (!theEnsemble -> namePresent) {
+	      theEnsemble ->  ensembleName	= realName;
+	      theEnsemble ->  EId	= EId;
+	      theEnsemble ->  namePresent	= true;
+	      name_of_ensemble (EId, name);
+	   }
+	   theEnsemble	-> isSynced = true;
 	}
 }
 //
-QString	fibDecoder::audioHeader		() {
-	return	QString ("serviceName") + ";" +
-	        "serviceId" + ";" +
-		"subChannel" + ";" +
-		"start address (CU's)" + ";" +
-		"length (CU's)" + ";" +
-		"protection" + ";" +
-		"code rate" + ";" +
-	        "bitrate" + ";" +
-		"dab type" + ";" +
-		"language" + ";" +
-		"program type" + ";" +
-		"fm freq" + ";";
+//	Name of service
+void	fibDecoder::FIG1Extension1 (uint8_t *d) {
+int16_t		offset	= 32;
+char		label [17];
+
+//      from byte 1 we deduce:
+	uint8_t charSet		= getBits_4 (d, 8);
+	uint8_t Rfu             = getBits_1 (d, 8 + 4);
+	uint8_t extension       = getBits_3 (d, 8 + 5);
+	uint32_t SId		= getBits (d, 16, 16);
+	label [16]      = 0x00;
+	(void)Rfu; (void)extension;
+	if (charSet >= 16) 	// does not seem right
+	   return;
+	
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (SId == serv. SId) 
+	      return;
+	}
+
+	for (int i = 0; i < 16; i ++) 
+	   label [i] = getBits_8 (d, offset + 8 * i);
+	QString dataName = toQStringUsingCharset (
+	                                  (const char *) label,
+	                                  (CharacterSet) charSet);
+	for (int i = dataName. length (); i < 16; i ++)
+	   dataName. append (' ');
+	QString shortName;		
+	for (int i = 0; i < 16; i ++) 
+	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
+	      shortName. append (dataName. at (i));
+
+	ensemble::service prim;
+	prim. programType	= 0;
+	prim. name 	= dataName;
+	prim. shortName = shortName;
+	prim. SId	= SId;
+	prim. fmFrequency	= -1;
+	theEnsemble -> primaries. push_back (prim);
+	add_to_ensemble (dataName, SId, -1);
 }
 
-QString	fibDecoder::audioData		(int index) {
-	return QString (serviceName (index)) + ";" +
-	       serviceIdOf (index) + ";" +
-	       subChannelOf (index) + ";" +
-	       startAddressOf (index) + ";" +
-	       lengthOf (index) + ";" +
-	       protLevelOf (index) + ";" +
-	       codeRateOf (index) + ";" +
-	       bitRateOf (index) + ";" +
-	       dabType (index) + ";" +
-	       languageOf (index) + ";" +
-	       programTypeOf (index) + ";" +
-	       fmFreqOf (index) + ";";
+//	service component label - 32 bits 8.1.14.3
+void	fibDecoder::FIG1Extension4 (uint8_t *d) {
+char		label [17];
+int		bitOffset = 16;
+uint32_t	SId;
+
+//      from byte 1 we deduce:
+	uint8_t charSet		= getBits_4 (d, 8);
+	uint8_t Rfu		= getBits_1 (d, 8 + 4);
+	uint8_t extension	= getBits_3 (d, 8 + 5);
+	uint8_t PD_flag		= getBits_1 (d, bitOffset);
+	uint8_t SCIds		= getBits   (d, bitOffset + 4, 4);
+	if (PD_flag) {
+	   SId	= getLBits  (d, bitOffset + 8, 32);
+	   bitOffset += 32 + 8;
+	}
+	else {
+	   SId = getLBits (d, bitOffset + 8, 16);
+	   bitOffset += 16 + 8;
+	}
+//
+//	just a check if we already have the servicename
+	for (auto &serv : theEnsemble -> secondaries)
+	   if (serv. SId == SId)
+	      return;
+	for (auto &serv :theEnsemble -> primaries)
+	   if (serv. SId == SId)
+	     return;
+
+	label [16]      = 0x00;
+	(void)Rfu;
+	(void)extension;
+	if (charSet >= 16) 	// does not seem right
+	   return;
+
+	for (int i = 0; i < 16; i ++) 
+	   label [i] = getBits_8 (d, bitOffset + 8 * i);
+	QString dataName = toQStringUsingCharset (
+	                                  (const char *) label,
+	                                  (CharacterSet) charSet);
+	QString shortName;		
+	for (int i = 0; i < 16; i ++) 
+	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
+	      shortName. append (dataName. at (i));
+
+	ensemble::service prim;
+	prim. name = dataName;
+	prim. shortName	= shortName;
+	prim. SId	= SId;
+	prim. SCIds	= SCIds;
+	theEnsemble -> secondaries. push_back (prim);
+	add_to_ensemble (dataName, SId, -1);
+}
+
+//	Data service label - 32 bits 8.1.14.2
+void	fibDecoder::FIG1Extension5 (uint8_t *d) {
+char		label [17];
+
+uint32_t	SId	= getLBits (d, 16, 32);
+int16_t		bitOffset	= 48;
+
+//      from byte 1 we deduce:
+	uint8_t charSet	= getBits_4 (d, 8);
+	uint8_t Rfu	= getBits_1 (d, 8 + 4);
+	uint8_t	extension	= getBits_3 (d, 8 + 5);
+	label [16]      = 0x00;
+	(void)Rfu; (void)extension;
+
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (SId == serv. SId) 
+	      return;
+	}
+
+	if (charSet > 16) 
+	   return;	// something wrong
+
+	for (int i = 0; i < 16; i ++) {
+	   label [i] = getBits_8 (d, bitOffset + 8 * i);
+	}
+	QString dataName = toQStringUsingCharset (
+	                                  (const char *) label,
+	                                  (CharacterSet) charSet);
+	QString shortName;		
+	for (int i = 0; i < 16; i ++) 
+	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
+	      shortName. append (dataName. at (i));
+
+
+	ensemble::service prim;
+	prim. programType	= 0;
+	prim. name 	= dataName;
+	prim. shortName = shortName;
+	prim. SId	= SId;
+	theEnsemble -> primaries. push_back (prim);
+	add_to_ensemble (dataName, SId, -1);
+}
+
+void	fibDecoder::connect_channel () {
+	fibLocker. lock();
+	currentConfig	-> reset ();
+	nextConfig	-> reset ();
+	theEnsemble	-> reset ();
+	connect (this, &fibDecoder::add_to_ensemble,
+	         myRadioInterface, &RadioInterface::add_to_ensemble);
+	fibLocker. unlock();
+}
+
+void	fibDecoder::disconnect_channel () {
+	fibLocker. lock ();
+	disconnect (this, &fibDecoder::add_to_ensemble,
+	            myRadioInterface, &RadioInterface::add_to_ensemble);
+	currentConfig	-> reset ();
+	nextConfig	-> reset ();
+	theEnsemble	-> reset ();
+	fibLocker. unlock();
+}
+
+bool	fibDecoder::syncReached() {
+	return  theEnsemble -> isSynced;
+}
+
+uint32_t fibDecoder::get_SId	(int index) {
+	return currentConfig -> SC_C_table [index]. SId;
+}
+
+uint8_t	fibDecoder::serviceType (int index) {
+	fprintf (stderr, "type vor index %d %d\n",
+	                index, currentConfig -> SC_C_table [index]. TMid);
+	return currentConfig -> SC_C_table [index]. TMid;
+}
+
+void	fibDecoder::audioData	(int index, audiodata &ad) {
+fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. SId == comp. SId) {
+	      ad. serviceName	= serv. name;
+	      ad. shortName	= serv. shortName;
+	      ad. SId		= serv. SId;
+	      ad. programType	= serv. programType;
+	      ad. fmFrequency	= serv. fmFrequency;
+	      break;
+	   }
+	}
+	int subChId	= currentConfig -> subChannelOf (index);
+	ad. subchId	= subChId;
+	int subChannel_index =
+	               currentConfig -> findIndex_subChannel_table (subChId);
+	if (subChannel_index < 0)
+	   return;
+	fibConfig::subChannel &channel =
+	               currentConfig -> subChannel_table [subChannel_index];
+	ad. startAddr	= channel. startAddr;	
+	ad. shortForm	= channel. shortForm;
+	ad. protLevel	= channel. protLevel;
+	ad. length	= channel. Length;
+	ad. bitRate	= channel. bitRate;
+	ad. ASCTy	= currentConfig -> dabTypeOf (index);
+	ad. language	= currentConfig -> languageOf (index);
+	ad. defined	= true;
+}
+
+void	fibDecoder::packetData		(int index, packetdata &pd) {
+fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. SId == comp. SId) {
+	      pd. serviceName	= serv. name;
+	      pd. shortName	= serv. shortName;
+	      pd. SId		= serv. SId;
+	      break;
+	   }
+	}
+	int subChId	= currentConfig -> subChannelOf (index);
+	pd. subchId	= subChId;
+	int subChannel_index =
+	               currentConfig -> findIndex_subChannel_table (subChId);
+	if (subChannel_index < 0)
+	   return;
+	fibConfig::subChannel &channel =
+	               currentConfig -> subChannel_table [subChannel_index];
+	pd. startAddr	= channel. startAddr;	
+	pd. shortForm	= channel. shortForm;
+	pd. protLevel	= channel. protLevel;
+	pd. length	= channel. Length;
+	pd. bitRate	= channel. bitRate;
+	pd. FEC_scheme	= currentConfig -> FEC_schemeOf (index);
+	pd. appType	= currentConfig -> appTypeOf (index);
+	pd. DGflag	= currentConfig -> DG_flag (index);
+	pd. DSCTy	= currentConfig -> DSCTy (index);
+	pd. packetAddress = currentConfig -> packetAddressOf (index);
+	pd. defined = true;
+}
+
+int	fibDecoder::get_nrComps			(uint32_t SId) {
+	for (auto &SId_element : currentConfig -> SId_table)
+	   if (SId_element. SId == SId)
+	      return SId_element. comps. size ();
+	return 0;
 }
 //
-QString	fibDecoder::packetHeader		() {
-	return	QString ("serviceName") + ";" +
-	        "serviceId" + ";" + 
-		"subChannel" + ";" +
-		"start address" + ";" +
-		"length" + ";" +
-		"protection" + ";" +
-		"code rate" + ";" +
-	        "appType" + ";" +
-	        "FEC_scheme" + ";" +
-	        "packetAddress" + ";" +
-	        "DSCTy" + ";";
+//	for primary services we return the index of the first
+//	component, the secondary services, the index of the
+//	component with the matching SCIds
+//	
+int	fibDecoder::get_serviceComp		(const QString &service) {
+//	first we check to see if the service is a primary one
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. name != service)
+	      continue;
+	   for (auto & SId_element: currentConfig -> SId_table) {
+	      if (SId_element. SId == serv. SId)
+	         return SId_element. comps [0];
+	   }
+	}
+	
+	for (auto &serv : theEnsemble -> secondaries) {
+	   if (serv. name != service)
+	      continue;
+	   return get_serviceComp_SCIds (serv. SId, serv. SCIds);
+	}
+	return -1;
 }
 
-QString	fibDecoder::packetData	(int index) {
-	return serviceName (index) + ";" +
-	       serviceIdOf (index) + ";" +
-	       subChannelOf (index) + ";" +
-	       startAddressOf (index) + ";" +
-	       lengthOf (index) + ";" +
-	       protLevelOf (index) + ";" +
-	       codeRateOf (index) + ";" +
-	       appTypeOf (index) + ";" +
-	       FEC_scheme (index) + ";" +
-	       packetAddress (index) + ";" +
-	       DSCTy (index) + ";";
-}
-//
-//	We terminate the sequences with a ";", so that is why the
-//	actual number is 1 smaller
-int	fibDecoder::scanWidth	() {
-QString s1	= audioHeader ();
-QString s2	= packetHeader ();
-QStringList l1 = s1. split (";");
-QStringList l2 = s2. split (";");
-	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
+int	fibDecoder::get_serviceComp		(uint32_t SId, int compnr) {
+	for (auto &SId_element : currentConfig -> SId_table) {
+	   if (SId_element. SId == SId) {
+	      return SId_element. comps [compnr];
+	   }
+	}
+	return -1;
 }
 
-uint32_t	fibDecoder::julianDate	() {
+int	fibDecoder::get_serviceComp_SCIds	(uint32_t SId, int SCIds) {
+	for (auto &SId_element : currentConfig -> SId_table) {
+	   if (SId_element. SId != SId)
+	      continue;
+	   for (int i = 0; i < (int) SId_element. comps. size (); i ++) {
+	      int index = SId_element. comps [i];
+	      if (currentConfig -> SCIdsOf   (index) == SCIds)
+	         return index;
+	   }
+	}
+	return -1;
+}
+
+bool	fibDecoder::isPrimary	(const QString &s) {
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (s == serv. name)
+	      return true;
+	}
+	return false;
+}
+	
+uint8_t	 fibDecoder:: get_ecc			() {
+	return theEnsemble -> eccByte;
+}
+
+int	fibDecoder::getFrequency	(const QString &s) {
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. name == s)
+	      return serv. fmFrequency;
+	}
+	return -1;
+}
+	   
+//	required for ETI generation
+int	fibDecoder::nrChannels	() {
+	return currentConfig -> subChannel_table. size ();
+}
+
+void	fibDecoder::get_channelInfo (channel_data *d, int n) {
+	d       -> in_use	= true;
+	d       -> id		= currentConfig -> subChannel_table [n]. subChId;
+	d       -> start_cu	= currentConfig -> subChannel_table [n]. startAddr;
+	d       -> protlev	= currentConfig -> subChannel_table [n]. protLevel; 
+	d       -> size		= currentConfig -> subChannel_table [n]. Length;
+	d       -> bitrate	= currentConfig -> subChannel_table [n]. bitRate;
+	d       -> uepFlag	= currentConfig -> subChannel_table [n]. shortForm;
+}
+
+int32_t	fibDecoder::get_CIFcount		() {
+	return CIFcount;
+}
+	
+void	fibDecoder::get_CIFcount		(int16_t &high, int16_t &low) {
+	high	= CIFcount_hi;
+	low	= CIFcount_lo;
+}
+
+uint32_t fibDecoder::julianDate		() {
 	return mjd;
 }
-//
-//	required for ETI generation
-void	fibDecoder::get_channelInfo (channel_data *d, int n) {
-	d       -> in_use	= currentConfig -> subChannels [n]. inUse;
-	d       -> id		= currentConfig -> subChannels [n]. SubChId;
-	d       -> start_cu	= currentConfig -> subChannels [n]. startAddr;
-	d       -> protlev	= currentConfig -> subChannels [n]. protLevel; 
-	d       -> size		= currentConfig -> subChannels [n]. Length;
-	d       -> bitrate	= currentConfig -> subChannels [n]. bitRate;
-	d       -> uepFlag	= currentConfig -> subChannels [n]. shortForm;
+
+
+QStringList	fibDecoder::basicPrint	() {
+fibPrinter thePrinter (currentConfig, theEnsemble);
+	return thePrinter. basicPrint ();
+}
+
+int	fibDecoder::scanWidth	() {
+fibPrinter thePrinter (currentConfig, theEnsemble);
+	return thePrinter. scanWidth ();
+}
+
+void	fibDecoder::handle_announcement (uint16_t SId, uint16_t flags,
+	                                                uint8_t subChId) {
+	(void)subChId;
+	for (auto &serv : currentConfig -> SId_table)
+	   if (serv. SId == SId) {
+	      if (serv. announcing != flags)
+	         emit announcement (SId, flags);
+	      serv. announcing = flags;
+	   }
+}
+
+uint16_t fibDecoder::get_announcing	(uint16_t SId) {
+	for (auto &serv : currentConfig -> SId_table)
+	   if (serv. SId == SId)
+	      return serv. announcing;
+	return 0;
 }
 

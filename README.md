@@ -5,10 +5,12 @@
 ![6.9](/res/read_me/front-picture.png?raw=true)
 
 --------------------------------------------------------------------------
-Moving towards Qt-DAB-6.9.1
+Moving towards Qt-DAB-6.9.2
 --------------------------------------------------------------------------
 
-Qt-DAB 6.9 and Qt-DAB 6.9.1 differ in the handling of SPI/EPG in Qt-DAB 6.9.1.
+Qt-DAB 6.9 and Qt-DAB 6.9.2 differ in the handling of SPI/EPG since Qt-DAB 6.9.1. The difference(s) between 6.9.1 and 6.9.2 are in the implementation
+of the (FIB) database. The version from up to 6.9.1 contained a few (design) errors.
+
 As the picture shows, program icons are extracted from the SPI data (obviously
 only when transmitted), and - again if an EPG service is part of the ensemble -
 timetables can be made visible.

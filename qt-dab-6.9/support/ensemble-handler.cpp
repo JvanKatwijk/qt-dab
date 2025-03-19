@@ -315,8 +315,8 @@ bool	isAudio (uint32_t v) {
 
 void	ensembleHandler::updateList	() {
 int currentRow	= 0;
-//bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
-//	                                        "audioServices_only", 1);
+bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
+	                                        "audioServices_only", 1);
 	clearTable ();
 	if (ensembleMode == SHOW_ENSEMBLE) {
 	   this -> setHorizontalHeaderLabels (

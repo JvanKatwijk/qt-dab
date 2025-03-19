@@ -58,7 +58,7 @@ uint16_t	rawContentType = 0;
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
 
 // Extract the content type
-	int b	= (segment [5] >> 1) & 0x3F;
+//	int b	= (segment [5] >> 1) & 0x3F;
 	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);

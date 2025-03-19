@@ -335,7 +335,7 @@ void	spyServer_client::connect_on () {
 
 void	spyServer_client::data_ready	() {
 int16_t buffer_16 [settings. batchSize * 2];
-static int fillP	= 0;
+//static int fillP	= 0;
 	while (connected && 
 	          (tmpBuffer. GetRingBufferReadAvailable () > 2 * settings. batchSize)) {
 	   uint32_t samps =	

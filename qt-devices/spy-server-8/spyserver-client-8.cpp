@@ -337,7 +337,7 @@ float convTable [] = {
 
 void	spyServer_client_8::data_ready	() {
 uint8_t buffer_8 [settings. batchSize * 2];
-static int fillP	= 0;
+//static int fillP	= 0;
 	while (connected && 
 	          (tmpBuffer. GetRingBufferReadAvailable () > 2 * settings. batchSize)) {
 	   uint32_t samps =	

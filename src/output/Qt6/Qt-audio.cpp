@@ -96,7 +96,7 @@ void	Qt_Audio::restart	() {
 	theIODevice. start ();
 	m_audioSink	-> setVolume	(linearVolume);
 	m_audioSink	-> start (&theIODevice);
-	QtAudio::Error err = m_audioSink -> error ();
+//	QtAudio::Error err = m_audioSink -> error ();
 //	fprintf (stderr, "Errorcode %d\n", (int)(err));
 }
 

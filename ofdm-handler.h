@@ -78,19 +78,20 @@ public:
 	void		set_tiiFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
-	QString		find_service		(uint32_t, int);
-	void		get_parameters		(const QString &,
-	                                         uint32_t *, int *);
-	std::vector<serviceId>	get_services	(int);
-        void		data_for_audioservice	(const QString &,
-	                                             audiodata &);
-        void		data_for_packetservice	(const QString &,
-	                                             packetdata &, int16_t);
+	int		get_serviceComp		(const QString &);
+	int		get_serviceComp		(uint32_t, int);
+	int		get_serviceComp_SCIds	(uint32_t SId, int SCIds);
+	bool		isPrimary		(const QString &);
+
+	uint16_t	get_announcing		(uint16_t);
+	uint32_t	get_SId			(int);
+	uint8_t		serviceType		(int);
+        void		audioData		(int, audiodata &);
+        void		packetData		(int, packetdata &);
 	int		get_nrComps		(uint32_t);
         uint8_t		get_ecc			();
-        int32_t		get_ensembleId		();
-	QString		get_ensembleName	();
 	uint32_t	julianDate		();
+	int		getFrequency		(const QString &);
 	QStringList	basicPrint		();
 	int		scanWidth		();
 	void		start_ficDump		(FILE *);

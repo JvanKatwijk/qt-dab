@@ -111,13 +111,13 @@ public:
 	QString		channel;
 	QString		serviceName;
 	uint32_t	SId;
-	int		SCIds;
 	int		subChId;
 	bool		valid;
 	bool		is_audio;
-//	bool		announcement_going;
 	FILE		*fd;
 	FILE		*frameDumper;
+	bool		runsBackground;
+	int		fmFrequency;
 	dabService () {
 	   channel	= "";
 	   serviceName	= "";
@@ -125,7 +125,7 @@ public:
 	   frameDumper	= nullptr;
 	   valid	= false;
 	   is_audio	= false;
-//	   announcement_going	= false;
+	   fmFrequency	= -1;
 	}
 	~dabService	() {}
 };
@@ -159,7 +159,7 @@ public:
 	int		serviceCount;	// from FIC or nothing
 	int		nrServices;	// measured
 	QString		ensembleName;
-	std::vector<dabService> backgroundServices;
+	std::vector<dabService> runningTasks;
 	dabService	currentService;
 	uint32_t	Eid;
 	bool		has_ecc;
@@ -168,7 +168,7 @@ public:
 	QString		countryName;
 	int		nrTransmitters;
 	int		snr;
-	bool		announcement_going;
+	bool		announcing;
 	std::vector<transmitterDesc>	transmitters;
 	position	targetPos;
 	QDate		theDate;
@@ -198,6 +198,7 @@ public:
 	subId		= -1;
 	transmitterName	= "";
 	snr		= 0;
+	announcing	= false;
 	height		= -1;
 	distance	= -1;
 	audioActive	= false;
@@ -324,7 +325,7 @@ private:
 	QTimer			presetTimer;
 	QLabel			*serviceIcon;
 	bool			get_serviceLogo		(QPixmap &,
-	                                                 const audiodata &);
+	                                                 uint32_t);
 	void			write_servicePictures	(uint32_t);
 	void			read_pictureMappings	(uint32_t);
 	QTimer			muteTimer;
@@ -362,7 +363,7 @@ private:
 	QString			checkDir		(const QString &);
 //
 	void			startAudioservice	(audiodata &);
-	void			startPacketservice	(const QString &);
+	void			startPacketservice	(packetdata &);
 	void			startAudiodumping	();
 	void			stopAudiodumping	();
 	void			scheduledAudioDumping	();
@@ -379,7 +380,7 @@ private:
 	                                                 const QString fistService = "");
 	void			stopChannel		();
 	void			stopService		(dabService &);
-	void			startService		(dabService &);
+	void			startService		(dabService &, int);
 	void			start_epgService	(packetdata &);
 	void			localSelect		(const QString &c,
 	                                                 const QString &s);
@@ -431,8 +432,8 @@ private:
 	bool			process_ensemble (const QDomElement &, uint32_t);
 	int			process_service	(const QDomElement &);
 	QString			extractName	(const QString &);
-	void			announcement_exit	();
-
+	void			announcement_start	(uint16_t, uint16_t);	
+	void			announcement_stop	();
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();
@@ -440,6 +441,7 @@ signals:
 
 public slots:
 	void			lto_ecc			(int, int);
+	void			setFreqList		();
 	void			report_startDir		(int);
 	void			report_completeDir	();
 	void			channelSignal		(const QString &);
@@ -468,8 +470,7 @@ public slots:
 	                                                 int, bool, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
-	void			changeinConfiguration	(const QStringList &,
-	                                                 const QStringList &);
+	void			changeinConfiguration	();
 	void			newAudio		(int, int, bool, bool);
 
 	void			localSelect_SS		(const QString &,
@@ -484,9 +485,7 @@ public slots:
 	void			clockTime		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			start_announcement	(const QString &,
-	                                                      int, int);
-	void			stop_announcement	(const QString &, int);
+	void			announcement		(uint16_t, uint16_t);
 	void			newFrame		(int);
 
 	void			epgTimer_timeOut	();
@@ -560,7 +559,7 @@ private slots:
 	void			updateTimeDisplay	();
 	void			channel_timeOut		();
 
-	void			start_background_task	(const QString &);
+	void			handle_backgroundTask	(const QString &);
 
 	void			setPresetService	();
 	void			muteButton_timeOut	();

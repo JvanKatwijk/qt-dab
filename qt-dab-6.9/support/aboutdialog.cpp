@@ -96,7 +96,7 @@
 #ifdef HAVE_SPYSERVER_16
                            "<li>SpyServer interface<a href=\https://airspy.com/download/\">spyserver</a></li>"
 #endif
-                           "<li> .. and has support for reading (and writing) raw files, xml files and wav files.</li>");
+                           "<li>  and has support for reading (and writing) files in different formats.</li>");
 
 ui->disclaimer->setText("<p>Copyright © 2016-2024 Jan van Katwijk</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "

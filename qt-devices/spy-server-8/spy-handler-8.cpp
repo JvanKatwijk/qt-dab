@@ -76,7 +76,7 @@ static std::vector<uint8_t> buffer (64 * 1024);
 	while (running. load ()) {
 	   readHeader	(theHeader);
 	   if (theHeader. SequenceNumber != volgNummer + 1) {
-	      fprintf (stderr, "%d %d\n",
+	      fprintf (stderr, "%d %ld\n",
 	                  (int)theHeader. SequenceNumber, volgNummer);
 //	      fprintf (stderr, "Buffer space = %d\n",
 //	               inBuffer. GetRingBufferReadAvailable ());

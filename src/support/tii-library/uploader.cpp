@@ -40,7 +40,7 @@ QString	uploader::fileName	(const QString  &ensembleName,
 	                         uint32_t Eid,
 	                         const QString &channel) {
 QString theTime	= QDateTime::currentDateTime (). toString ();
-
+	(void)ensembleName;
 	QString res =  "Qt-DAB-" + QString::number (Eid, 16) + "-" +
 	                channel + "-" + theTime + ".csv";
 	for (int i = 0; i < res. length (); i ++)

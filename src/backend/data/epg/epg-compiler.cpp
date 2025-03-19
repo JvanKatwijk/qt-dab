@@ -1547,7 +1547,7 @@ QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 	if ((v [index] != 0x80) && (v [index] != 0x81))
 	   return QString ("ik weet het niet");
 
-	int	corrector	= 0;
+//	int	corrector	= 0;
 	int endPoint = setLength (v, index);
 	uint32_t mjd	= getBits (v, 8 * index + 1, 17);
 	uint16_t dateOut [4];
@@ -1556,9 +1556,9 @@ QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 	int16_t M	= dateOut [1];
 	int16_t D	= dateOut [2];
 //	we need to know whether it is today or not
-	int ltoFlag	= getBit (v, 8 * index + 19);
+//	int ltoFlag	= getBit (v, 8 * index + 19);
 	int utcFlag	= getBit (v, 8 * index + 20);
-	int ltoBase	= utcFlag == 1 ? 48 : 32;
+//	int ltoBase	= utcFlag == 1 ? 48 : 32;
 	int hours	= getBits (v, 8 * index + 21, 5);
 	int minutes	= getBits (v, 8 * index + 26, 6);
 	QDate date (Y, M, D);
@@ -1659,7 +1659,7 @@ void	epgCompiler::process_token (const std::vector<uint8_t> &v,
 	                                             int  &index) {
 uint8_t tag	= v [index];
 int endPoint	= setLength (v, index);
-int	length	= endPoint - index;
+//int	length	= endPoint - index;
 	QByteArray text;
 	for (int i = index; i < endPoint; i ++) {
 	   text. push_back (v [i]);
@@ -1727,6 +1727,7 @@ int endPoint	= setLength (v, index);
 QString	epgCompiler::fetchString (const std::vector<uint8_t> &v,
 	                                  int &index, int endPoint, bool p) {
 QString res = "";
+	(void)p;
 	if (v [index] != 1) {	// should not happen, but it does
 	   QByteArray text;
 	   for (int i = index; i < endPoint; i ++) {

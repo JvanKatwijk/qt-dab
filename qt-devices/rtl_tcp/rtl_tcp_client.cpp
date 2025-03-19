@@ -217,6 +217,7 @@ void	rtl_tcp_client::sendRate (int32_t rate) {
 }
 
 void	rtl_tcp_client::setAgcMode (int agc) {
+	(void)agc;
 	bool b	= agcSelector -> isChecked ();
 	sendCommand (0x03, b);
 }

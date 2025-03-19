@@ -49,7 +49,6 @@
 #include	"mapport.h"
 #include	"techdata.h"
 #include	"aboutdialog.h"
-//#include	"db-loader.h"
 #include	"cacheElement.h"
 #include	"distances.h"
 #include	"position-handler.h"
@@ -293,11 +292,11 @@ QString h;
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 #ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("9.1") + " with RTLSDR-V3";
+	SystemVersion	= QString ("9.2") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("9.1") + " with RTLSDR-V4";
+	SystemVersion	= QString ("9.2") + " with RTLSDR-V4";
 #else
-	SystemVersion	= QString ("9.1");
+	SystemVersion	= QString ("9.2");
 #endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion;
@@ -311,7 +310,7 @@ QString h;
 	         this, &RadioInterface::localSelect);
 	connect (the_ensembleHandler,
 	               &ensembleHandler::start_background_task,
-	         this, &RadioInterface::start_background_task);
+	         this, &RadioInterface::handle_backgroundTask);
 	   
 	techWindow_p	= new techData (this, dabSettings_p, &theTechData);
 	
@@ -722,8 +721,6 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 	if (!running. load())
 	   return;
 
-	if (subChId < 0)
-	   return;
 	serviceId ed;
 	ed. name	= serviceName;
 	ed. SId		= SId;
@@ -733,17 +730,6 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 	if (the_ensembleHandler -> alreadyIn (ed))
 	   return;
 
-	packetdata pd;
-	audiodata ad;
-	theOFDMHandler -> data_for_audioservice (serviceName, ad);
-	theOFDMHandler -> data_for_packetservice (serviceName, pd, 0);
-	if (!ad. defined && !pd. defined)
-	   return;
-	if (pd. defined && (pd. appType == -256))
-	   return;
-	if (pd. defined && (pd. appType != 7) && 
-	             configHandler_p -> get_audioServices_only ())
-	   return;
 	bool added	= the_ensembleHandler -> add_to_ensemble (ed);
 	if (added) {
 	   channel. nrServices ++;
@@ -758,7 +744,6 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 
 	if ((channel. serviceCount == channel. nrServices)&& 
 	                     !theSCANHandler. active ()) {
-//	   presetTimer. stop ();
 	   setPresetService ();
 	}
 }
@@ -898,8 +883,7 @@ QString realName;
 	      std::vector<uint8_t> epgData (result. begin(), result. end());
 	      QDomDocument epgDocument;
 	      uint8_t docType = epgVertaler. process_epg (epgDocument,
-	                                                      epgData,
-	                                                  channel. lto);
+	                                                  epgData, channel.lto);
 	      if (docType == noType)		// should not happen
 	         break;
 
@@ -1070,9 +1054,6 @@ const char *type;
 	if (backgroundFlag || dirs)
 	   return;
 
-	if (channel. currentService. valid &&  
-	                     channel. announcement_going)
-	   return;
 	QPixmap p;
 	if (p. loadFromData (data, type))
 	   displaySlide (p);
@@ -1134,93 +1115,41 @@ uint8_t *localBuffer = dynVec (uint8_t, length + 8);
   *
   *	Response to a signal, so we presume that the signaling body exists
   *	signal may be pending though
+  *	we copy the tasklist and stop all services,
+  *	then, using the data in the copy we (try to) start
+  *	all services again (including the secondary services);
   */
-void	RadioInterface::changeinConfiguration (const QStringList &notInOld,
-	                                       const QStringList &notInNew) {
-	if (!running. load () || theOFDMHandler == nullptr)
-	   return;
-	
-	dabService s;
-	if (channel. currentService. valid) {
-	   s = channel. currentService;
-	   s. serviceName	= channel. currentService. serviceName;
-	   s. SId	= channel. currentService. SId;
-	   s. SCIds	= channel. currentService. SCIds;
-	   s. channel	= channel. channelName;
-	   s. valid	= true;
-	}
+void	RadioInterface::changeinConfiguration () {
+std::vector<dabService> taskCopy = channel. runningTasks;
 
-	stopService	(channel. currentService);
-	stopScanning ();
-//
-//	we stop all secondary services as well, but we maintain theer
-//	description, file descriptors remain of course
-//
+	if (theSCANHandler. active ()) {
+	   stopScanning ();
+	   return;
+	}
+	channelTimer. stop ();
+	stopMuting	();
+	setSoundLabel (false);
 	if (channel. etiActive)
 	   theOFDMHandler -> reset_etiGenerator ();
-	for (uint16_t i = 0; i < channel. backgroundServices. size (); i ++)
-	   theOFDMHandler -> stopService (channel. backgroundServices. at (i). subChId,
-	                                   BACK_GROUND);
-
-//	we rebuild the services list from the fib and
-//	then we (try to) restart the service
-	int	serviceOrder	= configHandler_p -> get_serviceOrder ();
-	std::vector<serviceId> serviceList	=
-	          theOFDMHandler -> get_services (serviceOrder);
-	the_ensembleHandler -> reset	();
-	channel. nrServices = 0;
-	for (auto &serv: serviceList) {
-	   serv . channel = channel. channelName;
-	   if (the_ensembleHandler -> add_to_ensemble (serv))
-	      channel. nrServices  ++;
-	}
-
-//	Of course, the (sub)service may have disappeared
-	if (s. valid) {
-	   QString ss = theOFDMHandler -> find_service (s. SId, s. SCIds);
-	   if (ss != "") {
-	      startService (s);
-	      return;
-	   }
-//
-	show_changeLabel (notInOld, notInNew);
-//	The service is gone, it may be the subservice of another one
-	   s. SCIds = 0;
-	   s. serviceName =
-	               theOFDMHandler -> find_service (s. SId, 0);
-	   if (s. serviceName != "") {
-	      startService (s);
-	   }
-	}
-//
-//	we also have to restart all background services,
-	for (uint16_t i = 0; i < channel. backgroundServices. size (); i ++) {
-	   QString ss = theOFDMHandler -> find_service (s. SId, s. SCIds);
-	   if (ss == "") {	// it is gone, close the file if any
-	      if (channel. backgroundServices. at (i). fd != nullptr)
-	         fclose (channel. backgroundServices. at (i). fd);
-	      channel. backgroundServices. erase
-	                        (channel. backgroundServices. begin () + i);
-	   }
-	   else {	// (re)start the service
-	      audiodata ad;
-	      theOFDMHandler -> data_for_audioservice (ss, ad);
-	      if (ad. defined) {
-	         FILE *f = channel. backgroundServices. at (i). fd;
-	         theOFDMHandler -> 
-	                   setAudioChannel (ad, &theAudioBuffer, f, BACK_GROUND);	       
-	         channel. backgroundServices. at (i). subChId  = ad. subchId;
-	      }
-	      else {
-	         packetdata pd;
-	         theOFDMHandler -> data_for_packetservice (ss, pd, 0);
-	         theOFDMHandler -> 
-	                   setDataChannel (pd, &theDataBuffer, BACK_GROUND);	       
-	         channel. backgroundServices. at (i). subChId     = pd. subchId;
-	      }
-	   }
+	my_timeTable. clear ();
+	my_timeTable. hide ();
+//	and stop the service
+	for (auto &serv :channel. runningTasks) 
+	   stopService (serv);
+	fprintf (stderr, "All services are halted, now start rebuilding\n");
+	techWindow_p	-> cleanUp ();
+	for (auto &serv : taskCopy) {
+	   int index = theOFDMHandler -> get_serviceComp (serv. serviceName);
+	   if (index < 0)
+	// hier moet de ensemlelist nog worden aangepast
+	      continue;
+	   if (serv. runsBackground)
+	      handle_backgroundTask (serv. serviceName);
+	   else
+	      startService (serv, index);
 	}
 }
+
 //
 //	In order to not overload with an enormous amount of
 //	signals, we trigger this function at most 10 times a second
@@ -1966,37 +1895,43 @@ QString pictureName	= QString (":res/radio-pictures/announcement%1.png").
 	return p;
 }
 
-void	RadioInterface::start_announcement (const QString &name,
-	                                    int subChId, int announcementId ) {
+void	RadioInterface::announcement	(uint16_t SId, uint16_t flags) {
 	if (!running. load ())
 	   return;
 
-	(void)subChId;
-	if (name == serviceLabel -> text ()) {
-	   if (!channel. announcement_going) {
-	      serviceLabel	-> setStyleSheet ("QLabel {color : red}");
-	      channel. announcement_going = true;
-	      QPixmap p = fetchAnnouncement (announcementId);
-	      displaySlide (p);
-	   }
+	if (channel. currentService. SId == SId) {
+	   if (flags != 0)
+	      announcement_start (SId, flags);
+	   else
+	      announcement_stop ();
 	}
 }
 
-void	RadioInterface::stop_announcement (const QString &name, int subChId) {
-	(void)subChId;
-	if (!running. load ())
-	   return;
-	
-	if (name == channel. currentService. serviceName) 
-	   announcement_exit ();
+static inline
+int     bits (uint s) {
+uint32_t startBit = 01;
+        for (int i = 0; i < 15; i ++) {
+           if ((s & startBit) != 0)
+              return i;
+           startBit <<= 1;
+        }
+        return 0;
 }
 
-void	RadioInterface::announcement_exit () {
-	if (channel. announcement_going) {
-	   channel. announcement_going = false;
-	   serviceLabel	-> setStyleSheet (labelStyle);
-	   show_pauzeSlide ();
-	}
+//	do not mess with the order
+void	RadioInterface::announcement_start (uint16_t SId,  uint16_t flags) {
+	(void)SId;
+	serviceLabel	-> setStyleSheet ("QLabel {color : red}");
+	int pictureId	= bits (flags);
+	QPixmap p = fetchAnnouncement (pictureId);
+	displaySlide (p);
+	channel. announcing = true;
+}
+
+void	RadioInterface::announcement_stop () {
+	serviceLabel	-> setStyleSheet (labelStyle);
+	channel. announcing = false;
+	show_pauzeSlide ();
 }
 //
 //	selection, either direct, from presets,  from scanlist or schedule
@@ -2061,9 +1996,8 @@ QString serviceName	= service;
 	
 	if (theOFDMHandler == nullptr)	// should not happen
 	   return;
-
-	channelTimer. stop ();
-	presetTimer. stop  ();
+//
+//	timers are stopped in the "stopService" function
 	stopService (channel. currentService);
 
 	for (int i = service. size (); i < 16; i ++)
@@ -2074,19 +2008,19 @@ QString serviceName	= service;
 	   QString channelName = theChannel;
 	   store (dabSettings_p, "channelPresets", channelName, theService);
 	}
+
 	if (theChannel == channel. channelName) {
 	   channel. currentService. valid = false;
 	   dabService s;
-	   theOFDMHandler -> get_parameters (service, &s. SId, &s. SCIds);
-	   if (s. SId == 0) {
-	      dynamicLabel -> setText ("cannot run " +
-	                       s. serviceName + " yet");
+	   int index  = theOFDMHandler -> get_serviceComp (service);
+	   if (index < 0) {
+	      dynamicLabel -> setText ("cannot run " + s. serviceName + " yet");
 	      return;
 	   }
 	   s. serviceName = service;
-	   startService (s);
+	   startService (s, index);
 	}
-	else {
+	else {		// selecting a service in a different channel
 	   stopChannel ();
 	   int k           = channelSelector -> findText (theChannel);
 	   if (k != -1) {
@@ -2116,37 +2050,43 @@ void	RadioInterface::stopService	(dabService &s) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
 	}
-	if (channel. announcement_going)
-	   announcement_exit ();
-//	my_timeTable. hide ();
-	my_timeTable. clear ();
-//	stop "dumpers"
-	if (channel. currentService. frameDumper != nullptr) {
-	   stopFramedumping ();
-	   channel. currentService. frameDumper = nullptr;
-	}
+	announcement_stop ();
+	if (s. is_audio) {
+	   soundOut_p -> suspend ();
 	stopAudiodumping ();
+	stopFramedumping ();
+	my_timeTable. clear ();
 
 //	and clean up the technical widget
 	techWindow_p	-> cleanUp ();
+//	and stop the service and erase it from the task list
+	theOFDMHandler -> stopService (s. subChId, FORE_GROUND);
+	for (int i = 0; i < (int)channel. runningTasks. size (); i ++) {
+	   if (channel. runningTasks [i]. serviceName == s. serviceName)
+	      if (channel. runningTasks [i]. runsBackground == false) {
+	      channel. runningTasks. erase
+	                        (channel. runningTasks. begin () + i);
+	   }
+	}
 
 //	stop "secondary services" - if any - as well
-	if (s. valid) {
-	   theOFDMHandler -> stopService (s. subChId, FORE_GROUND);
-	   if (s. is_audio) {
-	      soundOut_p -> suspend ();
-	      for (int i = 0; i < 5; i ++) {
-	         packetdata pd;
-	         theOFDMHandler -> data_for_packetservice (s. serviceName,
-	                                                        pd, i);
-	         if (pd. defined) {
-	            theOFDMHandler -> stopService (pd. subchId, FORE_GROUND);
-	            break;
-	         }
+//	Note: they are not recorded on the tasklist
+        int nrComps  =
+             theOFDMHandler -> get_nrComps (s. SId);
+	for (int i = 1; i < nrComps; i ++) {
+	   int index =
+             theOFDMHandler -> get_serviceComp (s. SId, i);
+           if ((index < 0) ||
+               (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
+                 continue;
+	      packetdata pd;
+	      theOFDMHandler -> packetData (index, pd);
+	      if (pd. defined) {
+	         theOFDMHandler -> stopService (pd. subchId, BACK_GROUND);
 	      }
 	   }
-	   s. valid = false;
 	}
+	s. valid = false;
 	show_pauzeSlide ();
 	cleanScreen	();
 }
@@ -2159,106 +2099,120 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 	s. channel     = pd. channel;
 	s. serviceName = pd. serviceName;
 	s. SId         = pd. SId;
-	s. SCIds	     = pd. SCIds;
 	s. subChId     = pd. subchId;
 	s. fd          = nullptr;
-	channel. backgroundServices. push_back (s);
+	s. runsBackground = true;
+	channel. runningTasks. push_back (s);
 	epgLabel	-> show ();
 }
-
 //
-void	RadioInterface::startService (dabService &s) {
+void	RadioInterface::startService (dabService &s, int index) {
 QString serviceName	= s. serviceName;
-//
-//	if the servcie is already running as background task,
-//	ignore this call
-	for (auto bs : channel. backgroundServices) {
-	   if (bs. serviceName == serviceName) {
+	s. SId		= theOFDMHandler -> get_SId (index);
+//	if the service is already running, ignore the call
+	for (auto serv : channel. runningTasks) {
+	   if (serv. serviceName == serviceName) {
 	      return;
 	   }
 	}
-	packetdata pd;
-	theOFDMHandler -> data_for_packetservice (s. serviceName, pd, 0);
-	if (pd. defined && pd. appType == 7) {
-	   start_epgService (pd);
-	   return;
-	}
-	   
-	channel. currentService		= s;
+	presetTimer.	stop	();
+	channel. currentService			= s;
+	channel. currentService. valid		= false;
 	channel. currentService. frameDumper	= nullptr;
-	channel. currentService. valid	= false;
-	theLogger. log (logger::LOG_NEW_SERVICE,
-	                             channelSelector -> currentText (),
-	                                         serviceName);
-
 //	mark the selected service in the service list
 //	and display the servicename on the serviceLabel
 	the_ensembleHandler -> reportStart (serviceName);
-	audiodata ad;
-	theOFDMHandler -> data_for_audioservice (serviceName, ad);
-	if (ad. defined) {
-	   channel. currentService. valid	= true;
-	   channel. currentService. is_audio	= true;
-	   channel. currentService. subChId	= ad. subchId;
-	   techWindow_p -> show_timetableButton (true);
-	   startAudioservice (ad);
-	   serviceLabel	-> setText (serviceName);
-	   QPixmap p;
-	   bool	hasIcon = false;
-	   if (get_serviceLogo (p, ad)) {
-	      hasIcon  = true;
-	      iconLabel -> setPixmap (p. scaled (55, 55, Qt::KeepAspectRatio));
-	   }
-	   else
-	      iconLabel -> setText (ad. shortName);
-
-	   if (my_timeTable. isVisible ()) {
-	      my_timeTable. setUp (channel. theDate, channel. Eid,
-	                           channel. currentService. SId,
-	                           channel. currentService. serviceName); 
-	      if (hasIcon)
-	         my_timeTable. addLogo (p);
-	   }
-	   techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
-
-#ifdef	HAVE_PLUTO_RXTX
-	   if (streamerOut_p != nullptr)
-	      streamerOut_p -> addRds (std::string (serviceName. toUtf8 (). data ()));
-#endif
-	}
-	else {
-	   serviceLabel	-> setText (serviceName);
-	   packetdata pd;
-	   theOFDMHandler -> data_for_packetservice (serviceName, pd, 0);
-	   if (pd. defined) {
+	if (theOFDMHandler -> serviceType (index) == AUDIO_SERVICE) {
+	   audiodata ad;
+	   theOFDMHandler -> audioData (index, ad);
+	   ad. channel = channel. channelName;
+	   if (ad. defined) {
 	      channel. currentService. valid	= true;
-	      channel. currentService. is_audio	= false;
-	      channel. currentService. subChId	= pd. subchId;
-	      startPacketservice (serviceName);
+	      channel. currentService. is_audio	= true;
+	      channel. currentService. subChId	= ad. subchId;
+	      techWindow_p -> show_timetableButton (true);
+	      startAudioservice (ad);
+//	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
+	      serviceLabel	-> setText (serviceName);
+	      QPixmap p;
+	      bool hasIcon = false;
+	      if (get_serviceLogo (p, channel. currentService. SId)) {
+	         hasIcon = true;
+	         iconLabel ->
+	            setPixmap (p. scaled (55, 55, Qt::KeepAspectRatio));
+	      }
+	      else
+	         iconLabel -> setText (ad. shortName);
+	      if (my_timeTable. isVisible ()) {
+	          my_timeTable. setUp (channel. theDate, channel. Eid,
+	                               channel. currentService. SId,
+	                               serviceName);
+	         if (hasIcon)
+	            my_timeTable. addLogo (p);
+	      }
+
+	      techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
 	   }
-	   else {
+	}
+	else 
+	if (theOFDMHandler -> serviceType (index) == PACKET_SERVICE) {
+	   packetdata pd;
+	   theOFDMHandler -> packetData (index, pd);
+	   pd. channel = channel. channelName;
+	   if (!pd. defined) {
 	      QMessageBox::warning (this, tr ("Warning"),
  	                           tr ("insufficient data for this program\n"));
 	      QString s = "";
 	      store (dabSettings_p, DAB_GENERAL, PRESET_NAME, s);
+	      return;;
 	   }
+	   if (pd. appType == 7) {
+	      start_epgService (pd);
+	      return;
+	   }
+	   serviceLabel	-> setText (pd. serviceName);
+	   channel. currentService. valid	= true;
+	   channel. currentService. is_audio	= false;
+	   channel. currentService. subChId	= pd. subchId;
+	   startPacketservice (pd);
 	}
 }
 //
 void	RadioInterface::startAudioservice (audiodata &ad) {
-//	channel. currentService. valid	= true;
 	(void)theOFDMHandler -> setAudioChannel (ad, &theAudioBuffer,
 	                                            nullptr, FORE_GROUND);
+	uint16_t flags	= theOFDMHandler	-> get_announcing (ad. SId);
+	if (flags != 0)
+	   announcement_start (ad. SId, flags);
+	else	
+	   announcement_stop ();
+	dabService s;
+	s. channel	= ad. channel;
+	s. serviceName	= ad. serviceName;
+	s. SId		= ad. SId;
+	s. subChId	= ad. subchId;
+	s. fd		= nullptr;
+	s. runsBackground	= false;
+	channel. runningTasks. push_back (s);
 //
 //	check the other components for this service (if any)
-	int nrComps	=
-	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
-	for (int i = 1; i < nrComps; i ++) {
-	   packetdata pd;
-	   theOFDMHandler -> data_for_packetservice (ad. serviceName, pd, i);
-	   if (pd. defined) {
-	      theOFDMHandler -> setDataChannel (pd, &theDataBuffer, FORE_GROUND);
-	      break;
+	if (theOFDMHandler -> isPrimary (ad. serviceName)) {
+	   int nrComps	=
+	        theOFDMHandler -> get_nrComps (ad. SId);
+	   for (int i = 1; i < nrComps; i ++) {
+	      int index =
+	           theOFDMHandler -> get_serviceComp (ad. SId, i);
+	      fprintf (stderr, "Component %d has index %d\n",
+	                                                i, index);
+	      if ((index < 0) ||
+	             (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
+	         continue;
+	      packetdata pd;
+	      theOFDMHandler -> packetData (index, pd);
+	      if (pd. defined) {
+	         theOFDMHandler -> setDataChannel (pd, &theDataBuffer,
+	                                                BACK_GROUND);
+	      }
 	   }
 	}
 //	activate sound
@@ -2272,38 +2226,34 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	techWindow_p	-> show_serviceData 	(&ad);
 }
 
-void	RadioInterface::startPacketservice (const QString &s) {
-packetdata pd;
-
-	theOFDMHandler -> data_for_packetservice (s, pd, 0);
-	if ((!pd. defined) ||
-	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
+void	RadioInterface::startPacketservice (packetdata &pd) {
+	if ((pd.  DSCTy == 0) || (pd. bitRate == 0)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("still insufficient data for this service\n"));
 	   return;
 	}
 
-	if (!theOFDMHandler -> setDataChannel (pd,
-	                                         &theDataBuffer, FORE_GROUND)) {
+	if (!theOFDMHandler -> setDataChannel (pd, &theDataBuffer,
+	                                              FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
 	   return;
 	}
 
-	int nrComps	= 
-	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
-	if (nrComps > 1)
+//	int nrComps	= 
+//	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
+//	if (nrComps > 1)
 //	   fprintf (stderr,  "%s has %d components\b",
 //	                     channel. currentService. serviceName. toLatin1 (). data (), nrComps);
-	for (int i = 1; i < nrComps; i ++) {
-	   packetdata lpd;
-	   theOFDMHandler -> data_for_packetservice (pd. serviceName, lpd, i);
-	   if (lpd. defined) {
-	      theOFDMHandler -> setDataChannel (lpd, &theDataBuffer,
-	                                                  FORE_GROUND);
-	      break;
-	   }
-	}
+//	for (int i = 1; i < nrComps; i ++) {
+//	   packetdata lpd;
+//	   theOFDMHandler -> data_for_packetservice (pd. serviceName, lpd, i);
+//	   if (lpd. defined) {
+//	      theOFDMHandler -> setDataChannel (lpd, &theDataBuffer,
+//	                                                  FORE_GROUND);
+//	      break;
+//	   }
+//	}
 
 	switch (pd. DSCTy) {
 	   default:
@@ -2390,14 +2340,13 @@ void	RadioInterface::setPresetService () {
 	for (int i = presetName. length (); i < 16; i ++)
 	   presetName. push_back (' ');
 	dabService s = nextService;
-	theOFDMHandler	-> get_parameters (presetName, &s. SId, &s. SCIds);
-	if (s. SId == 0) {
+	int index = theOFDMHandler	-> get_serviceComp (presetName);
+	if (index < 0) {
 	   dynamicLabel -> setText (QString ("not all data for ") +
-	                            s. serviceName +
-	                             " on board");
+	                            s. serviceName + " on board");
 	   return;
 	}
-	startService (s);
+	startService (s, index);
 }
 //
 //	Channel basics
@@ -2441,8 +2390,7 @@ int	tunedFrequency	=
 	      channelSelector		-> setCurrentIndex (k);
 	      channel. channelName	= realChannel;
 	      channel. tunedFrequency	= freq;
-	      theNewDisplay. showFrequency (realChannel,
-	                                    channel. tunedFrequency);
+	      theNewDisplay. showFrequency (realChannel, freq);
 	   }
 	   else {
 	      channel. channelName	= "";
@@ -2451,9 +2399,9 @@ int	tunedFrequency	=
 	}
 
 	distanceLabel		-> setText ("");
-	theDXDisplay. cleanUp ();
-	theNewDisplay. cleanTII	();
-	theNewDisplay. showTransmitters (channel. transmitters);
+	theDXDisplay. 		cleanUp ();
+	theNewDisplay. 		cleanTII	();
+	theNewDisplay. 		showTransmitters (channel. transmitters);
 	if (mapHandler != nullptr)
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
 
@@ -2482,7 +2430,6 @@ int	tunedFrequency	=
 	      nextService. channel	= theChannel;
 	      nextService. serviceName	= firstService;
 	      nextService. SId		= 0;
-	      nextService. SCIds	= 0;
 	      presetTimer. setSingleShot (true);
 	      presetTimer. setInterval	(switchDelay);
 	      presetTimer. start	(switchDelay);
@@ -2506,10 +2453,11 @@ void	RadioInterface::stopChannel	() {
 	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
-	if (my_timeTable. isVisible ()) {
+	if (my_timeTable. isVisible ()) { 
 	   my_timeTable. clear ();
 	   my_timeTable. hide ();
 	}
+
 	inputDevice_p		-> stopReader ();
 	disconnect (ensembleId, &clickablelabel::clicked,
 	            this, &RadioInterface::handle_contentButton);
@@ -2520,17 +2468,16 @@ void	RadioInterface::stopChannel	() {
 	transmitter_country	-> setText	("");
 	theNewDisplay. setSilent	();
 //
-//	first, stop services in fore and background
-	if (channel. currentService. valid)
-	   stopService (channel. currentService);
-//	soundOut_p	-> suspend ();
-
-	for (auto s : channel. backgroundServices) {
-	   theOFDMHandler -> stopService (s. subChId, BACK_GROUND);
-	   if (s. fd != nullptr)
-	      fclose (s. fd);
+	for (auto serv : channel. runningTasks) {
+	   if (!serv. runsBackground) 
+	      theOFDMHandler -> stopService (serv. subChId, FORE_GROUND);
+	   else
+	      theOFDMHandler -> stopService (serv. subChId, BACK_GROUND);
+	
+	   if (serv. fd != nullptr)
+	      fclose (serv. fd);
 	}
-	channel. backgroundServices. clear ();
+	channel. runningTasks. resize (0);
 
 	if (contentTable_p != nullptr) {
 	   contentTable_p -> hide ();
@@ -3329,8 +3276,13 @@ void	RadioInterface::epgTimer_timeOut	() {
 	   return;
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
 	for (auto serv : epgList) {
+	   int index = theOFDMHandler -> get_serviceComp (serv);
+	   if (index < 0)
+	      continue;
+	   if (theOFDMHandler -> serviceType (index) != PACKET_SERVICE)
+	      continue;
 	   packetdata pd;
-	   theOFDMHandler -> data_for_packetservice (serv, pd, 0);
+	   theOFDMHandler -> packetData (index, pd);
 	   if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
 	      continue;
@@ -3353,16 +3305,12 @@ void	RadioInterface::handle_timeTable	() {
 	                     !channel. currentService. is_audio)
 	   return;
 
-	audiodata ad;
-	theOFDMHandler -> data_for_audioservice (channel.
-	                             currentService. serviceName, ad);
 	my_timeTable. setUp (channel. theDate, channel. Eid,
 	                     channel. currentService. SId,
-	                     channel. currentService. serviceName); 
+	                     channel. currentService. serviceName);
 	QPixmap p;
-	if (ad. defined) 	// should be
-	   if (get_serviceLogo (p, ad)) // this may be
-	      my_timeTable. addLogo (p);
+	if (get_serviceLogo (p, channel. currentService. SId)) // this may be
+	   my_timeTable. addLogo (p);
 }
 
 //----------------------------------------------------------------------
@@ -3612,6 +3560,8 @@ void	RadioInterface::http_terminate	() {
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {
 int w   = 320;
 int h   = 3 * w / 4;
+	if (channel. announcing)
+	   return;
 	pauzeTimer. stop ();
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	if ((p. width () != 320) || (p. height () != 200))
@@ -4167,22 +4117,25 @@ void	RadioInterface::handle_aboutLabel   () {
 //
 //	Starting a background task is by clicking with the right mouse button
 //	on the servicename, swrvice is known to be in current ensemble
-void	RadioInterface::start_background_task (const QString &service) {
+void	RadioInterface::handle_backgroundTask (const QString &service) {
 audiodata ad;
-
-	theOFDMHandler -> data_for_audioservice (service, ad);
+	int index = theOFDMHandler -> get_serviceComp (service);
+	if (index < 0)
+	   return;
+	if (theOFDMHandler -> serviceType (index) != AUDIO_SERVICE)
+	   return;
+	theOFDMHandler -> audioData (index, ad);
 	if ((!ad. defined) || (ad. ASCTy != 077))
 	   return;
 
 	for (uint16_t i = 0;
-	     i < channel. backgroundServices. size (); i ++) {
-	   if (channel. backgroundServices. at (i). serviceName ==
-	                                                      service) {
+	     i < channel. runningTasks. size (); i ++) {
+	   if (channel. runningTasks. at (i). serviceName == service) {
 	      theOFDMHandler -> stopService (ad. subchId, BACK_GROUND);
-	      if (channel. backgroundServices. at (i). fd != nullptr)
-	         fclose (channel. backgroundServices. at (i). fd);
-	      channel. backgroundServices. erase
-	                        (channel. backgroundServices. begin () + i);
+	      if (channel. runningTasks. at (i). fd != nullptr)
+	         fclose (channel. runningTasks. at (i). fd);
+	      channel. runningTasks. erase
+	                        (channel. runningTasks. begin () + i);
 	      return;
 	   }
 	}
@@ -4199,10 +4152,11 @@ audiodata ad;
 	s. channel	= ad. channel;
 	s. serviceName	= ad. serviceName;
 	s. SId		= ad. SId;
-	s. SCIds	= ad. SCIds;
+//	s. SCIds	= ad. SCIds;
 	s. subChId	= ad. subchId;
 	s. fd		= f;
-	channel. backgroundServices. push_back (s);
+	s. runsBackground	= true;
+	channel. runningTasks. push_back (s);
 }
 
 void	RadioInterface::handle_labelColor () {
@@ -4520,10 +4474,12 @@ multimediaElement *bb = (multimediaElement *)b;
 }
 //
 //	we want the largest pictures, so we sort the list 
-bool	RadioInterface::get_serviceLogo (QPixmap &p, const audiodata &ad) {
+bool	RadioInterface::get_serviceLogo (QPixmap &p, uint32_t SId) {
 bool res = false;
 	for (auto &ss : channel. servicePictures) {
-	   if (ss. serviceId != (uint32_t)ad. SId)
+	   fprintf (stderr, "comparing %X with %X\n",
+	                          ss. serviceId, SId);
+	   if (ss. serviceId != SId)
 	      continue;
 	   QVector<multimediaElement> options;
 	   for (auto &ff: ss. elements)
@@ -4567,8 +4523,21 @@ void	RadioInterface::report_completeDir () {
 //	dynamicLabel	-> setText ("All EPG/SPI data is now in");
 }
 
-void	RadioInterface::lto_ecc	(int lto, int ecc) {
-	channel. ecc_byte = ecc;
+void    RadioInterface::lto_ecc (int lto, int ecc) {
+	channel. ecc_byte = ecc; 
 	channel. has_ecc = true;
-	channel. lto	= lto;
+	channel. lto    = lto;
 }
+
+void	RadioInterface::setFreqList	() {
+	if (channel. currentService. fmFrequency != -1)
+	   return;
+	if (techWindow_p -> isHidden ())
+	   return;
+	int fmFrequency = theOFDMHandler -> getFrequency (channel.
+	                                       currentService. serviceName);
+	if (fmFrequency == -1)
+	   return;
+	techWindow_p	-> updateFM (fmFrequency);
+}
+

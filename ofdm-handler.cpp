@@ -553,52 +553,63 @@ void	ofdmHandler::get_frameQuality	(int	*totalFrames,
 //	just convenience functions
 //	ficHandler abstracts channel data
 
-QString	ofdmHandler::find_service	(uint32_t SId, int SCIds) {
-	return theFicHandler. find_service (SId, SCIds);
+int	ofdmHandler::get_serviceComp	(const QString &s) {
+	return theFicHandler. get_serviceComp (s);
 }
 
-void	ofdmHandler::get_parameters	(const QString &s,
-	                                 uint32_t *p_SId, int*p_SCIds) {
-	theFicHandler. get_parameters (s, p_SId, p_SCIds);
+int	ofdmHandler::get_serviceComp	(uint32_t SId, int compnr) {
+	return theFicHandler. get_serviceComp (SId, compnr);
 }
 
-std::vector<serviceId>	ofdmHandler::get_services	(int n) {
-	return theFicHandler. get_services (n);
+int	ofdmHandler::get_serviceComp_SCIds	(uint32_t SId, int SCIds) {
+	return theFicHandler. get_serviceComp (SId, SCIds);
+}
+
+bool	ofdmHandler::isPrimary (const QString &s) {
+	return theFicHandler. isPrimary (s);
+}
+
+uint16_t ofdmHandler::get_announcing	(uint16_t SId) {
+	return theFicHandler. get_announcing (SId);
 }
 
 int	ofdmHandler::get_nrComps	(uint32_t SId) {
 	return theFicHandler. get_nrComps (SId);
 }
 
-void	ofdmHandler::data_for_audioservice	(const QString &s,
-	                                         audiodata &d) {
-	theFicHandler. data_for_audioservice (s, d);
+uint32_t ofdmHandler::get_SId			(int index) {
+	return theFicHandler. get_SId (index);
 }
 
-void	ofdmHandler::data_for_packetservice	(const QString &s,
-	                                         packetdata &pd,
-	                                         int16_t compnr) {
-	theFicHandler. data_for_packetservice (s, pd, compnr);
+uint8_t	ofdmHandler::serviceType		(int index) {
+	return theFicHandler. serviceType (index);
+}
+
+void	ofdmHandler::audioData			(int index, audiodata &d) {
+	theFicHandler. audioData (index, d);
+}
+
+void	ofdmHandler::packetData			(int index, packetdata &pd) {
+	theFicHandler. packetData (index, pd);
 }
 
 uint8_t	ofdmHandler::get_ecc 		() {
 	return theFicHandler. get_ecc();
 }
 
-int32_t ofdmHandler::get_ensembleId	() {
-	return theFicHandler. get_ensembleId();
-}
-
-QString ofdmHandler::get_ensembleName	() {
-	return theFicHandler. get_ensembleName();
+int	ofdmHandler::getFrequency	(const QString &s) {
+	return theFicHandler. getFrequency (s);
 }
 
 QStringList ofdmHandler::basicPrint	() {
+QStringList res;
 	return theFicHandler. basicPrint ();
+	return res;;
 }
 
 int	ofdmHandler::scanWidth		() {
 	return theFicHandler. scanWidth ();
+	return 0;
 }
 //
 void	ofdmHandler::stopService (int subChId, int flag) {

@@ -156,9 +156,11 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/tii-detector-1.h \
 	   ../includes/ofdm/tii-detector-2.h \
 	   ../includes/ofdm/fic-handler.h \
+	   ../includes/ofdm/ensemble.h  \
+	   ../includes/ofdm/fib-config.h  \
+	   ../includes/ofdm/fib-printer.h  \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
-	   ../includes/ofdm/dab-config.h \
 	   ../includes/ofdm/estimator.h \
 	   ../includes/protection/protTables.h \
 	   ../includes/protection/protection.h \
@@ -302,6 +304,9 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/tii-detector-1.cpp \
 	   ../src/ofdm/tii-detector-2.cpp \
 	   ../src/ofdm/fic-handler.cpp \
+	   ../src/ofdm/ensemble.cpp  \
+	   ../src/ofdm/fib-config.cpp  \
+	   ../src/ofdm/fib-printer.cpp  \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
 	   ../src/protection/protTables.cpp \
@@ -394,10 +399,10 @@ SOURCES += ./main.cpp \
 unix {
 DESTDIR		= ./linux-bin
 	equals (QT_MAJOR_VERSION, 5) {
-	TARGET		= qt-dab-qt5-6.9.1
+	TARGET		= qt-dab-qt5-6.9.2
 	}
 	else {
-	TARGET		= qt-dab-qt6-6.9.1
+	TARGET		= qt-dab-qt6-6.9.2
 	}
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
@@ -521,17 +526,17 @@ isEmpty(GITHASHSTRING) {
 #
 #for win32, comment out the lines above
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3.1
+	   TARGET		= qt-dab32-qt5-6.9V3.2
 	}
 	else {
-	   TARGET		= qt-dab32-qt6-6.9V3.1
+	   TARGET		= qt-dab32-qt6-6.9V3.2
 	}
 	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9.1
+#	   TARGET		= qt-dab32-qt5-6.9.2
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9.1
+#	   TARGET		= qt-dab32-qt6-6.9.2
 #	}
 #	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2

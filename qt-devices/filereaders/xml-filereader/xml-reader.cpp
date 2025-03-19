@@ -108,7 +108,7 @@ int	startPoint	= filePointer;
 	nextStop = currentTime ();
 	for (int blocks = 0; blocks < fd -> nrBlocks; blocks ++) {
 	   samplesToRead	= compute_nrSamples (file, blocks);
-	   fprintf (stderr, "samples to read %d\n", samplesToRead);
+	   fprintf (stderr, "samples to read %ld\n", samplesToRead);
 	   samplesRead		= 0;
 	   do {
 	      while ((samplesRead <= samplesToRead) && running. load ()) {
@@ -167,7 +167,7 @@ uint64_t	samplesToRead	= 0;
 	else	// typeofUnit = "sample"
 	   samplesToRead = nrElements;
 
-	fprintf (stderr, "%d samples have to be read, order is %s\n",
+	fprintf (stderr, "%ld samples have to be read, order is %s\n",
 	                 samplesToRead, fd -> iqOrder. toLatin1 (). data ());
 	return samplesToRead;
 }

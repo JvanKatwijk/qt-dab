@@ -78,7 +78,7 @@ uint16_t i;
 	switch (charset) {
 	   case UnicodeUcs2:
 	      for (int i = 0; i < size / 2; i ++) {
-	         uint16_t xx = buffer [2 * i + 1] & 0xFF;
+//	         uint16_t xx = buffer [2 * i + 1] & 0xFF;
 	         s += QChar (buffer [2 * i + 1]);
 	      }
 //	         for (uint16_t j = 10;

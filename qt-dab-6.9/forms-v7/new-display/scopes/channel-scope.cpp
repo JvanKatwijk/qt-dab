@@ -133,7 +133,7 @@ auto *ampVals	= dynVec (floatQwt, displaySize);
 
 void	channelScope::rightMouseClick	(const QPointF &point) {
 QColor	color;
-	
+	(void)point;
 	color	= QColorDialog::getColor (displayColor,
 	                                  nullptr, "displayColor");
 	if (!color. isValid ())

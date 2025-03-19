@@ -198,7 +198,7 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	      }
 	   }
 	   Minor	= 0;
-	   my_ficHandler -> get_CIFcount  (&CIFCount_hi, &CIFCount_lo);
+	   my_ficHandler -> get_CIFcount  (CIFCount_hi, CIFCount_lo);
 	}
 //	
 //	adding the MSC blocks. Blocks 5 .. 76 are "transformed"

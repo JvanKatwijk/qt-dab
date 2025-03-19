@@ -190,6 +190,10 @@ void	techData::show_timetableButton	(bool b) {
 	   timeTable_button	-> setEnabled (false);
 }
 
+void	techData::updateFM		(int fmFrequency) {
+	show_fm		(fmFrequency);
+}
+
 void	techData::show_frameDumpButton	(bool b) {
 	if (b)
 	   framedumpButton	-> show ();

@@ -40,7 +40,7 @@ void	xmlDescriptor::printDescriptor	() {
 	fprintf (stderr, "nrBlocks	= %d (%d)\n",
 	                              nrBlocks,  (int)(blockList. size ()));
 	for (int i = 0; i < (int)blockList. size (); i ++)
-	   fprintf (stderr, ">>>   %d %d %s %d %s\n",
+	   fprintf (stderr, ">>>   %d %ld %s %d %s\n",
 	                   blockList. at (i). blockNumber,
 	                   blockList. at (i). nrElements,
 	                   blockList. at (i). typeofUnit. toLatin1 (). data (),

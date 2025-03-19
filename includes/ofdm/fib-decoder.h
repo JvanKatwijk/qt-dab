@@ -29,12 +29,10 @@
 #include	<QByteArray>
 #include	"msc-handler.h"
 #include	<QMutex>
-#include	"dab-config.h"
 
 class	RadioInterface;
-class	ensembleDescriptor;
-class	dabConfig;
-class	Cluster;
+class	ensemble;
+class	fibConfig;
 
 class	fibDecoder: public QObject {
 Q_OBJECT
@@ -47,20 +45,23 @@ public:
 	void		disconnect_channel	();
 	bool		syncReached		();
 
-	void		data_for_audioservice	(const QString &, audiodata &);
-	void		data_for_packetservice	(const QString &,
-	                                          packetdata &, int16_t);
+	uint16_t	get_announcing		(uint16_t);
+	uint32_t	get_SId			(int);
+	uint8_t		serviceType		(int);
+	int		get_serviceComp		(const QString &);
+	int		get_serviceComp		(uint32_t, int);
+	int		get_serviceComp_SCIds	(uint32_t, int);
+	bool		isPrimary		(const QString &);
+	void		audioData		(int, audiodata &);
+	void		packetData		(int, packetdata &);
 	int		get_nrComps		(uint32_t);
-	std::vector<serviceId>	get_services	(int);
 	QString		find_service		(uint32_t, int);
-	void		get_parameters		(const QString &,
-	                                           uint32_t *, int *);
+	int		nrChannels		();
         uint8_t		get_ecc			();
-	int32_t		get_ensembleId		();
-	QString		get_ensembleName	();
+	int		getFrequency		(const QString &);
 	void		get_channelInfo		(channel_data *, int);
 	int32_t		get_CIFcount		();	
-	void		get_CIFcount		(int16_t *, int16_t *);
+	void		get_CIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	QStringList	basicPrint 		();
 	int		scanWidth		();
@@ -70,9 +71,9 @@ private:
 	std::vector<serviceId> insert (std::vector<serviceId> &l,
                                           serviceId n, int order);
 	RadioInterface	*myRadioInterface;
-	dabConfig	*currentConfig;
-	dabConfig	*nextConfig;
-	ensembleDescriptor	*ensemble;
+	fibConfig	*currentConfig;
+	fibConfig	*nextConfig;
+	ensemble	*theEnsemble;
 	void		process_FIG0		(uint8_t *);
 	void		process_FIG1		(uint8_t *);
 	void		FIG0Extension0		(uint8_t *);
@@ -133,69 +134,26 @@ private:
 	void		FIG1Extension5		(uint8_t *);
 	void		FIG1Extension6		(uint8_t *);
 
-	int		find_service		(const QString &);
-	int		find_service		(uint32_t);
-	void		cleanupServiceList	();
-	void		createService		(const QString &name,
-	                                         const QString &shortName,
-	                                         uint32_t SId, int SCIds);
-
-	int		findServiceComponent	(dabConfig *, int16_t);
-	int		findComponent		(dabConfig *db,
-	                                         uint32_t SId,
-                                                 int16_t subChId);
-	int		findServiceComponent	(dabConfig *,
-	                                         uint32_t, uint8_t);
-        void            bind_audioService	(dabConfig *,
-	                                         int8_t,
-                                                 uint32_t, int16_t,
-                                                 int16_t, int16_t, int16_t);
-	void		bind_packetService	(dabConfig *,
-                                                 int8_t,
-                                                 uint32_t, int16_t,
-                                                 int16_t, int16_t, int16_t);
-	QString		announcements		(uint16_t);
-	void		setCluster		(dabConfig *, 
-	                                         int, int16_t, uint16_t);
-	Cluster		*getCluster		(dabConfig *, int16_t);
 	int32_t		dateTime [8];
 	QMutex		fibLocker;
 	int		CIFcount;
 	int16_t		CIFcount_hi;
 	int16_t		CIFcount_lo;
 	uint32_t	mjd;			// julianDate
-	QString		serviceName		(int index);
-	QString		serviceIdOf		(int index);
-	QString		subChannelOf		(int index);
-	QString		startAddressOf		(int index);
-	QString		lengthOf 		(int index);
-	QString		protLevelOf		(int index);
-	QString		codeRateOf 		(int index);
-	QString		bitRateOf 		(int index);
-	QString		dabType 		(int index);
-	QString		languageOf 		(int index);
-	QString		programTypeOf		(int index);
-	QString		fmFreqOf		(int index);
-	QString		appTypeOf		(int index);
-	QString		FEC_scheme		(int index);
-	QString		packetAddress		(int index);
-	QString		DSCTy			(int index);
-//
-	QString		audioHeader		();
-	QString		packetHeader		();
-	QString		audioData		(int index);
-	QString		packetData		(int index);
+
+	void		handle_announcement	(uint16_t SId,
+	                                         uint16_t flags,
+	                                         uint8_t SubChId);
 signals:
 	void		add_to_ensemble		(const QString &, int, int);
 	void		name_of_ensemble	(int, const QString &);
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);
-	void		changeinConfiguration	(const QStringList &,
-	                                         const QStringList &);
-	void		start_announcement	(const QString &, int, int);
-	void		stop_announcement	(const QString &, int);
+	void		changeinConfiguration	();
+	void		announcement		(uint16_t, uint16_t);
 	void		nrServices		(int);
 	void		lto_ecc			(int, int);
+	void		setFreqList		();
 };
 
 

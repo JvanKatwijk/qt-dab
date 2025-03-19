@@ -51,6 +51,7 @@ public:
 	void	is_DAB_plus		(bool);
 	void	hide_missedLabel	();
 	void	show_timetableButton	(bool);
+	void	updateFM		(int);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;

@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C) 2014 .. 2023
@@ -119,14 +120,13 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"6.5"
+#define	CURRENT_VERSION	"6.9"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
 
-#define		AUDIO_SERVICE	0101
-#define		PACKET_SERVICE	0102
-#define		UNKNOWN_SERVICE	0100
+#define		AUDIO_SERVICE	0
+#define		PACKET_SERVICE	3
 
 #define		INPUT_RATE	2048000
 #define		BANDWIDTH	1536000
