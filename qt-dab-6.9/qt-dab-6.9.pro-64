@@ -153,9 +153,11 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/tii-detector-1.h \
 	   ../includes/ofdm/tii-detector-2.h \
 	   ../includes/ofdm/fic-handler.h \
+	   ../includes/ofdm/ensemble.h  \
+           ../includes/ofdm/fib-config.h  \
+           ../includes/ofdm/fib-printer.h  \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
-	   ../includes/ofdm/dab-config.h \
 	   ../includes/ofdm/estimator.h \
 	   ../includes/protection/protTables.h \
 	   ../includes/protection/protection.h \
@@ -297,6 +299,9 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/tii-detector-1.cpp \
 	   ../src/ofdm/tii-detector-2.cpp \
 	   ../src/ofdm/fic-handler.cpp \
+	   ../src/ofdm/ensemble.cpp  \
+           ../src/ofdm/fib-config.cpp  \
+           ../src/ofdm/fib-printer.cpp  \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
 	   ../src/protection/protTables.cpp \

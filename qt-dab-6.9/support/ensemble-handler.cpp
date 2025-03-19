@@ -313,6 +313,19 @@ bool	isAudio (uint32_t v) {
 	return (v & 0xFF0000) == 0;
 }
 
+static
+bool	seems_epg (const QString &name) {
+	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
+               name. contains (" EPG   ", Qt::CaseInsensitive) ||
+               name. contains ("Spored", Qt::CaseInsensitive) ||
+               name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
+               name. contains ("SPI", Qt::CaseSensitive) ||
+               name. contains ("BBC Guide", Qt::CaseInsensitive) ||
+               name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
+               name. contains ("EPG_", Qt::CaseInsensitive) ||
+               name. startsWith ("EPG ", Qt::CaseInsensitive);
+}
+
 void	ensembleHandler::updateList	() {
 int currentRow	= 0;
 bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
@@ -323,6 +336,9 @@ bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
 	                           QStringList () << tr ("service") <<
 	                                             tr ("fav"));
 	   for (uint16_t i = 0; i < ensembleList. size (); i ++) {
+	      if (!(seems_epg (ensembleList [i]. name) ||
+	            isAudio (ensembleList [i]. SId)))
+	         continue;
 	      bool toMark = false;
 	      if (handlePresets)
 	         toMark = inFavorites (ensembleList [i]. name) >= 0;
@@ -563,15 +579,7 @@ QStringList res;
 QStringList ensembleHandler::get_epgServices () {
 QStringList res;
 	for (auto &serv : ensembleList) {
-	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
-               serv. name. contains (" EPG   ", Qt::CaseInsensitive) ||
-               serv. name. contains ("Spored", Qt::CaseInsensitive) ||
-               serv. name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
-               serv. name. contains ("SPI", Qt::CaseSensitive) ||
-               serv. name. contains ("BBC Guide", Qt::CaseInsensitive) ||
-               serv. name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
-               serv. name. contains ("EPG_", Qt::CaseInsensitive) ||
-               serv. name. startsWith ("EPG ", Qt::CaseInsensitive) ) {
+	   if (seems_epg (serv. name)) {
 	      res << serv. name;
 	   }
 	}

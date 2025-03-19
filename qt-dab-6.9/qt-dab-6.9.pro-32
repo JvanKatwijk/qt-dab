@@ -58,7 +58,7 @@ DEPENDPATH += . \
 	      ../src/backend/audio \
 	      ../src/backend/data \
 	      ../src/backend/data/mot \
-	      ../src/backend/data/epg-2 \
+	      ../src/backend/data/epg \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
@@ -72,7 +72,6 @@ DEPENDPATH += . \
 	      ../includes/backend/data/mot \
 	      ../includes/backend/data/journaline \
 	      ../includes/backend/data/epg \
-	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
 	      ../src/support/tii-library \
@@ -104,7 +103,6 @@ INCLUDEPATH += . \
 	      ../includes/backend/data/mot \
 	      ../includes/backend/data/journaline \
 	      ../includes/backend/data/epg \
-	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
 	      ../src/support/tii-library \
@@ -158,9 +156,11 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/tii-detector-1.h \
 	   ../includes/ofdm/tii-detector-2.h \
 	   ../includes/ofdm/fic-handler.h \
+	   ../includes/ofdm/ensemble.h  \
+	   ../includes/ofdm/fib-config.h  \
+	   ../includes/ofdm/fib-printer.h  \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
-	   ../includes/ofdm/dab-config.h \
 	   ../includes/ofdm/estimator.h \
 	   ../includes/protection/protTables.h \
 	   ../includes/protection/protection.h \
@@ -197,16 +197,16 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/dabdgdec_impl.h \
 	   ../includes/backend/data/journaline/newsobject.h \
 	   ../includes/backend/data/journaline/NML.h \
-	   ../includes/backend/data/epg/epgdec.h \
-	   ../includes/backend/data/epg-2/epg-decoder.h \
-#	   ../includes/backend/data/epg-2/epg-compiler.h \
+	   ../includes/backend/data/epg/epg-compiler.h \
+	   ../includes/backend/data/epg/xml-extractor.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/time-converter.h \
 	   ../includes/support/logger.h \
 	   ../includes/support/settings-handler.h \
 	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
-	   ../includes/support/settingnames.h \
+	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/wavWriter.h \
 	   ../includes/support/converter_48000.h \
@@ -304,6 +304,9 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/tii-detector-1.cpp \
 	   ../src/ofdm/tii-detector-2.cpp \
 	   ../src/ofdm/fic-handler.cpp \
+	   ../src/ofdm/ensemble.cpp  \
+	   ../src/ofdm/fib-config.cpp  \
+	   ../src/ofdm/fib-printer.cpp  \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/ofdm/estimator.cpp \
 	   ../src/protection/protTables.cpp \
@@ -338,11 +341,11 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/dabdgdec_impl.c \
 	   ../src/backend/data/journaline/newsobject.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
-	   ../src/backend/data/epg/epgdec.cpp \
-	   ../src/backend/data/epg-2/epg-decoder.cpp \
-#	   ../src/backend/data/epg-2/epg-compiler.cpp \
+	   ../src/backend/data/epg/epg-compiler.cpp \
+	   ../src/backend/data/epg/xml-extractor.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/time-converter.cpp \
 	   ../src/support/logger.cpp \
 	   ../src/support/settings-handler.cpp \
 	   ../src/support/position-handler.cpp \
@@ -396,10 +399,10 @@ SOURCES += ./main.cpp \
 unix {
 DESTDIR		= ./linux-bin
 	equals (QT_MAJOR_VERSION, 5) {
-	TARGET		= qt-dab-qt5-6.9
+	TARGET		= qt-dab-qt5-6.9.2
 	}
 	else {
-	TARGET		= qt-dab-qt6-6.9
+	TARGET		= qt-dab-qt6-6.9.2
 	}
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
@@ -446,8 +449,8 @@ equals (QT_MAJOR_VERSION, 6) {
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-#CONFIG		+= double
-CONFIG		+= single
+CONFIG		+= double
+#CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -523,17 +526,17 @@ isEmpty(GITHASHSTRING) {
 #
 #for win32, comment out the lines above
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3
+	   TARGET		= qt-dab32-qt5-6.9V3.2
 	}
 	else {
-	   TARGET		= qt-dab32-qt6-6.9V3
+	   TARGET		= qt-dab32-qt6-6.9V3.2
 	}
 	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9
+#	   TARGET		= qt-dab32-qt5-6.9.2
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9
+#	   TARGET		= qt-dab32-qt6-6.9.2
 #	}
 #	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
@@ -907,9 +910,9 @@ viterbi-new {
 	QMAKE_CXXFLAGS  +=  -mavx2 -msse4
 	QMAKE_LFLAGS    +=  -mavx2
 	DEFINES		+= __ARCH_X86__
-	#DEFINES	+= __SSE4_1__
-	#DEFINES	+= __AVX2__
-	#DEFINES	+= __ARCH_AARCH64__
+	##DEFINES	+= __SSE4_1__
+	##DEFINES	+= __AVX2__
+	##DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi
 	HEADERS		+= ../src/support/viterbi/viterbi.h 
 	SOURCES		+= ../src/support/viterbi/viterbi.cpp 

@@ -212,10 +212,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/ofdm-decoder.h
 	     ../includes/ofdm/phasetable.h
 	     ../includes/ofdm/freq-interleaver.h
-	     ../includes/ofdm/fib-decoder.h
-	     ../includes/ofdm/dab-config.h
-	     ../includes/ofdm/fib-table.h
 	     ../includes/ofdm/fic-handler.h
+	     ../includes/ofdm/ensemble.h
+	     ../includes/ofdm/fib-config.h
+	     ../includes/ofdm/fib-printer.h
+	     ../includes/ofdm/fib-decoder.h
+	     ../includes/ofdm/fib-table.h
 	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/tii-detector-1.h
 	     ../includes/ofdm/tii-detector-2.h
@@ -343,8 +345,11 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/ofdm/freqsyncer.cpp
 	     ../src/ofdm/phasetable.cpp
 	     ../src/ofdm/freq-interleaver.cpp
-	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
+	     ../src/ofdm/ensemble.cpp
+	     ../src/ofdm/fib-config.cpp
+	     ../src/ofdm/fib-printer.cpp
+	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/tii-detector.cpp
 	     ../src/ofdm/tii-detector-1.cpp
 	     ../src/ofdm/tii-detector-2.cpp
@@ -456,8 +461,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/ofdm/ofdm-decoder.h
 	     ../includes/ofdm/correlator.h
 	     ../includes/ofdm/freqsyncer.h
-	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
+	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/estimator.h
 	     ../includes/backend/msc-handler.h

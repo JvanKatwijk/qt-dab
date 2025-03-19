@@ -32,7 +32,7 @@
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"device-handler.h"
-#include	"sdrplayselect.h"
+//#include	"sdrplayselect.h"
 #include	"ui_sdrplay-widget-v3.h"
 #include	<sdrplay_api.h>
 
