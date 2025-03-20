@@ -239,6 +239,7 @@ QString h;
 	   p. load (labelName, "png");
 	   strengthLabels. push_back (p);
 	}
+
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //	and init the up and down button, the select for details button ans
@@ -259,13 +260,12 @@ QString h;
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
 //
-	connect (folder_shower, SIGNAL (clicked ()),
-	         this, SLOT (handle_folderButton ()));
-	dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, 
-	                                        S_DX_MODE, 0) != 0;
+	connect (folder_shower, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_folderButton);
+	dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 	tiiButton -> setText (dxMode ? "tii local" : "dx display");
-	connect (tiiButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_tiiButton ()));
+	connect (tiiButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_tiiButton);
 
 //	put the widgets in the right place and create the workers
 	set_position_and_size	(dabSettings_p, this, S_MAIN_WIDGET);
@@ -456,10 +456,6 @@ QString h;
 //
 	audioDumping		= false;
 	sourceDumping		= false;
-	ficBlocks		= 0;
-	ficSuccess		= 0;
-	total_ficError		= 0;
-	total_fics		= 0;
       
 	previous_idle_time	= 0;
 	previous_total_time	= 0; 
@@ -580,9 +576,6 @@ QString h;
 	if (value_i (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   techWindow_p -> show ();
 
-//	dynamicLabel	-> setTextFormat (Qt::RichText);
-//	dynamicLabel	-> setTextInteractionFlags(Qt::TextBrowserInteraction);
-//	dynamicLabel	-> setOpenExternalLinks(true);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("<font color=\"black\">The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //
@@ -610,6 +603,7 @@ QString h;
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("The ini file is new and no home location is known yet"));
 	}
+
 	if (inputDevice_p != nullptr) {
 	   startDirect ();
 	   qApp	-> installEventFilter (this);
@@ -1136,11 +1130,12 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 //	and stop the service
 	for (auto &serv :channel. runningTasks) 
 	   stopService (serv);
-	fprintf (stderr, "All services are halted, now start rebuilding\n");
+//	fprintf (stderr, "All services are halted, now start rebuilding\n");
 	techWindow_p	-> cleanUp ();
 	for (auto &serv : taskCopy) {
 	   int index = theOFDMHandler -> get_serviceComp (serv. serviceName);
 	   if (index < 0)
+	      the_ensembleHandler -> remove (serv. serviceName);
 	// hier moet de ensemlelist nog worden aangepast
 	      continue;
 	   if (serv. runsBackground)
@@ -2202,8 +2197,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   for (int i = 1; i < nrComps; i ++) {
 	      int index =
 	           theOFDMHandler -> get_serviceComp (ad. SId, i);
-	      fprintf (stderr, "Component %d has index %d\n",
-	                                                i, index);
+//	      fprintf (stderr, "Component %d has index %d\n",
+//	                                                i, index);
 	      if ((index < 0) ||
 	             (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
 	         continue;
@@ -2468,7 +2463,7 @@ void	RadioInterface::stopChannel	() {
 	transmitter_country	-> setText	("");
 	theNewDisplay. setSilent	();
 //
-	for (auto serv : channel. runningTasks) {
+	for (auto &serv : channel. runningTasks) {
 	   if (!serv. runsBackground) 
 	      theOFDMHandler -> stopService (serv. subChId, FORE_GROUND);
 	   else
@@ -3877,12 +3872,14 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 
 	float Strength	= 0;
 //	Now the list is updated, see whether or not the strongest is ...
-	for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	   if (channel. transmitters [i]. theTransmitter. strength > Strength) {
-	      bestIndex = i;
-	      Strength  = channel. transmitters [i]. theTransmitter. strength;
+	int teller = 0;
+	for (auto &transm : channel. transmitters) {
+	   if (transm. theTransmitter. strength > Strength) {
+	      bestIndex = teller;
+	      Strength  = transm. theTransmitter. strength;
 	   }
-	   channel. transmitters [i]. isStrongest = false;
+	   transm. isStrongest = false;
+	   teller ++;
 	}
 
 	if (bestIndex >= 0) {
@@ -3905,9 +3902,11 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if (dxMode) {
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
-	   for (uint16_t i = 0; i < channel. transmitters. size (); i ++) {
-	      theDXDisplay. addRow (&channel. transmitters [i]. theTransmitter,
-	                              bestIndex == i);
+	   int teller = 0;
+	   for (auto &transm : channel. transmitters) {
+	      theDXDisplay. addRow (transm. theTransmitter,
+	                             bestIndex == teller);
+	      teller ++;
 	   }
 	}
 	else {	// just show on the main widget the strongest
@@ -4128,16 +4127,17 @@ audiodata ad;
 	if ((!ad. defined) || (ad. ASCTy != 077))
 	   return;
 
-	for (uint16_t i = 0;
-	     i < channel. runningTasks. size (); i ++) {
-	   if (channel. runningTasks. at (i). serviceName == service) {
+	int teller	= 0;
+	for (auto &task: channel. runningTasks) {
+	   if (task. serviceName == service) {
 	      theOFDMHandler -> stopService (ad. subchId, BACK_GROUND);
-	      if (channel. runningTasks. at (i). fd != nullptr)
-	         fclose (channel. runningTasks. at (i). fd);
+	      if (task. fd != nullptr)
+	         fclose (task. fd);
 	      channel. runningTasks. erase
-	                        (channel. runningTasks. begin () + i);
+	                        (channel. runningTasks. begin () + teller);
 	      return;
 	   }
+	   teller ++;
 	}
 
 	FILE *f = theFilenameFinder. findFrameDump_fileName (service, true);
@@ -4375,8 +4375,8 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	      bool ok = false;
 	      QString Ident = theElement. attribute ("Eid");
 	      uint32_t ensemble = Ident. toInt (&ok, 16);
-	      fprintf (stderr, "Comparing %X and %X\n", 
-	                          Eid, ensemble);
+//	      fprintf (stderr, "Comparing %X and %X\n", 
+//	                          Eid, ensemble);
 	      if (Eid != ensemble)
 	         continue;
 	      if (process_ensemble (theElement, Eid) && fresh)
@@ -4477,8 +4477,8 @@ multimediaElement *bb = (multimediaElement *)b;
 bool	RadioInterface::get_serviceLogo (QPixmap &p, uint32_t SId) {
 bool res = false;
 	for (auto &ss : channel. servicePictures) {
-	   fprintf (stderr, "comparing %X with %X\n",
-	                          ss. serviceId, SId);
+//	   fprintf (stderr, "comparing %X with %X\n",
+//	                          ss. serviceId, SId);
 	   if (ss. serviceId != SId)
 	      continue;
 	   QVector<multimediaElement> options;

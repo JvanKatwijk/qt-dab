@@ -1037,7 +1037,13 @@ char		label [17];
 	prim. SId	= SId;
 	prim. fmFrequency	= -1;
 	theEnsemble -> primaries. push_back (prim);
-	add_to_ensemble (dataName, SId, -1);
+	int subChId = -1;
+	for (int i = 0; i < currentConfig -> SC_C_table. size (); i ++) {
+	   fibConfig::serviceComp_C  comp  = currentConfig -> SC_C_table [i];
+	   if ((comp. compNr == 0) && (comp. SId == SId))
+	      subChId	= currentConfig -> subChannelOf (i);
+	}
+	add_to_ensemble (dataName, SId, subChId);
 }
 
 //	service component label - 32 bits 8.1.14.3

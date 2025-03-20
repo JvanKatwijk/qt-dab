@@ -450,6 +450,16 @@ bool	ensembleHandler::add_to_ensemble (serviceId &ed) {
 	return true;
 }
 
+void	ensembleHandler::remove (const QString &s) {
+	   for (uint16_t i = 0; i < ensembleList. size (); i ++) {
+	      if (ensembleList [i]. name == s) {
+	         ensembleList. erase (ensembleList. begin () + i);
+	         break;
+	      }
+	   }
+	   updateList ();
+}
+
 void	ensembleHandler::add_favorite_from_scanList (const QString &service) {
 	if (!handlePresets)
 	   return;

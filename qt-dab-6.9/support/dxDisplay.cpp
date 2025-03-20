@@ -130,24 +130,24 @@ void	dxDisplay::hide	() {
 	myWidget	-> hide ();
 }
 
-void	dxDisplay::addRow (cacheElement *theTransmitter, bool isStrongest) {
+void	dxDisplay::addRow (cacheElement &theTransmitter, bool isStrongest) {
 int16_t	row	= tableWidget -> rowCount ();
 
-	const QString &channel	= theTransmitter -> channel;
-	const QString &ensemble	= theTransmitter -> ensemble;
-	const QString &transmitterName = theTransmitter -> transmitterName;	
-	uint16_t pattern	= theTransmitter -> pattern;
-	int   mainId		= theTransmitter -> mainId;
-	int   subId		= theTransmitter -> subId;
-	bool	etsi		= theTransmitter -> norm;
-	float	phase		= theTransmitter -> phase;
-	float	strength	= theTransmitter -> strength;
-	float distance		= theTransmitter -> distance;
-	float azimuth		= theTransmitter -> azimuth;
-	float power		= theTransmitter -> power;
-	int   altitude		= theTransmitter -> altitude;
-	int  height		= theTransmitter -> height;
-	const QString &dir	= theTransmitter -> direction;
+	const QString &channel	= theTransmitter. channel;
+	const QString &ensemble	= theTransmitter. ensemble;
+	const QString &transmitterName = theTransmitter. transmitterName;	
+	uint16_t pattern	= theTransmitter. pattern;
+	int   mainId		= theTransmitter. mainId;
+	int   subId		= theTransmitter. subId;
+	bool	etsi		= theTransmitter. norm;
+	float	phase		= theTransmitter. phase;
+	float	strength	= theTransmitter. strength;
+	float distance		= theTransmitter. distance;
+	float azimuth		= theTransmitter. azimuth;
+	float power		= theTransmitter. power;
+	int   altitude		= theTransmitter. altitude;
+	int  height		= theTransmitter. height;
+	const QString &dir	= theTransmitter. direction;
 	bool	b		= isStrongest;
 
 	tableWidget	-> insertRow (row);	// the mark
@@ -213,7 +213,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 1) -> setText (aa);
 	QString tii	= convertNumber (mainId) + "-" +
 	                          convertNumber (subId);
-	if (theTransmitter -> collision)
+	if (theTransmitter. collision)
 	   tii += "!";
 	tableWidget	-> item (row, 2) -> setText (tii);
 	QString ss	= QString::number (phase, 'f', 1) + 

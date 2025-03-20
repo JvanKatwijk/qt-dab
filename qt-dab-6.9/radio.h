@@ -331,10 +331,6 @@ private:
 	QTimer			muteTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
-	int16_t			ficBlocks;
-	int16_t			ficSuccess;
-	int			total_ficError;
-	int			total_fics;
 	void			connectGUI		();
 	void			disconnectGUI		();
 

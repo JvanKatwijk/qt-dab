@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015, 2023
+ *    Copyright (C)  2015, 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -47,6 +47,7 @@ public:
 	void	reset			();
 	bool	add_to_ensemble		(serviceId &);
 	bool	alreadyIn		(serviceId &);
+	void	remove			(const QString &);
 	void	add_favorite_from_scanList	(const QString &);
 
 	void	handle_scheduledSelect	(const QString &, const QString &);
