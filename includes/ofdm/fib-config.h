@@ -36,7 +36,6 @@ public:
 //	Most components are a direct translation of the
 //	FIG 
 //	SId is a small optimization, not really needed
-//	It maps the SId to a ist if indices in the table
 //	of service components
 	typedef struct {
 	   uint32_t 	SId;
@@ -99,21 +98,21 @@ public:
 	} SC_language;
 
 //
-//	Data for the apptype of packet components
+//	Data for the apptype of packet components FIG0/13
 	typedef	struct {
 	   uint32_t	SId;
 	   uint8_t	SCIds;
 	   uint16_t	Apptype;
 	} AppType;
 //
-//	Data for the program type 
+//	Data for the program type  FIG0/17
 	typedef struct {
 	   uint32_t	SId;
 	   uint8_t	typeCode;
 	} programType;
 
 //
-//	data for the announcement support
+//	data for the announcement support FIG0/18
 	typedef struct {
 	   uint16_t	SId;
 	   uint16_t	asuFlags;

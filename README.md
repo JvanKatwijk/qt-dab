@@ -5,22 +5,6 @@
 ![6.9](/res/read_me/front-picture.png?raw=true)
 
 --------------------------------------------------------------------------
-Moving towards Qt-DAB-6.9.2
---------------------------------------------------------------------------
-
-Qt-DAB 6.9 and Qt-DAB 6.9.2 differ in the handling of SPI/EPG since Qt-DAB 6.9.1. The difference(s) between 6.9.1 and 6.9.2 are in the implementation
-of the (FIB) database. The version from up to 6.9.1 contained a few (design) errors.
-
-As the picture shows, program icons are extracted from the SPI data (obviously
-only when transmitted), and - again if an EPG service is part of the ensemble -
-timetables can be made visible.
-
-Since were I live no EPG services are available, all development was done using a few recordings of german WDR and british BBC transmissions.
-
-TQt-DAB 6.9.1 is therefore not yet officially released, although it seems
-to be working, it is "work in progress" .
-
-------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------
 
@@ -45,6 +29,7 @@ Table of Contents
 * [A Note on using an RTLSDR device](#a-note-on-using-an-rtlsdr-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
+* [EPG Handling and time tables]
 * [Documentation](#documentation)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
@@ -59,15 +44,7 @@ Introduction
 *Qt-DAB* is designed to be used  with different SDR devices.
 A simple and clean interface is used and Qt-DAB-6.9  has support for a
 DABsticks, all models of the SDRplay, Airspy, HackRF, LimeSDR, Adalm Pluto etc.
-
-*Qt-DAB* is being developed under Fedora, and cross compiled -
-using the excellent Mingw64 toolset - for Windows. For Windows,
-installers are available,  two installers for 32 bit  versions and one
-for a 64 bit version. For Linux, an AppImage, available for x64 Linux, is
-available, built under an older version of Ubuntu (right now Ubuntu 20, Ubuntu 22 is too new for an AppImage).
-
-To mark the transition for using Qt5 as framework to using Qt6, the releases section contains two sets of precompiled versions, one compiled with Qt5 and one with Qt6.
-
+Precompiled versions for Windows and Linux (x64) are available.
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 
 *Qt-DAB* is GUI driven, 
@@ -104,10 +81,8 @@ Widgets and scopes
 
 ![6.9](/res/read_me/Qt_DAB-6.9.2.png)
 
-The full GUI for Qt-DAB-6.9 is built up from 4 (four) larger widgets  and - depending on the settings - a few smaller ones.
-
-The *mainWidget* (see picture) (always visible), contains settings for controlling the visibility of other widgets.
-The main widget shows - left half - a list of services (either from the currently selected channel or from the favourites), seleting a service is just by clicking on the name.
+The *mainWidget* (see picture) of Qt-DAB (always visible), contains settings for controlling the visibility of other widgets.
+It shows - left half - a list of services (either from the currently selected channel or from the favourites), seleting a service is just by clicking on the name.
 On the right half of the widget is shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
 * touching the *ensemble name* (NPO (8001) in the picture) makes the

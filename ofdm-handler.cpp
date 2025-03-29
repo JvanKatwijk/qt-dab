@@ -174,7 +174,7 @@ void	ofdmHandler::set_tiiFilter	(bool b) {
 
 void	ofdmHandler::start () {
 	theFicHandler. restart	();
-	transmitters. clear ();
+//	transmitters. clear ();
 	theOfdmDecoder. reset	();
 	theFicHandler.  restart	();
 	if (!scanMode)

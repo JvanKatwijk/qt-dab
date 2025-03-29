@@ -29,6 +29,7 @@
 //	ensemble information relates to FIG1, basically some
 //	general, i.e. ensemble wide, data and mapping tables for
 //	primary and secondary services to SId's resp (SId x SCIds)
+//	Itis now completely separated from the FIG1 tables
 class ensemble {
 public:
 		ensemble	() {

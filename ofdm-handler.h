@@ -156,7 +156,7 @@ private:
 	int32_t			carrierDiff;
 	int16_t			fineOffset;
 	int32_t			coarseOffset;
-	QByteArray		transmitters;
+//	QByteArray		transmitters;
 	bool			correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
 	bool			correlationOrder;

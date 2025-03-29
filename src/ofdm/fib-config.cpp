@@ -52,7 +52,7 @@ void	fibConfig::reset	() {
 }
 
 int	fibConfig::serviceIdOf		(int index) {
-	return SC_C_table [index]. SId;;
+	return SC_C_table [index]. SId;
 }
 
 int	fibConfig::SCIdsOf		(int index) {

@@ -150,7 +150,7 @@ signals:
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);
 	void		changeinConfiguration	();
-	void		announcement		(uint16_t, uint16_t);
+	void		announcement		(int, int);
 	void		nrServices		(int);
 	void		lto_ecc			(int, int);
 	void		setFreqList		();

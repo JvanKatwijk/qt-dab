@@ -162,10 +162,10 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension10 (d);
 	      break;
 
-	   case 11:		// obsolete
+	   case 11:		// Reserved
 	      break;
 
-	   case 12:		// obsolete
+	   case 12:		// Reserved
 	      break;
 
 	   case 13:             // user application information (6.3.6)
@@ -176,10 +176,10 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension14 (d);
 	      break;
 
-	   case 15:		// obsolete
+	   case 15:		// Reserved
 	      break;
 
-	   case 16:		// obsolete
+	   case 16:		// Reserved
 	      break;
 
 	   case 17:		// Program type (8.1.5)
@@ -201,10 +201,10 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension21 (d);
 	      break;
 
-	   case 22:		// obsolete
+	   case 22:		// Reserved
 	      break;
 
-	   case 23:		// obsolete
+	   case 23:		// Reserved
 	      break;
 
 	   case 24:		// OE services (8.1.10)
@@ -216,12 +216,15 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	   case 26:		// OE announcement switching (8.1.6.4)
 	      break;		// not implemented
 
-	   case 27:
-	   case 28:
-	   case 29:		// undefined
+	   case 27:		// Reserved
+	   case 28:		// Reserved
+	   case 29:		// Reserved
+	   case 30:		// Reserved
+	   case 31:		// Reserved
 	      break;
 
 	   default:
+//	      fprintf (stderr, "Missed %d\n", extension);
 	      break;
 	}
 }
@@ -427,9 +430,6 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 }
 
 //	Service component in packet mode 6.3.2
-//      The Extension 3 of FIG type 0 (FIG 0/3) gives
-//      additional information about the service component
-//      description in packet mode.
 void	fibDecoder::FIG0Extension3 (uint8_t *d) {
 int16_t used    = 2;            // offset in bytes
 int16_t Length  = getBits_5 (d, 3);
@@ -528,10 +528,8 @@ fibConfig::SC_language comp;
 	localBase -> language_table. push_back (comp);
 	return bitOffset / 8;
 }
-
 //
 // FIG0/7: Configuration linking information 6.4.2,
-//
 void    fibDecoder::FIG0Extension7 (uint8_t *d) {
 int16_t used		= 2;            // offset in bytes
 int16_t Length          = getBits_5 (d, 3);
@@ -551,7 +549,6 @@ int     counter		= getBits   (d, used * 8 + 6, 10);
 }
 
 // FIG0/8:  Service Component Global Definition (6.3.5)
-//	
 void	fibDecoder::FIG0Extension8 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
 int16_t	Length		= getBits_5 (d, 3);
@@ -613,7 +610,17 @@ int16_t	used	= 2;		// offset in bytes
 //uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
 //uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
 //uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-	uint8_t	LTO	= getBits (d, used * 8 + 2, 6);
+//	6 indicates the number of hours
+        int     signbit = getBits_1 (d, used * 8 + 2);
+        dateTime [6] = (signbit == 1)?
+                        -1 * getBits_4 (d, used * 8 + 3):
+                             getBits_4 (d, used * 8 + 3);
+//      7 indicates a possible remaining half our
+        dateTime [7] = (getBits_1 (d, used * 8 + 7) == 1) ? 30 : 0;
+        if (signbit == 1)
+           dateTime [7] = -dateTime [7];
+
+	uint8_t	LTO	= dateTime [6];
 	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
 	theEnsemble	-> eccByte	= ecc;
 	theEnsemble	-> lto		= LTO;
@@ -627,6 +634,7 @@ int	monthLength [] {
 //	we add (or subtract) a number of Hours (half hours)
 void	adjustTime (int32_t *dateTime) {
 //	first adjust the half hour  in the amount of minutes
+	                    
 	dateTime [4] += (dateTime [7] == 1) ? 30 : 0;
 	if (dateTime [4] >= 60) {
 	   dateTime [4] -= 60; dateTime [3] ++;
@@ -667,6 +675,7 @@ void	adjustTime (int32_t *dateTime) {
 	   }
 	}
 }
+
 //	8.1.3.1 Date and time (d&t)
 void fibDecoder::FIG0Extension10 (uint8_t *dd) {
 int16_t		offset = 16;
@@ -708,7 +717,6 @@ uint16_t	theTime	[6];
 	                            utc_day, utc_hour, utc_minute, utc_seconds);
 	}
 }
-
 //
 //	User Application Information 6.3.6
 void	fibDecoder::FIG0Extension13 (uint8_t *d) {
@@ -841,7 +849,7 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	}
 }
 
-//
+//	Announcement switching 8.1.6.2
 void	fibDecoder::FIG0Extension19 (uint8_t *d) {
 int16_t	Length		= getBits_5 (d, 3);	// in Bytes
 uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
@@ -938,7 +946,7 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	      FIG1Extension1 (d);
 	      break;
 
-	   case 2:		// obsolete
+	   case 2:		// Labels etc
 	      break;
 
 	   case 3:		// obsolete
@@ -1172,8 +1180,6 @@ uint32_t fibDecoder::get_SId	(int index) {
 }
 
 uint8_t	fibDecoder::serviceType (int index) {
-	fprintf (stderr, "type vor index %d %d\n",
-	                index, currentConfig -> SC_C_table [index]. TMid);
 	return currentConfig -> SC_C_table [index]. TMid;
 }
 
@@ -1314,7 +1320,8 @@ int	fibDecoder::getFrequency	(const QString &s) {
 int	fibDecoder::nrChannels	() {
 	return currentConfig -> subChannel_table. size ();
 }
-
+//
+//	needed for generating eti files
 void	fibDecoder::get_channelInfo (channel_data *d, int n) {
 	d       -> in_use	= true;
 	d       -> id		= currentConfig -> subChannel_table [n]. subChId;

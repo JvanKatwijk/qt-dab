@@ -178,12 +178,18 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 	if (v > limit)
 	   v = limit;
 }
-
+//
+//	How to compute a sin or cos for (hopefully) small angles,
+//	Some tests showed the using the first few terms of the
+//	Taylor series for angles up to PI / 4 were up to  the third
+//	decimal correct.
+//	A more performance oriented solution could be a table,
+//	but then, the granularity of the table should be pretty high.
 Complex makeComplex (DABFLOAT phase) {
 DABFLOAT p2	= phase * phase;
 DABFLOAT p3	= p2 * phase;
 DABFLOAT p4	= p3 * phase;
-DABFLOAT sine	= phase - p3/ 6;
+DABFLOAT sine	= phase - p3 / 6;
 DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24;
 	return complex (cosi, sine);
 }
