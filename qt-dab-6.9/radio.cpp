@@ -1890,7 +1890,7 @@ QString pictureName	= QString (":res/radio-pictures/announcement%1.png").
 	return p;
 }
 
-void	RadioInterface::announcement	(uint16_t SId, uint16_t flags) {
+void	RadioInterface::announcement	(int SId, int flags) {
 	if (!running. load ())
 	   return;
 
@@ -4144,15 +4144,12 @@ audiodata ad;
 	if (f == nullptr)
 	   return;
 
-//	fprintf (stderr, "starting a background job %s\n",
-//	                             ad. serviceName. toLatin1 (). data ());
 	(void)theOFDMHandler ->
 	                   setAudioChannel (ad, &theAudioBuffer, f, BACK_GROUND);
 	dabService s;
 	s. channel	= ad. channel;
 	s. serviceName	= ad. serviceName;
 	s. SId		= ad. SId;
-//	s. SCIds	= ad. SCIds;
 	s. subChId	= ad. subchId;
 	s. fd		= f;
 	s. runsBackground	= true;
@@ -4508,7 +4505,6 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly))
 	   return;
-	fprintf (stderr, "de file is open\n");
 	pictureMappings. setContent (&f);
 	extractServiceInformation	(pictureMappings, Eid, false);
 }

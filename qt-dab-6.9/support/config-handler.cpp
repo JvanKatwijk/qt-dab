@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015, 2023
+ *    Copyright (C)  2015, 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -172,7 +172,6 @@ int	index_for_key (int key) {
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
-	this -> decoderSelector -> setToolTip (" There are several ideas on how to derive the softbits from the phase difference in the subsequent bins of the FFT output. 5 different approaches are implemented, decoder C is said to be the best when there is white noise and a difference in the amplitude of the carriers. while decoder D  is said to be the best when there is frequency selective interference and finally, decider E is said the best when there is strong frequency selective interference. The decoders C, D and E are derived from the work of old-dab");
 #else
 	this -> decoderSelector -> setEnabled (false);
 #endif
@@ -180,7 +179,6 @@ int	index_for_key (int key) {
 	int k	= value_i (dabSettings, CONFIG_HANDLER,
 	                                 "decoders", DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
-	
 
 	int v = value_i (dabSettings, CONFIG_HANDLER, "tii-detector", 1);
 	this	-> tiiSelector	-> setChecked (v != 0);

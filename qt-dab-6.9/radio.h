@@ -481,7 +481,7 @@ public slots:
 	void			clockTime		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			announcement		(uint16_t, uint16_t);
+	void			announcement		(int, int);
 	void			newFrame		(int);
 
 	void			epgTimer_timeOut	();

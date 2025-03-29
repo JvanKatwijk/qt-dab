@@ -37,8 +37,10 @@
 	                                  QSettings	*ensembleSettings,
 	                                  const QString &favFile):
 	                                       QTableWidget (0, 2),
-	                                       normalFont ("Times", 10, -1, false),
-	                                       markedFont ("Times", 12, -1, true),
+	                                       normalFont ("Times", 10,
+	                                                      -1, false),
+	                                       markedFont ("Times", 12,
+	                                                      -1, true),
 	                                       channelFont ("Times", 8) {
 	   (void)parent;
 	   this -> ensembleSettings	= ensembleSettings;
@@ -162,7 +164,7 @@ void	ensembleHandler::click_on_service	(int row, int column) {
 	      return;
 //
 //	If the click is on the second column, it is easy,
-//	and we do not need to update the while list
+//	and we do not need to update the whole list
 	   if (column == 1) {
 	      if (!handlePresets)	// should not occur
 	         return;
@@ -567,7 +569,6 @@ std::vector<serviceId> k;
 	   k. push_back (n);
 	return k;
 }
-
 
 QStringList ensembleHandler::getSelectables	() {
 QStringList res;
