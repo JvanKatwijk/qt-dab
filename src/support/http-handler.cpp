@@ -507,8 +507,9 @@ QString Jsontxt;
 	   direction = "??";
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d,  \"height\":%d, \"direction\":\"%s\"}",
+	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d,  \"height\":%d, \"direction\":\"%s\"}",
 	       t [0]. type,
+	       t [0]. ensemble. toUtf8 (). data (),
 	       dotNumber (t [0]. coords. latitude). c_str (),
 	       dotNumber (t [0]. coords. longitude). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
@@ -541,13 +542,14 @@ void	httpHandler::putData	(uint8_t type,
 	   
 	httpData t;
 	t. type			= type;
+	t. Eid			= 0;
+	t. ensemble		= "";
 	t. coords		= target;
 	t. transmitterName	= "";
 	t. channelName		= "";
 	t. dateTime		= "";
 	t. polarization		= "";
 	t. direction		= "";
-	t. Eid			= 0;
 	t. mainId		= 0;
 	t. subId		= 0;
 	t. snr			= 0;
@@ -581,7 +583,8 @@ void	httpHandler::putData	(uint8_t	type,
 	         
 	httpData t;
 	t. type			= type;
-//	t. ensemble		= theTr -> ensemble;
+	t. ensemble		= theTr -> theTransmitter. ensemble;
+	t. Eid			= theTr -> theTransmitter. Eid;
 	t. coords. latitude	= latitude;
 	t. coords. longitude	= longitude;
 	t. transmitterName	= theTr -> theTransmitter. transmitterName;

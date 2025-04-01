@@ -74,6 +74,8 @@ private:
 	fibConfig	*currentConfig;
 	fibConfig	*nextConfig;
 	ensemble	*theEnsemble;
+	void		adjustTime		(int32_t *dateTime);
+
 	void		process_FIG0		(uint8_t *);
 	void		process_FIG1		(uint8_t *);
 	void		FIG0Extension0		(uint8_t *);
@@ -134,7 +136,6 @@ private:
 	void		FIG1Extension5		(uint8_t *);
 	void		FIG1Extension6		(uint8_t *);
 
-	int32_t		dateTime [8];
 	QMutex		fibLocker;
 	int		CIFcount;
 	int16_t		CIFcount_hi;

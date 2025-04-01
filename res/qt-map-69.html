@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -72,24 +71,27 @@
 	      return icon;
 	   }
 
-	   function getIconForTransmitter (key) {
-	      var he = document. createElement ("P");
+	   function getIconForTransmitter (target) {
+//	      var he = document. createElement ("P");
+	      var he;
+	      var mainId = Math. floor (target. tiiValue / 256);
+	      var subId  = target. tiiValue % 256;
+	      var tii = '(' + mainId + ',' + subId + ')';
 //	      he.innerHTML = '*';
-
 	      var selhtml = '';
-	      if (key == ICON_OTHERFRAME)
-	         he = '<div style="font-size :1.5rem;"> &#x1F4CC</div>';
+	      if (target. key == ICON_OTHERFRAME)
+	         he = '<div style="font-size :0.9rem;"> &#x1F4CC';
 	      else
-	      if (key == ICON_FURTHEST)
-//	         he = '<div style="font-size :1.2rem"> &#x🏁</div>';
-	         he = '<div style="font-size :1.4rem"> &#x1F3C1</div>';
+	      if (target. key == ICON_FURTHEST)
+//	         he = '<div style="font-size :0.9rem"> &#x🏁';
+	         he = '<div style="font-size :0.9rem"> &#x1F3C1';
 	      else
-	      if (key == ICON_TOPFRAME)
-	         he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
+	      if (target. key == ICON_TOPFRAME)
+	         he = '<div style="font-size :0.9rem;"> &#x26AB';
 	      else	// ICON_CURRENT
-	         he = '<div style="font-size :1.4rem;"> &#x1F6A9</div>';
-	      
-	      var icon = L.divIcon ({html: he, className: 'transmitter-icon'});
+	         he = '<div style="font-size :0.9rem;">&#x1F6A9';
+	      he += '<b>' + tii + '</b>' + '</div>';
+	      var icon = L.divIcon ({iconSize:[tii. length * 6.5, 18], html: he, className: 'transmitter-icon'});
 	      return icon;
 	   }
 
@@ -118,11 +120,10 @@
 	         if (Transmitters [i]. status == true) {
 	            Transmitters [i]. status = false;
 	            Transmitters [i]. current = false;
-	            if (Transmitters [i]. furthest) 
-	               continue;
 	            Map. removeLayer (Transmitters [i]. marker);
-	            let icon = getIconForTransmitter (ICON_OTHERFRAME);
 	            let element = Transmitters [i];
+	            element. key = ICON_OTHERFRAME;
+	            let icon = getIconForTransmitter (element);
 	            let elementMarker =
 	                        L.marker ([element.lat, element.lon],
 	                                  {icon: icon}).addTo(Map);
@@ -138,52 +139,31 @@
 	      for (var j = 0; j < transmitterIndex; j ++) {
 	         if ((Transmitters [j]. lat == target. lat) &&
 	             (Transmitters [j]. lon == target. lon) &&
-	             (Transmitters [j]. channel == target. channel)) {
+	             (Transmitters [j]. status)) {
 	                return true;
 	         }
 	      }
 	      return false;
 	   }
 
-	   function clearPreviousFurthest () {
-	      for (var i = 0; i < transmitterIndex; i ++) {
-	         if (Transmitters [i]. furthest == true) {
-	            Transmitters [i]. furthest = false;
-	            Map. removeLayer (Transmitters [i]. marker);
-	            let tmp = Transmitters [i]. current ? ICON_TOPFRAME :
-	                                                  ICON_OTHERFRAME;
-	            let icon = getIconForTransmitter (tmp);
-	            let element = Transmitters [i];
-	            let elementMarker =
-	                    L.marker ([element.lat, element.lon],
-	                              {icon: icon}).addTo(Map);
-	            elementMarker.
-	                    addEventListener ('click',
-	                                       function () { selectTransmitterCallback (element);});
-	            Transmitters [i]. marker = elementMarker;
-	            return;
-	         }
-	      }
-	   }
-	   
 	   function showTransmitterAtSideBar (target, firstOne) {
 	      let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	      let coords = '<span style=\"font-style: italic;\">' +
-	                          target. lat + ' ' +
-	                          target. lon +  '</span>';
+	                          target. lat + '&#xb0' + ',' +
+	                          target. lon + '&#xb0' +  '</span>';
 	      let xx = document. getElementById ('selinfo');
 	      if (firstOne)
 	         xx. innerHTML = 
 	              '<span style=\"font-weight:bold;">' + 'Transmitters <br>' + '</span>';
-	      xx. innerHTML += newChannel + '=>' +
+	      xx. innerHTML += newChannel +
+	                       '   (' + target. ensemble + ')' + '<br>' +
 	                       target. dateTime + '<br>' +
 	                       'tii ' + Math. floor (target. tiiValue / 256) +
-	                              ' ' + target. tiiValue % 256 +
-	                              ' ' + target.snr + 'dB' + '<br>' +
+	                              ' ' + target. tiiValue % 256 + ', ' +
+	                       "alt " + target. altitude + ' m' + ', ' +
+	                       "height " + target. height + ' m' + '<br>' +
 	                       target. name + ' (' +
 	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
-	                       "alt " + target. altitude + ' m' + '<br>' +
-	                       "height " + target. height + ' m' + '<br>' +
 	                       (target. direction == "??" ? " ":
 	                               ("dir :" +  target. direction + '<br>')) +
 	                       coords + '<br>' +
@@ -198,18 +178,22 @@
 	         largestDistance = target. dist
 	         let aa = document. getElementById ('distance');
 	         aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
-	                       target. channel + '=>' +
-	                       target. dateTime + '<br>' +
-	                       target. name  + ' (' +
-	                       (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
-	                       "alt " + target. altitude + ' m' + '<br>' +
-	                       "height " + target. height + ' m' + '<br>' +
-	                       (target. direction == "??" ?  " " :
-	                             ("dir :" + target. direction + '<br>')) +
-	                       coords + '<br>' +
-	                       'Distance to home ' +
-	                       target. dist + 'km ' + 
-	                       target. azimuth + '&#xb0' + '<br><br>';
+	                       target. channel +
+	                       '   (' + target. ensemble + ')' + '<br>' +
+                               target. dateTime + '<br>' +
+                               'tii ' + Math. floor (target. tiiValue / 256) +
+                                      ' ' + target. tiiValue % 256 + ', ' +
+                               "alt " + target. altitude + ' m' + ', ' +
+                               "height " + target. height + ' m' + '<br>' +
+                               target. name + ' (' +
+                               (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
+                               (target. direction == "??" ? " ":
+                                       ("dir :" +  target. direction + '<br>')) +
+                               coords + '<br>' +
+                               'Distance to home ' +
+                                          target. dist + 'km ' +
+                               target. azimuth + '&#xb0' + '<br><br>';
+
 	           
 	      }
 	   }
@@ -236,18 +220,16 @@
 	   }
 
 	   function addTransmitter (target) {
-	      let firstOne = transmitterIndex == 0;
-	      target. furthest = target. type == MAP_MAX_TRANS;
-	      let icon =
-	             getIconForTransmitter (target. furthest ?
-	                                         ICON_FURTHEST : 
-	                                         ICON_CURRENT);
+	      let firstOne	= transmitterIndex == 0;
+	      target. furthest	= target. type == MAP_MAX_TRANS;
+	      target. key	= ICON_CURRENT;
+	      target. status	= true;
+	      target. current	= true;
+	      let icon		= getIconForTransmitter (target);
 	      let targetMarker =
 	                    L. marker([target.lat, target.lon],
 	                              {icon: icon}) .addTo(Map);
 	      target. marker = targetMarker;
-	      target. status = true;
-	      target. current = true;
 	      target. marker.
 	                 addEventListener ('click',
 	                                    function () { selectTransmitterCallback (target);});
@@ -255,69 +237,78 @@
 	      Transmitters [transmitterIndex] = target;
 	      transmitterIndex ++;
 
-	      let xx = document. getElementById ('testing');
-	      xx. innerHTML = 
-	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
+//	      let xx = document. getElementById ('testing');
+//	      xx. innerHTML = 
+//	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
 	      showTransmitterAtSideBar (target, firstOne);
 	   }
 
-	   function clearCurrent () {
-	      for (var i = 0; i < transmitterIndex; i ++) {
-	         if (Transmitters [i]. current) {
-	            Transmitters [i]. current = false;
-	            if (Transmitters [i]. furthest)
-	               break;	// had no "current" icon
-	            Map. removeLayer (Transmitters [i]. marker);
-
-	            var icon = getIconForTransmitter (ICON_CURRENT);
-	            if (Transmitters [i]. furthest)
-	               icon = getIconForTransmitter (ICON_FURTHEST);
-	            else
-	            if (Transmitters [i]. status)	// current frame
-	               icon = getIconForTransmitter (ICON_TOPFRAME);
-	            else
-	               icon = getIconForTransmitter (ICON_OTHERFRAME);
-
-	            let element = Transmitters [i];
-	            let elementMarker =
-	                    L.marker ([element.lat, element.lon],
-	                              {icon: icon}).addTo(Map);
-	            elementMarker.
-	                    addEventListener ('click',
-	                                       function () { selectTransmitterCallback (element);});
-	            Transmitters [i]. marker = elementMarker;
-	            break;
-	         }
-	      }
-	   }
 //	the CURRENT changed, so we have to restore the old
 //	marker for the previous current - if any - that is
 //	slightly complicated since there are several options
 	   function updateCurrent (target) {
+	      var maxDistance	= 0;
+	      var maxIndex	= -1;
+	      var currentIndex	= -1;
+//	first we compute - in all elements the indices of the max
+//	and in the "current" list, the element "current"
+//	the indices of max and current
+	      for (var j = transmitterIndex - 1; j >= 0; j --) {
+	         if (Transmitters [j]. dist > maxDistance) {
+	            maxDistance = Transmitters [j]. dist;
+	            maxIndex = j;
+	         }
+	      }
+	
 	      for (var j = 0; j < transmitterIndex; j ++) {
-                 if ((Transmitters [j]. lat == target. lat) &&
-                     (Transmitters [j]. lon == target. lon) &&
-	             (Transmitters [j]. channel == target. channel)) {
-	            Transmitters [j]. current = true;
-//
-//	recall that "furthest" positions do not show a "current" icon
-	            if (!Transmitters [j]. furthest) {
+	         if ((Transmitters [j]. lat == target. lat) &&
+	             (Transmitters [j]. lon == target. lon)) {
+	            if (!Transmitters [j]. status)
 	               Map. removeLayer (Transmitters [j]. marker);
-	               var icon = getIconForTransmitter (ICON_CURRENT);
-	               let element = Transmitters [j];
-	            
-	               let elementMarker =
-	                       L.marker ([element.lat, element.lon],
-	                              {icon: icon}).addTo(Map);
-	               elementMarker.
-	                       addEventListener ('click',
-	                                       function () { selectTransmitterCallback (element);});
-	               Transmitters [j]. marker = elementMarker;
+	            else {
+	               currentIndex = j;
+	               break;
 	            }
+	         }
+	      }
+//
+//	Now, if the furthest is still in the "old" layers
+//	the "handle_map_framw" has removed that marker, so
+//	it has to be reinstalled.
+	      if (!Transmitters [maxIndex]. status) {
+	         Map. removeLayer (Transmitters [maxIndex]. marker);
+	         Transmitters [maxIndex]. key = ICON_FURTHEST;
+	         let element = Transmitters [maxIndex];
+	         let icon = getIconForTransmitter (element);
+	         let elementMarker =
+	                       L.marker ([element.lat, element.lon],
+	                              {icon: icon}). addTo(Map);
+	         elementMarker.  addEventListener ('click',
+	                                      function () { selectTransmitterCallback (element);});
+	         Transmitters [maxIndex]. marker = elementMarker;
+	      }
+
+//	we rewrite ALL elements in the current layer
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if (!Transmitters [j]. status)
+	            continue;
+	         Map. removeLayer (Transmitters [j]. marker);
+	         let xx = document. getElementById ('testing');
+	         Transmitters [j]. key = j == maxIndex ? ICON_FURTHEST :
+	                                 j == currentIndex ? ICON_CURRENT :
+	                                            ICON_TOPFRAME;
+	         let element	= Transmitters [j];
+	         let icon	= getIconForTransmitter (element);
+	         let elementMarker =
+	                       L.marker ([element. lat, element. lon],
+	                              {icon: icon}). addTo (Map);
+	         elementMarker. addEventListener ('click',
+	                                      function () { selectTransmitterCallback (element);});
+	         Transmitters [j]. marker = elementMarker;
+	         if (j == currentIndex) {
 	            let xx = document. getElementById ('testing');
-	            xx. innerHTML = 
+	               xx. innerHTML = 
 	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
-	            break;
 	         }
 	      }
 	   }
@@ -346,20 +337,15 @@
 	               continue;
 	            }
 	            else {		// we add an element 
-	               if (!((target. type == MAP_MAX_TRANS) ||
-	                                 (target. type == MAP_NORM_TRANS))) 
-	                  continue;
+//	               if (!((target. type == MAP_MAX_TRANS) ||
+//	                                 (target. type == MAP_NORM_TRANS))) 
+//	                  continue;
 //
-	               clearCurrent ();	// always good
-	               if (seenAlready (target)) {
-	                  updateCurrent (target);
-	               }
-	               else
+//	               clearCurrent ();	// always good
+	               if (!seenAlready (target)) {
 	                  addTransmitter (target);
-	               if (target. type == MAP_MAX_TRANS) {
-	                  clearPreviousFurthest ();
-//	                  updateFurthest (target);
 	               }
+	               updateCurrent (target);
 	            }
 	         }
 	      });
@@ -390,8 +376,8 @@
 	   let xx = document. getElementById ('selected');
 	   let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	   let coords = '<span style=\"font-style: italic;\">' +
-	                          target. lat + '--' +
-	                          target. lon +  '</span>';
+	                          target. lat + '&#xb0' + ',' +
+	                          target. lon + '&#xb0' +  '</span>';
 	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
 	                    newChannel + '=>' +
 	                    target. dateTime + '<br>' +

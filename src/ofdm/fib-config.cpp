@@ -23,6 +23,7 @@
 
 #include	"fib-config.h"
 #include	<stdio.h>
+#include	<string.h>
 //
 //	Implementation of the FIG database
 //
@@ -49,6 +50,7 @@ void	fibConfig::reset	() {
 	programType_table.	resize (0);
 	AppType_table.		resize (0);
 	announcement_table. 	resize (0);
+	memset (dateTime, 0, sizeof (dateTime));
 }
 
 int	fibConfig::serviceIdOf		(int index) {
@@ -102,24 +104,32 @@ int	fibConfig::findIndex_subChannel_table (uint8_t subChId) {
 int	fibConfig::startAddressOf	(int index) {
 int subChId = subChannelOf (index);
 int subCh_index = findIndex_subChannel_table (subChId);
+	if (subCh_index < 0)
+	   return -1;
 	return subChannel_table [subCh_index]. startAddr;
 }
 
 int	fibConfig::lengthOf 		(int index) {
 int subChId = subChannelOf (index);
 int subCh_index = findIndex_subChannel_table (subChId);	
+	if (subCh_index < 0)
+	   return -1;
 	return subChannel_table [subCh_index]. Length;
 }
 
 bool	fibConfig::shortFormOf		(int index) {
 int subChId = subChannelOf (index);
 int subCh_index = findIndex_subChannel_table (subChId);	
+	if (subCh_index < 0)
+	   return -1;
 	return subChannel_table [subCh_index]. shortForm;
 }
 
 int16_t	fibConfig::protLevelOf		(int index) {
 int subChId = subChannelOf (index);
 int subCh_index = findIndex_subChannel_table (subChId);	
+	if (subCh_index < 0)
+	   return -1;
 	return subChannel_table [subCh_index]. protLevel;
 }
 
@@ -167,6 +177,8 @@ uint32_t SId	= SC_C_table [index]. SId;
 int	fibConfig::FEC_schemeOf		(int index) {
 int16_t subChId	= subChannelOf (index);
 int subCh_index = findIndex_subChannel_table (subChId);
+	if (index < 0)
+	   return -1;
 	return subChannel_table [subCh_index]. FEC_scheme;
 }
 

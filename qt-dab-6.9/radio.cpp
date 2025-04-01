@@ -3835,6 +3835,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   cacheElement theTransmitter = *tr;
 	   theTransmitter. strength	= r [i]. strength;
 	   if (theTransmitter. mainId == 255) {	// apparently not found
+	      theTransmitter. ensemble	= channel. ensembleName;
 	      theTransmitter. mainId	= r [i]. mainId;
 	      theTransmitter. subId	= r [i]. subId;
 	      theTransmitter. pattern	= r [i]. pattern;

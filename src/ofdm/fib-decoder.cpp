@@ -41,7 +41,6 @@
 //
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
-	memset (dateTime, 0, sizeof (dateTime));
 
 	connect (this, &fibDecoder::name_of_ensemble,
 	         myRadioInterface, &RadioInterface::name_of_ensemble);
@@ -612,15 +611,16 @@ int16_t	used	= 2;		// offset in bytes
 //uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 //	6 indicates the number of hours
         int     signbit = getBits_1 (d, used * 8 + 2);
-        dateTime [6] = (signbit == 1)?
-                        -1 * getBits_4 (d, used * 8 + 3):
-                             getBits_4 (d, used * 8 + 3);
+        currentConfig -> dateTime [6] = (signbit == 1)?
+                                         -1 * getBits_4 (d, used * 8 + 3):
+                                         getBits_4 (d, used * 8 + 3);
 //      7 indicates a possible remaining half our
-        dateTime [7] = (getBits_1 (d, used * 8 + 7) == 1) ? 30 : 0;
+        currentConfig -> dateTime [7] =
+	                   (getBits_1 (d, used * 8 + 7) == 1) ? 30 : 0;
         if (signbit == 1)
-           dateTime [7] = -dateTime [7];
+           currentConfig -> dateTime [7] = - currentConfig -> dateTime [7];
 
-	uint8_t	LTO	= dateTime [6];
+	uint8_t	LTO	= currentConfig -> dateTime [6];
 	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
 	theEnsemble	-> eccByte	= ecc;
 	theEnsemble	-> lto		= LTO;
@@ -632,46 +632,56 @@ int	monthLength [] {
 //
 //	Time in 10 is given in UTC, for other time zones
 //	we add (or subtract) a number of Hours (half hours)
-void	adjustTime (int32_t *dateTime) {
+void	fibDecoder::adjustTime (int32_t *dateTime) {
 //	first adjust the half hour  in the amount of minutes
 	                    
-	dateTime [4] += (dateTime [7] == 1) ? 30 : 0;
-	if (dateTime [4] >= 60) {
-	   dateTime [4] -= 60; dateTime [3] ++;
+	currentConfig -> dateTime [4] += 
+	            (currentConfig -> dateTime [7] == 1) ? 30 : 0;
+	if (currentConfig -> dateTime [4] >= 60) {
+	   currentConfig -> dateTime [4] -= 60;
+	   currentConfig -> dateTime [3] ++;
 	}
 
-	if (dateTime [4] < 0) {
-	   dateTime [4] += 60; dateTime [3] --;
+	if (currentConfig -> dateTime [4] < 0) {
+	   currentConfig -> dateTime [4] += 60;
+	   currentConfig -> dateTime [3] --;
 	}
 
-	dateTime [3] += dateTime [6];
-	if ((0 <= dateTime [3]) && (dateTime [3] <= 23))
+	currentConfig -> dateTime [3] += currentConfig -> dateTime [6];
+	if ((0 <= currentConfig ->  dateTime [3]) && 
+	    (currentConfig -> dateTime [3] <= 23))
 	   return;
 
-	if (dateTime [3] > 23) {
-	   dateTime [3] -= 24; dateTime [2] ++;
+	if (currentConfig -> dateTime [3] > 23) {
+	   currentConfig -> dateTime [3] -= 24;
+	   currentConfig -> dateTime [2] ++;
 	}
 
-	if (dateTime [3] < 0) {
-	   dateTime [3] += 24; dateTime [2] --;
+	if (currentConfig -> dateTime [3] < 0) {
+	   currentConfig -> dateTime [3] += 24;
+	   currentConfig -> dateTime [2] --;
 	}
 
-	if (dateTime [2] > monthLength [dateTime [1] - 1]) {
-	   dateTime [2] = 1; dateTime [1] ++;
-	   if (dateTime [1] > 12) {
-	      dateTime [1] = 1;
-	      dateTime [0] ++;
+	if (currentConfig -> dateTime [2] >
+	             monthLength [currentConfig -> dateTime [1] - 1]) {
+	   currentConfig -> dateTime [2] = 1;
+	   currentConfig -> dateTime [1] ++;
+	   if (currentConfig -> dateTime [1] > 12) {
+	      currentConfig -> dateTime [1] = 1;
+	      currentConfig -> dateTime [0] ++;
 	   }
 	}
 
-	if (dateTime [2] < 0) {
-	   if (dateTime [1] > 1) {
-	      dateTime [2] = monthLength [dateTime [1] - 1 - 1];
-	      dateTime [1] --;
+	if (currentConfig -> dateTime [2] < 0) {
+	   if (currentConfig -> dateTime [1] > 1) {
+	      currentConfig -> dateTime [2] =
+	                  monthLength [currentConfig -> dateTime [1] - 1 - 1];
+	      currentConfig -> dateTime [1] --;
 	   }
 	   else {
-	      dateTime [2] = monthLength [11];
-	      dateTime [1] = 12; dateTime [0] --;
+	      currentConfig -> dateTime [2] = monthLength [11];
+	      currentConfig -> dateTime [1] = 12;
+	      currentConfig -> dateTime [0] --;
 	   }
 	}
 }
@@ -689,8 +699,8 @@ uint16_t	theTime	[6];
 	theTime [3] = getBits_5 (dd, offset + 21); // Hours
 	theTime [4] = getBits_6 (dd, offset + 26); // Minutes
 
-	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
-	   theTime [5] =  0;	// Seconds (Ubergang abfangen)
+	if (getBits_6 (dd, offset + 26) != currentConfig -> dateTime [4]) 
+	   theTime [5] =  0;	// Seconds
 
 	if (dd [offset + 20] == 1)
 	   theTime [5] = getBits_6 (dd, offset + 32);	// Seconds
@@ -698,23 +708,26 @@ uint16_t	theTime	[6];
 //	take care of different time zones
 	bool	change = false;
 	for (int i = 0; i < 6; i ++) {
-	   if (theTime [i] != dateTime [i])
+	   if (theTime [i] != currentConfig -> dateTime [i])
 	      change = true;
-	   dateTime [i] = theTime [i];
+	   currentConfig -> dateTime [i] = theTime [i];
 	}
 
 #ifdef	CLOCK_STREAMER
 	change = true;
 #endif
 	if (change) {
-	   int utc_day	= dateTime [2];
-	   int utc_hour	= dateTime [3];
-	   int utc_minute = dateTime [4];
-	   int utc_seconds = dateTime [5];
-	   adjustTime (dateTime);
-	   emit  clockTime (dateTime [0], dateTime [1],
-	                    dateTime [2], dateTime [3], dateTime [4],
-	                            utc_day, utc_hour, utc_minute, utc_seconds);
+	   int utc_day		= currentConfig -> dateTime [2];
+	   int utc_hour		= currentConfig -> dateTime [3];
+	   int utc_minute 	= currentConfig -> dateTime [4];
+	   int utc_seconds	= currentConfig -> dateTime [5];
+	   adjustTime (currentConfig -> dateTime);
+	   emit  clockTime (currentConfig -> dateTime [0],
+	                    currentConfig -> dateTime [1],
+	                    currentConfig -> dateTime [2],
+	                    currentConfig -> dateTime [3],
+	                    currentConfig -> dateTime [4],
+	                    utc_day, utc_hour, utc_minute, utc_seconds);
 	}
 }
 //

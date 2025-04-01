@@ -168,13 +168,14 @@
 	   function showTransmitterAtSideBar (target, firstOne) {
 	      let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	      let coords = '<span style=\"font-style: italic;\">' +
-	                          target. lat + ' ' +
-	                          target. lon +  '</span>';
+	                          target. lat +  '&#xb0' + ',' +
+	                          target. lon + '&#xb0' + '</span>';
 	      let xx = document. getElementById ('selinfo');
 	      if (firstOne)
 	         xx. innerHTML = 
 	              '<span style=\"font-weight:bold;">' + 'Transmitters <br>' + '</span>';
-	      xx. innerHTML += newChannel + '=>' +
+	      xx. innerHTML += newChannel +
+	                       '(' + target. ensemble + ')' + '<br>' +
 	                       target. name + ' (' +
 	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
 	                       target. height + ' m' + '<br>' +

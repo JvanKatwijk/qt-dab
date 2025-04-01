@@ -32,9 +32,9 @@
 class cacheElement {
 public:
 	bool		valid;
+	QString		ensemble;
 	QString		country;
 	QString		channel;
-	QString		ensemble;
 	QString		location;
 	uint16_t 	Eid;
 	uint8_t		mainId;
@@ -61,6 +61,7 @@ public:
 	
 	cacheElement	() {
 	   valid		= false;
+	   ensemble		= "";
 	   country		= "not known";
 	   channel		= "";
 	   ensemble		= "";

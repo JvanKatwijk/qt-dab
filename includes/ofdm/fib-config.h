@@ -130,6 +130,7 @@ public:
 	std::vector<programType> programType_table;	// FIG017
 	std::vector<FIG18_cluster> announcement_table; // FIG0/18
 
+	int32_t dateTime [8];
 	void	reset			();
 	int	serviceIdOf		(int index);
 	int	SCIdsOf			(int index);

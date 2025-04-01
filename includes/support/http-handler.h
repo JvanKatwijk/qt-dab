@@ -38,11 +38,11 @@ class	RadioInterface;
 
 typedef struct {
 	uint8_t		type;
+	QString		ensemble;
 	position	coords;
 	QString		transmitterName;
 	QString 	channelName;
 	QString		dateTime;
-	QString		ensemble;
 	QString		polarization;
 	QString		direction;
 	uint16_t	Eid;
