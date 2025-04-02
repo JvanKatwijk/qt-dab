@@ -1894,7 +1894,7 @@ void	RadioInterface::announcement	(int SId, int flags) {
 	if (!running. load ())
 	   return;
 
-	if (channel. currentService. SId == SId) {
+	if (channel. currentService. SId == (uint32_t)SId) {
 	   if (flags != 0)
 	      announcement_start (SId, flags);
 	   else
@@ -2395,6 +2395,7 @@ int	tunedFrequency	=
 
 	distanceLabel		-> setText ("");
 	theDXDisplay. 		cleanUp ();
+	theDXDisplay. setChannel (channel. channelName, channel. ensembleName);
 	theNewDisplay. 		cleanTII	();
 	theNewDisplay. 		showTransmitters (channel. transmitters);
 	if (mapHandler != nullptr)
@@ -3903,6 +3904,8 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if (dxMode) {
 	   theDXDisplay. cleanUp ();
 	   theDXDisplay. show ();
+	   theDXDisplay. setChannel (channel. channelName,
+	                             channel. ensembleName);
 	   int teller = 0;
 	   for (auto &transm : channel. transmitters) {
 	      theDXDisplay. addRow (transm. theTransmitter,
@@ -4251,6 +4254,14 @@ void	RadioInterface::handle_folderButton	() {
 #endif
 }
 
+const char *directionTable [] = {
+	"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
+
+QString	fromAzimuth_toDirection (float azimuth) {
+int direction	= (azimuth) / 22.5;
+	return directionTable [(direction + 1) / 2];
+}
+
 QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
 	uint8_t mainId		= transmitter -> mainId;
 	uint8_t subId		= transmitter -> subId;
@@ -4258,9 +4269,10 @@ QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
 	                        = transmitter -> transmitterName;
 	float	theDistance	= transmitter -> distance;
 	float	theAzimuth	= transmitter -> azimuth;
+	QString direction	= fromAzimuth_toDirection (theAzimuth);
 //	int	theAltitude	= transmitter -> altitude;
 //	int	theHeight	= transmitter -> height;
-//	float	thePower	= transmitter -> power;
+	float	thePower	= transmitter -> power;
 
 QString labelText = "(" + QString::number (mainId) + ","
 	               + QString::number (subId) + ") ";
@@ -4268,10 +4280,11 @@ QString labelText = "(" + QString::number (mainId) + ","
 	labelText += "  "
 	             + QString::number (theDistance, 'f', 1) + " km " 
 	             + QString::number (theAzimuth, 'f', 1)
-	             + QString::fromLatin1 (" \xb0 ") + ",  ";
+	             + QString::fromLatin1 (" \xb0 ") + "  "
+	             + "(" + direction + ")  " 
 //	             + QString::number (theAltitude) +  "m "
 //	             + QString::number (theHeight) +  "m "
-//	             + QString::number (thePower, 'f', 1) + "kW";
+	             + QString::number (thePower, 'f', 1) + "kW";
 	return labelText;
 }
 

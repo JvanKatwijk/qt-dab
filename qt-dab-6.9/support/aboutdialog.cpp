@@ -65,8 +65,9 @@
                          "<ul>"
 	                 "<li> Herman Wijnants, for continuous suggestions and feedback</li>" +
 	                 "<li> Andreas Mikula, for continuous support </li>" +
-	                 "<li> Rolf Zerr, for an improved TII decoder </li>" +
+	                 "<li> Jarod Middelman, for continuous feedback</li>" +
 	                 "<li> Stefan Poeschel, for providing code for saving AAC </li>" +
+	                 "<li> Rolf Zerr, for an improved TII decoder </li>" +
 	                 "</ul>");
 //	ui -> configuration -> setTextInteractionFlags (Qt::TextBrowserInteraction);
 	ui -> configuration -> setOpenExternalLinks(true);

@@ -139,7 +139,7 @@
 	      for (var j = 0; j < transmitterIndex; j ++) {
 	         if ((Transmitters [j]. lat == target. lat) &&
 	             (Transmitters [j]. lon == target. lon) &&
-	             (Transmitters [j]. status)) {
+	             (Transmitters [j]. current)) {
 	                return true;
 	         }
 	      }
@@ -198,27 +198,6 @@
 	      }
 	   }
 
-	   function updateFurthest (target) {
-	      let coords = '<span style=\"font-style: italic;\">' +
-	                          target. lat + ' ' +
-	                          target. lon +  '</span>';
-	      let aa = document. getElementById ('distance');
-	      aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
-	                    target. channel + '=>' +
-	                    target. dateTime + '<br>' +
-	                     target. name  + ' (' +
-	                    (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
-	                    "alt " + target. altitude + ' m' + '<br>' +
-	                    "height " + target. height + ' m' + '<br>' +
-	                    (target. direction == "??" ?  " " :
-	                          ("dir :" + target. direction + '<br>')) +
-	                    coords + '<br>' +
-	                    'Distance to home ' + target. dist + 'km ' + 
-	                    target. azimuth + '&#xb0' +
-	                    '<br><br>';
-	           
-	   }
-
 	   function addTransmitter (target) {
 	      let firstOne	= transmitterIndex == 0;
 	      target. furthest	= target. type == MAP_MAX_TRANS;
@@ -243,9 +222,9 @@
 	      showTransmitterAtSideBar (target, firstOne);
 	   }
 
-//	the CURRENT changed, so we have to restore the old
-//	marker for the previous current - if any - that is
-//	slightly complicated since there are several options
+//	the CURRENT changed,
+//	two things might have changed, the "current" one
+//	and the "furthest" one
 	   function updateCurrent (target) {
 	      var maxDistance	= 0;
 	      var maxIndex	= -1;
@@ -379,17 +358,20 @@
 	                          target. lat + '&#xb0' + ',' +
 	                          target. lon + '&#xb0' +  '</span>';
 	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
-	                    newChannel + '=>' +
-	                    target. dateTime + '<br>' +
-	                    target. name +  ' (' +
-	                          (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
-	                          "alt " + target. altitude + ' m' + '<br>' +
-	                          "height " + target. height + ' m' + '<br>' +
-	                          (target. direction == "??" ? " " :
-	                              ("dir :" + target. direction  + '<br>')) +
-	                    coords + '<br>' +
-	                    'Distance to home ' + target. dist + 'km ' +
-	                             target. azimuth + '&#xb0' + '<br></p>'
+	            newChannel +  '  (' + target. ensemble + ')' + '<br>' +
+	                       target. dateTime + '<br>' +
+	                       'tii ' + Math. floor (target. tiiValue / 256) +
+	                              ' ' + target. tiiValue % 256 + ', ' +
+	                       "alt " + target. altitude + ' m' + ', ' +
+	                       "height " + target. height + ' m' + '<br>' +
+	                       target. name + ' (' +
+	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
+	                       (target. direction == "??" ? " ":
+	                               ("dir :" +  target. direction + '<br>')) +
+	                       coords + '<br>' +
+	                       'Distance to home ' +
+	                                  target. dist + 'km ' + 
+	                       target. azimuth + '&#xb0' + '<br><br>';
 	}
 
 </script>

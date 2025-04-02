@@ -242,15 +242,16 @@ DABFLOAT sum = 0;
 	                                RAD_PER_DEGREE * (DABFLOAT)20.0);
 
 /**
-  *	When trying the alternative decoder implementations
-  *	as implemented in DABstar by Rolf Zerr and TomNeda, I
-  *	decided to do some investigation to get  actual figures.
+  *	When trying alternative decoder implementations
+  *	as implemented in DABstar by Rolf Zerr (aka old-dab) and
+  *	Thomas Neder (aka) Tomneda.
+  *	I decided to do some investigation to get  actual figures.
   *	The different decoders below were tested with an old file
-  *	with a recording of a poor signal, that ran for two  minutes
-  *	from the start, and the BER results were accumulated to get a
-  *	more or less reliable answer.
-  *	The major effect on the decoding quality though was with
-  *	the phase shifting as done above.
+  *	with a recording of a poor signal, that ran for (almost) exact
+  *	two  minutes from the start, and the BER results were accumulated
+  *	to get a more or less reliable answer.
+  *	It turned out that the major effect on the decoding quality 
+  *	was with the phase shifting as done above.
   *	With that setting there turned out to be a marginal difference
   *	in favor of decoder 1 over decoder 4, the decoders 2 and 3 performed
   *	slightly less (roughly speaking app 740000 repairs by

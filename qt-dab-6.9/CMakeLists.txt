@@ -8,7 +8,7 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/Modules/CMakeFunctions.cmake)
 
 project(Qt-DAB VERSION 6)
-set (objectName qt-dab-6.9.1)
+set (objectName qt-dab-6.9.2)
 set (objectName "Qt-DAB")
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)

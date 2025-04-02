@@ -105,8 +105,9 @@ uint16_t	secondDigit (v % 10);
 	delete	myWidget;
 }
 
-void	dxDisplay::setChannel (const QString &channel) {
-	myWidget -> setWindowTitle (channel);
+void	dxDisplay::setChannel (const QString &channel,
+	                       const QString &ensemble) {
+	myWidget -> setWindowTitle ("TII data for " +channel + " " +ensemble);
 	theChannel	= channel;
 }
 
