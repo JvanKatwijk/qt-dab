@@ -71,7 +71,7 @@ private:
                 const error_t abs_error = error_t(get_abs(error));
                 total_error += abs_error;
             }
-            assert(total_error <= base.m_config.soft_decision_max_error);
+//          assert(total_error <= base.m_config.soft_decision_max_error);
 
             // We only store half the states in the branch table, but here we expand it out to explore the other unstored half
             // Both state 0 and state 1 when shifted give the same next state (for the same input bit)

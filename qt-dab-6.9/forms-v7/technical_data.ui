@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>309</width>
+    <width>278</width>
     <height>724</height>
    </rect>
   </property>
@@ -77,15 +77,12 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLCDNumber" name="serviceIdDisplay">
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
+      <widget class="QLabel" name="serviceIdDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
-       <property name="mode">
-        <enum>QLCDNumber::Mode::Hex</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -97,12 +94,12 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLCDNumber" name="startAddressDisplay">
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
+      <widget class="QLabel" name="startAddressDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -114,12 +111,12 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLCDNumber" name="lengthDisplay">
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
+      <widget class="QLabel" name="lengthDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -131,12 +128,12 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLCDNumber" name="subChIdDisplay">
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
+      <widget class="QLabel" name="subChIdDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -174,6 +171,9 @@
        <property name="text">
         <string>uepField</string>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -187,6 +187,9 @@
       <widget class="QLabel" name="codeRate">
        <property name="text">
         <string>TextLabel</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -204,6 +207,9 @@
        </property>
        <property name="text">
         <string>ASCTy</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
@@ -224,6 +230,9 @@
        </property>
        <property name="text">
         <string>language</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>

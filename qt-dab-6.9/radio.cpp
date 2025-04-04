@@ -291,6 +291,7 @@ QString h;
 	         the_ensembleHandler, &ensembleHandler::set_serviceOrder);
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
+
 #ifdef HAVE_RTLSDR_V3
 	SystemVersion	= QString ("9.2") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
@@ -299,7 +300,7 @@ QString h;
 	SystemVersion	= QString ("9.2");
 #endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
-	version		= "Qt6-DAB-6." + SystemVersion;
+	version		= "Qt6-DAB-6." + SystemVersion ;
 #else
 	version		= "Qt5-DAB-6." + SystemVersion;
 #endif
@@ -3835,7 +3836,9 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 //	   need_to_print = true;
 	   cacheElement theTransmitter = *tr;
 	   theTransmitter. strength	= r [i]. strength;
-	   if (theTransmitter. mainId == 255) {	// apparently not found
+	   if (theTransmitter. mainId == 255) {	// apparently not founda
+	      if (!configHandler_p -> get_allTIISelector ())
+	         continue;
 	      theTransmitter. ensemble	= channel. ensembleName;
 	      theTransmitter. mainId	= r [i]. mainId;
 	      theTransmitter. subId	= r [i]. subId;
@@ -3908,6 +3911,9 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	                             channel. ensembleName);
 	   int teller = 0;
 	   for (auto &transm : channel. transmitters) {
+	      if (!configHandler_p -> get_allTIISelector ())
+	         if (transm. theTransmitter. distance < 0)
+	            continue;
 	      theDXDisplay. addRow (transm. theTransmitter,
 	                             bestIndex == teller);
 	      teller ++;
@@ -3915,6 +3921,9 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	}
 	else {	// just show on the main widget the strongest
 	   for (auto &theTr: channel. transmitters) {
+	      if (!configHandler_p -> get_allTIISelector ())
+	         if (theTr. theTransmitter. distance < 0)
+	            continue;
 	      if (theTr. isStrongest) {
 	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
 	         distanceLabel	-> setText (labelText);

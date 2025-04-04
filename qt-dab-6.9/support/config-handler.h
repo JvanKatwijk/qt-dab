@@ -84,6 +84,7 @@ public:
 	void	enable_loadLib		();
 	bool	get_correlationSelector	();
 	bool	get_audioServices_only	();
+	bool	get_allTIISelector	();
 
 private:
 	RadioInterface	*myRadioInterface;
@@ -130,6 +131,7 @@ private slots:
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_tiiThreshold		(int);
 	void	handle_pathButton		();
+	void	handle_allTIISelector		(int);
 	void	handle_audioServices_only	(int);
 	void	handle_auto_http		(int);
 

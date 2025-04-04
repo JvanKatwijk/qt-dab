@@ -66,10 +66,10 @@ float Length	= jan_abs (V);
 	                                 conjVector (params. get_T_u ()),
 	                                 fft_buffer (params. get_T_u ()),
 		                         stdDevVector (params. get_T_u ()),
-	                                 IntegAbsPhaseVector (params. get_T_u ())
-//	                                 meanLevelVector (params. get_T_u ()),
-//	                                 meanPowerVector (params. get_T_u ()),
-//	                                 meanSigmaSqVector (params. get_T_u ())
+	                                 IntegAbsPhaseVector (params. get_T_u ()),
+	                                 meanLevelVector (params. get_T_u ()),
+	                                 meanPowerVector (params. get_T_u ()),
+	                                 meanSigmaSqVector (params. get_T_u ())
 {
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
@@ -103,9 +103,9 @@ void	ofdmDecoder::stop ()	{
 void	ofdmDecoder::reset ()	{
 	memset (stdDevVector. data (),		0, T_u * sizeof (DABFLOAT));
 	memset (IntegAbsPhaseVector. data (),	0, T_u * sizeof (DABFLOAT));
-//	memset (meanLevelVector. data (),	0, T_u * sizeof (DABFLOAT));
-//	memset (meanPowerVector. data (),	0, T_u * sizeof (DABFLOAT));
-//	memset (meanSigmaSqVector. data (),	0, T_u * sizeof (DABFLOAT));
+	memset (meanLevelVector. data (),	0, T_u * sizeof (DABFLOAT));
+	memset (meanPowerVector. data (),	0, T_u * sizeof (DABFLOAT));
+	memset (meanSigmaSqVector. data (),	0, T_u * sizeof (DABFLOAT));
 	meanValue	= 1.0f;
 }
 //
@@ -174,14 +174,14 @@ int	sign (DABFLOAT x) {
 
 void	limit_symmetrically (DABFLOAT &v, float limit) {
 	if (v < -limit)
-	   v = -limit;
+	   v = -limit / 2;
 	if (v > limit)
-	   v = limit;
+	   v = limit / 2;
 }
 //
 //	How to compute a sin or cos for (hopefully) small angles,
 //	Some tests showed the using the first few terms of the
-//	Taylor series for angles up to PI / 4 were up to  the third
+//	Taylor series for angles up to PI / 4 were up to  the fourth
 //	decimal correct.
 //	A more performance oriented solution could be a table,
 //	but then, the granularity of the table should be pretty high.
@@ -189,9 +189,11 @@ Complex makeComplex (DABFLOAT phase) {
 DABFLOAT p2	= phase * phase;
 DABFLOAT p3	= p2 * phase;
 DABFLOAT p4	= p3 * phase;
-DABFLOAT sine	= phase - p3 / 6;
-DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24;
-	return complex (cosi, sine);
+DABFLOAT p5	= p4 * phase;
+DABFLOAT p6	= p5 * phase;
+DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
+DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
+	return Complex (cosi, sine);
 }
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
@@ -237,26 +239,29 @@ DABFLOAT sum = 0;
 	            Complex (re, im);
 	   DABFLOAT	binAbsLevel	= jan_abs (fftBin_at_1);
 	   IntegAbsPhaseVector [index] = 
-	                           0.2f * ALPHA * (arg (fftBin_at_1) - M_PI_4);
+	                           0.5f * ALPHA * (arg (fftBin_at_1) - M_PI_4);
 	   limit_symmetrically (IntegAbsPhaseVector [index],
-	                                RAD_PER_DEGREE * (DABFLOAT)20.0);
+	                                RAD_PER_DEGREE * (DABFLOAT)30.0);
 
 /**
   *	When trying alternative decoder implementations
   *	as implemented in DABstar by Rolf Zerr (aka old-dab) and
-  *	Thomas Neder (aka) Tomneda.
-  *	I decided to do some investigation to get  actual figures.
-  *	The different decoders below were tested with an old file
+  *	Thomas Neder (aka) Tomneda,  I wanted to do some investigation
+  (	to get  actual figures.
+  *	The different decoders were tested with an old file
   *	with a recording of a poor signal, that ran for (almost) exact
   *	two  minutes from the start, and the BER results were accumulated
   *	to get a more or less reliable answer.
   *	It turned out that the major effect on the decoding quality 
   *	was with the phase shifting as done above.
   *	With that setting there turned out to be a marginal difference
-  *	in favor of decoder 1 over decoder 4, the decoders 2 and 3 performed
+  *	between decoders 1 and decoder 4,
+  *	the other two decoders 2 and 3 performed
   *	slightly less (roughly speaking app 740000 repairs by
   *	decoder 1 and 4, and 746000 by decoders 2 and 3).
-  *	Anyway, the contributions of Rolf Zerr and Thomas Neder
+  *	So, we have chosen decoders 1 (most simple one) and 4 (log likelihood)
+  *	as decoders here.
+  *	the contributions of Rolf Zerr and Thomas Neder
   *	for their decoders is greatly acknowledged
   */
 	   DABFLOAT	phaseError	= arg (fftBin_at_1) - M_PI_4;
@@ -264,59 +269,56 @@ DABFLOAT sum = 0;
 	   stdDevVector [index] =
 	        compute_avg (stdDevVector [index], stdDev, ALPHA);
 //
-//	   meanLevelVector [index] =
-//	         compute_avg (meanLevelVector[index],
-//	                                 binAbsLevel, ALPHA);
-//	   meanPowerVector [index] =
-//	            compute_avg (meanPowerVector [index],
-//	                                 binAbsLevel * binAbsLevel, ALPHA);
-//	   DABFLOAT meanLevelPerBin	= meanLevelVector [index] / sqrt (2);
-//
-////	x distance to reference point
-//	   DABFLOAT x_distance		= 
-//	                             abs (real (fftBin)) - meanLevelPerBin;
-////	y distance to reference point
-//	   DABFLOAT y_distance		=
-//	                             abs (imag (fftBin)) - meanLevelPerBin;
-//
-//	   DABFLOAT sigmaSq		= x_distance * x_distance +
-//	                                  y_distance * y_distance;
-//	   meanSigmaSqVector [index]	=
-//	             compute_avg (meanSigmaSqVector [index], sigmaSq, ALPHA);
-//
-//	   DABFLOAT signalPower		= meanPowerVector [index] - nullPower;
-//
-//	   if (signalPower <= 0.0f)
-//	      signalPower = 0.1f;
-//
-//	   DABFLOAT snr		= signalPower / nullPower;
-//	   DABFLOAT ff 		=  meanLevelVector [index] /
-//	                                         meanSigmaSqVector [index];
-//	   ff /= 1 / snr + 2;
+	   meanLevelVector [index] =
+	         compute_avg (meanLevelVector[index],
+	                                 binAbsLevel, ALPHA);
+	   meanPowerVector [index] =
+	            compute_avg (meanPowerVector [index],
+	                                 binAbsLevel * binAbsLevel, ALPHA);
+	   DABFLOAT meanLevelPerBin	= meanLevelVector [index] / sqrt (2);
+
+//	x distance to reference point
+	   DABFLOAT x_distance		= 
+	                             abs (real (fftBin)) - meanLevelPerBin;
+//	y distance to reference point
+	   DABFLOAT y_distance		=
+	                             abs (imag (fftBin)) - meanLevelPerBin;
+
+	   DABFLOAT sigmaSq		= x_distance * x_distance +
+	                                  y_distance * y_distance;
+	   meanSigmaSqVector [index]	=
+	             compute_avg (meanSigmaSqVector [index], sigmaSq, ALPHA);
+
+	   DABFLOAT signalPower		= meanPowerVector [index] - nullPower;
+
+	   if (signalPower <= 0.0f)
+	      signalPower = 0.1f;
+
+	   DABFLOAT snr		= signalPower / nullPower;
+	   DABFLOAT ff 		=  meanLevelVector [index] /
+	                                         meanSigmaSqVector [index];
+	   ff /= 1 / snr + 2;
 	   Complex R1;
 	   
-	   DABFLOAT weight;
+	   DABFLOAT weight_r;
+	   DABFLOAT weight_i;
 	   switch (decoder) {
 	      default:
 	      case DECODER_1:
-	         R1		= fftBin;
-	         weight		= - MAX_VITERBI / binAbsLevel;
+	         R1 =  normalize (fftBin) * ff *
+	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
+	         weight_r = weight_i	= -100 / meanValue;
+	         ibits [i]		= (int16_t)(real (R1) * weight_r);
+	         ibits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
 	         break;
-//	      case DECODER_2:
-//	         R1		= fftBin * ff;
-//	         weight		= -100 / meanValue;
-//	         break;
-//	      default:
-//	      case DECODER_3:
-//	         R1 =  normalize (fftBin) * ff *
-//	                   sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index]));
-//	         weight		= -100 / meanValue;
-//	         break;
+	      case DECODER_2:
+	         R1		= fftBin;
+	         ibits [i]
+	                   = - real (R1) / meanLevelPerBin * MAX_VITERBI;
+	         ibits [carriers + i]
+	                   = - imag (R1) / meanLevelPerBin * MAX_VITERBI; 
+	         break;
 	   }
-
-	   limit_symmetrically (weight, 127);
-	   ibits [i]		= (int16_t)(real (R1) * weight);
-	   ibits [carriers + i]	= (int16_t)(imag (R1) * weight);
 
 	   sum += jan_abs (R1);
 	}	// end of decode loop

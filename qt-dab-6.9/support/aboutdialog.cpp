@@ -30,6 +30,19 @@
 	AboutDialog::AboutDialog(QWidget *parent) :
 	                                  QDialog(parent),
 	                                  ui (new Ui::AboutDialog) {
+
+	QString support;
+#ifdef	SSE_AVAILABLE	
+	support		= "(spiral + sse)";
+#elif	NO_SSE_AVAILABLE
+	support		= "(spiral scalar)";
+#elif	__AVX2__
+	support		= "(yang + avx2)";
+#elif	__SSE4_1__	
+	support		= "(yang + sse)";
+#else
+	support		= "(yang scalar)";
+#endif
 	ui -> setupUi (this);
 	QPixmap p;
 	p. load (":res/pauze-slide.png", "png");
@@ -39,7 +52,7 @@
 	ui -> author		-> setTextInteractionFlags (Qt::TextBrowserInteraction);
 	ui -> version		-> setText (QString("Version-6.%1").arg ("9.2"));
 	QString theDate		= QString (__DATE__) + " " + QString (__TIME__);
-	ui -> buildInfo ->	setText (QString ("Built on ") + theDate + QString (", Commit ") + QString (GITHASH));
+	ui -> buildInfo ->	setText (QString ("Built on ") + theDate + QString (", Commit ") + QString (GITHASH) + " with " + support);
 	ui -> sourceLocation	-> setText ("Sources are at <a href=\"https://github.com/JvanKatwijk/qt-dab\">github> </a>");
 	ui -> sourceLocation	-> setOpenExternalLinks(true);
 	ui -> qtVersion		-> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));

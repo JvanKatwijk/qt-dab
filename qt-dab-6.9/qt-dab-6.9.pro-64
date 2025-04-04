@@ -467,7 +467,9 @@ CONFIG		+= fdk-aac
 #otherwise, if you want to use the default qt way of sound out
 CONFIG		+= local-audio
 
-CONFIG          += viterbi-new
+CONFIG          += viterbi-scalar
+CONFIG          += viterbi-sse
+CONFIG          += viterbi-avx2
 #CONFIG         += spiral-sse
 #CONFIG         += spiral-no-sse
 #DEFINES	+= SHOW_MISSING
@@ -517,7 +519,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-	CONFIG		+= viterbi-new
+	CONFIG		+= viterbi-scalar
 	DEFINES		+= __THREADED_BACKEND
 	CONFIG		+= local-audio
 	CONFIG		+= double
@@ -872,14 +874,33 @@ datastreamer	{
 	SOURCES		+= ../server-thread/tcp-server.cpp
 }
 
-viterbi-new {
+viterbi-scalar {
+	DEPENDPATH	+= ../src/support/viterbi
+	INCLUDEPATH	+= ../src/support/viterbi
+	HEADERS		+= ../src/support/viterbi/viterbi.h 
+	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+}
+
+viterbi-avx2 {
+	DEPENDPATH	+= ../src/support/viterbi
+	QMAKE_CFLAGS    +=  -msse4 -mavx2
+        QMAKE_CXXFLAGS  +=  -msse4 -mavx2
+        QMAKE_LFLAGS    +=  -msse4 -mavx2
+	DEFINES		+= __ARCH_X86__
+	DEFINES		+= __AVX2__
+	#DEFINES	+= __ARCH_AARCH64__
+	INCLUDEPATH	+= ../src/support/viterbi
+	HEADERS		+= ../src/support/viterbi/viterbi.h 
+	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+}
+
+viterbi-sse {
 	DEPENDPATH	+= ../src/support/viterbi
 	QMAKE_CFLAGS    +=  -msse4 -mavx2
         QMAKE_CXXFLAGS  +=  -msse4 -mavx2
         QMAKE_LFLAGS    +=  -msse4 -mavx2
 	DEFINES		+= __ARCH_X86__
 	#DEFINES	+= __SSE4_1__
-	#DEFINES	+= __AVX2__
 	#DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi
 	HEADERS		+= ../src/support/viterbi/viterbi.h 

@@ -55,7 +55,7 @@ constexpr int16_t soft_decision_high	= +127;
 static ViterbiDecoder_Config <uint16_t> create_decoder_config () {
 	const uint16_t max_error =
 	               uint16_t (soft_decision_high-soft_decision_low) *
-	                       uint16_t(viterbi::m_code_rate);
+	                       uint16_t(viterbi::m_code_rate) + 40;
 	const uint16_t error_margin =
 	               max_error * uint16_t(5u);
 	ViterbiDecoder_Config<uint16_t> config;

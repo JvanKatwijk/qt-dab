@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>527</width>
+    <width>513</width>
     <height>378</height>
    </rect>
   </property>
@@ -16,7 +16,7 @@
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
@@ -64,100 +64,86 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QSpinBox" name="fontSizeSelector">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font size of the service lists (both the ensemble view and the favorites view) can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="minimum">
-              <number>8</number>
-             </property>
-             <property name="maximum">
-              <number>15</number>
-             </property>
-             <property name="value">
-              <number>10</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="smallPushButton" name="fontButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font for displaying the servicenames in the ensemble display can be set here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>font</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="smallPushButton" name="fontColorButton">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The color used to display the servicenames in the ensemblewidget can be selected here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>font color</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QSpinBox" name="tiiThreshold_setter">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Minimum value is set to 6 dB.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="suffix">
+            <string> dB</string>
+           </property>
+           <property name="minimum">
+            <number>4</number>
+           </property>
+           <property name="value">
+            <number>6</number>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QSpinBox" name="tiiThreshold_setter">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Minimum value is set to 6 dB.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="suffix">
-              <string> dB</string>
-             </property>
-             <property name="minimum">
-              <number>4</number>
-             </property>
-             <property name="value">
-              <number>6</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="tiiFilter">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It shows that setting a lower threshold value allows (too) many false tii messages. A filter can be selected that inspects the potential tii values and blocks some of thoese that seem false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>tii filter</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="tiiCollisions">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If setting a subId value different from 0, the software searches for ALL mainIds, associated with that  subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QCheckBox" name="tiiFilter">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It shows that setting a lower threshold value allows (too) many false tii messages. A filter can be selected that inspects the potential tii values and blocks some of thoese that seem false.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>tii filter</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="tiiCollisions">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If setting a subId value different from 0, the software searches for ALL mainIds, associated with that  subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QSpinBox" name="fontSizeSelector">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font size of the service lists (both the ensemble view and the favorites view) can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="minimum">
+            <number>8</number>
+           </property>
+           <property name="maximum">
+            <number>15</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="smallPushButton" name="fontButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font for displaying the servicenames in the ensemble display can be set here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>font</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="smallPushButton" name="fontColorButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The color used to display the servicenames in the ensemblewidget can be selected here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>font color</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="smallPushButton" name="audioSelectButton">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation). Note that if no audio channels for the Qt_audio driver can be found, the default setting of portaudio is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>audio</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="smallPushButton" name="pathButton">
            <property name="toolTip">
@@ -165,6 +151,16 @@
            </property>
            <property name="text">
             <string>path</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="smallPushButton" name="audioSelectButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation). Note that if no audio channels for the Qt_audio driver can be found, the default setting of portaudio is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>audio</string>
            </property>
           </widget>
          </item>
@@ -245,21 +241,6 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="3" colspan="2">
-      <widget class="smallPushButton" name="loadTableButton">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button will instruct the software to load a fresh database. Note that this only works if either the software is precompiled or you have installed the small library as discussed in the installation instructions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>load table</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="smallPushButton" name="devicewidgetButton">
        <property name="sizePolicy">
@@ -297,28 +278,7 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="5">
-      <widget class="smallPushButton" name="dumpButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Raw dump</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2" colspan="2">
+     <item row="0" column="2">
       <widget class="smallPushButton" name="dlTextButton">
        <property name="font">
         <font>
@@ -333,7 +293,60 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="2">
+     <item row="0" column="3" colspan="2">
+      <widget class="smallPushButton" name="resetButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>reset</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="smallPushButton" name="scheduleButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>schedule</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="smallPushButton" name="snrButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Cantarell</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>snr viewer</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
       <widget class="smallPushButton" name="set_coordinatesButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -355,18 +368,23 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="6">
-      <widget class="smallPushButton" name="scheduleButton">
+     <item row="1" column="2" colspan="2">
+      <widget class="smallPushButton" name="loadTableButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button will instruct the software to load a fresh database. Note that this only works if either the software is precompiled or you have installed the small library as discussed in the installation instructions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>schedule</string>
+        <string>load table</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="4" colspan="2">
-      <widget class="smallPushButton" name="resetButton">
+     <item row="1" column="4">
+      <widget class="smallPushButton" name="dumpButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -379,42 +397,20 @@
         </font>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>reset</string>
+        <string>Raw dump</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="6">
+     <item row="1" column="5">
       <widget class="smallPushButton" name="skinButton">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few &amp;quot;skin&amp;quot;s for the widgets in the program. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>skin</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="smallPushButton" name="snrButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <family>Cantarell</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>snr viewer</string>
        </property>
       </widget>
      </item>
@@ -553,6 +549,16 @@
        </property>
        <property name="text">
         <string>  logger</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="allTIISelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If/when the threshold value for the TII detection is too low, the TII detector will &amp;quot;detect&amp;quot; non-existent transmitters. While some users want to see anythings that is detected, others (including myself) only want the &amp;quot;real&amp;quot; transmitters to appear on the DX display.&lt;/p&gt;&lt;p&gt;While by default the setting is &amp;quot;on&amp;quot;, switchin the selector 's value to &amp;quot;off&amp;quot; tells the software to show only transmitters known by the database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>all tii</string>
        </property>
       </widget>
      </item>

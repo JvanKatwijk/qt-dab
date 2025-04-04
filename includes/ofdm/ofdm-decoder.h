@@ -88,9 +88,9 @@ private:
 	std::vector<Complex>	fft_buffer;
 	std::vector<DABFLOAT>	stdDevVector;
 	std::vector<DABFLOAT> 	IntegAbsPhaseVector;
-//	std::vector<DABFLOAT>	meanLevelVector;
-//	std::vector<DABFLOAT>	meanPowerVector;
-//	std::vector<DABFLOAT>	meanSigmaSqVector;
+	std::vector<DABFLOAT>	meanLevelVector;
+	std::vector<DABFLOAT>	meanPowerVector;
+	std::vector<DABFLOAT>	meanSigmaSqVector;
 	
 	float		meanValue;
 	int		iqSelector;

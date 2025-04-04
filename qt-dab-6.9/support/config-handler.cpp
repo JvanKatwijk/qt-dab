@@ -176,6 +176,10 @@ int	index_for_key (int key) {
 	this -> decoderSelector -> setEnabled (false);
 #endif
 
+	int d	= value_i (dabSettings, CONFIG_HANDLER,
+	                                 "show_all_tii", 1);
+	this	-> allTIISelector	-> setChecked (d != 0);
+
 	int k	= value_i (dabSettings, CONFIG_HANDLER,
 	                                 "decoders", DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
@@ -221,6 +225,12 @@ int	index_for_key (int key) {
 	connect (tiiSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_tiiSelector);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (allTIISelector, &QCheckBox::checkStateChanged,
+#else
+	connect (allTIISelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_allTIISelector);
 	connect (this, &configHandler::process_tiiSelector,
 	         myRadioInterface, &RadioInterface::process_tiiSelector);
 	set_Colors ();
@@ -938,6 +948,16 @@ audiosystemSelector the_selector (dabSettings);
 
 bool	configHandler::get_correlationSelector () {
 	return correlationSelector -> isChecked ();
+}
+
+bool	configHandler::get_allTIISelector () {
+	return allTIISelector -> isChecked ();
+}
+
+void	configHandler::handle_allTIISelector	(int d) {
+	(void)d;
+	store (dabSettings, CONFIG_HANDLER, "show_all_tii", 
+	      allTIISelector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_tiiThreshold	(int t) {

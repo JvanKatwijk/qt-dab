@@ -53,7 +53,7 @@
 
 	set_position_and_size (dabSettings, &myFrame, TECHDATA_SETTING);
 
-	formLayout -> setLabelAlignment (Qt::AlignLeft);
+//	formLayout -> setLabelAlignment (Qt::AlignLeft);
 //	myFrame. setWindowFlag (Qt::Tool, true);
 	myFrame. hide ();
 	timeTable_button	-> setEnabled (false);
@@ -110,9 +110,9 @@ void	techData::cleanUp	() {
 	frameError_display	-> setValue (0);
 	rsError_display		-> setValue (0);
 	aacError_display	-> setValue (0);
-	startAddressDisplay	-> display (0);
-	lengthDisplay		-> display (0);
-	subChIdDisplay		-> display (0);
+	startAddressDisplay	-> setText (QString::number (0));
+	lengthDisplay		-> setText (QString::number (0));
+	subChIdDisplay		-> setText (QString::number (0));
 	uepField		-> setText (ee);
 	codeRate		-> setText (ee);
 	ASCTy			-> setText (ee);
@@ -207,30 +207,41 @@ void	techData::show_serviceName	(const QString &s1, const QString &s2) {
 	else
 	   programName -> setText (s1);
 }
+static
+QString hextoString (int v) {
+QString res;
+        for (int i = 0; i < 4; i ++) {
+           uint8_t t = (v & 0xF000) >> 12;
+           QChar c = t <= 9 ? (char)('0' + t) : (char) ('A' + t - 10);
+           res. append (c); 
+           v <<= 4;
+        }
+        return res;
+}
 
 void	techData::show_serviceId		(int SId) {
-	serviceIdDisplay -> display (SId);
+QString text	= hextoString (SId);
+	serviceIdDisplay -> setText (text);
 }
 
 void	techData::show_startAddress	(int sa) {
-	startAddressDisplay	-> display (sa);
+	startAddressDisplay	-> setText (QString::number (sa));
 }
 
 void	techData::show_length		(int l) {
-	lengthDisplay	-> display (l);
+	lengthDisplay		-> setText (QString::number (l));
 }
 
 void	techData::show_subChId		(int subChId) {
-	subChIdDisplay	-> display (subChId);
+	subChIdDisplay		-> setText (QString::number (subChId));
 }
 
 void	techData::show_language		(int l) {
-	language	-> setAlignment (Qt::AlignCenter);
+	language	-> setAlignment (Qt::AlignRight);
 	language	-> setText (getLanguage (l));
 }
 
 void	techData::show_ASCTy		(int a) {
-	ASCTy	-> setAlignment (Qt::AlignCenter);
 	ASCTy	-> setText (a == 077 ? "DAB+"  : "DAB");
 	if (a == 077) {
 	   rsError_display	-> show ();
@@ -244,12 +255,10 @@ void	techData::show_ASCTy		(int a) {
 
 void	techData::show_uep		(int shortForm, int protLevel) {
 	QString protL = getProtectionLevel (shortForm, protLevel);
-	uepField	-> setAlignment (Qt::AlignCenter);
 	uepField	-> setText (protL);
 }
 
 void	techData::show_codeRate		(int shortForm, int protLevel) {
-	codeRate -> setAlignment (Qt::AlignCenter);
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 

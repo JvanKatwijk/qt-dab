@@ -16,12 +16,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
 QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -481,7 +481,9 @@ CONFIG		+= datastreamer
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-CONFIG		+= viterbi-new
+#CONFIG		+= viterbi-scalar
+CONFIG		+= viterbi-sse
+#CONFIG		+= viterbi-avx2
 #CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
@@ -519,7 +521,7 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= sdrplay-v3
 ##	CONFIG		+= hackrf
 ##	CONFIG		+= lime
-#	CONFIG		+= viterbi-new
+#	CONFIG		+= viterbi-scalar
 #	CONFIG		+= spiral-sse
 #	CONFIG		+= spiral-no-sse
 #	DEFINES		+= __THREADED_BACKEND
@@ -560,7 +562,9 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= hackrf
 	CONFIG		+= lime
 	CONFIG		+= pluto
-	CONFIG		+= viterbi-new
+	CONFIG		+= viterbi-scalar
+#	CONFIG		+= viterbi-sse
+#	CONFIG		+= viterbi-avx2
 #	CONFIG		+= spiral-sse
 #	CONFIG		+= spiral-no-sse
 #
@@ -904,15 +908,36 @@ datastreamer	{
 	SOURCES		+= ../server-thread/tcp-server.cpp
 }
 
-viterbi-new {
+viterbi-scalar {
 	DEPENDPATH	+= ../src/support/viterbi
-	#QMAKE_CFLAGS    +=  -mavx2 -msse4
-	#QMAKE_CXXFLAGS  +=  -mavx2 -msse4
-	#QMAKE_LFLAGS    +=  -mavx2
-	#DEFINES		+= __ARCH_X86__
-	##DEFINES	+= __SSE4_1__
-	##DEFINES	+= __AVX2__
-	##DEFINES	+= __ARCH_AARCH64__
+	INCLUDEPATH	+= ../src/support/viterbi
+	HEADERS		+= ../src/support/viterbi/viterbi.h 
+	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+}
+
+viterbi-sse {
+	DEPENDPATH	+= ../src/support/viterbi
+	QMAKE_CFLAGS    +=  -msse4
+	QMAKE_CXXFLAGS  +=  -msse4
+	QMAKE_CFLAGS    +=  -mavx2 
+	QMAKE_CXXFLAGS  +=  -mavx2
+	QMAKE_LFLAGS    +=  -mavx2
+	DEFINES		+= __SSE4_1__
+	DEFINES		+= __ARCH_X86__
+	#DEFINES	+= __ARCH_AARCH64__
+	INCLUDEPATH	+= ../src/support/viterbi
+	HEADERS		+= ../src/support/viterbi/viterbi.h 
+	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+}
+
+viterbi-avx2 {
+	DEPENDPATH	+= ../src/support/viterbi
+	QMAKE_CFLAGS    +=  -mavx2 
+	QMAKE_CXXFLAGS  +=  -mavx2
+	QMAKE_LFLAGS    +=  -mavx2
+	DEFINES		+= __AVX2__
+	DEFINES		+= __ARCH_X86__
+	#DEFINES	+= __ARCH_AARCH64__
 	INCLUDEPATH	+= ../src/support/viterbi
 	HEADERS		+= ../src/support/viterbi/viterbi.h 
 	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
@@ -928,9 +953,10 @@ spiral-sse	{
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-sse.c
 }
 
-siral-no-sse	{
+spiral-no-sse	{
 	DEPENDPATH     +=  ../src/support/viterbi-spiral 
 	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
+	DEFINES		+= NO_SSE_AVAILABLE
 	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
 	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
