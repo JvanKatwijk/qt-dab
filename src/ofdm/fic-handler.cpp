@@ -48,6 +48,7 @@
   *	The data is sent through to the fib processor
   */
 
+static int starter	= 0;
 		ficHandler::ficHandler (RadioInterface *mr,
 	                                uint8_t dabMode,
 	                                uint8_t cpuSupport):
@@ -56,8 +57,8 @@
 	                                    myViterbi (768, true, cpuSupport) {
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-	index		= 0;
 	BitsperBlock	= 2 * params. get_carriers();
+	index		= 0;
 	ficno		= 0;
 	ficBlocks	= 0;
 
@@ -143,7 +144,18 @@ void	ficHandler::processFICBlock (std::vector<int16_t> &data,
 	   index = 0;
 	   ficno = 0;
 	}
-//
+
+	if (starter == 0) {
+	   if (blkno != 1) {
+	      fprintf (stderr, "ignoring %d\n", blkno);
+	      return;
+	   }
+	}
+	if (starter < 6) {
+	   starter ++;
+	   return;
+	}
+
 	if ((1 <= blkno) && (blkno <= 3)) {
 	   for (int i = 0; i < BitsperBlock; i ++) {
 	      ofdm_input [index ++] = data [i];
@@ -278,6 +290,13 @@ void	ficHandler::stop	() {
 void	ficHandler::restart	() {
 //	clearEnsemble	();
 	connect_channel	();
+	index		= 0;
+	ficno		= 0;
+	ficBlocks	= 0;
+
+	ficErrors	= 0;
+	ficBits		= 0;
+	starter		= 0;
 	running. store (true);
 }
 

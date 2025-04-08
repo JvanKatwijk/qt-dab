@@ -3913,7 +3913,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   for (auto &transm : channel. transmitters) {
 	      if (!configHandler_p -> get_allTIISelector ()) {
 	         if (transm. theTransmitter. distance < 0) {
-	            channel. transmitters. erase (channel. transmitters. begin () + teller);
 	            continue;
 	         }
 	      }

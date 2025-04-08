@@ -94,9 +94,12 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="tiiCollisions">
+          <widget class="QCheckBox" name="allTIISelector">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If setting a subId value different from 0, the software searches for ALL mainIds, associated with that  subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If/when the threshold value for the TII detection is too low, the TII detector will &amp;quot;detect&amp;quot; non-existent transmitters. While some users want to see anythings that is detected, others (including myself) only want the &amp;quot;real&amp;quot; transmitters to appear on the DX display.&lt;/p&gt;&lt;p&gt;While by default the setting is &amp;quot;on&amp;quot;, switchin the selector 's value to &amp;quot;off&amp;quot; tells the software to show only transmitters known by the database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>all tii</string>
            </property>
           </widget>
          </item>
@@ -553,12 +556,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="allTIISelector">
+      <widget class="QSpinBox" name="tiiCollisions">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If/when the threshold value for the TII detection is too low, the TII detector will &amp;quot;detect&amp;quot; non-existent transmitters. While some users want to see anythings that is detected, others (including myself) only want the &amp;quot;real&amp;quot; transmitters to appear on the DX display.&lt;/p&gt;&lt;p&gt;While by default the setting is &amp;quot;on&amp;quot;, switchin the selector 's value to &amp;quot;off&amp;quot; tells the software to show only transmitters known by the database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>all tii</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If setting a subId value different from 0, the software searches for ALL mainIds, associated with that  subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>

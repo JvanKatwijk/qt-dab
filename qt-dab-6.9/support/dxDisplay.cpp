@@ -47,15 +47,15 @@ uint16_t	secondDigit (v % 10);
 
 	tableWidget 	= new QTableWidget (0, 12);
 	tableWidget	-> setColumnWidth (0, 30);	// mark
-	tableWidget	-> setColumnWidth (1, 40);	// pattern
+	tableWidget	-> setColumnWidth (1, 50);	// pattern
 	tableWidget	-> setColumnWidth (2, 50);	// tii value
 	tableWidget	-> setColumnWidth (3, 50);	// phase
-	tableWidget	-> setColumnWidth (4, 50);	// strength
+	tableWidget	-> setColumnWidth (4, 55);	// strength
 	tableWidget	-> setColumnWidth (5, 70);	// azimuth
 	tableWidget	-> setColumnWidth (6, 70);	// power
-	tableWidget	-> setColumnWidth (7, 70);	// altitude
-	tableWidget	-> setColumnWidth (8, 70);	// height
-	tableWidget	-> setColumnWidth (9, 70);	// direction
+	tableWidget	-> setColumnWidth (7, 50);	// altitude
+	tableWidget	-> setColumnWidth (8, 60);	// height
+	tableWidget	-> setColumnWidth (9, 60);	// direction
 	tableWidget	-> setColumnWidth (10, 80);	// distamce
 	tableWidget	-> setColumnWidth (11, 250);	// transmitter
 
@@ -137,7 +137,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	int   subId		= theTransmitter. subId;
 	bool	etsi		= theTransmitter. norm;
 	float	phase		= theTransmitter. phase;
-	float	strength	= theTransmitter. strength;
+	float	strength	= 10 * log10 (theTransmitter. strength + 0.01);
 	float distance		= theTransmitter. distance;
 	float azimuth		= theTransmitter. azimuth;
 	float power		= theTransmitter. power;
