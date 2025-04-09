@@ -3923,9 +3923,8 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	}
 	else {	// just show on the main widget the strongest
 	   for (auto &theTr: channel. transmitters) {
-	      if (!configHandler_p -> get_allTIISelector ())
-	         if (theTr. theTransmitter. distance < 0)
-	            continue;
+	      if (theTr. theTransmitter. distance < 0)
+	         continue;
 	      if (theTr. isStrongest) {
 	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
 	         distanceLabel	-> setText (labelText);

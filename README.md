@@ -10,7 +10,7 @@ About Qt-DAB
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-Yhe GUI of Qt-DAB has a single *main* widget that
+The GUI of Qt-DAB has a single *main* widget that
 contains essentially all that is needed when just selecting a service and listening, while other widgets, visible under user control, if made visible show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
 
 Of course, as for previous versions, for the current version,
@@ -269,8 +269,10 @@ See the manual for entering the home position to Qt-DAB.
 Documentation
 =================================================================
 
-An extensive *user's guide* - in PDF format - for Qt-DAB-6.9 can be found in the "docs" directory in the repository and as a document in the releases section.
-The manual contains a fairly complete description of the widgets and on configuring for creating an executable (Linux).
+The "manual" tended to get thicker and thicker, and therefore less readable and accessible. That is why the "docs" directory now contains a much
+simplified "using-xx" text, an introductory text, covering the regular use.
+As a supplement a  separate guide is added with some notes on how to
+build an executable.
 
 ![Qt-DAB documentation](/res/read_me/qt-dab-6-manual.png?raw=true)
 
@@ -283,12 +285,9 @@ Such an installer will install the executable as well as required libraries,
 although for both SDRplay devices (when used) or for the Adaml Pluto (whens
 used), one has to install libraries from the provoder of the device.
 
-:information_source: The releases section contains 3 Windows installers. One for a 64 bit version, and 2 for a 32 bit version. The 2 versions for 32 bit differ in theit support for RTLSDR type devices (as mentioned above).
+:information_source: The releases section contains 2 Windows installers. The 2 versions  - for 32 bit - differ in theit support for RTLSDR type devices (as mentioned above).
 
 :information_source: Note that the device libraries for the SDRplay devices and the Adalm Pluto device library are **NOT** included in the installer, they require - if used - a separate installation. See below for details.
-
-:information_source: The 64 bit installers now contain the required dll's for 
-both the hackrf amd the lime devices. As the title on the main window already suggested, the configuration for the 64 bit versions (noth Qt5 and Qt6) contains the settings for the rtlsdr V4 library.
 
 Installation on Linux-x64
 =================================================================

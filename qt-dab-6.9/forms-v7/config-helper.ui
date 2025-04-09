@@ -70,7 +70,7 @@
          <item>
           <widget class="QSpinBox" name="tiiThreshold_setter">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Minimum value is set to 6 dB.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII threshold. The TII threshold is used in the detection of TII values in the NULL periods of the DAB frames. Of course, the lower the value, the more chance there is to get false positives.&lt;/p&gt;&lt;p&gt;Selecting the &amp;quot;new&amp;quot; tii detector leads to setting the minimum  threshold to 6 dB, for the other the minimum threshold is 4 dB. Setting the threshold to the minumum value leads in both cases - even with a small antenna - to some false positives.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="suffix">
             <string> dB</string>

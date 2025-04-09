@@ -147,7 +147,6 @@ void	ficHandler::processFICBlock (std::vector<int16_t> &data,
 
 	if (starter == 0) {
 	   if (blkno != 1) {
-	      fprintf (stderr, "ignoring %d\n", blkno);
 	      return;
 	   }
 	}
@@ -289,7 +288,6 @@ void	ficHandler::stop	() {
 
 void	ficHandler::restart	() {
 //	clearEnsemble	();
-	connect_channel	();
 	index		= 0;
 	ficno		= 0;
 	ficBlocks	= 0;
@@ -297,6 +295,7 @@ void	ficHandler::restart	() {
 	ficErrors	= 0;
 	ficBits		= 0;
 	starter		= 0;
+	connect_channel	();
 	running. store (true);
 }
 

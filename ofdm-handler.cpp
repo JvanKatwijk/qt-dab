@@ -173,8 +173,14 @@ void	ofdmHandler::set_tiiFilter	(bool b) {
 }
 
 void	ofdmHandler::start () {
-	theFicHandler. restart	();
-//	transmitters. clear ();
+	fineOffset			= 0;	
+	coarseOffset			= 0;	
+	correctionNeeded		= true;
+	attempts			= 0;
+
+	goodFrames			= 0;
+	badFrames			= 0;
+	totalFrames			= 0;
 	theOfdmDecoder. reset	();
 	theFicHandler.  restart	();
 	if (!scanMode)
@@ -198,7 +204,6 @@ void	ofdmHandler::stop	() {
    *	Finally, estimating the small frequency error
    */
 void	ofdmHandler::run	() {
-int32_t		startIndex;
 timeSyncer	myTimeSyncer (&theReader);
 phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
@@ -206,6 +211,7 @@ TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
 freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
 estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
+int32_t		startIndex	= -1;
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
 int	sampleCount	= 0;
@@ -220,13 +226,14 @@ int	snrCount	= 0;
 	coarseOffset		= 0;
 	correctionNeeded	= true;
 	attempts		= 0;
+	
 	theReader. setRunning (true);	// useful after a restart
 //
 //	to get some idea of the signal strength
 	try {
 	   const int tempSize = 128;
 	   std::vector<Complex> temp (tempSize);
-	   for (int i = 0; i < T_F / (5 * tempSize); i ++) {
+	   for (int i = 0; i < T_F / tempSize; i ++) {
 	      theReader. getSamples (temp, 0, tempSize, 0, true);
 	   }
 
@@ -292,22 +299,16 @@ int	snrCount	= 0;
 	            null_shower = true;
 	            memcpy (tester, &(ofdmBuffer [T_null - T_u / 3]),
 	                                 T_u / 4 * sizeof (Complex));
-	                                   
-//	            for (int i = 0; i < T_u / 4; i ++)
-//	               tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
 	         }
 
 	         theReader. getSamples (ofdmBuffer, 0,
 	                               T_u, coarseOffset + fineOffset, false);
-
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
 	                                               2.5 * threshold);
 	         if (null_shower) {
 	            memcpy (&tester [T_u / 4], ofdmBuffer. data (),
 	                               T_u / 4 * sizeof (Complex));
-//	            for (int i = 0; i < T_u / 4; i ++)
-//	               tester [T_u / 4 + i] = ofdmBuffer [i];
 	            nullBuffer_p -> putDataIntoBuffer (tester, T_u / 2);
 	            show_null (T_u / 2, startIndex);
 	         }

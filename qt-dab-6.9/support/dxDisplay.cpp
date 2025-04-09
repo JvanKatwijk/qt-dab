@@ -47,10 +47,10 @@ uint16_t	secondDigit (v % 10);
 
 	tableWidget 	= new QTableWidget (0, 12);
 	tableWidget	-> setColumnWidth (0, 30);	// mark
-	tableWidget	-> setColumnWidth (1, 50);	// pattern
+	tableWidget	-> setColumnWidth (1, 45);	// pattern
 	tableWidget	-> setColumnWidth (2, 50);	// tii value
 	tableWidget	-> setColumnWidth (3, 50);	// phase
-	tableWidget	-> setColumnWidth (4, 55);	// strength
+	tableWidget	-> setColumnWidth (4, 60);	// strength
 	tableWidget	-> setColumnWidth (5, 70);	// azimuth
 	tableWidget	-> setColumnWidth (6, 70);	// power
 	tableWidget	-> setColumnWidth (7, 50);	// altitude
