@@ -598,7 +598,7 @@ uint8_t	ofdmHandler::get_ecc 		() {
 	return theFicHandler. get_ecc();
 }
 
-int	ofdmHandler::getFrequency	(const QString &s) {
+std::vector<int>	ofdmHandler::getFrequency	(const QString &s) {
 	return theFicHandler. getFrequency (s);
 }
 

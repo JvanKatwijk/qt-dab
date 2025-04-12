@@ -4550,14 +4550,13 @@ void    RadioInterface::lto_ecc (int lto, int ecc) {
 }
 
 void	RadioInterface::setFreqList	() {
-	if (channel. currentService. fmFrequency != -1)
-	   return;
-	if (techWindow_p -> isHidden ())
-	   return;
-	int fmFrequency = theOFDMHandler -> getFrequency (channel.
+//	if (techWindow_p -> isHidden ())
+//	   return;
+	std::vector<int>  freqList = theOFDMHandler -> getFrequency (channel.
 	                                       currentService. serviceName);
-	if (fmFrequency == -1)
+	if (freqList. size () == 0)
 	   return;
-	techWindow_p	-> updateFM (fmFrequency);
+	channel. currentService. fmFrequencies = freqList;
+	techWindow_p	-> updateFM (freqList);
 }
 

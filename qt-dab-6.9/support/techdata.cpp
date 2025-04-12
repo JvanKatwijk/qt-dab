@@ -131,7 +131,7 @@ void	techData::show_serviceData	(audiodata *ad) {
 	show_ASCTy		(ad -> ASCTy);
 	show_codeRate		(ad -> shortForm, ad -> protLevel);
 	show_language		(ad -> language);
-	show_fm			(ad -> fmFrequency);
+	show_fm			(ad -> fmFrequencies);
 	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
 }
 
@@ -190,8 +190,10 @@ void	techData::show_timetableButton	(bool b) {
 	   timeTable_button	-> setEnabled (false);
 }
 
-void	techData::updateFM		(int fmFrequency) {
-	show_fm		(fmFrequency);
+void	techData::updateFM		(std::vector<int> &fmFrequencies) {
+	if (fmFrequencies. size () == 0)
+	   return;
+	show_fm		(fmFrequencies);
 }
 
 void	techData::show_frameDumpButton	(bool b) {
@@ -262,15 +264,22 @@ void	techData::show_codeRate		(int shortForm, int protLevel) {
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 
-void	techData::show_fm			(int freq) {
-	if (freq == -1) {
+void	techData::show_fm		(std::vector<int> &v) {
+	if (v. size () == 0) {
 	   fmFrequency	-> hide ();
 	   fmLabel	-> hide ();
 	}
 	else {
 	   fmLabel            -> show ();
-           fmFrequency        -> show ();
-           QString f = QString::number (freq);
+           fmFrequency        -> show ();	
+	   QString f;
+	   int teller	= 0;
+//	for now there is room for up to 2 freqyencies
+	   for (auto freq: v) {
+	      if (++teller > 2)
+	         break;			// for now
+              f. append (QString::number (freq) + " ");
+	   }
            f. append (" Khz");
            fmFrequency        -> setText (f);
 	}

@@ -49,7 +49,7 @@ public:
 	   uint32_t	SId;
 	   uint8_t	programType;
 	   uint8_t	SCIds;
-	   int		fmFrequency;
+	   std::vector<int>	fmFrequencies;
 	} service;
 
 
@@ -61,7 +61,7 @@ public:
 	uint32_t serviceToSId	(const QString &s);
 	QString	SIdToserv	(uint32_t SId);
 	int	programType	(uint32_t);
-	int	fmFrequency	(uint32_t);
+	std::vector<int>	fmFrequencies	(uint32_t);
 
 };
 

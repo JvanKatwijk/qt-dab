@@ -128,9 +128,9 @@ int Pt		= theEnsemble -> programType (sid);
 
 QString	fibPrinter::fmFreqOf		(int index) {
 uint32_t sid	= currentConfig -> serviceIdOf (index);
-int	fmFrequency	= theEnsemble -> fmFrequency (sid);
-	if (fmFrequency != -1)
-	   return QString::number (fmFrequency);
+std::vector<int> fmFrequencies	= theEnsemble -> fmFrequencies (sid);
+	if (fmFrequencies. size () > 0)
+	   return QString::number (fmFrequencies [0]);
 	return " ";
 }
 

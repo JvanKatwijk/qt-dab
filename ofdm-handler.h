@@ -91,7 +91,7 @@ public:
 	int		get_nrComps		(uint32_t);
         uint8_t		get_ecc			();
 	uint32_t	julianDate		();
-	int		getFrequency		(const QString &);
+	std::vector<int>	getFrequency	(const QString &);
 	QStringList	basicPrint		();
 	int		scanWidth		();
 	void		start_ficDump		(FILE *);

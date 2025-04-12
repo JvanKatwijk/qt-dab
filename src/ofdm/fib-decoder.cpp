@@ -931,10 +931,18 @@ int16_t		base		= l_offset + 16;
 	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
 	      int32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
 	      for (auto &serv : theEnsemble -> primaries) {
-	         if ((serv. SId == idField) && (serv. fmFrequency == -1)) {
-	            serv. fmFrequency = fmFrequency;
-	            newData = true;
-	            break;
+	         if ((serv. SId == idField)) {
+	            bool alreadyIn = false;
+	            for (auto freq : serv. fmFrequencies) {
+	               if (fmFrequency == freq) {
+	                  alreadyIn = true;
+	                  break;
+	               }
+	            }
+	            if (!alreadyIn) {
+	               serv. fmFrequencies. push_back (fmFrequency);
+	               newData = true;
+	            }
 	         }
 	      }
 	   }
@@ -1056,7 +1064,7 @@ char		label [17];
 	prim. name 	= dataName;
 	prim. shortName = shortName;
 	prim. SId	= SId;
-	prim. fmFrequency	= -1;
+	prim. fmFrequencies. resize (0);
 	theEnsemble -> primaries. push_back (prim);
 	int subChId = -1;
 	for (int i = 0; i < currentConfig -> SC_C_table. size (); i ++) {
@@ -1204,7 +1212,7 @@ fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
 	      ad. shortName	= serv. shortName;
 	      ad. SId		= serv. SId;
 	      ad. programType	= serv. programType;
-	      ad. fmFrequency	= serv. fmFrequency;
+	      ad. fmFrequencies	= serv. fmFrequencies;
 	      break;
 	   }
 	}
@@ -1321,12 +1329,13 @@ uint8_t	 fibDecoder:: get_ecc			() {
 	return theEnsemble -> eccByte;
 }
 
-int	fibDecoder::getFrequency	(const QString &s) {
+std::vector<int> fibDecoder::getFrequency	(const QString &s) {
+std::vector<int> res;
 	for (auto &serv : theEnsemble -> primaries) {
 	   if (serv. name == s)
-	      return serv. fmFrequency;
+	      return serv. fmFrequencies;
 	}
-	return -1;
+	return  res;
 }
 	   
 //	required for ETI generation

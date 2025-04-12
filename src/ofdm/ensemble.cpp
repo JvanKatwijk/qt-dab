@@ -54,10 +54,14 @@ int	ensemble::programType (uint32_t SId) {
 	return -1;
 }
 
-int	ensemble::fmFrequency	(uint32_t SId) {
+std::vector<int>	ensemble::fmFrequencies	(uint32_t SId) {
+std::vector<int> res;
 	for (auto &serv: primaries)
-	   if (serv. SId == SId)
-	      return serv. fmFrequency;
-	return -1;
+	   if (serv. SId == SId) {
+	      for (auto freq: serv. fmFrequencies)
+	         res. push_back (freq);
+	      return res;
+	   }
+	return res;
 }
 

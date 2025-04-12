@@ -117,7 +117,7 @@ public:
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
-	int		fmFrequency;
+	std::vector<int>		fmFrequencies;
 	dabService () {
 	   channel	= "";
 	   serviceName	= "";
@@ -125,7 +125,6 @@ public:
 	   frameDumper	= nullptr;
 	   valid	= false;
 	   is_audio	= false;
-	   fmFrequency	= -1;
 	}
 	~dabService	() {}
 };

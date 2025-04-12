@@ -58,7 +58,7 @@ public:
 	QString		find_service		(uint32_t, int);
 	int		nrChannels		();
         uint8_t		get_ecc			();
-	int		getFrequency		(const QString &);
+	std::vector<int>	getFrequency		(const QString &);
 	void		get_channelInfo		(channel_data *, int);
 	int32_t		get_CIFcount		();	
 	void		get_CIFcount		(int16_t &, int16_t &);
