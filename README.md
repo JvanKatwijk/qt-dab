@@ -25,7 +25,7 @@ Table of Contents
 
 * [Introduction](#introduction)
 * [Features](#features)
-* [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
+* [Widgets and scopes](#widgets-and-scopes)
 * [A Note on using an RTLSDR device](#a-note-on-using-an-rtlsdr-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
@@ -41,8 +41,8 @@ Table of Contents
 Introduction
 =================================================================
 
-*Qt-DAB* is designed to be used  with different SDR devices.
-A simple and clean interface is used and Qt-DAB-6.9  has support for a
+*Qt-DAB* is designed to be used  with a broad variety of SDR devices.
+A simple and clean interface is used and Qt-DAB  has built-in support for a
 DABsticks, all models of the SDRplay, Airspy, HackRF, LimeSDR, Adalm Pluto etc.
 Precompiled versions for Windows and Linux (x64) are available.
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
@@ -50,7 +50,7 @@ Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 *Qt-DAB* is GUI driven, 
 the full GUI shows 4+ widgets, one of them, the
 *main widget* - one with sufficient controls to select channels and service(s) -
-is always visible. This main widget contains selector
+is always visible. This main widget contains selectors
 for controlling the visibility of (the) other widgets.
 
 Features
@@ -64,9 +64,9 @@ Features
 	- LimeSDR, 
 	- Adalm Pluto,
 	- **untested** UHD (anyone wants to help testing?)
-	- Soapy, a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
+	- Soapy (Linux only), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
 	- ExtIO (experimental, Windows only),
-	- input from servers. support for a spyServer (both 8 bit and a 16 bit version) and an rtl_tcp server'
+	- input from servers. support for a spyServer (both 8 bit and a 16 bit version) and an rtl_tcp server,
   * Always supported input from files:
    	- prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
   * with, obviously, the possibility of generating such files from the input.

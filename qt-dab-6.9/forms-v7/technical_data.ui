@@ -60,7 +60,7 @@
    <item>
     <widget class="smallPushButton" name="timeTable_button">
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If an EPG service is active then - at least after some time - it is possible that the EPG handler has processed time table data.&lt;/p&gt;&lt;p&gt;Touching this button will activate the time table handler. If no time table can be found it will be reported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>timeTable</string>
@@ -71,6 +71,9 @@
     <layout class="QFormLayout" name="formLayout_2">
      <item row="0" column="0">
       <widget class="QLabel" name="label_3">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The serviceId is the unique identification of the service within the ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>serviceId</string>
        </property>
@@ -88,6 +91,9 @@
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The data in the body of the DAB frame is organized in usits of 64 bytes. The start address indicates the start address in the appropriate buffer in units.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Start Address of CU</string>
        </property>
@@ -105,6 +111,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number of 64 byte units used by this service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Used CUs</string>
        </property>
@@ -363,6 +372,9 @@
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="label_4">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The average number of corrections by the Reed Solomon procedure. The RS procesure is able to fix up to 5 erroneous bytes in a segment of 110 bytes.&lt;/p&gt;&lt;p&gt;The number tells how many errors were fiixed per 100 frames&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>rs corrections/100</string>
        </property>
@@ -383,6 +395,9 @@
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_11">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The RS procedure will try to fix errors. However, if the parity bits are erroneous then there might be a problem. That is why - after the RS procedure a CRC check is performed on the data. The number of remaining errors is sjpwn here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>ec errors </string>
        </property>
@@ -403,6 +418,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="missedLabel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The output hanfler expects 48000 two channel samples per second. If - for whatever reason - the amount actually delivered is less, the missing samples will be compensated for by NULL samples, and the percentage will be lower than 100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>audio % OK</string>
        </property>

@@ -50,6 +50,7 @@
 	   var Transmitters		= {};
 	   var transmitterIndex		= 0;
 	   var largestDistance		= 0;
+	   var afstand			= 0;
 
 	   const MAP_RESET		= 0;
 	   const MAP_FRAME		= 1;
@@ -102,7 +103,9 @@
 	      }
 
 	      Transmitters = {};
-	      transmitterIndex = 0;
+	      transmitterIndex	= 0;
+	      largestDistance	= 0;
+	      afstand		= 0;
 	      let xx = document. getElementById ('selinfo');
 	      xx . innerHTML = ' ';
 	      let yy = document. getElementById ('selCount');
@@ -117,21 +120,23 @@
 //	and record that the elements are not in the current frame anymore
 	   function handle_map_frame () {
 	      for (var i = 0; i < transmitterIndex; i ++) {
-	         if (Transmitters [i]. status == true) {
-	            Transmitters [i]. status = false;
-	            Transmitters [i]. current = false;
-	            Map. removeLayer (Transmitters [i]. marker);
-	            let element = Transmitters [i];
-	            element. key = ICON_OTHERFRAME;
-	            let icon = getIconForTransmitter (element);
-	            let elementMarker =
-	                        L.marker ([element.lat, element.lon],
+	         Transmitters [i]. current = false;
+	         if (!Transmitters [i]. status)
+	            continue;
+	         Map. removeLayer (Transmitters [i]. marker);
+	         if (!Transmitters [i]. isLargest)
+	            Transmitters [i]. key = ICON_OTHERFRAME;
+	         else
+	            Transmitters [i]. key = ICON_FURTHEST;
+	         let element = Transmitters [i];
+	         let icon = getIconForTransmitter (Transmitters [i]);
+	         let elementMarker =
+	                     L.marker ([element.lat, element.lon],
 	                                  {icon: icon}).addTo(Map);
-	            elementMarker.
+	         elementMarker.
 	                       addEventListener ('click',
 	                                       function () { selectTransmitterCallback (element);});
-	            Transmitters [i]. marker = elementMarker;
-	         }
+	         Transmitters [i]. marker = elementMarker;
 	      }
 	   }
 
@@ -174,7 +179,7 @@
 	      let yy = document. getElementById ('selCount');
 	      yy. innerHTML = '<span style=\"font-weight:bold;">' + 'Number of transmitters' + '</span>' + ' ' + transmitterIndex + '<br>';
 
-	      if (target. dist > largestDistance) {
+	      if (target. dist >= largestDistance) {
 	         largestDistance = target. dist
 	         let aa = document. getElementById ('distance');
 	         aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
@@ -200,10 +205,17 @@
 
 	   function addTransmitter (target) {
 	      let firstOne	= transmitterIndex == 0;
-	      target. furthest	= target. type == MAP_MAX_TRANS;
+	      for (var i = 0; i < transmitterIndex; i ++) {
+	         let test = Transmitters [i];
+	         if ((test. tiiValue == target. tiiValue)) {
+	            Map. removeLayer (Transmitters [i]. marker);
+	            Transmitters [i]. status = false;
+	         }
+	      }
 	      target. key	= ICON_CURRENT;
 	      target. status	= true;
 	      target. current	= true;
+	      target. isLargest	= false;
 	      let icon		= getIconForTransmitter (target);
 	      let targetMarker =
 	                    L. marker([target.lat, target.lon],
@@ -221,62 +233,74 @@
 //	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
 	      showTransmitterAtSideBar (target, firstOne);
 	   }
+//
+//	
+	   function checkDistance (target) {
+	      var maxIndex	= 0;
+	      afstand		= -1;
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if ((Transmitters [j]. status) &
+	             (Transmitters [j]. dist > afstand)) {
+	            afstand = Transmitters [j]. dist;
+	            maxIndex = j;
+	         }
+	      }
+	
+//
+//	remove the mark from previous "furthest"s
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if (!Transmitters [j]. status)
+	            continue;
+	         if (!Transmitters [j]. isLargest)
+	            continue;
+	         if (maxIndex == j)
+	            return;
+	         Transmitters [j]. isLargest = false;
+	         Map. removeLayer (Transmitters [j]. marker);
+	         Transmitters [j]. key = Transmitters [j]. current ?
+	                                              ICON_TOPFRAME :
+	                                              ICON_OTHERFRAME;
+	         let element	= Transmitters [j];
+	         let icon	= getIconForTransmitter (element);
+	         let elementMarker =
+	                       L.marker ([element. lat, element. lon],
+	                              {icon: icon}). addTo (Map);
+	         elementMarker. addEventListener ('click',
+	                                      function () { selectTransmitterCallback (element);});
+	         Transmitters [j]. marker = elementMarker;
+	      }
+//
+//	we have a bew one, show it on the map
+	      Transmitters [maxIndex]. isLargest = true;
+	      Map. removeLayer (Transmitters [maxIndex]. marker);
+	      Transmitters [maxIndex]. key	= ICON_FURTHEST;
+	      let element = Transmitters [maxIndex];
+	      let icon  = getIconForTransmitter (element);
+	      let elementMarker = L.marker ([element. lat, element. lon],
+                                             {icon: icon}). addTo (Map);
+	      elementMarker. addEventListener ('click',
+                                          function () { selectTransmitterCallback (element);});
+	      Transmitters [maxIndex]. marker = elementMarker;
+	   }
+	
 
 //	the CURRENT changed,
 //	two things might have changed, the "current" one
 //	and the "furthest" one
 	   function updateCurrent (target) {
-	      var maxDistance	= 0;
-	      var maxIndex	= -1;
 	      var currentIndex	= -1;
-//	first we compute - in all elements the indices of the max
-//	and in the "current" list, the element "current"
-//	the indices of max and current
-	      for (var j = transmitterIndex - 1; j >= 0; j --) {
-	         if (Transmitters [j]. dist > maxDistance) {
-	            maxDistance = Transmitters [j]. dist;
-	            maxIndex = j;
-	         }
-	      }
-	
-	      for (var j = 0; j < transmitterIndex; j ++) {
-	         if ((Transmitters [j]. lat == target. lat) &&
-	             (Transmitters [j]. lon == target. lon)) {
-	            if (!Transmitters [j]. status)
-	               Map. removeLayer (Transmitters [j]. marker);
-	            else {
-	               currentIndex = j;
-	               break;
-	            }
-	         }
-	      }
-//
-//	Now, if the furthest is still in the "old" layers
-//	the "handle_map_framw" has removed that marker, so
-//	it has to be reinstalled.
-	      if (!Transmitters [maxIndex]. status) {
-	         Map. removeLayer (Transmitters [maxIndex]. marker);
-	         Transmitters [maxIndex]. key = ICON_FURTHEST;
-	         let element = Transmitters [maxIndex];
-	         let icon = getIconForTransmitter (element);
-	         let elementMarker =
-	                       L.marker ([element.lat, element.lon],
-	                              {icon: icon}). addTo(Map);
-	         elementMarker.  addEventListener ('click',
-	                                      function () { selectTransmitterCallback (element);});
-	         Transmitters [maxIndex]. marker = elementMarker;
-	      }
-
 //	we rewrite ALL elements in the current layer
 	      for (var j = 0; j < transmitterIndex; j ++) {
-	         if (!Transmitters [j]. status)
+	         if (!Transmitters [j]. current)
+	            continue;
+	         if (Transmitters [j]. isLargest)
 	            continue;
 	         Map. removeLayer (Transmitters [j]. marker);
-	         let xx = document. getElementById ('testing');
-	         Transmitters [j]. key = j == maxIndex ? ICON_FURTHEST :
-	                                 j == currentIndex ? ICON_CURRENT :
-	                                            ICON_TOPFRAME;
-	         let element	= Transmitters [j];
+	         let element = Transmitters [j];
+	         if (element. tiiValue == target. tiiValue) 
+	            currentIndex = j;
+	         Transmitters [j]. key = j == currentIndex ? ICON_CURRENT :
+	                                                     ICON_TOPFRAME;
 	         let icon	= getIconForTransmitter (element);
 	         let elementMarker =
 	                       L.marker ([element. lat, element. lon],
@@ -313,6 +337,7 @@
 	            else
 	            if (target. type == MAP_CURRENT) {
 	               updateCurrent (target);
+	               checkDistance (target);
 	               continue;
 	            }
 	            else {		// we add an element 
@@ -325,6 +350,7 @@
 	                  addTransmitter (target);
 	               }
 	               updateCurrent (target);
+	               checkDistance (target);
 	            }
 	         }
 	      });
