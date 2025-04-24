@@ -688,7 +688,7 @@ void	RadioInterface::startDirect	() {
 
 	startChannel (channelSelector -> currentText ());
 	int auto_http	= value_i (dabSettings_p, CONFIG_HANDLER,
-	                                       "auto_http", 0);
+	                                       AUTO_HTTP, 0);
 	if ((auto_http != 0) && (localPos. latitude != 0)) {
 	   bool succ = autoStart_http ();
 	   if (succ)
@@ -774,8 +774,17 @@ QString s;
 	   stopScanning ();
 	}
 	else
-	if (theSCANHandler. active () && theSCANHandler. scan_single ())
-	   theSCANHandler. addEnsemble (channelSelector -> currentText (), v);
+	if (theSCANHandler. active ()) {
+	   if (theSCANHandler. scan_single ())
+	     theSCANHandler. addEnsemble (channelSelector -> currentText (), v);
+	   if (theSCANHandler. scan_single () ||
+	       theSCANHandler. scan_continuous ()) {
+	      channelTimer. stop ();
+	      int switchStay		=
+	              configHandler_p -> switchStayValue ();
+	      channelTimer. start (switchStay);
+	   }
+	}
 	else
 	if (!theSCANHandler. active ()) {
 	   read_pictureMappings (id);
@@ -2600,8 +2609,7 @@ void	RadioInterface::startScan_to_data () {
 }
 
 void	RadioInterface::startScan_single () {
-	if (configHandler_p -> clearScan_Selector_active ())
-	   theScanlistHandler. clear_scanList ();
+	theScanlistHandler. clear_scanList ();
 
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
@@ -3936,38 +3944,17 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if (mapHandler == nullptr)
 	      return;
 //
-//	On the map, we show - next to the list - the strongest one and
-//	the one with the largest distance to the home position	
-	int maxDistance = 0;
-	transmitterDesc *best = nullptr;
-	for (auto &theTr : channel. transmitters) {
-	   if (theTr. theTransmitter. transmitterName == "not in database")
-	      continue;
-	   if (theTr. theTransmitter. distance > maxDistance) {
-	      maxDistance = theTr. theTransmitter. distance;
-	      best =  &theTr;
-	   }
-	}
-	if (best == nullptr)
-	   return;	// should not happen
-	int	maxTrans	= (best -> theTransmitter. mainId << 8) |
-	                          (best -> theTransmitter. subId);
-
 	for (auto &theTr : channel. transmitters) {
 	   if (theTr. theTransmitter. transmitterName == "not in database")
 	      continue;
 
-	   uint8_t key	= MAP_NORM_TRANS;	// default value
-	   uint8_t mainId = theTr. theTransmitter. mainId;
-	   uint8_t subId  = theTr. theTransmitter. subId;
-	   if (((mainId << 8) | subId)  == maxTrans) {
-	      key = MAP_MAX_TRANS;
-	   }
-//
+	   uint8_t key = configHandler_p -> showAll_Selector_active () ?
+	                                      SHOW_ALL: SHOW_SINGLE;
+	   
 	   QDateTime theTime = 
-	   configHandler_p -> utcSelector_active () ?
-	                              QDateTime::currentDateTimeUtc () :
-	                              QDateTime::currentDateTime ();
+	            configHandler_p -> utcSelector_active () ?
+	                                     QDateTime::currentDateTimeUtc () :
+	                                     QDateTime::currentDateTime ();
 
 	   mapHandler -> putData (key,
 	                          &theTr,
@@ -4233,6 +4220,11 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 
 void	RadioInterface::channelSignal (const QString &channel) {
 	stopChannel ();
+	channelSelector	-> setEnabled (false);
+	int k = channelSelector -> findText (channel);
+	if (k != -1) 	
+	   channelSelector -> setCurrentIndex (k);
+	channelSelector	-> setEnabled (true);
 	startChannel (channel);
 }
 

@@ -104,6 +104,10 @@ int	index_for_key (int key) {
 	                               DEFAULT_SWITCHVALUE);
 	this -> switchDelaySetting -> setValue (x);
 
+	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING,
+	                                           10);
+	this	-> switchStaySetting -> setValue (x);
+
 	x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
 	                               ALPHA_BASED);
 	if (x == ALPHA_BASED)
@@ -145,8 +149,8 @@ int	index_for_key (int key) {
 
 //	fifth row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           CLEAR_SCAN_RESULT_SETTING, 1) == 1;
-	this -> clearScan_selector -> setChecked (b);
+	                           "showAll_Setting", 1) == 1;
+	this -> showAll_selector -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) == 1;
@@ -158,10 +162,10 @@ int	index_for_key (int key) {
 	                           S_CORRELATION_ORDER, 0) != 0;
 	this	-> correlationSelector -> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER, "audioServices_only", 1);
+	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
 	this	-> audioServices_only -> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER, "auto_http", 9) != 0;
+	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 9) != 0;
 	this	-> auto_http -> setChecked (b);
 	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0);
 	this	-> tiiCollisions -> setValue (c);
@@ -345,6 +349,8 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_muteTimeSetting);
 	connect (switchDelaySetting, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_switchDelaySetting);
+	connect (switchStaySetting, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_switchStaySetting);
 	connect (orderAlfabetical, &QRadioButton::clicked,
 	         this, &configHandler::handle_orderAlfabetical);
 	connect (orderServiceIds, &QRadioButton::clicked,
@@ -460,11 +466,11 @@ void	configHandler::set_connections () {
 //
 //	fifh line
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
-	connect (clearScan_selector, &QCheckBox::checkStateChanged,
+	connect (showAll_selector, &QCheckBox::checkStateChanged,
 #else
-	connect (clearScan_selector, &QCheckBox::stateChanged,
+	connect (showAll_selector, &QCheckBox::stateChanged,
 #endif
-	         this, &configHandler::handle_clearScan_Selector);
+	         this, &configHandler::handle_showAll_Selector);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
 	connect (saveSlides, &QCheckBox::checkStateChanged,
@@ -733,6 +739,10 @@ void	configHandler::handle_switchDelaySetting	(int newV) {
 	store (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING, newV);
 }
 
+void	configHandler::handle_switchStaySetting	(int newV) {
+	store (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, newV);
+}
+
 void	configHandler::handle_orderAlfabetical		() {
 	set_serviceOrder (ALPHA_BASED);
 	serviceOrder	= ALPHA_BASED;
@@ -786,10 +796,10 @@ void	configHandler::handle_localBrowser	(int d) {
 	               this ->  localBrowserSelector -> isChecked () ? 1 : 0);
 }
 
-void	configHandler::handle_clearScan_Selector (int c) {
+void	configHandler::handle_showAll_Selector (int c) {
 	(void)c;
-	store (dabSettings, CONFIG_HANDLER, CLEAR_SCAN_RESULT_SETTING,
-	               this ->  clearScan_selector -> isChecked () ? 1 : 0);
+	store (dabSettings,  CONFIG_HANDLER, "showAll_Setting",
+	               this ->  showAll_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_saveSlides	(int x) {
@@ -831,8 +841,8 @@ bool	configHandler::closeDirect_active	() {
 	return closeDirect_selector -> isChecked ();
 }
 
-bool	configHandler::clearScan_Selector_active () {
-	return clearScan_selector	-> isChecked ();
+bool	configHandler::showAll_Selector_active () {
+	return showAll_selector	-> isChecked ();
 }
 
 //
@@ -927,6 +937,10 @@ QString	configHandler::currentStream		() {
 
 int	configHandler::switchDelayValue		() {
 	return switchDelaySetting	-> value () * 1000;
+}
+
+int	configHandler::switchStayValue		() {
+	return switchStaySetting	-> value () * 60000;
 }
 
 int	configHandler::muteValue		() {

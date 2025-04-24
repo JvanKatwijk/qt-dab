@@ -57,13 +57,11 @@
 	   const MAP_MAX_TRANS		= 2;
 	   const MAP_NORM_TRANS 	= 4;
 	   const MAP_CURRENT 		= 8;
-	   const SHOW_SINGLE		= 16;	
-	   const SHOW_ALL		= 32;
 
+	   const ICON_OTHERFRAME	= 0;
 	   const ICON_FURTHEST		= 1;
 	   const ICON_TOPFRAME		= 2;
 	   const ICON_CURRENT		= 3;
-	   const ICON_SELECTED		= 4;
 
 	   function getIconForHome () {
 	      var he = document. createElement ("P");
@@ -74,29 +72,29 @@
 	      return icon;
 	   }
 
-//	   function getIconForTransmitter (target) {
-////	      var he = document. createElement ("P");
-//	      var he;
-//	      var mainId = Math. floor (target. tiiValue / 256);
-//	      var subId  = target. tiiValue % 256;
-//	      text	= target. channel + ' (' + mainId + ',' + subId + ')';
-////	      he.innerHTML = '*';
-//	      var selhtml = '';
-//	      if (target. key == ICON_OTHERFRAME)
-//	         he = '<div style="font-size :0.9rem;"> &#x1F4CC';
-//	      else
-//	      if (target. key == ICON_FURTHEST)
-////	         he = '<div style="font-size :0.9rem"> &#x🏁';
-//	         he = '<div style="font-size :0.9rem"> &#x1F3C1';
-//	      else
-//	      if (target. key == ICON_TOPFRAME)
-//	         he = '<div style="font-size :0.9rem;"> &#x26AB';
-//	      else	// ICON_CURRENT
-//	         he = '<div style="font-size :0.9rem;">&#x1F6A9';
-//	      he += '<b>' + text + '</b>' + '</div>';
-//	      var icon = L.divIcon ({iconSize:[text. length * 10, count * 18], html: he, className: 'transmitter-icon'});
-//	      return icon;
-//	   }
+	   function getIconForTransmitter (target) {
+//	      var he = document. createElement ("P");
+	      var he;
+	      var mainId = Math. floor (target. tiiValue / 256);
+	      var subId  = target. tiiValue % 256;
+	      var tii = '(' + mainId + ',' + subId + ')';
+//	      he.innerHTML = '*';
+	      var selhtml = '';
+	      if (target. key == ICON_OTHERFRAME)
+	         he = '<div style="font-size :0.9rem;"> &#x1F4CC';
+	      else
+	      if (target. key == ICON_FURTHEST)
+//	         he = '<div style="font-size :0.9rem"> &#x🏁';
+	         he = '<div style="font-size :0.9rem"> &#x1F3C1';
+	      else
+	      if (target. key == ICON_TOPFRAME)
+	         he = '<div style="font-size :0.9rem;"> &#x26AB';
+	      else	// ICON_CURRENT
+	         he = '<div style="font-size :0.9rem;">&#x1F6A9';
+	      he += '<b>' + tii + '</b>' + '</div>';
+	      var icon = L.divIcon ({iconSize:[tii. length * 6.5, 18], html: he, className: 'transmitter-icon'});
+	      return icon;
+	   }
 
 	   function handle_map_reset () {
 	      for (var i = 0; i < transmitterIndex; i ++) {
@@ -117,21 +115,40 @@
 	      zz. innerHTML = '';
 	   }
 //
-	   function seenAlready (target) {
-	      for (var j = 0; j < transmitterIndex; j ++) {
-	         if (Transmitters [j]. tiiValue == target. tiiValue)
-	                return true;
+//	when entering a new channel, while maintaining all
+//	elements on the map, make the elements different
+//	and record that the elements are not in the current frame anymore
+	   function handle_map_frame () {
+	      for (var i = 0; i < transmitterIndex; i ++) {
+	         Transmitters [i]. current = false;
+	         if (!Transmitters [i]. status)
+	            continue;
+	         Map. removeLayer (Transmitters [i]. marker);
+	         if (!Transmitters [i]. isLargest)
+	            Transmitters [i]. key = ICON_OTHERFRAME;
+	         else
+	            Transmitters [i]. key = ICON_FURTHEST;
+	         let element = Transmitters [i];
+	         let icon = getIconForTransmitter (Transmitters [i]);
+	         let elementMarker =
+	                     L.marker ([element.lat, element.lon],
+	                                  {icon: icon}).addTo(Map);
+	         elementMarker.
+	                       addEventListener ('click',
+	                                       function () { selectTransmitterCallback (element);});
+	         Transmitters [i]. marker = elementMarker;
 	      }
-	      return false;
 	   }
 
-	   function isStrongest (target) {
-	      for (var i = 0; i < transmitterIndex; i ++) {
-	         if (target. ensemble == Transmitters [i]. ensemble)
-	            if (target. snr < Transmitters [i]. snr)
-	               return false;
+	   function seenAlready (target) {
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if ((Transmitters [j]. lat == target. lat) &&
+	             (Transmitters [j]. lon == target. lon) &&
+	             (Transmitters [j]. current)) {
+	                return true;
+	         }
 	      }
-	      return true;
+	      return false;
 	   }
 
 	   function showTransmitterAtSideBar (target, firstOne) {
@@ -181,10 +198,123 @@
                                'Distance to home ' +
                                           target. dist + 'km ' +
                                target. azimuth + '&#xb0' + '<br><br>';
+
 	           
 	      }
 	   }
 
+	   function addTransmitter (target) {
+	      let firstOne	= transmitterIndex == 0;
+	      for (var i = 0; i < transmitterIndex; i ++) {
+	         let test = Transmitters [i];
+	         if ((test. tiiValue == target. tiiValue)) {
+	            Map. removeLayer (Transmitters [i]. marker);
+	            Transmitters [i]. status = false;
+	         }
+	      }
+	      target. key	= ICON_CURRENT;
+	      target. status	= true;
+	      target. current	= true;
+	      target. isLargest	= false;
+	      let icon		= getIconForTransmitter (target);
+	      let targetMarker =
+	                    L. marker([target.lat, target.lon],
+	                              {icon: icon}) .addTo(Map);
+	      target. marker = targetMarker;
+	      target. marker.
+	                 addEventListener ('click',
+	                                    function () { selectTransmitterCallback (target);});
+
+	      Transmitters [transmitterIndex] = target;
+	      transmitterIndex ++;
+
+//	      let xx = document. getElementById ('testing');
+//	      xx. innerHTML = 
+//	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
+	      showTransmitterAtSideBar (target, firstOne);
+	   }
+//
+//	
+	   function checkDistance (target) {
+	      var maxIndex	= 0;
+	      afstand		= -1;
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if ((Transmitters [j]. status) &
+	             (Transmitters [j]. dist > afstand)) {
+	            afstand = Transmitters [j]. dist;
+	            maxIndex = j;
+	         }
+	      }
+	
+//
+//	remove the mark from previous "furthest"s
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if (!Transmitters [j]. status)
+	            continue;
+	         if (!Transmitters [j]. isLargest)
+	            continue;
+	         if (maxIndex == j)
+	            return;
+	         Transmitters [j]. isLargest = false;
+	         Map. removeLayer (Transmitters [j]. marker);
+	         Transmitters [j]. key = Transmitters [j]. current ?
+	                                              ICON_TOPFRAME :
+	                                              ICON_OTHERFRAME;
+	         let element	= Transmitters [j];
+	         let icon	= getIconForTransmitter (element);
+	         let elementMarker =
+	                       L.marker ([element. lat, element. lon],
+	                              {icon: icon}). addTo (Map);
+	         elementMarker. addEventListener ('click',
+	                                      function () { selectTransmitterCallback (element);});
+	         Transmitters [j]. marker = elementMarker;
+	      }
+//
+//	we have a bew one, show it on the map
+	      Transmitters [maxIndex]. isLargest = true;
+	      Map. removeLayer (Transmitters [maxIndex]. marker);
+	      Transmitters [maxIndex]. key	= ICON_FURTHEST;
+	      let element = Transmitters [maxIndex];
+	      let icon  = getIconForTransmitter (element);
+	      let elementMarker = L.marker ([element. lat, element. lon],
+                                             {icon: icon}). addTo (Map);
+	      elementMarker. addEventListener ('click',
+                                          function () { selectTransmitterCallback (element);});
+	      Transmitters [maxIndex]. marker = elementMarker;
+	   }
+	
+
+//	the CURRENT changed,
+//	two things might have changed, the "current" one
+//	and the "furthest" one
+	   function updateCurrent (target) {
+	      var currentIndex	= -1;
+//	we rewrite ALL elements in the current layer
+	      for (var j = 0; j < transmitterIndex; j ++) {
+	         if (!Transmitters [j]. current)
+	            continue;
+	         if (Transmitters [j]. isLargest)
+	            continue;
+	         Map. removeLayer (Transmitters [j]. marker);
+	         let element = Transmitters [j];
+	         if (element. tiiValue == target. tiiValue) 
+	            currentIndex = j;
+	         Transmitters [j]. key = j == currentIndex ? ICON_CURRENT :
+	                                                     ICON_TOPFRAME;
+	         let icon	= getIconForTransmitter (element);
+	         let elementMarker =
+	                       L.marker ([element. lat, element. lon],
+	                              {icon: icon}). addTo (Map);
+	         elementMarker. addEventListener ('click',
+	                                      function () { selectTransmitterCallback (element);});
+	         Transmitters [j]. marker = elementMarker;
+	         if (j == currentIndex) {
+	            let xx = document. getElementById ('testing');
+	               xx. innerHTML = 
+	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
+	         }
+	      }
+	   }
 
 	   function channelSelect (val) {
 	    $.getJSON ('/channelSelector::' + val, function (data) {});
@@ -201,128 +331,31 @@
 	            }
 	            else
 	            if (target. type == MAP_FRAME) {
+	               handle_map_frame ();
 	               continue;
 	            }
 	            else
 	            if (target. type == MAP_CURRENT) {
+	               updateCurrent (target);
+	               checkDistance (target);
 	               continue;
 	            }
 	            else {		// we add an element 
-                       let current = document. getElementById ('testing');
-	               if (isStrongest (target)) {
-                          current. innerHTML =
-                         '<span style=\"font-weight:bold;">' + 'Current : ' + target. channel + ' ' + target. name + '<br>' + '</span>';
+//	               if (!((target. type == MAP_MAX_TRANS) ||
+//	                                 (target. type == MAP_NORM_TRANS))) 
+//	                  continue;
+//
+//	               clearCurrent ();	// always good
+	               if (!seenAlready (target)) {
+	                  addTransmitter (target);
 	               }
-	               if (seenAlready (target))
-	                  continue;
-	               var firstOne	= transmitterIndex == 0;
-	               var xx = getLargest ();
-	               target. status		= true;
-	               target. current		= true;
-	               target. visible		= false;
-	               target. isLargest	= false;
-	               target. isSelected	= false; 
-	               Transmitters [transmitterIndex ++] = target;
-	               if (xx == -1) {
-	                  Transmitters [transmitterIndex - 1]. isLargest = true;
-	                  set_Icon (transmitterIndex - 1,
-	                            ICON_FURTHEST, target. type, false)
-	               }
-	               else 
-	               if (target. dist < Transmitters [xx]. dist)
-//	The new one is not the largest one, easy
-	                  set_Icon (transmitterIndex - 1,
-	                            ICON_TOPFRAME, target. type, false);
-	               else {
-//	The new one is the largest one, tough
-//	first remove amy previous "isLargest"
-	                  for (var i = 0; i < transmitterIndex; i ++) {
-	                     if (Transmitters [i]. isLargest)  {
-	                        if (Transmitters [i]. isVisible)
-	                           Map. removeLayer (Transmitters [i]. marker);
-	                        set_Icon (i, ICON_TOPFRAME, target.type, false);
-	                        Transmitters [i]. isLargest = false;
-	                     }
-	                  }
-//	and mark the "new" one
-	                  set_Icon (transmitterIndex - 1,
-	                            ICON_FURTHEST, target. type, false);
-	                   Transmitters [transmitterIndex - 1]. isLargest = true;
-	                  }
-	               }
-	               showTransmitterAtSideBar (target, firstOne);
+	               updateCurrent (target);
+	               checkDistance (target);
 	            }
-	         }	
-	      );
+	         }
+	      });
 	   }
 
-	   function getLargest	() {
-	      afstand	= 0;
-	      var index	= -1;
-	      for (var i = 0; i < transmitterIndex; i ++) {
-	         if (Transmitters [i]. dist >= afstand) {
-	            afstand = Transmitters [i]. dist;
-	            index = i;
-	         }
-	      }
-	      return  index;
-	   }
-
-	   function set_Icon (index, iconType, showType, kleur) {
-	      let target = Transmitters [index];
-	      var text		= '';
-	      var count		= 0;
-	      var deLengte	= 0;
-	      let showAll	= showType & SHOW_ALL;
-	      for (var t = transmitterIndex - 1; t >= 0; t --) {
-	         if (target. name != Transmitters [t]. name) 
-	            continue;
-	         if (!Transmitters [t]. status)
-	            continue;
-	         if (Transmitters [t]. isVisible)
-	            Map. removeLayer (Transmitters [t]. marker);
-	         Transmitters [t]. isVisible = false;
-	         var mainId = Math. floor (Transmitters [t]. tiiValue / 256);
-	         var subId  = Transmitters [t]. tiiValue % 256;
-	         let channel = Transmitters [t]. channel;
-	         if (count == 0) {
-	            var ss = channel + ' (' + mainId + ',' + subId + ')';
-	            deLengte = ss. length;
-	            text =  '<br>' + ss;
-	         }
-	         else {
-	            if (showAll)
-	               text  += '<br>' +  channel + ' (' + mainId + ',' + subId + ')';
-	         }
-	         count ++;
-	      }
-	      var selhtml = '';
-	      var he;
-	      if (!kleur && iconType == ICON_FURTHEST)
-//	         he = '<div style="font-size :0.9rem"> &#x🏁';
-	         he = '<div style="font-size :0.9rem;text-align:left;color:Black"> &#x1F3C1';
-	      else
-	      if (kleur && iconType == ICON_FURTHEST)
-	         he = '<div style="font-size :0.9rem;text-align:left;color:Blue"> &#x1F3C1';
-//	         he = '<div style="font-size :0.9rem"> &#x🏁';
-	      else
-	      if (!kleur)
-	         he = '<div style="font-size :0.9rem;text-align:left;color:Black"> &#x26AB';
-	      else
-	         he = '<div style="font-size :0.9rem;text-align:left;color:Blue"> &#x1F535';
-	      he += '<b>' + text + '</b>' + '</div>';
-	
-	      var icon = L.divIcon ({iconSize:[deLengte * 9, 18], html: he, className: 'transmitter-icon'});
-
-	      let elementMarker =
-	                     L.marker ([target. lat, target. lon],
-	                                  {icon: icon}).addTo(Map);
-	      elementMarker. addEventListener ('click',
-	                                       function () { selectTransmitterCallback (target);});
-	      Transmitters [index]. marker = elementMarker;
-	      Transmitters [index]. isVisible	= true;
-	   }
-	         
 	   function initialize () {
 	      Map = L.map ('map_canvas').setView([homeLatitude, homeLongitude], 8);
 
@@ -343,81 +376,28 @@
 	   }, 2000);
 	}
 
-//
-//	at selected
-//	
+	
 	function selectTransmitterCallback (target) {
-//	if  the taret was selected, undo the  selection
-	   if (target. isSelected) {
-	      for (var i = transmitterIndex - 1; i >= 0; i --) {
-	         if (target == Transmitters [i]) {
-	            Transmitters [i]. isSelected = false;
-	            let xx = document. getElementById ('selected');
-	            xx. innerHTML = '';
-	            Map. removeLayer (Transmitters [i]. marker);
-	            if (target. isLargest)
-	               set_Icon (i, ICON_FURTHEST,
-	                                 Transmitters [i]. type, false);
-	            else
-	               set_Icon (i, ICON_TOPFRAME,
-	                                 Transmitters [i]. type, false);
-	            return;
-	         }
-	      }
-	   }
-//
-//	If target was not already selected, undo previous selection first
-	   for (var i = transmitterIndex - 1; i >= 0; i --) {
-	      if (Transmitters [i]. isSelected) {
-	         Transmitters [i]. isSelected = false;
-	         Map. removeLayer (Transmitters [i]. marker);
-	         if (Transmitters [i]. isLargest)
-	            set_Icon (i, ICON_FURTHEST, target. type, false);
-	         else
-	            set_Icon (i, ICON_TOPFRAME, target. type, false);
-	      }
-	   }
-//
-//	Now mark the newly selected one
-	   for (var i = transmitterIndex - 1; i >= 0; i --) {
-	      if (Transmitters [i] == target) {
-	         Map. removeLayer (Transmitters [i]. marker);
-	         Transmitters [i]. isSelected = true;
-	         if (Transmitters [i]. isLargest)
-	            set_Icon (i, ICON_FURTHEST, target. type, true);
-	         else
-	            set_Icon (i, ICON_TOPFRAME, target. type, true);
-	      }
-	   }
 	   let xx = document. getElementById ('selected');
+	   let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	   let coords = '<span style=\"font-style: italic;\">' +
 	                          target. lat + '&#xb0' + ',' +
 	                          target. lon + '&#xb0' +  '</span>';
-	   var text = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
-	         '<span style=\"font-weight:bold;font-size:120%\">' + target. name + '</span>'  + '<br>' +
+	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
+	            newChannel +  '  (' + target. ensemble + ')' + '<br>' +
 	                       target. dateTime + '<br>' +
+	                       'tii ' + Math. floor (target. tiiValue / 256) +
+	                              ' ' + target. tiiValue % 256 + ', ' +
+	                       "alt " + target. altitude + ' m' + ', ' +
+	                       "height " + target. height + ' m' + '<br>' +
+	                       target. name + ' (' +
+	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
+	                       (target. direction == "??" ? " ":
+	                               ("dir :" +  target. direction + '<br>')) +
 	                       coords + '<br>' +
 	                       'Distance to home ' +
-	                                  target. dist + 'km ' +
-	                                  target. azimuth + '&#xb0' + '<br>' + '<br>';
-	   for (var i = transmitterIndex - 1; i >= 0; i --) {
-	      if (target. name == Transmitters [i]. name) {
-	         let newChannel = Transmitters [i]. channel;
-	         let newEnsemble	= Transmitters [i]. ensemble;
-	         let tiiValue	= Transmitters [i]. tiiValue;
-	         let tii	= 'tii  (' + Math. floor (tiiValue / 256) +
-	                                       '-' + tiiValue % 256 + ') ';
-	         let power	= (Transmitters [i]. power / 100.0). toFixed (2) + ' kW';
-	         let kopText = '<span style=\"font-weight:bold;font-size:120%\">' + newChannel + '  ' + tii  + ' ' + power + '<br>'  + '</span>' ;
-	         text +=    kopText +  newEnsemble  + '<br>' +
-	                   'alt ' + Transmitters [i]. altitude + ' m' + ', ' +
-	                   'height ' + Transmitters [i]. height + ' m' + '<br>' +
-	                   (Transmitters [i]. direction == "??" ? " ":
-	                          ("dir :" +  Transmitters [i]. direction + '<br>')) +
-	                   '<br>' + '<br>';
-	      }
-	   }
-	   xx. innerHTML = text;
+	                                  target. dist + 'km ' + 
+	                       target. azimuth + '&#xb0' + '<br><br>';
 	}
 
 </script>

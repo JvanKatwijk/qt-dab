@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>513</width>
-    <height>378</height>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -217,6 +217,19 @@
            <property name="toolTip">
             <string>Set here the mute time in minutes</string>
            </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="smallSpinBox" name="switchDelaySetting">
+           <property name="toolTip">
+            <string>Set here the delay, when searching for data in a channel, in seconds</string>
+           </property>
+           <property name="minimum">
+            <number>2</number>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
@@ -229,10 +242,20 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="smallSpinBox" name="switchDelaySetting">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>stay time (in min)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="smallSpinBox" name="switchStaySetting">
            <property name="toolTip">
-            <string>Set here the delay, when searching for data in a channel, in seconds</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Once - with scanning in single mode - a DAB stream is detected in a channel, the channel will stay &amp;quot;on&amp;quot; for the amount of minutes specified here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="minimum">
+            <number>1</number>
            </property>
           </widget>
          </item>
@@ -512,12 +535,12 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QCheckBox" name="clearScan_selector">
+      <widget class="QCheckBox" name="showAll_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting the selector has effect when scanning. If set, the scan table is cleared whenever a new scan (mode &amp;quot;single scan&amp;quot;) is started.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Display of transmitters on the map has two modes, selected by this checkbox. If enabled, all (channel, tiiPairs) per transmitter is shown, i.e. if it is seen that - for different channels - the same  transmitter(location) is used, then for each of the channels the channelname and the tii values are shown in a list.&lt;/p&gt;&lt;p&gt;If the checkbox is disabled, then for each transmitter(location) seen, only the channel last seen is shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>clear scan</string>
+        <string>showAll</string>
        </property>
       </widget>
      </item>

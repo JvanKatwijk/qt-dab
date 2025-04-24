@@ -64,9 +64,8 @@
 #else
 	this	-> browserAddress	= temp. toStdString ();
 #endif
-	dabSettings			= settings;
 	this	-> running. store (false);
-
+	this	-> dabSettings		= settings;
 	connect (this, &httpHandler::terminating,
 	     parent, &RadioInterface::http_terminate);
 	saveFile	= fopen (saveName. toUtf8 (). data (), "w");
@@ -507,7 +506,7 @@ QString Jsontxt;
 	   direction = "??";
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d,  \"height\":%d, \"direction\":\"%s\"}",
+	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d, \"height\":%d, \"direction\":\"%s\"}",
 	       t [0]. type,
 	       t [0]. ensemble. toUtf8 (). data (),
 	       dotNumber (t [0]. coords. latitude). c_str (),

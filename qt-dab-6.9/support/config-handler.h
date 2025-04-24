@@ -52,6 +52,7 @@ public:
 	bool	upload_active		();
 	int	get_serviceOrder	();
 	int	switchDelayValue	();
+	int	switchStayValue		();
 	int	muteValue		();
 	
 	bool	closeDirect_active	();
@@ -62,7 +63,7 @@ public:
 	bool	epg2_active		();
 	bool	onTop_active		();
 	bool	logger_active		();
-	bool	clearScan_Selector_active	();
+	bool	showAll_Selector_active	();
 	bool	localBrowserSelector_active	();
 //
 //	a few others
@@ -117,6 +118,7 @@ private slots:
 	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
+	void	handle_switchStaySetting	(int);
 	void	handle_orderAlfabetical		();
 	void	handle_orderServiceIds		();
 	void	handle_ordersubChannelIds	();
@@ -126,7 +128,7 @@ private slots:
 	void	handle_epgSelector		(int);
 	void	handle_utc_selector		(int);
 	void	handle_localBrowser		(int);
-	void	handle_clearScan_Selector	(int);
+	void	handle_showAll_Selector		(int);
 	void	handle_saveSlides		(int);
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_tiiThreshold		(int);

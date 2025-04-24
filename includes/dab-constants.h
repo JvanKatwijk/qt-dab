@@ -33,6 +33,7 @@
 #include	<cstdlib>
 #include	<cstdio>
 #include	<complex>
+#include	<vector>
 #include	<limits>
 #include	<cstring>
 #include	<unistd.h>
@@ -137,6 +138,9 @@ using namespace std;
 #define		MAP_FRAME	1
 #define		MAP_MAX_TRANS	2
 #define		MAP_NORM_TRANS	4
+
+#define		SHOW_SINGLE	16
+#define		SHOW_ALL	32
 
 #define		BAND_III	0100
 #define		L_BAND		0101

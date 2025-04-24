@@ -8,10 +8,14 @@
 #define	SCANNER			"scannerHandler"
 //
 //
+
+#define	AUDIOSERVICES_ONLY	"audioServices_only"
+#define	AUTO_HTTP		"auto_http"
 #define	MAP_HANDLING		"MAP_HANDLING"
 #define	TII_THRESHOLD		"tiiThreshold"
 #define	MUTE_TIME_SETTING	"muteTime"
 #define	SWITCH_VALUE_SETTING	"switchDelay"
+#define	SWITCH_STAY_SETTING	"switchStay"
 #define	SERVICE_ORDER_SETTING	"servicOrder"
 #define	LOG_MODE		"logMode"
 #define	EPG2XML_SETTING		"epg2xml"
