@@ -15,7 +15,7 @@ contains essentially all that is needed when just selecting a service and listen
 
 Of course, as for previous versions, for the current version,
 *Qt-DAB-6.9*, predefined executables and installers are available.
-For Windows  **three** installers are available, and for Linux there is an x64 AppImage.
+For Windows  **two** installers are available, and for Linux there is an x64 AppImage.
 
 ![6.9](/res/read_me/Qt_DAB-6.9.1.png?raw=true)
 ![6.9](/res/read_me/Qt_DAB-6.9.2.png?raw=true)
@@ -42,13 +42,12 @@ Introduction
 =================================================================
 
 *Qt-DAB* is designed to be used  with a broad variety of SDR devices.
-A simple and clean interface is used and Qt-DAB  has built-in support for a
-DABsticks, all models of the SDRplay, Airspy, HackRF, LimeSDR, Adalm Pluto etc.
+Qt-DAB  has built-in support for a DABsticks, all models of the SDRplay,
+Airspy, HackRF, LimeSDR, Adalm Pluto etc.
 Precompiled versions for Windows and Linux (x64) are available.
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 
-*Qt-DAB* is GUI driven, 
-the full GUI shows 4+ widgets, one of them, the
+*Qt-DAB* is GUI driven, the full GUI shows 4+ widgets, one of them, the
 *main widget* - one with sufficient controls to select channels and service(s) -
 is always visible. This main widget contains selectors
 for controlling the visibility of (the) other widgets.
@@ -404,7 +403,7 @@ If running on a "more or less" modern X86_64 based device, uncomment in the
 section *viterbi-new*
 
         DEFINES         += __ARCH_X86__
- 	QMAKE_CFLAGS    +=  -mavx2 -msse4
+        QMAKE_CFLAGS    +=  -mavx2 -msse4
         QMAKE_CXXFLAGS  +=  -mavx2 -msse4
         QMAKE_LFLAGS    +=  -mavx2 -msse4
 
@@ -447,7 +446,7 @@ If Qt-DAB does not *see* the database, it will just function without mapping TII
 Some comments
 ================================================================
 
-A user compiled Qt-DAB-6.9  ond and for an RPI, met the follwoing issues:
+A user compiled Qt-DAB-6.9, on and for an RPI,  and met the follwoing issues:
 
 Once I had downloaded the qt-dab-master from the code page,
 installed all the libraries listed in the Readme on the code page,
@@ -456,57 +455,59 @@ I had a problem getting the .pro file to recognise the new qwt version.
 This was because on the pi it installs to /usr/include.
 
 So I changed the .pro file as follows:
-Line 433
-INCLUDEPATH += /usr/include
-!mac {
-INCLUDEPATH += /usr/include/qwt-6.3.0/lib
-#correct this for the correct path to the qwt6 library on your system
-#LIBS += -lqwt
-equals (QT_MAJOR_VERSION, 6) {
-LIBS += -lqwt-qt6
-}else{ LIBS += -lqwt-qt5
+
+	 Line 433
+	 INCLUDEPATH += /usr/include
+	 !mac {
+	 INCLUDEPATH += /usr/include/qwt-6.3.0/lib
+	 #correct this for the correct path to the qwt6 library on your system
+	 #LIBS += -lqwt
+	 equals (QT_MAJOR_VERSION, 6) {
+	 LIBS += -lqwt-qt6
+	 }else{ LIBS += -lqwt-qt5
 
 However I still could not get the qwt recognised so further changes were needed, this time to the Modules folder.
 
 To do this, I went to the qt-dab-6.9 folder in the qt-dab-master, and then opened the folder cmake. Then Modules.
 Found the relevant FindQwt file and made the following changes:
 
-find_path(QWT_INCLUDE_DIRS
-NAMES qwt_global.h
-HINTS
-${CMAKE_INSTALL_PREFIX}/include/qwt
-${CMAKE_INSTALL_PREFIX}/include/qwt-qt6
-PATHS
-/usr/local/include/qwt-qt6
-/usr/local/include/qwt
-/usr/include/qwt6
-/usr/include/qwt6-qt6
-/usr/include/qt6/qwt
-/opt/local/include/qwt
-/usr/include/qwt-6.3.0
-/sw/include/qwt
-/usr/local/lib/qwt.framework/Headers
-/usr/local/lib/qwt-qt5/lib/framework/Headers
-/usr/include/qwt-6.3.0/include
-)
-if (APPLE)
-set(CMAKE_FIND_LIBRARY_SUFFIXES " " " .dylib" ".so" ".a ")
-endif (APPLE)
+	find_path(QWT_INCLUDE_DIRS
+	NAMES qwt_global.h
+	HINTS
+	${CMAKE_INSTALL_PREFIX}/include/qwt
+	${CMAKE_INSTALL_PREFIX}/include/qwt-qt6
+	PATHS
+	/usr/local/include/qwt-qt6
+	/usr/local/include/qwt
+	/usr/include/qwt6
+	/usr/include/qwt6-qt6
+	/usr/include/qt6/qwt
+	/opt/local/include/qwt
+	/usr/include/qwt-6.3.0
+	/sw/include/qwt
+	/usr/local/lib/qwt.framework/Headers
+	/usr/local/lib/qwt-qt5/lib/framework/Headers
+	/usr/include/qwt-6.3.0/include
+	)
+	if (APPLE)
+	set(CMAKE_FIND_LIBRARY_SUFFIXES " " " .dylib" ".so" ".a ")
+	endif (APPLE)
 
-find_library (QWT_LIBRARIES
-NAMES qwt6 qwt6-qt6 qwt-qt6 qwt
-HINTS
-${CMAKE_INSTALL_PREFIX}/lib
-${CMAKE_INSTALL_PREFIX}/lib64
-PATHS
-/usr/local/lib
-/usr/lib
-/opt/local/lib
-/sw/lib
-/usr/local/lib/qwt.framework
-/usr/local/lib/qwt-qt6/lib/framework
-/usr/include/qwt-6.3.0/lib
-)
+	find_library (QWT_LIBRARIES
+	NAMES qwt6 qwt6-qt6 qwt-qt6 qwt
+	HINTS
+	${CMAKE_INSTALL_PREFIX}/lib
+	${CMAKE_INSTALL_PREFIX}/lib64
+	PATHS
+	/usr/local/lib
+	/usr/lib
+	/opt/local/lib
+	/sw/lib
+	/usr/local/lib/qwt.framework
+	/usr/local/lib/qwt-qt6/lib/framework
+	/usr/include/qwt-6.3.0/lib
+	)
+
 With these settings Qt-DAB could be compiled
 
 Using user specified bands
