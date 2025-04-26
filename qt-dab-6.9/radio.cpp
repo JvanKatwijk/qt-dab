@@ -775,10 +775,10 @@ QString s;
 	}
 	else
 	if (theSCANHandler. active ()) {
-	   if (theSCANHandler. scan_single ())
-	     theSCANHandler. addEnsemble (channelSelector -> currentText (), v);
 	   if (theSCANHandler. scan_single () ||
 	       theSCANHandler. scan_continuous ()) {
+	      theSCANHandler.
+	                 addEnsemble (channelSelector -> currentText (), v);
 	      channelTimer. stop ();
 	      int switchStay		=
 	              configHandler_p -> switchStayValue ();

@@ -185,7 +185,7 @@ public:
 	realChannel	= true;
 	serviceCount	= -1;
 	currentService. valid	= false;
-	nrServices	= -1;
+	nrServices	= 0;
 	tunedFrequency	= -1;
 	ensembleName	=  "";
 	nrTransmitters	= 0;
