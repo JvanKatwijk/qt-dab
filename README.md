@@ -42,7 +42,7 @@ Introduction
 =================================================================
 
 *Qt-DAB* is designed to be used  with a broad variety of SDR devices.
-Qt-DAB  has built-in support for a DABsticks, all models of the SDRplay,
+Qt-DAB  supports  a DABsticks, all models of the SDRplay,
 Airspy, HackRF, LimeSDR, Adalm Pluto etc.
 Precompiled versions for Windows and Linux (x64) are available.
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
@@ -78,7 +78,7 @@ Features
 Widgets and scopes
 =======================================================================
 
-![6.9](/res/read_me/Qt_DAB-6.9.2.png)
+![6.9](/res/read_me/Qt_DAB-6.9.1.png)
 
 The *mainWidget* (see picture) of Qt-DAB (always visible), contains settings for controlling the visibility of other widgets.
 It shows - left half - a list of services (either from the currently selected channel or from the favourites), seleting a service is just by clicking on the name.
@@ -94,7 +94,7 @@ a spectrum of the audio of the selected service;
  * touching the icon showing a *speaker* controls muting the signal and shows
 whether or not a signal should be audible.
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
- * touching with the *right hand mouse button* the text of the dynamic label (Alannah Myles - Black Velvet) shows a small menu to put the text on the clipboard;
+ * touching with the *right hand mouse button* the text of the dynamic label (NPO Radio 1- NOS Langs de lijn - NOS) shows a small menu to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map )with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
@@ -102,7 +102,8 @@ whether or not a signal should be audible.
  * the button labeled *favourites* controls  whether the list of services
 from the currently selected channel of the list of favourites is shown,
  * the button labeled *scanlist* controls the visibility
-of the scan list, i.e the list of services seen at the most recent scan.
+of the scan list, i.e the list of services seen at the most recent scan.;
+ * the bottom line shows the transmitter name from which the data is received.
 
 (Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
 
@@ -257,6 +258,18 @@ the position(s) of the transmitter(s) received on the map.
 Note that two preconditions have to be met:
  * a "home" location has to be known (see the button *coordinates*);
  * the TII database is installed (see the button *refresh table*)l
+
+New in the current version of Qt-DAB is the display of the channels that
+contain data, together with the TII value (mainId, subId) of the transmitter.
+Clicking on a transmitterlocation, displays the details of that location, i.e.
+the distance and some data of the transmitters on that location.
+(Clicking a second time causes that detailed specification to disappear from the screen.
+
+The picture shows some channels I receive with a simple whip net to my "lazy chair".
+
+Of course, using a more advanced antenna. more transmitters show, as seen on the picture below (courtesy of Herman Wijnants)
+
+![6.8](/res/read_me/good-antenna.png?raw=true)
 
 The webbrowser listens to port 8080. By default, the "standard" browser
 on the system is activated. The *configuration and control* widget

@@ -757,7 +757,7 @@ void	ensembleHandler::handle_scheduledSelect (const QString &name,
 }
 
 void	ensembleHandler::set_serviceOrder	(int order) {
-	store (ensembleSettings, ENSEMBLE,"serviceOrder", order);
+	store (ensembleSettings, ENSEMBLE, "serviceOrder", order);
 	serviceOrder	= order;
 }
 

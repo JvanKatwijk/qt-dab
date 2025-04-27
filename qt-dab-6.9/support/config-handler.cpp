@@ -188,7 +188,7 @@ int	index_for_key (int key) {
 	                                 "decoders", DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 
-	int v = value_i (dabSettings, CONFIG_HANDLER, "tii-detector", 1);
+	int v = value_i (dabSettings, CONFIG_HANDLER, TII_DETECTOR_SETTING, 1);
 	this	-> tiiSelector	-> setChecked (v != 0);
 	if (v == 0) {
 	   tiiCollisions -> setEnabled (false);
@@ -510,7 +510,7 @@ QString fontColorButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              FONTCOLOR_BUTTON + "_font", WHITE);
 QString	fontColorButton_color =
-	   value_s (dabSettings, "COLOR_SETTINGD",
+	   value_s (dabSettings, COLOR_SETTINGS,
 	                              FONTCOLOR_BUTTON + "_color", BLACK);
 
 QString devicewidgetButton_color =
@@ -759,13 +759,13 @@ void	configHandler::handle_ordersubChannelIds	() {
 }
 
 void	configHandler::handle_portSelector () {
-QString oldPort	= value_s (dabSettings, "MAP_HANDLING",
+QString oldPort	= value_s (dabSettings, MAP_HANDLING,
 	                                 MAP_PORT_SETTING, "8080");
 mapPortHandler theHandler (oldPort);
 	int portNumber = theHandler. QDialog::exec ();
 	if (portNumber != 0) {
 	   QString ss = QString::number (portNumber);
-	   store (dabSettings, "MAP_HANDLING", MAP_PORT_SETTING, ss);
+	   store (dabSettings, MAP_HANDLING, MAP_PORT_SETTING, ss);
 	}
 }
 
@@ -1020,7 +1020,7 @@ bool    x       = tiiFilter     -> isChecked ();
 void	configHandler::handle_tiiSelector	(int state) {
 bool	x 	= tiiSelector	-> isChecked ();
 	(void)state;
-	store (dabSettings, CONFIG_HANDLER, "tii-detector", x ? 1 : 0);
+	store (dabSettings, CONFIG_HANDLER, TII_DETECTOR_SETTING, x ? 1 : 0);
 	tiiCollisions -> setEnabled (x);
 	if (x) 
 	   tiiThreshold_setter -> setMinimum (6);

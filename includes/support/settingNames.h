@@ -30,7 +30,7 @@
 #define	SAVE_SLIDES_SETTING		"saveSlides"
 #define	TRANSMITTER_NAMES_SETTING	"transmitterNames"
 
-#define	COLOR_SETTINGS		"COLOR_SETTINGS"
+#define	COLOR_SETTINGS		"colorSettings"
 #define	SKIN_SETTING		"skin"
 #define	SAVE_SERVICE_SETTING	"saveService"
 
