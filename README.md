@@ -129,11 +129,21 @@ is shown as well.
 The buttons at the top of the widget control dumping the audio
 (".wav" file) resp. the AAC frames into a file. The latter can be processed
 by e.g. VLC.
+The **timeTable** button has only effect if on this channel (ensemble) an EPG 
+service is of was active. Data from the EPG service is stored, and the
+timetable is an interpretation of that data.
+
 The three progress bars (quality indicators) for DAB+ give success rates of
 resp. detecting a DAB+ frame, the RS error repair and the AAC decoding.
 (For "old" DAB transmissions only a single quality indicator appears).
 
-Below the progress bars the *rsCorrections/100* indicator show how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames. Of course, the parity bits used by the RS decoding may contain bit errors themselves, the second indicator shows the amount of CRC errors detected after thecorrection by the RS decosing.
+Below the progress bars the *rsCorrections/100* indicator show how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames.
+Of course, the parity bits used by the RS decoding may contain bit errors themselves, the second indicator shows the amount of CRC errors detected after thecorrection by the RS decoding.
+
+The third indicator tells the percentage of the audio that was OK. If - for
+whatever reason - the audio frames in the selected audio service could not
+be translated into PCM data, NULL values are inserted to ensure that the
+demands of the outputrate are met.
 
 ![6.8](/res/read_me/spectrum-scope.png)
 
