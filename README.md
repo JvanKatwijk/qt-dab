@@ -288,6 +288,21 @@ one's own browser.
 
 See the manual for entering the home position to Qt-DAB.
 
+EPG Handling and time tables
+
+While not here in the Nertherlands, in many other countries an ensemble
+contains an *epg* or *spi* service.
+Such a service contains **time table** data. If such a service is 
+part of the ensemble, it will be started automatically to run as background
+task. Data will be stored in a separate directory that is itself stored
+in the user's Qt-DAB-files directory.
+
+If sufficient data is read in and stored, a time table for the selected
+service can be shown by touching the timeTable button on the technical widget.
+
+![6.8](/res/read_me/timetable.png?raw=true)
+
+
 Documentation
 =================================================================
 
