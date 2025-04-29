@@ -26,10 +26,11 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
-* [A Note on using an RTLSDR device](#a-note-on-using-an-rtlsdr-device]
+* [A Note on using an RTLSDR device](#a-note-on-using-an-RTLSDR-device]
+A Note on using an RTLSDR device
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
-* [EPG Handling and time tables]
+* [EPG Handling and time tables](#epg-handling-and-time-tables)
 * [Documentation](#documentation)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
@@ -289,6 +290,7 @@ one's own browser.
 See the manual for entering the home position to Qt-DAB.
 
 EPG Handling and time tables
+=================================================================
 
 While not here in the Nertherlands, in many other countries an ensemble
 contains an *epg* or *spi* service.
