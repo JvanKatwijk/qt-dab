@@ -527,20 +527,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3.2
-	}
-	else {
-	   TARGET		= qt-dab32-qt6-6.9V3.2
-	}
-	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9.2
+#	   TARGET		= qt-dab32-qt5-6.9V3.2
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9.2
+#	   TARGET		= qt-dab32-qt6-6.9V3.2
 #	}
-#	CONFIG		+= dabstick-win-v4
+#	CONFIG		+= dabstick-win-v3
+	equals (QT_MAJOR_VERSION, 5) {
+	   TARGET		= qt-dab32-qt5-6.9.2
+	}
+	else {
+	   TARGET		= qt-dab32-qt6-6.9.2
+	}
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

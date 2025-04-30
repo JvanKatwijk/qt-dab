@@ -11,11 +11,11 @@ About Qt-DAB
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 The GUI of Qt-DAB has a single *main* widget that
-contains essentially all that is needed when just selecting a service and listening, while other widgets, visible under user control, if made visible show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
+contains essentially all that is needed when just selecting a service and listening.  Other widgets, visible under user control, if made visible show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
 
 Of course, as for previous versions, for the current version,
 *Qt-DAB-6.9*, predefined executables and installers are available.
-For Windows  **two** installers are available, and for Linux there is an x64 AppImage.
+For Windows  **two** 32 bit installers are available, and for Linux there is an x64 AppImage.
 
 ![6.9](/res/read_me/Qt_DAB-6.9.1.png?raw=true)
 ![6.9](/res/read_me/Qt_DAB-6.9.2.png?raw=true)
@@ -26,8 +26,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
-* [A Note on using an RTLSDR device](#a-note-on-using-an-RTLSDR-device]
-A Note on using an RTLSDR device
+* [A note on using an RTLSDR device](#a-note-on-using-an-RTLSDR-device]
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
@@ -81,9 +80,9 @@ Widgets and scopes
 
 ![6.9](/res/read_me/Qt_DAB-6.9.1.png)
 
-The *mainWidget* (see picture) of Qt-DAB (always visible), contains settings for controlling the visibility of other widgets.
+The *main widget* (see picture) of Qt-DAB (always visible), contains settings for controlling the visibility of other widgets.
 It shows - left half - a list of services (either from the currently selected channel or from the favourites), seleting a service is just by clicking on the name.
-On the right half of the widget is shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
+On the right half of the widget it shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
 * touching the *ensemble name* (NPO (8001) in the picture) makes the
 *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a ".csv" format. If  the data is visible, touching will hide it;
@@ -110,7 +109,7 @@ of the scan list, i.e the list of services seen at the most recent scan.;
 
 As mentioned, Qt-DAB supports **Favourites**, i.e. a list of (channel, service pairs),
 the list is maintained between program invocations. 
-The *services list* is shown in one of two modes, selectable by the button (in the picture labeled favourites). In *ensemble view* mode, the services in the current ensemble are shown, in the *favourites view* mode, the favourites are shown.
+The *services list* on the main widget is shown in one of two modes, selectable by the button (in the picture labeled favourites). In *ensemble view* mode, the services in the current ensemble are shown, in the *favourites view* mode, the favourites are shown.
 In both views, selecting a service is just by clicking on the service name.
 Of course, when selecting a service in the list of favourites, it might take some time before the software has switched over to the appropriate channel, and has
 received sufficient information on the new ensemble carried in that channel before being able to select the service in that channel.
@@ -124,7 +123,7 @@ service from the list, as does clicking on the field in the *favourites view*.
 
 The technical widget shows - as the name suggests - some technical details of
 the  selected audio service. If the audio of the service is also transmitted
-on FM, the FM frequency - derived from additional data in the DAB data -
+on FM, the FM frequency - derived from additional data in the DAB datastream -
 is shown as well.
 
 The buttons at the top of the widget control dumping the audio
@@ -138,7 +137,7 @@ The three progress bars (quality indicators) for DAB+ give success rates of
 resp. detecting a DAB+ frame, the RS error repair and the AAC decoding.
 (For "old" DAB transmissions only a single quality indicator appears).
 
-Below the progress bars the *rsCorrections/100* indicator show how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames.
+Below the progress bars the *rsCorrections/100* indicator shows how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames.
 Of course, the parity bits used by the RS decoding may contain bit errors themselves, the second indicator shows the amount of CRC errors detected after thecorrection by the RS decoding.
 
 The third indicator tells the percentage of the audio that was OK. If - for
@@ -206,7 +205,7 @@ The *configuration and control* widget contains  checkboxes, spinboxes and
 buttons with which the configuration of the decoding process can be
 influenced.
 
-At starting up Qt-DAB for the (very) first time, no device is selected yet, amd the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
+At starting up Qt-DAB for the (very) first time, no device is selected yet, and the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
 
 For a detailed description of all selectors, see the manual (or read the tooltips).
 
@@ -229,7 +228,7 @@ Scan control
 ![6.8](/res/read_me/scan-widget.png?raw=true)
 
 A separate widget - visible under control of the *scan* button on the
-main widget - provides full control on scanning. Qt-DAB provides different scanning modes" scan to data, single scan and scan continuously.
+main widget - provides full control on scanning. Qt-DAB provides different scanning modes: scan to data, single scan and scan continuously.
 
 With *single scan* a listing is produced of (the contents of) all
 ensembles encountered. The scan momitor shows for each channel where
@@ -239,19 +238,20 @@ The picture shows the result of such a scan with
 a simple whip antenna next to the *Lazy Chair*.
 
 With *scan to data* scanning starts and continues until a channel is detected
-that carries DAB data,
+that carries DAB data (or scanning is stopped by touching the *stop* button).
 With *scan continuously* a single line is shown for each ensemble
 enountered, and - as the name suggests - scanning goes on until stopped
 ny the user.
 
-To allow skipping over given channels when scanning, Qt-DAB supports the notion of a *skiptable*, in which channels to be skipped can be marked.
-Next to a default skiptable, skiptables can be created as separate files and
+To allow skipping over given channels when scanning, Qt-DAB supports the notion of a *scantable*, in which channels can be marked for skipping.
+Next to a default scantable, scantables can be created as separate files and
 read-in when required.
 
-The *show* button controls the visibility of the *skiptable*, skiptables
+The *show* button controls the visibility of the *scantable*, scantables
 can be loaded and stored in either the ".ini" file (use the "...default" buttons, or can be kept as xml file on a user defined place (the other load/store buttons).
 
-The small table at the bottom of the widget is just for convenience, on scanning it displays the channel name, the ensemble name encountered and the number of services detected in the ensemble.
+The table at the bottom of the widget is just for convenience, on scanning it displays the channel name being scanned currently, the ensemble name encountered and the number of services detected in the ensemble. Only for *scan single* the
+transmitters that were identified are shown as well.
 
 Displaying TII data
 =======================================================================
@@ -266,8 +266,8 @@ If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tr
 
 The picture shows that in my environment, on channel 12C, the national network,
 I can identify a couple of different transmitters in the received signal.
-The left column in the widget shows the transmitter whose data is the data
-being processed. New is the addition of a "compass" to show the direction
+The left column in the widget shows the transmitter whose TII data is 
+strongest. New is the addition of a "compass" to show the direction
 from which the signal comes from the selected transmitter.
 
 If the DX mode is set - the button on the bottom line of the mainwidget -,
@@ -380,7 +380,8 @@ Building an executable for Qt-DAB: a few notes
 Note:
 I work on Linux, creating both AppImages for Linux and Cross-compiled versions
 for Windows. While it is most likely possible to build an executable
-on and for Windows, do not ask me, I do not know anything about windows.
+on and for Windows, do not ask me, I do not know anything about Windows.
+
 =====================================================================
 
 It is strongly advised to use qmake/make for the compilation process,
@@ -483,7 +484,7 @@ for inclusion in the AppImage.
 Step 3
 -----------------------------------------------------------------
 
-Run *qmake* (variants of the name are *qmake6*, *qt6-qmake*) which generates a *Makefile* and then run *make*.  *Compiling may take some time*.
+Run *qmake* (variants of the name are *qmake6*, *qt6-qmake*, etc) which generates a *Makefile* and then run *make*.  *Compiling may take some time*.
 Use *make -j XX* for speeding up the build process, with XX the amount
 of parallel threads used. Of course, qmake will complain if not all
 required libraries can be found.
@@ -493,6 +494,10 @@ Step 4
 Use the database downloader (for Windows and Linux available as
 precompiled item) to download a fresh copy of the database. Or download a
 copy of the database from the repository.
+
+A copy of the database is part of the repository. The directory **helpers**
+contains a file "tiiFile.zip", unpack the zipped file and store the result
+in your homedirectory (folder).
 
 If Qt-DAB does not *see* the database, it will just function without mapping TII data onto names and locations.
 
