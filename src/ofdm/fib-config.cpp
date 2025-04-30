@@ -29,7 +29,7 @@
 //
 //	While in previous versions I tried to "optimize" by
 //	adding properties to SIds and serviceNames, the code became
-//	messy and a few errors vould not be handled properly.
+//	messy and a few errors could not be handled properly.
 //
 //	Here I took the easy approach: for (almost) each FIG, I added
 //	a table, and the interpretation is "as and when needed"

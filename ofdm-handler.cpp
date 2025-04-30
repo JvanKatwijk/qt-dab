@@ -101,7 +101,6 @@
 	                             S_CORRELATION_ORDER, 0) != 0;
 	this	-> dxMode		=
 	         value_i (dabSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
-
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
 	                                           "decoders", DECODER_1); 
 	this	-> selected_TII		= value_i (dabSettings, CONFIG_HANDLER,		 	                                   "tii-detector", 1) == 0 ?

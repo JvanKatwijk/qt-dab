@@ -144,7 +144,7 @@ QString scanmodeText (int e) {
 	loadKnop	= new QPushButton ("load scanfile");
 	storeKnop	= new QPushButton ("store scanfile");
 	scanModeSelector	= new QComboBox ();
-        contentWidget	= new QTableWidget (0, 3);
+        contentWidget	= new QTableWidget (0, 4);
 	QHBoxLayout *LH	= new QHBoxLayout ();
 	QHBoxLayout *LH_2	= new QHBoxLayout ();
 	LH		-> addWidget (startKnop);
@@ -193,7 +193,7 @@ QString scanmodeText (int e) {
 	   connect (clearKnop, &QPushButton::clicked,
 	            this, &scanHandler::handle_clearKnop);
 	}
-	header << "channel" << "ensemble" << "nrServices";
+	header << "channel" << "ensemble" << "nrServices" << "transmitters";
         contentWidget	-> setHorizontalHeaderLabels (header);
 	addRow ();	// for the ensemble name
 	totalServices	= 0;
@@ -253,21 +253,23 @@ int16_t row	= contentWidget -> rowCount ();
 
         contentWidget     -> insertRow (row);
 
-	for (int i = 0; i < 3; i ++) {
+	for (int i = 0; i < 4; i ++) {
            QTableWidgetItem *item0 = new QTableWidgetItem;
-           item0           -> setTextAlignment (Qt::AlignLeft |
+	   if (i < 2)
+              item0           -> setTextAlignment (Qt::AlignHCenter |
+	                                                Qt::AlignVCenter);
+	   else
+              item0           -> setTextAlignment (Qt::AlignRight |
 	                                                Qt::AlignVCenter);
            contentWidget     -> setItem (row, i, item0);
 	}
-	contentWidget	-> item (row, 2) -> setText ("0");
+	contentWidget	-> item (row, 2) -> setText (" ");
+	contentWidget	-> item (row, 3) -> setText (" ");
 	return row;
 }
 
 void	scanHandler::addEnsemble (const QString &channel,
 	                               const QString &name)  {
-	fprintf (stderr, "adding %s %s\n",
-	                         channel. toLatin1 (). data (),
-	                         name. toLatin1 (). data ());
 	for (int i = 1; i < contentWidget -> rowCount (); i ++) {
 	   QString ch = contentWidget -> item (i, 0) -> text ();
            if (ch == channel) {
@@ -279,6 +281,23 @@ void	scanHandler::addEnsemble (const QString &channel,
         contentWidget -> item (row, 0) -> setText (channel);
         contentWidget -> item (row, 1) -> setText (name);
         contentWidget -> item (row, 2) -> setText ("0");
+}
+
+void	scanHandler::addTransmitters	(const QStringList &ss, 
+	                                 const QString &channel) {
+	if (ss. size () < 1)
+	   return;
+	for (int i = 1; i < contentWidget -> rowCount (); i ++) {
+	   QString ch = contentWidget -> item (i, 0) -> text ();
+	   if (ch == channel)  {
+	      contentWidget -> item (i, 3) -> setText (ss [0]);
+	      for (int j = 1; j < ss. size (); j ++) {
+	         int row = addRow ();
+                 contentWidget -> item (row, 3) -> setText (ss [j]);
+	      }
+	      return;
+	   }
+	}
 }
 
 void	scanHandler::addService (const QString &channel) {
@@ -302,7 +321,6 @@ void	scanHandler::addService (const QString &channel) {
 	}
 //
 //	no channel found so far
-	
 	int row	= addRow ();
 	contentWidget -> item (row, 0) -> setText (channel);
 	contentWidget -> item (row, 2) -> setText ("1");

@@ -2781,6 +2781,13 @@ void	RadioInterface::channel_timeOut () {
 	}
 	else	
 	if (theSCANHandler. scan_single ()) {
+	   if (channel. transmitters. size () > 0) {
+	      QStringList ss;
+	      for (auto tr : channel. transmitters)
+	         ss << tr. theTransmitter. transmitterName;
+	      theSCANHandler.
+	                 addTransmitters (ss, channel. channelName);
+	   }
 	   nextFor_scan_single ();
 	}
 	else {
@@ -2808,7 +2815,7 @@ void	RadioInterface::nextFor_scan_to_data () {
 }
 
 void	RadioInterface::nextFor_scan_single () {
-	if (channel. nrServices > 0)
+	if (channel. nrServices > 0) 
 	   show_for_single_scan ();
 	stopChannel ();
 	try {

@@ -229,7 +229,20 @@ Scan control
 ![6.8](/res/read_me/scan-widget.png?raw=true)
 
 A separate widget - visible under control of the *scan* button on the
-main widget - provides full control on scanning. Qt-DAB provides different scanning modes, with single scannning and continuous scanning.
+main widget - provides full control on scanning. Qt-DAB provides different scanning modes" scan to data, single scan and scan continuously.
+
+With *single scan* a listing is produced of (the contents of) all
+ensembles encountered. The scan momitor shows for each channel where
+data was detected the ensemble name, the number of services and the
+detected transmitters.
+The picture shows the result of such a scan with
+a simple whip antenna next to the *Lazy Chair*.
+
+With *scan to data* scanning starts and continues until a channel is detected
+that carries DAB data,
+With *scan continuously* a single line is shown for each ensemble
+enountered, and - as the name suggests - scanning goes on until stopped
+ny the user.
 
 To allow skipping over given channels when scanning, Qt-DAB supports the notion of a *skiptable*, in which channels to be skipped can be marked.
 Next to a default skiptable, skiptables can be created as separate files and

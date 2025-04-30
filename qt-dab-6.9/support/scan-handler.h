@@ -51,6 +51,7 @@ public:
 	bool	isVisible	();
 	void	clearTable	();
 	void	addEnsemble	(const QString &channel, const QString &name);
+	void	addTransmitters (const QStringList &, const QString &);
 	void	addService	(const QString &);
 	void	addText		(const QString &koptext);
 
