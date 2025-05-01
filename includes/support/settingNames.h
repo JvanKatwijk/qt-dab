@@ -60,7 +60,7 @@
 
 #define	SAVEDIR_XML		"saveDir_xmlDump"
 
-
+#define	SCAN_HANDLER		"scanHandler"
 #define	SOUND_HANDLER		"soundHandler"
 #define	SOUND_HANDLING		"soundHandling"
 #define	S_PORT_AUDIO		"PORTAUDIO"

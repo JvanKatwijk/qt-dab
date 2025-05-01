@@ -26,6 +26,7 @@
 #include        "radio.h"
 #include	"dab-constants.h"
 #include	"settingNames.h"
+#include	"position-handler.h"
 #include	"settings-handler.h"
 
 static const
@@ -163,6 +164,8 @@ QString scanmodeText (int e) {
 	LV		-> addWidget (contentWidget);
         myWidget. setLayout (LV);
 	myWidget. setWindowTitle ("scan monitor");
+	set_position_and_size (dabSettings, &myWidget, SCAN_HANDLER);
+
 	if (!no_scanTables)
 	   scanTable. setup_scanTable (selectedBand);
 	scanModeSelector -> addItem ("single scan");
@@ -193,6 +196,10 @@ QString scanmodeText (int e) {
 	   connect (clearKnop, &QPushButton::clicked,
 	            this, &scanHandler::handle_clearKnop);
 	}
+	contentWidget	-> setColumnWidth (0, 60);
+	contentWidget	-> setColumnWidth (1, 150);
+	contentWidget	-> setColumnWidth (2, 100);
+	contentWidget	-> setColumnWidth (3, 250);
 	header << "channel" << "ensemble" << "nrServices" << "transmitters";
         contentWidget	-> setHorizontalHeaderLabels (header);
 	addRow ();	// for the ensemble name
@@ -208,6 +215,7 @@ QString scanmodeText (int e) {
 }
 
 	scanHandler::~scanHandler () {
+	store_widget_position (dabSettings, &myWidget, SCAN_HANDLER);
 	clearTable	();
 	scanTable. hide_scanTable ();
         delete  contentWidget;

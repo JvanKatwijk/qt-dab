@@ -806,7 +806,8 @@ QStringList s	= theOFDMHandler -> basicPrint ();
 	   contentTable_p = nullptr;
 	   return;
 	}
-	QString headLine = buildHeadLine ();
+	QString headLine	= build_kop ();
+	
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
 	                                            theOFDMHandler -> scanWidth ());
@@ -814,6 +815,10 @@ QStringList s	= theOFDMHandler -> basicPrint ();
 	         this, &RadioInterface::handle_contentSelector);
 
 	contentTable_p		-> addLine (headLine);
+	for (auto &tr : channel. transmitters) {
+	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
+	   contentTable_p	-> addLine (transmitterLine);
+	}  
 	for (auto &ss : s)
 	   contentTable_p -> addLine (ss);
 	contentTable_p -> show ();
@@ -2621,14 +2626,9 @@ void	RadioInterface::startScan_single () {
 	                           "channelName" + ";" +
 	                           "frequency (KHz)" + ";" +
 	                           "Eid" + ";" +
-	                           "tii" + ";" +
 	                           "time" + ";" +
 	                           "SNR" + ";" +
-	                           "nr services" + ";" +
-	                           "transmitterName;" +
-	                           "distance;" +
-	                           "azimuth;" +
-	                           "height";
+	                           "nr services" + ";" ;
 	 
 	scanTable_p	-> addLine (topLine);
 	scanTable_p	-> addLine ("\n");
@@ -2903,11 +2903,52 @@ QString	theHeight;
 	return headLine;
 }
 
+QString RadioInterface::build_kop	() {
+QString SNR 		= "SNR " + QString::number (channel. snr);
+QString	theName;
+
+	if (theOFDMHandler == nullptr) {	// cannot happen
+	   fprintf (stderr, "Expert error 26\n");
+	   return "";
+	}
+
+	QString utcTime	= convertTime (UTC. year, UTC.month,
+	                               UTC. day, UTC. hour, 
+	                               UTC. minute);
+	QString headLine = channel. ensembleName + ";" +
+	                      channel. channelName  + ";" +
+	                      QString::number (channel. tunedFrequency) + ";" +
+	                      hextoString (channel. Eid) + ";" +
+	                      utcTime + ";" +
+	                      SNR + ";" +
+	                      QString::number (channel. nrServices) +";" ;
+	return headLine;
+}
+
+QString	RadioInterface::build_transmitterLine (const cacheElement &c) {
+QString res	= "";
+	res += ";";
+	res += "(" + QString::number (c. mainId) + "-" +
+	             QString::number (c. subId) + ")" + ";";
+	res += c. transmitterName + ";";
+	res += QString::number (c. distance, 'f', 1) + "km;";
+	res += QString::number (c. azimuth, 'f', 1) +
+	               QString::fromLatin1 (" \xb0 ") + ";";
+	res += QString::number (c. altitude, 'f', 1) + "m;";
+	res += QString::number (c. height, 'f', 1) + "m;\n";
+	return res;
+}
+
+
 void	RadioInterface::show_for_single_scan () {
-QString	headLine = buildHeadLine ();
-	QStringList s = theOFDMHandler -> basicPrint ();
+QString	headLine = build_kop ();
 	scanTable_p -> addLine (headLine);
 	scanTable_p -> addLine ("\n");
+	for (const auto &tr : channel. transmitters) {
+	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
+           scanTable_p	-> addLine (transmitterLine);
+        }
+	QStringList s = theOFDMHandler -> basicPrint ();
 	for (const auto &l : s)
 	   scanTable_p -> addLine (l);
 	scanTable_p -> addLine ("\n;\n;\n");

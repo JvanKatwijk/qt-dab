@@ -382,7 +382,10 @@ private:
 	void			scheduleSelect		(const QString &s);
 
 	QString			buildHeadLine		();
+	QString			build_kop		();
 	QString			build_cont_addLine	(transmitterDesc &);
+	QString		        build_transmitterLine	(const cacheElement &);
+
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 
