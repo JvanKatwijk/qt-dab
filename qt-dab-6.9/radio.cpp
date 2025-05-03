@@ -258,18 +258,13 @@ QString h;
 	      fprintf (stderr, "Loading details button failed\n");
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
-	   if (p. load (":res/radio-pictures/tii-icon.png", "png"))
-	      tiiButton -> setPixmap (p. scaled (25, 25, Qt::KeepAspectRatio));
-	   else
-	   fprintf (stderr, "Loading tii-icon.png failed\n");
 	}
 //
 	connect (folder_shower, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_folderButton);
 	dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
-//	tiiButton -> setText (dxMode ? "local" : "display");
-//	connect (tiiButton, &QPushButton::clicked,
-	connect (tiiButton, &clickablelabel::clicked,
+	tiiButton -> setText (dxMode ? "tii local" : "dx display");
+	connect (tiiButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_tiiButton);
 
 //	put the widgets in the right place and create the workers
@@ -477,8 +472,8 @@ QString h;
 	         this, &RadioInterface::color_configButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
-//	connect (tiiButton, &smallPushButton::rightClicked,
-//	         this, &RadioInterface::color_tiiButton);
+	connect (tiiButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_tiiButton);
 	connect (prevServiceButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_prevServiceButton);
 	connect (nextServiceButton, &smallPushButton::rightClicked,
@@ -3202,7 +3197,7 @@ void	RadioInterface::color_httpButton	() 	{
 }
 
 void	RadioInterface::color_tiiButton	() 	{
-//	setButtonColors (tiiButton, TII_BUTTON);
+	setButtonColors (tiiButton, TII_BUTTON);
 }
 
 void	RadioInterface::setButtonColors	(QPushButton *b,
@@ -4336,10 +4331,10 @@ QString labelText = "(" + QString::number (mainId) + ","
 	             + "(" + direction + ") "
 	             + QString::number (theDistance, 'f', 1) + " km " 
 	             + QString::number (theAzimuth, 'f', 1)
-	             + QString::fromLatin1 (" \xb0 ") + " \n"
-	             + "altitude " + QString::number (theAltitude) +  "m "
-	             + "transmitter height " + QString::number (theHeight) +  "m "
-	             + "transmitter power " + QString::number (thePower, 'f', 1) + "kW";
+	             + QString::fromLatin1 (" \xb0 ");
+//	             + "altitude " + QString::number (theAltitude) +  "m "
+//	             + "transmitter height " + QString::number (theHeight) +  "m "
+//	             + "transmitter power " + QString::number (thePower, 'f', 1) + "kW";
 	return labelText;
 }
 
@@ -4395,12 +4390,12 @@ void	RadioInterface::handle_tiiButton () {
 	theDXDisplay. cleanUp ();
 	if (!dxMode) {
 	   theDXDisplay. hide ();
-//	   tiiButton	-> setText ("dx display");
+	   tiiButton	-> setText ("dx display");
 	}
 	if (dxMode) {
 	   distanceLabel	-> setText ("");
 	   theDXDisplay. show ();
-//	   tiiButton	-> setText ("tii local");
+	   tiiButton	-> setText ("tii local");
 	}
 	theOFDMHandler -> setDXMode (dxMode);
 }

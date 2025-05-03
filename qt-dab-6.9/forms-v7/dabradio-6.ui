@@ -53,7 +53,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>230</width>
+          <width>224</width>
           <height>222</height>
          </rect>
         </property>
@@ -498,17 +498,9 @@
         </spacer>
        </item>
        <item>
-        <widget class="clickablelabel" name="tiiButton">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured, this line shows the name of the transmitter that is received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
+        <widget class="smallPushButton" name="tiiButton">
          <property name="text">
-          <string>TextLabel</string>
+          <string>tii local</string>
          </property>
         </widget>
        </item>
