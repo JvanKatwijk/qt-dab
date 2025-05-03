@@ -504,9 +504,12 @@ QString Jsontxt;
 	QString direction	= t [0]. direction;
 	if (direction. size () < 3)
 	   direction = "??";
+	QString polarization	= t [0]. polarization;
+	if (polarization. size () == 0)
+	   polarization = "??";
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%d,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d, \"height\":%d, \"direction\":\"%s\"}",
+	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%f,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d, \"height\":%d, \"direction\":\"%s\", \"polarisation\":\"%s\"}",
 	       t [0]. type,
 	       t [0]. ensemble. toUtf8 (). data (),
 	       dotNumber (t [0]. coords. latitude). c_str (),
@@ -515,13 +518,14 @@ QString Jsontxt;
 	       t [0]. channelName. toUtf8 (). data (),
 	       t [0]. dateTime. toUtf8 (). data (),
 	       (t [0]. mainId << 8) | (t [0]. subId),
-	       t [0]. snr,
+	       10 * log10 (t [0]. snr + 0.01),
 	       t [0]. distance,
 	       t [0]. azimuth,
 	       (int)(t [0]. power * 100),
 	       (int)(t [0]. altitude),
 	       (int)(t [0]. height),
-	       direction. toUtf8 (). data ());
+	       direction. toUtf8 (). data (),
+	       polarization. toUtf8 (). data ());
 
 	Jsontxt += QString (buf);
 //

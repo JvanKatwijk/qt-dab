@@ -27,6 +27,7 @@
 #include	<QtXml>
 #include	<QColorDialog>
 #include	<QFontDialog>
+#include	<QHeaderView>
 
 #include	"settingNames.h"
 #include	"settings-handler.h"
@@ -63,6 +64,7 @@
 	                                             tr ("fav"));
 	   connect (this, &QTableWidget::cellClicked,
 	            this, &ensembleHandler::click_on_service);
+	   this -> verticalHeader () -> setVisible (false);
 	   loadFavorites (favFile);
 	   handlePresets	= true;	// for now
 	   serviceOrder	= value_i (ensembleSettings , ENSEMBLE,

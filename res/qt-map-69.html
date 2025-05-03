@@ -152,8 +152,11 @@
 	                       "height " + target. height + ' m' + '<br>' +
 	                       target. name + ' (' +
 	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
-	                       (target. direction == "??" ? " ":
-	                               ("dir :" +  target. direction + '<br>')) +
+	                       'signalLevel ' + target. snr. toFixed (2) + ' dB ' +
+	                       (target. direction == '??' ? ' ':
+	                               ('dir :' +  target. direction + ' ')) +
+	                       (target. polarisation == '??' ? ' ':
+	                               ('Polarisation :' + target. polarisation + '<br>')) +
 	                       coords + '<br>' +
 	                       'Distance to home ' +
 	                                  target. dist + 'km ' + 
@@ -175,8 +178,11 @@
                                "height " + target. height + ' m' + '<br>' +
                                target. name + ' (' +
                                (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
-                               (target. direction == "??" ? " ":
-                                       ("dir :" +  target. direction + '<br>')) +
+	                       'signalLevel ' + target. snr. toFixed (2) + ' dB ' +               
+                               (target. direction == '??' ? ' ':
+                                       ('dir :' +  target. direction + ' ')) +
+                               (target. polarisation == '??' ? ' ':
+                                       ('Polarisation :' + target. polarisation + '<br>')) +
                                coords + '<br>' +
                                'Distance to home ' +
                                           target. dist + 'km ' +
@@ -211,7 +217,7 @@
                        let current = document. getElementById ('testing');
 	               if (isStrongest (target)) {
                           current. innerHTML =
-                         '<span style=\"font-weight:bold;">' + 'Current : ' + target. channel + ' ' + target. name + '<br>' + '</span>';
+                         '<span style=\"font-weight:bold;">' + 'Strongest : ' + target. channel + ' ' + target. name + '<br>' + '</span>';
 	               }
 	               if (seenAlready (target))
 	                  continue;
@@ -409,11 +415,15 @@
 	                                       '-' + tiiValue % 256 + ') ';
 	         let power	= (Transmitters [i]. power / 100.0). toFixed (2) + ' kW';
 	         let kopText = '<span style=\"font-weight:bold;font-size:120%\">' + newChannel + '  ' + tii  + ' ' + power + '<br>'  + '</span>' ;
+	         let tr = Transmitters [i];
 	         text +=    kopText +  newEnsemble  + '<br>' +
-	                   'alt ' + Transmitters [i]. altitude + ' m' + ', ' +
-	                   'height ' + Transmitters [i]. height + ' m' + '<br>' +
-	                   (Transmitters [i]. direction == "??" ? " ":
-	                          ("dir :" +  Transmitters [i]. direction + '<br>')) +
+	                   'alt ' + tr. altitude + ' m' + ', ' +
+	                   'height ' + tr. height + ' m' + '<br>' +
+	                   'signalLevel ' + tr. snr. toFixed (2) + ' dB ' + 
+	                    (tr. direction == '??' ? ' ':
+                                       ('dir :' +  tr. direction + ' ')) +
+                            (tr. polarisation == '??' ? ' ':
+                                       ('Polarisation :' + tr. polarisation + '<br>')) +
 	                   '<br>' + '<br>';
 	      }
 	   }

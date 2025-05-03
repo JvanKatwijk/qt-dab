@@ -53,7 +53,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>230</width>
+          <width>224</width>
           <height>222</height>
          </rect>
         </property>
@@ -479,6 +479,14 @@
        </item>
        <item>
         <widget class="QLabel" name="distanceLabel">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured, this line shows the name of the transmitter that is received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>TextLabel</string>
          </property>
@@ -498,17 +506,12 @@
         </spacer>
        </item>
        <item>
-        <widget class="clickablelabel" name="tiiButton">
-         <property name="font">
-          <font>
-           <pointsize>9</pointsize>
-          </font>
-         </property>
+        <widget class="smallPushButton" name="tiiButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured, this line shows the name of the transmitter that is received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This button controls the visibility of the so-called &amp;quot;dxDisplay&amp;quot;. If the dxScope is enabled - and the tii database is loaded (and your location is set), the dxDisplay shows the tii data, decoded in the current channel. This data encompasses not only the mainId and the subId, but also the name of the transmitter, and the distance from your specified location to that transmitter.&lt;/p&gt;&lt;p&gt;If the dxDisplay is NOT enabled, and the tii database is loaded, then the data on the transmitter whose data you are currently receiving is shown on the line to the left.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>TextLabel</string>
+          <string>tii disply</string>
          </property>
         </widget>
        </item>

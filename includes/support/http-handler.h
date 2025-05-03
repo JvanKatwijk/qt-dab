@@ -48,7 +48,7 @@ typedef struct {
 	uint16_t	Eid;
 	uint8_t		mainId;
 	uint8_t		subId;
-	int		snr;
+	float		snr;
 	int		distance;
 	int		azimuth;
 	float		power;
