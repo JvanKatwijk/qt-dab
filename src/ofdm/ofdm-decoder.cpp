@@ -408,7 +408,6 @@ float	ofdmDecoder::compute_frequencyOffset (Complex *r,
 	                                      Complex *c) {
 
 Complex theta = Complex (0, 0);
-
 	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
 	   int index = i < 0 ? i + T_u : i;
 	   Complex val = r [index] * conj (c [index]);
