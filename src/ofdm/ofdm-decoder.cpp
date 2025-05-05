@@ -348,6 +348,8 @@ DABFLOAT sum = 0;
 	      }
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
+	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
+	                                              phaseReference. data ());
 	      if (devBuffer != nullptr) {
 	         float tempVector [carriers];
 	         for (int i = 0; i < carriers; i ++) {
@@ -364,8 +366,8 @@ DABFLOAT sum = 0;
 	      float Quality	= computeQuality (conjVector. data ());
 	      float timeOffset	= compute_timeOffset (fft_buffer. data (),
 	                                              phaseReference. data ());
-	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
-	                                              phaseReference. data ());
+//	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
+//	                                              phaseReference. data ());
 	      show_quality (Quality, timeOffset, freqOffset);
 	      cnt = 0;
 	   }
@@ -403,20 +405,26 @@ Complex sum	= Complex (0, 0);
 
 	return arg (sum);
 }
-
+//
+//	Ideally, the processed carrier should have a value
+//	equal to (2 * k + 1) * PI / 4
+//	The offset is a measure of the frequency "error"
 float	ofdmDecoder::compute_frequencyOffset (Complex *r,
 	                                      Complex *c) {
 
 Complex theta = Complex (0, 0);
+static float vv	=  0;
+
 	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
 	   int index = i < 0 ? i + T_u : i;
 	   Complex val = r [index] * conj (c [index]);
-	   val		= Complex (abs (real (val)),
-	                                       abs (imag (val)));
+	   val		= Complex (abs (real (val)), abs (imag (val)));
 	   theta	+= val * Complex (1, -1);
 	}
 
-	return arg (theta) / (2 * M_PI) * 2048000 / T_u;
+	float uu =  arg (theta) / (2 * M_PI) * 2048000 / T_u;
+	vv	= 0.9 * vv + 0.1 * abs (uu);;
+	return vv;
 }
 
 float	ofdmDecoder::compute_clockOffset (Complex *r,

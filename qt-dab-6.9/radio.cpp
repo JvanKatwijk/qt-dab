@@ -2742,8 +2742,8 @@ void	RadioInterface::stopScan_single () {
 	   fclose (scanDumper_p);
 	   scanDumper_p = nullptr;
 	}
-	delete scanTable_p;
-	scanTable_p	= nullptr;
+//	delete scanTable_p;
+//	scanTable_p	= nullptr;
 }
 
 void	RadioInterface::stopScan_continuous () {
@@ -2759,8 +2759,8 @@ void	RadioInterface::stopScan_continuous () {
 	   fclose (scanDumper_p);
 	   scanDumper_p = nullptr;
 	}
-	delete scanTable_p;
-	scanTable_p	= nullptr;
+//	delete scanTable_p;
+//	scanTable_p	= nullptr;
 }
 
 //	If the ofdm processor has waited - without success -
@@ -3966,13 +3966,18 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   theDXDisplay. setChannel (channel. channelName,
 	                             channel. ensembleName);
 	   int teller = 0;
-	   for (auto &transm : channel. transmitters) {
+	   for (auto &theTr : channel. transmitters) {
 	      if (!configHandler_p -> get_allTIISelector ()) {
-	         if (transm. theTransmitter. distance < 0) {
+	         if (theTr. theTransmitter. distance < 0) {
 	            continue;
 	         }
 	      }
-	      theDXDisplay. addRow (transm. theTransmitter,
+	      
+	      if (bestIndex == teller) {
+	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
+	         distanceLabel	-> setText (labelText);
+	      }
+	      theDXDisplay. addRow (theTr. theTransmitter,
 	                             bestIndex == teller);
 	      teller ++;
 	   }
