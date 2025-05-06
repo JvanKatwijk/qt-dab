@@ -65,6 +65,8 @@ public:
 	uint32_t	julianDate		();
 	QStringList	basicPrint 		();
 	int		scanWidth		();
+
+	int		freeSpace		();
 protected:
 	void		process_FIB		(uint8_t *, uint16_t);
 private:

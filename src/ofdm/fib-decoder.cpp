@@ -1396,3 +1396,7 @@ uint16_t fibDecoder::get_announcing	(uint16_t SId) {
 	return 0;
 }
 
+int	fibDecoder::freeSpace		() {
+	return currentConfig -> freeSpace ();
+}
+

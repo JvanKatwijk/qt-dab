@@ -2915,13 +2915,16 @@ QString	theName;
 	QString utcTime	= convertTime (UTC. year, UTC.month,
 	                               UTC. day, UTC. hour, 
 	                               UTC. minute);
+	int	freeSpace	= theOFDMHandler -> freeSpace ();
 	QString headLine = channel. ensembleName + ";" +
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
 	                      hextoString (channel. Eid) + ";" +
 	                      utcTime + ";" +
 	                      SNR + ";" +
-	                      QString::number (channel. nrServices) +";" ;
+	                      QString::number (channel. nrServices) +";"  +
+	                      QString::number (freeSpace) + ", " +
+	                      QString::number ((int) (freeSpace / 864.0 * 100)) + "%" + ";";
 	return headLine;
 }
 
@@ -3886,6 +3889,11 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	                                         "any",
 	                                         channel. Eid,
 	                                         r [i]. mainId,  r [i]. subId);
+	   if (tr -> ensemble. trimmed () !=
+	       channel. ensembleName. trimmed ()) { // fake 
+	      fprintf (stderr, "comparison fails\n");
+	      continue;
+	   }
 //	if the (mainId, subId) is alreay known but without a name found
 //	and we see now a good element, throuw the old one out
 //	we have to add the entry to the list

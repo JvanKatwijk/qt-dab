@@ -93,6 +93,7 @@ public:
 	uint32_t	julianDate		();
 	std::vector<int>	getFrequency	(const QString &);
 	QStringList	basicPrint		();
+	int		freeSpace		();
 	int		scanWidth		();
 	void		start_ficDump		(FILE *);
 	void		stop_ficDump		();

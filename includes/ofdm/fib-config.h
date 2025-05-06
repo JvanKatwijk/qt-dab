@@ -152,5 +152,7 @@ public:
 	int	findIndex_languageTable	(uint8_t key_1, uint16_t key_2);
 	int	findIndexApptype_table	(uint32_t SId, uint8_t SCIds);
 	bool	compIsKnown		(serviceComp_C &newComp);
+
+	int	freeSpace		();
 };
 

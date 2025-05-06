@@ -250,3 +250,10 @@ bool	fibConfig::compIsKnown	(serviceComp_C &newComp) {
 	return false;
 }
 
+int	fibConfig::freeSpace	() {
+int amount = 0;
+	for (auto &ss: subChannel_table) 
+	   amount += ss. Length;
+	return 864 - amount;
+}
+

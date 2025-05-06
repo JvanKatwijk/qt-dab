@@ -611,6 +611,11 @@ int	ofdmHandler::scanWidth		() {
 	return theFicHandler. scanWidth ();
 	return 0;
 }
+
+int	ofdmHandler::freeSpace		() {
+	return theFicHandler. freeSpace ();
+}
+
 //
 void	ofdmHandler::stopService (int subChId, int flag) {
 	if (!scanMode)
