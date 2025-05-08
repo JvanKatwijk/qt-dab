@@ -381,10 +381,10 @@ QString h;
 	                                  AUDIO_STREAM_NAME, "default");
 	      fprintf (stderr, "channel is  %s\n", temp. toLatin1 (). data ());
 	      volumeSlider	-> show ();
-	      int volume	=
+	      audioVolume	=
 	          value_i (dabSettings_p, SOUND_HANDLING, QT_AUDIO_VOLUME, 50);
-	      volumeSlider		-> setValue (volume);
-	      ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
+	      volumeSlider		-> setValue (audioVolume);
+	      ((Qt_Audio *)soundOut_p)	-> setVolume (audioVolume);
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
 	   } catch (...) {
@@ -1243,6 +1243,7 @@ float	absPeakRight	= 0;
 void	RadioInterface::TerminateProcess () {
 	running. store	(false);
 	theSCANHandler. hide ();
+	store (dabSettings_p, SOUND_HANDLING, QT_AUDIO_VOLUME, audioVolume);
 	my_timeTable. hide ();
 	stopScanning ();
 	while (theSCANHandler. active ())
@@ -3016,6 +3017,8 @@ QString theHeight;
 //
 //	Handling the Mute button
 void	RadioInterface::handle_muteButton	() {
+	if ((audioVolume == 0) && !muteTimer. isActive ())
+	   return;
 	if (muteTimer. isActive ()) {
 	   stopMuting ();
 	   return;
@@ -3889,11 +3892,10 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	                                         "any",
 	                                         channel. Eid,
 	                                         r [i]. mainId,  r [i]. subId);
-	   if (tr -> ensemble. trimmed () !=
-	       channel. ensembleName. trimmed ()) { // fake 
-	      fprintf (stderr, "comparison fails\n");
-	      continue;
-	   }
+//	   if (tr -> ensemble. trimmed () !=
+//	       channel. ensembleName. trimmed ()) { // fake 
+//	      continue;
+//	   }
 //	if the (mainId, subId) is alreay known but without a name found
 //	and we see now a good element, throuw the old one out
 //	we have to add the entry to the list
@@ -4255,12 +4257,20 @@ void	RadioInterface::handle_newDisplayFrame_closed () {
 }
 
 void	RadioInterface::setVolume	(int n) {
+	audioVolume	= n;
 	if (n == 0) 
 	   setSoundLabel (false);
-	else
-	if (channel. audioActive)
-	   setSoundLabel (true);
-	((Qt_Audio *)soundOut_p) -> setVolume (n);
+	else {
+	   if (muteTimer. isActive ()) {
+              muteTimer. stop ();
+              disconnect (&muteTimer, &QTimer::timeout,
+	                  this, &RadioInterface::muteButton_timeOut);
+	      stillMuting     -> hide ();
+	   }
+	   if (channel. audioActive)
+	      setSoundLabel (true);
+	   ((Qt_Audio *)soundOut_p) -> setVolume (n);
+	}
 }
 
 void	RadioInterface::handle_snrLabel	() {

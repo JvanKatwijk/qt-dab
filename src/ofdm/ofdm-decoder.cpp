@@ -174,9 +174,9 @@ int	sign (DABFLOAT x) {
 
 void	limit_symmetrically (DABFLOAT &v, float limit) {
 	if (v < -limit)
-	   v = -limit / 2;
+	   v = -limit;
 	if (v > limit)
-	   v = limit / 2;
+	   v = limit;
 }
 //
 //	How to compute a sin or cos for (hopefully) small angles,
@@ -235,13 +235,13 @@ DABFLOAT sum = 0;
 	      re = -re;
 	   if (im < 0)
 	      im = -im;
-	   Complex	fftBin_at_1	=
-	            Complex (re, im);
+	   Complex	fftBin_at_1	= Complex (re, im);
 	   DABFLOAT	binAbsLevel	= jan_abs (fftBin_at_1);
+	   DABFLOAT	phaseError	= arg (fftBin_at_1) - M_PI_4;
 	   IntegAbsPhaseVector [index] = 
-	                           0.5f * ALPHA * (arg (fftBin_at_1) - M_PI_4);
+	      (1 - ALPHA) * IntegAbsPhaseVector [index] + ALPHA * phaseError;
 	   limit_symmetrically (IntegAbsPhaseVector [index],
-	                                RAD_PER_DEGREE * (DABFLOAT)30.0);
+	                                RAD_PER_DEGREE * (DABFLOAT)10.0);
 
 /**
   *	When trying alternative decoder implementations
@@ -261,10 +261,9 @@ DABFLOAT sum = 0;
   *	decoder 1 and 4, and 746000 by decoders 2 and 3).
   *	So, we have chosen decoders 1 (most simple one) and 4 (log likelihood)
   *	as decoders here.
-  *	the contributions of Rolf Zerr and Thomas Neder
-  *	for their decoders is greatly acknowledged
+  *	the contributions of Rolf Zerr (aka OldDab) and
+  *	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
   */
-	   DABFLOAT	phaseError	= arg (fftBin_at_1) - M_PI_4;
 	   DABFLOAT	stdDev		= phaseError * phaseError;
 	   stdDevVector [index] =
 	        compute_avg (stdDevVector [index], stdDev, ALPHA);
@@ -305,19 +304,22 @@ DABFLOAT sum = 0;
 	   switch (decoder) {
 	      default:
 	      case DECODER_1:
+	         R1		= fftBin;
+	         ibits [i]
+	                   = - real (R1) / jan_abs (R1) * MAX_VITERBI;
+//	                   = - real (R1) / meanLevelPerBin * MAX_VITERBI;
+	         ibits [carriers + i]
+	                   = - imag (R1) / jan_abs (R1) * MAX_VITERBI; 
+//	                   = - imag (R1) / meanLevelPerBin * MAX_VITERBI; 
+	         break;
+	      case DECODER_2:
 	         R1 =  normalize (fftBin) * ff *
 	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
 	         weight_r = weight_i	= -100 / meanValue;
 	         ibits [i]		= (int16_t)(real (R1) * weight_r);
 	         ibits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
 	         break;
-	      case DECODER_2:
-	         R1		= fftBin;
-	         ibits [i]
-	                   = - real (R1) / meanLevelPerBin * MAX_VITERBI;
-	         ibits [carriers + i]
-	                   = - imag (R1) / meanLevelPerBin * MAX_VITERBI; 
-	         break;
+
 	   }
 
 	   sum += jan_abs (R1);

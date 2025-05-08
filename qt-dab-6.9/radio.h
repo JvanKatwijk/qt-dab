@@ -335,7 +335,8 @@ private:
 
 	struct theTime		localTime;
 	struct theTime		UTC;
-      
+
+	int			audioVolume;
 	size_t			previous_idle_time;
 	size_t			previous_total_time;
 
