@@ -44,6 +44,8 @@ public:
 	QString	findAudioDump_fileName		(const QString &service, bool);
 	QString findRawDump_fileName		(const QString &deviceName,
 	                                       	 const QString &channelName);
+	QString find_scanfile			(const QString &channel);
+
 	FILE	*findScanDump_fileName		();
 	FILE	*findSummary_fileName		();
 const	QString	findskipFile_fileName		();

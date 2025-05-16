@@ -34,6 +34,7 @@
 #include	<QByteArray>
 #include	<QLabel>
 #include	<QPushButton>
+#include	<QCheckBox>
 #include	<QComboBox>
 #include	"findfilenames.h"
 #include	"scantable-handler.h"
@@ -65,6 +66,7 @@ public:
 	bool	active		();
 	void	setStop		();
 	FILE	*askFileName	();
+	bool	dumpInFile	();
 
 	QStringList	getChannelNames	();
 	int32_t		Frequency	(const QString &);
@@ -87,6 +89,7 @@ private:
 	QPushButton	*loadKnop;
 	QPushButton	*storeKnop;
 	QComboBox	*scanModeSelector;
+	QCheckBox	*dumpChecker;
 
 #ifndef	__MINGW32__
 	dabFrequencies alternatives [128];

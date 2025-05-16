@@ -136,6 +136,7 @@ QString scanmodeText (int e) {
 	stopKnop	= new QPushButton ("stop");
 	showKnop	= new QPushButton ("show");
 	showKnop	-> setToolTip ("show the scanlist, the list indicating which channels should NOT be skipped when scanning");
+	dumpChecker	= new QCheckBox ("dump input");
 	clearKnop	= new QPushButton ("clear");
 	clearKnop	-> setToolTip ("clear the current scantable, i.e. scan all channels");
 	defaultLoad	= new QPushButton ("load default");
@@ -152,6 +153,7 @@ QString scanmodeText (int e) {
 	LH		-> addWidget (stopKnop);
 	LH		-> addWidget (showKnop);
 	LH		-> addWidget (clearKnop);
+	LH		-> addWidget (dumpChecker);
 	LH_2		-> addWidget (defaultLoad);
 	LH_2		-> addWidget (defaultStore);
 	LH_2		-> addWidget (loadKnop);
@@ -492,6 +494,10 @@ QString	scanHandler::getChannel	(int frequency) {
 	   if (selectedBand [i]. fKHz == frequency / 1000)
 	      return selectedBand [i]. key;
 	return "";
+}
+
+bool	scanHandler::dumpInFile	() {
+	return dumpChecker -> isChecked ();
 }
 
 #ifndef	__MINGW32__

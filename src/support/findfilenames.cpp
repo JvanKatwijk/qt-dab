@@ -81,6 +81,11 @@ QString suggestedFileName;
 	return QDir::toNativeSeparators (fileName);
 }
 
+QString	findfileNames::find_scanfile (const QString &channel) {
+QString fileName	= outputDialog (basicPath (), channel, ".sdr", false);
+	return fileName;
+}
+
 FILE	*findfileNames::findContentDump_fileName (const QString &channel) {
 QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 

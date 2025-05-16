@@ -769,7 +769,6 @@ QString s;
 	channel. ensembleName	= v;
 	channel. Eid		= id;
 	dynamicLabel		-> setText ("");
-
 //
 //	id we are scanning "to data", we reached the end
 	if (theSCANHandler. scan_to_data ()) {
@@ -784,6 +783,15 @@ QString s;
 	      channelTimer. stop ();
 	      int switchStay		=
 	              configHandler_p -> switchStayValue ();
+	      if (theSCANHandler. dumpInFile ()) {
+	         configHandler_p	-> mark_dumpButton (true);
+	         int	bitDepth	= inputDevice_p	-> bitDepth	();
+	         QString rawDumpName = theFilenameFinder.
+	                                 find_scanfile (channel. channelName);
+	         theOFDMHandler -> start_dumping (rawDumpName,
+	                            channel. tunedFrequency, bitDepth);
+	         sourceDumping = true;
+	      }
 	      channelTimer. start (switchStay);
 	   }
 	}
