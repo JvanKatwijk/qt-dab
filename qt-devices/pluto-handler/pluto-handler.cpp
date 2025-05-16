@@ -646,11 +646,19 @@ void	plutoHandler::toggle_debugButton	() {
 
 void	plutoHandler::set_xmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
+	   setup_xmlDump (false);
 	}
 	else {
 	   close_xmlDump ();
 	}
+}
+
+void	plutoHandler::startDump	() {
+	setup_xmlDump (true);
+}
+
+void	plutoHandler::stopDump	() {
+	close_xmlDump ();
 }
 
 static inline
@@ -658,7 +666,7 @@ bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-');
 }
 
-bool	plutoHandler::setup_xmlDump () {
+bool	plutoHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (plutoSettings, DAB_GENERAL,
 	                                         "channel", "xx");
 	xmlWriter	= nullptr;
@@ -672,7 +680,8 @@ QString channel		= value_s (plutoSettings, DAB_GENERAL,
 	                                      gainControl -> value (),
 	                                      "Pluto",
 	                                      "xxx",
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

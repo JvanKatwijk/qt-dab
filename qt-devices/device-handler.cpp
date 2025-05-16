@@ -79,3 +79,9 @@ int	deviceHandler::getVFOFrequency	() {
 	return lastFrequency;
 }
 
+void	deviceHandler::startDump	() {
+}
+
+void	deviceHandler::stopDump		() {
+}
+

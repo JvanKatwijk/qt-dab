@@ -592,14 +592,22 @@ QString	airspy_2::deviceName	() {
 
 void	airspy_2::set_xmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
+	   setup_xmlDump (false);
 	}
 	else {
 	   close_xmlDump ();
 	}
 }
 
-bool	airspy_2::setup_xmlDump () {
+void	airspy_2::startDump	() {
+	setup_xmlDump (false);
+}
+
+void	airspy_2::stopDump	() {
+	close_xmlDump	();
+}
+
+bool	airspy_2::setup_xmlDump (bool direct) {
 QString channel		= value_s (airspySettings, DAB_GENERAL,
 	                                            "channel", "xx");
 	try {
@@ -612,7 +620,8 @@ QString channel		= value_s (airspySettings, DAB_GENERAL,
 	                                      -1,
 	                                      "Airspy",
 	                                      getSerial (),
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

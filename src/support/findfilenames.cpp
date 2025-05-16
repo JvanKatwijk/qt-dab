@@ -256,7 +256,8 @@ QString suggestedFileName;
 }
 
 QString	findfileNames::find_xmlName	(const QString &deviceName,
-	                                 const QString &channel) {
+	                                 const QString &channel,
+	                                 bool direct) {
 QString	saveDir	=  basicPath ();
 QDate	theDate;
 QTime	theTime;
@@ -268,6 +269,8 @@ QTime	theTime;
 	   if (!isValid (suggestedFilename. at (i)))
 	      suggestedFilename. replace (i, 1, "-");
 	suggestedFilename	= QDir::toNativeSeparators (suggestedFilename);
+	if (direct)
+	   return suggestedFilename + ".uff";
 	QString fileName	=
 	          QFileDialog::getSaveFileName (nullptr,
 	                                        "save file ..",

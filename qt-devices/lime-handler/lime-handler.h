@@ -106,6 +106,9 @@ public:
         void            resetBuffer		();
         int16_t         bitDepth		();
 	QString		deviceName		();
+
+	void		startDump		();
+	void		stopDump		();
 private:
 	QFrame		myFrame;
 	RingBuffer<std::complex<int16_t>> _I_Buffer;
@@ -123,7 +126,7 @@ private:
         void		run			();
 
         xml_fileWriter  *xmlWriter;
-        bool            setup_xmlDump           ();
+        bool            setup_xmlDump		(bool);
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
 

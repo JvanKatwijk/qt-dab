@@ -509,11 +509,19 @@ bool	limeHandler::load_limeFunctions() {
 
 void	limeHandler::set_xmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
+	   setup_xmlDump (false);
 	}
 	else {
 	   close_xmlDump ();
 	}
+}
+
+void	limeHandler::startDump	() {
+	setup_xmlDump (true);
+}
+
+void	limeHandler::stopDump	() {
+	close_xmlDump	();
 }
 
 static inline
@@ -521,7 +529,7 @@ bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-');
 }
 
-bool	limeHandler::setup_xmlDump () {
+bool	limeHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (limeSettings, DAB_GENERAL,
 	                                       "channel", "xx");
 	xmlWriter	= nullptr;
@@ -535,7 +543,8 @@ QString channel		= value_s (limeSettings, DAB_GENERAL,
 	                                      theGain,
 	                                      "LimeSDR",
 	                                      "???",
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

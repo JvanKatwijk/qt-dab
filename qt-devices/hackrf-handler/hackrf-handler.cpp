@@ -563,14 +563,22 @@ bool	hackrfHandler::load_hackrfFunctions () {
 
 void	hackrfHandler::handle_xmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
+	   setup_xmlDump (false);
 	}
 	else {
 	   close_xmlDump ();
 	}
 }
 
-bool	hackrfHandler::setup_xmlDump () {
+void	hackrfHandler::startDump	() {
+	setup_xmlDump (true);
+}
+
+void	hackrfHandler::stopDump		() {
+	close_xmlDump ();
+}
+
+bool	hackrfHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (hackrfSettings, DAB_GENERAL,
 	                                             "channel", "xx");
 	try {
@@ -583,7 +591,8 @@ QString channel		= value_s (hackrfSettings, DAB_GENERAL,
 	                                      -1,
 	                                      "Hackrf",
 	                                      serialNumber,
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

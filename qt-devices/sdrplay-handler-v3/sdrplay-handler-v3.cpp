@@ -377,12 +377,21 @@ void    sdrplayHandler_v3::show_lnaGain (int g) {
 
 void	sdrplayHandler_v3::set_xmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
+	   setup_xmlDump (false);
 	}
 	else {
 	   close_xmlDump ();
 	}
 }
+
+void	sdrplayHandler_v3::startDump	() {
+	setup_xmlDump (true);
+}
+
+void	sdrplayHandler_v3::stopDump	() {
+	close_xmlDump ();
+}
+
 //
 ////////////////////////////////////////////////////////////////////////
 //	showing data
@@ -415,7 +424,7 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
 }
 
-bool	sdrplayHandler_v3::setup_xmlDump () {
+bool	sdrplayHandler_v3::setup_xmlDump (bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                               "channel", "xx");
 	xmlWriter	= nullptr;
@@ -429,7 +438,8 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      theGain,
 	                                      "SDRplay",
 	                                      deviceModel,
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

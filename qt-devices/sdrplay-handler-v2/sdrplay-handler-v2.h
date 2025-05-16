@@ -133,7 +133,9 @@ public:
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 	QString		deviceName		();
-
+	
+	void		startDump		();	
+	void		stopDump		();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
@@ -203,7 +205,7 @@ private:
 
 	int		lnaMax;
 	xml_fileWriter	*xmlWriter;
-        bool		setup_xmlDump		();
+        bool		setup_xmlDump		(bool);
         void		close_xmlDump		();
 	std::atomic<bool> dumping;
 //	experimental

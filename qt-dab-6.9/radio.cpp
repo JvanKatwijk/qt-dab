@@ -784,13 +784,14 @@ QString s;
 	      int switchStay		=
 	              configHandler_p -> switchStayValue ();
 	      if (theSCANHandler. dumpInFile ()) {
-	         configHandler_p	-> mark_dumpButton (true);
-	         int	bitDepth	= inputDevice_p	-> bitDepth	();
-	         QString rawDumpName = theFilenameFinder.
-	                                 find_scanfile (channel. channelName);
-	         theOFDMHandler -> start_dumping (rawDumpName,
-	                            channel. tunedFrequency, bitDepth);
-	         sourceDumping = true;
+	         inputDevice_p	-> startDump	();
+//	         configHandler_p	-> mark_dumpButton (true);
+//	         int	bitDepth	= inputDevice_p	-> bitDepth	();
+//	         QString rawDumpName = theFilenameFinder.
+//	                                 find_scanfile (channel. channelName);
+//	         theOFDMHandler -> start_dumping (rawDumpName,
+//	                            channel. tunedFrequency, bitDepth);
+//	         sourceDumping = true;
 	      }
 	      channelTimer. start (switchStay);
 	   }
@@ -2481,7 +2482,8 @@ void	RadioInterface::stopChannel	() {
 	   my_timeTable. hide ();
 	}
 
-	inputDevice_p		-> stopReader ();
+	inputDevice_p		-> stopReader	();
+	inputDevice_p		-> stopDump	();
 	disconnect (ensembleId, &clickablelabel::clicked,
 	            this, &RadioInterface::handle_contentButton);
 	ensembleId	-> setText ("");

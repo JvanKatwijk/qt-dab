@@ -43,11 +43,12 @@ bool	isValid (QChar c) {
                                          int     deviceGain,
                                          const QString  &deviceName,
                                          const QString  &deviceModel,
-                                         const QString  &recorderVersion):
+                                         const QString  &recorderVersion,
+	                                 bool direct):
 	                                          filenameFinder (settings) {
 uint8_t t	= 0;
 	QString fileName	=
-	              filenameFinder. find_xmlName (deviceName, channel);
+	              filenameFinder. find_xmlName (deviceName, channel, direct);
 	if (fileName == "")
 	   throw (21);
 	xmlFile		= fopen (fileName. toUtf8 (). data (), "w+b");

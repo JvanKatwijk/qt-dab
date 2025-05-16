@@ -93,6 +93,9 @@ public:
 	int16_t		bitDepth	();
 	QString		deviceName	();
 
+	void		startDump	();
+	void		stopDump	();
+
 //	These need to be visible for the separate usb handling thread
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*theDevice;
@@ -111,7 +114,7 @@ private:
 	QString		deviceModel;
 	QString		recorderVersion;
         xml_fileWriter  *xmlWriter;
-        bool            setup_xmlDump		();
+        bool            setup_xmlDump		(bool);
         void            close_xmlDump		();
         std::atomic<bool> xml_dumping;
 	FILE		*iqDumper;

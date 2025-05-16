@@ -136,8 +136,10 @@ public:
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
-
 	QString		deviceName		();
+
+	void		startDump		();
+	void		stopDump		();
 private:
 	bool			loadFunctions	();
 	QLibrary		*pHandle;
@@ -145,7 +147,7 @@ private:
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
 	xml_fileWriter		*xmlWriter;
-	bool			setup_xmlDump	();
+	bool			setup_xmlDump	(bool);
 	void			close_xmlDump	();
 	std::atomic<bool>	dumping;
 	bool			filterOn;

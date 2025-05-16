@@ -54,7 +54,8 @@ public:
 	                         int,
 	                         const QString &,
 	                         const QString &,
-	                         const QString &);
+	                         const QString &,
+	                         bool direct	= false);
 			~xml_fileWriter		();
 	void		add			(std::complex<int16_t> *, int);
 	void		add			(std::complex<uint8_t> *, int);

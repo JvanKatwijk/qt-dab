@@ -929,11 +929,19 @@ QString	sdrplayHandler_v2::errorCodes (mir_sdr_ErrT err) {
 
 void	sdrplayHandler_v2::handle_xmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
+	   setup_xmlDump (false);
 	}
 	else {
 	   close_xmlDump ();
 	}
+}
+
+void	sdrplayHandler_v2::startDump	() {
+	setup_xmlDump (true);
+}
+
+void	sdrplayHandler_v2::stopDump	() {
+	close_xmlDump	();
 }
 
 static inline
@@ -941,7 +949,7 @@ bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-');
 }
 
-bool	sdrplayHandler_v2::setup_xmlDump () {
+bool	sdrplayHandler_v2::setup_xmlDump (bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                                  "channel", "xx");
 	xmlWriter	= nullptr;
@@ -958,7 +966,8 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      (int)(theGains. curr),
 	                                      "SDRplay",
 	                                      deviceModel,
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

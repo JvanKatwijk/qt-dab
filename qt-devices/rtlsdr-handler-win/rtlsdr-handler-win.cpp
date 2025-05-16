@@ -443,7 +443,7 @@ void	rtlsdrHandler_win::close_iqDump () {
 	   
 void	rtlsdrHandler_win::set_xmlDump () {
 	if (!xml_dumping. load ()) {
-	   if (setup_xmlDump ()) 
+	   if (setup_xmlDump (false)) 
 	      iq_dumpButton	-> hide	();
 	}
 	else {
@@ -452,7 +452,17 @@ void	rtlsdrHandler_win::set_xmlDump () {
 	}
 }
 
-bool	rtlsdrHandler_win::setup_xmlDump () {
+void	rtlsdrHandler_win::startDump	() {
+	setup_xmlDump (true);
+	iq_dumpButton	-> hide ();
+}
+
+void	rtsdrHandler_win::stopDump	() {
+	close_xmlDump ();
+	iq_dumpButton		-> show ();
+}
+
+bool	rtlsdrHandler_win::setup_xmlDump (bool direct) {
 QString channel		= rtlsdrSettings -> value ("channel", "xx").
 	                                                      toString ();
 	xmlWriter	= nullptr;
@@ -466,7 +476,8 @@ QString channel		= rtlsdrSettings -> value ("channel", "xx").
 	                                      rtlsdr_get_tuner_gain (theDevice),
 	                                      "RTLSDR",
 	                                      deviceModel,
-	                                      recorderVersion);
+	                                      recorderVersion,
+	                                      direct);
 	} catch (...) {
 	   return false;
 	}

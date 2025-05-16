@@ -101,13 +101,16 @@ public:
 	int16_t		bitDepth		();
 	int		getBufferSpace		();
 	QString		deviceName		();
+
+	void		startDump		();
+	void		stopDump		();
 	int16_t		currentTab;
 private:
 	RingBuffer<std::complex<float>> _I_Buffer;
 	QString		recorderVersion;
 	void		check_error		(bool, const std::string);
         xml_fileWriter  *xmlWriter;
-        bool            setup_xmlDump           ();
+        bool            setup_xmlDump		(bool);
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
 	void		record_gainSettings	(int, int);

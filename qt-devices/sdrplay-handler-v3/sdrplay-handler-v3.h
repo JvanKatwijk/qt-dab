@@ -65,6 +65,9 @@ public:
 	int16_t		bitDepth		();
 	QString		deviceName		();
 
+	void		startDump		();
+	void		stopDump		();
+
 	void            update_PowerOverload (
 	                                 sdrplay_api_EventParamsT *params);
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
@@ -117,7 +120,7 @@ public:
 	double			ppmValue;
 	bool			biasT;
 	xml_fileWriter		*xmlWriter;
-	bool			setup_xmlDump		();
+	bool			setup_xmlDump		(bool);
 	void			close_xmlDump		();
 	std::atomic<bool>	dumping;
 	std::queue<generalCommand *>	server_queue;
