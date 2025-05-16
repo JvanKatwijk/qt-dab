@@ -820,7 +820,8 @@ QStringList s	= theOFDMHandler -> basicPrint ();
 	for (auto &tr : channel. transmitters) {
 	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
 	   contentTable_p	-> addLine (transmitterLine);
-	}  
+	}
+  
 	for (auto &ss : s)
 	   contentTable_p -> addLine (ss);
 	contentTable_p -> show ();
@@ -1130,6 +1131,7 @@ uint8_t *localBuffer = dynVec (uint8_t, length + 8);
   *	then, using the data in the copy we (try to) start
   *	all services again (including the secondary services);
   */
+
 void	RadioInterface::changeinConfiguration () {
 std::vector<dabService> taskCopy = channel. runningTasks;
 
@@ -2050,7 +2052,8 @@ QString serviceName	= service;
 
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stopService	(dabService &s) {
+void	RadioInterface::stopService	(dabService s) {
+//void	RadioInterface::stopService	(dabService &s) {
 	if (!s. valid)
 	   return;
 	presetTimer. stop ();
@@ -2123,7 +2126,7 @@ void	RadioInterface::startService (dabService &s, int index) {
 QString serviceName	= s. serviceName;
 	s. SId		= theOFDMHandler -> get_SId (index);
 //	if the service is already running, ignore the call
-	for (auto serv : channel. runningTasks) {
+	for (auto &serv : channel. runningTasks) {
 	   if (serv. serviceName == serviceName) {
 	      return;
 	   }
@@ -2784,7 +2787,7 @@ void	RadioInterface::channel_timeOut () {
 	if (theSCANHandler. scan_single ()) {
 	   if (channel. transmitters. size () > 0) {
 	      QStringList ss;
-	      for (auto tr : channel. transmitters)
+	      for (auto &tr : channel. transmitters)
 	         ss << tr. theTransmitter. transmitterName;
 	      theSCANHandler.
 	                 addTransmitters (ss, channel. channelName);
@@ -3334,7 +3337,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
 	   return;
 	QStringList epgList = the_ensembleHandler -> get_epgServices ();
-	for (auto serv : epgList) {
+	for (auto &serv : epgList) {
 	   int index = theOFDMHandler -> get_serviceComp (serv);
 	   if (index < 0)
 	      continue;
@@ -3778,8 +3781,14 @@ std::vector<Complex> inBuffer (2048);
 	theTIIBuffer. getDataFromBuffer (inBuffer. data (), 2048);
 	theTIIBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
-	           (theNewDisplay. getTab () == SHOW_TII))
-	   theNewDisplay. showTII (inBuffer, channel. tunedFrequency);
+	           (theNewDisplay. getTab () == SHOW_TII)) {
+	   if (channel. subId != 0)
+	      theNewDisplay. showTII (inBuffer,
+	                           channel. tunedFrequency, channel. subId);
+	   else
+	      theNewDisplay. showTII (inBuffer,
+	                           channel. tunedFrequency, -1);
+	}
 }
 
 void	RadioInterface::showCorrelation	(int s, int g,
@@ -4304,12 +4313,12 @@ void	RadioInterface::show_changeLabel (const QStringList notInOld,
 	theLogger. log (logger::LOG_CONFIG_CHANGE);
 	if (notInOld. size () > 0) {
 	   fprintf (stderr, "New service:\n");
-	   for (auto s: notInOld) 
+	   for (auto &s: notInOld) 
 	      fprintf (stderr, "\t%s\n", s. toUtf8 (). data ());
 	}
 	if (notInNew. size () > 0) {
 	   fprintf (stderr, "removed service:\n");
-	   for (auto s: notInNew)
+	   for (auto &s: notInNew)
 	      fprintf (stderr, "\t%s\n", s. toUtf8 (). data ());
 	}
 }

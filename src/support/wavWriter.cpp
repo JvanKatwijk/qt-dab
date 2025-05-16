@@ -20,7 +20,6 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 //
 //	The RIFF writer writes the input samples into a "wav" file
 //	with the samplerate of 2048000, as 16 bit int's, and a "chunk"
@@ -29,6 +28,12 @@
 
 static
 const char	* riff	= "RIFF";
+static
+const char	* junk	= "JUNK";
+static
+const char	* bw64	= "BW64";
+static
+const char	* ds64	= "ds64";
 static
 const char	* wave	= "WAVE";
 static
@@ -62,6 +67,17 @@ bool	wavWriter::init	(const QString &fileName, const int sampleRate,
 	locationCounter		= 8;
 	fwrite (wave, 1, 4, filePointer);
 	locationCounter		+= 4;
+//
+//	junk block
+	fwrite (junk, 1, 4, filePointer);
+	locationCounter		+= 4;
+	uint32_t junkSize	= 32;
+	fwrite (&junkSize, 1, 4, filePointer);
+	locationCounter		+= 4;
+	char junkNix [32]	= {0};
+	fwrite (&junkNix, 1, 32, filePointer);
+	locationCounter		+= 32;
+
 	fwrite (fmt,  1, 4, filePointer);
 	locationCounter		+= 4;
 	uint32_t fmtSize	= 16;
@@ -89,23 +105,23 @@ bool	wavWriter::init	(const QString &fileName, const int sampleRate,
 //	the "freq" chunk
 	if (frequency > 0) {
 	   fwrite (aux1, 1, 4, filePointer);
-	   locationCounter		+= 4;
+	   locationCounter	+= 4;
 	   int freqLen	= sizeof (int32_t);
 	   fwrite (&freqLen, 1, 4, filePointer);
-	   locationCounter		+= 4;
+	   locationCounter	+= 4;
 	   fwrite (&frequency, 1, 4, filePointer);
-	   locationCounter		+= 4;
+	   locationCounter	+= 4;
 	}
 //
 //	the "bitdepth" chunk
 	if (bitDepth > 0) {
 	   fwrite (aux2, 1, 4, filePointer);
-	   locationCounter		+= 4;
+	   locationCounter	+= 4;
 	   int bitDepthLen	= 4;
 	   fwrite (&bitDepthLen, 1, 4, filePointer);
-	   locationCounter		+= 4;
+	   locationCounter	+= 4;
 	   fwrite (&bitDepth, 1, 4, filePointer);
-	   locationCounter		+= 4;
+	   locationCounter	+= 4;
 	}
 //
 //	start of the "data" chunk
@@ -121,28 +137,52 @@ void	wavWriter::close	() {
 	if (!isValid)
 	   return;
 	isValid		= false;
-	int nrBytes	= nrElements * 2 * sizeof (int16_t);
-//
+	uint64_t nrBytes	= nrElements * 2 * sizeof (int16_t);
+
 //	reset the fp to the location where the nr bytes in the
-//	data chunk shouold be written
-	fseek (filePointer, locationCounter, SEEK_SET);
-	fwrite (&nrBytes, 1, 4, filePointer);
+//	data chunk should be written
+	fseek (filePointer, 0, SEEK_SET);
+	if (nrBytes < (uint64_t)0xFFFFFFFF) {
+//	   fwrite (bw64, 1, 4, filePointer);
+	   fseek (filePointer, locationCounter, SEEK_SET);
+	   fwrite (&nrBytes, 1, 4, filePointer);
 //
+//	compute the number if of to be recorded in the RIFF count
+	   fseek (filePointer, 0, SEEK_END);
+	   int riffSize	= ftell (filePointer) - 8;
+//
+//	and record the value at loc 4
+	   fseek (filePointer, 4, SEEK_SET);
+	   fwrite (&riffSize, 1, 4, filePointer);
+	   fseek (filePointer, 0, SEEK_END);
+	   fclose (filePointer);
+	   return;
+	}
+//	a large file, make it BW64
+//
+	uint32_t minusOne = 0xFFFFFFFF;
+	fwrite (bw64, 1, 4, filePointer);
+	fwrite (&minusOne, 1, 4, filePointer);
+	fseek (filePointer, locationCounter, SEEK_SET);
+	fwrite (&minusOne, 1, 4, filePointer);
 //	compute the number if of to be recorded in the RIFF count
 	fseek (filePointer, 0, SEEK_END);
 	int riffSize	= ftell (filePointer) - 8;
-//
-//	and record the value at loc 4
-	fseek (filePointer, 4, SEEK_SET);
-	fwrite (&riffSize, 1, 4, filePointer);
+//	just fill the ds64 struct
+	fseek (filePointer, 12, SEEK_SET);
+	fwrite (ds64, 1, 4, filePointer);
+	fseek (filePointer, 20, SEEK_SET);
+	uint64_t theSize	= riffSize;
+	fwrite (&theSize, 1, 8, filePointer);
+	fwrite (&nrBytes, 1, 8, filePointer);
 	fseek (filePointer, 0, SEEK_END);
 	fclose (filePointer);
 }
 
-void	wavWriter::write (int16_t *buff, int samples) {
+void	wavWriter::write (int16_t *buff, uint64_t samples) {
 	if (!isValid)
 	   return;
-	fwrite (buff, 2 * sizeof (int16_t), samples, filePointer);
+	fwrite (buff, 2 * sizeof (int16_t), (size_t)samples, filePointer);
 	nrElements	+= samples;
 }
 

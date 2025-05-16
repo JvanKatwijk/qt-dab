@@ -138,6 +138,8 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
   *	The function is called with a blkno. This should be 1, 2 or 3
   *	for each time 2304 bits are in, we call process_ficInput
   */
+//
+//	pre data. size () >= BitsperBlock
 void	ficHandler::processFICBlock (std::vector<int16_t> &data,
 	                              int16_t blkno) {
 	if (blkno == 1) {

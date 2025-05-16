@@ -66,7 +66,8 @@
 	correlationScope_p	= new correlationScope (correlationDisplay,
 	                                                256, dabSettings_p);
 	TII_Scope_p		= new spectrumScope	(tiiDisplay,
-	                                                192, dabSettings_p);
+	                                                192, dabSettings_p,
+	                                                true);
 	channelScope_p		= new channelScope	(channelPlot,
 	                                                 NR_TAPS,
 	                                                 dabSettings_p);
@@ -319,7 +320,7 @@ void	displayWidget::showNULL	(Complex *v, int amount,
 //	for "tii" we get a segment of 2048 time domain samples,
 //	data is from the NULL period with TII data, after the
 //	FFT, we collapse to 192 "bin"s
-void	displayWidget::showTII	(std::vector<Complex> v, int freq) {
+void	displayWidget::showTII	(std::vector<Complex> v, int freq, int marker) {
 floatQwt	X_axis [512];
 floatQwt	Y_value [512];
 
@@ -347,7 +348,7 @@ floatQwt	Y_value [512];
 	}
 
 	TII_Scope_p		-> display (X_axis, resVec, 96, 
-	                                      tiiSlider -> value ());
+	                                      tiiSlider -> value (), marker);
 //
 //	for the waterfall we upsample from 192 -> 512
 	for (int i = 0; i < 512; i ++) {

@@ -48,9 +48,10 @@ Q_OBJECT
 public:
 		spectrumScope	(QwtPlot *,
 	                         int,
-	                         QSettings *);
+	                         QSettings *,
+	                         bool marker = false);
 		~spectrumScope	();
-	void	display		(floatQwt *, floatQwt *, int, int);
+	void	display		(floatQwt *, floatQwt *, int, int, int marker = -1);
 	void	set_bitDepth	(int);
 	void	clean		();
 
@@ -65,6 +66,7 @@ private:
 	int		bitDepth;
 	int		normalizer;
 	int16_t		displaySize;
+	bool		hasMarker;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;

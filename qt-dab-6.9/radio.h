@@ -375,7 +375,8 @@ private:
 	void			startChannel		(const QString &,
 	                                                 const QString fistService = "");
 	void			stopChannel		();
-	void			stopService		(dabService &);
+	void			stopService		(dabService);
+//	void			stopService		(dabService &);
 	void			startService		(dabService &, int);
 	void			start_epgService	(packetdata &);
 	void			localSelect		(const QString &c,

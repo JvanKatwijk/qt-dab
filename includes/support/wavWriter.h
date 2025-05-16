@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,14 +33,14 @@ public:
 		~wavWriter	();
 	bool	init		(const QString &, int,
 	                               int bitDepth = 0, int frequency = 0);
-	void	write		(int16_t *buff, int samples);
+	void	write		(int16_t *buff, uint64_t samples);
 	void	close		();
 	bool	isActive	();
 private:
 	FILE	*filePointer;
-	int	nrElements;
+	uint64_t	nrElements;
 	std::fpos_t	dataPos;
 	bool	isValid;
-	int	locationCounter;
+	uint64_t	locationCounter;
 };
 

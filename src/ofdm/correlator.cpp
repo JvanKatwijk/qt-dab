@@ -67,7 +67,8 @@
   *	we believe that that indicates the first sample we were
   *	looking for.
   */
-
+//
+//	Pre v. size () >= T_u
 int32_t	correlator::findIndex (std::vector <Complex> v,
 	                       bool firstFound, int threshold ) {
 int32_t	i;

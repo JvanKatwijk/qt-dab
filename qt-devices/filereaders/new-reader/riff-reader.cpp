@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2024
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -41,7 +41,7 @@ int res	= 1;
 uint32_t segmentSize;
 char header [5];
 
-	bitDepth	= 15;
+	bitDepth	= 15;	// default
 	tunedFrequency	= -1;
 	denominator	= 0;
         header [4] = 0;
@@ -52,17 +52,143 @@ char header [5];
            throw device_exception (val. toStdString ());
         }
 
+	this	-> fileName	= fileName;
         fread (header, 1, 4, filePointer);
-        if (QString (header) != "RIFF") {
+        fread (&segmentSize, 1, 4, filePointer);
+        if (QString (header) == "RIFF") 
+	   setupFor_wavType (segmentSize);
+	else
+	if ((QString (header) == "BW64") && (segmentSize != 0xFFFFFFFF))
+	   setupFor_wavType (segmentSize);
+	else
+	if (QString (header) == "BW64")
+	   setupFor_bw64Type (segmentSize);
+	else {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
         }
-	
-        fread (&segmentSize, 1, 4, filePointer);
-//	fprintf (stderr, "Size of RIFF %d\n", segmentSize);
+}
 
-//	We expect a "WAVE" header, enclosing an "fmt " header
+	riffReader::~riffReader () {
+	fclose (filePointer);
+}
+//
+//	To keep things simple, we have
+//	separated "handlers" for the chunk handling for
+//	"wave" and "bw64" files.
+//	While large code parts are the same, the
+//	differences are in the beginning and in the end.
+void	riffReader::setupFor_wavType (uint32_t segmentSize) {
+char header [5];
+	header [0] = 0;
+	fread (header, 1, 4, filePointer);
+//	fprintf (stderr, "Header %s\n", header);
+	if (QString (header) != "WAVE") {
+	   QString val =
+           QString ("File '%1' is no valid SDR file").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
+//	fprintf (stderr, "Header %s\n", header);
+//      JUNK can be skipped
+        fread (header, 1, 4, filePointer);
+        if (QString (header) == "JUNK") {
+           int junkSize;
+           fread (&junkSize, 1, 4, filePointer);
+           char junkBuffer [junkSize];
+           fread (&junkBuffer, 1, junkSize, filePointer);
+           fread (header, 1, 4, filePointer);
+        }
+//	fprintf (stderr, "Header %s\n", header);
+
+	if (QString (header) != "fmt ") {
+           QString val =
+                   QString ("File '%1' is no valid SDR file").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
+	
+	fread (&segmentSize, 1, 4, filePointer);
+//	save position of the fp
+	std::fpos_t pos;
+	std::fgetpos (filePointer, &pos);
+	uint32_t samplingRate;
+	fread (&formatTag, 1, sizeof (uint16_t), filePointer);
+	fread (&nrChannels, 1, sizeof (uint16_t), filePointer);
+	fread (&samplingRate, 1, 4, filePointer);
+//	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
+	if ((formatTag != 01) ||
+	    (nrChannels != 02) || (samplingRate != 2048000)) {
+	   QString val =
+                   QString ("File '%1' is no valid SDR file").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
+
+	uint32_t bytesperSecond;
+	fread (&bytesperSecond, 1, 4, filePointer);
+//	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
+
+	fread (&blockAlign, 1, 2, filePointer);
+	if (blockAlign == 4) 
+	   readBytes	= READ4BYTES;
+	else
+	if (blockAlign == 6)
+	   readBytes	= READ6BYTES;
+	else
+	if (blockAlign == 8) {
+	   readBytes	= READ8BYTES;
+	   QString val =
+	           QString ("File '%1' has unsupported 32 bit elements"). arg (fileName);
+	   throw device_exception (val. toStdString ());
+	}
+	else {
+	   QString val =
+                   QString ("File '%1' has unsupported elements").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
+
+	fsetpos (filePointer, &pos);
+	fseek (filePointer, segmentSize, SEEK_CUR);
+
+	fread (header, 1, 4, filePointer);
+	while (QString (header) != "data") {
+	   fread (&segmentSize, 1, 4, filePointer);
+//	   fprintf (stderr, "we read %s (%d)\n", header, segmentSize);
+	   if (QString (header) == "freq")
+	      fread (&tunedFrequency, 1, 4, filePointer);
+	   else
+	   if (QString (header) == "bits")
+	      fread (&bitDepth, 1, 4, filePointer);
+	   else
+	      fseek (filePointer, segmentSize, SEEK_CUR);
+	   fread (header, 1, 4, filePointer);
+//	   fprintf (stderr, "Now we read %s\n", header);
+	   if (feof (filePointer)) {
+	      QString val =
+                   QString ("File '%1' is no valid SDR file").arg(fileName);
+              throw device_exception (val. toStdString ());
+           }
+	}
+
+	denominator	= value_for (bitDepth);
+	if (QString (header) != "data") {	// should not happen
+	   QString val =
+                   QString ("File '%1' is no valid SDR file").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
+
+	uint32_t xxx;
+	fread (&xxx, 1, 4, filePointer);
+//	fprintf (stderr, "nrbytes in data %d\n", nrElements);
+	nrElements = xxx / blockAlign;
+	remainingElements	= nrElements;
+	std::fgetpos (filePointer, &baseofData);
+}
+
+void	riffReader::setupFor_bw64Type (uint32_t segmentSize) {
+int	dataSize;
+char header [5];
+	header [4] = 0;
+//	We expect a "WAVE" header, enclosing an "bw64 " header
 	fread (header, 1, 4, filePointer);
 //	fprintf (stderr, "Header -> %s\n", header);
 	if (QString (header) != "WAVE") {
@@ -72,7 +198,24 @@ char header [5];
         }
 
 	fread (header, 1, 4, filePointer);
-//	fprintf (stderr, "Header = %s\n", header);
+//	fprintf (stderr, "Header -> %s\n", header);
+	if (QString (header) != "ds64") {
+	   QString val =
+                   QString ("File '%1' is no valid SDR file").arg(fileName);
+           throw device_exception (val. toStdString ());
+        }
+
+	int ds64Size;
+	fread (&ds64Size, 1, 4, filePointer);
+//	fprintf (stderr, "ds64Size %d\n", ds64Size);
+	fread (&dataSize, 8, 1, filePointer);
+	fread (&dataSize, 8, 1, filePointer);
+	uint32_t dummy;
+	for (int i = ds64Size - 4 * 4; i < ds64Size; i += 4)
+	   fread (&dummy, 1, 4, filePointer);
+	fprintf (stderr, "Komen we hier nog?\n");
+	fread (header, 1, 4, filePointer);
+	fprintf (stderr, "header -> %s\n", header);
 	if (QString (header) != "fmt ") {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -80,8 +223,6 @@ char header [5];
         }
 //
 //	The format we expect is limited to genuine DAB files
-	uint16_t formatTag;
-	uint16_t nrChannels;
 	fread (&segmentSize, 1, 4, filePointer);
 //
 //	save position of the fp
@@ -152,16 +293,11 @@ char header [5];
            throw device_exception (val. toStdString ());
         }
 
-	uint32_t xxx;
-	fread (&xxx, 1, 4, filePointer);
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
-	nrElements = xxx / blockAlign;
+	nrElements = dataSize  / blockAlign;
 	remainingElements	= nrElements;
 	std::fgetpos (filePointer, &baseofData);
 }
-
-	riffReader::~riffReader () {
-	fclose (filePointer);}
 
 void	riffReader::reset	() {
 	fsetpos (filePointer, &baseofData);

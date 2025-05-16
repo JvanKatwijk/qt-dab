@@ -66,7 +66,7 @@ public:
 	void	showCorrelation	(const std::vector<float> &,
 	                                 QVector<int> &, int,
 	                                 std::vector<transmitterDesc> &);
-	void	showTII	(std::vector<Complex>, int);
+	void	showTII		(std::vector<Complex>, int, int);
 	void	showChannel	(const std::vector<Complex>);
 	void	showStdDev	(const std::vector<float>);
 

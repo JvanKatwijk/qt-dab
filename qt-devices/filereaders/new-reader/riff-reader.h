@@ -39,9 +39,17 @@ public:
 
 	int	getVFOFrequency	();
 private:
-	int	read4Bytes	(std::complex<float> *, uint64_t);
-	int	read6Bytes	(std::complex<float> *, uint64_t);
-	int	read8Bytes	(std::complex<float> *, uint64_t);
+
+	QString	fileName;
+	uint16_t	formatTag;
+        uint16_t	nrChannels;
+        uint32_t	samplingRate;
+
+	void	setupFor_wavType	(uint32_t);
+	void	setupFor_bw64Type	(uint32_t);
+	int	read4Bytes		(std::complex<float> *, uint64_t);
+	int	read6Bytes		(std::complex<float> *, uint64_t);
+	int	read8Bytes		(std::complex<float> *, uint64_t);
 	FILE	*filePointer;
 	uint64_t	remainingElements;
 	uint64_t	nrElements;

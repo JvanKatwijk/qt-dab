@@ -36,7 +36,7 @@ public:
 			Blocks		() {}
 			~Blocks		() {}
 	int		blockNumber;
-	int		nrElements;
+	uint64_t	nrElements;
 	QString		typeofUnit;
 	int		frequency;
 	int		deviceGain;
@@ -73,7 +73,7 @@ private:
 	QString		create_xmltree		();
 	FILE		*xmlFile;
 	QString		byteOrder;
-	int		nrElements;
+	uint64_t	nrElements;
 	QString		timeString;
 };
 

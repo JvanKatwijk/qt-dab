@@ -39,13 +39,15 @@ int result	= 1;
 
 	spectrumScope::spectrumScope (QwtPlot *dabScope,
 	                              int displaySize,
-	                              QSettings	*dabSettings):
+	                              QSettings	*dabSettings,
+	                              bool hasMarker):
 	                                  spectrumCurve ("") {
 QString	colorString	= "black";
 bool	brush;
 
 	this		-> dabSettings		= dabSettings;
 	this		-> displaySize		= displaySize;
+	this		-> hasMarker		= hasMarker;
 	dabSettings	-> beginGroup ("spectrumScope");
 	colorString	= dabSettings -> value ("displayColor",
 	                                           "white"). toString();
@@ -96,11 +98,12 @@ bool	brush;
            spectrumCurve. setBrush (ourBrush);
 	}
 	spectrumCurve. attach (plotgrid);
-	
-//	Marker		= new QwtPlotMarker();
-//	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-//	Marker		-> setLinePen (QPen (Qt::red));
-//	Marker		-> attach (plotgrid);
+
+	Marker		= new QwtPlotMarker();
+	Marker		-> setLineStyle (QwtPlotMarker::VLine);
+	Marker		-> setLinePen (QPen (Qt::red));
+	if (hasMarker)
+	   Marker	-> attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	bitDepth	= 12;
 	normalizer	= valueFor (bitDepth);
@@ -114,7 +117,8 @@ bool	brush;
 
 void	spectrumScope::display		(floatQwt *X_axis,
 	                                 floatQwt *Y_value,
-	                                 int freq, int Amp) {
+	                                 int freq, int Amp,
+	                                 int marker) {
 	(void)freq;
 	float Max	= Amp / 50.0 * (-get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
@@ -129,7 +133,18 @@ void	spectrumScope::display		(floatQwt *X_axis,
 	Y_value [displaySize - 1] = get_db (0);
 
 	spectrumCurve. setSamples (X_axis, Y_value, displaySize);
-//	Marker		-> setXValue (0);
+	if (hasMarker && (marker != -1)) {
+	   QwtText theText = "startpoint " + QString::number (marker);
+           QFont zz = theText. font ();
+           int pp = zz. pointSize ();
+           zz . setPointSize (pp + 3);
+           theText. setFont (zz);
+           Marker -> setLinePen (QColor ("yellow"), 1.0);
+           Marker -> setLabelOrientation (Qt::Orientation::Vertical);
+           Marker -> setLabelAlignment (Qt::AlignLeft);
+           Marker -> setLabel  (theText);
+	   Marker -> setXValue (marker + 96);
+	}
 	plotgrid	-> replot (); 
 }
 
