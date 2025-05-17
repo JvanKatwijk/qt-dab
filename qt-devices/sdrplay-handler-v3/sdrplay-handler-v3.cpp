@@ -441,6 +441,7 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      recorderVersion,
 	                                      direct);
 	} catch (...) {
+	   fprintf (stderr, "Setup_xml handler failed\n");
 	   return false;
 	}
 	dumping. store (true);

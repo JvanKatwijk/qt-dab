@@ -51,10 +51,11 @@ uint8_t t	= 0;
 	              filenameFinder. find_xmlName (deviceName, channel, direct);
 	if (fileName == "")
 	   throw (21);
+	fprintf (stderr, "filename = %s\n", fileName. toLatin1 (). data ());
 	xmlFile		= fopen (fileName. toUtf8 (). data (), "w+b");
 	if (xmlFile == nullptr)
 	   throw (21);
-//	fprintf (stderr, "file is open\n");
+	fprintf (stderr, "file is open\n");
 	this	-> nrBits	= nrBits;
 	this	-> container	= container;
 	this	-> sampleRate	= sampleRate;

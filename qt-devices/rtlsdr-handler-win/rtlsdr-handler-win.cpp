@@ -457,7 +457,7 @@ void	rtlsdrHandler_win::startDump	() {
 	iq_dumpButton	-> hide ();
 }
 
-void	rtsdrHandler_win::stopDump	() {
+void	rtlsdrHandler_win::stopDump	() {
 	close_xmlDump ();
 	iq_dumpButton		-> show ();
 }

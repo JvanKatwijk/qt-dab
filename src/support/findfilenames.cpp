@@ -55,7 +55,7 @@ QString suggestedFileName;
 	
 	suggestedFileName = saveDir + "Qt-DAB-" + channel +
 	                                          "-" + theTime;
-	for (int i = 0; i < suggestedFileName. length (); i ++)
+	for (int i = 4; i < suggestedFileName. length (); i ++)
 	   if (!isValid (suggestedFileName. at (i)))
 	      suggestedFileName. replace (i, 1, '-');
 
@@ -265,7 +265,8 @@ QTime	theTime;
 	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
 	QString suggestedFilename	= 
 	                     saveDir + deviceName + "-" + channel + "-" + timeString;
-	for (int i = 0; i < suggestedFilename. length (); i ++)
+//	In Windows, there is a problem with C: or D:
+	for (int i = 4; i < suggestedFilename. length (); i ++)
 	   if (!isValid (suggestedFilename. at (i)))
 	      suggestedFilename. replace (i, 1, "-");
 	suggestedFilename	= QDir::toNativeSeparators (suggestedFilename);
