@@ -600,7 +600,7 @@ void	airspy_2::set_xmlDump () {
 }
 
 void	airspy_2::startDump	() {
-	setup_xmlDump (false);
+	setup_xmlDump (true);
 }
 
 void	airspy_2::stopDump	() {

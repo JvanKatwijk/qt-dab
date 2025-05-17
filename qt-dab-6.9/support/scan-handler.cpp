@@ -137,6 +137,7 @@ QString scanmodeText (int e) {
 	showKnop	= new QPushButton ("show");
 	showKnop	-> setToolTip ("show the scanlist, the list indicating which channels should NOT be skipped when scanning");
 	dumpChecker	= new QCheckBox ("dump input");
+	dumpChecker	-> setToolTip ("if set, during the scan the input data for each channel with DAB data is stored in an uff file");
 	clearKnop	= new QPushButton ("clear");
 	clearKnop	-> setToolTip ("clear the current scantable, i.e. scan all channels");
 	defaultLoad	= new QPushButton ("load default");
