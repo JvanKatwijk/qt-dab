@@ -34,8 +34,9 @@
 	deviceHandler::~deviceHandler	() {
 }
 
-bool	deviceHandler::restartReader	(int32_t freq) {
+bool	deviceHandler::restartReader	(int32_t freq, int samplesSkipped) {
 	lastFrequency	= freq;
+	(void)samplesSkipped;
 	return true;
 }
 

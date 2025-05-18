@@ -178,7 +178,7 @@ public:
 	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();
 
-	bool		restartReader		(int32_t);
+	bool		restartReader		(int32_t, int skipped = 0);
 	void		stopReader		();
 	int32_t		Samples			();
 	int32_t		getSamples		(std::complex<float> *,

@@ -181,11 +181,12 @@ void	soapyHandler::createDevice (const QString &deviceString) {
 	m_thread = std::thread(&soapyHandler::workerthread, this);
 }
 
-bool	soapyHandler::restartReader (int frequency) {
+bool	soapyHandler::restartReader (int frequency, int skipped) {
 	if (!deviceReady)
 	   return false;
 	m_sampleBuffer. FlushRingBuffer ();
 	m_freq	= frequency;
+	(void)skipped;
 	SoapySDRDevice_setFrequency (m_device, SOAPY_SDR_RX,
 	                                          0, frequency, NULL);
 	return true;

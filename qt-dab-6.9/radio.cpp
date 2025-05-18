@@ -2387,10 +2387,8 @@ int	tunedFrequency	=
 	         theSCANHandler. Frequency (theChannel);
 	the_ensembleHandler	-> reset ();
 	theNewDisplay. showFrequency (theChannel, tunedFrequency);
-	usleep (1000);
-	inputDevice_p		-> restartReader (tunedFrequency);
-
 	presetTimer. stop	();		// should not run
+	inputDevice_p		-> restartReader (tunedFrequency, 100 * 2048);
 	channel. cleanChannel	();
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;

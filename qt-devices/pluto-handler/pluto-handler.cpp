@@ -490,7 +490,7 @@ struct iio_channel *gain_channel;
 	}
 }
 
-bool	plutoHandler::restartReader	(int32_t freq) {
+bool	plutoHandler::restartReader	(int32_t freq, int skipped) {
 int ret;
 iio_channel *lo_channel;
 iio_channel *gain_channel;
@@ -502,6 +502,7 @@ iio_channel *gain_channel;
 	   return true;		// should not happen
 
 	lastFrequency	= freq;
+	this -> toSkip = skipped;
 	if (save_gainSettings)
 	   update_gainSettings (freq /MHz (1));
 
@@ -593,8 +594,11 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	                             convBuffer [inpBase + 1] * inpRatio +
                                      convBuffer [inpBase] * (1 - inpRatio);
                  }
-	         _I_Buffer. putDataIntoBuffer (localBuf,
-	                                        DAB_RATE / DIVIDER);
+	         if (toSkip > 0)
+	            toSkip -= DAB_RATE / DIVIDER;
+	         else
+	            _I_Buffer. putDataIntoBuffer (localBuf,
+	                                          DAB_RATE / DIVIDER);
 	         convBuffer [0] = convBuffer [CONV_SIZE];
 	         convIndex = 1;
 	      }

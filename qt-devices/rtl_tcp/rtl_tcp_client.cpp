@@ -132,11 +132,12 @@ void	rtl_tcp_client::wantConnect () {
 	toServer. waitForBytesWritten ();
 }
 
-bool	rtl_tcp_client::restartReader (int32_t freq) {
+bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
 
 	if (!connected)
 	   return true;
 	vfoFrequency = freq;
+	(void)skipped;
 //	here the command to set the frequency
 	sendVFO (freq);
 	connect (&toServer, SIGNAL(readyRead ()),

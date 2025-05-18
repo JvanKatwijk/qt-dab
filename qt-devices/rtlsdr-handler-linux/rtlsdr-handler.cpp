@@ -317,12 +317,13 @@ void	rtlsdrHandler::set_filter	(int c) {
 	filtering       = filterSelector -> isChecked ();
 }
 
-bool	rtlsdrHandler::restartReader	(int32_t freq) {
+bool	rtlsdrHandler::restartReader	(int32_t freq, int skipped) {
 	(void)(this -> rtlsdr_set_center_freq (theDevice, freq));
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
 	lastFrequency	= freq;
+	(void)skipped;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
@@ -740,7 +741,11 @@ static int iqTeller	= 0;
 
 	if (!isActive. load ()) 
 	   return;
-	
+
+	if (toSkip > 0) {
+	   toSkip -= len / 2;
+	   return;
+	}
 	if (xml_dumping. load ())
 	   xmlWriter -> add ((std::complex<uint8_t> *)buf, len / 2);
 

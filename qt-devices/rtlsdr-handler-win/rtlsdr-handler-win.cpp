@@ -72,6 +72,10 @@ rtlsdrHandler_win	*theStick	= (rtlsdrHandler_win *)ctx;
 	   return;
 	}
 
+	if (theStick -> toSkip > 0) {
+	   theStick -> toSkip -= len / 2;
+	   return;
+	}
 	if (theStick -> isActive. load ()) {
 	   int ovf	= theStick ->  _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
 	   if (ovf < 0)
@@ -296,7 +300,7 @@ void	rtlsdrHandler_win::set_filter	(int c) {
 	filtering       = filterSelector -> isChecked ();
 }
 
-bool	rtlsdrHandler_win::restartReader	(int32_t freq) {
+bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
 	_I_Buffer. FlushRingBuffer();
 
 	(void)(rtlsdr_set_center_freq (theDevice, freq));
@@ -304,6 +308,7 @@ bool	rtlsdrHandler_win::restartReader	(int32_t freq) {
 	   update_gainSettings (freq / MHz (1));
 
 	lastFrequency	= freq;
+	(void)skipped;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {

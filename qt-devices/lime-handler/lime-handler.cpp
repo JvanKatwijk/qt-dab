@@ -224,13 +224,14 @@ void	limeHandler::set_filter		(int c) {
 	fprintf (stderr, "filter set %s\n", filtering ? "on" : "off");
 }
 
-bool	limeHandler::restartReader	(int32_t freq) {
+bool	limeHandler::restartReader	(int32_t freq, int skipped) {
 int	res;
 
 	if (isRunning())
 	   return true;
 
 	lastFrequency	= freq;
+	this -> toSkip	= skipped;
 	if (save_gainSettings) {
 	   update_gainSettings	(freq / MHz (1));
 	   setGain (gainSelector -> value ());
@@ -324,7 +325,10 @@ int	amountRead	= 0;
 	   res = LMS_RecvStream (&stream, localBuffer,
 	                                     FIFO_SIZE,  &meta, 1000);
 	   if (res > 0) {
-	      _I_Buffer. putDataIntoBuffer (localBuffer, res);
+	      if (toSkip > 0) 
+	         toSkip -= res;
+	      else
+	         _I_Buffer. putDataIntoBuffer (localBuffer, res);
 	      amountRead	+= res;
 	      res	= LMS_GetStreamStatus (&stream, &streamStatus);
 	      underruns	+= streamStatus. underrun;

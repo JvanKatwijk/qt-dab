@@ -74,8 +74,9 @@
 	   fclose (filePointer);
 }
 
-bool	rawFiles::restartReader	(int32_t freq) {
+bool	rawFiles::restartReader	(int32_t freq, int skipped) {
 	(void)freq;
+	(void)skipped;
 	if (running. load())
 	   return true;
 	readerTask	= new rawReader (this, filePointer, &_I_Buffer);

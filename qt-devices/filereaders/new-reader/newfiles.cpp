@@ -58,8 +58,9 @@
 	}
 }
 
-bool	newFiles::restartReader		(int32_t freq) {
+bool	newFiles::restartReader		(int32_t freq, int skipped) {
 	(void)freq;
+	(void)skipped;
 	if (running. load())
            return true;
         readerTask      = new newReader (this, &theReader, &_I_Buffer);

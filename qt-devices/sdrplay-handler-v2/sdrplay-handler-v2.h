@@ -126,7 +126,7 @@ public:
 	                                         const QString &, logger *);
 			~sdrplayHandler_v2	();
 
-	bool		restartReader		(int32_t);
+	bool		restartReader		(int32_t, int skipped = 0);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *, int32_t);
 	int32_t		Samples			();

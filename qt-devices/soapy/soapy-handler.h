@@ -44,17 +44,17 @@ class soapyHandler : //public QObject,
 	              public deviceHandler, public Ui_soapyWidget {
 Q_OBJECT
 public:
-	soapyHandler	(QSettings *);
-	~soapyHandler	();
-
-bool	restartReader	(int);
-void	stopReader	();
-void	reset		();
-int32_t getSamples	(std::complex<float> * Buffer, int32_t Size);
-int32_t	Samples		();
-float	getGain		() const;
-int32_t	getGainCount	();
-bool	isFileInput	();
+		soapyHandler	(QSettings *);
+		~soapyHandler	();
+	
+	bool	restartReader	(int, int skipped = 0);
+	void	stopReader	();
+	void	reset		();
+	int32_t getSamples	(std::complex<float> * Buffer, int32_t Size);
+	int32_t	Samples		();
+	float	getGain		() const;
+	int32_t	getGainCount	();
+	bool	isFileInput	();
 
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;

@@ -40,7 +40,7 @@ Q_OBJECT
 public:
 			deviceHandler	();
 virtual			~deviceHandler	();
-virtual		bool	restartReader	(int32_t freq);
+virtual		bool	restartReader	(int32_t freq, int samplesSkipped = 0);
 virtual		void	stopReader	();
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples		();
@@ -57,7 +57,8 @@ virtual		void	stopDump	();
 //	performed by these functions
 		bool	getVisibility	();
 		void	setVisibility	(bool);
-//
+//	should be visible in the callback:
+		int	toSkip;
 protected:
 		superFrame	myFrame;
 		int32_t	lastFrequency;

@@ -228,12 +228,13 @@ std::string errorMessage (int errorCode) {
 /////////////////////////////////////////////////////////////////////////
 
 
-bool	sdrplayHandler_v3::restartReader	(int32_t newFreq) {
+bool	sdrplayHandler_v3::restartReader (int32_t newFreq, int skipped) {
 restartRequest r (newFreq);
 
         if (receiverRuns. load ())
            return true;
         lastFrequency    = newFreq;
+	this ->  toSkip	= skipped;
 	_I_Buffer. FlushRingBuffer();
 	return messageHandler (&r);
 }
@@ -243,7 +244,7 @@ stopRequest r;
 	close_xmlDump ();
         if (!receiverRuns. load ())
            return;
-        messageHandler (&r);
+        messageHandler (&r);	// synchronous call
 	_I_Buffer. FlushRingBuffer();
 }
 void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
@@ -488,6 +489,10 @@ std::complex<int16_t> localBuf [numSamples];
 	if (!p -> receiverRuns. load ())
 	   return;
 
+	if (p -> toSkip > 0) {
+	   p -> toSkip -= numSamples;
+	   return;
+	}
 	for (int i = 0; i <  (int)numSamples; i ++) {
 	   std::complex<int16_t> symb = std::complex<int16_t> (xi [i], xq [i]);
 	   localBuf [i] = symb;

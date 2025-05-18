@@ -106,8 +106,9 @@
 	delete	theDescriptor;
 }
 
-bool	xml_fileReader::restartReader (int32_t freq) {
+bool	xml_fileReader::restartReader (int32_t freq, int skipped) {
 	(void)freq;
+	(void)skipped;
 	if (running. load())
 	   return true;
 	theReader	= new xml_Reader (this,

@@ -265,7 +265,7 @@ int32_t	spyServer_client::getRate	() {
 	return INPUT_RATE;
 }
 
-bool	spyServer_client::restartReader	(int32_t freq) {
+bool	spyServer_client::restartReader	(int32_t freq, int skipped) {
 	if (!connected)
 	   return false;
 	std::cerr << "spy-handler: setting center_freq to " <<
@@ -278,6 +278,7 @@ bool	spyServer_client::restartReader	(int32_t freq) {
 	   std::cerr << "Failed to set gain\n";
 	   return false;
 	}
+	(void)skipped;
 	theServer -> start_running ();
 	running	= true;
 	return true;

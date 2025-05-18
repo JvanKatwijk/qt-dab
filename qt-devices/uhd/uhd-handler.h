@@ -51,7 +51,7 @@ public:
 		uhdHandler	(QSettings * dabSettings);
 		~uhdHandler	();
 
-	bool	restartReader	(int32_t freq);
+	bool	restartReader	(int32_t freq, int skipped = 0);
 	void	stopReader	();
 	int32_t getSamples	(std::complex<float> *, int32_t size);
 	int32_t Samples		();

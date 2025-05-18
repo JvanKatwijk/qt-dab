@@ -229,7 +229,7 @@ uint32_t samplerateCount;
 	delete library_p;
 }
 
-bool	airspy_2::restartReader	(int32_t freq) {
+bool	airspy_2::restartReader	(int32_t freq, int samplesSkipped) {
 int	result;
 //int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 
@@ -237,6 +237,7 @@ int	result;
 	   return true;
 
 	lastFrequency	= freq;
+	this	-> toSkip = samplesSkipped;
 	QString key	= QString (TAB_SETTINGS) + "-"
 	                             + QString::number (freq / MHz (1));
 	int tab		= value_i (airspySettings, AIRSPY_SETTINGS, key, 0);
@@ -344,6 +345,10 @@ std::complex<float> temp [2048];
 	         float    inpRatio   = mapTable_float [j];
 	         temp [j]    = convBuffer [inpBase + 1] * inpRatio +
 	                       convBuffer [inpBase] * (1 - inpRatio);
+	      }
+	      if (toSkip > 0) {
+	         toSkip -= 2048;
+	         continue;
 	      }
 	      _I_Buffer. putDataIntoBuffer (temp, 2048);
 //	shift the sample at the end to the beginning, it is needed

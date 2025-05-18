@@ -355,6 +355,12 @@ std::complex<int16_t> localBuf [numSamples];
 	   fprintf (stderr, "Hardware removed\n");
 	if (reset || hwRemoved)
 	   return;
+
+	if (p -> toSkip > 0) {
+	   p -> toSkip -= numSamples;
+	   return;
+	}
+	
 	for (i = 0; i <  (int)numSamples; i ++)
 //	   localBuf [i] = std::complex<int16_t> (xq [i], xi [i]);
 	   localBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
@@ -380,7 +386,7 @@ void	myGainChangeCallback (uint32_t	GRdB,
 //	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
 
-bool	sdrplayHandler_v2::restartReader	(int32_t freq) {
+bool	sdrplayHandler_v2::restartReader	(int32_t freq, int skipped) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
@@ -389,9 +395,11 @@ int	lnaState	= lnaGainSetting	-> value ();
 int	agc		= agcControl	-> isChecked () ? 1 : 0;
 
 	lastFrequency	= freq;
+	(void)skipped;
 	if (running. load())
 	   return true;
 
+	this	-> toSkip	= skipped;
 	if (save_gainSettings) {
 	   update_gainSettings (freq / MHz (1));
 	   handle_ifgainReduction	(GRdBSelector -> value ());

@@ -93,7 +93,7 @@ public:
 	                                         const QString &, logger *);
 			~airspy_2		();
 	int32_t		defaultFrequency	();
-	bool		restartReader		(int32_t);
+	bool		restartReader		(int32_t, int samplesSkipped = 0);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *v, int32_t size);
 	int32_t		Samples			();

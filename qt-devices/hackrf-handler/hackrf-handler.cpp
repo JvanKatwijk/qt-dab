@@ -319,13 +319,14 @@ int	bufferIndex	= 0;
 	return 0;
 }
 
-bool	hackrfHandler::restartReader	(int32_t freq) {
+bool	hackrfHandler::restartReader	(int32_t freq, int skipped) {
 int	res;
 
 	if (running. load())
 	   return true;
 
 	lastFrequency	= freq;
+	(void)skipped;
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 	this -> hackrf_set_lna_gain (theDevice, lnaGainSlider -> value ());

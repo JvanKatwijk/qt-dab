@@ -176,7 +176,7 @@ std::vector<std::string> antList;
 	}
 }
 
-bool	uhdHandler::restartReader(int32_t freq) {
+bool	uhdHandler::restartReader(int32_t freq, int skipped) {
 
 	std::cout << boost::format("Setting RX Freq: %f MHz...") % (freq / 1e6) << std::endl;
 	uhd::tune_request_t tune_request(freq);
@@ -186,6 +186,7 @@ bool	uhdHandler::restartReader(int32_t freq) {
 	   return true;
 	}
 
+	(void)skipped;
 	theBuffer -> FlushRingBuffer();
 	m_workerHandle = new uhd_streamer(this);
 	return true;
