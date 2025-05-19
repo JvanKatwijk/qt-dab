@@ -138,6 +138,10 @@ QString scanmodeText (int e) {
 	showKnop	-> setToolTip ("show the scanlist, the list indicating which channels should NOT be skipped when scanning");
 	dumpChecker	= new QCheckBox ("dump input");
 	dumpChecker	-> setToolTip ("if set, during the scan the input data for each channel with DAB data is stored in an uff file");
+	dumpDirKnop	= new QPushButton ("dumpdir");
+	dumpDirKnop	-> setToolTip ("set the directory where the scan files are stored");
+        connect (dumpDirKnop, &QPushButton::clicked,
+                 this, &scanHandler::setDumpDir);
 	clearKnop	= new QPushButton ("clear");
 	clearKnop	-> setToolTip ("clear the current scantable, i.e. scan all channels");
 	defaultLoad	= new QPushButton ("load default");
@@ -154,6 +158,7 @@ QString scanmodeText (int e) {
 	LH		-> addWidget (stopKnop);
 	LH		-> addWidget (showKnop);
 	LH		-> addWidget (clearKnop);
+	LH		-> addWidget (dumpDirKnop);
 	LH		-> addWidget (dumpChecker);
 	LH_2		-> addWidget (defaultLoad);
 	LH_2		-> addWidget (defaultStore);
@@ -449,6 +454,17 @@ FILE	*scanHandler::askFileName	() {
 	      return  filenameFinder. findSummary_fileName ();
 	}
 	return nullptr;
+}
+
+void	scanHandler::setDumpDir		() {
+QString dir     =
+          QFileDialog::getExistingDirectory (nullptr,
+                                             tr("Open Directory"),
+                                             QDir::homePath (),
+                                             QFileDialog::ShowDirsOnly
+                                             | QFileDialog::DontResolveSymlinks);
+        if (dir != "")
+           store (dabSettings, DAB_GENERAL,  S_SCANFILE_PATH, dir);
 }
 
 QString	scanHandler::getFirstChannel	() {

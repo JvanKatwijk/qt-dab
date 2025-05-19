@@ -278,7 +278,7 @@ bool	spyServer_client::restartReader	(int32_t freq, int skipped) {
 	   std::cerr << "Failed to set gain\n";
 	   return false;
 	}
-	(void)skipped;
+	toSkip	= skipped;
 	theServer -> start_running ();
 	running	= true;
 	return true;
@@ -360,7 +360,10 @@ int16_t buffer_16 [settings. batchSize * 2];
 	               temp [j]    = convBuffer [inpBase + 1] * inpRatio +
 	                             convBuffer [inpBase] * (1 - inpRatio);
 	            }
-	            _I_Buffer. putDataIntoBuffer (temp, 2048);
+	            if (toSkip > 0)
+	               toSkip -= 2048;
+	            else
+	               _I_Buffer. putDataIntoBuffer (temp, 2048);
 	            convBuffer [0] = convBuffer [convBufferSize];
 	            convIndex = 1;
 	         }

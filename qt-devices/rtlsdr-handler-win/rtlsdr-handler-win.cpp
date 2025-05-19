@@ -308,7 +308,7 @@ bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
 	   update_gainSettings (freq / MHz (1));
 
 	lastFrequency	= freq;
-	(void)skipped;
+	this -> toSkip = skipped;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {

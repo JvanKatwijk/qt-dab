@@ -83,6 +83,7 @@ private:
 	QPushButton	*startKnop;
 	QPushButton	*stopKnop;
 	QPushButton	*showKnop;
+	QPushButton	*dumpDirKnop;
 	QPushButton	*clearKnop;
 	QPushButton	*defaultLoad;
 	QPushButton	*defaultStore;
@@ -119,6 +120,8 @@ private slots:
 	void		handle_defaultStore	();
 	void		handle_loadKnop		();
 	void		handle_storeKnop	();
+
+	void		setDumpDir		();
 signals:
 	void		startScanning	();
 	void		stopScanning	();

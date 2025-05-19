@@ -315,7 +315,10 @@ int	bufferIndex	= 0;
 	   buffer [bufferIndex]	= std::complex<int8_t> (re, im);
 	   bufferIndex ++;
 	}
-	q -> putDataIntoBuffer (buffer, bufferIndex);
+	if (ctx -> toSkip > 0)
+	   ctx -> toSkip -= bufferIndex;
+	else
+	   q -> putDataIntoBuffer (buffer, bufferIndex);
 	return 0;
 }
 
@@ -326,7 +329,7 @@ int	res;
 	   return true;
 
 	lastFrequency	= freq;
-	(void)skipped;
+	this	-> toSkip	= skipped;
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 	this -> hackrf_set_lna_gain (theDevice, lnaGainSlider -> value ());

@@ -350,7 +350,10 @@ std::complex<float> temp [2048];
 	         toSkip -= 2048;
 	         continue;
 	      }
-	      _I_Buffer. putDataIntoBuffer (temp, 2048);
+	      if (toSkip > 0)
+	         toSkip -= 2048;
+	      else
+	         _I_Buffer. putDataIntoBuffer (temp, 2048);
 //	shift the sample at the end to the beginning, it is needed
 //	as the starting sample for the next time
 	      convBuffer [0] = convBuffer [convBufferSize];

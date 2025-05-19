@@ -137,7 +137,7 @@ bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
 	if (!connected)
 	   return true;
 	vfoFrequency = freq;
-	(void)skipped;
+	this -> toSkip = skipped;
 //	here the command to set the frequency
 	sendVFO (freq);
 	connect (&toServer, SIGNAL(readyRead ()),
@@ -182,7 +182,10 @@ std::complex<float> localBuffer [SEGMENT_SIZE];
 	      localBuffer [i] =
 	        std::complex<float> (mapTable [buffer [2 * i]],
 	                             mapTable [buffer [2 * i + 1]]);
-	   _I_Buffer. putDataIntoBuffer (localBuffer, SEGMENT_SIZE);
+	   if (toSkip > 0)
+	      toSkip -= SEGMENT_SIZE;
+	   else
+	      _I_Buffer. putDataIntoBuffer (localBuffer, SEGMENT_SIZE);
 	}
 }
 

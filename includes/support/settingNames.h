@@ -69,6 +69,7 @@
 #define	S_MAIN_WIDGET		"mainWidget"
 
 #define	S_FILE_PATH		"filePath"
+#define	S_SCANFILE_PATH		"scanfilePath"
 #define	S_CORRELATION_ORDER	"correlationOrder"
 #define	S_DX_MODE		"dxMode"
 

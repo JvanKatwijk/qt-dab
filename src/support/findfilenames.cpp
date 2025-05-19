@@ -262,6 +262,12 @@ QString	saveDir	=  basicPath ();
 QDate	theDate;
 QTime	theTime;
 
+	if (direct) {
+	   saveDir = 
+	          value_s (dabSettings, DAB_GENERAL, S_SCANFILE_PATH, saveDir);
+	   if (!saveDir. endsWith ("/"))
+	      saveDir += "/";
+	}
 	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
 	QString suggestedFilename	= 
 	                     saveDir + deviceName + "-" + channel + "-" + timeString;

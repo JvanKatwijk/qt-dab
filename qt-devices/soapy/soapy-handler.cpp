@@ -186,7 +186,7 @@ bool	soapyHandler::restartReader (int frequency, int skipped) {
 	   return false;
 	m_sampleBuffer. FlushRingBuffer ();
 	m_freq	= frequency;
-	(void)skipped;
+	toSkip	= skipped;
 	SoapySDRDevice_setFrequency (m_device, SOAPY_SDR_RX,
 	                                          0, frequency, NULL);
 	return true;
