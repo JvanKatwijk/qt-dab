@@ -304,7 +304,7 @@ channel_data data;
 	int FICF	= 1;			// FIC present in MST
 	int NST		= 0;			// number of streams
 	int FL		= 0;			// Frame Length
-	for (int j = 0; j < 64; j++) {
+	for (int j = 0; j < my_ficHandler -> nrChannels ();  j++) {
 	   my_ficHandler -> get_channelInfo (&data, j);
 	   if (data. in_use) {
 	      NST++;
@@ -324,7 +324,7 @@ channel_data data;
 //	Now for each of the streams in the FIC we add information
 //	on how to get it
 //	STC ()
-	for (int j = 0; j < 64; j++) {
+	for (int j = 0; j < my_ficHandler -> nrChannels (); j ++) {
 	   my_ficHandler -> get_channelInfo (&data, j);
 	   if (data. in_use) {
 	      int SCID	= data. id;
@@ -378,7 +378,7 @@ int32_t	etiGenerator::process_CIF (int16_t *input,
 uint8_t	shiftRegister [9];
 std::vector<parameter *> theParameters;
 
-	for (int i = 0; i < 64; i ++) {
+	for (int i = 0; i < my_ficHandler -> nrChannels (); i ++) {
 	   channel_data data;
 	   my_ficHandler -> get_channelInfo (&data, i);
 	   if (data. in_use) {

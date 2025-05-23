@@ -26,7 +26,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
-* [A note on using an RTLSDR device](#a-note-on-using-an-RTLSDR-device]
+* [A note on using an RTLSDR device](#a-note-on-using-an-RTLSDR-device)
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)

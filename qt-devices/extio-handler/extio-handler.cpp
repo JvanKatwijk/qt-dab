@@ -365,8 +365,8 @@ long	extioHandler::GetHWLO		(void) {
 //
 //
 //	Handling the data
-bool	extioHandler::restartReader	(int32_t freq, int skipped = 0) {
-	fprintf (stderr, "setting freq to %d\n", freq);
+bool	extioHandler::restartReader	(int32_t freq, int skipped) {
+//	fprintf (stderr, "setting freq to %d\n", freq);
 	toSkip = skipped;
 int	h =  (*SetHWLO) ((int)freq);
 	lastFrequency = freq;

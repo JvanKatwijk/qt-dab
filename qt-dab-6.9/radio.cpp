@@ -4193,7 +4193,6 @@ void	RadioInterface::handle_aboutLabel   () {
 	delete the_aboutLabel;
 	the_aboutLabel	= nullptr;
 }
-
 //
 //	Starting a background task is by clicking with the right mouse button
 //	on the servicename, swrvice is known to be in current ensemble

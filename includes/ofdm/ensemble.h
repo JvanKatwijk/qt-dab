@@ -62,7 +62,6 @@ public:
 	QString	SIdToserv	(uint32_t SId);
 	int	programType	(uint32_t);
 	std::vector<int>	fmFrequencies	(uint32_t);
-
 };
 
 

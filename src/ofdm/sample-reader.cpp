@@ -165,7 +165,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 //	Note that "phase" itself might be negative
 	   currentPhase	-= phaseOffset;
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
-	   if ( saving && (localCounter < bufferSize))
+	   if (saving && (localCounter < bufferSize))
 	      localBuffer [localCounter ++]     = v;
 	   v_out  [index + i]	= Complex (real (v),
 	                                   imag (v)) * oscillatorTable [currentPhase];
