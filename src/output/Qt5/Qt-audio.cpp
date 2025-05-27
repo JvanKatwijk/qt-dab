@@ -48,6 +48,10 @@ class	RadioInterface;
 	initializeAudio (QAudioDeviceInfo::defaultOutputDevice());
 }
 
+bool	Qt_Audio::is_QtAudio		() {
+	return true;
+}
+
 void	Qt_Audio::initialize_deviceList () {	
 	QAudioFormat audioFormat;
 	audioFormat. setSampleRate      (outputRate);

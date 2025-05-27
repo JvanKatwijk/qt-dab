@@ -37,7 +37,8 @@ Q_OBJECT
 
 public:
 	explicit AboutDialog (QWidget *parent = nullptr);
-	~AboutDialog();
+	~AboutDialog	();
+	bool	isVisible ();
 
 private:
 	Ui::AboutDialog *ui;

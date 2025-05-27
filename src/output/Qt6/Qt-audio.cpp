@@ -71,6 +71,10 @@ class	RadioInterface;
 	theIODevice. stop ();
 }
 
+bool	Qt_Audio::is_QtAudio		() {
+	return true;
+}
+
 QStringList     Qt_Audio::streams       () {
 QStringList nameList;
         for (auto & listEl: outputDevices)

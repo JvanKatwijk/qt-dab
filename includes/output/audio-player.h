@@ -32,6 +32,7 @@ Q_OBJECT
 public:
 		audioPlayer	();
 virtual		~audioPlayer	();
+virtual bool	is_QtAudio	();
 virtual void	audioOutput	(float *, int);
 virtual	void	stop		();
 virtual	void	restart		();

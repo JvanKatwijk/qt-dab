@@ -32,15 +32,15 @@
   *	Handles the pad segments passed on from mp2- and mp4Processor
   */
 	padHandler::padHandler	(RadioInterface *mr,
-	                            bool backgroundFlag) {
-	myRadioInterface		= mr;
+	                            bool backgroundFlag):
+	                              myRadioInterface (mr) {
 	this	-> backgroundFlag	= backgroundFlag;
 
 	connect (this, &padHandler::show_label,
 	         mr, &RadioInterface::show_label);
 	connect (this, &padHandler::show_mothandling,
 	         mr, &RadioInterface::show_mothandling);
-	currentSlide	= nullptr;
+//	currentSlide	= nullptr;
 //
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.
@@ -56,11 +56,17 @@
 	lastSegment	= false;
 	firstSegment	= false;
 	segmentNumber	= -1;
+//
+//
+	segmentno		= -1;
+	remainDataLength	= 0;
+	isLastSegment		= false;
+	moreXPad		= false;
 }
 
 	padHandler::~padHandler() {
-	if (currentSlide != nullptr)
-	   delete currentSlide;
+//	if (currentSlide != nullptr)
+//	   delete currentSlide;
 }
 
 //	Data is stored reverse, we pass the vector and the index of the
@@ -201,7 +207,6 @@ void	padHandler::handle_variablePAD (uint8_t *b,
 	                                int16_t last, uint8_t CI_flag) {
 int16_t	CI_Index = 0;
 uint8_t CI_table [4];
-int16_t	i, j;
 int16_t	base	= last;	
 std::vector<uint8_t> data;		// for the local addition
 
@@ -209,16 +214,32 @@ std::vector<uint8_t> data;		// for the local addition
 //	dealing with an msc field, the size to be taken is
 //	the size of the latest xpadfield that had a CI_flag != 0
 	if (CI_flag == 0) {
-	   if (mscGroupElement && (xpadLength > 0)) {
+//	   if (mscGroupElement && (xpadLength > 0)) {
+	   if (xpadLength > 0) {
 	      if (last < xpadLength - 1) {
 //	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
 	         return;
 	      }
 	      
 	      data. resize (xpadLength);
-	      for (j = 0; j < xpadLength; j ++)
+	      for (int16_t j = 0; j < xpadLength; j ++)
 	         data [j] = b [last - j];
-	      add_MSC_element (data);
+	      switch (last_appType) {
+// Dynamic label segment, start of X-PAD data group
+	         case 2:
+// Dynamic label segment, continuation of X-PAD data group
+	         case 3:
+	            dynamicLabel((uint8_t *)(data.data()), xpadLength, 3);
+	            break;
+
+	         case 12:   // MOT, start of X-PAD data group
+	         case 13:   // MOT, continuation of X-PAD data group
+	            if (mscGroupElement)
+	               add_MSC_element(data);
+	            break;
+	         default:
+	            break;
+	      }
 	   }
 	   return;
 	}
@@ -234,16 +255,17 @@ std::vector<uint8_t> data;		// for the local addition
 
 //	The space for the CI's does belong to the CPadfield, so
 //	do not forget to take into account the '0'field if CI_Index < 4
-	if (mscGroupElement) {	
+//	if (mscGroupElement) {	
+	{
 	   xpadLength = 0;
-	   for (i = 0; i < CI_Index; i ++)
+	   for (int16_t i = 0; i < CI_Index; i ++)
 	      xpadLength += lengthTable [CI_table [i] >> 5];
 	   xpadLength += CI_Index == 4 ? 4 : CI_Index + 1;
 //	   fprintf (stderr, "xpadLength set to %d\n", xpadLength);
 	}
 
 //	Handle the contents
-	for (i = 0; i < CI_Index; i ++) {
+	for (int16_t i = 0; i < CI_Index; i ++) {
 	   uint8_t appType	= CI_table [i] & 037;
 	   int16_t length	= lengthTable [CI_table [i] >> 5];
 
@@ -256,7 +278,7 @@ std::vector<uint8_t> data;		// for the local addition
 
 //	collect data, reverse the reversed bytes
 	   data. resize (length);
-	   for (j = 0; j < length; j ++)  
+	   for (int16_t j = 0; j < length; j ++)  
 	      data [j] = b [base - j];
 
 	   switch (appType) {
@@ -290,10 +312,6 @@ std::vector<uint8_t> data;		// for the local addition
 //	A dynamic label is created from a sequence of (dynamic) xpad
 //	fields, starting with CI = 2, continuing with CI = 3
 void	padHandler::dynamicLabel (uint8_t *data, int16_t length, uint8_t CI) {
-static int16_t segmentno	   = -1;
-static int16_t remainDataLength    = 0;
-static bool    isLastSegment       = false;
-static bool    moreXPad            = false;
 int16_t  dataLength                = 0;
 
 	if ((CI & 037) == 02) {	// start of segment
@@ -522,13 +540,13 @@ uint16_t	index;
 	   case 3:
 	      if (currentSlide == nullptr) {
 //	         fprintf (stderr, "creating %d\n", transportId);
-	         currentSlide	= new motObject (myRadioInterface,
+	         currentSlide. reset (new motObject (myRadioInterface,
 	                                         false,
 	   	                                 transportId,
 	                                         &data [index + 2],
 	                                         segmentSize,
 	                                         lastFlag,
-	                                         backgroundFlag);
+	                                         backgroundFlag));
 	      }
 	      else {
 	         if (currentSlide -> get_transportId() == transportId)
@@ -536,15 +554,15 @@ uint16_t	index;
 //	         fprintf (stderr, "out goes %d, in comes %d\n",
 //	                          currentSlide -> get_transportId(),
 //	                                           transportId);
-	         delete currentSlide;
-	         currentSlide	= new motObject (myRadioInterface,
+//	         delete currentSlide;
+	         currentSlide. reset (new motObject (myRadioInterface,
 	                                         false,
 	   	                                 transportId,
 	                                         &data [index + 2],
 	                                         segmentSize,
 	                                         lastFlag,
 	                                         backgroundFlag
-	                                       );
+	                                       ));
 	      }
 	      break;
 

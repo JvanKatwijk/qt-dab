@@ -41,39 +41,39 @@
 	   if (((audiodata *)d) -> ASCTy != 077) {
 	      theLogger ->  log (logger::LOG_SERVICE_STARTS,
 	                               "MP2 service ", d -> bitRate);
-              theProcessor = new mp2Processor (mr,
+              theProcessor. reset (new mp2Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
-	                                       backgroundFlag);
+	                                       backgroundFlag));
 	   }
            else
            if (((audiodata *)d) -> ASCTy == 077) {
 	      theLogger -> log (logger::LOG_SERVICE_STARTS,
 	                               "MP4 service ", d -> bitRate);
-              theProcessor =  new mp4Processor (mr,
+              theProcessor. reset (new mp4Processor (mr,
 	                                        d -> bitRate,
                                                 audioBuffer,
 	                                        frameBuffer,
 	                                        backgroundFlag,
-	                                        dump);
+	                                        dump));
 	   }
 	   else
-	      theProcessor = new frameProcessor ();	// should not happen
+	      theProcessor. reset (new frameProcessor ());	// should not happen
 	}
 	else
 	if (d -> type == PACKET_SERVICE) {
-	   theProcessor = new dataProcessor (mr,
+	   theProcessor. reset (new dataProcessor (mr,
 	                                     (packetdata *)d,
 	                                     dataBuffer,
-	                                     backgroundFlag);
+	                                     backgroundFlag));
 	}
 	else
-	   theProcessor = new frameProcessor ();	// should not happen
+	   theProcessor. reset (new frameProcessor ());	// should not happen
 }
 
 
     backendDriver::~backendDriver() {
-	delete theProcessor;
+//	delete theProcessor;
 }
 
 //

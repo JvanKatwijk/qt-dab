@@ -270,25 +270,30 @@ QString h;
 //	put the widgets in the right place and create the workers
 	set_position_and_size	(dabSettings_p, this, S_MAIN_WIDGET);
 
-	configHandler_p		= new configHandler (this, dabSettings_p);
-	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
-	                                                       presetFile);
+	configHandler_p. reset (new configHandler (this, dabSettings_p));
+	the_ensembleHandler. reset (new ensembleHandler (this, dabSettings_p,
+	                                                       presetFile));
 //	we have the configuration handler and the ensemble handler,
 //	connect some signals directly
 	configHandler_p		-> set_connections ();
 	configHandler_p		-> setDeviceList (theDeviceChoser.
 	                                            getDeviceList ());
-	connect (configHandler_p, &configHandler::frameClosed,
+	connect (configHandler_p. data (), &configHandler::frameClosed,
 	         this, &RadioInterface::handle_configFrame_closed);
-	connect (configHandler_p, &configHandler::handle_fontSelect,
-	         the_ensembleHandler, &ensembleHandler::handle_fontSelect);
-
-	connect (configHandler_p, &configHandler::handle_fontSizeSelect,
-	         the_ensembleHandler, &ensembleHandler::handle_fontSizeSelect);
-	connect (configHandler_p, &configHandler::handle_fontColorSelect,
-	         the_ensembleHandler,& ensembleHandler::handle_fontColorSelect);
-	connect (configHandler_p, &configHandler::set_serviceOrder,
-	         the_ensembleHandler, &ensembleHandler::set_serviceOrder);
+	connect (configHandler_p. data (), &configHandler::handle_fontSelect,
+	         the_ensembleHandler. data (),
+	                               &ensembleHandler::handle_fontSelect);
+	connect (configHandler_p. data (),
+	                         &configHandler::handle_fontSizeSelect,
+	         the_ensembleHandler. data (),
+	                         &ensembleHandler::handle_fontSizeSelect);
+	connect (configHandler_p. data (),
+	                        &configHandler::handle_fontColorSelect,
+	         the_ensembleHandler. data (),
+	                        &ensembleHandler::handle_fontColorSelect);
+	connect (configHandler_p. data (), &configHandler::set_serviceOrder,
+	         the_ensembleHandler. data (),
+	                               &ensembleHandler::set_serviceOrder);
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 
@@ -306,16 +311,16 @@ QString h;
 #endif
 	setWindowTitle (version);
 
-	ensembleWidget -> setWidget (the_ensembleHandler);
-	connect (the_ensembleHandler, &ensembleHandler::selectService,
+	ensembleWidget -> setWidget (the_ensembleHandler. data ());
+	connect (the_ensembleHandler. data (), &ensembleHandler::selectService,
 	         this, &RadioInterface::localSelect);
-	connect (the_ensembleHandler,
+	connect (the_ensembleHandler. data (),
 	               &ensembleHandler::start_background_task,
 	         this, &RadioInterface::handle_backgroundTask);
 	   
-	techWindow_p	= new techData (this, dabSettings_p, &theTechData);
+	techWindow_p. reset (new techData (this, dabSettings_p, &theTechData));
 	
-	connect (techWindow_p, &techData::frameClosed,
+	connect (techWindow_p. data (), &techData::frameClosed,
 	         this, &RadioInterface::handle_techFrame_closed);
 
 	if (value_i (dabSettings_p, DAB_GENERAL, NEW_DISPLAY_VISIBLE, 0) != 0)
@@ -482,7 +487,7 @@ QString h;
 	         this, &RadioInterface::color_spectrumButton);
 //
 //	
-	connect (techWindow_p, &techData::handle_timeTable,
+	connect (techWindow_p. data (), &techData::handle_timeTable,
 	         this, &RadioInterface::handle_timeTable);
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
@@ -1289,10 +1294,15 @@ void	RadioInterface::TerminateProcess () {
 	if (theOFDMHandler != nullptr)
 	   theOFDMHandler -> stop ();
 	the_ensembleHandler	-> hide ();
+	configHandler_p		-> hide ();
+	techWindow_p		-> hide ();
 //	delete	the_ensembleHandler;
-	delete	configHandler_p;
-//	techWindow_p	-> hide ();
-	delete techWindow_p;
+//	delete	configHandler_p;
+//	delete techWindow_p;
+	if (the_aboutLabel != nullptr) {
+	   the_aboutLabel -> hide ();
+	   delete the_aboutLabel;
+	}
 	if (contentTable_p != nullptr) {
 	   contentTable_p -> clearTable ();
 	   contentTable_p -> hide ();
@@ -1825,9 +1835,9 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_scanButton);
 //
 //	and for the techWindow
-	connect (techWindow_p, &techData::handle_audioDumping,
+	connect (techWindow_p. data (), &techData::handle_audioDumping,
 	         this, &RadioInterface::handle_audiodumpButton);
-	connect (techWindow_p, &techData::handle_frameDumping,
+	connect (techWindow_p. data (), &techData::handle_frameDumping,
 	         this, &RadioInterface::handle_framedumpButton);
 }
 
@@ -3028,7 +3038,10 @@ QString theHeight;
 //
 //	Handling the Mute button
 void	RadioInterface::handle_muteButton	() {
-	if ((audioVolume == 0) && !muteTimer. isActive ())
+//	do not activate mute timer if volume == 0
+//	but Volume is only defined with Qt_Audio
+	if ((soundOut_p -> is_QtAudio () && audioVolume == 0) &&
+	                           !muteTimer. isActive ())
 	   return;
 	if (muteTimer. isActive ()) {
 	   stopMuting ();
@@ -3572,7 +3585,6 @@ bool	RadioInterface::autoStart_http () {
 	QString mapPort		=
 	            value_s (dabSettings_p, MAP_HANDLING, MAP_PORT_SETTING,
 	                                             "8080");
-
 	mapHandler = new httpHandler (this,
 	                              mapPort,
 	                              browserAddress,

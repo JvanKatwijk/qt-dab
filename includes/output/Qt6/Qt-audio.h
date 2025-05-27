@@ -52,6 +52,7 @@ public:
 			Qt_Audio	(RadioInterface *,
 	                                  QSettings *);
 			~Qt_Audio	();
+	bool		is_QtAudio	();
 	void		stop		();
 	void		restart		();
 	void		suspend		();

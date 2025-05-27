@@ -67,8 +67,10 @@
 #include	"tii-mapper.h"
 
 #include	"ensemble-handler.h"
+#include	"config-handler.h"
 #include	"logger.h"
 
+#include	<QScopedPointer>
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
@@ -258,8 +260,10 @@ private:
 	timeTableHandler	my_timeTable;
 	xmlExtractor		xmlHandler;
 	epgCompiler		epgVertaler;
-	configHandler		*configHandler_p;
-	ensembleHandler		*the_ensembleHandler;
+//	configHandler		*configHandler_p;
+//	ensembleHandler		*the_ensembleHandler;
+	QScopedPointer<configHandler> configHandler_p;
+	QScopedPointer<ensembleHandler> the_ensembleHandler;
 	QLabel			*dxDisplayText;
 	bool			dxMode;
 
@@ -280,7 +284,7 @@ private:
 	channelDescriptor	channel;
 	QDialog			*the_aboutLabel;
 	bool			error_report;
-	techData		*techWindow_p;
+	QScopedPointer<techData> techWindow_p;
 //	Ui_configWidget		configWidget;
 	QSettings		*dabSettings_p;
 	int16_t			tii_delay;

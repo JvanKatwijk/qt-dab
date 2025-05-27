@@ -346,10 +346,6 @@ std::complex<float> temp [2048];
 	         temp [j]    = convBuffer [inpBase + 1] * inpRatio +
 	                       convBuffer [inpBase] * (1 - inpRatio);
 	      }
-	      if (toSkip > 0) {
-	         toSkip -= 2048;
-	         continue;
-	      }
 	      if (toSkip > 0)
 	         toSkip -= 2048;
 	      else

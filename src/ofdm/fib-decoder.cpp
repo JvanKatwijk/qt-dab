@@ -39,6 +39,10 @@
 #include	"time-converter.h"
 //
 //
+//	The fibDecoder was rewritten since the "old" one
+//	contained (a) errors and (b) was incomplete on
+//	some issues.
+//	The current one is straight forward.
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
 
@@ -634,7 +638,7 @@ int	monthLength [] {
 //	we add (or subtract) a number of Hours (half hours)
 void	fibDecoder::adjustTime (int32_t *dateTime) {
 //	first adjust the half hour  in the amount of minutes
-	                    
+	(void)dateTime;
 	currentConfig -> dateTime [4] += 
 	            (currentConfig -> dateTime [7] == 1) ? 30 : 0;
 	if (currentConfig -> dateTime [4] >= 60) {
@@ -1067,7 +1071,7 @@ char		label [17];
 	prim. fmFrequencies. resize (0);
 	theEnsemble -> primaries. push_back (prim);
 	int subChId = -1;
-	for (int i = 0; i < currentConfig -> SC_C_table. size (); i ++) {
+	for (int i = 0; i < (int)(currentConfig -> SC_C_table. size ()); i ++) {
 	   fibConfig::serviceComp_C  comp  = currentConfig -> SC_C_table [i];
 	   if ((comp. compNr == 0) && (comp. SId == SId))
 	      subChId	= currentConfig -> subChannelOf (i);

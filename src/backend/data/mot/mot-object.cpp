@@ -155,7 +155,7 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
 
-	if (motMap. find (segmentNumber) != motMap. end())
+	if (motMap. find (segmentNumber) != motMap. end ())
 	   return;
 
 //	fprintf (stderr, "adding segment %d to %d (last ? %d)\n",

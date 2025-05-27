@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -82,7 +82,7 @@ static int cifTable [] = {18, 72, 0, 36};
 	   usleep (100);
 #endif
 	locker. lock();
-	for (auto const &b : theBackends) {
+	for (auto &b : theBackends) {
 	   b -> stopRunning();
 	   delete b;
 	}
@@ -196,10 +196,11 @@ void	mscHandler::resetBuffers	() {
 	start ();
 #endif
 }
+
 void	mscHandler::resetChannel () {
 //	fprintf (stderr, "channel reset: all services will be stopped\n");
 	locker. lock ();
-	for (auto const &b : theBackends) {
+	for (auto &b : theBackends) {
 	   b -> stopRunning();
 	   delete b;
 	}
@@ -221,13 +222,15 @@ void	mscHandler::stopService	(int subchId, int flag) {
 	}
 	locker. unlock ();
 }
-
+//
+//	Note that - in general - the backens run in their own thread
 bool	mscHandler::setChannel (descriptorType &d,
 	                        RingBuffer<std::complex<int16_t>> *audioBuffer,
 	                        RingBuffer<uint8_t> *dataBuffer,
 	                        FILE *dump, int flag) {
 //	fprintf (stderr, "going to open %s\n",
 //	                d. serviceName. toLatin1 (). data ());
+
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     theLogger,
 	                                     &d,
@@ -264,7 +267,7 @@ int16_t	currentblk	= (blkno - 4) % numberofblocksperCIF;
 //	be done.  We assume that the backend itself
 //	does the work in a separate thread.
 	locker. lock ();
-	for (auto const& b: theBackends) {
+	for (auto & b: theBackends) {
 	   int16_t startAddr	= b -> startAddr;
 	   int16_t Length	= b -> Length; 
 	   if (Length > 0) 		// Length = 0? should not happen

@@ -36,6 +36,8 @@ void	audioPlayer::audioOutput	(float *buffer, int amount) {
 	(void)buffer; (void) amount;
 }
 
+bool	audioPlayer::is_QtAudio		() {return false;}
+
 void	audioPlayer::stop		() {}
 
 void	audioPlayer::restart		() {}

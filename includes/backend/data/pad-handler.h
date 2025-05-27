@@ -27,9 +27,10 @@
 #include	<cstring>
 #include	<cstdint>
 #include	<vector>
+#include	"mot-object.h"
+#include	<QScopedPointer>
 
 class	RadioInterface;
-class	motObject;
 
 class	padHandler: public QObject {
 Q_OBJECT
@@ -51,7 +52,8 @@ private:
 	bool		pad_crc			(uint8_t *, int16_t);
 	QByteArray	dynamicLabelText;
 	int16_t		charSet;
-	motObject	*currentSlide;
+//	motObject	*currentSlide;
+	QScopedPointer<motObject>	currentSlide;
 	uint8_t		last_appType;
 	bool		mscGroupElement;
 	int		xpadLength;
@@ -62,6 +64,12 @@ private:
 	int16_t		segmentNumber;
 //      dataGroupLength is set when having processed an appType 1
         int 		dataGroupLength;
+
+	int16_t		segmentno;
+	int16_t		remainDataLength;
+	bool		isLastSegment;
+	bool		moreXPad;
+
 //
 //      The msc_dataGroupBuffer is - as the name suggests - used for
 //      assembling the msc_data group.

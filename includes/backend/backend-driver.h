@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include	<QScopedPointer>
 #include	<vector>
 #include	<utility>
 #include	"dab-constants.h"
@@ -45,6 +46,6 @@ public:
 void	addtoFrame	(const std::vector<uint8_t> &outData);
 private:
 	logger		*theLogger;
-	frameProcessor	*theProcessor;
+	QScopedPointer<frameProcessor>	theProcessor;
 };
 

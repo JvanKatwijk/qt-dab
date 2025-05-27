@@ -87,7 +87,7 @@ private:
 
 	QMutex		locker;
 	bool		audioService;
-	std::vector<Backend *>theBackends;
+	std::vector<Backend*>theBackends;
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
 	int16_t		blkCount;
