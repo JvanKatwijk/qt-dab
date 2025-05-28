@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -30,9 +30,12 @@
 #include	"frame-processor.h"
 #include	"ringbuffer.h"
 #include	"reed-solomon.h"
+#include	"virtual-datahandler.h"
+
+#include	<QScopedPointer>
 
 class	RadioInterface;
-class	virtual_dataHandler;
+//class	virtual_dataHandler;
 class	packetdata;
 
 class	dataProcessor final :public QObject, public frameProcessor {
@@ -81,7 +84,8 @@ private:
 	void		processRS		(std::vector<uint8_t> &appdata,
                                   	         const std::vector<uint8_t> &RSdata);
 
-	virtual_dataHandler *my_dataHandler;
+	QScopedPointer<virtual_dataHandler> my_dataHandler;
+//	virtual_dataHandler *my_dataHandler;
 //
 signals:
 	void		show_mscErrors		(int);

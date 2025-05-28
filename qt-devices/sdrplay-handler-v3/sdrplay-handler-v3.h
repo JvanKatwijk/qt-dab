@@ -36,7 +36,10 @@
 #include	"ui_sdrplay-widget-v3.h"
 #include	<sdrplay_api.h>
 
-class	Rsp_device;
+#include	<QScopedPointer>
+#include	"Rsp-device.h"
+
+//class	Rsp_device;
 class	generalCommand;
 class	xml_fileWriter;
 class	logger;
@@ -94,7 +97,7 @@ public:
 	sdrplay_api_Update_t            sdrplay_api_Update;
 	sdrplay_api_SwapRspDuoActiveTuner_t sdrplay_api_SwapRspDuoActiveTuner;
 	sdrplay_api_DeviceT             *chosenDevice;
-	Rsp_device		*theRsp;
+	QScopedPointer<Rsp_device>	theRsp;
 
 	int			inputRate;
 	std::atomic<bool>	failFlag;

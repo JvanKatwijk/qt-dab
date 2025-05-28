@@ -62,35 +62,35 @@
 	switch (DSCTy) {
 	   default:
 	      fprintf (stderr, "DSCTy %d not supported\n", DSCTy);
-	      my_dataHandler	= new virtual_dataHandler();
+	      my_dataHandler. reset (new virtual_dataHandler ());
 	      break;
 
 	   case 5:
 	      if (appType == 0x44a)
-	         my_dataHandler	= new journaline_dataHandler();
+	         my_dataHandler. reset (new journaline_dataHandler ());
 	      else
 	      if (appType == 1500)
-	         my_dataHandler = new adv_dataHandler (mr, dataBuffer, appType);
+	         my_dataHandler. reset (new adv_dataHandler (mr, dataBuffer, appType));
 	      else
 	      if (appType == 4)
-	         my_dataHandler	= new tdc_dataHandler (mr, dataBuffer, appType);
+	         my_dataHandler. reset (new tdc_dataHandler (mr, dataBuffer, appType));
 	      else {
 	         fprintf (stderr, "DSCTy 5 with appType %d not supported\n",
 	                                                           appType);
-	         my_dataHandler	= new virtual_dataHandler();
+	         my_dataHandler. reset (new virtual_dataHandler ());
 	      }
 	      break;
 
 	   case 44:
-	      my_dataHandler	= new journaline_dataHandler();
+	      my_dataHandler. reset (new journaline_dataHandler ());
 	      break;
 
 	   case 59:
-	      my_dataHandler	= new ip_dataHandler (mr, dataBuffer);
+	      my_dataHandler. reset (new ip_dataHandler (mr, dataBuffer));
 	      break;
 
 	   case 60:
-	      my_dataHandler	= new motHandler (mr, backgroundFlag);
+	      my_dataHandler. reset (new motHandler (mr, backgroundFlag));
 	      break;
 	   
 	}
@@ -98,7 +98,7 @@
 }
 
 	dataProcessor::~dataProcessor() {
-	delete		my_dataHandler;
+//	delete		my_dataHandler;
 }
 
 void	dataProcessor::addtoFrame (const std::vector<uint8_t>  &outV) {
