@@ -55,6 +55,7 @@
 #include	"xml-extractor.h"
 
 #include	"device-chooser.h"
+#include	"device-handler.h"
 #include	"display-widget.h"
 #include	"snr-viewer.h"
 
@@ -69,6 +70,8 @@
 #include	"ensemble-handler.h"
 #include	"config-handler.h"
 #include	"logger.h"
+
+#include	"ofdm-handler.h"
 
 #include	<QScopedPointer>
 class	QSettings;
@@ -119,14 +122,17 @@ public:
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
-	std::vector<int>		fmFrequencies;
+	std::vector<int>	fmFrequencies;
 	dabService () {
 	   channel	= "";
 	   serviceName	= "";
-	   fd		= nullptr;
-	   frameDumper	= nullptr;
+	   SId		= 0;
+	   subChId	= 77;
 	   valid	= false;
 	   is_audio	= false;
+	   fd		= nullptr;
+	   frameDumper	= nullptr;
+	   runsBackground	= false;
 	}
 	~dabService	() {}
 };
@@ -144,7 +150,9 @@ typedef struct {
 	uint32_t serviceId;
 	std::vector<multimediaElement> elements;
 } mmDescriptor;
-
+//
+//	Pretty important, the channel descriptor is supposed to
+//	contain all data related to the currently selected class
 class	channelDescriptor {
 public:
 	channelDescriptor () {
@@ -157,20 +165,20 @@ public:
 	int		tunedFrequency;
 	bool		realChannel;
 	bool		etiActive;
-	int		serviceCount;	// from FIC or nothing
-	int		nrServices;	// measured
 	QString		ensembleName;
-	std::vector<dabService> runningTasks;
-	dabService	currentService;
 	uint32_t	Eid;
+	int		nrServices;	// measured
+	int		serviceCount;	// from FIC or nothing
+	dabService	currentService;
+	std::vector<dabService> runningTasks;
 	bool		has_ecc;
 	uint8_t		ecc_byte;
 	int		lto;
 	QString		countryName;
 	int		nrTransmitters;
+	std::vector<transmitterDesc>	transmitters;
 	int		snr;
 	bool		announcing;
-	std::vector<transmitterDesc>	transmitters;
 	position	targetPos;
 	QDate		theDate;
 	int8_t		mainId;
@@ -244,7 +252,6 @@ private:
 	uint8_t			cpuSupport;
 	displayWidget		theNewDisplay;
 	snrViewer		theSNRViewer;
-//	QFrame			theDataDisplay;
 	dlCache			theDLCache;
 	tiiMapper		theTIIProcessor;
 	findfileNames		theFilenameFinder;
@@ -260,17 +267,18 @@ private:
 	timeTableHandler	my_timeTable;
 	xmlExtractor		xmlHandler;
 	epgCompiler		epgVertaler;
-//	configHandler		*configHandler_p;
-//	ensembleHandler		*the_ensembleHandler;
-	QScopedPointer<configHandler> configHandler_p;
-	QScopedPointer<ensembleHandler> the_ensembleHandler;
-	QLabel			*dxDisplayText;
-	bool			dxMode;
 
 //	end of variables that are initalized
 
+	QScopedPointer<configHandler>	configHandler_p;
+	QScopedPointer<ensembleHandler> the_ensembleHandler;
+	QScopedPointer<ofdmHandler>	theOFDMHandler;
+	QScopedPointer<deviceHandler>	inputDevice_p;
 	bool			autoStart_http		();
-
+	bool			dxMode;
+//
+//	Since the local position does not depend on the channel selected
+//	the local position is not stored in the channel data
 	position		localPos;
 	dabService		nextService;
 	std::vector<QPixmap>	strengthLabels;
@@ -285,19 +293,16 @@ private:
 	QDialog			*the_aboutLabel;
 	bool			error_report;
 	QScopedPointer<techData> techWindow_p;
-//	Ui_configWidget		configWidget;
 	QSettings		*dabSettings_p;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
-	deviceHandler		*inputDevice_p;
 //
 	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut_p;
 #endif
-	ofdmHandler		*theOFDMHandler;
 	audioPlayer		*soundOut_p;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer_p;
@@ -307,9 +312,6 @@ private:
 #endif
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
-//	QString			path_for_tiiFile;
-//	QString			path_for_pictures;
-//	QString			epgPath;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
@@ -367,7 +369,7 @@ private:
 	void			startAudiodumping	();
 	void			stopAudiodumping	();
 	void			scheduledAudioDumping	();
-	void			scheduledDLTextDumping ();
+	void			scheduledDLTextDumping	();
 	void			scheduledFICDumping	();
 	FILE			*ficDumpPointer;
 
@@ -405,14 +407,11 @@ private:
 	                                                 const QString &,
 	                                                 int, bool);
 	void			stopMuting		();
-
-
 //	short hands
 	void                    newChannelIndex        (int);
-
 	std::mutex		locker;
 	void			setSoundLabel		(bool);
-
+//	scan functions
 	void			startScan_to_data	();
 	void			startScan_single	();
 	void			startScan_continuous	();
@@ -422,13 +421,14 @@ private:
 	void			stopScan_to_data	();
 	void			stopScan_single	();
 	void			stopScan_continuous	();
-	void			setPeakLevel	(const std::vector<float> &);
 
+	void			setPeakLevel	(const std::vector<float> &);
 	QString			create_tiiLabel (const cacheElement *);
 	void			addtoLogFile	(const cacheElement *);
 	void			removeFromList	(uint8_t, uint8_t);
 	cacheElement		*inList		(uint8_t, uint8_t);
-
+//
+//	EPG extraction
 	void			extractServiceInformation (const QDomDocument &,
 	                                                      uint32_t, bool);
 	void			saveServiceInfo	(const QDomDocument &, 
@@ -436,6 +436,7 @@ private:
 	bool			process_ensemble (const QDomElement &, uint32_t);
 	int			process_service	(const QDomElement &);
 	QString			extractName	(const QString &);
+
 	void			announcement_start	(uint16_t, uint16_t);	
 	void			announcement_stop	();
 signals:

@@ -207,6 +207,7 @@ std::string errorMessage (int errorCode) {
 	threadRuns. store (false);
 	while (isRunning ())
 	   usleep (1000);
+	theRsp. reset ();
 //	thread should be stopped by now
 	myFrame. hide ();
 	QString groupName	= SDRPLAY_SETTINGS;

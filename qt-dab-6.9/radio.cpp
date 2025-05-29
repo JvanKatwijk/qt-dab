@@ -188,7 +188,6 @@ QString h;
 	this	-> ficDumpPointer	= nullptr;
 	this	-> the_aboutLabel	= nullptr;
 	running. 		store (false);
-	theOFDMHandler		= nullptr;
 	stereoSetting		= false;
 	contentTable_p		= nullptr;
 	scanTable_p		= nullptr;
@@ -542,13 +541,13 @@ QString h;
 	set_Colors ();
 //
 //	do we have a known device from previous invocations?
-	inputDevice_p	= nullptr;
+//	inputDevice_p	= nullptr;
 	h               =
 	           value_s (dabSettings_p, DAB_GENERAL, 
 	                                      SELECTED_DEVICE, "no device");
 	bool b = configHandler_p -> findDevice (h);
 	if (b) {
-	   inputDevice_p = createDevice (h, &theLogger);
+	   inputDevice_p. reset (createDevice (h, &theLogger));
 	}
 //
 	peakLeftDamped          = -100;
@@ -610,7 +609,7 @@ QString h;
 	                               tr ("The ini file is new and no home location is known yet"));
 	}
 
-	if (inputDevice_p != nullptr) {
+	if (!inputDevice_p .isNull ()) {
 	   startDirect ();
 	   qApp	-> installEventFilter (this);
 	   return;
@@ -628,9 +627,9 @@ QString h;
 //	was registered to be used, and the user presses the
 //	selectDevice comboBox
 void	RadioInterface::doStart (const QString &dev) {
-	inputDevice_p	= createDevice	(dev, &theLogger);
+	inputDevice_p. reset (createDevice	(dev, &theLogger));
 //	Some buttons should not be touched before we have a device
-	if (inputDevice_p == nullptr) {
+	if (inputDevice_p. isNull ()) {
 	   return;
 	}
 	startDirect ();
@@ -664,11 +663,19 @@ void	RadioInterface::startDirect	() {
 #endif
 	theLogger. log (logger::LOG_RADIO_STARTS, inputDevice_p -> deviceName (),
 	                                 channelSelector -> currentText ());
-	theOFDMHandler	= new ofdmHandler  (this,
-	                                    inputDevice_p,
+	theOFDMHandler. reset (new ofdmHandler  (this,
+	                                    inputDevice_p. data (),
 	                                    &globals, dabSettings_p,
-	                                    &theLogger, this -> cpuSupport);
+	                                    &theLogger, this -> cpuSupport));
+	if (theOFDMHandler. isNull ()) {
+	   QMessageBox::warning (this, tr ("Warning"),
+                                       tr ("Fatal error, call expert 11"));
+	   abort ();
+	}
+
 	channel. cleanChannel ();
+//
+//	Note: this is NOT "the_ensembleHandler. reset ()" !!!!
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
 
@@ -790,13 +797,6 @@ QString s;
 	              configHandler_p -> switchStayValue ();
 	      if (theSCANHandler. dumpInFile ()) {
 	         inputDevice_p	-> startDump	();
-//	         configHandler_p	-> mark_dumpButton (true);
-//	         int	bitDepth	= inputDevice_p	-> bitDepth	();
-//	         QString rawDumpName = theFilenameFinder.
-//	                                 find_scanfile (channel. channelName);
-//	         theOFDMHandler -> start_dumping (rawDumpName,
-//	                            channel. tunedFrequency, bitDepth);
-//	         sourceDumping = true;
 	      }
 	      channelTimer. start (switchStay);
 	   }
@@ -1282,23 +1282,16 @@ void	RadioInterface::TerminateProcess () {
 	channelTimer.	stop	();
 	presetTimer.	stop	();
 	epgTimer.	stop	();
-//	serviceIcon	-> hide ();
-//	delete serviceIcon;
-//	soundOut_p	-> stop ();
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
 #ifdef	HAVE_PLUTO_RXTX
 	if (streamerOut_p != nullptr)
 	   streamerOut_p	-> stop ();
 #endif
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> stop ();
+	theOFDMHandler -> stop ();
 	the_ensembleHandler	-> hide ();
 	configHandler_p		-> hide ();
 	techWindow_p		-> hide ();
-//	delete	the_ensembleHandler;
-//	delete	configHandler_p;
-//	delete techWindow_p;
 	if (the_aboutLabel != nullptr) {
 	   the_aboutLabel -> hide ();
 	   delete the_aboutLabel;
@@ -1328,10 +1321,8 @@ void	RadioInterface::TerminateProcess () {
 //	everything should be halted by now
 	dabSettings_p	-> sync ();
 	theSNRViewer. hide ();
-	if (theOFDMHandler != nullptr)
-	   delete	theOFDMHandler;
-	if (inputDevice_p != nullptr)
-	   delete	inputDevice_p;
+	theOFDMHandler. reset ();
+	inputDevice_p. reset ();;
 	delete		soundOut_p;
 	theScanlistHandler. hide ();
 //	close();
@@ -1364,8 +1355,6 @@ void	RadioInterface::updateTimeDisplay() {
 //
 //	The timer runs autonomously, so it might happen
 //	that it rings when there is no processor running
-	if (theOFDMHandler == nullptr)
-	   return;
 	if (!techWindow_p -> isHidden () && soundOut_p -> hasMissed ())  {
 	   int totalSamples	= 0;
 	   int totalMissed	= 0;
@@ -1412,17 +1401,17 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	stopScanning	();
 	stopChannel	();
 	fprintf (stderr, "disconnecting\n");
-	if (inputDevice_p != nullptr) {
-	   delete inputDevice_p;
-	   inputDevice_p = nullptr;
-	   fprintf (stderr, "device is deleted\n");
-	}
+//	if (inputDevice_p != nullptr) {
+//	   delete inputDevice_p;
+//	   inputDevice_p = nullptr;
+//	   fprintf (stderr, "device is deleted\n");
+//	}
 
 	theLogger. log (logger::LOG_NEWDEVICE, deviceName, 
 	                                channelSelector -> currentText ());
-	inputDevice_p		= createDevice (deviceName, &theLogger);
-	if (inputDevice_p == nullptr) {
-	   inputDevice_p = new deviceHandler ();
+	inputDevice_p. reset (createDevice (deviceName, &theLogger));
+	if (inputDevice_p. isNull ()) {
+	   inputDevice_p. reset (new deviceHandler ());
 	   return;		// nothing will happen
 	}
 
@@ -1872,11 +1861,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (!running. load ())
 	   return QWidget::eventFilter (obj, event);
 
-	if (theOFDMHandler == nullptr) {
-	   fprintf (stderr, "expert error 5\n");
-	   return true;
-	}
-	else
 	if ((obj == this -> the_ensembleHandler -> viewport ()) &&
 	    (event -> type () == QEvent::MouseButtonPress)) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
@@ -2028,9 +2012,6 @@ void	RadioInterface::localSelect_SS (const QString &service,
 
 QString serviceName	= service;
 	
-	if (theOFDMHandler == nullptr)	// should not happen
-	   return;
-//
 //	timers are stopped in the "stopService" function
 	stopService (channel. currentService);
 
@@ -2081,10 +2062,7 @@ void	RadioInterface::stopService	(dabService s) {
 	stopMuting	();
 	setSoundLabel (false);
 	channel. audioActive	= false;
-	if (theOFDMHandler == nullptr) {
-	   fprintf (stderr, "Expert error 22\n");
-	   return;
-	}
+
 	announcement_stop ();
 	if (s. is_audio) {
 	   soundOut_p -> suspend ();
@@ -2237,8 +2215,6 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   for (int i = 1; i < nrComps; i ++) {
 	      int index =
 	           theOFDMHandler -> get_serviceComp (ad. SId, i);
-//	      fprintf (stderr, "Component %d has index %d\n",
-//	                                                i, index);
 	      if ((index < 0) ||
 	             (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
 	         continue;
@@ -2274,21 +2250,6 @@ void	RadioInterface::startPacketservice (packetdata &pd) {
  	                         tr ("could not start this service\n"));
 	   return;
 	}
-
-//	int nrComps	= 
-//	     theOFDMHandler -> get_nrComps (channel. currentService. SId);
-//	if (nrComps > 1)
-//	   fprintf (stderr,  "%s has %d components\b",
-//	                     channel. currentService. serviceName. toLatin1 (). data (), nrComps);
-//	for (int i = 1; i < nrComps; i ++) {
-//	   packetdata lpd;
-//	   theOFDMHandler -> data_for_packetservice (pd. serviceName, lpd, i);
-//	   if (lpd. defined) {
-//	      theOFDMHandler -> setDataChannel (lpd, &theDataBuffer,
-//	                                                  FORE_GROUND);
-//	      break;
-//	   }
-//	}
 
 	switch (pd. DSCTy) {
 	   default:
@@ -2478,9 +2439,6 @@ int	tunedFrequency	=
 //	apart from stopping the reader, a lot of administration
 //	is to be done.
 void	RadioInterface::stopChannel	() {
-	if (inputDevice_p == nullptr)		// should not happen
-	   return;
-
 	epgTimer. stop		();		// if running
 	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
@@ -2496,7 +2454,8 @@ void	RadioInterface::stopChannel	() {
 	            this, &RadioInterface::handle_contentButton);
 	ensembleId	-> setText ("");
 	stopSourcedumping	();
-	stop_etiHandler	();	// if any
+	if (channel. etiActive)
+	   stop_etiHandler	();	// 
 	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
 	transmitter_country	-> setText	("");
 	theNewDisplay. setSilent	();
@@ -2573,10 +2532,6 @@ void	RadioInterface::setChannelButton (int currentChannel) {
 	   return;
 
 	presetTimer. stop ();
-	if (theOFDMHandler == nullptr) {
-	   fprintf (stderr, "Expert error 23\n");
-	   abort ();
-	}
 	stopScanning	();
 	stopChannel	();
 	newChannelIndex (currentChannel);
@@ -2607,7 +2562,7 @@ void	RadioInterface::startScanning	() {
 	                               tr ("Scanning not useful with file input"));
 
 	epgTimer. stop ();
-	connect (theOFDMHandler, &ofdmHandler::no_signal_found,
+	connect (theOFDMHandler. data (), &ofdmHandler::no_signal_found,
 	         this, &RadioInterface::no_signal_found);
 
 	if (theSCANHandler. scan_to_data ())
@@ -2712,7 +2667,7 @@ void	RadioInterface::stopScanning	() {
 	if (!theSCANHandler. active ())
 	   return;
 //	fprintf (stderr, "De scan wordt gestopt\n");
-	disconnect (theOFDMHandler, &ofdmHandler::no_signal_found,
+	disconnect (theOFDMHandler. data (), &ofdmHandler::no_signal_found,
 	            this, &RadioInterface::no_signal_found);
 	presetButton	-> setText ("favorites");
 	presetButton	-> setEnabled (true);
@@ -2881,11 +2836,6 @@ QString theDistance;
 QString	theAzimuth;
 QString	theHeight;
 
-	if (theOFDMHandler == nullptr) {	// cannot happen
-	   fprintf (stderr, "Expert error 26\n");
-	   return "";
-	}
-
 	if (channel. mainId != -1) 
 	   tii		= ids_to_string (channel. mainId,
 	                                     channel. subId);
@@ -2928,11 +2878,6 @@ QString	theHeight;
 QString RadioInterface::build_kop	() {
 QString SNR 		= "SNR " + QString::number (channel. snr);
 QString	theName;
-
-	if (theOFDMHandler == nullptr) {	// cannot happen
-	   fprintf (stderr, "Expert error 26\n");
-	   return "";
-	}
 
 	QString utcTime	= convertTime (UTC. year, UTC.month,
 	                               UTC. day, UTC. hour, 
@@ -3427,7 +3372,7 @@ void	RadioInterface::handle_configButton	() {
 }
 
 void	RadioInterface::handle_devicewidgetButton	() {
-	if (inputDevice_p == nullptr)
+	if (inputDevice_p. isNull ())
 	   return;
 	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
 	store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE,
@@ -3556,8 +3501,7 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler	-> handleDecoderSelector (decoder);
+	theOFDMHandler	-> handleDecoderSelector (decoder);
 }
 
 void	RadioInterface:: set_streamSelector (int k) {
@@ -3593,7 +3537,6 @@ bool	RadioInterface::autoStart_http () {
 	                              configHandler_p -> localBrowserSelector_active (), dabSettings_p);
 	return mapHandler != nullptr;
 }
-
 
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
@@ -3708,9 +3651,6 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 /////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_etiHandler	() {
-	if (theOFDMHandler == nullptr)	// should not happen
-	   return;
-
 	if (channel. etiActive)
 	   stop_etiHandler ();
 	else
@@ -3747,9 +3687,6 @@ void	RadioInterface::start_etiHandler () {
 void	RadioInterface::handle_eti_activeSelector (int k) {
 bool setting	= configHandler_p -> eti_active ();
 	(void)k;
-	if (inputDevice_p == nullptr)
-	   return;
-
 	if (setting) {
 	   stopScanning ();
 	   disconnect (scanButton, &QPushButton::clicked,
@@ -3789,8 +3726,7 @@ std::vector<Complex> inBuffer (2048);
 
 void	RadioInterface::handle_tiiThreshold	(int v) {
 	store (dabSettings_p, CONFIG_HANDLER, TII_THRESHOLD, v);
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> set_tiiThreshold (v);
+	theOFDMHandler -> set_tiiThreshold (v);
 }
 
 void	RadioInterface::show_tii_spectrum	() {
@@ -4156,8 +4092,7 @@ bool	RadioInterface::devScopeOn () {
 }
 
 void	RadioInterface::handle_iqSelector () {
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> handleIQSelector ();
+	theOFDMHandler -> handleIQSelector ();
 }
 
 void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
@@ -4313,8 +4248,7 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 	(void)d;
 	bool b =  configHandler_p -> get_correlationSelector ();
 	store (dabSettings_p, CONFIG_HANDLER, S_CORRELATION_ORDER, b ? 1 : 0);
-	if (theOFDMHandler != nullptr)
-	   theOFDMHandler -> setCorrelationOrder (b);
+	theOFDMHandler -> setCorrelationOrder (b);
 }
 
 void	RadioInterface::channelSignal (const QString &channel) {
@@ -4436,8 +4370,6 @@ bool exists	= false;
 void	RadioInterface::handle_tiiButton () {
 	dxMode	= !dxMode;
 	store (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, dxMode ? 1 : 0);
-	if (theOFDMHandler == nullptr)
-	   return;
 	theDXDisplay. cleanUp ();
 	if (!dxMode) {
 	   theDXDisplay. hide ();
@@ -4533,7 +4465,7 @@ int picturesSeen = 0;
 	return picturesSeen > 0;
 }
 
-bool	containsPicture (mmDescriptor &set, multimediaElement m) {
+bool	containsPicture (mmDescriptor &set, multimediaElement &m) {
 	for (auto &mm : set. elements) {
 	   if ((mm. url == m. url) && (mm. width == m. width))
 	      return true;
@@ -4637,13 +4569,12 @@ void	RadioInterface::report_completeDir () {
 void    RadioInterface::lto_ecc (int lto, int ecc) {
 	channel. ecc_byte = ecc; 
 	channel. has_ecc = true;
-	channel. lto    = lto;
+	channel. lto	= lto;
 }
 
 void	RadioInterface::setFreqList	() {
-//	if (techWindow_p -> isHidden ())
-//	   return;
-	std::vector<int>  freqList = theOFDMHandler -> getFrequency (channel.
+	std::vector<int>  freqList =
+	       theOFDMHandler -> getFrequency (channel.
 	                                       currentService. serviceName);
 	if (freqList. size () == 0)
 	   return;

@@ -40,8 +40,6 @@
 #include	"ofdm-decoder.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-//#include	"tii-detector-1.h"
-//#include	"tii-detector-2.h"
 #include	"eti-generator.h"
 
 class	RadioInterface;
