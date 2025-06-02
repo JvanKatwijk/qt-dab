@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2013 .. 2024
@@ -29,13 +28,18 @@
 #include	<sys/time.h>
 #include	<ctime>
 #include	"newfiles.h"
+#include	"position-handler.h"
+#include	"settingNames.h"
 
 #define	__BUFFERSIZE__	8 * 32768
 
-	newFiles::newFiles (const QString &fileName):
+	newFiles::newFiles (QSettings *s,
+	                    const QString &fileName):
 	                               _I_Buffer (__BUFFERSIZE__),
 	                                  theReader (fileName) {
+	newFilesSettings	= s;
 	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, WAVSETTINGS);
 	myFrame. show	();
 	this -> fileName	= fileName;
 
@@ -54,7 +58,8 @@
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
 	      usleep (500);
-	   delete readerTask;
+	   store_widget_position (newFilesSettings, &myFrame, WAVSETTINGS);
+	   readerTask. reset ();
 	}
 }
 
@@ -63,7 +68,7 @@ bool	newFiles::restartReader		(int32_t freq, int skipped) {
 	(void)skipped;
 	if (running. load())
            return true;
-        readerTask      = new newReader (this, &theReader, &_I_Buffer);
+        readerTask. reset (new newReader (this, &theReader, &_I_Buffer));
         running. store (true);
         return true;
 }
@@ -73,7 +78,7 @@ void	newFiles::stopReader	() {
            readerTask   -> stopReader();
            while (readerTask -> isRunning())
               usleep (100);
-	   delete readerTask;
+	   readerTask. reset ();
         }
         running. store (false);
 }

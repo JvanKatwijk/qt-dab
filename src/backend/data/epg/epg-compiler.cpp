@@ -1557,7 +1557,7 @@ QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 	int16_t D	= dateOut [2];
 //	we need to know whether it is today or not
 //	int ltoFlag	= getBit (v, 8 * index + 19);
-	int utcFlag	= getBit (v, 8 * index + 20);
+//	int utcFlag	= getBit (v, 8 * index + 20);
 //	int ltoBase	= utcFlag == 1 ? 48 : 32;
 	int hours	= getBits (v, 8 * index + 21, 5);
 	int minutes	= getBits (v, 8 * index + 26, 6);

@@ -46,9 +46,9 @@ private:
 	void		handle_variablePAD	(uint8_t *, int16_t, uint8_t);
 	void		handle_shortPAD		(uint8_t *, int16_t, uint8_t);
 	void		dynamicLabel		(uint8_t *, int16_t, uint8_t);
-	void		new_MSC_element		(std::vector<uint8_t>);
-	void		add_MSC_element		(std::vector<uint8_t>);
-	void		build_MSC_segment	(std::vector<uint8_t>);
+	void		new_MSC_element		(std::vector<uint8_t> &);
+	void		add_MSC_element		(std::vector<uint8_t> &);
+	void		build_MSC_segment	(std::vector<uint8_t> &);
 	bool		pad_crc			(uint8_t *, int16_t);
 	QByteArray	dynamicLabelText;
 	int16_t		charSet;

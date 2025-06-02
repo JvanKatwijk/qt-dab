@@ -36,16 +36,20 @@
 #include	<ctime>
 #include	"device-exceptions.h"
 #include	"raw-reader.h"
-
+#include	"position-handler.h"
+#include	"settingNames.h"
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	rawFiles::rawFiles (const QString &fileName):
+	rawFiles::rawFiles (QSettings *s,
+	                    const QString &fileName):
 	                       _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
+	rawFilesSettings	= s;
+	this -> fileName	= fileName;
 	setupUi	(&myFrame);
+	set_position_and_size (s, &myFrame, RAWSETTINGS);
 	myFrame. show	();
 
-	this -> fileName	= fileName;
 	filePointer	= fopen (fileName. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
 	   const QString str = QString("Cannot open file '%1'").arg (fileName);
@@ -68,8 +72,9 @@
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
 	      usleep (100);
-	   delete readerTask;
+	   readerTask. reset ();
 	}
+	store_widget_position (rawFilesSettings, &myFrame, RAWSETTINGS);
 	if (filePointer != nullptr)
 	   fclose (filePointer);
 }
@@ -79,7 +84,7 @@ bool	rawFiles::restartReader	(int32_t freq, int skipped) {
 	(void)skipped;
 	if (running. load())
 	   return true;
-	readerTask	= new rawReader (this, filePointer, &_I_Buffer);
+	readerTask. reset (new rawReader (this, filePointer, &_I_Buffer));
 	running. store (true);
 	return true;
 }
@@ -89,7 +94,7 @@ void	rawFiles::stopReader	() {
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
 	      usleep (100);
-	   delete readerTask;
+	   readerTask. reset ();
 	   running. store (false);
 	}
 }

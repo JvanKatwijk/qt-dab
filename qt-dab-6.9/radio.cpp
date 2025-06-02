@@ -360,7 +360,6 @@ QString h;
 #else
 	(void)clockPort;
 #endif
-//	serviceIcon		= new QLabel;
 	volumeSlider	-> hide ();
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
@@ -383,7 +382,6 @@ QString h;
 	      temp		=
 	          value_s (dabSettings_p, SOUND_HANDLING,
 	                                  AUDIO_STREAM_NAME, "default");
-	      fprintf (stderr, "channel is  %s\n", temp. toLatin1 (). data ());
 	      volumeSlider	-> show ();
 	      audioVolume	=
 	          value_i (dabSettings_p, SOUND_HANDLING, QT_AUDIO_VOLUME, 50);
@@ -392,7 +390,6 @@ QString h;
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
 	   } catch (...) {
-//	      fprintf (stderr, "QT_AUDIO does not find streams\n");
 	      soundOut_p = nullptr;
 	   }
 	}
@@ -500,12 +497,9 @@ QString h;
 	         this, &RadioInterface::handle_snrLabel);
 
 	if (theTIIProcessor. has_tiiFile ()) 
-	   fprintf (stderr, "table is loaded\n");
+	   configHandler_p -> enable_loadLib ();
 	else
-	   fprintf (stderr, "waar is the rable\n");
-	configHandler_p -> enable_loadLib ();
-//	else
-//	   httpButton	-> setEnabled (false);
+	   httpButton	-> setEnabled (false);
 
 	channel. etiActive	= false;
 	QPixmap epgP;
@@ -541,7 +535,6 @@ QString h;
 	set_Colors ();
 //
 //	do we have a known device from previous invocations?
-//	inputDevice_p	= nullptr;
 	h               =
 	           value_s (dabSettings_p, DAB_GENERAL, 
 	                                      SELECTED_DEVICE, "no device");
@@ -678,9 +671,6 @@ void	RadioInterface::startDirect	() {
 //	Note: this is NOT "the_ensembleHandler. reset ()" !!!!
 	the_ensembleHandler	-> reset	();
 	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
-
-	if (value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 0) != 0)
-	   inputDevice_p -> setVisibility (true);
 
 //	Just to be sure we disconnect here.
 //	It would have been helpful to have a function
@@ -1009,7 +999,7 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 }
 
 void	RadioInterface::saveMOTObject (QByteArray  &result,
-	                                QString name) {
+	                                QString  &name) {
 	if (path_for_files == "")
 	   return;
 
@@ -1385,10 +1375,9 @@ deviceHandler	*inputDevice = theDeviceChoser.
 	         this, &RadioInterface::handle_deviceFrame_closed);
 	QString ss = s;
 	store (dabSettings_p, DAB_GENERAL, SELECTED_DEVICE, ss);
-	if (value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 1) != 0)
-	   inputDevice -> setVisibility (true);
-	else
-	   inputDevice -> setVisibility (false);
+	inputDevice -> setVisibility (true);
+//	if (value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 1) == 0)
+//	   inputDevice -> setVisibility (false);
 	theNewDisplay. setBitDepth (inputDevice -> bitDepth ());
 	return inputDevice;
 }
@@ -1401,11 +1390,6 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	stopScanning	();
 	stopChannel	();
 	fprintf (stderr, "disconnecting\n");
-//	if (inputDevice_p != nullptr) {
-//	   delete inputDevice_p;
-//	   inputDevice_p = nullptr;
-//	   fprintf (stderr, "device is deleted\n");
-//	}
 
 	theLogger. log (logger::LOG_NEWDEVICE, deviceName, 
 	                                channelSelector -> currentText ());
@@ -1722,7 +1706,8 @@ void	RadioInterface::stopFramedumping () {
 
 void	RadioInterface::startFramedumping () {
 	channel. currentService. frameDumper	=
-	     theFilenameFinder. findFrameDump_fileName (channel. currentService. serviceName,
+	     theFilenameFinder.
+	      findFrameDump_fileName (channel. currentService. serviceName,
 	                                                              true);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
@@ -2052,13 +2037,12 @@ QString serviceName	= service;
 
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stopService	(dabService s) {
-//void	RadioInterface::stopService	(dabService &s) {
+//void	RadioInterface::stopService	(dabService s) {
+void	RadioInterface::stopService	(dabService &s) {
 	if (!s. valid)
 	   return;
 	presetTimer. stop ();
 	channelTimer. stop ();
-//	serviceIcon	-> hide ();
 	stopMuting	();
 	setSoundLabel (false);
 	channel. audioActive	= false;
@@ -2551,16 +2535,20 @@ void	RadioInterface::handle_scanButton () {
 }
 
 void	RadioInterface::startScanning	() {
-	the_ensembleHandler	-> set_showMode (SHOW_ENSEMBLE);
-	presetButton		-> setText ("not in use");
-	presetButton	-> setEnabled (false);
-	presetTimer. stop ();
-	stopChannel     ();
-	channelTimer. stop ();
-	if (inputDevice_p -> isFileInput ())
+	if (inputDevice_p -> isFileInput ()) {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Scanning not useful with file input"));
-
+	   return;
+	}
+	stopChannel     ();
+	the_ensembleHandler	-> set_showMode (SHOW_ENSEMBLE);
+	presetButton		-> setText ("not in use");
+	presetButton		-> setEnabled (false);
+//	scanning and showing the techWindows does not make much sense
+	techWindow_p 		-> hide ();	// until shown otherwise
+        store (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, false);
+	presetTimer. stop ();
+	channelTimer. stop ();
 	epgTimer. stop ();
 	connect (theOFDMHandler. data (), &ofdmHandler::no_signal_found,
 	         this, &RadioInterface::no_signal_found);
@@ -3374,9 +3362,10 @@ void	RadioInterface::handle_configButton	() {
 void	RadioInterface::handle_devicewidgetButton	() {
 	if (inputDevice_p. isNull ())
 	   return;
-	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
+	int currentVisibility = inputDevice_p -> getVisibility ();
+	inputDevice_p	-> setVisibility (!currentVisibility);
 	store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE,
-	                      inputDevice_p -> getVisibility () ? 1 : 0);
+	                                             !currentVisibility);
 }
 //
 //	called from the configHandler
@@ -3747,8 +3736,7 @@ std::vector<Complex> inBuffer (2048);
 	}
 }
 
-void	RadioInterface::showCorrelation	(int s, int g,
-	                                         QVector<int> maxVals) {
+void	RadioInterface::showCorrelation	(int s, int g, QVector<int> maxVals) {
 std::vector<float> inBuffer (s);
 
 	(void)g;
@@ -3790,7 +3778,6 @@ cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 }
 
 void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
-//bool	need_to_print	= true;
 
 	(void)ind;
 	if (r. size () == 0)
@@ -4284,7 +4271,6 @@ void	RadioInterface::handle_folderButton	() {
 	                                   nullptr, nullptr, SW_SHOWDEFAULT);
 #else
 	std::string x = "xdg-open " + tempPath. toStdString ();
-//	fprintf (stderr, "we gaan voor %s\n", x. c_str ());
 	(void)system (x. c_str ());
 #endif
 }
@@ -4305,9 +4291,9 @@ QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
 	float	theDistance	= transmitter -> distance;
 	float	theAzimuth	= transmitter -> azimuth;
 	QString direction	= fromAzimuth_toDirection (theAzimuth);
-	int	theAltitude	= transmitter -> altitude;
-	int	theHeight	= transmitter -> height;
-	float	thePower	= transmitter -> power;
+//	int	theAltitude	= transmitter -> altitude;
+//	int	theHeight	= transmitter -> height;
+//	float	thePower	= transmitter -> power;
 
 QString labelText = "(" + QString::number (mainId) + ","
 	               + QString::number (subId) + ") ";

@@ -108,7 +108,7 @@
                            "<li>Soapy interface<a href=\"https://github.com/pothosware/SoapySDR/wiki\">SoapySDR</a></li>"
 #endif
 #ifdef HAVE_SPYSERVER_16
-                           "<li>SpyServer interface<a href=\https://airspy.com/download/\">spyserver</a></li>"
+                           "<li>SpyServer interface<a href=\"https://airspy.com/download/\">spyserver</a></li>"
 #endif
                            "<li>  and has support for reading (and writing) files in different formats.</li>");
 

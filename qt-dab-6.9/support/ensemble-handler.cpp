@@ -332,8 +332,8 @@ bool	seems_epg (const QString &name) {
 
 void	ensembleHandler::updateList	() {
 int currentRow	= 0;
-bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
-	                                        AUDIOSERVICES_ONLY, 1);
+//bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
+//	                                        AUDIOSERVICES_ONLY, 1);
 	clearTable ();
 	if (ensembleMode == SHOW_ENSEMBLE) {
 	   this -> setHorizontalHeaderLabels (

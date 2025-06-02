@@ -174,7 +174,6 @@ void	ofdmHandler::set_tiiFilter	(bool b) {
 void	ofdmHandler::start () {
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
-	correctionNeeded		= true;
 	attempts			= 0;
 
 	goodFrames			= 0;
@@ -218,6 +217,7 @@ int	totalSamples	= 0;
 int	cCount		= 0;
 float	snr		= 0;
 bool	inSync		= false;
+int	tryCounter	= 0;
 Complex tester	[T_u / 2];
 int	snrCount	= 0;
 	ibits. resize (2 * params. get_carriers());
@@ -370,17 +370,27 @@ int	snrCount	= 0;
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-	      if (!correctionNeeded && !theFicHandler. syncReached ())
-	         correctionNeeded	= true;
-	      if (correctionNeeded) {
+	      correctionNeeded = !theFicHandler. syncReached ();
+	      if (correctionNeeded && (tryCounter == 0)) {
 	         int correction	=
 	            myFreqSyncer. estimate_CarrierOffset (ofdmBuffer);
 	         if (correction != 100) {
-	            coarseOffset	+= 0.4 * correction * carrierDiff;
 	            if (abs (coarseOffset) > Khz (35))
 	               coarseOffset = 0;
+	            else {
+//	               coarseOffset	+= 0.4 * correction * carrierDiff;
+	               coarseOffset	+=  correction * carrierDiff;
+	               tryCounter	= 5;
+	            }
 	         }
 	      }
+	      else
+	      if (!correctionNeeded)
+	         tryCounter = 5;
+	      else
+	      if (tryCounter > 0)
+	         tryCounter --;
+	      
 /**
   *	after block 0, we will just read in the other
   *	(params -> L - 1) blocks

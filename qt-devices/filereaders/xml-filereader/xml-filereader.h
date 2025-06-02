@@ -26,6 +26,8 @@
 #include	<QObject>
 #include	<QString>
 #include	<QFrame>
+#include	<QSettings>
+#include	<QScopedPointer>
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"device-handler.h"
@@ -40,7 +42,7 @@ class	xml_Reader;
 class	xml_fileReader: public deviceHandler, public Ui_xmlfile_widget {
 Q_OBJECT
 public:
-				xml_fileReader	(const QString &);
+				xml_fileReader	(QSettings *, const QString &);
                 		~xml_fileReader	();
 	bool			restartReader	(int32_t, int skipped = 0);
 	void			stopReader	();
@@ -51,13 +53,14 @@ public:
 	bool			isFileInput	();
 	int			getVFOFrequency	();
 private:
-	std::atomic<bool>	running;
+	QSettings		*xmlFilesSettings;
 	QString			fileName;
+	std::atomic<bool>	running;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	FILE			*theFile;
 	uint64_t		filePointer;
-	xmlDescriptor		*theDescriptor;
-	xml_Reader		*theReader;
+	QScopedPointer<xmlDescriptor>	theDescriptor;
+	QScopedPointer<xml_Reader> theReader;
 public slots:
 	void			setProgress	(int, int);
 	void			handle_continuousButton ();

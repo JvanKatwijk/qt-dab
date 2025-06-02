@@ -126,7 +126,7 @@ int	zeroCount = 0;
 	QDomElement root        = xmlDoc. documentElement ();
 	QDomNodeList nodes = root. childNodes ();
 
-	fprintf (stderr, "document has %d topnodes\n", nodes. count ());
+//	fprintf (stderr, "document has %d topnodes\n", nodes. count ());
 	for (int i = 0; i < nodes. count (); i ++) {
 	   if (nodes. at (i). isComment ()) {
 	      continue;

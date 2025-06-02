@@ -26,6 +26,8 @@
 #include	<QObject>
 #include	<QString>
 #include	<QFrame>
+#include	<QSettings>
+#include	<QScopedPointer>
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"device-handler.h"
@@ -37,7 +39,8 @@
 class	newFiles: public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-			newFiles	(const QString &);
+			newFiles	(QSettings *,
+	                                 const QString &);
 	       		~newFiles	();
 	bool		restartReader	(int32_t, int skipped = 0);
 	void		stopReader	();
@@ -47,11 +50,12 @@ public:
 	bool		isFileInput	();
 	int		getVFOFrequency	();
 private:
+	QSettings	*newFilesSettings;
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	int32_t		bufferSize;
 	riffReader	theReader;
-	newReader	*readerTask;
+	QScopedPointer<newReader> readerTask;
 	std::atomic<bool>	running;
 public slots:
 	void		setProgress	(int, float);

@@ -50,7 +50,7 @@ void BitWriter::AddBytes (const uint8_t *data, size_t len) {
 	   AddBits (data[i], 8);
 }
 
-void BitWriter::WriteAudioMuxLengthBytes() {
+void BitWriter::WriteAudioMuxLengthBytes () {
 	size_t len = data.size () - 3;
 	data [1] |= (len >> 8) & 0x1F;
 	data [2] = len & 0xFF;

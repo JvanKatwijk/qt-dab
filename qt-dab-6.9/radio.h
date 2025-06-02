@@ -328,7 +328,6 @@ private:
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
-	QLabel			*serviceIcon;
 	bool			get_serviceLogo		(QPixmap &,
 	                                                 uint32_t);
 	void			write_servicePictures	(uint32_t);
@@ -379,10 +378,9 @@ private:
 	void			stopFramedumping	();
 	void			scheduled_frameDumping	(const QString &);
 	void			startChannel		(const QString &,
-	                                                 const QString fistService = "");
+	                                                 const QString firstService = "");
 	void			stopChannel		();
-	void			stopService		(dabService);
-//	void			stopService		(dabService &);
+	void			stopService		(dabService &);
 	void			startService		(dabService &, int);
 	void			start_epgService	(packetdata &);
 	void			localSelect		(const QString &c,
@@ -399,7 +397,7 @@ private:
 
 	void			startDirect		();
 	void			saveMOTObject		(QByteArray &,
-	                                                 QString);
+	                                                 QString &);
 
 	void			saveMOTtext		(QByteArray &, int,
 	                                                 const QString &);
@@ -505,20 +503,21 @@ public slots:
 
 	void			show_spectrum		(int);
 	void			handle_tiiThreshold	(int);
-	void			show_tiiData		(QVector<tiiData>, int);
+	void			show_tiiData		(QVector<tiiData>,
+	                                                 int);
 	void			show_tii_spectrum       ();
 	void			show_snr		(float);
 	void			show_null		(int, int);
 	void			showIQ			(int);
 	void			showCorrelation		(int, int,
-	                                                 QVector<int> );
+	                                                 QVector<int>);
 	void			show_stdDev		(int);
 	void			showPeakLevel		(float, float);
 
-	void			handle_techFrame_closed ();
-	void			handle_configFrame_closed ();
-	void			handle_deviceFrame_closed ();
-	void			handle_newDisplayFrame_closed ();
+	void			handle_techFrame_closed		();
+	void			handle_configFrame_closed	();
+	void			handle_deviceFrame_closed	();
+	void			handle_newDisplayFrame_closed	();
 
 	void			doStart			(const QString &);
 	void			newDevice		(const QString &);

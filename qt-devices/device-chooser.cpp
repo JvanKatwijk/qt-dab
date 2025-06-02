@@ -291,13 +291,11 @@ int	deviceNumber	= getDeviceIndex (s);
 	      switch (fileType) {
 	         case RAW_FILE_RAW:
 	         case RAW_FILE_IQ:
-	            return new rawFiles (fileName);
-//	         case WAV_FILE:
-//	            return new wavFiles (fileName);
+	            return new rawFiles (dabSettings, fileName);
 	         case WAV_FILE:
-	            return new newFiles (fileName);
+	            return new newFiles (dabSettings, fileName);
 	         case XML_FILE:
-	            return new xml_fileReader (fileName);
+	            return new xml_fileReader (dabSettings, fileName);
 	         default:
 	            throw (device_exception ("no file"));
 	      }

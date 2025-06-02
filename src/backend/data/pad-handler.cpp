@@ -417,7 +417,7 @@ int16_t  dataLength                = 0;
 //
 //	Called at the start of the msc datagroupfield,
 //	the msc_length was given by the preceding appType "1"
-void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
+void	padHandler::new_MSC_element (std::vector<uint8_t> &data) {
 
 //	if (mscGroupElement) { 
 ////	   if (msc_dataGroupBuffer. size() < dataGroupLength)
@@ -446,7 +446,7 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 }
 
 //
-void	padHandler::add_MSC_element	(std::vector<uint8_t> data) {
+void	padHandler::add_MSC_element	(std::vector<uint8_t> &data) {
 int32_t	currentLength = msc_dataGroupBuffer. size();
 //
 //	just to ensure that, when a "12" appType is missing, the
@@ -465,7 +465,7 @@ int32_t	currentLength = msc_dataGroupBuffer. size();
 	}
 }
 
-void	padHandler::build_MSC_segment (std::vector<uint8_t> data) {
+void	padHandler::build_MSC_segment (std::vector<uint8_t> &data) {
 //	we have a MOT segment, let us look what is in it
 //	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is

@@ -50,12 +50,10 @@ int32_t	i;
 	   phaseDifferences [i - 1] =
 	        abs (arg (theTable -> refTable [(T_u + i) % T_u] *
 	             conj (theTable -> refTable [(T_u + i + 1) % T_u])));
-	
 }
 
 	freqSyncer::~freqSyncer () {
 }
-//
 //
 //	an approach that works fine is to correlate the phasedifferences
 //	between subsequent carriers
@@ -64,9 +62,36 @@ int16_t	freqSyncer::
 	     estimate_CarrierOffset (std::vector<Complex> v) {
 int16_t index_1 = 100, index_2 = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
-
+//
+//	the approach is to first get a rough idea of where the
+//	data is bij looking at the weight of the first and last 25
+//	samples of the sequence of 1536 samples
 	fft_forward. fft (v);
 
+#define	OPTIMIZE
+#ifdef	OPTIMIZE
+int starter	= SEARCH_RANGE;
+float max	= 0;
+float	test [T_u];
+	for (int i = 0; i < T_u / 2; i ++) {
+	   test [i]		= jan_abs (v [T_u / 2 + i]);
+	   test [T_u / 2 + i]	= jan_abs (v [i]);
+	}
+#define	SUM_SIZE	30
+	for (int i = -SEARCH_RANGE / 2; i < SEARCH_RANGE / 2; i ++) {
+	   float xx	= 0;
+	   for (int j = 0; j < SUM_SIZE; j ++)
+	      xx += test [T_u / 2 - carriers / 2 + i + j] +
+	              test [T_u / 2 + carriers / 2 - SUM_SIZE +  i + j];
+	   if (xx > max) {
+	      max = xx;
+	      starter = i - 6;
+	   }
+	}
+//	fprintf (stderr, "estimated starter %d\n", starter + 6);
+	if (starter < - SEARCH_RANGE / 2)
+	   starter = - SEARCH_RANGE / 2;
+#endif
 	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
@@ -76,18 +101,31 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
 	float	Mmin	= 1000;
 	float	Mmax	= 0;
+#ifdef	OPTIMIZE
+	for (int i = T_u + starter;
+	     i < T_u + starter + 20; i ++) {
+#else
 	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2; i ++) {
+#endif
 	   float sum	= 0;
 	   float sum2	= 0;
-
+//
+//	Since correlation with lots of zeros in the reference
+//	vector does not make much sense (the reference values
+//	are 0, PI/ 2 and PI).
+//	We therefore compute the sum of the values that should be 0,
+//	and the sum of the values that should be either PI / 2 or PI
+//	and compute the minimum resp max value (and index)
+//	If the indices are the same, we believe we found a solution
 	   for (int j = 1; j < diff_length; j ++) {
 	      if (phaseDifferences [j - 1] < 0.1) {
 	         sum += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
 	      }
-	      if (phaseDifferences [j - 1] > M_PI - 0.1) {
+	      if (phaseDifferences [j - 1] > M_PI / 2 - 0.1) {
 	         sum2 += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
 	      }
+	
 	   }
 	   if (sum < Mmin) {
 	      Mmin = sum;
@@ -101,6 +139,7 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 	
 	if (index_1 != index_2)
 	   return 100;
+//	fprintf (stderr, "starter detected %d\n", index_1 - T_u);
 	return index_1 - T_u; 
 }
 

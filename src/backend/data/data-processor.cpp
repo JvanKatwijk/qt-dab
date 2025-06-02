@@ -98,7 +98,6 @@
 }
 
 	dataProcessor::~dataProcessor() {
-//	delete		my_dataHandler;
 }
 
 void	dataProcessor::addtoFrame (const std::vector<uint8_t>  &outV) {

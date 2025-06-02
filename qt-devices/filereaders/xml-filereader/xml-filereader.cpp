@@ -28,6 +28,9 @@
 #include	<fcntl.h>
 #include	<ctime>
 
+#include	"position-handler.h"
+#include	"settingNames.h"
+
 #ifdef	_WIN32
 #else
 #include	<unistd.h>
@@ -41,24 +44,29 @@
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	xml_fileReader::xml_fileReader (const QString &fileName):
-	                      _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
-	setupUi	(&myFrame);
-	myFrame. show	();
-
+	xml_fileReader::xml_fileReader (QSettings *s,
+	                                const QString &fileName):
+	                                 _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
+	xmlFilesSettings	= s;
 	this -> fileName	= fileName;
-	if (fileName == nullptr) 
+	if (fileName == nullptr) 	// should not happen
 	   throw device_exception ("no file specified");
+//
+//	back to normal
+	setupUi	(&myFrame);
+	set_position_and_size (s, &myFrame, XMLSETTINGS);
+	myFrame. show	();
 
 	theFile	= fopen (fileName. toUtf8 (). data (), "rb");
 	if (theFile == nullptr) {
 	   throw device_exception ("cannot open " + fileName. toStdString ());
 	}
+	filenameLabel	-> setText (fileName);
 	
 	bool	ok	= false;
-	filenameLabel	-> setText (fileName);
-	theDescriptor	= new xmlDescriptor (theFile, &ok);
+	theDescriptor. reset (new xmlDescriptor (theFile, &ok));
 	if (!ok) {
+	   theDescriptor. reset ();
 	   throw device_exception (fileName. toStdString () + "no xml file");
 	}
 
@@ -98,12 +106,13 @@
 	   theReader	-> stopReader();
 	   while (theReader -> isRunning())
 	      usleep (100);
-	   delete theReader;
+	   theReader. reset ();
 	}
-	if (theFile != nullptr)
+	store_widget_position (xmlFilesSettings, &myFrame, XMLSETTINGS);
+	if (theFile != nullptr)		// cannot happen
 	   fclose (theFile);
 
-	delete	theDescriptor;
+	theDescriptor. reset ();
 }
 
 bool	xml_fileReader::restartReader (int32_t freq, int skipped) {
@@ -111,11 +120,9 @@ bool	xml_fileReader::restartReader (int32_t freq, int skipped) {
 	(void)skipped;
 	if (running. load())
 	   return true;
-	theReader	= new xml_Reader (this,
-	                                 theFile,
-	                                 theDescriptor,
-	                                 5000,
-	                                 &_I_Buffer);
+	theReader. reset (new xml_Reader (this, theFile,
+	                                  theDescriptor. data (),
+	                                  5000, &_I_Buffer));
 	running. store (true);
 	return true;
 }
@@ -125,8 +132,7 @@ void	xml_fileReader::stopReader () {
 	   theReader	-> stopReader();
 	   while (theReader -> isRunning())
 	      usleep (100);
-	   delete theReader;
-	   theReader = nullptr;
+	   theReader. reset ();
 	}
 	running. store (false);
 }

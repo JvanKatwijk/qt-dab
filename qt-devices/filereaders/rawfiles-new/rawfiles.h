@@ -26,6 +26,8 @@
 #include	<QFrame>
 #include	<QObject>
 #include	<QString>
+#include	<QSettings>
+#include	<QScopedPointer>
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"device-handler.h"
@@ -42,7 +44,7 @@ class	rawFiles: //public QObject,
 	          public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-			rawFiles	(const QString &);
+			rawFiles	(QSettings *, const QString &);
  	               ~rawFiles	();
 	bool		restartReader	(int32_t, int skipped = 0);
 	void		stopReader	();
@@ -51,10 +53,11 @@ public:
 	QString		deviceName	();
 	bool		isFileInput	();
 private:
+	QSettings	*rawFilesSettings;
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	FILE		*filePointer;
-	rawReader	*readerTask;
+	QScopedPointer<rawReader> readerTask;
 	std::atomic<bool>	running;
 public slots:
 	void		setProgress	(int, float);
