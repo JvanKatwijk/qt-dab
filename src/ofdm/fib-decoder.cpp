@@ -1065,9 +1065,9 @@ char		label [17];
 
 	ensemble::service prim;
 	prim. programType	= 0;
-	prim. name 	= dataName;
-	prim. shortName = shortName;
-	prim. SId	= SId;
+	prim. name 		= dataName;
+	prim. shortName		= shortName;
+	prim. SId		= SId;
 	prim. fmFrequencies. resize (0);
 	theEnsemble -> primaries. push_back (prim);
 	int subChId = -1;
@@ -1077,6 +1077,8 @@ char		label [17];
 	      subChId	= currentConfig -> subChannelOf (i);
 	}
 	add_to_ensemble (dataName, SId, subChId);
+	if (theEnsemble -> primaries. size () >= 2)
+	   theEnsemble	-> isSynced = true;
 }
 
 //	service component label - 32 bits 8.1.14.3

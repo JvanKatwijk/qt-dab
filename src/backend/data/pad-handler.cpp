@@ -348,14 +348,41 @@ int16_t  dataLength                = 0;
 	      fprintf (stderr, "segment %d\n", segmentno);
 #endif
 	   }
-
+//
+//	etsi TS 102 980 specifies the DL plus objects, I just let it go
+//	for the time being
  	  if (Cflag) {		// special dynamic label command
-	      // the only specified command is to clear the display
+	      uint16_t Command = (prefix >> 8) & 0x0f;
+	      switch (Command) {
+	         case 1:
 #ifdef	_PAD_TRACE_
-	      fprintf (stderr, "clear command\n");
+	            fprintf (stderr, "clear command\n");
 #endif
-	      dynamicLabelText. clear ();;
-	      segmentno = -1;
+	            dynamicLabelText. clear ();
+	            segmentno = -1;
+	            break;
+	         case 2:
+#ifdef	_PAD_TRACE_
+	            fprintf (stderr, "DL plus command\n");
+#endif
+//	            {
+//	               int length = prefix & 0x0f;
+//	               int IT	= data [2] & 0x08;
+//	               int IR	= data [2] & 0x04;
+//	               int NT	= data [2] & 0x03;
+//	               for (int i = 0; i < NT; i ++) {
+//	                  uint8_t ct	= data [3 + i * 3] & 0x7F;
+//	                  uint8_t sm	= data [4 + i * 3] & 0x7F;
+//	                  uint8_t ln	= data [5 + i * 3] & 0x7F;
+//	                  fprintf (stderr, "CT -> %d, SM -> %d, NT -> %d\n",
+//	                                  ct, sm, ln);
+//	               }
+//	            }
+	            break;
+	         default:
+//	            fprintf (stderr, "unknown command %d\n", Command);
+	            break;
+	      }
 	   }
 	   else {		// Dynamic text length
 	      int16_t totalDataLength = field_1 + 1;
@@ -367,9 +394,7 @@ int16_t  dataLength                = 0;
 	         dataLength = totalDataLength;  // no more xpad app's 3
 	         moreXPad   = false;
 	      }
-
 //	convert dynamic label
-	
 	      dynamicLabelText. append ((const char *)(&data [2]), dataLength);
 
 //	if at the end, show the label

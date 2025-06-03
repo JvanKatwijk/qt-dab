@@ -64,34 +64,45 @@ int16_t index_1 = 100, index_2 = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 //
 //	the approach is to first get a rough idea of where the
-//	data is bij looking at the weight of the first and last 25
+//	data is bij looking at the weight of the first and last 
 //	samples of the sequence of 1536 samples
 	fft_forward. fft (v);
 
-#define	OPTIMIZE
-#ifdef	OPTIMIZE
 int starter	= SEARCH_RANGE;
-float max	= 0;
 float	test [T_u];
 	for (int i = 0; i < T_u / 2; i ++) {
 	   test [i]		= jan_abs (v [T_u / 2 + i]);
 	   test [T_u / 2 + i]	= jan_abs (v [i]);
 	}
 #define	SUM_SIZE	30
+//
+//	We look with a moving sum  of the first and the last SUM_SIZE carriers
+//	to a full sequence of "carrier" carriers for a maximum.
+//	if found, we have a rough estimate of where the NULL carrier is
+	double xx	= 0;
+	double max	= 0;
+	for (int j = - SEARCH_RANGE / 2;
+	         j < -SEARCH_RANGE / 2 + SUM_SIZE; j ++) {
+	   xx += test [T_u / 2 - carriers / 2 + j];
+	   xx += test [T_u / 2 + carriers / 2 - SUM_SIZE + j];
+	}
 	for (int i = -SEARCH_RANGE / 2; i < SEARCH_RANGE / 2; i ++) {
-	   float xx	= 0;
-	   for (int j = 0; j < SUM_SIZE; j ++)
-	      xx += test [T_u / 2 - carriers / 2 + i + j] +
-	              test [T_u / 2 + carriers / 2 - SUM_SIZE +  i + j];
+	   xx -= test [T_u / 2 - carriers / 2  + i];
+	   xx += test [T_u / 2 - carriers / 2  + i + SUM_SIZE];
+	   xx -= test [T_u / 2 + (carriers / 2 - SUM_SIZE) + i];
+	   xx += test [T_u / 2 + (carriers / 2 - SUM_SIZE) + i + SUM_SIZE];
 	   if (xx > max) {
 	      max = xx;
+//
+//	we choose to start at a few carriers before the match
 	      starter = i - 6;
 	   }
 	}
-//	fprintf (stderr, "estimated starter %d\n", starter + 6);
+//
+//	the actual search for the best fit of the incoming data wrt
+//	the predefined data is done over a range of app 20 carriers
 	if (starter < - SEARCH_RANGE / 2)
 	   starter = - SEARCH_RANGE / 2;
-#endif
 	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
@@ -101,13 +112,9 @@ float	test [T_u];
 
 	float	Mmin	= 1000;
 	float	Mmax	= 0;
-#ifdef	OPTIMIZE
+//
 	for (int i = T_u + starter;
 	     i < T_u + starter + 20; i ++) {
-#else
-	for (int i = T_u - SEARCH_RANGE / 2;
-	     i < T_u + SEARCH_RANGE / 2; i ++) {
-#endif
 	   float sum	= 0;
 	   float sum2	= 0;
 //
