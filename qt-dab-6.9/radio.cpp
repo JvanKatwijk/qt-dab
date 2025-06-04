@@ -3502,7 +3502,9 @@ void	RadioInterface:: set_streamSelector (int k) {
 }
 //
 //////////////////////////////////////////////////////////////////////////
-
+//
+//	Some, by far not all, ensembles are transmitted with a
+//	specification of the number of services carried
 void	RadioInterface::nrServices	(int n) {
 	channel. serviceCount = n;
 }

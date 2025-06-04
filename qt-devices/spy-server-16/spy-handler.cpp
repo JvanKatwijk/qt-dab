@@ -98,7 +98,7 @@ static std::vector<uint8_t> buffer (64 * 1024);
 	         process_client_sync (buffer. data (), m_curr_client_sync);
 	         break;
 	   }
-//	   std::this_thread::sleep_for (std::chrono::milliseconds (1));
+	   std::this_thread::sleep_for (std::chrono::milliseconds (1));
 	}
 }
 

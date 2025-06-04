@@ -70,6 +70,7 @@ private slots:
 	void		setGain		(int);
 	void		handle_autogain	(int);
 	void		handle_checkTimer	();
+	void		set_portNumber	(int);
 public slots:
 	void		data_ready	();
 private:

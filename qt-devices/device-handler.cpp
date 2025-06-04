@@ -60,7 +60,6 @@ void	deviceHandler::resetBuffer	() {
 void	deviceHandler::setVisibility	(bool b) {
 	if (b) {
 	   myFrame. show ();
-	   fprintf (stderr, "myFrame should be visible\n");
 	}
 	else
 	   myFrame. hide ();

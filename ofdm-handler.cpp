@@ -242,9 +242,7 @@ int	snrCount	= 0;
 	         totalSamples	= 0;
 	         frameCount	= 0;
 	         sampleCount	= 0;
-
 	         set_synced (false);
-	         
 	         if (selected_TII == TII_NEW)
 	            theTIIDetector_NEW. reset ();
 	         else

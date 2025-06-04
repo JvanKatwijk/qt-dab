@@ -56,10 +56,15 @@
 	settings. gain		= value_i (spyServer_settings,
 	                                   SPY_SERVER_8_SETTINGS,
 	                                   "spyServer-gain", 20);
+	settings. auto_gain     = value_i (spyServer_settings,
+                                           SPY_SERVER_8_SETTINGS,
+                                           "spyServer-auto_gain", 0);
 	settings. basePort	= value_i (spyServer_settings,
 	                                   SPY_SERVER_8_SETTINGS,
 	                                   "spyServer+port", 5555);
-	spyServer_settings	-> endGroup();
+	portNumber      -> setValue     (settings. basePort); 
+        if (settings. auto_gain != 0)
+           autogain_selector    -> setChecked (true);
 	spyServer_gain	-> setValue (theGain);
 	lastFrequency	= DEFAULT_FREQUENCY;
 	connected	= false;
@@ -71,9 +76,17 @@
 	settings. sample_bits		= 16;
 //
 	connect (spyServer_connect, &QPushButton::clicked,
-	         this, &spyServer_client_8::wantConnect);
-	connect (spyServer_gain, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &spyServer_client_8::setGain);
+                 this, &spyServer_client_8::wantConnect);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+        connect (autogain_selector, &QCheckBox::checkStateChanged,
+#else
+        connect (autogain_selector, &QCheckBox::stateChanged,
+#endif
+                 this, &spyServer_client_8::handle_autogain);
+        connect (spyServer_gain, qOverload<int>(&QSpinBox::valueChanged),
+                 this, &spyServer_client_8::setGain);
+        connect (portNumber, qOverload<int>(&QSpinBox::valueChanged),
+                 this, &spyServer_client_8::set_portNumber);
 	theState	-> setText ("waiting to start");
 }
 
@@ -129,6 +142,7 @@ QString s	= hostLineEdit -> text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
 	theServer	= nullptr;
+	settings. basePort	= portNumber -> value ();
 	try {
 	   theServer	= new spyHandler_8 (this, theAddress,
 	                                    (int)settings. basePort,
@@ -190,17 +204,17 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
-	   selectedRate = (uint32_t)(max_samp_rate / (1 << i));
-	   if (selectedRate == INPUT_RATE) {
+	   int targetRate = (uint32_t)(max_samp_rate / (1 << i));
+	   if (targetRate == INPUT_RATE) {
 	      desired_decim_stage = i;
 	      resample_ratio = 1;
 	      break;
 	   } else
-	   if (selectedRate > INPUT_RATE) {
+	   if (targetRate > INPUT_RATE) {
 //	remember the next-largest rate that is available
 	      desired_decim_stage = i;
-	      resample_ratio = INPUT_RATE / (double)selectedRate;
-	      settings. sample_rate = selectedRate;
+	      resample_ratio = INPUT_RATE / (double)targetRate;
+	      settings. sample_rate = targetRate;
 	   }
 
 	   if (desired_decim_stage < 0) {
@@ -244,10 +258,10 @@ QString theAddress	= QHostAddress (s). toString ();
 //	same size as the input buffer is OK
 	if (settings. resample_ratio != 1.0 ) {
 //	we process chunks of 1 msec
-	   convBufferSize          = selectedRate / 1000;
+	   convBufferSize          = settings. sample_rate / 1000;
 	   convBuffer. resize (convBufferSize + 1);
 	   for (int i = 0; i < 2048; i ++) {
-	      float inVal  = float (selectedRate / 1000);
+	      float inVal  = float (settings. sample_rate / 1000);
 	      mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
 	      mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
 	   }
@@ -311,6 +325,18 @@ void	spyServer_client_8::setGain	(int gain) {
 	   std::cerr << "Failed to set gain\n";
 	   return;
 	}
+	store (spyServer_settings, SPY_SERVER_8_SETTINGS,
+                                      "spyServer_client-gain", settings. gain);
+}
+
+void    spyServer_client_8::handle_autogain       (int d) {
+        (void)d;
+        int x = autogain_selector -> isChecked ();
+        settings. auto_gain     = x != 0;
+        store (spyServer_settings, SPY_SERVER_8_SETTINGS,
+                                     "spyServer-auto_gain", x ? 1 : 0);
+        if (connected)
+           theServer -> set_gain_mode (d != x, 0);
 }
 
 void	spyServer_client_8::connect_on () {
@@ -387,3 +413,8 @@ void	spyServer_client_8::handle_checkTimer () {
 	timedOut = true;
 }
 
+void    spyServer_client_8::set_portNumber        (int v) {
+        settings. basePort = v;
+        store (spyServer_settings, SPY_SERVER_8_SETTINGS,  
+                                 "spyServer-port", v);
+}

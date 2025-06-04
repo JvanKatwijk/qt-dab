@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>224</width>
-    <height>311</height>
+    <width>239</width>
+    <height>279</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,18 +26,50 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string> gain</string>
+        <string>portnumber</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="spyServer_gain">
+      <widget class="QSpinBox" name="portNumber">
        <property name="maximum">
-        <number>999</number>
+        <number>9999</number>
+       </property>
+       <property name="value">
+        <number>5555</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string> gain</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spyServer_gain">
+         <property name="maximum">
+          <number>999</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="autogain_selector">
+       <property name="text">
+        <string>autogain</string>
        </property>
       </widget>
      </item>
@@ -67,7 +99,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>spy-server 8 bits</string>
+      <string>spy-server 8 bits  (rtlsdr format)</string>
      </property>
     </widget>
    </item>

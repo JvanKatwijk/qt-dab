@@ -46,7 +46,7 @@
 #define	SPY_SERVER_16_SETTINGS	"SPY_SERVER_16_SETTINGS"
 
 	spyServer_client::spyServer_client	(QSettings *s):
-	                                        _I_Buffer (32 * 32768),
+	                                        _I_Buffer (8 * 32 * 32768),
 	                                        tmpBuffer (32 * 32768) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
@@ -61,7 +61,8 @@
 	                                   "spyServer-auto_gain", 0);
 	settings. basePort	=  value_i (spyServer_settings,
 	                                    SPY_SERVER_16_SETTINGS,
-	                                    "spyServer+port", 5555);
+	                                    "spyServer-port", 5555);
+	portNumber	-> setValue	(settings. basePort);
 	if (settings. auto_gain != 0)
 	   autogain_selector	-> setChecked (true);
 	spyServer_gain	-> setValue (theGain);
@@ -76,8 +77,16 @@
 //
 	connect (spyServer_connect, &QPushButton::clicked,
 	         this, &spyServer_client::wantConnect);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+        connect (autogain_selector, &QCheckBox::checkStateChanged,
+#else
+        connect (autogain_selector, &QCheckBox::stateChanged,
+#endif
+	         this, &spyServer_client::handle_autogain);
 	connect (spyServer_gain, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &spyServer_client::setGain);
+	connect (portNumber, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &spyServer_client::set_portNumber);
 	theState	-> setText ("waiting to start");
 }
 
@@ -132,6 +141,7 @@ QString s	= hostLineEdit -> text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
 	theServer	= nullptr;
+	settings. basePort	= portNumber -> value ();
 	try {
 	   theServer	= new spyHandler (this, theAddress,
 	                                  (int)settings. basePort,
@@ -145,7 +155,6 @@ QString theAddress	= QHostAddress (s). toString ();
 	   fprintf (stderr, "Connecting failed\n");
 	   return;
 	}
-	fprintf (stderr, "We wachten op de spyHandler\n");
 
 	connect (&checkTimer, &QTimer::timeout,
 	         this, &spyServer_client::handle_checkTimer);
@@ -160,10 +169,10 @@ QString theAddress	= QHostAddress (s). toString ();
 	   connected = false;
 	   return;
 	}
+
 	checkTimer. stop ();	
 	disconnect (&checkTimer, &QTimer::timeout,
 	            this, &spyServer_client::handle_checkTimer);
-//	fprintf (stderr, "We kunnen echt beginnen\n");
 	theServer	-> connection_set ();
 
 //	fprintf (stderr, "going to ask for device info\n");
@@ -193,21 +202,22 @@ QString theAddress	= QHostAddress (s). toString ();
 	   theServer	= nullptr;
 	   return;
 	}
-	selectedRate	= INPUT_RATE;
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
-	     selectedRate = (uint32_t)(max_samp_rate / (1 << i));
-	   if (selectedRate == INPUT_RATE) {
+	     int testRate = (uint32_t)(max_samp_rate / (1 << i));
+	   if (testRate == 2048000) {
 	      desired_decim_stage = i;
 	      resample_ratio = 1;
 	      break;
 	   } else
-	   if (selectedRate > INPUT_RATE) {
+	   if (testRate > 2048000) {
 //	remember the next-largest rate that is available
 	      desired_decim_stage = i;
-	      resample_ratio = INPUT_RATE / (double)selectedRate;
-	      settings. sample_rate = selectedRate;
+	      resample_ratio = 2048000 / (double)testRate;
+	      settings. sample_rate = testRate;
 	   }
 
+	   fprintf (stderr, " result: resample_ratio %f, targetrate %f\n",
+	                    (float)resample_ratio, (float)settings. sample_rate);
 	   if (desired_decim_stage < 0) {
 	      delete theServer;
 	      theServer	= nullptr;
@@ -250,10 +260,11 @@ QString theAddress	= QHostAddress (s). toString ();
 //	same size as the input buffer is OK
 	if (settings. resample_ratio != 1.0 ) {
 //	we process chunks of 1 msec
-	   convBufferSize          = selectedRate / 1000;
+	   convBufferSize          = settings. sample_rate/ 1000;
+	   fprintf (stderr, "convBufferSize %d\n", convBufferSize);
 	   convBuffer. resize (convBufferSize + 1);
 	   for (int i = 0; i < 2048; i ++) {
-	      float inVal  = float (selectedRate / 1000);
+	      float inVal  = float (settings. sample_rate / 1000);
 	      mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
 	      mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
 	   }
@@ -313,6 +324,10 @@ int16_t	spyServer_client::bitDepth () {
 
 void	spyServer_client::setGain	(int gain) {
 	settings. gain = gain;
+	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
+                                      "spyServer_client-gain", settings. gain);
+	if (theServer == nullptr)
+	   return;
 	if (!theServer -> set_gain (settings.gain)) {
 	   std::cerr << "Failed to set gain\n";
 	   return;
@@ -369,7 +384,7 @@ int16_t buffer_16 [settings. batchSize * 2];
 	         }
 	      }
 	   }
-	   else {	// no resmpling
+	   else {	// no resampling
 	      std::complex<float> outB [samps];
 	      for (uint32_t i = 0; i < samps; i ++) 
 	         outB [i] = std::complex<float> (
@@ -384,3 +399,8 @@ void	spyServer_client::handle_checkTimer () {
 	timedOut = true;
 }
 
+void	spyServer_client::set_portNumber	(int v) {
+	settings. basePort = v;
+	store (spyServer_settings, SPY_SERVER_16_SETTINGS, 
+	                         "spyServer-port", v);
+}
