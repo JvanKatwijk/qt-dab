@@ -32,6 +32,21 @@
 
 class	RadioInterface;
 
+struct DL2_object {
+	uint8_t ct;
+	uint8_t base;
+	uint8_t len;
+};
+
+struct DL2_base {
+	bool	valid;
+	uint8_t	IT;
+	uint8_t	IR;
+	QString	dlsText;
+	struct DL2_object entity [4];
+};
+
+	
 class	padHandler: public QObject {
 Q_OBJECT
 public:
@@ -75,8 +90,12 @@ private:
 //      assembling the msc_data group.
         std::vector<uint8_t> msc_dataGroupBuffer;
 
+//	Experimental
+	DL2_base	the_DL2;
+	void		add_toDL2		(const QString &);
+	void		add_toDL2		(uint8_t *);
 signals:
-	void		show_label			(const QString &, int);
-	void		show_mothandling		(bool);
+	void		show_label		(const QString &, int);
+	void		show_mothandling	(bool);
 };
 

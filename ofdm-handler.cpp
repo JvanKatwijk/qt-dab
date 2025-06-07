@@ -94,6 +94,7 @@
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
+	this	-> freq_speedUp		= false;
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 	this	-> correlationOrder	= 
@@ -206,7 +207,7 @@ timeSyncer	myTimeSyncer (&theReader);
 phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
-freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
+freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable, freq_speedUp);
 estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
@@ -706,5 +707,9 @@ void	ofdmHandler::select_TII		(uint8_t a) {
 	   selected_TII = TII_OLD;
 	else
 	   selected_TII = TII_NEW;
+}
+
+void	ofdmHandler::set_speedUp	(bool b) {
+	freq_speedUp	= b;
 }
 

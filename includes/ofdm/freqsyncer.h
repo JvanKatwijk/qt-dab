@@ -41,7 +41,8 @@ Q_OBJECT
 public:
 			freqSyncer 		(RadioInterface *,
 	                                         processParams *,
-	                                         phaseTable *);
+	                                         phaseTable *,
+	                                         bool speedUp = false);
 			~freqSyncer		();
 	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
 private:
@@ -52,6 +53,8 @@ private:
 	int32_t		T_g;
 	int16_t		carriers;
 	fftHandler	fft_forward;
+
+	bool		speedUp;
 };
 //#endif
 

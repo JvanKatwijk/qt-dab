@@ -95,7 +95,8 @@ public:
 	int		scanWidth		();
 	void		start_ficDump		(FILE *);
 	void		stop_ficDump		();
-//
+
+	void		set_speedUp		(bool);
 //	for the mscHandler
 //	void		resetServices		();
 //	void		stopService		(descriptorType *, int);
@@ -160,6 +161,7 @@ private:
 	std::vector<Complex>	ofdmBuffer;
 	bool			correlationOrder;
 	bool			dxMode;
+	bool			freq_speedUp;
 virtual	void			run		();
 signals:
 	void		set_synced		(bool);

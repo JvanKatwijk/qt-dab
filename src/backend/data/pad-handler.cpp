@@ -62,6 +62,12 @@
 	remainDataLength	= 0;
 	isLastSegment		= false;
 	moreXPad		= false;
+
+	the_DL2. dlsText	= "";
+	the_DL2. IT		= 10;
+	the_DL2. IR		= 10;
+	for (int i = 0; i < 4; i ++)
+	   the_DL2. entity [i]. ct = 65;
 }
 
 	padHandler::~padHandler() {
@@ -187,6 +193,7 @@ int16_t	i;
 	                               (const char *)dynamicLabelText. data (),
 	                               (CharacterSet) charSet,
 	                               dynamicLabelText. size ());
+	            fprintf (stderr, "%s \n", displayText. toLatin1 (). data ());
 	            show_label (displayText, (int)charSet);
 	         }
 	         dynamicLabelText. clear();
@@ -365,19 +372,8 @@ int16_t  dataLength                = 0;
 #ifdef	_PAD_TRACE_
 	            fprintf (stderr, "DL plus command\n");
 #endif
-//	            {
-//	               int length = prefix & 0x0f;
-//	               int IT	= data [2] & 0x08;
-//	               int IR	= data [2] & 0x04;
-//	               int NT	= data [2] & 0x03;
-//	               for (int i = 0; i < NT; i ++) {
-//	                  uint8_t ct	= data [3 + i * 3] & 0x7F;
-//	                  uint8_t sm	= data [4 + i * 3] & 0x7F;
-//	                  uint8_t ln	= data [5 + i * 3] & 0x7F;
-//	                  fprintf (stderr, "CT -> %d, SM -> %d, NT -> %d\n",
-//	                                  ct, sm, ln);
-//	               }
-//	            }
+	            if (!backgroundFlag)
+	               add_toDL2 (&data [2]);
 	            break;
 	         default:
 //	            fprintf (stderr, "unknown command %d\n", Command);
@@ -405,7 +401,10 @@ int16_t  dataLength                = 0;
 	                              (const char *) dynamicLabelText. data (),
 	                              (CharacterSet) charSet,
 	                              dynamicLabelText. size ());
-	            show_label (displayText, (int)charSet);
+	            if (!backgroundFlag) {
+	               add_toDL2 (displayText);
+	               show_label (displayText, (int)charSet);
+	            }
 	            segmentno = -1;
 	         }
 	         else
@@ -434,7 +433,10 @@ int16_t  dataLength                = 0;
 	                                  ((char *)(dynamicLabelText. data()),
 	                                  (CharacterSet)charSet,
 	                                  dynamicLabelText. size());
-	             show_label (displayText, (int)charSet);
+	             if (!backgroundFlag) {
+	                add_toDL2 (displayText);
+	                show_label (displayText, (int)charSet);
+	             }
 	   }
 	}
 }
@@ -610,3 +612,58 @@ uint16_t	index;
 	      break;
 	}
 }
+
+
+void	padHandler::add_toDL2 (const QString &text) {
+	if (the_DL2. dlsText != text) {
+	   the_DL2. dlsText = text;
+	   the_DL2. valid = true;	// non existent key
+	   for (int i = 0; i < 4; i ++)
+	      the_DL2. entity [i]. ct = 65;
+	}
+}
+
+void	padHandler::add_toDL2 (uint8_t *data) {
+int IT	= (data [0] & 0x08) >> 3;
+int IR	= (data [2] & 0x04) >> 2; 
+int NT	= data [2] & 0x03;
+	if ((the_DL2. IT != IT) ||
+	    (the_DL2. IR != IR)) {
+	   the_DL2. IT = IT;
+	   the_DL2. IR = IR;
+	   for (int i = 0; i < 4; i ++)
+	      the_DL2. entity [i]. ct = 65;
+	}
+	if (the_DL2. dlsText. size () < 2)
+	   return;
+	for (int i = 0; i < NT; i ++) {
+	   uint8_t ct	= data [1 + i * 3] & 0x7F;
+	   uint8_t sm	= data [2 + i * 3] & 0x7F;
+	   uint8_t ln	= data [3 + i * 3] & 0x7F;
+	   if ((the_DL2. entity [i]. ct == ct) &&
+	       (the_DL2. entity [i]. base == sm) &&
+	       (the_DL2. entity [i]. len == ln))
+	   continue;	// no change needed
+	   if ((ct == 0) || (ct > 63))
+	      continue;
+	   if (ln == 0)
+	      continue;
+//	just for safety
+	   if (sm > the_DL2. dlsText. size ())
+	      continue;
+	   if (sm + ln > the_DL2. dlsText. size () + 2)
+	      continue;
+	   the_DL2. entity [i]. ct = ct;
+	   the_DL2. entity [i]. base = sm;
+	   the_DL2. entity [i]. len = ln;
+	   char resText [ln + 2];
+	   resText [ln + 1] = 0;
+	   for (int j = sm; j < sm + ln + 1; j ++)
+	      resText [j - sm] = the_DL2. dlsText. toUtf8 (). data () [j];
+//
+//	still have to figure out what to do when with these DL elements
+//	   fprintf (stderr, "Object index %d (of %d)  with %d %d, type %d %d %d %s\n",
+//	             i, NT, IT, IR , ct, sm, ln, resText);
+	}
+}
+

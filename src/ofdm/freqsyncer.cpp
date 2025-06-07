@@ -28,13 +28,15 @@
 
 	freqSyncer::freqSyncer (RadioInterface *mr,
 	                                processParams	*p,
-	                                phaseTable	*theTable):
+	                                phaseTable	*theTable,
+	                                bool		speedUp):
 	                                     params (p -> dabMode),
 	                                     fft_forward (params. get_T_u (), false) {
 int32_t	i;
 //float	Phi_k;
 
 	(void)mr;
+	this	-> speedUp	= speedUp;
 	this	-> diff_length	= p -> diff_length;
 	this	-> diff_length	= 128;
 	this	-> T_u		= params. get_T_u();
@@ -61,48 +63,45 @@ int32_t	i;
 int16_t	freqSyncer::
 	     estimate_CarrierOffset (std::vector<Complex> v) {
 int16_t index_1 = 100, index_2 = 100;
+int starter_1	= - SEARCH_RANGE / 2;	// the default
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 //
-//	the approach is to first get a rough idea of where the
-//	data is bij looking at the weight of the first and last 
-//	samples of the sequence of 1536 samples
 	fft_forward. fft (v);
 
-int starter	= SEARCH_RANGE;
 float	test [T_u];
 	for (int i = 0; i < T_u / 2; i ++) {
 	   test [i]		= jan_abs (v [T_u / 2 + i]);
 	   test [T_u / 2 + i]	= jan_abs (v [i]);
 	}
-#define	SUM_SIZE	30
-//
-//	We look with a moving sum  of the first and the last SUM_SIZE carriers
-//	to a full sequence of "carrier" carriers for a maximum.
-//	if found, we have a rough estimate of where the NULL carrier is
-	double xx	= 0;
-	double max	= 0;
-	for (int j = - SEARCH_RANGE / 2;
+#define	SUM_SIZE	50
+	if (speedUp) {
+//	   We look with a moving sum  of the first and the last
+//	   SUM_SIZE carriers to a full sequence of "carrier" carriers
+//	   for a maximum.
+//	   if found, we have a rough estimate of where the NULL carrier is
+	   double xx	= 0;
+	   double max	= 0;
+	   for (int j = - SEARCH_RANGE / 2;
 	         j < -SEARCH_RANGE / 2 + SUM_SIZE; j ++) {
-	   xx += test [T_u / 2 - carriers / 2 + j];
-	   xx += test [T_u / 2 + carriers / 2 - SUM_SIZE + j];
-	}
-	for (int i = -SEARCH_RANGE / 2; i < SEARCH_RANGE / 2; i ++) {
-	   xx -= test [T_u / 2 - carriers / 2  + i];
-	   xx += test [T_u / 2 - carriers / 2  + i + SUM_SIZE];
-	   xx -= test [T_u / 2 + (carriers / 2 - SUM_SIZE) + i];
-	   xx += test [T_u / 2 + (carriers / 2 - SUM_SIZE) + i + SUM_SIZE];
-	   if (xx > max) {
-	      max = xx;
-//
-//	we choose to start at a few carriers before the match
-	      starter = i - 6;
+	      xx += test [T_u / 2 - carriers / 2 + j];
+	      xx += test [T_u / 2 + carriers / 2 - SUM_SIZE + j];
+	   }
+	   for (int i = -SEARCH_RANGE / 2; i < SEARCH_RANGE / 2; i ++) {
+	      xx -= test [T_u / 2 - carriers / 2  + i];
+	      xx += test [T_u / 2 - carriers / 2  + i + SUM_SIZE];
+	      xx -= test [T_u / 2 + (carriers / 2 - SUM_SIZE) + i];
+	      xx += test [T_u / 2 + (carriers / 2 - SUM_SIZE) + i + SUM_SIZE];
+	      if (xx > max) {
+	         max = xx;
+	         starter_1 = i;
+	      }
 	   }
 	}
-//
+
 //	the actual search for the best fit of the incoming data wrt
 //	the predefined data is done over a range of app 20 carriers
-	if (starter < - SEARCH_RANGE / 2)
-	   starter = - SEARCH_RANGE / 2;
+	if (starter_1 - 10 < - SEARCH_RANGE / 2)
+	   starter_1 = - SEARCH_RANGE / 2;
 	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
@@ -112,10 +111,10 @@ float	test [T_u];
 
 	float	Mmin	= 1000;
 	float	Mmax	= 0;
-//
-	for (int i = T_u + starter;
-	     i < T_u + starter + 20; i ++) {
-	   float sum	= 0;
+	int	length	= speedUp ? 20 : SEARCH_RANGE;
+	for (int i = T_u + starter_1;
+	     i < T_u + starter_1 + length; i ++) {
+	   float sum1	= 0;
 	   float sum2	= 0;
 //
 //	Since correlation with lots of zeros in the reference
@@ -127,15 +126,14 @@ float	test [T_u];
 //	If the indices are the same, we believe we found a solution
 	   for (int j = 1; j < diff_length; j ++) {
 	      if (phaseDifferences [j - 1] < 0.1) {
-	         sum += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
+	         sum1 += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
 	      }
 	      if (phaseDifferences [j - 1] > M_PI / 2 - 0.1) {
 	         sum2 += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
 	      }
-	
 	   }
-	   if (sum < Mmin) {
-	      Mmin = sum;
+	   if (sum1 < Mmin) {
+	      Mmin = sum1;
 	      index_1 = i;
 	   }
 	   if (sum2 > Mmax) {
@@ -143,10 +141,8 @@ float	test [T_u];
 	      index_2 = i;
 	   }
 	}
-	
 	if (index_1 != index_2)
 	   return 100;
-//	fprintf (stderr, "starter detected %d\n", index_1 - T_u);
 	return index_1 - T_u; 
 }
 
