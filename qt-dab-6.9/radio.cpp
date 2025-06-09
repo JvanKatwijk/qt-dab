@@ -2243,7 +2243,7 @@ void	RadioInterface::startPacketservice (packetdata &pd) {
 	      show_label (QString ("Transp. Channel partially implemented"), 1);
 	      break;
 	   case 60:
-	      show_label (QString ("MOT"), 1);
+	      show_label (QString (" processing MOT data"), 1);
 	      break;
 	   case 59: {
 #ifdef	_SEND_DATAGRAM_
@@ -4568,5 +4568,18 @@ void	RadioInterface::setFreqList	() {
 	   return;
 	channel. currentService. fmFrequencies = freqList;
 	techWindow_p	-> updateFM (freqList);
+}
+
+void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,
+	                                  const QString &s) {
+	return;
+	if (s == "")
+	   fprintf (stderr, "einde fragment\n");
+	else
+	if (ct == 1)
+	   fprintf (stderr, "Ttitle: %s\n", s. toUtf8 (). data ());
+	else
+	if (ct == 4)
+	   fprintf (stderr, "Artist: %s\n", s. toUtf8 (). data ());
 }
 

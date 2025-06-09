@@ -36,7 +36,7 @@
 	ip_dataHandler::~ip_dataHandler () {
 }
 
-void	ip_dataHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
+void	ip_dataHandler::add_mscDatagroup (const std::vector<uint8_t> &msc) {
 uint8_t *data		= (uint8_t *)(msc. data());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;

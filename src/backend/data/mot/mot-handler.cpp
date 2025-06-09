@@ -64,7 +64,7 @@ struct motTable_ {
 	   delete theDirectory;
 }
 
-void	motHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
+void	motHandler::add_mscDatagroup (const std::vector<uint8_t> &msc) {
 uint8_t *data		= (uint8_t *)(msc. data());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;

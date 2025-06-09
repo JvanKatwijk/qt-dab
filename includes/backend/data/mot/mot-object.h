@@ -42,12 +42,12 @@ public:
 		motObject (RadioInterface *mr,
 	                   bool		dirElement,
 	                   uint16_t	transportId,
-	                   uint8_t	*segment,
+	                   const uint8_t	*segment,
 	                   int32_t	segmentSize,
 	                   bool		lastFlag,
 	                   bool		backgroundFlag);
 		~motObject	();
-	void	addBodySegment (uint8_t	*bodySegment,
+	void	addBodySegment (const uint8_t	*bodySegment,
                                 int16_t	segmentNumber,
                                 int32_t	segmentSize,
 	                        bool	lastFlag);

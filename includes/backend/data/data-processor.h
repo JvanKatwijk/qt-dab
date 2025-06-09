@@ -69,16 +69,16 @@ private:
 //
 //	result handlers
 	void		handleTDCAsyncstream 	(const uint8_t *, int32_t);
-	void		handlePackets		(uint8_t *, int16_t);
-	void		handlePacket		(uint8_t *vec);
+	void		handlePackets		(const uint8_t *, int16_t);
+	void		handlePacket		(const uint8_t *vec);
 
-	void		handleRSPacket		(uint8_t *);
-	void		registerFEC		(uint8_t *, int);
+	void		handleRSPacket		(const uint8_t *);
+	void		registerFEC		(const uint8_t *, int);
 	void		clear_FECtable		();
 	bool		FEC_complete		();
-	void		handle_RSpackets	(std::vector<uint8_t> &);
-	void		handle_RSpacket		(uint8_t *, int16_t);
-	int		addPacket		(uint8_t *, 
+	void		handle_RSpackets	(const std::vector<uint8_t> &);
+	void		handle_RSpacket		(const uint8_t *, int16_t);
+	int		addPacket		(const uint8_t *, 
 	                                         std::vector<uint8_t> &, int);
 
 	void		processRS		(std::vector<uint8_t> &appdata,

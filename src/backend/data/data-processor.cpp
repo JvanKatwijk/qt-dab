@@ -111,8 +111,7 @@ std::vector<uint8_t> VV = outV;
 	      handlePackets (VV. data (), 24 * bitRate);
 }
 //
-void	dataProcessor::handlePackets (uint8_t *dataL, int16_t length) {
-uint8_t *data = dataL;
+void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 	while (true) {
 //	pLength is in bits
 	   int32_t pLength = (getBits_2 (data, 0) + 1) * 24 * 8;
@@ -133,7 +132,7 @@ uint8_t *data = dataL;
 	}
 }
 
-void	dataProcessor::handlePacket (uint8_t *vec) {
+void	dataProcessor::handlePacket (const uint8_t *vec) {
 static int expected_cntidx = 0;
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
@@ -224,7 +223,7 @@ static int expected_cntidx = 0;
 //
 //	we try to ensure that when the RS packages are readin, we
 //	have exactly RSDIMS * FRAMESIZE uint's read
-void	dataProcessor::handleRSPacket (uint8_t  *vec) {
+void	dataProcessor::handleRSPacket (const uint8_t  *vec) {
 int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
 //
@@ -256,7 +255,7 @@ void	dataProcessor::clear_FECtable () {
 //	addPacket basically packs the sequence of bits into a sequence
 //	of bytes, for processing by the RS decoder
 //	of course, we check for overflow
-int	dataProcessor::addPacket (uint8_t *vec,
+int	dataProcessor::addPacket (const uint8_t *vec,
 	                          std::vector<uint8_t> &theBuffer,
 	                          int fillPointer) {
 	int16_t	packetLength	= (getBits_2 (vec, 0) + 1) * 24;
@@ -279,7 +278,7 @@ int	dataProcessor::addPacket (uint8_t *vec,
 //	of packets, first dispatch and separate the packet sequence
 //	into its elements
 //
-void	dataProcessor::handle_RSpackets (std::vector<uint8_t> &vec) {
+void	dataProcessor::handle_RSpackets (const std::vector<uint8_t> &vec) {
 	for (int baseP = 0; baseP < RSDIMS * FRAMESIZE; ) {
 	   int16_t packetLength = (((vec [baseP] & 0xc0) >> 6) + 1) * 24;
 	   handle_RSpacket (&(vec. data ()) [baseP], packetLength);
@@ -293,7 +292,8 @@ uint8_t bitList [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 //	The RS data is with packed bytes, while the basis infrastructure
 //	is with bit sequences, so to keep things simple, we just
 //	transform the byte sequence into a bit sequence
-void	dataProcessor::handle_RSpacket (uint8_t *packet, int16_t packetLength) {
+void	dataProcessor::handle_RSpacket (const uint8_t *packet,
+	                                        int16_t packetLength) {
 std::vector<uint8_t> bitData (packetLength * 8);
 	for (int i = 0; i < packetLength; i ++) {
 	   uint8_t temp = packet [i];
@@ -308,7 +308,7 @@ std::vector<uint8_t> bitData (packetLength * 8);
 //	as it tuns out, the FEC data packages are arriving in order,
 //	so it would have been sufficient just to wait until the
 //	package with counter '8' was seen
-void	dataProcessor::registerFEC (uint8_t *vec, int cnt) {
+void	dataProcessor::registerFEC (const uint8_t *vec, int cnt) {
 	for (int i = 0; i < 22; i ++) {
 	   uint8_t temp = 0;
 	   for (int j = 0; j < 8; j ++)

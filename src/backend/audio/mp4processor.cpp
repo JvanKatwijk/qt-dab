@@ -103,13 +103,12 @@
   *	the function adds nbits bits, packed in bytes, to the frame
   */
 void	mp4Processor::addtoFrame (const std::vector<uint8_t> &V) {
-int16_t	i, j;
-uint8_t	temp	= 0;
 int16_t	nbits	= 24 * bitRate;
+uint8_t	temp	= 0;
 
-	for (i = 0; i < nbits / 8; i ++) {	// in bytes
+	for (int i = 0; i < nbits / 8; i ++) {	// in bytes
 	   temp = 0;
-	   for (j = 0; j < 8; j ++)
+	   for (int j = 0; j < 8; j ++)
 	      temp = (temp << 1) | (V [i * 8 + j] & 01);
 	   frameBytes [blockFillIndex * nbits / 8 + i] = temp;
 	}
@@ -120,7 +119,6 @@ int16_t	nbits	= 24 * bitRate;
 /**
   *	we take the last five blocks to look at
   */
-
 	if (blocksInBuffer >= 5) {
 ///	first, we show the "successrate"
 	   if (++frameCount >= 25) {
@@ -410,3 +408,4 @@ BitWriter	au_bw;
 	fileBuffer	= au_bw. GetData ();
 	return fileBuffer. size ();
 }
+

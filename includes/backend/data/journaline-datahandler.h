@@ -36,7 +36,7 @@ Q_OBJECT
 public:
 		journaline_dataHandler();
 		~journaline_dataHandler();
-	void	add_mscDatagroup	(std::vector<uint8_t>);
+	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 	void	add_to_dataBase		(NML *);
 private:
 	journalineScreen	theScreen;

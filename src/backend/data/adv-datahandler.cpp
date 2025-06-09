@@ -42,7 +42,7 @@
 
 const uint8_t syncWord [] = {0x01, 0x41, 0x0f, 0xf7, 0xcf, 0x78, 0x9c};
 
-void	adv_dataHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
+void	adv_dataHandler::add_mscDatagroup (const std::vector<uint8_t> msc) {
 uint8_t *data		= (uint8_t *)(msc. data());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
@@ -61,7 +61,7 @@ uint16_t segmentNumber	= 0;
 	if (segmentFlag)  {
 //	   LastSegment = getBits   (data, next, 15);
 	   segmentNumber = getBits_1 (data, next ++);
-	   fprintf (stderr, "segment %d\n", segmentNumber);
+//	   fprintf (stderr, "segment %d\n", segmentNumber);
 	   next = next + 15;
 	}
 

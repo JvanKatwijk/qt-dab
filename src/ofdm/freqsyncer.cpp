@@ -37,7 +37,7 @@ int32_t	i;
 
 	(void)mr;
 	this	-> speedUp	= speedUp;
-	this	-> diff_length	= p -> diff_length;
+//	this	-> diff_length	= p -> diff_length;
 	this	-> diff_length	= 128;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();

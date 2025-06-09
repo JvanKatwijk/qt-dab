@@ -68,7 +68,8 @@ void my_callBack (
 }
 
 //void	journaline_dataHandler::add_mscDatagroup (QByteArray &msc) {
-void	journaline_dataHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
+void	journaline_dataHandler::
+	             add_mscDatagroup (const std::vector<uint8_t> &msc) {
 int16_t	len	= msc. size ();
 uint8_t	*data	= (uint8_t *)(msc. data());
 uint8_t	*buffer	= (uint8_t *) alloca (len / 8 * sizeof (uint8_t));

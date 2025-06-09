@@ -36,6 +36,7 @@ struct DL2_object {
 	uint8_t ct;
 	uint8_t base;
 	uint8_t len;
+	QString str;
 };
 
 struct DL2_base {
@@ -53,17 +54,20 @@ public:
 			padHandler		(RadioInterface *,
 	                                         bool);
 			~padHandler		();
-	void		processPAD		(uint8_t *,
+	void		processPAD		(const uint8_t *,
 	                                         int16_t, uint8_t, uint8_t);
 private:
 	RadioInterface	*myRadioInterface;
 	bool		backgroundFlag;
-	void		handle_variablePAD	(uint8_t *, int16_t, uint8_t);
-	void		handle_shortPAD		(uint8_t *, int16_t, uint8_t);
-	void		dynamicLabel		(uint8_t *, int16_t, uint8_t);
-	void		new_MSC_element		(std::vector<uint8_t> &);
-	void		add_MSC_element		(std::vector<uint8_t> &);
-	void		build_MSC_segment	(std::vector<uint8_t> &);
+	void		handle_variablePAD	(const uint8_t *,
+	                                             int16_t, uint8_t);
+	void		handle_shortPAD		(const uint8_t *,
+	                                             int16_t, uint8_t);
+	void		dynamicLabel		(const uint8_t *,
+	                                             int16_t, uint8_t);
+	void		new_MSC_element		(const std::vector<uint8_t> &);
+	void		add_MSC_element		(const std::vector<uint8_t> &);
+	void		build_MSC_segment	(const std::vector<uint8_t> &);
 	bool		pad_crc			(uint8_t *, int16_t);
 	QByteArray	dynamicLabelText;
 	int16_t		charSet;
@@ -93,9 +97,11 @@ private:
 //	Experimental
 	DL2_base	the_DL2;
 	void		add_toDL2		(const QString &);
-	void		add_toDL2		(uint8_t *);
+	void		add_toDL2		(const uint8_t *);
 signals:
 	void		show_label		(const QString &, int);
 	void		show_mothandling	(bool);
+	void		show_title		(uint8_t, uint8_t,
+	                                         const QString &);
 };
 

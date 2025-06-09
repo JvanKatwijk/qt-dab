@@ -36,7 +36,7 @@ public:
 		ip_dataHandler		(RadioInterface *,
 	                                 RingBuffer<uint8_t> *);
 		~ip_dataHandler();
-	void	add_mscDatagroup	(std::vector<uint8_t>);
+	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 private:
 	void	process_ipVector	(std::vector<uint8_t>);
 	void	process_udpVector	(uint8_t *, int16_t);

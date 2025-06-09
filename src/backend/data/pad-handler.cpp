@@ -40,6 +40,8 @@
 	         mr, &RadioInterface::show_label);
 	connect (this, &padHandler::show_mothandling,
 	         mr, &RadioInterface::show_mothandling);
+	connect (this, &padHandler::show_title,
+	         mr, &RadioInterface::show_title);
 //	currentSlide	= nullptr;
 //
 //	mscGroupElement indicates whether we are handling an
@@ -78,7 +80,7 @@
 //	Data is stored reverse, we pass the vector and the index of the
 //	last element of the XPad data.
 //	 L0 is the "top" byte of the L field, L1 the next to top one.
-void	padHandler::processPAD (uint8_t *buffer, int16_t last,
+void	padHandler::processPAD (const uint8_t *buffer, int16_t last,
 	                        uint8_t L1, uint8_t L0) {
 uint8_t	fpadType	= (L1 >> 6) & 03;
 
@@ -117,7 +119,8 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 //	of these 2 values, but it is not clear to me how.
 //	For me, the end of a segment is when we collected the amount
 //	of values specified for the segment.
-void	padHandler::handle_shortPAD (uint8_t *b, int16_t last, uint8_t CIf) {
+void	padHandler::handle_shortPAD (const uint8_t *b,
+	                             int16_t last, uint8_t CIf) {
 int16_t	i;
 
 	if (CIf != 0) {	// has a CI flag
@@ -193,7 +196,7 @@ int16_t	i;
 	                               (const char *)dynamicLabelText. data (),
 	                               (CharacterSet) charSet,
 	                               dynamicLabelText. size ());
-	            fprintf (stderr, "%s \n", displayText. toLatin1 (). data ());
+//	            fprintf (stderr, "%s \n", displayText. toLatin1 (). data ());
 	            show_label (displayText, (int)charSet);
 	         }
 	         dynamicLabelText. clear();
@@ -210,7 +213,7 @@ int16_t	lengthTable [] = {4, 6, 8, 12, 16, 24, 32, 48};
 //	Since the data is reversed, we pass on the vector address
 //	and the offset of the last element in the vector,
 //	i.e. we start (downwards)  beginning at b [last];
-void	padHandler::handle_variablePAD (uint8_t *b,
+void	padHandler::handle_variablePAD (const uint8_t *b,
 	                                int16_t last, uint8_t CI_flag) {
 int16_t	CI_Index = 0;
 uint8_t CI_table [4];
@@ -292,8 +295,11 @@ std::vector<uint8_t> data;		// for the local addition
 	      default:
 	         return; // sorry, we do not handle this
 
-	      case 2:	 // Dynamic label segment, start of X-PAD data group
-	      case 3:	 // Dynamic label segment, continuation of X-PAD data group
+	      case 1:	//
+//	         fprintf (stderr, "Need to fix this\n");
+	         return;
+	      case 2:	// Dynamic label segment, start of X-PAD data group
+	      case 3:	// Dynamic label segment, continuation of X-PAD data group
 	         dynamicLabel ((uint8_t *)(data. data()),
 	                        data. size(), CI_table [i]);
 	         break;
@@ -318,7 +324,7 @@ std::vector<uint8_t> data;		// for the local addition
 //
 //	A dynamic label is created from a sequence of (dynamic) xpad
 //	fields, starting with CI = 2, continuing with CI = 3
-void	padHandler::dynamicLabel (uint8_t *data, int16_t length, uint8_t CI) {
+void	padHandler::dynamicLabel (const uint8_t *data, int16_t length, uint8_t CI) {
 int16_t  dataLength                = 0;
 
 	if ((CI & 037) == 02) {	// start of segment
@@ -444,7 +450,7 @@ int16_t  dataLength                = 0;
 //
 //	Called at the start of the msc datagroupfield,
 //	the msc_length was given by the preceding appType "1"
-void	padHandler::new_MSC_element (std::vector<uint8_t> &data) {
+void	padHandler::new_MSC_element (const std::vector<uint8_t> &data) {
 
 //	if (mscGroupElement) { 
 ////	   if (msc_dataGroupBuffer. size() < dataGroupLength)
@@ -473,7 +479,7 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> &data) {
 }
 
 //
-void	padHandler::add_MSC_element	(std::vector<uint8_t> &data) {
+void	padHandler::add_MSC_element	(const std::vector<uint8_t> &data) {
 int32_t	currentLength = msc_dataGroupBuffer. size();
 //
 //	just to ensure that, when a "12" appType is missing, the
@@ -492,7 +498,7 @@ int32_t	currentLength = msc_dataGroupBuffer. size();
 	}
 }
 
-void	padHandler::build_MSC_segment (std::vector<uint8_t> &data) {
+void	padHandler::build_MSC_segment (const std::vector<uint8_t> &data) {
 //	we have a MOT segment, let us look what is in it
 //	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is
@@ -623,7 +629,7 @@ void	padHandler::add_toDL2 (const QString &text) {
 	}
 }
 
-void	padHandler::add_toDL2 (uint8_t *data) {
+void	padHandler::add_toDL2 (const uint8_t *data) {
 int IT	= (data [0] & 0x08) >> 3;
 int IR	= (data [2] & 0x04) >> 2; 
 int NT	= data [2] & 0x03;
@@ -631,11 +637,16 @@ int NT	= data [2] & 0x03;
 	    (the_DL2. IR != IR)) {
 	   the_DL2. IT = IT;
 	   the_DL2. IR = IR;
-	   for (int i = 0; i < 4; i ++)
+	   if (IR == 0)
+	      show_title (0, 63, "");
+	   for (int i = 0; i < 4; i ++) {
 	      the_DL2. entity [i]. ct = 65;
+	      the_DL2. entity [i]. str = "";
+	   }
 	}
 	if (the_DL2. dlsText. size () < 2)
 	   return;
+
 	for (int i = 0; i < NT; i ++) {
 	   uint8_t ct	= data [1 + i * 3] & 0x7F;
 	   uint8_t sm	= data [2 + i * 3] & 0x7F;
@@ -646,24 +657,28 @@ int NT	= data [2] & 0x03;
 	   continue;	// no change needed
 	   if ((ct == 0) || (ct > 63))
 	      continue;
-	   if (ln == 0)
-	      continue;
-//	just for safety
-	   if (sm > the_DL2. dlsText. size ())
-	      continue;
-	   if (sm + ln > the_DL2. dlsText. size () + 2)
+	   if ((ct != 1) && (ct != 4))
 	      continue;
 	   the_DL2. entity [i]. ct = ct;
 	   the_DL2. entity [i]. base = sm;
 	   the_DL2. entity [i]. len = ln;
+	   if (ln == 0) {
+	      show_title (IR, ct, "");
+	      the_DL2. entity [i]. str = "";
+	      continue;
+	   }
+	   if ((ln > the_DL2. dlsText. size ()) ||
+	       (sm + ln > the_DL2. dlsText. size ()))
+	      continue;
 	   char resText [ln + 2];
 	   resText [ln + 1] = 0;
 	   for (int j = sm; j < sm + ln + 1; j ++)
 	      resText [j - sm] = the_DL2. dlsText. toUtf8 (). data () [j];
-//
+	   the_DL2. entity [i]. str = QString (resText);
+	   show_title (IR, ct, the_DL2. entity [i]. str);
 //	still have to figure out what to do when with these DL elements
-//	   fprintf (stderr, "Object index %d (of %d)  with %d %d, type %d %d %d %s\n",
-//	             i, NT, IT, IR , ct, sm, ln, resText);
+	   fprintf (stderr, "Object index %d (of %d)  with %d %d, type %d %d %d %s\n",
+	             i, NT, IT, IR , ct, sm, ln, resText);
 	}
 }
 

@@ -34,7 +34,7 @@ class	motHandler:public virtual_dataHandler {
 public:
 		motHandler	(RadioInterface *, bool);
 		~motHandler	();
-	void	add_mscDatagroup	(std::vector<uint8_t>);
+	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 private:
 	RadioInterface	*myRadioInterface;
 	bool		backgroundFlag;

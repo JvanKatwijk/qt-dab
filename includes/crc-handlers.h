@@ -59,16 +59,16 @@ int16_t	Sum	= 0;
 }
 
 static inline
-bool	check_crc_bytes (uint8_t *msg, int32_t len) {
+bool	check_crc_bytes (const uint8_t *msg, int32_t len) {
 int i, j;
 uint16_t	accumulator	= 0xFFFF;
 uint16_t	crc;
 uint16_t	genpoly		= 0x1021;
 
-	for (i = 0; i < len; i ++) {
+	for (int i = 0; i < len; i ++) {
 	   uint16_t xx = msg [i];
 	   int16_t data = xx << 8;
-	   for (j = 8; j > 0; j--) {
+	   for (int j = 8; j > 0; j--) {
 	      if ((data ^ accumulator) & 0x8000)
 	         accumulator = ((accumulator << 1) ^ genpoly) & 0xFFFF;
 	      else

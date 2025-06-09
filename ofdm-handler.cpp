@@ -94,7 +94,8 @@
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
-	this	-> freq_speedUp		= false;
+	this	-> freq_speedUp		= 
+	         value_i (dabSettings, CONFIG_HANDLER, "SPPED_UP", 0) != 0;
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 	this	-> correlationOrder	= 

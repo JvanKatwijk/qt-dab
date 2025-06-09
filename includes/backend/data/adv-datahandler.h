@@ -36,7 +36,7 @@ public:
 		adv_dataHandler		(RadioInterface *,
 	                                 RingBuffer<uint8_t> *, int);
 		~adv_dataHandler	();
-	void	add_mscDatagroup	(std::vector<uint8_t>);
+	void	add_mscDatagroup	(const std::vector<uint8_t>);
 private:
 	RingBuffer<uint8_t>*	dataBuffer;
 };
