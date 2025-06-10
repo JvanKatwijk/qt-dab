@@ -293,7 +293,13 @@ stream_parms    streamParameters;
 	   if (check_crc_bytes (&outVector [au_start [i]],
 	                                aac_frame_length)) {
 //
-//	firs prepare dumping
+//	first prepare dumping
+//
+//	It is a litle tricky, but we deal with foreground and background
+//	tasks. For the foreground task, the user might - or might not -
+//	push the button to store the aac data,
+//	for a background task - indicated by having the var "dump" not NULL,
+//	the aac output is always written to a file
 	      std::vector<uint8_t> fileBuffer;
 	      int segmentSize =
 	              build_aacFile (aac_frame_length,
@@ -385,13 +391,13 @@ BitWriter	au_bw;
 	   au_bw. AddBits (sp -> CoreChConfig, 4); // channelConfiguration
 	   au_bw. AddBits (sp -> ExtensionSrIndex, 4);	// extensionSamplingFrequencyIndex
 	   au_bw. AddBits (0b00010, 5);		// AAC LC
-	   au_bw. AddBits (0b100, 3);							// GASpecificConfig() with 960 transform
+	   au_bw. AddBits (0b100, 3);	// GASpecificConfig() with 960 transform
 	} else {
 	   au_bw. AddBits (0b00010, 5); // AAC LC
 	   au_bw. AddBits (sp -> CoreSrIndex, 4); // samplingFrequencyIndex
 	   au_bw. AddBits (sp -> CoreChConfig, 4); // channelConfiguration
-	   au_bw. AddBits (0b100, 3);							// GASpecificConfig() with 960 transform
-	}
+	   au_bw. AddBits (0b100, 3);	// GASpecificConfig() with 960 transform
+}
 
 	au_bw. AddBits (0b000, 3);	// frameLengthType
 	au_bw. AddBits (0xFF, 8);	// latmBufferFullness

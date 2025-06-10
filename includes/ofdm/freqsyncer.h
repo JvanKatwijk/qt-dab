@@ -47,12 +47,14 @@ public:
 	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
 private:
 	dabParams	params;
+	phaseTable	*theTable;
 	std::vector<float> phaseDifferences;
 	int16_t		diff_length;
 	int32_t		T_u;
 	int32_t		T_g;
 	int16_t		carriers;
 	fftHandler	fft_forward;
+	fftHandler	fft_backwards;
 
 	bool		speedUp;
 };

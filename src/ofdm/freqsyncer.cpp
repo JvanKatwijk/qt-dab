@@ -31,7 +31,8 @@
 	                                phaseTable	*theTable,
 	                                bool		speedUp):
 	                                     params (p -> dabMode),
-	                                     fft_forward (params. get_T_u (), false) {
+	                                     fft_forward (params. get_T_u (), false),
+	                                     fft_backwards (params. get_T_u (), true) {
 int32_t	i;
 //float	Phi_k;
 
@@ -39,12 +40,12 @@ int32_t	i;
 	this	-> speedUp	= speedUp;
 //	this	-> diff_length	= p -> diff_length;
 	this	-> diff_length	= 128;
+	this	-> theTable	= theTable;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
 	
 	phaseDifferences.       resize (diff_length);
-
 //      prepare a table for the coarse frequency synchronization
 //      can be a static one, actually, we are only interested in
 //      the ones with a null
@@ -59,16 +60,76 @@ int32_t	i;
 //
 //	an approach that works fine is to correlate the phasedifferences
 //	between subsequent carriers
-#define	SEARCH_RANGE	(2 * 35)
+//	We start with an estimate of the offset by looking at the 
+//	best fit of begin and end segment of the carrier sequence
+//	from the input to the carrier sequence in the predefined
+//	null symbol
+#define	SEARCH_RANGE	(2 * 32)
+//
+//	Note: the vector v is being processed, its value is not constant
 int16_t	freqSyncer::
 	     estimate_CarrierOffset (std::vector<Complex> v) {
 int16_t index_1 = 100, index_2 = 100;
 int starter_1	= - SEARCH_RANGE / 2;	// the default
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
-//
-	fft_forward. fft (v);
-
 float	test [T_u];
+
+	fft_forward. fft (v);
+//
+//	The coarse frequency offset is computed by looking at the
+//	phase differences of subsequenct carriers in the
+//	predefined data vs the incoming symbol 0.
+//	The current approach is pretty simple, we just look at the
+//	low values (phase 0) and the higher values on the positions
+//	defined by the predefined data.
+//	A simple optimization was to just make a (not too wild) guess
+//	of the position of the NULL carrier, and applying the
+//	search on just a few carriers around this assumed null carrier.
+//
+//	Willem S suggested to apply a more "scientific" approach to
+//	compute the correlation between the phases, required for
+//	computing the coarse frequency offset.
+//	Inspired by https://phys.uri.edu/nigh/NumRec/bookfpdf/f13-2.pdf
+//	(and of course using the approach in the time syncing),
+//	I experimented with different "test" sizes and, while testsize 128
+//	works pretty well, it underperforms compared to the more basic
+//	approach that consists of counting high and low values
+//
+#if	0
+#define	TEST_SIZE 128
+Complex t1 [TEST_SIZE];
+Complex t2 [TEST_SIZE];
+fftHandler go_forward (TEST_SIZE, false);
+fftHandler go_backwards (TEST_SIZE, true);
+//
+//	first of all: compute the phases
+	for (int i = -TEST_SIZE / 2; i < TEST_SIZE / 2; i ++) {
+	   t1 [TEST_SIZE / 2 + i] = theTable -> refTable [(T_u + i) % T_u] *
+	                 conj (theTable -> refTable [(T_u + i + 1) % T_u]);
+//	   t1 [TEST_SIZE / 2 + i] = Complex (arg (t1 [i]), 0);
+	   t2 [TEST_SIZE / 2 + i] = v [(T_u + i) % T_u] *
+	                 conj (v [(T_u + i + 1) % T_u]);
+//	   t2 [TEST_SIZE / 2 +i] = Complex (arg (t2 [i]), 0);
+	}
+//	apply the FFT
+	go_forward. fft (t2);
+	go_forward. fft (t1);
+	for (int i = 0; i < TEST_SIZE; i ++)
+	   t1 [i] = t1 [i] * conj (t2 [i]);
+//	and go back
+	go_backwards. fft (t1);
+	int ind1	= -1000;
+	float mm	= -0;
+	for (int i = -SEARCH_RANGE / 2 ; i < SEARCH_RANGE / 2; i ++) {
+	   if (abs (t1 [(TEST_SIZE + i) % TEST_SIZE]) > mm) {
+	      mm = abs (t1 [(TEST_SIZE + i) % TEST_SIZE]);
+	      ind1 = i;
+	   }
+	}
+	if (ind1 == -SEARCH_RANGE)
+	   return 100;
+	return ind1;
+#else
 	for (int i = 0; i < T_u / 2; i ++) {
 	   test [i]		= jan_abs (v [T_u / 2 + i]);
 	   test [T_u / 2 + i]	= jan_abs (v [i]);
@@ -144,5 +205,6 @@ float	test [T_u];
 	if (index_1 != index_2)
 	   return 100;
 	return index_1 - T_u; 
+#endif
 }
 

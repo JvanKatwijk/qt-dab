@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -23,7 +23,8 @@
 #pragma once
 
 #include	"dab-constants.h"
-class	protection;
+#include	<QScopedPointer>
+#include	"protection.h"
 
 class	backendDeconvolver {
 public:
@@ -33,6 +34,6 @@ void	deconvolve	(int16_t	*rawBits_in,
 	                 int32_t	length,
 	                 uint8_t	*outData);
 private:
-	protection	* protectionHandler;
+	QScopedPointer<protection>	protectionHandler;
 };
 

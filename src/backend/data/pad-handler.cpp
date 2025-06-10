@@ -316,7 +316,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   last_appType = appType;
 	   base -= length;
 	   if (base < 0 && i < CI_Index - 1) {
-	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
+//	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
 	      return;
 	   }
 	}
@@ -529,7 +529,7 @@ uint16_t	index;
 	}
 
 	if ((groupType != 3) && (groupType != 4)) {
-	   fprintf (stderr, "groupType %d\n", groupType);
+//	   fprintf (stderr, "groupType %d\n", groupType);
 	   return;		// do not know yet
 	}
 //	extensionflag
@@ -677,8 +677,8 @@ int NT	= data [2] & 0x03;
 	   the_DL2. entity [i]. str = QString (resText);
 	   show_title (IR, ct, the_DL2. entity [i]. str);
 //	still have to figure out what to do when with these DL elements
-	   fprintf (stderr, "Object index %d (of %d)  with %d %d, type %d %d %d %s\n",
-	             i, NT, IT, IR , ct, sm, ln, resText);
+//	   fprintf (stderr, "Object index %d (of %d)  with %d %d, type %d %d %d %s\n",
+//	             i, NT, IT, IR , ct, sm, ln, resText);
 	}
 }
 

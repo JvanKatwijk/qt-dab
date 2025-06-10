@@ -28,17 +28,16 @@
 	backendDeconvolver::backendDeconvolver (descriptorType *d,
 	                                               uint8_t cpuSupport) {
         if (d -> shortForm) 
-	   protectionHandler    = new uep_protection (d -> bitRate,
+	   protectionHandler. reset (new uep_protection (d -> bitRate,
                                                       d -> protLevel,
-	                                              cpuSupport);
+	                                              cpuSupport));
         else 
-           protectionHandler    = new eep_protection (d -> bitRate,
+           protectionHandler. reset (new eep_protection (d -> bitRate,
                                                       d -> protLevel,
-	                                              cpuSupport);
+	                                              cpuSupport));
 }
 
 	backendDeconvolver::~backendDeconvolver() {
-	delete protectionHandler;
 }
 
 void	backendDeconvolver::deconvolve	(int16_t	*rawBits_in,
