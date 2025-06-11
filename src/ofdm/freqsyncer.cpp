@@ -31,11 +31,12 @@
 	                                phaseTable	*theTable,
 	                                bool		speedUp):
 	                                     params (p -> dabMode),
-	                                     fft_forward (params. get_T_u (), false),
-	                                     fft_backwards (params. get_T_u (), true) {
-int32_t	i;
-//float	Phi_k;
-
+	                                     fft_forward (params. get_T_u (), false)
+#ifdef	__FFT_CORR__
+	                                     ,go_forward (TEST_SIZE, false)
+	                                     ,go_backwards (TEST_SIZE, true)
+#endif
+	                                          {
 	(void)mr;
 	this	-> speedUp	= speedUp;
 //	this	-> diff_length	= p -> diff_length;
@@ -49,10 +50,19 @@ int32_t	i;
 //      prepare a table for the coarse frequency synchronization
 //      can be a static one, actually, we are only interested in
 //      the ones with a null
-	for (i = 1; i <= diff_length; i ++) 
+	for (int i = 1; i <= diff_length; i ++) 
 	   phaseDifferences [i - 1] =
 	        abs (arg (theTable -> refTable [(T_u + i) % T_u] *
 	             conj (theTable -> refTable [(T_u + i + 1) % T_u])));
+#ifdef	__FFT_CORR__
+//	first of all: compute the phases
+	for (int i = -TEST_SIZE / 2; i < TEST_SIZE / 2; i ++) {
+	   t1 [TEST_SIZE / 2 + i] = theTable -> refTable [(T_u + i) % T_u] *
+	                 conj (theTable -> refTable [(T_u + i + 1) % T_u]);
+//	   t1 [TEST_SIZE / 2 + i] = Complex (arg (t1 [i]), 0);
+	}
+	go_forward. fft (t1);
+#endif
 }
 
 	freqSyncer::~freqSyncer () {
@@ -69,10 +79,6 @@ int32_t	i;
 //	Note: the vector v is being processed, its value is not constant
 int16_t	freqSyncer::
 	     estimate_CarrierOffset (std::vector<Complex> v) {
-int16_t index_1 = 100, index_2 = 100;
-int starter_1	= - SEARCH_RANGE / 2;	// the default
-float	computedDiffs [SEARCH_RANGE + diff_length + 1];
-float	test [T_u];
 
 	fft_forward. fft (v);
 //
@@ -95,41 +101,34 @@ float	test [T_u];
 //	works pretty well, it underperforms compared to the more basic
 //	approach that consists of counting high and low values
 //
-#if	0
-#define	TEST_SIZE 128
-Complex t1 [TEST_SIZE];
-Complex t2 [TEST_SIZE];
-fftHandler go_forward (TEST_SIZE, false);
-fftHandler go_backwards (TEST_SIZE, true);
-//
-//	first of all: compute the phases
+#ifdef	__FFT_CORR__
 	for (int i = -TEST_SIZE / 2; i < TEST_SIZE / 2; i ++) {
-	   t1 [TEST_SIZE / 2 + i] = theTable -> refTable [(T_u + i) % T_u] *
-	                 conj (theTable -> refTable [(T_u + i + 1) % T_u]);
-//	   t1 [TEST_SIZE / 2 + i] = Complex (arg (t1 [i]), 0);
 	   t2 [TEST_SIZE / 2 + i] = v [(T_u + i) % T_u] *
 	                 conj (v [(T_u + i + 1) % T_u]);
 //	   t2 [TEST_SIZE / 2 +i] = Complex (arg (t2 [i]), 0);
 	}
 //	apply the FFT
 	go_forward. fft (t2);
-	go_forward. fft (t1);
 	for (int i = 0; i < TEST_SIZE; i ++)
-	   t1 [i] = t1 [i] * conj (t2 [i]);
+	   t2 [i] = t1 [i] * conj (t2 [i]);
 //	and go back
-	go_backwards. fft (t1);
-	int ind1	= -1000;
+	go_backwards. fft (t2);
+	int theCarrier	= -1000;
 	float mm	= -0;
 	for (int i = -SEARCH_RANGE / 2 ; i < SEARCH_RANGE / 2; i ++) {
-	   if (abs (t1 [(TEST_SIZE + i) % TEST_SIZE]) > mm) {
-	      mm = abs (t1 [(TEST_SIZE + i) % TEST_SIZE]);
-	      ind1 = i;
+	   if (abs (t2 [(TEST_SIZE + i) % TEST_SIZE]) > mm) {
+	      mm = abs (t2 [(TEST_SIZE + i) % TEST_SIZE]);
+	      theCarrier = i;
 	   }
 	}
-	if (ind1 == -SEARCH_RANGE)
+	if ((theCarrier == -SEARCH_RANGE) || (theCarrier == SEARCH_RANGE))
 	   return 100;
-	return ind1;
+	return theCarrier;
 #else
+	int16_t index_1 = 100, index_2 = 100;
+	int starter_1	= - SEARCH_RANGE / 2;	// the default
+	float	computedDiffs [SEARCH_RANGE + diff_length + 1];
+	float	test [T_u];
 	for (int i = 0; i < T_u / 2; i ++) {
 	   test [i]		= jan_abs (v [T_u / 2 + i]);
 	   test [T_u / 2 + i]	= jan_abs (v [i]);

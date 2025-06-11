@@ -327,6 +327,7 @@ bool	seems_epg (const QString &name) {
                name. contains ("BBC Guide", Qt::CaseInsensitive) ||
                name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
                name. contains ("EPG_", Qt::CaseInsensitive) ||
+               name. contains ("EPG-", Qt::CaseInsensitive) ||
                name. startsWith ("EPG ", Qt::CaseInsensitive);
 }
 

@@ -60,7 +60,6 @@ int16_t	Sum	= 0;
 
 static inline
 bool	check_crc_bytes (const uint8_t *msg, int32_t len) {
-int i, j;
 uint16_t	accumulator	= 0xFFFF;
 uint16_t	crc;
 uint16_t	genpoly		= 0x1021;

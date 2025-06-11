@@ -54,8 +54,15 @@ private:
 	int32_t		T_g;
 	int16_t		carriers;
 	fftHandler	fft_forward;
-	fftHandler	fft_backwards;
+#ifdef	__FFT_CORR__
+#define	TEST_SIZE	64
+	fftHandler	go_forward;
+	fftHandler	go_backwards;
+	Complex		t1 [TEST_SIZE];
+	Complex		t2 [TEST_SIZE];
+#endif
 
+	
 	bool		speedUp;
 };
 //#endif

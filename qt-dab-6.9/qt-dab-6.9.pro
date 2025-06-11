@@ -40,6 +40,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #       defines
 #DEFINES	+= __MSC_THREAD__
 DEFINES		+= __THREADED_BACKEND__
+#DEFINES	+= __FFT_CORR__
 
 #For showing trace output
 #DEFINES	+= __EPG_TRACE__  
