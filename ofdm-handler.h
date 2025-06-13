@@ -97,6 +97,7 @@ public:
 	void		stop_ficDump		();
 
 	void		set_speedUp		(bool);
+	void		set_freqCorrelator	(uint8_t);
 //	for the mscHandler
 //	void		resetServices		();
 //	void		stopService		(descriptorType *, int);
@@ -162,6 +163,7 @@ private:
 	bool			correlationOrder;
 	bool			dxMode;
 	bool			freq_speedUp;
+	uint8_t			freq_correlator;
 virtual	void			run		();
 signals:
 	void		set_synced		(bool);

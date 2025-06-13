@@ -174,7 +174,6 @@ QTranslator	theTranslator;
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	qRegisterMetaType<QVector<tiiData> >("QVector<tiiData>");
 	
-
 	a. exec();
 /*
  *      done:

@@ -41,7 +41,6 @@
 
 #define	TII_OLD	0100
 #define	TII_NEW	0101
-
 /**
   *	\brief ofdmHandler
   *	The ofdmHandler class is the driver of the processing
@@ -95,7 +94,9 @@
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
 	this	-> freq_speedUp		= 
-	         value_i (dabSettings, CONFIG_HANDLER, "SPPED_UP", 0) != 0;
+	         value_i (dabSettings, CONFIG_HANDLER, "SPEED_UP", 0) != 0;
+	this	-> freq_correlator		=
+	         value_i (dabSettings, CONFIG_HANDLER, "SELECT_CORR", 0);
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 	this	-> correlationOrder	= 
@@ -208,7 +209,8 @@ timeSyncer	myTimeSyncer (&theReader);
 phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
-freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable, freq_speedUp);
+freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable,
+	                                freq_speedUp, freq_correlator);
 estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
@@ -712,5 +714,10 @@ void	ofdmHandler::select_TII		(uint8_t a) {
 
 void	ofdmHandler::set_speedUp	(bool b) {
 	freq_speedUp	= b;
+	store (settings_p, CONFIG_HANDLER, "SPEED_UP", b ? 1 : 0);
+}
+
+void	ofdmHandler::set_freqCorrelator	(uint8_t corr) {
+	store (settings_p, CONFIG_HANDLER, "SELECT_CORR", corr);
 }
 

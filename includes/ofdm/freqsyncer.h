@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -36,13 +36,15 @@
 
 class	RadioInterface;
 
+#define	FFT_CORR	0100
 class freqSyncer : public QObject {
 Q_OBJECT
 public:
 			freqSyncer 		(RadioInterface *,
 	                                         processParams *,
 	                                         phaseTable *,
-	                                         bool speedUp = false);
+	                                         bool speedUp = false,
+	                                         uint8_t correlator = 0);
 			~freqSyncer		();
 	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
 private:
@@ -54,16 +56,12 @@ private:
 	int32_t		T_g;
 	int16_t		carriers;
 	fftHandler	fft_forward;
-#ifdef	__FFT_CORR__
 #define	TEST_SIZE	64
 	fftHandler	go_forward;
 	fftHandler	go_backwards;
 	Complex		t1 [TEST_SIZE];
 	Complex		t2 [TEST_SIZE];
-#endif
-
-	
 	bool		speedUp;
+	uint8_t		correlator;
 };
-//#endif
 

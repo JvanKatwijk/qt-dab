@@ -1056,7 +1056,6 @@ const char *type;
 	      QDir (). mkpath (temp);	
 	   pict	= QDir::toNativeSeparators (pict);
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
-
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
 	                         pict. toUtf8 (). data ());
@@ -2351,8 +2350,7 @@ int	tunedFrequency	=
 	theLogger. log (logger::LOG_NEW_CHANNEL, theChannel, channel. snr);
 	channel. realChannel	= !inputDevice_p -> isFileInput ();
 	if (channel. realChannel) {
-	   QString sChannel = theChannel;
-	   store (dabSettings_p, DAB_GENERAL, CHANNEL_NAME, sChannel);
+	   store (dabSettings_p, DAB_GENERAL, CHANNEL_NAME, theChannel);
 	}
 
 //	The ".sdr" and ".uff" files - when built by us - carry
