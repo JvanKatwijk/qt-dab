@@ -133,7 +133,6 @@ private:
 
 	QSettings		*hackrfSettings;
 	QString			recorderVersion;
-	int32_t			inputRate;
 	std::atomic<bool>	running;
 	QLibrary*		library_p;
 	QString			serialNumber;

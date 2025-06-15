@@ -25,7 +25,7 @@
  *	Inspired by the spyserver client from Mike Weber
  *	and some functions are copied.
  *	The code is simplified since Qt-DAB functions best with
- *	16 bit codes and a samplerate of 2048000 S/s
+ *	16 bit codes and a samplerate of SAMPLERATE (2048000) S/s
  *	for Functions copied (more or less) from Mike weber's version
  *	copyrights are gratefully acknowledged
  */
@@ -47,10 +47,12 @@
 
 	spyServer_client::spyServer_client	(QSettings *s):
 	                                        _I_Buffer (8 * 32 * 32768),
-	                                        tmpBuffer (32 * 32768) {
+	                                        tmpBuffer (32 * 32768),
+	                                        hostLineEdit (nullptr) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
 	myFrame. show		();
+	hostLineEdit. hide ();
 
     //	setting the defaults and constants
 	settings. gain		= value_i (spyServer_settings,
@@ -68,8 +70,6 @@
 	spyServer_gain	-> setValue (theGain);
 	lastFrequency	= DEFAULT_FREQUENCY;
 	connected	= false;
-	theServer	= nullptr;
-	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
 	settings. resample_quality	= 2;
 	settings. batchSize		= 4096;
@@ -97,9 +97,7 @@
 	}
 	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
 	                              "spyServer_client-gain", settings. gain);
-	if (theServer != nullptr)
-	   delete theServer;
-	delete	hostLineEdit;
+	theServer. reset ();
 }
 //
 void	spyServer_client::wantConnect () {
@@ -122,13 +120,12 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
 	ipAddress =value_s (spyServer_settings, SPY_SERVER_16_SETTINGS,
 	                                       "remote-server", ipAddress);
-	hostLineEdit	-> setText (ipAddress);
-
-	hostLineEdit	-> setInputMask ("000.000.000.000");
+	hostLineEdit. setText (ipAddress);
+	hostLineEdit. setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit	-> show();
+	hostLineEdit. show ();
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (hostLineEdit, &QLineEdit::returnPressed,
+	connect (&hostLineEdit, &QLineEdit::returnPressed,
 	         this, &spyServer_client::setConnection);
 }
 
@@ -137,21 +134,20 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
 void	spyServer_client::setConnection () {
-QString s	= hostLineEdit -> text();
+QString s	= hostLineEdit. text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
-	theServer	= nullptr;
 	settings. basePort	= portNumber -> value ();
 	try {
-	   theServer	= new spyHandler (this, theAddress,
+	   theServer. reset (new spyHandler (this, theAddress,
 	                                  (int)settings. basePort,
-	                                   &tmpBuffer);
+	                                   &tmpBuffer));
 	} catch (...) {
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("Connection failed"));
 	   return;
 	}
-	if (theServer == nullptr) {
+	if (theServer. isNull ()) {
 	   fprintf (stderr, "Connecting failed\n");
 	   return;
 	}
@@ -165,7 +161,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	if (timedOut) {
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("no answers, fatal"));
-	   delete theServer;
+	   theServer. reset ();
 	   connected = false;
 	   return;
 	}
@@ -198,29 +194,27 @@ QString theAddress	= QHostAddress (s). toString ();
 	double resample_ratio	= 1.0;
 
 	if (max_samp_rate == 0) {
-	   delete theServer;
-	   theServer	= nullptr;
+	   theServer. reset ();
 	   return;
 	}
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
 	     int testRate = (uint32_t)(max_samp_rate / (1 << i));
-	   if (testRate == 2048000) {
+	   if (testRate == SAMPLERATE) {
 	      desired_decim_stage = i;
 	      resample_ratio = 1;
 	      break;
 	   } else
-	   if (testRate > 2048000) {
+	   if (testRate > SAMPLERATE) {
 //	remember the next-largest rate that is available
 	      desired_decim_stage = i;
-	      resample_ratio = 2048000 / (double)testRate;
+	      resample_ratio = SAMPLERATE / (double)testRate;
 	      settings. sample_rate = testRate;
 	   }
 
 	   fprintf (stderr, " result: resample_ratio %f, targetrate %f\n",
 	                    (float)resample_ratio, (float)settings. sample_rate);
 	   if (desired_decim_stage < 0) {
-	      delete theServer;
-	      theServer	= nullptr;
+	      theServer. reset ();
 	      return;
 	   }
 /*
@@ -263,17 +257,18 @@ QString theAddress	= QHostAddress (s). toString ();
 	   convBufferSize          = settings. sample_rate/ 1000;
 	   fprintf (stderr, "convBufferSize %d\n", convBufferSize);
 	   convBuffer. resize (convBufferSize + 1);
-	   for (int i = 0; i < 2048; i ++) {
+	   float samplesPerMsec	= SAMPLERATE / 1000.0;
+	   for (int i = 0; i < SAMPLERATE / 1000; i ++) {
 	      float inVal  = float (settings. sample_rate / 1000);
-	      mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
-	      mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
+	      mapTable_int [i]     = int (floor (i * (inVal / samplesPerMsec)));
+	      mapTable_float [i]   = i * (inVal / samplesPerMsec) - mapTable_int [i];
 	   }
 	   convIndex       = 0;
 	}
 }
 
 int32_t	spyServer_client::getRate	() {
-	return INPUT_RATE;
+	return SAMPLERATE;
 }
 
 bool	spyServer_client::restartReader	(int32_t freq, int skipped) {
@@ -297,7 +292,7 @@ bool	spyServer_client::restartReader	(int32_t freq, int skipped) {
 
 void	spyServer_client::stopReader() {
 	fprintf (stderr, "stopReader is called\n");
-	if (theServer == nullptr)
+	if (theServer. isNull ())
 	   return;
 	if (!connected || !running)	// seems double???
 	   return;
@@ -326,7 +321,7 @@ void	spyServer_client::setGain	(int gain) {
 	settings. gain = gain;
 	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
                                       "spyServer_client-gain", settings. gain);
-	if (theServer == nullptr)
+	if (theServer. isNull ())
 	   return;
 	if (!theServer -> set_gain (settings.gain)) {
 	   std::cerr << "Failed to set gain\n";
@@ -361,7 +356,7 @@ int16_t buffer_16 [settings. batchSize * 2];
 	      continue;
 
 	   if (settings. resample_ratio != 1) {
-	      std::complex<float> temp [2048];
+	      std::complex<float> temp [SAMPLERATE / 1000];
 	      for (uint32_t i = 0; i < samps; i ++) {
 	         convBuffer [convIndex ++] =
 	                     std::complex<float> (
@@ -369,16 +364,16 @@ int16_t buffer_16 [settings. batchSize * 2];
                                           buffer_16 [2 * i + 1] / 32768.0);
 
 	         if (convIndex > convBufferSize) { 
-	            for (int j = 0; j < 2048; j ++) {
+	            for (int j = 0; j < SAMPLERATE / 1000; j ++) {
 	               int16_t  inpBase    = mapTable_int [j];
 	               float    inpRatio   = mapTable_float [j];
 	               temp [j]    = convBuffer [inpBase + 1] * inpRatio +
 	                             convBuffer [inpBase] * (1 - inpRatio);
 	            }
 	            if (toSkip > 0)
-	               toSkip -= 2048;
+	               toSkip -= SAMPLERATE / 1000;
 	            else
-	               _I_Buffer. putDataIntoBuffer (temp, 2048);
+	               _I_Buffer. putDataIntoBuffer (temp, SAMPLERATE / 1000);
 	            convBuffer [0] = convBuffer [convBufferSize];
 	            convIndex = 1;
 	         }

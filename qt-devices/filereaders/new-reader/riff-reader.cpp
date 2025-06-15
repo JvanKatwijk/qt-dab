@@ -25,6 +25,8 @@
 #include	<stdint.h>
 #include	"riff-reader.h"
 
+#include	"device-handler.h"
+
 #define	READ4BYTES	0
 #define	READ6BYTES	1
 #define	READ8BYTES	2
@@ -117,7 +119,7 @@ char header [5];
 	fread (&samplingRate, 1, 4, filePointer);
 //	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
 	if ((formatTag != 01) ||
-	    (nrChannels != 02) || (samplingRate != 2048000)) {
+	    (nrChannels != 02) || (samplingRate != SAMPLERATE)) {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
@@ -234,7 +236,7 @@ char header [5];
 	fread (&samplingRate, 1, 4, filePointer);
 	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
 	if ((formatTag != 01) ||
-	    (nrChannels != 02) || (samplingRate != 2048000)) {
+	    (nrChannels != 02) || (samplingRate != SAMPLERATE)) {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());

@@ -50,6 +50,19 @@ float Length	= jan_abs (V);
 	return Length == 0.0f ? Complex (0.0, 0.0) : V / (DABFLOAT)Length;
 }
 
+#define	GRANULARITY	1000
+#define	TABLE_SIZE	(int)(GRANULARITY + RAD_PER_DEGREE * 30.0)
+Complex makeComplex (DABFLOAT phase) {
+DABFLOAT p2	= phase * phase;
+DABFLOAT p3	= p2 * phase;
+DABFLOAT p4	= p3 * phase;
+DABFLOAT p5	= p4 * phase;
+DABFLOAT p6	= p5 * phase;
+DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
+DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
+	return Complex (cosi, sine);
+}
+
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
@@ -92,6 +105,12 @@ float Length	= jan_abs (V);
 	decoder			= DECODER_1;
 
 	nullPower		= 0.1f;
+
+	sinTable. resize (TABLE_SIZE);
+	for (int i = 0; i < TABLE_SIZE; i ++)  {
+	   float argum = (float)(i - TABLE_SIZE / 2) / TABLE_SIZE;
+	   sinTable [i] = Complex (cos (argum), sin (argum));
+	}
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -185,16 +204,6 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 //	decimal correct.
 //	A more performance oriented solution could be a table,
 //	but then, the granularity of the table should be pretty high.
-Complex makeComplex (DABFLOAT phase) {
-DABFLOAT p2	= phase * phase;
-DABFLOAT p3	= p2 * phase;
-DABFLOAT p4	= p3 * phase;
-DABFLOAT p5	= p4 * phase;
-DABFLOAT p6	= p5 * phase;
-DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
-DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
-	return Complex (cosi, sine);
-}
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
@@ -226,8 +235,10 @@ DABFLOAT sum = 0;
 	   conjVector   [index] = fftBinRaw;
 
 //	   Complex fftBin	= fftBinRaw;
-	   Complex fftBin	= fftBinRaw *
-	                     makeComplex (-IntegAbsPhaseVector [index]);
+	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
+	                                                 TABLE_SIZE / 2);
+	   Complex fftBin	= fftBinRaw * sinTable [dd];
+//	                     makeComplex (-IntegAbsPhaseVector [index]);
 //	Get the phase (real and absolute) 
 	   DABFLOAT	re	= real (fftBin);
 	   DABFLOAT	im	= imag (fftBin);
@@ -241,13 +252,14 @@ DABFLOAT sum = 0;
 	   IntegAbsPhaseVector [index] = 
 	      (1 - ALPHA) * IntegAbsPhaseVector [index] + ALPHA * phaseError;
 	   limit_symmetrically (IntegAbsPhaseVector [index],
-	                                RAD_PER_DEGREE * (DABFLOAT)10.0);
+	                                RAD_PER_DEGREE * (DABFLOAT)9.9);
 
+	   
 /**
   *	When trying alternative decoder implementations
   *	as implemented in DABstar by Rolf Zerr (aka old-dab) and
   *	Thomas Neder (aka) Tomneda,  I wanted to do some investigation
-  (	to get  actual figures.
+  *	to get  actual figures.
   *	The different decoders were tested with an old file
   *	with a recording of a poor signal, that ran for (almost) exact
   *	two  minutes from the start, and the BER results were accumulated
@@ -264,6 +276,7 @@ DABFLOAT sum = 0;
   *	the contributions of Rolf Zerr (aka OldDab) and
   *	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
   */
+#ifdef	__ZERR__
 	   DABFLOAT	stdDev		= phaseError * phaseError;
 	   stdDevVector [index] =
 	        compute_avg (stdDevVector [index], stdDev, ALPHA);
@@ -297,21 +310,21 @@ DABFLOAT sum = 0;
 	   DABFLOAT ff 		=  meanLevelVector [index] /
 	                                         meanSigmaSqVector [index];
 	   ff /= 1 / snr + 2;
-	   Complex R1;
 	   
 	   DABFLOAT weight_r;
 	   DABFLOAT weight_i;
+#endif
+	   Complex R1;
 	   switch (decoder) {
 	      default:
 	      case DECODER_1:
 	         R1		= fftBin;
 	         ibits [i]
-	                   = - real (R1) / jan_abs (R1) * MAX_VITERBI;
-//	                   = - real (R1) / meanLevelPerBin * MAX_VITERBI;
+	                   = - real (R1) / binAbsLevel * MAX_VITERBI;
 	         ibits [carriers + i]
-	                   = - imag (R1) / jan_abs (R1) * MAX_VITERBI; 
-//	                   = - imag (R1) / meanLevelPerBin * MAX_VITERBI; 
+	                   = - imag (R1) / binAbsLevel * MAX_VITERBI; 
 	         break;
+#ifdef	__ZERR__
 	      case DECODER_2:
 	         R1 =  normalize (fftBin) * ff *
 	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
@@ -319,13 +332,17 @@ DABFLOAT sum = 0;
 	         ibits [i]		= (int16_t)(real (R1) * weight_r);
 	         ibits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
 	         break;
-
+#endif
 	   }
 
+#ifdef	__ZERR__
 	   sum += jan_abs (R1);
 	}	// end of decode loop
 
 	meanValue	= sum / carriers;
+#else
+	}
+#endif
 
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
@@ -424,13 +441,12 @@ static float vv	=  0;
 	   theta	+= val * Complex (1, -1);
 	}
 
-	float uu =  arg (theta) / (2 * M_PI) * 2048000 / T_u;
+	float uu =  arg (theta) / (2 * M_PI) * SAMPLERATE / T_u;
 	vv	= 0.9 * vv + 0.1 * abs (uu);;
 	return vv;
 }
 
-float	ofdmDecoder::compute_clockOffset (Complex *r,
-	                                  Complex *v) {
+float	ofdmDecoder::compute_clockOffset (Complex *r, Complex *v) {
 float	offsa	= 0;
 int	offsb	= 0;
 

@@ -59,7 +59,7 @@
 	nameofFile	-> setText (fileName);
 	fseek (filePointer, 0, SEEK_END);
 	int64_t fileLength      = ftell (filePointer);
-        totalTime       -> display ((float)fileLength / (INPUT_RATE * 2));
+        totalTime       -> display ((float)fileLength / (SAMPLERATE * 2));
 	fseek (filePointer, 0, SEEK_SET);
 	fileProgress    -> setValue (0);
         currentTime     -> display (0);

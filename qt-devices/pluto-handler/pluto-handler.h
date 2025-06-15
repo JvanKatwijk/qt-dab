@@ -30,13 +30,15 @@
 #include	<QObject>
 #include	<QFrame>
 #include	<QSettings>
+#include	<QLibrary>
+#include	<QScopedPointer>
 #include	<atomic>
 #include	<iio.h>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 #include	"ui_pluto-widget.h"
-#include	<QLibrary>
+#include	"xml-filewriter.h"
 
 //#ifdef __MINGW32__
 //#define GETPROCADDRESS  GetProcAddress
@@ -44,12 +46,10 @@
 //#define GETPROCADDRESS  dlsym
 //#endif
 
-class	xml_fileWriter;
 class	logger;
 
 #ifndef	PLUTO_RATE
 #define	PLUTO_RATE	2112000
-#define	DAB_RATE	2048000
 #define	DIVIDER		1000
 #define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
 #define	FM_RATE		2112000
@@ -146,10 +146,9 @@ private:
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
-	xml_fileWriter		*xmlWriter;
+	QScopedPointer<xml_fileWriter>	xmlWriter;
 	bool			setup_xmlDump	(bool);
 	void			close_xmlDump	();
-	std::atomic<bool>	dumping;
 	bool			filterOn;
 	void			run		();
 	int32_t			inputRate;
@@ -166,8 +165,8 @@ private:
 	bool			connected;
 	std::complex<float>	convBuffer	[CONV_SIZE + 1];
 	int			convIndex;
-	int16_t			mapTable_int	[DAB_RATE / DIVIDER];
-	float			mapTable_float	[DAB_RATE / DIVIDER];
+	int16_t			mapTable_int	[SAMPLERATE / DIVIDER];
+	float			mapTable_float	[SAMPLERATE / DIVIDER];
 
 	void			record_gainSettings	(int);
 	void			update_gainSettings	(int);

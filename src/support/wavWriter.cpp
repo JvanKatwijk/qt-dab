@@ -22,7 +22,7 @@
  */
 //
 //	The RIFF writer writes the input samples into a "wav" file
-//	with the samplerate of 2048000, as 16 bit int's, and a "chunk"
+//	with the samplerate of SAMPLERATE (2048000), as 16 bit int's, and a "chunk"
 //	(chunk Id "freq") is added that contains the frequency
 #include	"wavWriter.h"
 

@@ -33,6 +33,8 @@
 #include	<vector>
 #include	<atomic>
 
+#include	"device-handler.h"
+
 class	xml_fileReader;
 class	xmlDescriptor;
 
@@ -75,8 +77,8 @@ private:
 	int16_t         convBufferSize;
         int16_t         convIndex;
         std::vector <std::complex<float> >   convBuffer;
-        int16_t         mapTable_int   [2048];
-        float           mapTable_float [2048];
+        int16_t         mapTable_int   [SAMPLERATE / 1000];
+        float           mapTable_float [SAMPLERATE / 1000];
 
 signals:
 	void		setProgress		(int, int);

@@ -24,6 +24,7 @@
 #include	<QSettings>
 #include	<QLabel>
 #include	<QPoint>
+#include	"dab-constants.h"
 #include	"sdrplay-handler-v3.h"
 #include	"position-handler.h"
 #include	"sdrplay-commands.h"
@@ -94,7 +95,6 @@ std::string errorMessage (int errorCode) {
 	                               logger	*theLogger): // dummy right now
 	                                          _I_Buffer (4 * 1024 * 1024) {
 	sdrplaySettings			= s;
-	inputRate			= 2048000;
 	this	-> recorderVersion	= recorderVersion;
 	(void)theLogger;
         setupUi (&myFrame);
@@ -438,7 +438,7 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      channel,
 	                                      nrBits,
 	                                      "int16",
-	                                      2048000,
+	                                      SAMPLERATE,
 	                                      lastFrequency,
 	                                      theGain,
 	                                      "SDRplay",

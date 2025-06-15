@@ -30,6 +30,7 @@
 #include	<QTcpSocket>
 #include	<QFileDialog>
 #include	<QDir>
+#include	"dab-constants.h"
 #include	"rtl_tcp_client.h"
 #include	"device-exceptions.h"
 #include	"position-handler.h"
@@ -37,7 +38,6 @@
 
 #define	RTL_TCP_SETTINGS	"rtl_tcp_settings"
 #define	DEFAULT_FREQUENCY	(kHz (220000))
-#define	INPUT_RATE		2048000
 
 	rtl_tcp_client::rtl_tcp_client (QSettings *s):
 	                                        _I_Buffer (32 * 32768) {
@@ -50,7 +50,7 @@
 	ipAddress	= "127.0.0.1";
 
 	for (int i = 0; i < 256; i ++)
-	   mapTable [i] = (float)(i - 128.0) / 128.0;
+	   convTable [i] = (float)(i - 128.0) / 128.0;
 
 	Gain		=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "Gain", 20);
@@ -70,7 +70,7 @@
 	setAgcMode	(AgcMode);
 	portSelector	-> setValue (basePort);
 	addressSelector	-> setText (ipAddress);
-	vfoFrequency = DEFAULT_FREQUENCY;
+	vfoFrequency	= DEFAULT_FREQUENCY;
 	connected	= false;
 //
 	connect (tcp_connect, SIGNAL (clicked ()),
@@ -124,7 +124,7 @@ void	rtl_tcp_client::wantConnect () {
 	}
 	connected = true;
 	theState -> setText ("connected");
-	sendRate	(INPUT_RATE);
+	sendRate	(SAMPLERATE);
 	setAgcMode	(AgcMode);
 	set_fCorrection (Ppm);
 	setBandwidth	(1536000);
@@ -180,8 +180,8 @@ std::complex<float> localBuffer [SEGMENT_SIZE];
 	   toServer. read ((char *)buffer, SEGMENT_SIZE);
 	   for (int i = 0; i < SEGMENT_SIZE; i ++)
 	      localBuffer [i] =
-	        std::complex<float> (mapTable [buffer [2 * i]],
-	                             mapTable [buffer [2 * i + 1]]);
+	        std::complex<float> (convTable [buffer [2 * i]],
+	                             convTable [buffer [2 * i + 1]]);
 	   if (toSkip > 0)
 	      toSkip -= SEGMENT_SIZE;
 	   else

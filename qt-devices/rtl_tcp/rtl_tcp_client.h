@@ -73,7 +73,7 @@ private:
 	QTcpSocket	toServer;
 	qint64		basePort;
 
-	float		mapTable [256];
+	float		convTable [256];
 
 private slots:
 	void		sendGain	(int);

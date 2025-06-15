@@ -35,7 +35,7 @@
 	this	-> base = base_16;
 }
 
-	reader_16::~reader_16 (void) {
+	reader_16::~reader_16 () {
 }
 //
 //	apparently bytes are read in from low byte to high byte

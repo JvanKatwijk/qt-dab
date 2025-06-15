@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2014 .. 2023
@@ -46,6 +45,7 @@
 #define	AVX_SUPPORT	0100
 #define	SSE_SUPPORT	0200
 #endif
+
 
 #if defined (__MINGW32__) || defined (__WIN32)
 //#include	"iostream.h"
@@ -129,10 +129,10 @@ using namespace std;
 #define		AUDIO_SERVICE	0
 #define		PACKET_SERVICE	3
 
-#define		INPUT_RATE	2048000
+#define		SAMPLERATE	2048000
 #define		BANDWIDTH	1536000
 
-#define		M_PER_SAMPLE	 (299792458 / INPUT_RATE)
+#define		M_PER_SAMPLE	 (299792458 / SAMPLERATE)
 
 #define		MAP_RESET	0
 #define		MAP_FRAME	1

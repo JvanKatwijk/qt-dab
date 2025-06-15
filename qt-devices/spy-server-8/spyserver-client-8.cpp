@@ -25,7 +25,7 @@
  *	Inspired by the spyserver client from Mike Weber
  *	and some functions are copied.
  *	The code is simplified since Qt-DAB functions best with
- *	16 bit codes and a samplerate of 2048000 S/s
+ *	16 bit codes and a samplerate of  SAMPLERATE (2048000) S/s
  *	for Functions copied (more or less) from Mike weber's version
  *	copyrights are gratefully acknowledged
  */
@@ -47,10 +47,12 @@
 
 	spyServer_client_8::spyServer_client_8	(QSettings *s):
 	                                            _I_Buffer (32 * 32768),
-	                                            tmpBuffer (32 * 32768) {
+	                                            tmpBuffer (32 * 32768),
+	                                            hostLineEdit (nullptr) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
 	myFrame. show		();
+	hostLineEdit. hide ();
 
     //	setting the defaults and constants
 	settings. gain		= value_i (spyServer_settings,
@@ -66,10 +68,8 @@
         if (settings. auto_gain != 0)
            autogain_selector    -> setChecked (true);
 	spyServer_gain	-> setValue (theGain);
-	lastFrequency	= DEFAULT_FREQUENCY;
 	connected	= false;
-	theServer	= nullptr;
-	hostLineEdit 	= new QLineEdit (nullptr);
+//	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
 	settings. resample_quality	= 2;
 	settings. batchSize		= 4096;
@@ -97,9 +97,9 @@
 	}
 	store (spyServer_settings, SPY_SERVER_8_SETTINGS,
 	                         "spyServer_client-gain", settings. gain);
-	if (theServer != nullptr)
-	   delete theServer;
-	delete	hostLineEdit;
+	if (!theServer. isNull ())
+	   theServer. reset ();
+//	delete	hostLineEdit;
 }
 //
 void	spyServer_client_8::wantConnect () {
@@ -123,13 +123,13 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	ipAddress	= value_s (spyServer_settings,
 	                           SPY_SERVER_8_SETTINGS,
 	                           "remote-server", ipAddress);
-	hostLineEdit	-> setText (ipAddress);
+	hostLineEdit. setText (ipAddress);
 
-	hostLineEdit	-> setInputMask ("000.000.000.000");
+	hostLineEdit. setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit	-> show();
+	hostLineEdit. show();
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (hostLineEdit, &QLineEdit::returnPressed,
+	connect (&hostLineEdit, &QLineEdit::returnPressed,
 	         this, &spyServer_client_8::setConnection);
 }
 
@@ -138,45 +138,42 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
 void	spyServer_client_8::setConnection () {
-QString s	= hostLineEdit -> text();
+QString s	= hostLineEdit. text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
-	theServer	= nullptr;
 	settings. basePort	= portNumber -> value ();
 	try {
-	   theServer	= new spyHandler_8 (this, theAddress,
+	   theServer. reset (new spyHandler_8 (this, theAddress,
 	                                    (int)settings. basePort,
-	                                    &tmpBuffer);
+	                                    &tmpBuffer));
 	} catch (...) {
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("Connection failed"));
 	   return;
 	}
-	if (theServer == nullptr) {
+	if (theServer. isNull ()) {
 	   fprintf (stderr, "Connecting failed\n");
 	   return;
 	}
 
 	connect (&checkTimer, &QTimer::timeout,
 	         this, &spyServer_client_8::handle_checkTimer);
-	checkTimer. start (2000);
 	timedOut	= false;
+	checkTimer. start (2000);
 	while (!onConnect. load () && !timedOut) 
 	   usleep (1000);
 	if (timedOut) {
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("no answers, fatal"));
-	   delete theServer;
+	   theServer. reset ();
 	   connected = false;
 	   return;
 	}
 	checkTimer. stop ();	
 	disconnect (&checkTimer, &QTimer::timeout,
 	            this, &spyServer_client_8::handle_checkTimer);
-//	fprintf (stderr, "We kunnen echt beginnen\n");
 	theServer	-> connection_set ();
 
-//	fprintf (stderr, "going to ask for device info\n");
 	struct DeviceInfo theDevice;
 	theServer	-> get_deviceInfo (theDevice);
 
@@ -199,27 +196,26 @@ QString theAddress	= QHostAddress (s). toString ();
 	double resample_ratio	= 1.0;
 
 	if (max_samp_rate == 0) {
-	   delete theServer;
-	   theServer	= nullptr;
+	   theServer. reset ();
 	   return;
 	}
+
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
 	   int targetRate = (uint32_t)(max_samp_rate / (1 << i));
-	   if (targetRate == INPUT_RATE) {
+	   if (targetRate == SAMPLERATE) {
 	      desired_decim_stage = i;
 	      resample_ratio = 1;
 	      break;
 	   } else
-	   if (targetRate > INPUT_RATE) {
+	   if (targetRate > SAMPLERATE) {
 //	remember the next-largest rate that is available
 	      desired_decim_stage = i;
-	      resample_ratio = INPUT_RATE / (double)targetRate;
+	      resample_ratio = SAMPLERATE / (double)targetRate;
 	      settings. sample_rate = targetRate;
 	   }
 
 	   if (desired_decim_stage < 0) {
-	      delete theServer;
-	      theServer	= nullptr;
+	      theServer. reset ();
 	      return;
 	   }
 /*
@@ -260,17 +256,18 @@ QString theAddress	= QHostAddress (s). toString ();
 //	we process chunks of 1 msec
 	   convBufferSize          = settings. sample_rate / 1000;
 	   convBuffer. resize (convBufferSize + 1);
-	   for (int i = 0; i < 2048; i ++) {
+	   float samplesPerMsec = SAMPLERATE / 1000.0;
+	   for (int i = 0; i < SAMPLERATE / 1000; i ++) {
 	      float inVal  = float (settings. sample_rate / 1000);
-	      mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
-	      mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
+	      mapTable_int [i]     = int (floor (i * (inVal / samplesPerMsec)));
+	      mapTable_float [i]   = i * (inVal / samplesPerMsec) - mapTable_int [i];
 	   }
 	   convIndex       = 0;
 	}
 }
 
 int32_t	spyServer_client_8::getRate	() {
-	return INPUT_RATE;
+	return SAMPLERATE;
 }
 
 bool	spyServer_client_8::restartReader	(int32_t freq, int skipped) {
@@ -374,7 +371,7 @@ uint8_t buffer_8 [settings. batchSize * 2];
 	      continue;
 
 	   if (settings. resample_ratio != 1) {
-	      std::complex<float> temp [2048];
+	      std::complex<float> temp [SAMPLERATE / 1000];
 	      for (uint32_t i = 0; i < samps; i ++) {
                  convBuffer [convIndex ++] =
                              std::complex<float> (
@@ -382,16 +379,16 @@ uint8_t buffer_8 [settings. batchSize * 2];
                                           convTable [buffer_8 [2 * i + 1]]);
               
                  if (convIndex > convBufferSize) {
-                    for (int j = 0; j < 2048; j ++) {
+                    for (int j = 0; j < SAMPLERATE / 1000; j ++) {
                        int16_t  inpBase    = mapTable_int [j];
                        float    inpRatio   = mapTable_float [j];
                        temp [j]    = convBuffer [inpBase + 1] * inpRatio +
                                      convBuffer [inpBase] * (1 - inpRatio);
                     }
 	            if (toSkip > 0)
-	               toSkip -= 2048;
+	               toSkip -= SAMPLERATE / 1000;
 	            else
-                       _I_Buffer. putDataIntoBuffer (temp, 2048);
+                       _I_Buffer. putDataIntoBuffer (temp, SAMPLERATE / 1000);
                     convBuffer [0] = convBuffer [convBufferSize];
                     convIndex = 1;
                  }

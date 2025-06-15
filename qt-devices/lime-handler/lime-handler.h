@@ -26,6 +26,8 @@
 #include	<QThread>
 #include	<QFrame>
 #include	<QSettings>
+#include	<QLibrary>
+#include	<QScopedPointer>
 #include	<atomic>
 #include	<vector>
 #include	"dab-constants.h"
@@ -34,7 +36,7 @@
 #include	"device-handler.h"
 #include	"lime-widget.h"
 #include	"fir-filters.h"
-#include	<QLibrary>
+#include	"xml-filewriter.h"
 class		logger;
 
 class	xml_fileWriter;
@@ -125,10 +127,9 @@ private:
         lms_stream_t    stream;
         void		run			();
 
-        xml_fileWriter  *xmlWriter;
+        QScopedPointer<xml_fileWriter>  xmlWriter;
         bool            setup_xmlDump		(bool);
         void            close_xmlDump           ();
-        std::atomic<bool> dumping;
 
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);

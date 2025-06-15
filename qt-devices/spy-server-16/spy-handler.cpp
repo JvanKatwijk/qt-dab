@@ -48,13 +48,12 @@
                                  "Failed to establish connection!" );
 	is_connected. store (true);
 	cleanRecords ();
-	testTimer	= new QTimer ();
-	connect (testTimer, &QTimer::timeout,
+	connect (&testTimer, &QTimer::timeout,
 	         this, &spyHandler::no_deviceInfo);
 	connect (this, &spyHandler::data_ready,
 	         parent, &spyServer_client::data_ready);
 	start ();
-	testTimer	-> start (10000);
+	testTimer. start (10000);
 }
 
 	spyHandler::~spyHandler	() {
@@ -262,9 +261,9 @@ bool	spyHandler::get_deviceInfo (struct DeviceInfo &theDevice) {
 	return true;
 }
 
-int	spyHandler::get_iq_data	(const int size, int16_t *outputItems) {
-	return outB -> getDataFromBuffer (outputItems,  2 * size) / 2;
-}
+//int	spyHandler::get_iq_data	(const int size, int16_t *outputItems) {
+//	return outB -> getDataFromBuffer (outputItems,  2 * size) / 2;
+//}
 
 bool	spyHandler::set_sample_rate_by_decim_stage (const uint32_t stage) {
 std::vector<uint32_t> p (1);
@@ -371,6 +370,6 @@ bool	spyHandler::isFileInput		() {
 }
 
 QString	spyHandler::deviceName		() {
-	return "spy-server-16 bits :";
+	return "spy-server-16-Bits :";
 }
 

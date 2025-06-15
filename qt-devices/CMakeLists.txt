@@ -274,6 +274,7 @@ include_directories(
 
 	   include_directories (
 	        ./rtlsdr-handler-linux/
+	        ./rtlsdr-handler-common/
 	   )
 
 	   set (${devicesLibName}_HDRS
@@ -282,12 +283,14 @@ include_directories(
 	        ./rtlsdr-handler-linux/rtl-dongleselect.h
 	        ./rtlsdr-handler-linux/rtl-sdr.h
 	        ./rtlsdr-handler-linux/rtl-sdr_export.h
+	        ./rtlsdr-handler-common/dll-driver.h
 	   )
 
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
 	        ./rtlsdr-handler-linux/rtlsdr-handler.cpp
 	        ./rtlsdr-handler-linux/rtl-dongleselect.cpp
+	        ./rtlsdr-handler-common/dll-driver.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)

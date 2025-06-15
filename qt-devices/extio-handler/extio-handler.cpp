@@ -110,7 +110,6 @@ int16_t	wchars_num;
 #endif
 int32_t	inputRate	= 0;
 
-	inputRate	= 2048000;	// default
 	lastFrequency	= Khz (25000);
 	base_16		= s -> value ("base_16", 128). toInt();
 	base_24		= s -> value ("base_24", 32767 * 256). toInt();

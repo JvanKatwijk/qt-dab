@@ -22,9 +22,9 @@
  */
 
 #include	<QTime>
+#include	"dab-constants.h"
 #include	"lime-handler.h"
 #include	"position-handler.h"
-#include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 #include	"logger.h"
 #include	"settingNames.h"
@@ -41,7 +41,7 @@ lms_info_str_t limedevices [10];
 	                          const QString &recorderVersion,
 	                          logger	*theLogger): // dummy for now
 	                             _I_Buffer (4 * 1024 * 1024),
-	                             theFilter (5, 1560000 / 2, 2048000) {
+	                             theFilter (5, 1560000 / 2, SAMPLERATE) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	(void)theLogger;
@@ -115,7 +115,7 @@ lms_info_str_t limedevices [10];
 	   throw (device_exception ("could not enable channels"));
 	}
 
-	res	= LMS_SetSampleRate (theDevice, 2048000.0, 0);
+	res	= LMS_SetSampleRate (theDevice, (float)SAMPLERATE, 0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
 	   delete library_p;
@@ -186,9 +186,7 @@ lms_info_str_t limedevices [10];
 	connect (filterSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &limeHandler::set_filter);
-	dumping. store (false);
 	running. store (false);
-	xmlWriter	= nullptr;
 }
 
 	limeHandler::~limeHandler() {
@@ -286,7 +284,7 @@ auto *temp	= dynVec (std::complex<int16_t>, size);
            for (int i = 0; i < amount; i ++)
               V [i] = std::complex<float> (real (temp [i]) / 2048.0,
                                            imag (temp [i]) / 2048.0);
-        if (dumping. load ())
+        if (!xmlWriter. isNull ())
            xmlWriter -> add (temp, amount);
         return amount;
 }
@@ -334,7 +332,7 @@ int	amountRead	= 0;
 	      underruns	+= streamStatus. underrun;
 	      overruns	+= streamStatus. overrun;
 	   }
-	   if (amountRead > 4 * 2048000) {
+	   if (amountRead > 4 * SAMPLERATE) {
 	      amountRead = 0;
 	      showErrors (underruns, overruns);
 	      underruns	= 0;
@@ -512,7 +510,7 @@ bool	limeHandler::load_limeFunctions() {
 }
 
 void	limeHandler::set_xmlDump () {
-	if (xmlWriter == nullptr) {
+	if (xmlWriter. isNull ()) {
 	   setup_xmlDump (false);
 	}
 	else {
@@ -536,36 +534,32 @@ bool	isValid (QChar c) {
 bool	limeHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (limeSettings, DAB_GENERAL,
 	                                       "channel", "xx");
-	xmlWriter	= nullptr;
 	try {
-	   xmlWriter	= new xml_fileWriter (limeSettings,
+	   xmlWriter. reset (new xml_fileWriter (limeSettings,
 	                                      channel,
 	                                      bitDepth (),
 	                                      "int16",
-	                                      2048000,
+	                                      SAMPLERATE,
 	                                      lastFrequency,
 	                                      theGain,
 	                                      "LimeSDR",
 	                                      "???",
 	                                      recorderVersion,
-	                                      direct);
+	                                      direct));
 	} catch (...) {
 	   return false;
 	}
 	dumpButton	-> setText ("writing");
-	dumping. store (true);
 	return true;
 }
 	
 void	limeHandler::close_xmlDump () {
-	if (xmlWriter == nullptr)	// this can happen !!
+	if (xmlWriter. isNull ())	// this can happen !!
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	delete xmlWriter;
-	dumping. store (false);
 	dumpButton	-> setText ("Dump");
-	xmlWriter	= nullptr;
+	xmlWriter. reset ();
 }
 
 void	limeHandler::record_gainSettings	(int key) {

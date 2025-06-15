@@ -30,6 +30,8 @@
 #include	<sys/time.h>
 #endif
 
+#include	"device-handler.h"
+
 #define	BUFFERSIZE	32768
 static inline
 int64_t         getMyTime() {
@@ -53,7 +55,7 @@ struct timeval  tv;
 	fileLength		= ftell (filePointer);
 	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
 	fseek (filePointer, 0, SEEK_SET);
-	period          = (32768 * 1000) / (2 * 2048);  // full IQś read
+	period          = (32768 * 1000) / (2 * SAMPLERATE / 1000);  // full IQś read
 	fprintf (stderr, "Period = %ld\n", period);
 	bi              = new uint8_t [BUFFERSIZE];
 	running. store (false);
@@ -114,7 +116,8 @@ std::complex<float> localBuffer [BUFFERSIZE / 2];
 	      if (++teller >= 20) {
 	         int xx = ftell (filePointer);
 	         float progress = (float)xx / fileLength;
-	         setProgress ((int)(progress * 100), (float)xx / (2 * 2048000));
+	         setProgress ((int)(progress * 100),
+	                           (float)xx / (2 * SAMPLERATE / 1000));
 	         teller = 0;
 	      }
 

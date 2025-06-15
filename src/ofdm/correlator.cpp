@@ -49,7 +49,7 @@
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
 
-	framesperSecond		= INPUT_RATE / params. get_T_F();
+	framesperSecond		= SAMPLERATE / params. get_T_F();
 	displayCounter		= 0;
 	connect (this, &correlator::showCorrelation,
 	         mr, &RadioInterface::showCorrelation);

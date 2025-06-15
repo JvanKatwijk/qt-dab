@@ -19,10 +19,10 @@
 #include	<QFileDialog>
 #include	<QTime>
 #include	<QDate>
+#include	"dab-constants.h"
 #include	"airspy-2.h"
 #include	"position-handler.h"
 #include	"airspyselect.h"
-#include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 #include	"logger.h"
 #include	"settingNames.h"
@@ -124,8 +124,8 @@ uint32_t samplerateCount;
 	selectedRate	= 0;
 	for (int i = 0; i < (int)samplerateCount; i ++) {
 	   fprintf (stderr, "%d \n", sampleRates [i]);
-	   if (abs ((int)sampleRates [i] - 2048000) < distance) {
-	      distance	= abs ((int)sampleRates [i] - 2048000);
+	   if (abs ((int)sampleRates [i] - SAMPLERATE) < distance) {
+	      distance	= abs ((int)sampleRates [i] - SAMPLERATE);
 	      selectedRate = sampleRates [i];
 	   }
 	}
@@ -146,17 +146,18 @@ uint32_t samplerateCount;
 	filterDepth		= value_i (airspySettings, AIRSPY_SETTINGS,
 	                                     CONV_QUALITY, 7);
 	convQuality_setter	-> setValue (filterDepth);
-        theFilter       = new LowPassFIR (filterDepth,
-	                                  1536000 / 2, selectedRate);
+        theFilter. reset (new LowPassFIR (filterDepth,
+	                                  1536000 / 2, selectedRate));
 
 //      The sizes of the mapTables follow from the input and output rate
-//      (selectedRate / 1000) vs (2048000 / 1000)
+//      (selectedRate / 1000) vs (SAMPLERATE / 1000)
 //      so we end up with buffers with 1 msec content
         convBufferSize          = selectedRate / 1000;
-        for (int i = 0; i < 2048; i ++) {
+	float samplesPerMsec	= SAMPLERATE / 1000.0;
+        for (int i = 0; i < SAMPLERATE / 1000; i ++) {
            float inVal  = float (selectedRate / 1000);
-           mapTable_int [i]     = int (floor (i * (inVal / 2048.0)));
-           mapTable_float [i]   = i * (inVal / 2048.0) - mapTable_int [i];
+           mapTable_int [i]     = int (floor (i * (inVal / samplesPerMsec)));
+           mapTable_float [i]   = i * (inVal / samplesPerMsec) - mapTable_int [i];
         }
         convIndex       = 0;
         convBuffer. resize (convBufferSize + 1);
@@ -203,7 +204,6 @@ uint32_t samplerateCount;
 	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 	dumping. store (false);
-	xmlWriter	= nullptr;
 }
 
 	airspy_2::~airspy_2 () {
@@ -226,6 +226,9 @@ uint32_t samplerateCount;
 	   }
 	}
 	my_airspy_exit();
+	theFilter. reset ();
+	if (!xmlWriter. isNull ())
+	   xmlWriter. reset ();
 	delete library_p;
 }
 
@@ -322,7 +325,7 @@ airspy_2 *p;
 int 	airspy_2::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
-std::complex<float> temp [2048];
+std::complex<float> temp [SAMPLERATE / 1000];
 
 	if (dumping. load ())
 	   xmlWriter -> add ((std::complex<int16_t> *)sbuf, nSamples);
@@ -340,16 +343,16 @@ std::complex<float> temp [2048];
                                                 sbuf [2 * i + 1] / (float)2048));
 
 	   if (convIndex > convBufferSize) {
-	      for (int j = 0; j < 2048; j ++) {
+	      for (int j = 0; j < SAMPLERATE / 1000; j ++) {
 	         int16_t  inpBase    = mapTable_int [j];
 	         float    inpRatio   = mapTable_float [j];
 	         temp [j]    = convBuffer [inpBase + 1] * inpRatio +
 	                       convBuffer [inpBase] * (1 - inpRatio);
 	      }
 	      if (toSkip > 0)
-	         toSkip -= 2048;
+	         toSkip -= SAMPLERATE / 1000;
 	      else
-	         _I_Buffer. putDataIntoBuffer (temp, 2048);
+	         _I_Buffer. putDataIntoBuffer (temp, SAMPLERATE / 1000);
 //	shift the sample at the end to the beginning, it is needed
 //	as the starting sample for the next time
 	      convBuffer [0] = convBuffer [convBufferSize];
@@ -595,7 +598,7 @@ QString	airspy_2::deviceName	() {
 }
 
 void	airspy_2::set_xmlDump () {
-	if (xmlWriter == nullptr) {
+	if (xmlWriter. isNull ()) {
 	   setup_xmlDump (false);
 	}
 	else {
@@ -615,7 +618,7 @@ bool	airspy_2::setup_xmlDump (bool direct) {
 QString channel		= value_s (airspySettings, DAB_GENERAL,
 	                                            "channel", "xx");
 	try {
-	   xmlWriter	= new xml_fileWriter (airspySettings,
+	   xmlWriter. reset (new xml_fileWriter (airspySettings,
 	                                      channel,
 	                                      12,
 	                                      "int16",
@@ -625,7 +628,7 @@ QString channel		= value_s (airspySettings, DAB_GENERAL,
 	                                      "Airspy",
 	                                      getSerial (),
 	                                      recorderVersion,
-	                                      direct);
+	                                      direct));
 	} catch (...) {
 	   return false;
 	}
@@ -635,15 +638,14 @@ QString channel		= value_s (airspySettings, DAB_GENERAL,
 }
 
 void	airspy_2::close_xmlDump () {
-	if (xmlWriter == nullptr)	// this can happen !!
+	if (xmlWriter. isNull ())	// this can happen !!
 	   return;
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	delete xmlWriter;
 	dumping. store (false);
 	dumpButton	-> setText ("Dump");
-	xmlWriter	= nullptr;
+	xmlWriter. reset ();
 }
 //
 //	gain settings are maintained on a per-channel and per tab base,

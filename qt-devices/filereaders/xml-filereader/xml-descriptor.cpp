@@ -22,6 +22,7 @@
  *
  */
 #include	"xml-descriptor.h"
+#include	"device-handler.h"
 
 	xmlDescriptor::~xmlDescriptor	() {
 }
@@ -103,7 +104,6 @@ QByteArray xmlText;
 int	zeroCount = 0;
 //
 //	set default values
-	sampleRate	= 2048000;
 	nrChannels	= 2;
 	bitsperChannel	= 16;
 	container	= "int16_t";
@@ -149,7 +149,8 @@ int	zeroCount = 0;
 	      for (int k = 0; k < childNodes. count (); k ++) {
 	         QDomElement Child = childNodes. at (k). toElement ();
 	         if (Child. tagName () == "Samplerate") {
-	            QString SR = Child. attribute ("Value", "2048000");
+	            QString SR = Child. attribute ("Value",
+	                                           QString::number (SAMPLERATE));
 	            QString Hz = Child. attribute ("Unit", "Hz");
 	            int factor = Hz == "Hz" ? 1 :
 	                         (Hz == "KHz") || (Hz == "Khz") ? 1000 :

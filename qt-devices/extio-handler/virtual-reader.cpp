@@ -26,15 +26,16 @@
 //
 //	This is the - almost empty - default implementation
 #include	"virtual-reader.h"
+#include	"dab-constants.h"
 
 	virtualReader::virtualReader	(RingBuffer<std::complex<float>> *p,
 	                                                       int32_t rate) {
 	theBuffer	= p;
 	blockSize	= -1;
-	setMapper (rate, 2048000);
+	setMapper (rate, SAMPLERATE);
 }
 
-	virtualReader::~virtualReader		(void) {
+	virtualReader::~virtualReader		() {
 }
 
 void	virtualReader::restartReader	(int32_t s) {

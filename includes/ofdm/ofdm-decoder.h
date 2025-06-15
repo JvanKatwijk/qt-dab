@@ -69,6 +69,8 @@ private:
 	fftHandler	fft;
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
+
+	std::vector<Complex>	sinTable;
 	float		computeQuality		(Complex *);
 	float		compute_timeOffset      (Complex *,
 	                                         Complex *);

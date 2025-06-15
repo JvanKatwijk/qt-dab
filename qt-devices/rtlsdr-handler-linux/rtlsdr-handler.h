@@ -39,8 +39,11 @@
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
 #include	<QLibrary>
-class	dll_driver;
-class	xml_fileWriter;
+#include	<QScopedPointer>
+#include        "xml-filewriter.h"
+
+#include	"dll-driver.h"
+
 class	logger;
 //
 //	create typedefs for the library functions
@@ -108,12 +111,12 @@ private:
 	int32_t		inputRate;
 	int32_t		deviceCount;
 	QLibrary*	phandle;
-	dll_driver	*workerHandle;
+	QScopedPointer<dll_driver>	workerHandle;
 	int32_t		lastFrequency;
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
-        xml_fileWriter  *xmlWriter;
+        QScopedPointer<xml_fileWriter>  xmlWriter;
         bool            setup_xmlDump		(bool);
         void            close_xmlDump		();
         std::atomic<bool> xml_dumping;

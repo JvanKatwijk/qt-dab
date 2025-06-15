@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,11 +27,11 @@
  */
 
 #include	<QThread>
+#include	"dab-constants.h"
 #include	"rtlsdr-handler.h"
 #include	"position-handler.h"
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
-#include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 #include	"logger.h"
 #include	"settings-handler.h"
@@ -43,16 +43,8 @@
 #define	GETPROCADDRESS	dlsym
 #endif
 
-#define	READLEN_DEFAULT	(4 * 8192)
-//
-//	For the callback, we do need some environment which
-//	is passed through the ctx parameter
-//
-//	This is the user-side call back function
-//	ctx is the calling task
-
 static 
-float mapTable [] = {
+float convTable [] = {
  -128 / 128.0 , -127 / 128.0 , -126 / 128.0 , -125 / 128.0 , -124 / 128.0 , -123 / 128.0 , -122 / 128.0 , -121 / 128.0 , -120 / 128.0 , -119 / 128.0 , -118 / 128.0 , -117 / 128.0 , -116 / 128.0 , -115 / 128.0 , -114 / 128.0 , -113 / 128.0 
 , -112 / 128.0 , -111 / 128.0 , -110 / 128.0 , -109 / 128.0 , -108 / 128.0 , -107 / 128.0 , -106 / 128.0 , -105 / 128.0 , -104 / 128.0 , -103 / 128.0 , -102 / 128.0 , -101 / 128.0 , -100 / 128.0 , -99 / 128.0 , -98 / 128.0 , -97 / 128.0 
 , -96 / 128.0 , -95 / 128.0 , -94 / 128.0 , -93 / 128.0 , -92 / 128.0 , -91 / 128.0 , -90 / 128.0 , -89 / 128.0 , -88 / 128.0 , -87 / 128.0 , -86 / 128.0 , -85 / 128.0 , -84 / 128.0 , -83 / 128.0 , -82 / 128.0 , -81 / 128.0 
@@ -70,50 +62,13 @@ float mapTable [] = {
 , 96 / 128.0 , 97 / 128.0 , 98 / 128.0 , 99 / 128.0 , 100 / 128.0 , 101 / 128.0 , 102 / 128.0 , 103 / 128.0 , 104 / 128.0 , 105 / 128.0 , 106 / 128.0 , 107 / 128.0 , 108 / 128.0 , 109 / 128.0 , 110 / 128.0 , 111 / 128.0 
 , 112 / 128.0 , 113 / 128.0 , 114 / 128.0 , 115 / 128.0 , 116 / 128.0 , 117 / 128.0 , 118 / 128.0 , 119 / 128.0 , 120 / 128.0 , 121 / 128.0 , 122 / 128.0 , 123 / 128.0 , 124 / 128.0 , 125 / 128.0 , 126 / 128.0 , 127 / 128.0 };
 
-static
-void	RTLSDRCallBack (uint8_t *buf, uint32_t len, void *ctx) {
-rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
-
-	if ((theStick == nullptr) || (len != READLEN_DEFAULT)) {
-	   fprintf (stderr, "%d \n", len);
-	   return;
-	}
-
-	static_cast<rtlsdrHandler *>(ctx) -> processBuffer (buf, len);
-}
-//
-//	for handling the events in libusb, we need a controlthread
-//	whose sole purpose is to process the rtlsdr_read_async function
-//	from the lib.
-class	dll_driver : public QThread {
-private:
-	rtlsdrHandler	*theStick;
-public:
-
-	dll_driver (rtlsdrHandler *d) {
-	theStick	= d;
-	start();
-}
-
-	~dll_driver() {
-}
-
-private:
-void	run () {
-	(theStick -> rtlsdr_read_async) (theStick -> theDevice,
-	                          (rtlsdr_read_async_cb_t)&RTLSDRCallBack,
-	                          (void *)theStick,
-	                          0,
-	                          READLEN_DEFAULT);
-	}
-};
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              const QString &recorderVersion,
 	                              logger	*theLogger):	// dummy for now
 	                                 _I_Buffer (8 * 1024 * 1024),
-	                                 theFilter (5, 1560000 / 2, 2048000) {
+	                                 theFilter (5, 1560000 / 2, SAMPLERATE) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -126,7 +81,7 @@ char	manufac [256], product [256], serial [256];
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	set_position_and_size (s, &myFrame, "rtlsdrSettings");
-	myFrame. show();
+	myFrame. show ();
 	filtering			= false;
 
 	currentDepth	=  value_i (rtlsdrSettings, "rtlsdrSettings",
@@ -134,8 +89,6 @@ char	manufac [256], product [256], serial [256];
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
 
-	inputRate		= 2048000;
-	workerHandle		= nullptr;
 	isActive. store (false);
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
@@ -186,7 +139,7 @@ char	manufac [256], product [256], serial [256];
 	QString tunerType	= get_tunerType (rtlsdr_get_tuner_type (theDevice));
 	product_display	-> setText (tunerType);
 
-	r = rtlsdr_set_sample_rate (theDevice, inputRate);
+	r = rtlsdr_set_sample_rate (theDevice, SAMPLERATE);
 	if (r < 0) {
 	   delete phandle;
 	   throw (device_exception ("Setting samplerate for rtlsdr failed"));
@@ -279,20 +232,18 @@ char	manufac [256], product [256], serial [256];
 	connect (this, &rtlsdrHandler::new_agcSetting,
 	         agcControl, &QCheckBox::setChecked);
 	iqDumper	= nullptr;
-	xmlWriter	= nullptr;
 	iq_dumping. store (false);
 	xml_dumping. store (false);
 }
 
 	rtlsdrHandler::~rtlsdrHandler () {
 	stopReader	();
-	if (workerHandle != nullptr) {
+	if (!workerHandle. isNull ()) {
 	   rtlsdr_cancel_async (theDevice);
 	   while (!workerHandle -> isFinished())
 	      usleep (200); 
 	   _I_Buffer. FlushRingBuffer();
-	   delete       workerHandle;
-	   workerHandle = nullptr;
+	   workerHandle. reset ();
 	}
 	store_widget_position (rtlsdrSettings, &myFrame, "rtlsdrSettings");
 	QString gainText	= gainControl -> currentText ();
@@ -305,6 +256,8 @@ char	manufac [256], product [256], serial [256];
 	store (rtlsdrSettings, "rtlsdrSettings",
 	                    "filterDepth", filterDepth -> value ());
 	rtlsdrSettings	-> sync ();
+	if (!xmlWriter. isNull ())
+	   xmlWriter. reset ();
 	myFrame. hide ();
 	usleep (1000);
 	rtlsdr_close (theDevice);
@@ -326,10 +279,10 @@ bool	rtlsdrHandler::restartReader	(int32_t freq, int skipped) {
 	this -> toSkip = skipped;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
-	if (workerHandle == nullptr) {
+	if (workerHandle. isNull ()) {
 //	reset endpoint
 	   (void)this -> rtlsdr_reset_buffer (theDevice);
-	   workerHandle	= new dll_driver (this);
+	   workerHandle. reset (new dll_driver (this));
 	   fprintf (stderr, "worker handler started\n");
 	}
 	_I_Buffer. FlushRingBuffer();
@@ -338,17 +291,16 @@ bool	rtlsdrHandler::restartReader	(int32_t freq, int skipped) {
 }
 
 void	rtlsdrHandler::stopReader () {
-	if (workerHandle == nullptr)
+	if (workerHandle. isNull ())
 	   return;
 	isActive. store (false);
-	this->rtlsdr_cancel_async(theDevice);
-        this->rtlsdr_reset_buffer(theDevice);
-        if (workerHandle != nullptr) {
-            while (!workerHandle->isFinished())
+	this -> rtlsdr_cancel_async (theDevice);
+        this -> rtlsdr_reset_buffer (theDevice);
+        if (!workerHandle. isNull ()) {
+            while (!workerHandle -> isFinished())
                 usleep(100);
-            _I_Buffer.FlushRingBuffer();
-            delete  workerHandle;
-            workerHandle = nullptr;
+            _I_Buffer.FlushRingBuffer ();
+            workerHandle. reset ();
         }
         close_xmlDump();
 
@@ -655,7 +607,7 @@ bool	rtlsdrHandler::setup_xmlDump (bool direct) {
 QString channel		= rtlsdrSettings -> value ("channel", "xx").
 	                                                      toString ();
 	try {
-	   xmlWriter	= new xml_fileWriter (rtlsdrSettings,
+	   xmlWriter. reset (new xml_fileWriter (rtlsdrSettings,
 	                                      channel,
 	                                      8,
 	                                      "uint8",
@@ -665,7 +617,7 @@ QString channel		= rtlsdrSettings -> value ("channel", "xx").
 	                                      "RTLSDR",
 	                                      deviceModel,
 	                                      recorderVersion,
-	                                      direct);
+	                                      direct));
 	} catch (...) {
 	   return false;
 	}
@@ -679,8 +631,7 @@ void	rtlsdrHandler::close_xmlDump () {
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	delete xmlWriter;
-	xmlWriter	= nullptr;
+	xmlWriter. reset ();
 	xml_dumpButton	-> setText ("Dump to xml");
 	xml_dumping. store (false);
 }
@@ -767,8 +718,8 @@ static int iqTeller	= 0;
 	float dcI	= m_dcI;
 	float dcQ	= m_dcQ;
 	for (uint32_t i = 0; i < len / 2; i ++) {
-	   float tempI	= mapTable [buf [2 * i]];
-	   float tempQ	= mapTable [buf [2 * i + 1]];
+	   float tempI	= convTable [buf [2 * i]];
+	   float tempQ	= convTable [buf [2 * i + 1]];
 	   sumI		+= tempI;
 	   sumQ		+= tempQ;
 	   tempBuf [i] = std::complex<float> (tempI, tempQ);

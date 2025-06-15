@@ -23,6 +23,7 @@
 #
 #include	"sample-reader.h"
 #include	"radio.h"
+#include	"dab-constants.h"
 
 static  inline
 int16_t valueFor (int16_t b) {
@@ -48,8 +49,8 @@ void    constrain (float &testVal, const float limit) {
 }
 
 static
-Complex oscillatorTable [INPUT_RATE];
-constexpr float ALPHA = 1.0f / INPUT_RATE;
+Complex oscillatorTable [SAMPLERATE];
+constexpr float ALPHA = 1.0f / SAMPLERATE;
 
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig_i,
@@ -67,10 +68,10 @@ int	i;
 	dcReal		= 0;
 	dcImag		= 0;
 	repetitionCounter	= 8;
-	for (i = 0; i < INPUT_RATE; i ++)
+	for (i = 0; i < SAMPLERATE; i ++)
 	   oscillatorTable [i] = Complex
-	                            (cos (2.0 * M_PI * i / INPUT_RATE),
-	                             sin (2.0 * M_PI * i / INPUT_RATE));
+	                            (cos (2.0 * M_PI * i / SAMPLERATE),
+	                             sin (2.0 * M_PI * i / SAMPLERATE));
 
 	bufferContent	= 0;
 	corrector	= 0;
@@ -152,7 +153,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	      v = Complex (real_V - dcReal, imag_V - dcImag);
 
 	      static int teller = 0;
-	      if (++teller >= INPUT_RATE) {
+	      if (++teller >= SAMPLERATE) {
 	         show_dcOffset ((dcReal + dcImag) / 2);
 	         teller = 0;
 	      }
@@ -162,7 +163,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 //	first: adjust frequency. We need Hz accuracy
 //	Note that "phase" itself might be negative
 	   currentPhase	-= phaseOffset;
-	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
+	   currentPhase	= (currentPhase + SAMPLERATE) % SAMPLERATE;
 	   if (saving && (localCounter < bufferSize))
 	      localBuffer [localCounter ++]     = v;
 	   v_out  [index + i]	= Complex (real (v),
@@ -173,7 +174,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	sampleCount	+= nrSamples;
 	
 	if (saving && (spectrumBuffer != nullptr) &&
-	             (sampleCount > INPUT_RATE / repetitionCounter)) {
+	             (sampleCount > SAMPLERATE / repetitionCounter)) {
 //	   show_corrector	(corrector);
 	   sampleCount = 0;
 	   spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
@@ -185,7 +186,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 
 void	sampleReader::startDumping (const QString &fileName,
 	                                      int freq, int bitDepth) {
-	sourceDumper. init (fileName, 2048000, freq, bitDepth);
+	sourceDumper. init (fileName, SAMPLERATE, freq, bitDepth);
 }
 
 void	sampleReader::stopDumping() {

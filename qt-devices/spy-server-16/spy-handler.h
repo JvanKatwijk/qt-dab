@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #pragma once
+
 #include	<stdexcept>
 #include	<atomic>
 #include	<chrono>
@@ -42,8 +42,8 @@ public:
 	                                 RingBuffer<int16_t> *outB);
 		~spyHandler		();
 	bool	get_deviceInfo		(struct DeviceInfo &theDevice);
-	int	get_iq_data		(const int size,
-	                                       int16_t *outputItems);
+//	int	get_iq_data		(const int size,
+//	                                       int16_t *outputItems);
 	bool	set_sample_rate_by_decim_stage (const uint32_t decim_stage);
 	double	get_sample_rate		();
 	bool	set_iq_center_freq	(double freq);
@@ -59,7 +59,8 @@ public:
 	QString	deviceName		();
 private:
 	RingBuffer<uint8_t>	inBuffer;
-	tcp_client	tcpHandler;
+	tcp_client		tcpHandler;
+	QTimer			testTimer;
 	RingBuffer<int16_t>	*outB;
 	spyServer_client	*parent;
 	void		run		();
@@ -73,7 +74,6 @@ private:
 	bool	send_command	(uint32_t, std::vector<uint8_t> &);
 	bool	set_setting	(uint32_t, std::vector<uint32_t> &);
 
-	QTimer	*testTimer;
 	int	streamingMode;
 	std::atomic<bool>	is_connected;
 	std::atomic<bool>	streaming;
@@ -88,7 +88,6 @@ private:
 
 	double			_center_freq;
 	double			_gain;
-
 	
 	const uint32_t ProtocolVersion = SPYSERVER_PROTOCOL_VERSION;
 	const std::string SoftwareID = std::string("gr-osmosdr");

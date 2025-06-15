@@ -47,7 +47,7 @@
 	fileProgress		-> setValue (0);
 	currentTime		-> display (0);
 	int64_t fileLength	= theReader. elementCount ();
-	totalTime	-> display ((float)fileLength / INPUT_RATE);
+	totalTime	-> display ((float)fileLength / SAMPLERATE);
 	running. store (false);
 }
 //

@@ -158,8 +158,8 @@ int32_t	xml_fileReader::Samples	() {
 
 void	xml_fileReader::setProgress (int samplesRead, int samplesToRead) {
 	fileProgress	-> setValue ((float)samplesRead / samplesToRead * 100);
-	currentTime	-> display (samplesRead / 2048000.0);
-	totalTime	-> display (samplesToRead / 2048000.0);
+	currentTime	-> display (samplesRead / (float)SAMPLERATE);
+	totalTime	-> display (samplesToRead / (float)SAMPLERATE);
 }
 
 int	xml_fileReader::getVFOFrequency	() {

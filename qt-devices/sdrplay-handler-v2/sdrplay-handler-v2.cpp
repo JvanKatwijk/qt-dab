@@ -28,6 +28,7 @@
 #include	<QTime>
 #include	<QDate>
 #include	<QLabel>
+#include	"dab-constants.h"
 #include	"sdrplay-handler-v2.h"
 #include	"position-handler.h"
 #include	"sdrplayselect.h"
@@ -84,7 +85,6 @@ mir_sdr_DeviceT devDesc [4];
 	myFrame. show ();
 	antennaSelector		-> hide();
 	tunerSelector		-> hide();
-	this	-> inputRate	= Khz (2048);
 
 	bool success	= fetchLibrary ();
 	if (!success)
@@ -368,7 +368,7 @@ std::complex<int16_t> localBuf [numSamples];
 	if (n >= (int)numSamples) 
 	   p -> _I_Buffer. putDataIntoBuffer (localBuf, numSamples);
 	else {
-	   p -> _I_Buffer. skipDataInBuffer (2048000 / 2);
+	   p -> _I_Buffer. skipDataInBuffer (SAMPLERATE / 2);
 	}
 	(void)	firstSampleNum;
 	(void)	grChanged;
@@ -411,7 +411,7 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	   agc		= agcControl	-> isChecked () ? 1 : 0;
 	}
 	err	= my_mir_sdr_StreamInit (&GRdB,
-	                                 double (inputRate) / MHz (1),
+	                                 double (SAMPLERATE) / MHz (1),
 	                                 double (lastFrequency) / Mhz (1),
 	                                 mir_sdr_BW_1_536,
 	                                 mir_sdr_IF_Zero,
@@ -969,7 +969,7 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      channel,
 	                                      nrBits,
 	                                      "int16",
-	                                      2048000,
+	                                      SAMPLERATE,
 	                                      lastFrequency,
 	                                      (int)(theGains. curr),
 	                                      "SDRplay",

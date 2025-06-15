@@ -27,6 +27,8 @@
 #include	<sys/time.h>
 #include	<stdio.h>
 
+#include	"device-handler.h"
+
 static
 int	shift (int a) {
 int r	= 1;
@@ -65,11 +67,11 @@ struct timeval tv;
 //	buffer is one larger
 	convBufferSize		= fd -> sampleRate / 1000;
 	continuous. store (true);
-
-	for (int i = 0; i < 2048; i ++) {
+	float samplesPerMsec	= SAMPLERATE / 1000.0;
+	for (int i = 0; i < SAMPLERATE / 1000; i ++) {
 	   float inVal = float (fd -> sampleRate / 1000);
-	   mapTable_int [i] = (int)(floor (i * (inVal / 2048.0)));
-	   mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
+	   mapTable_int [i] = (int)(floor (i * (inVal / samplesPerMsec )));
+	   mapTable_float [i] = i * (inVal / samplesPerMsec) - mapTable_int [i];
 	}
 
 	convIndex	= 0;
@@ -175,10 +177,10 @@ uint64_t	samplesToRead	= 0;
 uint64_t	xml_Reader::readSamples (FILE *theFile, 
 	                         void(xml_Reader::*r)(FILE *theFile,
 	                                    std::complex<float> *, int)) {
-std::complex<float> temp [2048];
+std::complex<float> temp [SAMPLERATE / 1000];
 
 	(*this.*r) (theFile, &convBuffer [1], convBufferSize);
-	for (int i = 0; i < 2048; i ++) {
+	for (int i = 0; i < SAMPLERATE / 1000; i ++) {
 	   int16_t inpBase	= mapTable_int [i];
 	   float   inpRatio	= mapTable_float [i];
 	   temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
@@ -186,8 +188,8 @@ std::complex<float> temp [2048];
 	}
 	convBuffer [0] = convBuffer [convBufferSize];
 	convIndex = 1;
-	sampleBuffer -> putDataIntoBuffer (temp, 2048);
-	return 2048;
+	sampleBuffer -> putDataIntoBuffer (temp, SAMPLERATE / 1000);
+	return SAMPLERATE / 1000;
 }
 	
 static 

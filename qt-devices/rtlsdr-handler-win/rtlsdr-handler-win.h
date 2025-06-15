@@ -26,6 +26,7 @@
 #include	<QObject>
 #include	<QSettings>
 #include	<QString>
+#include	<QScopedPointer>
 #include	<cstdio>
 #include	<atomic>
 #include	"rtl-sdr.h"
@@ -34,8 +35,9 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
-class	dll_driver_win;
-class	xml_fileWriter;
+#include	"xml-filewriter.h"
+#include	"dll-driver.h"
+
 class	logger;
 //
 //	This class is a simple wrapper around the
@@ -74,7 +76,7 @@ private:
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
-        xml_fileWriter  *xmlWriter;
+        QScopedPointer<xml_fileWriter>  xmlWriter;
         bool            setup_xmlDump		(bool);
         void            close_xmlDump		();
         std::atomic<bool> xml_dumping;

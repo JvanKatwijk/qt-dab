@@ -24,9 +24,9 @@
 #include	<QSettings>
 #include	<QLabel>
 #include	<QDebug>
+#include	"dab-constants.h"
 #include	"pluto-handler.h"
 #include	"position-handler.h"
-#include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 #include	"logger.h"
 #include	"settingNames.h"
@@ -355,17 +355,15 @@ int	ret;
 	connect (this, &plutoHandler::new_agcValue,
 	         agcControl, &QCheckBox::setChecked);
 //	set up for interpolator
-	float	denominator	= float (DAB_RATE) / DIVIDER;
+	float	denominator	= float (SAMPLERATE) / DIVIDER;
         float inVal		= float (PLUTO_RATE) / DIVIDER;
-	for (int i = 0; i < DAB_RATE / DIVIDER; i ++) {
+	for (int i = 0; i < SAMPLERATE / DIVIDER; i ++) {
            mapTable_int [i]	= int (floor (i * (inVal / denominator)));
 	   mapTable_float [i] =
 	                     i * (inVal / denominator) - mapTable_int [i];
         }
         convIndex       = 0;
-	dumping. store	(false);
 	running. store (false);
-	xmlWriter	= nullptr;
 	int enabled;
 //
 //	go for the filter
@@ -565,8 +563,8 @@ void	plutoHandler::stopReader() {
 void	plutoHandler::run	() {
 char	*p_end, *p_dat;
 int	p_inc;
-std::complex<float> localBuf [DAB_RATE / DIVIDER];
-std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
+std::complex<float> localBuf [SAMPLERATE / DIVIDER];
+std::complex<int16_t> dumpBuf [SAMPLERATE / DIVIDER];
 
 	state -> setText ("running");
 	running. store (true);
@@ -585,9 +583,9 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
 	      if (convIndex > CONV_SIZE) {
-	         if (dumping. load ())
+	         if (!xmlWriter. isNull ())
 	            xmlWriter -> add (dumpBuf, CONV_SIZE);
-	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
+	         for (int j = 0; j < SAMPLERATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
 	            localBuf [j]	=
@@ -595,10 +593,10 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
                                      convBuffer [inpBase] * (1 - inpRatio);
                  }
 	         if (toSkip > 0)
-	            toSkip -= DAB_RATE / DIVIDER;
+	            toSkip -= SAMPLERATE / DIVIDER;
 	         else
 	            _I_Buffer. putDataIntoBuffer (localBuf,
-	                                          DAB_RATE / DIVIDER);
+	                                          SAMPLERATE / DIVIDER);
 	         convBuffer [0] = convBuffer [CONV_SIZE];
 	         convIndex = 1;
 	      }
@@ -649,7 +647,7 @@ void	plutoHandler::toggle_debugButton	() {
 }
 
 void	plutoHandler::set_xmlDump () {
-	if (xmlWriter == nullptr) {
+	if (xmlWriter. isNull ()) {
 	   setup_xmlDump (false);
 	}
 	else {
@@ -673,9 +671,8 @@ bool	isValid (QChar c) {
 bool	plutoHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (plutoSettings, DAB_GENERAL,
 	                                         "channel", "xx");
-	xmlWriter	= nullptr;
 	try {
-	   xmlWriter	= new xml_fileWriter (plutoSettings,
+	   xmlWriter. reset (new xml_fileWriter (plutoSettings,
 	                                      channel,
 	                                      12,
 	                                      "int16",
@@ -685,23 +682,20 @@ QString channel		= value_s (plutoSettings, DAB_GENERAL,
 	                                      "Pluto",
 	                                      "xxx",
 	                                      recorderVersion,
-	                                      direct);
+	                                      direct));
 	} catch (...) {
 	   return false;
 	}
-	dumping. store (true);
 	dumpButton	-> setText ("writing");
 	return true;
 }
 	
 void	plutoHandler::close_xmlDump () {
-	if (xmlWriter == nullptr)	// this can happen !!
+	if (xmlWriter. isNull ())	// this can happen !!
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	delete xmlWriter;
-	xmlWriter	= nullptr;
-	dumping. store (false);
+	xmlWriter. reset ();
 	dumpButton	-> setText ("Dump");
 }
 

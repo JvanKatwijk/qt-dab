@@ -48,13 +48,12 @@
                                  "Failed to establish connection!" );
 	is_connected. store (true);
 	cleanRecords ();
-	testTimer	= new QTimer ();
-	connect (testTimer, &QTimer::timeout,
+	connect (&testTimer, &QTimer::timeout,
 	           this, &spyHandler_8::no_deviceInfo);
 	connect (this, &spyHandler_8::data_ready,
 	           parent, &spyServer_client_8::data_ready);
 	start ();
-	testTimer	-> start (10000);
+	testTimer. start (10000);
 }
 
 	spyHandler_8::~spyHandler_8	() {
@@ -76,8 +75,8 @@ static std::vector<uint8_t> buffer (64 * 1024);
 	while (running. load ()) {
 	   readHeader	(theHeader);
 	   if (theHeader. SequenceNumber != volgNummer + 1) {
-	      fprintf (stderr, "%d %ld\n",
-	                  (int)theHeader. SequenceNumber, volgNummer);
+//	      fprintf (stderr, "%d %ld\n",
+//	                  (int)theHeader. SequenceNumber, volgNummer);
 //	      fprintf (stderr, "Buffer space = %d\n",
 //	               inBuffer. GetRingBufferReadAvailable ());
 	   }
@@ -361,6 +360,6 @@ bool	spyHandler_8::isFileInput	() {
 }
 
 QString	spyHandler_8::deviceName	() {
-	return "spy-server-8Bits :";
+	return "spy-server-8-Bits :";
 }
 

@@ -32,6 +32,7 @@
 #include	<QLineEdit>
 #include	<QHostAddress>
 #include	<QByteArray>
+#include	<QScopedPointer>
 #include	<cstdio>
 #include	"dab-constants.h"
 #include	"device-handler.h"
@@ -79,8 +80,8 @@ private:
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	RingBuffer<uint8_t>	tmpBuffer;
 	QTimer		checkTimer;
-	spyHandler_8	*theServer;
-	QLineEdit	*hostLineEdit;
+	QScopedPointer<spyHandler_8>	theServer;
+	QLineEdit	hostLineEdit;
 	bool		isvalidRate	(int32_t);
 	QSettings	*spyServer_settings;
 	int32_t		theRate;

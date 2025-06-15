@@ -21,6 +21,7 @@
  */
 #include	"Rsp-device.h"
 
+#include	"dab-constants.h"
 #include	<stdint.h>
 #include	<sdrplay_api.h>
 #include	"sdrplay-handler-v3.h"
@@ -63,7 +64,7 @@ sdrplay_api_ErrT        err;
 
 	this	-> chParams	= deviceParams -> rxChannelA;
 	deviceParams	-> devParams	-> ppm		= ppmValue;
-	deviceParams    -> devParams	-> fsFreq. fsHz    = 2048000;
+	deviceParams    -> devParams	-> fsFreq. fsHz    = SAMPLERATE;
         chParams        -> tunerParams. bwType = sdrplay_api_BW_1_536;
         chParams        -> tunerParams. ifType = sdrplay_api_IF_Zero;
 //

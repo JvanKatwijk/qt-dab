@@ -30,6 +30,7 @@
 #include	<QLabel>
 #include	<QDebug>
 #include	<QFileDialog>
+#include	"dab-constants.h"
 #include	"hackrf-handler.h"
 #include	"position-handler.h"
 #include	"xml-filewriter.h"
@@ -52,7 +53,6 @@
 	(void)theLogger;
         setupUi (&myFrame);
 	set_position_and_size (s, &myFrame, HACKRF_SETTINGS);
-	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
 	const char *libraryString = "libhackrf.dll";
@@ -112,7 +112,7 @@
 	   throw (device_exception ("open failure"));
 	}
 
-	if (hackrf_set_sample_rate (theDevice, 2048000.0) != HACKRF_SUCCESS) {
+	if (hackrf_set_sample_rate (theDevice, (float)SAMPLERATE) != HACKRF_SUCCESS) {
 	   delete library_p;
 	   throw (device_exception ("error setting samplerate"));
 	}
@@ -590,7 +590,7 @@ QString channel		= value_s (hackrfSettings, DAB_GENERAL,
 	                                      channel,
 	                                      8,
 	                                      "int8",
-	                                      2048000,
+	                                      SAMPLERATE,
 	                                      lastFrequency,
 	                                      -1,
 	                                      "Hackrf",

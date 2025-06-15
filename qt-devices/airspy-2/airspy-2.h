@@ -33,7 +33,9 @@
 #include	"libairspy/airspy.h"
 #endif
 #include	"fir-filters.h"
-class	xml_fileWriter;
+
+#include	<QScopedPointer>
+#include	"xml-filewriter.h"
 class	logger;
 
 extern "C"  {
@@ -109,7 +111,7 @@ private:
 	RingBuffer<std::complex<float>> _I_Buffer;
 	QString		recorderVersion;
 	void		check_error		(bool, const std::string);
-        xml_fileWriter  *xmlWriter;
+        QScopedPointer<xml_fileWriter>	xmlWriter;
         bool            setup_xmlDump		(bool);
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
@@ -118,7 +120,7 @@ private:
 	void		restore_gainSettings	(int);
 	QSettings	*airspySettings;
 
-	LowPassFIR	*theFilter;
+	QScopedPointer<LowPassFIR>	theFilter;
 	int		filterDepth;
 private slots:
 	void		set_linearity		(int value);

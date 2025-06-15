@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #pragma once
+
 #include	<stdexcept>
 #include	<atomic>
 #include	<chrono>
@@ -61,6 +61,7 @@ public:
 private:
 	RingBuffer<uint8_t>	inBuffer;
 	tcp_client_8		tcpHandler;
+	QTimer			testTimer;
 	RingBuffer<uint8_t>	*outB;
 	spyServer_client_8	*parent;
 	void		run		();
@@ -74,7 +75,6 @@ private:
 	bool	send_command	(uint32_t, std::vector<uint8_t> &);
 	bool	set_setting	(uint32_t, std::vector<uint32_t> &);
 
-	QTimer	*testTimer;
 	int	streamingMode;
 	std::atomic<bool>	is_connected;
 	std::atomic<bool>	streaming;
@@ -89,7 +89,6 @@ private:
 
 	double			_center_freq;
 	double			_gain;
-
 	
 	const uint32_t ProtocolVersion = SPYSERVER_PROTOCOL_VERSION;
 	const std::string SoftwareID = std::string("gr-osmosdr");

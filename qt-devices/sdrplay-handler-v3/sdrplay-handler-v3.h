@@ -99,7 +99,6 @@ public:
 	sdrplay_api_DeviceT             *chosenDevice;
 	QScopedPointer<Rsp_device>	theRsp;
 
-	int			inputRate;
 	std::atomic<bool>	failFlag;
 	std::atomic<bool>	successFlag;
 	float			denominator;

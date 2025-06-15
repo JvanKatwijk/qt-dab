@@ -293,7 +293,7 @@ int	snrCount	= 0;
 	         totalSamples	+= sampleCount;
 	         if (frameCount >= 10) {
 	            int diff	= (totalSamples - frameCount * T_F);
-	            diff	= (int)((float)INPUT_RATE / (frameCount * T_F) * diff);
+	            diff	= (int)((float)SAMPLERATE / (frameCount * T_F) * diff);
 	            show_clock_error (diff);
 	            totalSamples = 0;
 	            frameCount	= 0;

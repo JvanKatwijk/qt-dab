@@ -44,7 +44,7 @@ struct timeval  tv;
 	fileLength		= theReader -> elementCount ();
 	fprintf (stderr, "fileLength = %ld\n",  (int64_t)fileLength);
 	theReader	-> reset ();
-	period          = (32768 * 1000) / (2048);  // full IQś read
+	period          = (32768 * 1000) / (SAMPLERATE / 1000);// full IQś read
 	fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
 	start ();
@@ -86,7 +86,7 @@ std::complex<float> bi [bufferSize];
 	      if (++teller >= 20) {
 	         int64_t xx = theReader -> currentPos ();
 	         float progress = (float)xx / fileLength;
-	         setProgress ((int)(progress * 100), (float)xx / 2048000);
+	         setProgress ((int)(progress * 100), (float)xx / SAMPLERATE);
 	         teller = 0;
 	      }
 
