@@ -611,7 +611,7 @@ QString channel		= rtlsdrSettings -> value ("channel", "xx").
 	                                      channel,
 	                                      8,
 	                                      "uint8",
-	                                      2048000,
+	                                      SAMPLERATE,
 	                                      lastFrequency,
 	                                      rtlsdr_get_tuner_gain (theDevice),
 	                                      "RTLSDR",

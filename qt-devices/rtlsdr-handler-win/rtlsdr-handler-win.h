@@ -26,7 +26,6 @@
 #include	<QObject>
 #include	<QSettings>
 #include	<QString>
-#include	<QScopedPointer>
 #include	<cstdio>
 #include	<atomic>
 #include	"rtl-sdr.h"
@@ -35,9 +34,8 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
-#include	"xml-filewriter.h"
-#include	"dll-driver.h"
-
+class	dll_driver_win;
+class	xml_fileWriter;
 class	logger;
 //
 //	This class is a simple wrapper around the
@@ -50,7 +48,7 @@ public:
 			rtlsdrHandler_win	(QSettings *,
 	                                         const QString &, logger *);
 			~rtlsdrHandler_win	();
-	bool		restartReader		(int32_t, int skipped = 0);
+	bool		restartReader		(int32_t);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                        int32_t);
@@ -60,8 +58,6 @@ public:
 	int16_t		bitDepth		();
 	QString		deviceName		();
 
-	void		startDump		();
-	void		stopDump		();
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	struct rtlsdr_dev	*theDevice;
@@ -76,8 +72,8 @@ private:
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
-        QScopedPointer<xml_fileWriter>  xmlWriter;
-        bool            setup_xmlDump		(bool);
+        xml_fileWriter  *xmlWriter;
+        bool            setup_xmlDump		();
         void            close_xmlDump		();
         std::atomic<bool> xml_dumping;
 	FILE		*iqDumper;

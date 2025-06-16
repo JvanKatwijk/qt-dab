@@ -16,12 +16,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
-QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -609,33 +609,26 @@ DEFINES	+= __DUMP_SNR__		# for experiments only
 #	linux version loads the function from the so
 dabstick-linux {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux \
-	                   ../qt-devices/rtlsdr-handler-common
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux \
-	                   ../qt-devices/rtlsdr-handler-common
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux 
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux 
 	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-common/dll-driver.h \
+	                   ../qt-devices/rtlsdr-handler-linux/dll-driver.h \
 	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
 	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-common/dll-driver.cpp \
+	                   ../qt-devices/rtlsdr-handler-linux/dll-driver.cpp \
 	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
 }
 
 dabstick-win-v4 {
 	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win \
-	                   ../qt-devices/rtlsdr-handler-common
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win \
-	                   ../qt-devices/rtlsdr-handler-common
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win 
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win 
 	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4
 	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4/x86
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
 	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ../qt-devices/rtlsdr-handler-common/dll-driver.h \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
 	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ../qt-devices/rtlsdr-handler-common/dll-driver.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x86/rtlsdr.dll

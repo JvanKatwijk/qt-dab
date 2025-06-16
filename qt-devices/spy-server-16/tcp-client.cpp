@@ -24,7 +24,7 @@
 #include "tcp-client.h"
 
 /*
- *	Thanks to Youssef Touil (well know from Airspy and spyServer),
+ *	Thanks to Youssef Touil (well known from Airspy and spyServer),
  *	the structure of this program part is an adapted C++ translation
  *	of a C# fragment that he is using
  */
@@ -164,5 +164,4 @@ fd_set m_readFds;
 	   }
 	}
 }
-
 

@@ -2342,7 +2342,8 @@ int	tunedFrequency	=
 	the_ensembleHandler	-> reset ();
 	theNewDisplay. showFrequency (theChannel, tunedFrequency);
 	presetTimer. stop	();		// should not run
-	inputDevice_p		-> restartReader (tunedFrequency, 100 * 2048);
+	inputDevice_p		-> restartReader (tunedFrequency, 
+	                                                 SAMPLERATE / 10);
 	channel. cleanChannel	();
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;
@@ -3702,11 +3703,11 @@ bool setting	= configHandler_p -> eti_active ();
 //
 //	access functions to the display widget
 void	RadioInterface::show_spectrum            (int amount) {
-std::vector<Complex> inBuffer (2048);
+std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 	(void)amount;
-	if (theSpectrumBuffer. GetRingBufferReadAvailable () < 2048)
+	if (theSpectrumBuffer. GetRingBufferReadAvailable () < SAMPLERATE / 1000)
 	   return;
-	theSpectrumBuffer. getDataFromBuffer (inBuffer. data (), 2048);
+	theSpectrumBuffer. getDataFromBuffer (inBuffer. data (), SAMPLERATE / 1000);
 	theSpectrumBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
 	           (theNewDisplay. getTab () == SHOW_SPECTRUM))
@@ -3719,11 +3720,11 @@ void	RadioInterface::handle_tiiThreshold	(int v) {
 }
 
 void	RadioInterface::show_tii_spectrum	() {
-std::vector<Complex> inBuffer (2048);
+std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 
-	if (theTIIBuffer. GetRingBufferReadAvailable () < 2048)
+	if (theTIIBuffer. GetRingBufferReadAvailable () < SAMPLERATE / 1000)
 	   return;
-	theTIIBuffer. getDataFromBuffer (inBuffer. data (), 2048);
+	theTIIBuffer. getDataFromBuffer (inBuffer. data (), SAMPLERATE / 1000);
 	theTIIBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
 	           (theNewDisplay. getTab () == SHOW_TII)) {

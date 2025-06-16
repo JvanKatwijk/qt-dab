@@ -97,8 +97,8 @@ private:
 	int16_t         convBufferSize; 
         int16_t         convIndex;
         std::vector <std::complex<float> >      convBuffer;
-        int16_t         mapTable_int   [4 * 512];
-        float           mapTable_float [4 * 512];
+        int16_t         mapTable_int   [SAMPLERATE / 1000];
+        float           mapTable_float [SAMPLERATE / 1000];
         int             selectedRate;
 };
 

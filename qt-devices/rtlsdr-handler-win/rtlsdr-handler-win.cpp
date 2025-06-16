@@ -27,17 +27,16 @@
  */
 
 #include	<QThread>
-#include	"dab-constants.h"
 #include	"rtlsdr-handler-win.h"
 #include	"rtl-dongleselect.h"
 #include	"position-handler.h"
 #include	"rtl-sdr.h"
+#include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 #include	"logger.h"
 #include	"settings-handler.h"
 
-#include	"dll-driver.h"
-
+#define	READLEN_DEFAULT	(4 * 8192)
 //
 //	For the callback, we do need some environment which
 //	is passed through the ctx parameter
@@ -46,7 +45,7 @@
 //	ctx is the calling task
 
 static 
-float convTable [] = {
+float mapTable [] = {
  -128 / 128.0 , -127 / 128.0 , -126 / 128.0 , -125 / 128.0 , -124 / 128.0 , -123 / 128.0 , -122 / 128.0 , -121 / 128.0 , -120 / 128.0 , -119 / 128.0 , -118 / 128.0 , -117 / 128.0 , -116 / 128.0 , -115 / 128.0 , -114 / 128.0 , -113 / 128.0 
 , -112 / 128.0 , -111 / 128.0 , -110 / 128.0 , -109 / 128.0 , -108 / 128.0 , -107 / 128.0 , -106 / 128.0 , -105 / 128.0 , -104 / 128.0 , -103 / 128.0 , -102 / 128.0 , -101 / 128.0 , -100 / 128.0 , -99 / 128.0 , -98 / 128.0 , -97 / 128.0 
 , -96 / 128.0 , -95 / 128.0 , -94 / 128.0 , -93 / 128.0 , -92 / 128.0 , -91 / 128.0 , -90 / 128.0 , -89 / 128.0 , -88 / 128.0 , -87 / 128.0 , -86 / 128.0 , -85 / 128.0 , -84 / 128.0 , -83 / 128.0 , -82 / 128.0 , -81 / 128.0 
@@ -64,13 +63,61 @@ float convTable [] = {
 , 96 / 128.0 , 97 / 128.0 , 98 / 128.0 , 99 / 128.0 , 100 / 128.0 , 101 / 128.0 , 102 / 128.0 , 103 / 128.0 , 104 / 128.0 , 105 / 128.0 , 106 / 128.0 , 107 / 128.0 , 108 / 128.0 , 109 / 128.0 , 110 / 128.0 , 111 / 128.0 
 , 112 / 128.0 , 113 / 128.0 , 114 / 128.0 , 115 / 128.0 , 116 / 128.0 , 117 / 128.0 , 118 / 128.0 , 119 / 128.0 , 120 / 128.0 , 121 / 128.0 , 122 / 128.0 , 123 / 128.0 , 124 / 128.0 , 125 / 128.0 , 126 / 128.0 , 127 / 128.0 };
 
+static
+void	RTLSDRCallBack (uint8_t *buf, uint32_t len, void *ctx) {
+rtlsdrHandler_win	*theStick	= (rtlsdrHandler_win *)ctx;
+
+	if ((theStick == nullptr) || (len != READLEN_DEFAULT)) {
+	   fprintf (stderr, "%d \n", len);
+	   return;
+	}
+
+	if (theStick -> isActive. load ()) {
+	   int ovf	= theStick ->  _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
+	   if (ovf < 0)
+	      (void)theStick -> _I_Buffer.
+	           putDataIntoBuffer ((std::complex<uint8_t> *)buf,
+	                                         (int)len / 2 + ovf);
+	   else
+	      (void)theStick -> _I_Buffer.
+	           putDataIntoBuffer ((std::complex<uint8_t> *)buf, (int)len / 2);
+	   theStick -> reportOverflow (ovf < 0);
+	}
+}
+//
+//	for handling the events in libusb, we need a controlthread
+//	whose sole purpose is to process the rtlsdr_read_async function
+//	from the lib.
+class	dll_driver_win : public QThread {
+private:
+	rtlsdrHandler_win	*theStick;
+public:
+
+	dll_driver_win (rtlsdrHandler_win *d) {
+	theStick	= d;
+	start		();
+}
+
+	~dll_driver_win	() {
+}
+
+private:
+void	run () {
+	rtlsdr_read_async (theStick -> theDevice,
+	                   (rtlsdr_read_async_cb_t)&RTLSDRCallBack,
+	                   (void *)theStick,
+	                   0,
+	                   READLEN_DEFAULT);
+	fprintf (stderr, "dll_task terminates\n");
+	}
+};
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler_win::rtlsdrHandler_win (QSettings *s,
 	                                      const QString &recorderVersion,
 	                                      logger *theLogger): // dummy now
 	                                 _I_Buffer (8 * 1024 * 1024),
-	                                 theFilter (5, 1560000 / 2, SAMPLERATE) {
+	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -91,6 +138,8 @@ char	manufac [256], product [256], serial [256];
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
 
+	inputRate		= 2048000;
+	workerHandle		= nullptr;
 	isActive. store (false);
 
 //	Ok, from here we have the library functions accessible
@@ -120,7 +169,7 @@ char	manufac [256], product [256], serial [256];
 	QString	tunerType	= get_tunerType (rtlsdr_get_tuner_type (theDevice));
 	product_display	-> setText (tunerType);
 
-	r		= rtlsdr_set_sample_rate (theDevice, SAMPLERATE);
+	r		= rtlsdr_set_sample_rate (theDevice, inputRate);
 	if (r < 0) {
 	   throw (device_exception ("Setting samplerate failed\n"));
 	}
@@ -210,17 +259,20 @@ char	manufac [256], product [256], serial [256];
 	connect (this, &rtlsdrHandler_win::new_agcSetting,
 	         agcControl, &QCheckBox::setChecked);
 	iqDumper	= nullptr;
+	xmlWriter	= nullptr;
 	iq_dumping. store (false);
+	xml_dumping. store (false);
 }
 
 	rtlsdrHandler_win::~rtlsdrHandler_win	() {
 	stopReader	();
-	if (!workerHandle. isNull ()) {
+	if (workerHandle != nullptr) {
 	   rtlsdr_cancel_async (theDevice);
 	   while (!workerHandle -> isFinished()) 
 	      usleep (200);
 	   _I_Buffer. FlushRingBuffer();
-	   workerHandle. reset ();
+	   delete	workerHandle;
+	   workerHandle	= nullptr;
 //	   rtlsdr_close (theDevice);	// will crash if activated
 	}
 
@@ -244,7 +296,7 @@ void	rtlsdrHandler_win::set_filter	(int c) {
 	filtering       = filterSelector -> isChecked ();
 }
 
-bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
+bool	rtlsdrHandler_win::restartReader	(int32_t freq) {
 	_I_Buffer. FlushRingBuffer();
 
 	(void)(rtlsdr_set_center_freq (theDevice, freq));
@@ -252,12 +304,11 @@ bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
 	   update_gainSettings (freq / MHz (1));
 
 	lastFrequency	= freq;
-	this -> toSkip = skipped;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
-	if (workerHandle. isNull ()) {
+	if (workerHandle == nullptr) {
 	   (void)rtlsdr_reset_buffer (theDevice);
-	   workerHandle. reset (new dll_driver_win (this))
+	   workerHandle	= new dll_driver_win (this);
 	}
 	isActive. store (true);
 	return true;
@@ -309,14 +360,14 @@ static int iqTeller	= 0;
 	   }
 	   for (int i = 0; i < amount; i ++) 
 	      V [i] = theFilter. Pass (
-	               std::complex<float> (convTable [real (temp [i]) & 0xFF],
-	                                    convTable [imag (temp [i]) & 0xFF]));
+	               std::complex<float> (mapTable [real (temp [i]) & 0xFF],
+	                                    mapTable [imag (temp [i]) & 0xFF]));
 	}
 	else
 	   for (int i = 0; i < amount; i ++) 
-	      V [i] = std::complex<float> (convTable [real (temp [i]) & 0xFF],
-	                                   convTable [imag (temp [i]) & 0xFF]);
-	if (!xml_writer. isNull ())
+	      V [i] = std::complex<float> (mapTable [real (temp [i]) & 0xFF],
+	                                   mapTable [imag (temp [i]) & 0xFF]);
+	if (xml_dumping. load ())
 	   xmlWriter -> add (temp, amount);
 	else
 	if (iq_dumping. load ()) {
@@ -391,8 +442,8 @@ void	rtlsdrHandler_win::close_iqDump () {
 }
 	   
 void	rtlsdrHandler_win::set_xmlDump () {
-	if (xml_writer. isNull ())
-	   if (setup_xmlDump (false)) 
+	if (!xml_dumping. load ()) {
+	   if (setup_xmlDump ()) 
 	      iq_dumpButton	-> hide	();
 	}
 	else {
@@ -401,45 +452,36 @@ void	rtlsdrHandler_win::set_xmlDump () {
 	}
 }
 
-void	rtlsdrHandler_win::startDump	() {
-	setup_xmlDump (true);
-	iq_dumpButton	-> hide ();
-}
-
-void	rtlsdrHandler_win::stopDump	() {
-	close_xmlDump ();
-	iq_dumpButton		-> show ();
-}
-
-bool	rtlsdrHandler_win::setup_xmlDump (bool direct) {
+bool	rtlsdrHandler_win::setup_xmlDump () {
 QString channel		= rtlsdrSettings -> value ("channel", "xx").
 	                                                      toString ();
 	xmlWriter	= nullptr;
 	try {
-	   xmlWriter. reset (new xml_fileWriter (rtlsdrSettings,
+	   xmlWriter	= new xml_fileWriter (rtlsdrSettings,
 	                                      channel,
 	                                      8,
 	                                      "uint8",
-	                                      SAMPLERATE,
+	                                      2048000,
 	                                      lastFrequency,
 	                                      rtlsdr_get_tuner_gain (theDevice),
 	                                      "RTLSDR",
 	                                      deviceModel,
-	                                      recorderVersion,
-	                                      direct));
+	                                      recorderVersion);
 	} catch (...) {
 	   return false;
 	}
+	xml_dumping. store (true);
 	xml_dumpButton	-> setText ("writing xml file");
 	return true;
 }
 	
 void	rtlsdrHandler_win::close_xmlDump () {
-	if (xmlWriter. isNull ())
+	if (xmlWriter == nullptr)
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	xmlWriter. reset ();
+	delete xmlWriter;
+	xmlWriter	= nullptr;
 	xml_dumping. store (false);
 	xml_dumpButton	-> setText ("Dump to xml");
 }

@@ -39,7 +39,7 @@
 #include	"dab-constants.h"
 #include	"device-exceptions.h"
 #include	"spyserver-client.h"
-
+#include	"position-handler.h"
 #include	"settings-handler.h"
 
 #define	DEFAULT_FREQUENCY	(Khz (227360))
@@ -51,6 +51,7 @@
 	                                        hostLineEdit (nullptr) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, SPY_SERVER_16_SETTINGS);
 	myFrame. show		();
 	hostLineEdit. hide ();
 
@@ -97,7 +98,10 @@
 	}
 	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
 	                              "spyServer_client-gain", settings. gain);
-	theServer. reset ();
+	if (!theServer. isNull ())
+	   theServer. reset ();
+	store_widget_position (spyServer_settings, &myFrame,
+	                           SPY_SERVER_16_SETTINGS);
 }
 //
 void	spyServer_client::wantConnect () {
@@ -143,6 +147,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	                                  (int)settings. basePort,
 	                                   &tmpBuffer));
 	} catch (...) {
+	   theServer. reset ();		// ???
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("Connection failed"));
 	   return;
@@ -171,7 +176,6 @@ QString theAddress	= QHostAddress (s). toString ();
 	            this, &spyServer_client::handle_checkTimer);
 	theServer	-> connection_set ();
 
-//	fprintf (stderr, "going to ask for device info\n");
 	struct DeviceInfo theDevice;
 	theServer	-> get_deviceInfo (theDevice);
 
@@ -183,7 +187,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	   nameOfDevice	-> setText ("RTLSDR");
 	}
 	else {
-	   theState -> setText ("Invalid device");
+	   theState -> setText ("not supported device");
 	   return;
 	}
 
@@ -211,8 +215,6 @@ QString theAddress	= QHostAddress (s). toString ();
 	      settings. sample_rate = testRate;
 	   }
 
-	   fprintf (stderr, " result: resample_ratio %f, targetrate %f\n",
-	                    (float)resample_ratio, (float)settings. sample_rate);
 	   if (desired_decim_stage < 0) {
 	      theServer. reset ();
 	      return;
@@ -249,7 +251,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	fprintf (stderr, "The samplerate = %f\n",
 	                      (float)(theServer -> get_sample_rate ()));
 	theState	-> setText ("connected");
-//	start ();		// start the reader
+
 //	Since we are down sampling, creating an outputbuffer with the
 //	same size as the input buffer is OK
 	if (settings. resample_ratio != 1.0 ) {
@@ -335,18 +337,19 @@ void	spyServer_client::handle_autogain	(int d) {
 	settings. auto_gain	= x != 0;
 	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
 	                             "spyServer-auto_gain", x ? 1 : 0);
+	if (theServer. isNull ())
+	   return;
 	if (connected)
 	   theServer -> set_gain_mode (d != x, 0);
 }
 
 void	spyServer_client::connect_on () {
-	fprintf (stderr, "onConnect gezet!!!!!!!!!!\n");
 	onConnect. store (true);
 }
 
 void	spyServer_client::data_ready	() {
 int16_t buffer_16 [settings. batchSize * 2];
-//static int fillP	= 0;
+
 	while (connected && 
 	          (tmpBuffer. GetRingBufferReadAvailable () > 2 * settings. batchSize)) {
 	   uint32_t samps =	

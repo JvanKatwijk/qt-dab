@@ -39,7 +39,7 @@
 #include	"dab-constants.h"
 #include	"device-exceptions.h"
 #include	"spyserver-client-8.h"
-
+#include	"position-handler.h"
 #include	"settings-handler.h"
 
 #define	DEFAULT_FREQUENCY	(Khz (227360))
@@ -51,6 +51,7 @@
 	                                            hostLineEdit (nullptr) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, SPY_SERVER_8_SETTINGS);
 	myFrame. show		();
 	hostLineEdit. hide ();
 
@@ -69,7 +70,6 @@
            autogain_selector    -> setChecked (true);
 	spyServer_gain	-> setValue (theGain);
 	connected	= false;
-//	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
 	settings. resample_quality	= 2;
 	settings. batchSize		= 4096;
@@ -99,18 +99,18 @@
 	                         "spyServer_client-gain", settings. gain);
 	if (!theServer. isNull ())
 	   theServer. reset ();
-//	delete	hostLineEdit;
+	store_widget_position (spyServer_settings, &myFrame,
+	                                 SPY_SERVER_8_SETTINGS);
 }
 //
 void	spyServer_client_8::wantConnect () {
 QString ipAddress;
-int16_t	i;
 QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
 	if (connected)
 	   return;
 	// use the first non-localhost IPv4 address
-	for (i = 0; i < ipAddressesList.size (); ++i) {
+	for (uint16_t i = 0; i < ipAddressesList.size (); i ++) {
 	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
 	      ipAddressesList. at (i). toIPv4Address()) {
 	      ipAddress = ipAddressesList. at(i). toString();
@@ -127,7 +127,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
 	hostLineEdit. setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit. show();
+	hostLineEdit. show ();
 	theState	-> setText ("Enter IP address, \nthen press return");
 	connect (&hostLineEdit, &QLineEdit::returnPressed,
 	         this, &spyServer_client_8::setConnection);
@@ -147,6 +147,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	                                    (int)settings. basePort,
 	                                    &tmpBuffer));
 	} catch (...) {
+	   theServer. reset ();		// ???
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("Connection failed"));
 	   return;
@@ -185,7 +186,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	   nameOfDevice	-> setText ("RTLSDR");
 	}
 	else {
-	   theState -> setText ("Invalid device");
+	   theState -> setText ("not supported device");
 	   return;
 	}
 
@@ -248,7 +249,6 @@ QString theAddress	= QHostAddress (s). toString ();
 	fprintf (stderr, "The samplerate = %f\n",
 	                      (float)(theServer -> get_sample_rate ()));
 	theState	-> setText ("connected");
-//	start ();		// start the reader
 
 //	Since we are down sampling, creating an outputbuffer with the
 //	same size as the input buffer is OK
@@ -291,7 +291,7 @@ bool	spyServer_client_8::restartReader	(int32_t freq, int skipped) {
 
 void	spyServer_client_8::stopReader	() {
 	fprintf (stderr, "stopReader is called\n");
-	if (theServer == nullptr)
+	if (theServer. isNull ())
 	   return;
 	if (!connected || !running)	// seems double???
 	   return;
@@ -318,12 +318,14 @@ int16_t	spyServer_client_8::bitDepth () {
 
 void	spyServer_client_8::setGain	(int gain) {
 	settings. gain = gain;
+	store (spyServer_settings, SPY_SERVER_8_SETTINGS,
+                                      "spyServer_client-gain", settings. gain);
+	if (theServer. isNull ())
+	   return;
 	if (!theServer -> set_gain (settings.gain)) {
 	   std::cerr << "Failed to set gain\n";
 	   return;
 	}
-	store (spyServer_settings, SPY_SERVER_8_SETTINGS,
-                                      "spyServer_client-gain", settings. gain);
 }
 
 void    spyServer_client_8::handle_autogain       (int d) {
@@ -332,6 +334,8 @@ void    spyServer_client_8::handle_autogain       (int d) {
         settings. auto_gain     = x != 0;
         store (spyServer_settings, SPY_SERVER_8_SETTINGS,
                                      "spyServer-auto_gain", x ? 1 : 0);
+	if (theServer. isNull ())
+	   return;
         if (connected)
            theServer -> set_gain_mode (d != x, 0);
 }
@@ -361,7 +365,7 @@ float convTable [] = {
 
 void	spyServer_client_8::data_ready	() {
 uint8_t buffer_8 [settings. batchSize * 2];
-//static int fillP	= 0;
+
 	while (connected && 
 	          (tmpBuffer. GetRingBufferReadAvailable () > 2 * settings. batchSize)) {
 	   uint32_t samps =	
@@ -393,7 +397,6 @@ uint8_t buffer_8 [settings. batchSize * 2];
                     convIndex = 1;
                  }
               }
-
 	   }
 	   else {	// no resmpling
 	      std::complex<float> outB [samps];

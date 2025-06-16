@@ -273,8 +273,7 @@ include_directories(
 	   )
 
 	   include_directories (
-	        ./rtlsdr-handler-linux/
-	        ./rtlsdr-handler-common/
+	        ./rtlsdr-handler-linux
 	   )
 
 	   set (${devicesLibName}_HDRS
