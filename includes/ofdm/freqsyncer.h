@@ -56,7 +56,7 @@ private:
 	int32_t		T_g;
 	int16_t		carriers;
 	fftHandler	fft_forward;
-#define	TEST_SIZE	64
+#define	TEST_SIZE	128
 	fftHandler	go_forward;
 	fftHandler	go_backwards;
 	Complex		t1 [TEST_SIZE];

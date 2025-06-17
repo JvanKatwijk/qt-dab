@@ -70,7 +70,7 @@ private:
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
 
-	std::vector<Complex>	sinTable;
+	std::vector<Complex>	compTable;
 	float		computeQuality		(Complex *);
 	float		compute_timeOffset      (Complex *,
 	                                         Complex *);

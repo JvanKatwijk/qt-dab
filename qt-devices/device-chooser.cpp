@@ -124,17 +124,17 @@
 #ifdef	HAVE_SDRPLAY_V2
 	deviceList. push_back (deviceItem ("sdrplay-v2", SDRPLAY_V2_DEVICE));
 #endif
-#ifdef	__MINGW32__
+//#ifdef	__MINGW32__
 #ifdef	HAVE_RTLSDR_V3
 	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
 #elif	HAVE_RTLSDR_V4
 	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
 #endif
-#else
+//#else
 #ifdef	HAVE_RTLSDR
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 #endif
-#endif
+//#endif
 #ifdef	HAVE_AIRSPY_2
 	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
 #endif

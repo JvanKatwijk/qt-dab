@@ -48,7 +48,7 @@ public:
 			rtlsdrHandler_win	(QSettings *,
 	                                         const QString &, logger *);
 			~rtlsdrHandler_win	();
-	bool		restartReader		(int32_t);
+	bool		restartReader		(int32_t, int skipped = 0);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                        int32_t);
@@ -62,7 +62,7 @@ public:
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	struct rtlsdr_dev	*theDevice;
 	std::atomic<bool>	isActive;
-	void		reportOverflow		(bool);
+	void		processBuffer (uint8_t *, uint32_t);
 private:
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
@@ -88,6 +88,10 @@ private:
 	bool		filtering;
 	LowPassFIR	theFilter;
 	int		currentDepth;
+	void		reportOverflow		(bool);
+
+	double		m_dcI;
+	double		m_dcQ;
 
 signals:
 	void		new_gainIndex		(int);

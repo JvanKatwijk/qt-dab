@@ -50,7 +50,7 @@ float Length	= jan_abs (V);
 	return Length == 0.0f ? Complex (0.0, 0.0) : V / (DABFLOAT)Length;
 }
 
-#define	GRANULARITY	1000
+#define	GRANULARITY	5000
 #define	TABLE_SIZE	(int)(GRANULARITY + RAD_PER_DEGREE * 30.0)
 Complex makeComplex (DABFLOAT phase) {
 DABFLOAT p2	= phase * phase;
@@ -105,11 +105,10 @@ DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
 	decoder			= DECODER_1;
 
 	nullPower		= 0.1f;
-
-	sinTable. resize (TABLE_SIZE);
+	compTable. resize (TABLE_SIZE);
 	for (int i = 0; i < TABLE_SIZE; i ++)  {
 	   float argum = (float)(i - TABLE_SIZE / 2) / TABLE_SIZE;
-	   sinTable [i] = Complex (cos (argum), sin (argum));
+	   compTable [i] = Complex (cos (argum), sin (argum));
 	}
 }
 
@@ -235,10 +234,20 @@ DABFLOAT sum = 0;
 	   conjVector   [index] = fftBinRaw;
 
 //	   Complex fftBin	= fftBinRaw;
-	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
-	                                                 TABLE_SIZE / 2);
-	   Complex fftBin	= fftBinRaw * sinTable [dd];
-//	                     makeComplex (-IntegAbsPhaseVector [index]);
+//
+//	In the original code, "borrowed" from Tomneda, the
+//	correction factor was dynamically computed, i.e
+	Complex fftBin	= fftBinRaw *
+	                     makeComplex (-IntegAbsPhaseVector [index]);
+//	It turned out that the makeComplex function took app 10 % of the
+//	overall processing time.
+//	Table lookup was the answer, accuracy of the table increases
+//	by making the table longer
+//	since we are dealing with non int values, choosing the length
+//	requires attention
+//	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
+//	                                                 TABLE_SIZE / 2);
+//	   Complex fftBin	= fftBinRaw * compTable [dd];
 //	Get the phase (real and absolute) 
 	   DABFLOAT	re	= real (fftBin);
 	   DABFLOAT	im	= imag (fftBin);
@@ -254,7 +263,6 @@ DABFLOAT sum = 0;
 	   limit_symmetrically (IntegAbsPhaseVector [index],
 	                                RAD_PER_DEGREE * (DABFLOAT)9.9);
 
-	   
 /**
   *	When trying alternative decoder implementations
   *	as implemented in DABstar by Rolf Zerr (aka old-dab) and
@@ -276,6 +284,7 @@ DABFLOAT sum = 0;
   *	the contributions of Rolf Zerr (aka OldDab) and
   *	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
   */
+#define	__ZERR__
 #ifdef	__ZERR__
 	   DABFLOAT	stdDev		= phaseError * phaseError;
 	   stdDevVector [index] =

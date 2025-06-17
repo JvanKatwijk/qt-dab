@@ -45,7 +45,7 @@
 //	ctx is the calling task
 
 static 
-float mapTable [] = {
+float convTable [] = {
  -128 / 128.0 , -127 / 128.0 , -126 / 128.0 , -125 / 128.0 , -124 / 128.0 , -123 / 128.0 , -122 / 128.0 , -121 / 128.0 , -120 / 128.0 , -119 / 128.0 , -118 / 128.0 , -117 / 128.0 , -116 / 128.0 , -115 / 128.0 , -114 / 128.0 , -113 / 128.0 
 , -112 / 128.0 , -111 / 128.0 , -110 / 128.0 , -109 / 128.0 , -108 / 128.0 , -107 / 128.0 , -106 / 128.0 , -105 / 128.0 , -104 / 128.0 , -103 / 128.0 , -102 / 128.0 , -101 / 128.0 , -100 / 128.0 , -99 / 128.0 , -98 / 128.0 , -97 / 128.0 
 , -96 / 128.0 , -95 / 128.0 , -94 / 128.0 , -93 / 128.0 , -92 / 128.0 , -91 / 128.0 , -90 / 128.0 , -89 / 128.0 , -88 / 128.0 , -87 / 128.0 , -86 / 128.0 , -85 / 128.0 , -84 / 128.0 , -83 / 128.0 , -82 / 128.0 , -81 / 128.0 
@@ -72,17 +72,8 @@ rtlsdrHandler_win	*theStick	= (rtlsdrHandler_win *)ctx;
 	   return;
 	}
 
-	if (theStick -> isActive. load ()) {
-	   int ovf	= theStick ->  _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
-	   if (ovf < 0)
-	      (void)theStick -> _I_Buffer.
-	           putDataIntoBuffer ((std::complex<uint8_t> *)buf,
-	                                         (int)len / 2 + ovf);
-	   else
-	      (void)theStick -> _I_Buffer.
-	           putDataIntoBuffer ((std::complex<uint8_t> *)buf, (int)len / 2);
-	   theStick -> reportOverflow (ovf < 0);
-	}
+	if (theStick -> isActive. load ()) 	
+	   static_cast<rtlsdrHandler_win *>(ctx) -> processBuffer (buf, len);
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -296,7 +287,7 @@ void	rtlsdrHandler_win::set_filter	(int c) {
 	filtering       = filterSelector -> isChecked ();
 }
 
-bool	rtlsdrHandler_win::restartReader	(int32_t freq) {
+bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
 	_I_Buffer. FlushRingBuffer();
 
 	(void)(rtlsdr_set_center_freq (theDevice, freq));
@@ -304,6 +295,7 @@ bool	rtlsdrHandler_win::restartReader	(int32_t freq) {
 	   update_gainSettings (freq / MHz (1));
 
 	lastFrequency	= freq;
+	this	-> toSkip	= skipped;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
@@ -360,13 +352,13 @@ static int iqTeller	= 0;
 	   }
 	   for (int i = 0; i < amount; i ++) 
 	      V [i] = theFilter. Pass (
-	               std::complex<float> (mapTable [real (temp [i]) & 0xFF],
-	                                    mapTable [imag (temp [i]) & 0xFF]));
+	               std::complex<float> (convTable [real (temp [i]) & 0xFF],
+	                                    convTable [imag (temp [i]) & 0xFF]));
 	}
 	else
 	   for (int i = 0; i < amount; i ++) 
-	      V [i] = std::complex<float> (mapTable [real (temp [i]) & 0xFF],
-	                                   mapTable [imag (temp [i]) & 0xFF]);
+	      V [i] = std::complex<float> (convTable [real (temp [i]) & 0xFF],
+	                                   convTable [imag (temp [i]) & 0xFF]);
 	if (xml_dumping. load ())
 	   xmlWriter -> add (temp, amount);
 	else
@@ -529,6 +521,62 @@ QString freqS		= QString::number (freq);
 	   usleep (1000);
 	set_autogain (agcControl -> isChecked ());
 	agcControl	-> blockSignals (false);
+}
+
+#define	IQ_BUFSIZE	4096
+#define	CORRF	0.0005
+void	rtlsdrHandler_win::processBuffer (uint8_t *buf, uint32_t len) {
+float	sumI	= 0;
+float	sumQ	= 0;
+auto	*tempBuf 	= dynVec (std::complex<float>, len / 2);
+static uint8_t dumpBuffer [2 * IQ_BUFSIZE];
+static int iqTeller	= 0;
+
+	if (!isActive. load ()) 
+	   return;
+
+	if (toSkip > 0) {
+	   toSkip -= len / 2;
+	   return;
+	}
+	if (xml_dumping. load ())
+	   xmlWriter -> add ((std::complex<uint8_t> *)buf, len / 2);
+
+	if (iq_dumping. load ()) {
+	   for (uint32_t i = 0; i < len / 2; i ++) {
+	      dumpBuffer [2 * iqTeller]	= buf [2 * i];
+	      dumpBuffer [2 * iqTeller + 1] = buf [2 * i + 1];
+	      iqTeller ++;
+	      if (iqTeller >= IQ_BUFSIZE) {
+	         fwrite (dumpBuffer, 2, IQ_BUFSIZE, iqDumper);
+	         iqTeller = 0;
+	      }
+	   }
+	}
+	if ((filtering) && (filterDepth -> value () != currentDepth)) {
+	   currentDepth = filterDepth -> value ();
+	   theFilter. resize (currentDepth);
+	}
+	float dcI	= m_dcI;
+	float dcQ	= m_dcQ;
+	for (uint32_t i = 0; i < len / 2; i ++) {
+	   float tempI	= convTable [buf [2 * i]];
+	   float tempQ	= convTable [buf [2 * i + 1]];
+	   sumI		+= tempI;
+	   sumQ		+= tempQ;
+	   tempBuf [i] = std::complex<float> (tempI, tempQ);
+	   if (filtering)
+	      tempBuf [i] = theFilter. Pass (tempBuf [i]);
+	}
+// calculate correction values for next input buffer
+	m_dcI = sumI / (len / 2) * CORRF + (1 - CORRF) * dcI;
+	m_dcQ = sumQ / (len / 2) * CORRF + (1 - CORRF) * dcQ;
+	int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
+	if (ovf < 0)
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2 + ovf);
+	else
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2);
+	reportOverflow (ovf < 0);
 }
 
 QString	rtlsdrHandler_win::get_tunerType	(int tunerType) {

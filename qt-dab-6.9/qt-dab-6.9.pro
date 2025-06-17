@@ -636,16 +636,12 @@ dabstick-win-v4 {
 
 dabstick-win-v3 {
 	DEFINES		+= HAVE_RTLSDR_V3
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win \
-	                   ../qt-devices/rtlsdr-handler-common
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win \
-	                   ../qt-devices/rtlsdr-handler-common
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win 
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win 
 	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
 	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ../qt-devices/rtlsdr-handler-common/dll-driver.h \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
 	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ../qt-devices/rtlsdr-handler-common/dll-driver.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 #	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll

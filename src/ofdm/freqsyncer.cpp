@@ -44,7 +44,7 @@
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
-	
+
 	phaseDifferences.       resize (diff_length);
 //      prepare a table for the coarse frequency synchronization
 //      can be a static one, actually, we are only interested in
@@ -131,7 +131,7 @@ int16_t	freqSyncer::
 	      test [i]		= jan_abs (v [T_u / 2 + i]);
 	      test [T_u / 2 + i]	= jan_abs (v [i]);
 	   }
-#define	SUM_SIZE	50
+#define	SUM_SIZE	75
 	   if (speedUp) {
 //	   We look with a moving sum  of the first and the last
 //	   SUM_SIZE carriers to a full sequence of "carrier" carriers
