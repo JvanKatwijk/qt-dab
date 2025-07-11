@@ -23,8 +23,8 @@
 #include	"position-handler.h"
 #include	<QWidget>
 
-void	set_position_and_size (QSettings * settings,
-	                       QWidget *w, const QString &key) {
+void	setPositionAndSize (QSettings * settings,
+	                    QWidget *w, const QString &key) {
 	settings	-> beginGroup (key);
 	int x	= settings	-> value (key + "-x", 100). toInt ();
 	int y	= settings	-> value (key + "-y", 100). toInt ();
@@ -35,7 +35,7 @@ void	set_position_and_size (QSettings * settings,
 	w	-> move (QPoint (x, y));
 }
 
-void	store_widget_position (QSettings *settings,
+void	storeWidgetPosition (QSettings *settings,
 	                       QWidget *w, const QString &key) {
 	settings	-> beginGroup (key);
 	settings	-> setValue (key + "-x", w -> pos (). x ());

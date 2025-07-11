@@ -61,43 +61,43 @@ public:
 //	void		start			(int32_t);
 	void		stop			();
 
-	void		select_TII		(uint8_t);
-	void		start_dumping		(const QString &, int, int);
-	void		stop_dumping		();
-	bool		start_etiGenerator	(const QString &);
-	void		stop_etiGenerator	();
-	void		reset_etiGenerator	();
-	void		set_scanMode		(bool);
-	void		get_frameQuality	(int *, int*, int *);
+	void		selectTII		(uint8_t);
+	void		startDumping		(const QString &, int, int);
+	void		stopDumping		();
+	bool		startEtiGenerator	(const QString &);
+	void		stopEtiGenerator	();
+	void		resetEtiGenerator	();
+	void		setScanMode		(bool);
+	void		getFrameQuality		(int *, int*, int *);
 //
 //	for the tii settings
-	void		set_tiiThreshold	(int16_t);
-	void		set_tiiCollisions	(bool);
-	void		set_tiiFilter		(bool);
+	void		setTIIThreshold		(int16_t);
+	void		setTIICollisions	(bool);
+	void		setTIIFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
-	int		get_serviceComp		(const QString &);
-	int		get_serviceComp		(uint32_t, int);
-	int		get_serviceComp_SCIds	(uint32_t SId, int SCIds);
+	int		getServiceComp		(const QString &);
+	int		getServiceComp		(uint32_t, int);
+	int		getServiceComp_SCIds	(uint32_t SId, int SCIds);
 	bool		isPrimary		(const QString &);
 
-	uint16_t	get_announcing		(uint16_t);
-	uint32_t	get_SId			(int);
+	uint16_t	getAnnouncing		(uint16_t);
+	uint32_t	getSId			(int);
 	uint8_t		serviceType		(int);
         void		audioData		(int, audiodata &);
         void		packetData		(int, packetdata &);
-	int		get_nrComps		(uint32_t);
-        uint8_t		get_ecc			();
+	int		getNrComps		(uint32_t);
+        uint8_t		getEcc			();
 	uint32_t	julianDate		();
 	std::vector<int>	getFrequency	(const QString &);
 	QStringList	basicPrint		();
 	int		freeSpace		();
 	int		scanWidth		();
-	void		start_ficDump		(FILE *);
-	void		stop_ficDump		();
+	void		startFicDump		(FILE *);
+	void		stopFicDump		();
 
-	void		set_speedUp		(bool);
-	void		set_freqCorrelator	(uint8_t);
+	void		setSpeedUp		(bool);
+	void		setFreqCorrelator	(uint8_t);
 //	for the mscHandler
 //	void		resetServices		();
 //	void		stopService		(descriptorType *, int);
@@ -124,27 +124,27 @@ private:
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 
-	uint8_t			selected_TII;
+	uint8_t			selectedTII;
 
 	int16_t			tiiThreshold;
 	bool			tiiCollisions_active;
 	bool			tiiFilter_active;
 
 	int			decoder;
-	int			threshold;
+	int			thresHold;
 	int			totalFrames;
 	int			goodFrames;
 	int			badFrames;
 	bool			tiiSwitch;
-	int16_t			tii_depth;
-	int16_t			echo_depth;
+	int16_t			tiiDepth;
+	int16_t			echoEepth;
 	RingBuffer<Complex >	*tiiBuffer_p;
 	RingBuffer<Complex >	*nullBuffer_p;
 	RingBuffer<float>	*snrBuffer_p;
 	RingBuffer<Complex>	*channelBuffer_p;
-	int16_t			tii_delay;
-	int16_t			tii_counter;
-	bool			eti_on;
+	int16_t			tiiDelay;
+	int16_t			tiiCounter;
+	bool			etiOn;
 	int16_t			attempts;
 	bool			scanMode;
 	int32_t			T_null;
@@ -162,22 +162,22 @@ private:
 	std::vector<Complex>	ofdmBuffer;
 	bool			correlationOrder;
 	bool			dxMode;
-	bool			freq_speedUp;
-	uint8_t			freq_correlator;
+	bool			freqSpeedUp;
+	uint8_t			freqCorrelator;
 virtual	void			run		();
 signals:
-	void		set_synced		(bool);
-	void		no_signal_found		();
-	void		set_sync_lost		();
-	void		show_tiiData		(QVector<tiiData>, int);
-	void		show_tii_spectrum	();
-	void		show_spectrum		(int);
-	void		show_snr		(float);
-	void		show_snr		(float, float, float,
+	void		setSynced		(bool);
+	void		noSignalFound		();
+	void		setSyncLost		();
+	void		showTIIData		(QVector<tiiData>, int);
+	void		showTIIspectrum		();
+	void		showSpectrum		(int);
+	void		showSnr			(float);
+	void		showSnr			(float, float, float,
 	                                                  float, float);
-	void		show_clock_error	(int);
-	void		show_null		(int, int);
-	void		show_channel		(int);
-	void		show_Corrector		(int, float);
+	void		showClockError		(int);
+	void		showNull		(int, int);
+	void		showChannel		(int);
+	void		showCorrector		(int, float);
 };
 

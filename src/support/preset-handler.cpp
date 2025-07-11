@@ -114,7 +114,6 @@ void	presetHandler::removeElement	(const QString &service) {
 	      return;
 	   }
 	}
-	
 }
 	      
 void	presetHandler::addElement (const QString &service) {
@@ -129,7 +128,7 @@ void	presetHandler::addElement (const QString &service) {
 	addElement (list. at (0), list. at (1));
 }
 	
-void	presetHandler::clear_presetList	() {
+void	presetHandler::clearPresetList	() {
 	thePresets. resize (0);
 	presetList. clear ();
 	displayList. setStringList (presetList);
@@ -142,9 +141,13 @@ void	presetHandler::clear_presetList	() {
 void    presetHandler::selectElement (QModelIndex ind) {
 QString currentProgram = displayList. data (ind, Qt::DisplayRole). toString ();
 	for (uint32_t i = 0; i < thePresets. size (); i ++)
-	   if (thePresets. at (i). serviceName == currentProgram) 
-              emit handle_presetSelect (thePresets. at (i). channel,
+	   if (thePresets. at (i). serviceName == currentProgram)  {
+              emit handlePresetSelect (thePresets. at (i). channel,
 	                                currentProgram);
+	      fprintf (stderr, "gekozen voor %s %s\n",
+	                                 thePresets. at (i). channel. toLatin1 (). data (),
+	                                 currentProgram. toLatin1 (). data ());
+	   }
 }       
 
 int	presetHandler::nrElements	() {

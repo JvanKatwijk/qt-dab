@@ -46,7 +46,7 @@ lms_info_str_t limedevices [10];
 	this	-> recorderVersion	= recorderVersion;
 	(void)theLogger;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, LIME_SETTINGS);
+	setPositionAndSize (s, &myFrame, LIME_SETTINGS);
 	myFrame. show	();
 
 	filtering	= false;
@@ -195,7 +195,7 @@ lms_info_str_t limedevices [10];
 	while (isRunning())
 	   usleep (100);
 	myFrame. hide ();
-	store_widget_position (limeSettings, &myFrame, LIME_SETTINGS);
+	storeWidgetPosition (limeSettings, &myFrame, LIME_SETTINGS);
 	QString currentText = antennaList -> currentText ();
 	store (limeSettings, LIME_SETTINGS, "antenna", currentText);
 	store (limeSettings, LIME_SETTINGS, "gain", gainSelector -> value());

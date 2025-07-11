@@ -80,7 +80,7 @@ mir_sdr_DeviceT devDesc [4];
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, SDRPLAY_SETTINGS_V2);
+	setPositionAndSize (s, &myFrame, SDRPLAY_SETTINGS_V2);
 	myFrame.setWindowFlag(Qt::Tool, true);
 	myFrame. show ();
 	antennaSelector		-> hide();
@@ -283,7 +283,7 @@ mir_sdr_DeviceT devDesc [4];
 	sdrplayHandler_v2::~sdrplayHandler_v2() {
 	stopReader	();
 	myFrame. hide	();
-	store_widget_position (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS_V2);
+	storeWidgetPosition (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS_V2);
 	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
 	                            "sdrplay-ppm", ppmControl -> value());
 	store (sdrplaySettings, SDRPLAY_SETTINGS_V2,
@@ -844,7 +844,7 @@ ULONG APIkeyValue_length = 255;
 
         wchar_t *libname = (wchar_t *)L"mir_sdr_api.dll";
         Handle  = LoadLibrary (libname);
-	if (Handle == NULL) {
+	if (Handle == nullptr) {
 	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
 	                   TEXT("Software\\MiricsSDR\\API"),
 	                   &APIkey) != ERROR_SUCCESS) {
@@ -856,8 +856,8 @@ ULONG APIkeyValue_length = 255;
 
 	   RegQueryValueEx (APIkey,
 	                    (wchar_t *)L"Install_Dir",
-	                    NULL,
-	                    NULL,
+	                    nullptr,
+	                    nullptr,
 	                    (LPBYTE)&APIkeyValue,
 	                    (LPDWORD)&APIkeyValue_length);
 //	Ok, make explicit it is in the 64 bits section
@@ -870,7 +870,7 @@ ULONG APIkeyValue_length = 255;
 	   RegCloseKey (APIkey);
 
 	   Handle	= LoadLibrary (x);
-	   if (Handle == NULL) {
+	   if (Handle == nullptr) {
 	      return false;
 	   }
 	}
@@ -878,10 +878,10 @@ ULONG APIkeyValue_length = 255;
 	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
 
 	Handle		= dlopen ("libmirsdrapi-rsp.so", RTLD_NOW);
-	if (Handle == NULL)
+	if (Handle == nullptr)
 	   Handle	= dlopen ("libmir_sdr.so", RTLD_NOW);
 
-	if (Handle == NULL) {
+	if (Handle == nullptr) {
 	   fprintf (stderr, "error report %s\n", dlerror ());
 	   return false;
 	}

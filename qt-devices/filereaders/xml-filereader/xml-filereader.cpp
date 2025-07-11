@@ -54,7 +54,7 @@
 //
 //	back to normal
 	setupUi	(&myFrame);
-	set_position_and_size (s, &myFrame, XMLSETTINGS);
+	setPositionAndSize (s, &myFrame, XMLSETTINGS);
 	myFrame. show	();
 
 	theFile	= fopen (fileName. toUtf8 (). data (), "rb");
@@ -108,7 +108,7 @@
 	      usleep (100);
 	   theReader. reset ();
 	}
-	store_widget_position (xmlFilesSettings, &myFrame, XMLSETTINGS);
+	storeWidgetPosition (xmlFilesSettings, &myFrame, XMLSETTINGS);
 	if (theFile != nullptr)		// cannot happen
 	   fclose (theFile);
 

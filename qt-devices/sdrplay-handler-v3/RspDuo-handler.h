@@ -26,7 +26,7 @@
 
 class	sdrplayHandler_v3;
 
-class	RspDuo_handler: public Rsp_device {
+class	RspDuo_handler: public RspDevice {
 public:
 		RspDuo_handler (sdrplayHandler_v3 *parent,
 	                       sdrplay_api_DeviceT *chosenDevice,
@@ -43,14 +43,14 @@ public:
 
 	int	lnaStates	(int frequency);
 	bool	restart		(int freq);
-	bool	set_lna		(int lnaState);
-	bool	set_antenna 	(int antenna);
-	bool	set_tuner	(int tuner);
-	bool	set_biasT	(bool biasT);
-	bool	set_notch	(bool on);
+	bool	setLna		(int lnaState);
+	bool	setAntenna 	(int antenna);
+	bool	setTuner	(int tuner);
+	bool	setBiasT	(bool biasT);
+	bool	setNotch	(bool on);
 private:
 	int16_t	bankFor_rspDuo 	(int freq);
-	int	get_lnaGain	(int, int);
+	int	getLnaGain	(int, int);
 	sdrplayHandler_v3	*parent;
 	int	currentTuner;
 };

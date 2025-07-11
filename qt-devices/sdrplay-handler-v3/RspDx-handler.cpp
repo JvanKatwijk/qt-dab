@@ -32,7 +32,7 @@
 	                              bool	biasT,
 	                              bool	notch,
 	                              double	ppmValue) :
-	                              Rsp_device (parent,
+	                              RspDevice (parent,
 	                                          chosenDevice, 
 	                                          freq,
 	                                          agcMode,
@@ -40,18 +40,18 @@
 	                                          GRdB,
 	                                          biasT,
 	                                          ppmValue) {
-	set_antenna (antennaValue);
+	setAntenna (antennaValue);
 	this	-> deviceModel		= "RSP-Dx";
 	this	-> nrBits		= 14;
-	this	-> lna_upperBound	= lnaStates (freq);
-	set_lnabounds_signal	(0, lna_upperBound);
-	if (lnaState > lna_upperBound)
-	   this -> lnaState = lna_upperBound - 1;
-	set_lna (this -> lnaState);
+	this	-> lnaUpperBound	= lnaStates (freq);
+	setLnaBoundsSignal	(0, lnaUpperBound);
+	if (lnaState > lnaUpperBound)
+	   this -> lnaState = lnaUpperBound - 1;
+	setLna (this -> lnaState);
 	if (biasT)
-	   set_biasT (true);
+	   setBiasT (true);
 	if (notch)
-	   set_notch (true);
+	   setNotch (true);
 }
 
 	RspDx_handler::~RspDx_handler	() {}
@@ -73,7 +73,6 @@ int	RSPdx_Table [6][29] = {
 	          53, 56, 59, 62, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
-
 int16_t RspDx_handler::bankFor_rspdx (int freq) {
 	if (freq < MHz (12))
 	   return 0;
@@ -93,7 +92,7 @@ int band	= bankFor_rspdx (frequency);
 	return RSPdx_Table [band][0];
 }
 
-int     RspDx_handler::get_lnaGain (int lnaState, int freq) {
+int     RspDx_handler::getLnaGain (int lnaState, int freq) {
 int     band    = bankFor_rspdx (freq);
         return RSPdx_Table [band][lnaState + 1];
 }
@@ -113,13 +112,13 @@ sdrplay_api_ErrT        err;
 	}
 
 	this	-> freq	= freq;
-	set_lnabounds_signal	(0, lnaStates (freq));
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	setLnaBoundsSignal	(0, lnaStates (freq));
+	showLnaGain (getLnaGain (lnaState, freq));
 
 	return true;
 }
 
-bool	RspDx_handler::set_lna	(int lnaState) {
+bool	RspDx_handler::setLna	(int lnaState) {
 sdrplay_api_ErrT        err;
 
 	chParams -> tunerParams. gain. LNAstate = lnaState;
@@ -134,11 +133,11 @@ sdrplay_api_ErrT        err;
 	}
 
 	this	-> lnaState = lnaState;
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
 
-bool	RspDx_handler::set_antenna (int antenna) {
+bool	RspDx_handler::setAntenna (int antenna) {
 sdrplay_api_ErrT        err;
 
 	deviceParams    -> devParams -> rspDxParams. antennaSel =
@@ -159,7 +158,7 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-bool	RspDx_handler::set_amPort (int amPort) {
+bool	RspDx_handler::setAmPort (int amPort) {
 sdrplay_api_ErrT        err;
 
 	deviceParams    -> devParams -> rspDxParams. hdrEnable = amPort;
@@ -170,7 +169,7 @@ sdrplay_api_ErrT        err;
 	return err == sdrplay_api_Success;
 }
 
-bool	RspDx_handler::set_biasT (bool biasT_value) {
+bool	RspDx_handler::setBiasT (bool biasT_value) {
 sdrplay_api_DevParamsT *xxx;
 sdrplay_api_RspDxParamsT *rspDxParams;
 sdrplay_api_ErrT        err;
@@ -186,7 +185,7 @@ sdrplay_api_ErrT        err;
 	return err == sdrplay_api_Success;
 }
 
-bool	RspDx_handler::set_notch (bool on) {
+bool	RspDx_handler::setNotch (bool on) {
 sdrplay_api_ErrT err;
 sdrplay_api_DevParamsT * devParams;
 sdrplay_api_RspDxParamsT * rspDxParams;

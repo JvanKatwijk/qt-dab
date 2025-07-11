@@ -15,7 +15,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *    GNU General Public License for more details.
- * 
+ P
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -45,7 +45,7 @@
 	remoteSettings		= s;
 	setupUi (&myFrame);
 	QString groupName       = RTL_TCP_SETTINGS;
-        set_position_and_size (s, &myFrame, groupName);
+        setPositionAndSize (s, &myFrame, groupName);
         myFrame. show   ();
 	ipAddress	= "127.0.0.1";
 
@@ -93,7 +93,7 @@
 }
 
 	rtl_tcp_client::~rtl_tcp_client () {
-	store_widget_position (remoteSettings, &myFrame, RTL_TCP_SETTINGS);
+	storeWidgetPosition (remoteSettings, &myFrame, RTL_TCP_SETTINGS);
 
 	if (!connected) 
 	   return;

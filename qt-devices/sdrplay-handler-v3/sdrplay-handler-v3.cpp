@@ -99,7 +99,7 @@ std::string errorMessage (int errorCode) {
 	(void)theLogger;
         setupUi (&myFrame);
 	QString	groupName	= SDRPLAY_SETTINGS;
-	set_position_and_size (s, &myFrame, groupName);
+	setPositionAndSize (s, &myFrame, groupName);
 	myFrame. show	();
 
 	xmlWriter		= nullptr;
@@ -152,37 +152,37 @@ std::string errorMessage (int errorCode) {
 
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &sdrplayHandler_v3::set_ifgainReduction);
+	         this, &sdrplayHandler_v3::setIfGainReduction);
 	connect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &sdrplayHandler_v3::set_lnagainReduction);
+	         this, &sdrplayHandler_v3::setLnaGainReduction);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	connect (agcControl, &QCheckBox::stateChanged,
 #endif
-	         this, &sdrplayHandler_v3::set_agcControl);
+	         this, &sdrplayHandler_v3::setAgcControl);
 	connect (ppmControl, qOverload<double>(&QDoubleSpinBox::valueChanged),
-	         this, &sdrplayHandler_v3::set_ppmControl);
+	         this, &sdrplayHandler_v3::setPpmControl);
 	connect (dumpButton, &QPushButton::clicked,
-                 this, &sdrplayHandler_v3::set_xmlDump);
+                 this, &sdrplayHandler_v3::setXmlDump);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (biasT_selector, &QCheckBox::checkStateChanged,	
 #else
 	connect (biasT_selector, &QCheckBox::stateChanged,	
 #endif
-	         this, &sdrplayHandler_v3::set_biasT);
+	         this, &sdrplayHandler_v3::setBiasT);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (notch_selector, &QCheckBox::checkStateChanged,	
 #else
 	connect (notch_selector, &QCheckBox::stateChanged,	
 #endif
-	         this, &sdrplayHandler_v3::set_notch);
+	         this, &sdrplayHandler_v3::setNotch);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
-	connect (this, &sdrplayHandler_v3::overload_state_changed,
+	connect (this, &sdrplayHandler_v3::overloadStateChanged,
 #else
-	connect (this, &sdrplayHandler_v3::overload_state_changed,
+	connect (this, &sdrplayHandler_v3::overloadStateChanged,
 #endif
-	         this, &sdrplayHandler_v3::report_overload_state);
+	         this, &sdrplayHandler_v3::reportOverloadState);
 
 	lastFrequency	= MHz (220);
 	theGain		= -1;
@@ -203,7 +203,7 @@ std::string errorMessage (int errorCode) {
 }
 
 	sdrplayHandler_v3::~sdrplayHandler_v3 () {
-	close_xmlDump ();
+	closeXmlDump ();
 	threadRuns. store (false);
 	while (isRunning ())
 	   usleep (1000);
@@ -211,7 +211,7 @@ std::string errorMessage (int errorCode) {
 //	thread should be stopped by now
 	myFrame. hide ();
 	QString groupName	= SDRPLAY_SETTINGS;
-	store_widget_position (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS);
+	storeWidgetPosition (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS);
 
 	store (sdrplaySettings, SDRPLAY_SETTINGS,
 	                          SDRPLAY_PPM, ppmControl -> value ());
@@ -242,13 +242,13 @@ restartRequest r (newFreq);
 
 void	sdrplayHandler_v3::stopReader	() {
 stopRequest r;
-	close_xmlDump ();
+	closeXmlDump ();
         if (!receiverRuns. load ())
            return;
         messageHandler (&r);	// synchronous call
 	_I_Buffer. FlushRingBuffer();
 }
-void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
+void	sdrplayHandler_v3::setIfGainReduction	(int GRdB) {
 GRdBRequest r (GRdB);
 	
 	if (!receiverRuns. load ())
@@ -256,7 +256,7 @@ GRdBRequest r (GRdB);
         messageHandler (&r);
 }
 
-void	sdrplayHandler_v3::set_lnagainReduction (int lnaState) {
+void	sdrplayHandler_v3::setLnaGainReduction (int lnaState) {
 lnaRequest r (lnaState);
 
 	if (!receiverRuns. load ())
@@ -264,7 +264,7 @@ lnaRequest r (lnaState);
         messageHandler (&r);
 }
 
-void	sdrplayHandler_v3::set_agcControl (int dummy) {
+void	sdrplayHandler_v3::setAgcControl (int dummy) {
 bool    agcMode = agcControl -> isChecked ();
 agcRequest r (agcMode, 30);
 	(void)dummy;
@@ -281,12 +281,12 @@ agcRequest r (agcMode, 30);
 	}
 }
 
-void	sdrplayHandler_v3::set_ppmControl (int ppm) {
+void	sdrplayHandler_v3::setPpmControl (int ppm) {
 ppmRequest r (ppm);
         messageHandler (&r);
 }
 
-void	sdrplayHandler_v3::set_biasT (int v) {
+void	sdrplayHandler_v3::setBiasT (int v) {
 biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 
 	(void)v;
@@ -296,7 +296,7 @@ biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 	                              biasT_selector -> isChecked () ? 1 : 0);
 }
 
-void	sdrplayHandler_v3::set_notch (int v) {
+void	sdrplayHandler_v3::setNotch (int v) {
 notch_Request r (notch_selector -> isChecked () ? 1 : 0);
 	(void)v;
 	messageHandler (&r);
@@ -305,7 +305,7 @@ notch_Request r (notch_selector -> isChecked () ? 1 : 0);
 	                              notch_selector -> isChecked () ? 1 : 0);
 }
 	
-void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
+void	sdrplayHandler_v3::setSelectAntenna	(const QString &s) {
 	antennaRequest request (s == "Antenna A" ? 'A' :
 	                        s == "Antenna B" ? 'B' : 'C');
 	messageHandler (&request);
@@ -315,7 +315,7 @@ void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_ANTENNA, ss);
 }
 
-void	sdrplayHandler_v3::set_selectTuner	(const QString &s) {
+void	sdrplayHandler_v3::setSelectTuner	(const QString &s) {
 	int tuner = s == "Tuner 1" ? 1 : 2; 
 	messageHandler (new tunerRequest (tuner));
 	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_TUNER, tuner);
@@ -362,46 +362,45 @@ QString	sdrplayHandler_v3::deviceName	() {
 //	Communication with that thread is synchronous!
 //
 
-void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
+void	sdrplayHandler_v3::setLnaBounds (int low, int high) {
 	lnaGainSetting	-> setRange (low, high - 1);
 }
 
-void	sdrplayHandler_v3::set_serial	(const QString& s) {
+void	sdrplayHandler_v3::setSerial	(const QString& s) {
 	serialNumber	-> setText (s);
 }
 
-void	sdrplayHandler_v3::set_apiVersion (float version) {
+void	sdrplayHandler_v3::setApiVersion (float version) {
 QString v = QString::number (version, 'r', 2);
 	api_version	-> display (v);
 }
 
-void    sdrplayHandler_v3::show_lnaGain (int g) {
+void    sdrplayHandler_v3::showLnaGain (int g) {
         lnaGRdBDisplay  -> display (g);
 }
 
-
-void	sdrplayHandler_v3::set_xmlDump () {
+void	sdrplayHandler_v3::setXmlDump () {
 	if (xmlWriter == nullptr) {
-	   setup_xmlDump (false);
+	   setupXmlDump (false);
 	}
 	else {
-	   close_xmlDump ();
+	   closeXmlDump ();
 	}
 }
 
 void	sdrplayHandler_v3::startDump	() {
-	setup_xmlDump (true);
+	setupXmlDump (true);
 }
 
 void	sdrplayHandler_v3::stopDump	() {
-	close_xmlDump ();
+	closeXmlDump ();
 }
 
 //
 ////////////////////////////////////////////////////////////////////////
 //	showing data
 ////////////////////////////////////////////////////////////////////////
-int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
+int	sdrplayHandler_v3::setAntennaSelect (int sdrDevice) {
 	if ((sdrDevice == SDRPLAY_RSPdx_) || (sdrDevice == SDRPLAY_RSPdxR2_)) {
 	   antennaSelector      -> addItem ("Antenna B");
 	   antennaSelector      -> addItem ("Antenna C");
@@ -425,11 +424,11 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 #else
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
-	         this, &sdrplayHandler_v3::set_selectAntenna);
+	         this, &sdrplayHandler_v3::setSelectAntenna);
 	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
 }
 
-bool	sdrplayHandler_v3::setup_xmlDump (bool direct) {
+bool	sdrplayHandler_v3::setupXmlDump (bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                               "channel", "xx");
 	xmlWriter	= nullptr;
@@ -454,7 +453,7 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	return true;
 }
 	
-void	sdrplayHandler_v3::close_xmlDump () {
+void	sdrplayHandler_v3::closeXmlDump () {
 	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	usleep (1000);
@@ -470,8 +469,8 @@ void	sdrplayHandler_v3::close_xmlDump () {
 ///////////////////////////////////////////////////////////////////////
 
 bool    sdrplayHandler_v3::messageHandler (generalCommand *r) {
-        server_queue. push (r);
-	serverjobs. release (1);
+        serverQueue. push (r);
+	serverJobs. release (1);
 	while (!r -> waiter. tryAcquire (1, 1000))
 	   if (!threadRuns. load ())
 	      return false;
@@ -523,11 +522,11 @@ sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 	(void)tuner;
 	switch (eventId) {
 	   case sdrplay_api_GainChange:
-	      p -> show_tuner_gain (params -> gainParams. currGain);
+	      p -> showTunerGain (params -> gainParams. currGain);
 	      break;
 
 	   case sdrplay_api_PowerOverloadChange:
-	      p -> update_PowerOverload (params);
+	      p -> updatePowerOverload (params);
 	      break;
 
 	   default:
@@ -537,12 +536,12 @@ sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 }
 
 void	sdrplayHandler_v3::
-	         update_PowerOverload (sdrplay_api_EventParamsT *params) {
+	         updatePowerOverload (sdrplay_api_EventParamsT *params) {
 	sdrplay_api_Update (chosenDevice -> dev,
 	                    chosenDevice -> tuner,
 	                    sdrplay_api_Update_Ctrl_OverloadMsgAck,
 	                    sdrplay_api_Update_Ext1_None);
-	emit overload_state_changed (
+	emit overloadStateChanged (
 	        params -> powerOverloadParams.powerOverloadChangeType ==
 	                                   sdrplay_api_Overload_Detected);
 }
@@ -557,12 +556,12 @@ int	deviceIndex	= 0;
 
 	chosenDevice		= nullptr;
 
-	connect (this, &sdrplayHandler_v3::set_serial_signal,
-	         this, &sdrplayHandler_v3::set_serial);
-	connect (this, &sdrplayHandler_v3::set_apiVersion_signal,
-	         this, &sdrplayHandler_v3::set_apiVersion);
-	connect (this, &sdrplayHandler_v3::show_tuner_gain,
-	         this, &sdrplayHandler_v3::display_gain);
+	connect (this, &sdrplayHandler_v3::setSerialSignal,
+	         this, &sdrplayHandler_v3::setSerial);
+	connect (this, &sdrplayHandler_v3::setApiVersionSignal,
+	         this, &sdrplayHandler_v3::setApiVersion);
+	connect (this, &sdrplayHandler_v3::showTunerGain,
+	         this, &sdrplayHandler_v3::displayGain);
 
 	denominator		= 2048.0f;		// default
 	nrBits			= 12;		// default
@@ -666,7 +665,7 @@ int	deviceIndex	= 0;
 	   switch (hwVersion) {
 	      case SDRPLAY_RSPdx_ :
 	      case SDRPLAY_RSPdxR2_ :
-	         antennaValue = set_antennaSelect (hwVersion);
+	         antennaValue = setAntennaSelect (hwVersion);
 	         nrBits		= 14;
 	         denominator	= 8192.0f;
 	         deviceModel	=  hwVersion == SDRPLAY_RSPdx_?
@@ -715,7 +714,7 @@ int	deviceIndex	= 0;
 	         break;
 
 	      case SDRPLAY_RSP2_ :
-	         antennaValue = set_antennaSelect (SDRPLAY_RSP2_);
+	         antennaValue = setAntennaSelect (SDRPLAY_RSP2_);
 	         nrBits		= 14;
 	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-II";
@@ -741,7 +740,7 @@ int	deviceIndex	= 0;
 #else
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
-	         this, &sdrplayHandler_v3::set_selectTuner);
+	         this, &sdrplayHandler_v3::setSelectTuner);
 	         theRsp. reset (new RspDuo_handler (this,
 	                                      chosenDevice,
 	                                      KHz (220000),
@@ -760,7 +759,7 @@ int	deviceIndex	= 0;
 	         deviceModel	= "UNKNOWN";
 	         lnaBounds	= 4;
 	         lnaGainSetting	-> setRange (0, lnaBounds - 1);
-	         theRsp. reset (new Rsp_device (this,
+	         theRsp. reset (new RspDevice (this,
 	                                  chosenDevice,
 	                                  KHz (220000),
 	                                  agcMode,
@@ -774,24 +773,24 @@ int	deviceIndex	= 0;
 	}
 
 	deviceLabel		-> setText (deviceModel);
-	set_serial_signal       (serial);
-        set_apiVersion_signal   (apiVersion);
+	setSerialSignal       (serial);
+        setApiVersionSignal   (apiVersion);
 
 	threadRuns. store (true);       // it seems we can do some work
 	successFlag. store (true);
 
 	while (threadRuns. load ()) {
-	   while (!serverjobs. tryAcquire (1, 1000))
+	   while (!serverJobs. tryAcquire (1, 1000))
 	   if (!threadRuns. load ())
 	      goto normal_exit;
 
-//	here we could assert that the server_queue is not empty
+//	here we could assert that the serverQueue is not empty
 //	Note that we emulate synchronous calling, so
 //	we signal the caller when we are done
-	   switch (server_queue. front () -> cmd) {
+	   switch (serverQueue. front () -> cmd) {
 	      case RESTART_REQUEST: {
-	         restartRequest *p = (restartRequest *)(server_queue. front ());
-	         server_queue. pop ();
+	         restartRequest *p = (restartRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
 	         p -> result = theRsp -> restart (p -> freq);
 	         receiverRuns. store (true);
 	         p -> waiter. release (1);
@@ -799,8 +798,8 @@ int	deviceIndex	= 0;
 	      }
 	       
 	      case STOP_REQUEST: {
-	         stopRequest *p = (stopRequest *)(server_queue. front ());
-	         server_queue. pop ();
+	         stopRequest *p = (stopRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
 	         receiverRuns. store (false);
 	         p -> waiter. release (1);
 	         break;
@@ -808,67 +807,67 @@ int	deviceIndex	= 0;
 	       
 	      case AGC_REQUEST: {
 	         agcRequest *p = 
-	                    (agcRequest *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_agc (-p -> setPoint, p -> agcMode);
+	                    (agcRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setAgc (-p -> setPoint, p -> agcMode);
 	         p -> waiter. release (1);
 	         break;
 	      }
 
 	      case GRDB_REQUEST: {
-	         GRdBRequest *p =  (GRdBRequest *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_GRdB (p -> GRdBValue);
+	         GRdBRequest *p =  (GRdBRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setGRdB (p -> GRdBValue);
                  p -> waiter. release (1);
 	         break;
 	      }
 
 	      case PPM_REQUEST: {
-	         ppmRequest *p = (ppmRequest *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_ppm (p -> ppmValue);
+	         ppmRequest *p = (ppmRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setPpm (p -> ppmValue);
 	         p -> waiter. release (1);
 	         break;
 	      }
 
 	      case LNA_REQUEST: {
-	         lnaRequest *p = (lnaRequest *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_lna (p -> lnaState);
+	         lnaRequest *p = (lnaRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setLna (p -> lnaState);
                  p -> waiter. release (1);
 	         break;
 	      }
 
 	      case ANTENNASELECT_REQUEST: {
-	         antennaRequest *p = (antennaRequest *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_antenna (p -> antenna);
+	         antennaRequest *p = (antennaRequest *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setAntenna (p -> antenna);
                  p -> waiter. release (1);
 	         break;
 	      }
 
 	      case BIAS_T_REQUEST: {
-	         biasT_Request *p = (biasT_Request *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_biasT (p -> checked);
+	         biasT_Request *p = (biasT_Request *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setBiasT (p -> checked);
                  p -> waiter. release (1);
 	         break;
 	      }
 
 	      case NOTCH_REQUEST: {
-	         notch_Request *p = (notch_Request *)(server_queue. front ());
-	         server_queue. pop ();
-	         p -> result = theRsp -> set_notch (p -> checked);
+	         notch_Request *p = (notch_Request *)(serverQueue. front ());
+	         serverQueue. pop ();
+	         p -> result = theRsp -> setNotch (p -> checked);
                  p -> waiter. release (1);
 	         break;
 	      }
 
 	      case TUNERSELECT_REQUEST: {
 	         tunerRequest *p =
-	               (tunerRequest *)(server_queue. front ());
-	         server_queue. pop();
-	         fprintf (stderr, "Going to call set_tuner\n");
-	         p -> result = theRsp -> set_tuner (p -> tuner);
+	               (tunerRequest *)(serverQueue. front ());
+	         serverQueue. pop();
+//	         fprintf (stderr, "Going to call set_tuner\n");
+	         p -> result = theRsp -> setTuner (p -> tuner);
 	         p -> waiter. release (1);
 	         break;
 	      }
@@ -1087,7 +1086,7 @@ bool	sdrplayHandler_v3::loadFunctions () {
 
 	return true;
 }
-void	sdrplayHandler_v3::report_overload_state (bool b) {
+void	sdrplayHandler_v3::reportOverloadState (bool b) {
 	if (b)
 	   overloadLabel -> setStyleSheet ("QLabel {background-color : red}");
 	else
@@ -1095,7 +1094,7 @@ void	sdrplayHandler_v3::report_overload_state (bool b) {
 
 }
 
-void	sdrplayHandler_v3::display_gain	(double gain) {
+void	sdrplayHandler_v3::displayGain	(double gain) {
 	gainDisplay -> setText (QString::number (gain, 'f', 0) + "dB");
 }
 

@@ -79,7 +79,7 @@
 	this	-> p			= p;
 	this	-> theLogger		= theLogger;
 	this	-> cpuSupport		= cpuSupport;
-	this	-> threshold		= p -> threshold;
+	this	-> thresHold		= p -> threshold;
 	this	-> tiiBuffer_p		= p -> tiiBuffer;
 	this	-> nullBuffer_p		= p -> nullBuffer;
 	this	-> snrBuffer_p		= p -> snrBuffer;
@@ -93,12 +93,12 @@
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
-	this	-> freq_speedUp		= 
+	this	-> freqSpeedUp		= 
 	         value_i (dabSettings, CONFIG_HANDLER, "SPEED_UP", 0) != 0;
-	this	-> freq_correlator		=
+	this	-> freqCorrelator		=
 	         value_i (dabSettings, CONFIG_HANDLER, "SELECT_CORR", 0);
-	this	-> tii_delay		= p -> tii_delay;
-	this	-> tii_counter		= 0;
+	this	-> tiiDelay		= p -> tii_delay;
+	this	-> tiiCounter		= 0;
 	this	-> correlationOrder	= 
 	         value_i (dabSettings, CONFIG_HANDLER,
 	                             S_CORRELATION_ORDER, 0) != 0;
@@ -106,10 +106,10 @@
 	         value_i (dabSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
 	                                           "decoders", DECODER_1); 
-	this	-> selected_TII		= value_i (dabSettings, CONFIG_HANDLER,		 	                                   "tii-detector", 1) == 0 ?
+	this	-> selectedTII		= value_i (dabSettings, CONFIG_HANDLER,		 	                                   "tii-detector", 1) == 0 ?
 	                                          TII_OLD : TII_NEW;
 
-	this	-> eti_on		= false;
+	this	-> etiOn		= false;
 	ofdmBuffer. resize (2 * T_s);
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
@@ -121,25 +121,25 @@
 	totalFrames			= 0;
 	scanMode			= false;
 
-	connect (this, &ofdmHandler::set_synced,
+	connect (this, &ofdmHandler::setSynced,
 	         radioInterface_p, &RadioInterface::set_synced);
-	connect (this, &ofdmHandler::set_sync_lost,
+	connect (this, &ofdmHandler::setSyncLost,
 	         radioInterface_p, &RadioInterface::set_sync_lost);
-	connect (this, &ofdmHandler::show_tiiData,
+	connect (this, &ofdmHandler::showTIIData,
 	         radioInterface_p, &RadioInterface::show_tiiData);
-	connect (this, &ofdmHandler::show_tii_spectrum,
+	connect (this, &ofdmHandler::showTIIspectrum,
 	         radioInterface_p, &RadioInterface::show_tii_spectrum);
-	connect (this, static_cast<void (ofdmHandler::*)(float)>(&ofdmHandler::show_snr),
+	connect (this, static_cast<void (ofdmHandler::*)(float)>(&ofdmHandler::showSnr),
 	         mr, &RadioInterface::show_snr);
-	connect (this, &ofdmHandler::show_clock_error,
+	connect (this, &ofdmHandler::showClockError,
 	         mr,  &RadioInterface::show_clock_error);
-	connect (this, &ofdmHandler::show_null,
+	connect (this, &ofdmHandler::showNull,
 	         mr, &RadioInterface::show_null);
 //	for older versions, this is a dummy
-	connect (this, &ofdmHandler::show_channel,
+	connect (this, &ofdmHandler::showChannel,
 	         mr, &RadioInterface::show_channel);
 //	end of dummy
-	connect (this, &ofdmHandler::show_Corrector,
+	connect (this, &ofdmHandler::showCorrector,
 	         mr,  &RadioInterface::show_Corrector);
 	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
                                              TII_THRESHOLD, 6);
@@ -162,15 +162,15 @@
 	}
 }
 
-void	ofdmHandler::set_tiiThreshold	(int16_t threshold) {
+void	ofdmHandler::setTIIThreshold	(int16_t threshold) {
 	tiiThreshold = threshold;
 }
 
-void	ofdmHandler::set_tiiCollisions	(bool b) {
+void	ofdmHandler::setTIICollisions	(bool b) {
 	tiiCollisions_active = b;
 }
 
-void	ofdmHandler::set_tiiFilter	(bool b) {
+void	ofdmHandler::setTIIFilter	(bool b) {
 	tiiFilter_active	= b;
 }
 
@@ -210,7 +210,7 @@ phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
 freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable,
-	                                freq_speedUp, freq_correlator);
+	                                freqSpeedUp, freqCorrelator);
 estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
@@ -246,20 +246,20 @@ int	snrCount	= 0;
 	         totalSamples	= 0;
 	         frameCount	= 0;
 	         sampleCount	= 0;
-	         set_synced (false);
-	         if (selected_TII == TII_NEW)
+	         setSynced (false);
+	         if (selectedTII == TII_NEW)
 	            theTIIDetector_NEW. reset ();
 	         else
 	            theTIIDetector_OLD. reset ();
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
 	               inSync	= true;
-	               set_synced (true);
+	               setSynced (true);
 	               break;			// yes, we are ready
 
 	            case NO_DIP_FOUND:
 	               if (++ attempts >= 8) {
-	                  emit (no_signal_found());
+	                  emit (noSignalFound());
 	                  attempts = 0;
 	               }	
 	               continue;
@@ -273,14 +273,14 @@ int	snrCount	= 0;
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
-	                                               threshold);
+	                                               thresHold);
 
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
-	               set_sync_lost();
+	               setSyncLost();
 	            }
 	            badFrames ++;
-	            set_synced (false);
+	            setSynced (false);
 	            inSync	= false;
 	            continue;
 	         }
@@ -289,15 +289,15 @@ int	snrCount	= 0;
 	      else {	// we are in sync and continue with a next frame
 	         totalFrames ++;
 	         frameCount ++;
-	         bool null_shower	= false;
+	         bool nullShower	= false;
 	         totalSamples	+= sampleCount;
 	         if (frameCount >= 10) {
 	            int diff	= (totalSamples - frameCount * T_F);
 	            diff	= (int)((float)SAMPLERATE / (frameCount * T_F) * diff);
-	            show_clock_error (diff);
+	            showClockError (diff);
 	            totalSamples = 0;
 	            frameCount	= 0;
-	            null_shower = true;
+	            nullShower = true;
 	            memcpy (tester, &(ofdmBuffer [T_null - T_u / 3]),
 	                                 T_u / 4 * sizeof (Complex));
 	         }
@@ -306,21 +306,21 @@ int	snrCount	= 0;
 	                               T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
-	                                               2.5 * threshold);
-	         if (null_shower) {
+	                                               2.5 * thresHold);
+	         if (nullShower) {
 	            memcpy (&tester [T_u / 4], ofdmBuffer. data (),
 	                               T_u / 4 * sizeof (Complex));
 	            nullBuffer_p -> putDataIntoBuffer (tester, T_u / 2);
-	            show_null (T_u / 2, startIndex);
+	            showNull (T_u / 2, startIndex);
 	         }
 
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
-	               set_sync_lost();
+	               setSyncLost();
 	            }
 	            badFrames	++;
 	            inSync	= false;
-	            set_synced (false);
+	            setSynced (false);
 	            continue;
 	         }
 	         sampleCount = startIndex;
@@ -354,7 +354,7 @@ int	snrCount	= 0;
 	            if (channelBuffer_p != nullptr) {
 	               channelBuffer_p -> putDataIntoBuffer (result. data (),
 	                                                   result. size ());
-	               emit show_channel (result. size ());
+	               emit showChannel (result. size ());
 	            }
 	            abc = 0;
 	         }
@@ -425,7 +425,7 @@ int	snrCount	= 0;
 //
 //
 //	If "eti_on" we process all data here
-	         if (eti_on) {
+	         if (etiOn) {
 	            theOfdmDecoder.
 	                   decode (ofdmBuffer, ofdmSymbolCount, ibits);
 	            if (ofdmSymbolCount <= 3) 
@@ -473,24 +473,24 @@ int	snrCount	= 0;
 //	of the NULL period (the one without TII data)
 
 	      if (frame_with_TII) {
-	         if (selected_TII == TII_NEW)
+	         if (selectedTII == TII_NEW)
 	            theTIIDetector_NEW. addBuffer (ofdmBuffer);
 	         else
 	            theTIIDetector_OLD. addBuffer (ofdmBuffer);
-	         if (++tii_counter >= tii_delay) {
+	         if (++tiiCounter >= tiiDelay) {
 	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
 	                                                          T_u);
-	            show_tii_spectrum ();
+	            showTIIspectrum ();
 	            QVector<tiiData> resVec =
-	                selected_TII == TII_NEW ?
+	                selectedTII == TII_NEW ?
 	                       theTIIDetector_NEW. processNULL (tiiThreshold,
 	                                                 tiiCollisions_active,
 	                                                 tiiFilter_active):
 	                       theTIIDetector_OLD. processNULL (tiiThreshold,
 	                                                 tiiCollisions_active,
 	                                                 tiiFilter_active);
-	            show_tiiData (resVec, 0);
-	            tii_counter = 0;
+	            showTIIData (resVec, 0);
+	            tiiCounter = 0;
 	         }
 	      }
 	      else {	// compute SNR
@@ -506,7 +506,7 @@ int	snrCount	= 0;
 	         snrCount ++;
 	         if (snrCount >= 3) {
 	            snrCount = 0;
-	            show_snr (snr);
+	            showSnr (snr);
 	         }
 	         theOfdmDecoder. setPowerLevel (sum / T_u);
 	      }
@@ -530,7 +530,7 @@ int	snrCount	= 0;
 	         coarseOffset -= carrierDiff;
 	         fineOffset += carrierDiff;
 	      }
-	      show_Corrector (coarseOffset, fineOffset);
+	      showCorrector (coarseOffset, fineOffset);
 	      if ((oldCoarseOffset != coarseOffset) &&
 	          (theFicHandler. getFICQuality () < 40))
 	              correctionNeeded = true;;
@@ -546,12 +546,12 @@ int	snrCount	= 0;
 }
 //
 //
-void	ofdmHandler::set_scanMode	(bool b) {
+void	ofdmHandler::setScanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
 
-void	ofdmHandler::get_frameQuality	(int	*totalFrames,
+void	ofdmHandler::getFrameQuality	(int	*totalFrames,
 	                                 int	*goodFrames,
 	                                 int	*badFrames) {
 	*totalFrames		= this	-> totalFrames;
@@ -565,15 +565,15 @@ void	ofdmHandler::get_frameQuality	(int	*totalFrames,
 //	just convenience functions
 //	ficHandler abstracts channel data
 
-int	ofdmHandler::get_serviceComp	(const QString &s) {
+int	ofdmHandler::getServiceComp	(const QString &s) {
 	return theFicHandler. get_serviceComp (s);
 }
 
-int	ofdmHandler::get_serviceComp	(uint32_t SId, int compnr) {
+int	ofdmHandler::getServiceComp	(uint32_t SId, int compnr) {
 	return theFicHandler. get_serviceComp (SId, compnr);
 }
 
-int	ofdmHandler::get_serviceComp_SCIds	(uint32_t SId, int SCIds) {
+int	ofdmHandler::getServiceComp_SCIds	(uint32_t SId, int SCIds) {
 	return theFicHandler. get_serviceComp (SId, SCIds);
 }
 
@@ -581,15 +581,15 @@ bool	ofdmHandler::isPrimary (const QString &s) {
 	return theFicHandler. isPrimary (s);
 }
 
-uint16_t ofdmHandler::get_announcing	(uint16_t SId) {
+uint16_t ofdmHandler::getAnnouncing	(uint16_t SId) {
 	return theFicHandler. get_announcing (SId);
 }
 
-int	ofdmHandler::get_nrComps	(uint32_t SId) {
+int	ofdmHandler::getNrComps	(uint32_t SId) {
 	return theFicHandler. get_nrComps (SId);
 }
 
-uint32_t ofdmHandler::get_SId			(int index) {
+uint32_t ofdmHandler::getSId			(int index) {
 	return theFicHandler. get_SId (index);
 }
 
@@ -605,7 +605,7 @@ void	ofdmHandler::packetData			(int index, packetdata &pd) {
 	theFicHandler. packetData (index, pd);
 }
 
-uint8_t	ofdmHandler::get_ecc 		() {
+uint8_t	ofdmHandler::getEcc 		() {
 	return theFicHandler. get_ecc();
 }
 
@@ -654,20 +654,20 @@ bool    ofdmHandler::setDataChannel (packetdata &d,
 	   return false;
 }
 
-void	ofdmHandler::start_dumping	(const QString &f, int freq,
+void	ofdmHandler::startDumping	(const QString &f, int freq,
 	                                               int bitDepth) {
 	theReader. startDumping (f, freq, bitDepth);
 }
 
-void	ofdmHandler::stop_dumping() {
+void	ofdmHandler::stopDumping() {
 	theReader. stopDumping();
 }
 
-void	ofdmHandler::start_ficDump	(FILE *f) {
+void	ofdmHandler::startFicDump	(FILE *f) {
 	theFicHandler. startFICDump (f);
 }
 
-void	ofdmHandler::stop_ficDump	() {
+void	ofdmHandler::stopFicDump	() {
 	theFicHandler. stopFICDump ();
 }
 
@@ -675,17 +675,17 @@ uint32_t ofdmHandler::julianDate	()  {
 	return theFicHandler. julianDate ();
 }
 
-bool	ofdmHandler::start_etiGenerator	(const QString &s) {
-	eti_on = theEtiGenerator. start_etiGenerator (s);
-	return eti_on;
+bool	ofdmHandler::startEtiGenerator	(const QString &s) {
+	etiOn = theEtiGenerator. start_etiGenerator (s);
+	return etiOn;
 }
 
-void	ofdmHandler::stop_etiGenerator		() {
+void	ofdmHandler::stopEtiGenerator		() {
 	theEtiGenerator. stop_etiGenerator ();
-	eti_on		= false;
+	etiOn		= false;
 }
 
-void	ofdmHandler::reset_etiGenerator	() {
+void	ofdmHandler::resetEtiGenerator	() {
 	theEtiGenerator. reset ();
 }
 
@@ -705,19 +705,19 @@ void	ofdmHandler::setDXMode		(bool b) {
 	dxMode	= b;
 }
 
-void	ofdmHandler::select_TII		(uint8_t a) {
+void	ofdmHandler::selectTII		(uint8_t a) {
 	if (a == 0)
-	   selected_TII = TII_OLD;
+	   selectedTII = TII_OLD;
 	else
-	   selected_TII = TII_NEW;
+	   selectedTII = TII_NEW;
 }
 
-void	ofdmHandler::set_speedUp	(bool b) {
-	freq_speedUp	= b;
+void	ofdmHandler::setSpeedUp	(bool b) {
+	freqSpeedUp	= b;
 	store (settings_p, CONFIG_HANDLER, "SPEED_UP", b ? 1 : 0);
 }
 
-void	ofdmHandler::set_freqCorrelator	(uint8_t corr) {
+void	ofdmHandler::setFreqCorrelator	(uint8_t corr) {
 	store (settings_p, CONFIG_HANDLER, "SELECT_CORR", corr);
 }
 

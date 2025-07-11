@@ -61,12 +61,11 @@
 	this	-> setModel (&displayList);
 }
 
-
 	scanListHandler::~scanListHandler   () {
-QDomDocument the_scanList;
-QDomElement root = the_scanList. createElement ("history_db");
+QDomDocument theScanList;
+QDomElement root = theScanList. createElement ("history_db");
 
-	the_scanList. appendChild (root);
+	theScanList. appendChild (root);
 
 	for (int i = 1; i < scanList. size (); i ++) {
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
@@ -80,7 +79,7 @@ QDomElement root = the_scanList. createElement ("history_db");
 	      continue;
            QString channel = list. at (0);
            QString serviceName = list. at (1);
-	   QDomElement scanListService = the_scanList.
+	   QDomElement scanListService = theScanList.
 	                            createElement ("HISTORY_ELEMENT");
 	   scanListService. setAttribute ("SERVICE_NAME", serviceName);
 	   scanListService. setAttribute ("CHANNEL", channel);
@@ -92,7 +91,7 @@ QDomElement root = the_scanList. createElement ("history_db");
 	   return;
 
 	QTextStream stream (&file);
-	stream << the_scanList. toString ();
+	stream << theScanList. toString ();
 	file. close ();
 }
 
@@ -108,7 +107,7 @@ const QString scanListElement = channel + ":" + serviceName;
 	this	-> setModel (&displayList);
 }
 
-void	scanListHandler::clear_scanList () {
+void	scanListHandler::clearScanList () {
 	scanList. clear ();
 	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
@@ -120,6 +119,6 @@ void	scanListHandler::clear_scanList () {
 void	scanListHandler::selectElement (QModelIndex ind) {
 QString currentProgram = displayList. data (ind, Qt::DisplayRole). toString ();
 	fprintf (stderr, "scan %s\n", currentProgram. toLatin1 (). data ());
-	emit handle_scanListSelect (currentProgram);
+	emit handleScanListSelect (currentProgram);
 }
 

@@ -177,7 +177,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si,
 	                                                        freqExtension),
-	                                        my_timeTable (this, Si) {
+	                                        myTimeTable (this, Si) {
 int16_t k;
 QString h;
 
@@ -267,10 +267,10 @@ QString h;
 	         this, &RadioInterface::handle_tiiButton);
 
 //	put the widgets in the right place and create the workers
-	set_position_and_size	(dabSettings_p, this, S_MAIN_WIDGET);
+	setPositionAndSize	(dabSettings_p, this, S_MAIN_WIDGET);
 
 	configHandler_p. reset (new configHandler (this, dabSettings_p));
-	the_ensembleHandler. reset (new ensembleHandler (this, dabSettings_p,
+	theEnsembleHandler. reset (new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile));
 //	we have the configuration handler and the ensemble handler,
 //	connect some signals directly
@@ -280,19 +280,19 @@ QString h;
 	connect (configHandler_p. data (), &configHandler::frameClosed,
 	         this, &RadioInterface::handle_configFrame_closed);
 	connect (configHandler_p. data (), &configHandler::handle_fontSelect,
-	         the_ensembleHandler. data (),
-	                               &ensembleHandler::handle_fontSelect);
+	         theEnsembleHandler. data (),
+	                               &ensembleHandler::handleFontSelect);
 	connect (configHandler_p. data (),
 	                         &configHandler::handle_fontSizeSelect,
-	         the_ensembleHandler. data (),
-	                         &ensembleHandler::handle_fontSizeSelect);
+	         theEnsembleHandler. data (),
+	                         &ensembleHandler::handleFontSizeSelect);
 	connect (configHandler_p. data (),
 	                        &configHandler::handle_fontColorSelect,
-	         the_ensembleHandler. data (),
-	                        &ensembleHandler::handle_fontColorSelect);
+	         theEnsembleHandler. data (),
+	                        &ensembleHandler::handleFontColorSelect);
 	connect (configHandler_p. data (), &configHandler::set_serviceOrder,
-	         the_ensembleHandler. data (),
-	                               &ensembleHandler::set_serviceOrder);
+	         theEnsembleHandler. data (),
+	                               &ensembleHandler::setServiceOrder);
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 
@@ -310,10 +310,10 @@ QString h;
 #endif
 	setWindowTitle (version);
 
-	ensembleWidget -> setWidget (the_ensembleHandler. data ());
-	connect (the_ensembleHandler. data (), &ensembleHandler::selectService,
+	ensembleWidget -> setWidget (theEnsembleHandler. data ());
+	connect (theEnsembleHandler. data (), &ensembleHandler::selectService,
 	         this, &RadioInterface::localSelect);
-	connect (the_ensembleHandler. data (),
+	connect (theEnsembleHandler. data (),
 	               &ensembleHandler::start_background_task,
 	         this, &RadioInterface::handle_backgroundTask);
 	   
@@ -441,10 +441,10 @@ QString h;
 	connect (&pauzeTimer, &QTimer::timeout,
 	         this, &RadioInterface::show_pauzeSlide);
 
-	my_timeTable. hide ();
+	myTimeTable. hide ();
 
-	connect (&theScanlistHandler, &scanListHandler::handle_scanListSelect,
-	         this, &RadioInterface::handle_scanListSelect);
+	connect (&theScanlistHandler, &scanListHandler::handleScanListSelect,
+	         this, &RadioInterface::handleScanListSelect);
 
 //	extract the channelnames and fill the combobox
 	QStringList res = theSCANHandler. getChannelNames ();
@@ -483,7 +483,7 @@ QString h;
 	         this, &RadioInterface::color_spectrumButton);
 //
 //	
-	connect (techWindow_p. data (), &techData::handle_timeTable,
+	connect (techWindow_p. data (), &techData::handleTimeTable,
 	         this, &RadioInterface::handle_timeTable);
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
@@ -668,9 +668,9 @@ void	RadioInterface::startDirect	() {
 
 	channel. cleanChannel ();
 //
-//	Note: this is NOT "the_ensembleHandler. reset ()" !!!!
-	the_ensembleHandler	-> reset	();
-	the_ensembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
+//	Note: this is NOT "theEnsembleHandler. reset ()" !!!!
+	theEnsembleHandler	-> reset	();
+	theEnsembleHandler	-> setMode (!inputDevice_p -> isFileInput ());
 
 //	Just to be sure we disconnect here.
 //	It would have been helpful to have a function
@@ -724,10 +724,10 @@ void	RadioInterface::add_to_ensemble (const QString &serviceName,
 	ed. subChId	= subChId;
 	ed. channel	= channel. channelName;
 
-	if (the_ensembleHandler -> alreadyIn (ed))
+	if (theEnsembleHandler -> alreadyIn (ed))
 	   return;
 
-	bool added	= the_ensembleHandler -> add_to_ensemble (ed);
+	bool added	= theEnsembleHandler -> addToEnsemble (ed);
 	if (added) {
 	   channel. nrServices ++;
 	   if (theSCANHandler. active ())
@@ -970,7 +970,7 @@ int base	= motName. lastIndexOf (QChar ('/'));
 	      sidString. push_back (realName. at (j));
 	   uint32_t sid = sidString. toInt (&ok, 16);
 	   if (ok) {
-	      QString name = the_ensembleHandler -> extract_name (sid);
+	      QString name = theEnsembleHandler -> extractName (sid);
 	      if (name != "") {
 	         return env + dateString + "_" + sidString. toUpper () + "_SI.xml";
 	      }
@@ -1146,18 +1146,18 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 	stopMuting	();
 	setSoundLabel (false);
 	if (channel. etiActive)
-	   theOFDMHandler -> reset_etiGenerator ();
-	my_timeTable. clear ();
-	my_timeTable. hide ();
+	   theOFDMHandler -> resetEtiGenerator ();
+	myTimeTable. clear ();
+	myTimeTable. hide ();
 //	and stop the service
 	for (auto &serv :channel. runningTasks) 
 	   stopService (serv);
 //	fprintf (stderr, "All services are halted, now start rebuilding\n");
 	techWindow_p	-> cleanUp ();
 	for (auto &serv : taskCopy) {
-	   int index = theOFDMHandler -> get_serviceComp (serv. serviceName);
+	   int index = theOFDMHandler -> getServiceComp (serv. serviceName);
 	   if (index < 0)
-	      the_ensembleHandler -> remove (serv. serviceName);
+	      theEnsembleHandler -> remove (serv. serviceName);
 	// hier moet de ensemlelist nog worden aangepast
 	      continue;
 	   if (serv. runsBackground)
@@ -1180,7 +1180,7 @@ static int teller	= 0;
 	if (teller > 10) {
 	   teller = 0;
 	   if (!techWindow_p -> isHidden ())
-	      techWindow_p	-> show_rate (rate, ps, sbr);
+	      techWindow_p	-> showRate (rate, ps, sbr);
 	   audiorateLabel	-> setStyleSheet ("color:cyan");
 	   audiorateLabel	-> setText (QString::number (rate));
 	   if (!ps)
@@ -1249,14 +1249,14 @@ void	RadioInterface::TerminateProcess () {
 	running. store	(false);
 	theSCANHandler. hide ();
 	store (dabSettings_p, SOUND_HANDLING, QT_AUDIO_VOLUME, audioVolume);
-	my_timeTable. hide ();
+	myTimeTable. hide ();
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
 	hideButtons	();
 
 	theDXDisplay. hide ();
-	store_widget_position (dabSettings_p, this, S_MAIN_WIDGET);
+	storeWidgetPosition (dabSettings_p, this, S_MAIN_WIDGET);
 	theNewDisplay. hide ();
 //
 #ifdef	DATA_STREAMER
@@ -1277,8 +1277,8 @@ void	RadioInterface::TerminateProcess () {
 	if (streamerOut_p != nullptr)
 	   streamerOut_p	-> stop ();
 #endif
-	theOFDMHandler -> stop ();
-	the_ensembleHandler	-> hide ();
+	theOFDMHandler		-> stop ();
+	theEnsembleHandler	-> hide ();
 	configHandler_p		-> hide ();
 	techWindow_p		-> hide ();
 	if (the_aboutLabel != nullptr) {
@@ -1301,9 +1301,9 @@ void	RadioInterface::TerminateProcess () {
 	}
 	theSCANHandler. hide ();
 
-	stopFramedumping	();
-	stopSourcedumping	();
-	stopAudiodumping	();
+	stopFrameDumping	();
+	stopSourceDumping	();
+	stopAudioDumping	();
 	theScheduler. hide	();
 	theLogger. log (logger::LOG_RADIO_STOPS);
 	usleep (1000);		// pending signals
@@ -1369,7 +1369,7 @@ deviceHandler	*inputDevice = theDeviceChoser.
 	   showButtons ();
 	else 
 	   hideButtons ();
-	the_ensembleHandler -> setMode (channel. realChannel);
+	theEnsembleHandler -> setMode (channel. realChannel);
 	connect (inputDevice, &deviceHandler::frameClosed,
 	         this, &RadioInterface::handle_deviceFrame_closed);
 	QString ss = s;
@@ -1474,7 +1474,7 @@ void	RadioInterface::show_frameErrors (int s) {
 	if (!running. load ()) 
 	   return;
 	if (!techWindow_p -> isHidden ())
-	   techWindow_p -> show_frameErrors (s);
+	   techWindow_p -> showFrameErrors (s);
 }
 //
 //	called from the MP4 decoder
@@ -1482,7 +1482,7 @@ void	RadioInterface::show_rsErrors (int s) {
 	if (!running. load ())		// should not happen
 	   return;
 	if (!techWindow_p -> isHidden ())
-	   techWindow_p	-> show_rsErrors (s);
+	   techWindow_p	-> showRsErrors (s);
 }
 //
 //	called from the NP4 decoder
@@ -1490,7 +1490,7 @@ void	RadioInterface::show_aacErrors (int s) {
 	if (!running. load ())
 	   return;
 	if (!techWindow_p -> isHidden ())
-	   techWindow_p	-> show_aacErrors (s);
+	   techWindow_p	-> showAacErrors (s);
 }
 //
 //	called from the ficHandler
@@ -1625,17 +1625,17 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 	b		-> update ();
 }
 
-void	RadioInterface::handle_audiodumpButton () {
+void	RadioInterface::handleAudiodumpButton () {
 	if (!running. load () || theSCANHandler. active ())
 	   return;
 
 	if (audioDumping) 
-	   stopAudiodumping ();	
+	   stopAudioDumping ();	
 	else
-	   startAudiodumping ();
+	   startAudioDumping ();
 }
 
-void	RadioInterface::stopAudiodumping	() {
+void	RadioInterface::stopAudioDumping	() {
 	if (!audioDumping)
 	   return;
 
@@ -1645,7 +1645,7 @@ void	RadioInterface::stopAudiodumping	() {
 	techWindow_p	-> audiodumpButton_text ("audio dump", 10);
 }
 
-void	RadioInterface::startAudiodumping () {
+void	RadioInterface::startAudioDumping () {
 	if (audioDumping)	// should not happen
 	   return;
 
@@ -1683,17 +1683,17 @@ void	RadioInterface::scheduledAudioDumping () {
 	audioDumping		= true;
 }
 
-void	RadioInterface::handle_framedumpButton () {
+void	RadioInterface::handleFramedumpButton () {
 	if (!running. load () || theSCANHandler. active ())
 	   return;
 
 	if (channel. currentService. frameDumper != nullptr) 
-	   stopFramedumping ();
+	   stopFrameDumping ();
 	else
-	   startFramedumping ();
+	   startFrameDumping ();
 }
 
-void	RadioInterface::stopFramedumping () {
+void	RadioInterface::stopFrameDumping () {
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 
@@ -1703,7 +1703,7 @@ void	RadioInterface::stopFramedumping () {
 	channel. currentService. frameDumper	= nullptr;
 }
 
-void	RadioInterface::startFramedumping () {
+void	RadioInterface::startFrameDumping () {
 	channel. currentService. frameDumper	=
 	     theFilenameFinder.
 	      findFrameDump_fileName (channel. currentService. serviceName,
@@ -1808,10 +1808,10 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_scanButton);
 //
 //	and for the techWindow
-	connect (techWindow_p. data (), &techData::handle_audioDumping,
-	         this, &RadioInterface::handle_audiodumpButton);
-	connect (techWindow_p. data (), &techData::handle_frameDumping,
-	         this, &RadioInterface::handle_framedumpButton);
+	connect (techWindow_p. data (), &techData::handleAudioDumping,
+	         this, &RadioInterface::handleAudiodumpButton);
+	connect (techWindow_p. data (), &techData::handleFrameDumping,
+	         this, &RadioInterface::handleFramedumpButton);
 }
 
 void	RadioInterface::disconnectGUI () {
@@ -1845,14 +1845,14 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (!running. load ())
 	   return QWidget::eventFilter (obj, event);
 
-	if ((obj == this -> the_ensembleHandler -> viewport ()) &&
+	if ((obj == this -> theEnsembleHandler -> viewport ()) &&
 	    (event -> type () == QEvent::MouseButtonPress)) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	   if (ev -> buttons () & Qt::RightButton) {
 	      QTableWidgetItem *x =
-	              the_ensembleHandler -> itemAt (ev -> pos ());
+	              theEnsembleHandler -> itemAt (ev -> pos ());
 	      if (x != nullptr)
-	         the_ensembleHandler -> handle_rightMouseClick (x -> text ());
+	         theEnsembleHandler -> handleRightMouseClick (x -> text ());
 	   }
 	   else {
 	      return QWidget::eventFilter (obj, event);
@@ -1868,7 +1868,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	   if (ev -> buttons () & Qt::RightButton) {
 	      QString service =
 	           this -> theScanlistHandler. indexAt (ev -> pos()). data ().toString();
-	     the_ensembleHandler -> add_favorite_from_scanList (service);
+	     theEnsembleHandler -> addFavoriteFromScanList (service);
 	   }
 	}
 	else
@@ -1958,7 +1958,7 @@ void	RadioInterface::handle_presetSelect (const QString &channel,
 //
 //	selecting from the scan list, which is essential
 //	the same as handling form the preset list
-void	RadioInterface::handle_scanListSelect (const QString &s) {
+void	RadioInterface::handleScanListSelect (const QString &s) {
 	if (!inputDevice_p -> isFileInput ()) {
 	   QStringList list        = splitter (s);
 	   if (list. length () != 2)
@@ -2009,9 +2009,9 @@ QString serviceName	= service;
 	}
 
 	if (theChannel == channel. channelName) {
-	   channel. currentService. valid = false;
+	   channel. currentService. isValid = false;
 	   dabService s;
-	   int index  = theOFDMHandler -> get_serviceComp (service);
+	   int index  = theOFDMHandler -> getServiceComp (service);
 	   if (index < 0) {
 	      dynamicLabel -> setText ("cannot run " + s. serviceName + " yet");
 	      return;
@@ -2038,7 +2038,7 @@ QString serviceName	= service;
 
 //void	RadioInterface::stopService	(dabService s) {
 void	RadioInterface::stopService	(dabService &s) {
-	if (!s. valid)
+	if (!s. isValid)
 	   return;
 	presetTimer. stop ();
 	channelTimer. stop ();
@@ -2047,11 +2047,11 @@ void	RadioInterface::stopService	(dabService &s) {
 	channel. audioActive	= false;
 
 	announcement_stop ();
-	if (s. is_audio) {
+	if (s. isAudio) {
 	   soundOut_p -> suspend ();
-	stopAudiodumping ();
-	stopFramedumping ();
-	my_timeTable. clear ();
+	stopAudioDumping ();
+	stopFrameDumping ();
+	myTimeTable. clear ();
 
 //	and clean up the technical widget
 	techWindow_p	-> cleanUp ();
@@ -2068,10 +2068,10 @@ void	RadioInterface::stopService	(dabService &s) {
 //	stop "secondary services" - if any - as well
 //	Note: they are not recorded on the tasklist
         int nrComps  =
-             theOFDMHandler -> get_nrComps (s. SId);
+             theOFDMHandler -> getNrComps (s. SId);
 	for (int i = 1; i < nrComps; i ++) {
 	   int index =
-             theOFDMHandler -> get_serviceComp (s. SId, i);
+             theOFDMHandler -> getServiceComp (s. SId, i);
            if ((index < 0) ||
                (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
                  continue;
@@ -2082,7 +2082,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	      }
 	   }
 	}
-	s. valid = false;
+	s. isValid = false;
 	show_pauzeSlide ();
 	cleanScreen	();
 }
@@ -2104,7 +2104,7 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 //
 void	RadioInterface::startService (dabService &s, int index) {
 QString serviceName	= s. serviceName;
-	s. SId		= theOFDMHandler -> get_SId (index);
+	s. SId		= theOFDMHandler -> getSId (index);
 //	if the service is already running, ignore the call
 	for (auto &serv : channel. runningTasks) {
 	   if (serv. serviceName == serviceName) {
@@ -2113,20 +2113,20 @@ QString serviceName	= s. serviceName;
 	}
 	presetTimer.	stop	();
 	channel. currentService			= s;
-	channel. currentService. valid		= false;
+	channel. currentService. isValid	= false;
 	channel. currentService. frameDumper	= nullptr;
 //	mark the selected service in the service list
 //	and display the servicename on the serviceLabel
-	the_ensembleHandler -> reportStart (serviceName);
+	theEnsembleHandler -> reportStart (serviceName);
 	if (theOFDMHandler -> serviceType (index) == AUDIO_SERVICE) {
 	   audiodata ad;
 	   theOFDMHandler -> audioData (index, ad);
 	   ad. channel = channel. channelName;
 	   if (ad. defined) {
-	      channel. currentService. valid	= true;
-	      channel. currentService. is_audio	= true;
+	      channel. currentService. isValid	= true;
+	      channel. currentService. isAudio	= true;
 	      channel. currentService. subChId	= ad. subchId;
-	      techWindow_p -> show_timetableButton (true);
+	      techWindow_p -> showTimetableButton (true);
 	      startAudioservice (ad);
 //	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	      serviceLabel	-> setText (serviceName);
@@ -2139,15 +2139,15 @@ QString serviceName	= s. serviceName;
 	      }
 	      else
 	         iconLabel -> setText (ad. shortName);
-	      if (my_timeTable. isVisible ()) {
-	          my_timeTable. setUp (channel. theDate, channel. Eid,
+	      if (myTimeTable. isVisible ()) {
+	          myTimeTable. setUp (channel. theDate, channel. Eid,
 	                               channel. currentService. SId,
 	                               serviceName);
 	         if (hasIcon)
-	            my_timeTable. addLogo (p);
+	            myTimeTable. addLogo (p);
 	      }
 
-	      techWindow_p	-> is_DAB_plus  (ad. ASCTy == 077);
+	      techWindow_p	-> isDABPlus  (ad. ASCTy == 077);
 	   }
 	}
 	else 
@@ -2167,8 +2167,8 @@ QString serviceName	= s. serviceName;
 	      return;
 	   }
 	   serviceLabel	-> setText (pd. serviceName);
-	   channel. currentService. valid	= true;
-	   channel. currentService. is_audio	= false;
+	   channel. currentService. isValid	= true;
+	   channel. currentService. isAudio	= false;
 	   channel. currentService. subChId	= pd. subchId;
 	   startPacketservice (pd);
 	}
@@ -2177,7 +2177,7 @@ QString serviceName	= s. serviceName;
 void	RadioInterface::startAudioservice (audiodata &ad) {
 	(void)theOFDMHandler -> setAudioChannel (ad, &theAudioBuffer,
 	                                            nullptr, FORE_GROUND);
-	uint16_t flags	= theOFDMHandler	-> get_announcing (ad. SId);
+	uint16_t flags	= theOFDMHandler	-> getAnnouncing (ad. SId);
 	if (flags != 0)
 	   announcement_start (ad. SId, flags);
 	else	
@@ -2194,10 +2194,10 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 //	check the other components for this service (if any)
 	if (theOFDMHandler -> isPrimary (ad. serviceName)) {
 	   int nrComps	=
-	        theOFDMHandler -> get_nrComps (ad. SId);
+	        theOFDMHandler -> getNrComps (ad. SId);
 	   for (int i = 1; i < nrComps; i ++) {
 	      int index =
-	           theOFDMHandler -> get_serviceComp (ad. SId, i);
+	           theOFDMHandler -> getServiceComp (ad. SId, i);
 	      if ((index < 0) ||
 	             (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
 	         continue;
@@ -2217,7 +2217,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	rateLabel		-> setStyleSheet ("color:magenta");
 	rateLabel		-> setText (QString::number (ad. bitRate) + "kbit");
 //	show service related data
-	techWindow_p	-> show_serviceData 	(&ad);
+	techWindow_p	-> showServiceData 	(&ad);
 }
 
 void	RadioInterface::startPacketservice (packetdata &pd) {
@@ -2288,11 +2288,11 @@ void	RadioInterface::cleanScreen	() {
 ////////////////////////////////////////////////////////////////////////////
 //
 void	RadioInterface::handle_prevServiceButton        () {
-	the_ensembleHandler -> selectPrevService ();
+	theEnsembleHandler -> selectPrevService ();
 }
 
 void	RadioInterface::handle_nextServiceButton        () {
-	the_ensembleHandler -> selectNextService ();
+	theEnsembleHandler -> selectNextService ();
 }
 //
 //	The user(s)
@@ -2317,7 +2317,7 @@ void	RadioInterface::setPresetService () {
 	for (int i = presetName. length (); i < 16; i ++)
 	   presetName. push_back (' ');
 	dabService s = nextService;
-	int index = theOFDMHandler	-> get_serviceComp (presetName);
+	int index = theOFDMHandler	-> getServiceComp (presetName);
 	if (index < 0) {
 	   dynamicLabel -> setText (QString ("not all data for ") +
 	                            s. serviceName + " on board");
@@ -2339,7 +2339,7 @@ void	RadioInterface::startChannel (const QString &theChannel,
 	                                 QString firstService) {
 int	tunedFrequency	=
 	         theSCANHandler. Frequency (theChannel);
-	the_ensembleHandler	-> reset ();
+	theEnsembleHandler	-> reset ();
 	theNewDisplay. showFrequency (theChannel, tunedFrequency);
 	presetTimer. stop	();		// should not run
 	inputDevice_p		-> restartReader (tunedFrequency, 
@@ -2426,9 +2426,9 @@ void	RadioInterface::stopChannel	() {
 	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
-	if (my_timeTable. isVisible ()) { 
-	   my_timeTable. clear ();
-	   my_timeTable. hide ();
+	if (myTimeTable. isVisible ()) { 
+	   myTimeTable. clear ();
+	   myTimeTable. hide ();
 	}
 
 	inputDevice_p		-> stopReader	();
@@ -2436,7 +2436,7 @@ void	RadioInterface::stopChannel	() {
 	disconnect (ensembleId, &clickablelabel::clicked,
 	            this, &RadioInterface::handle_contentButton);
 	ensembleId	-> setText ("");
-	stopSourcedumping	();
+	stopSourceDumping	();
 	if (channel. etiActive)
 	   stop_etiHandler	();	// 
 	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
@@ -2462,7 +2462,7 @@ void	RadioInterface::stopChannel	() {
 //	note framedumping - if any - was already stopped
 //	ficDumping - if on - is stopped here
 	if (ficDumpPointer != nullptr) {
-	   theOFDMHandler -> stop_ficDump ();
+	   theOFDMHandler -> stopFicDump ();
 	   ficDumpPointer = nullptr;
 	}
 	theOFDMHandler		-> stop ();
@@ -2540,7 +2540,7 @@ void	RadioInterface::startScanning	() {
 	   return;
 	}
 	stopChannel     ();
-	the_ensembleHandler	-> set_showMode (SHOW_ENSEMBLE);
+	theEnsembleHandler	-> setShowMode (SHOW_ENSEMBLE);
 	presetButton		-> setText ("not in use");
 	presetButton		-> setEnabled (false);
 //	scanning and showing the techWindows does not make much sense
@@ -2549,7 +2549,7 @@ void	RadioInterface::startScanning	() {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	epgTimer. stop ();
-	connect (theOFDMHandler. data (), &ofdmHandler::no_signal_found,
+	connect (theOFDMHandler. data (), &ofdmHandler::noSignalFound,
 	         this, &RadioInterface::no_signal_found);
 
 	if (theSCANHandler. scan_to_data ())
@@ -2573,12 +2573,12 @@ void	RadioInterface::startScan_to_data () {
 	int switchDelay		=
 	              configHandler_p -> switchDelayValue ();
 	channelTimer. start (switchDelay);
-	theOFDMHandler	-> set_scanMode (true);
+	theOFDMHandler	-> setScanMode (true);
 	startChannel    (channelSelector -> currentText ());
 }
 
 void	RadioInterface::startScan_single () {
-	theScanlistHandler. clear_scanList ();
+	theScanlistHandler. clearScanList ();
 
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
@@ -2597,7 +2597,7 @@ void	RadioInterface::startScan_single () {
 	scanTable_p	-> addLine (topLine);
 	scanTable_p	-> addLine ("\n");
 
-	theOFDMHandler	-> set_scanMode (true);
+	theOFDMHandler	-> setScanMode (true);
 	QString fs	= theSCANHandler. getFirstChannel ();
 	int k = channelSelector ->  findText (fs);
 	if (k != -1)
@@ -2632,7 +2632,7 @@ void	RadioInterface::startScan_continuous () {
 	scanTable_p -> addLine (topLine);
 	scanTable_p	-> addLine ("\n");
 
-	theOFDMHandler	-> set_scanMode (true);
+	theOFDMHandler	-> setScanMode (true);
 //      To avoid reaction of the system on setting a different value:
 	QString fs = theSCANHandler. getFirstChannel ();
 	int k = channelSelector -> findText (fs);
@@ -2654,7 +2654,7 @@ void	RadioInterface::stopScanning	() {
 	if (!theSCANHandler. active ())
 	   return;
 //	fprintf (stderr, "De scan wordt gestopt\n");
-	disconnect (theOFDMHandler. data (), &ofdmHandler::no_signal_found,
+	disconnect (theOFDMHandler. data (), &ofdmHandler::noSignalFound,
 	            this, &RadioInterface::no_signal_found);
 	presetButton	-> setText ("favorites");
 	presetButton	-> setEnabled (true);
@@ -2673,12 +2673,12 @@ void	RadioInterface::stopScanning	() {
 }
 
 void	RadioInterface::stopScan_to_data () {
-	theOFDMHandler	-> set_scanMode (false);
+	theOFDMHandler	-> setScanMode (false);
 	channelTimer. stop ();
 }
 
 void	RadioInterface::stopScan_single () {
-	theOFDMHandler	-> set_scanMode (false);
+	theOFDMHandler	-> setScanMode (false);
 	channelTimer. stop ();
 
 	if (scanTable_p == nullptr)
@@ -2711,7 +2711,7 @@ void	RadioInterface::stopScan_single () {
 }
 
 void	RadioInterface::stopScan_continuous () {
-	theOFDMHandler	-> set_scanMode (false);
+	theOFDMHandler	-> setScanMode (false);
 	channelTimer. stop ();
 
 	if (scanTable_p == nullptr)
@@ -3203,7 +3203,7 @@ QString		scheduleService;
 	   candidates += QString (scheduleList [i]);
 	}
 
-	QStringList selectables	= the_ensembleHandler -> getSelectables ();
+	QStringList selectables	= theEnsembleHandler -> getSelectables ();
 	for (auto &candidate: selectables) {
 	   if (!candidates. contains (candidate)) {
 	      theSelector.
@@ -3270,10 +3270,10 @@ void	RadioInterface::scheduledFICDumping () {
 	     theFilenameFinder. find_ficDump_file (channel. channelName);
 	   if (ficDumpPointer == nullptr)
 	      return;
-	   theOFDMHandler -> start_ficDump (ficDumpPointer);
+	   theOFDMHandler -> startFicDump (ficDumpPointer);
 	   return;
 	}
-	theOFDMHandler	-> stop_ficDump ();
+	theOFDMHandler	-> stopFicDump ();
 	ficDumpPointer = nullptr;
 }
 
@@ -3289,9 +3289,9 @@ void	RadioInterface::epgTimer_timeOut	() {
 	   return;
 	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
 	   return;
-	QStringList epgList = the_ensembleHandler -> get_epgServices ();
+	QStringList epgList = theEnsembleHandler -> getEpgServices ();
 	for (auto &serv : epgList) {
-	   int index = theOFDMHandler -> get_serviceComp (serv);
+	   int index = theOFDMHandler -> getServiceComp (serv);
 	   if (index < 0)
 	      continue;
 	   if (theOFDMHandler -> serviceType (index) != PACKET_SERVICE)
@@ -3311,21 +3311,21 @@ void	RadioInterface::epgTimer_timeOut	() {
 }
 
 void	RadioInterface::handle_timeTable	() {
-	if (my_timeTable. isVisible ()) {
-	   my_timeTable. clear ();
-	   my_timeTable. hide ();
+	if (myTimeTable. isVisible ()) {
+	   myTimeTable. clear ();
+	   myTimeTable. hide ();
 	   return;
 	}
-	if (!channel. currentService. valid ||
-	                     !channel. currentService. is_audio)
+	if (!channel. currentService. isValid ||
+	                     !channel. currentService. isAudio)
 	   return;
 
-	my_timeTable. setUp (channel. theDate, channel. Eid,
+	myTimeTable. setUp (channel. theDate, channel. Eid,
 	                     channel. currentService. SId,
 	                     channel. currentService. serviceName);
 	QPixmap p;
 	if (get_serviceLogo (p, channel. currentService. SId)) // this may be
-	   my_timeTable. addLogo (p);
+	   myTimeTable. addLogo (p);
 }
 
 //----------------------------------------------------------------------
@@ -3432,16 +3432,16 @@ void	RadioInterface::handle_loadTable	 () {
 //	}
 }
 
-void	RadioInterface::stopSourcedumping	() {
+void	RadioInterface::stopSourceDumping	() {
 	if (!sourceDumping)
 	   return;
 	theLogger. log (logger::LOG_SOURCEDUMP_STOPS);
-	theOFDMHandler	-> stop_dumping();
+	theOFDMHandler	-> stopDumping();
 	sourceDumping	= false;
 	configHandler_p	-> mark_dumpButton (false);
 }
 
-void	RadioInterface::startSourcedumping () {
+void	RadioInterface::startSourceDumping () {
 QString deviceName	= inputDevice_p -> deviceName	();
 int	bitDepth	= inputDevice_p	-> bitDepth	();
 QString channelName	= channel. channelName;
@@ -3456,7 +3456,7 @@ QString channelName	= channel. channelName;
 	theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
 	                                     deviceName, channelName);
 	configHandler_p	-> mark_dumpButton (true);
-	theOFDMHandler -> start_dumping (rawDumpName,
+	theOFDMHandler -> startDumping (rawDumpName,
 	                            channel. tunedFrequency, bitDepth);
 	sourceDumping = true;
 }
@@ -3465,9 +3465,9 @@ void	RadioInterface::handle_sourcedumpButton () {
 	if (!running. load () || theSCANHandler. active ())
 	   return;
 	if (sourceDumping)
-	   stopSourcedumping ();
+	   stopSourceDumping ();
 	else
-	   startSourcedumping ();
+	   startSourceDumping ();
 }
 
 void	RadioInterface::handle_LoggerButton (int s) {
@@ -3652,7 +3652,7 @@ void	RadioInterface::stop_etiHandler () {
 	   return;
 
 	theLogger. log (logger::LOG_ETI_STOPS);
-	theOFDMHandler -> stop_etiGenerator ();
+	theOFDMHandler -> stopEtiGenerator ();
 	channel. etiActive = false;
 	scanButton	-> setText ("eti");
 }
@@ -3669,7 +3669,7 @@ void	RadioInterface::start_etiHandler () {
 	theLogger. log (logger::LOG_ETI_STARTS, 
 	                     inputDevice_p -> deviceName (),
 	                     channel. channelName);
-	channel. etiActive = theOFDMHandler -> start_etiGenerator (etiFile);
+	channel. etiActive = theOFDMHandler -> startEtiGenerator (etiFile);
 	if (channel. etiActive) 
 	   scanButton -> setText ("eti runs");
 }
@@ -3716,7 +3716,7 @@ std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 
 void	RadioInterface::handle_tiiThreshold	(int v) {
 	store (dabSettings_p, CONFIG_HANDLER, TII_THRESHOLD, v);
-	theOFDMHandler -> set_tiiThreshold (v);
+	theOFDMHandler -> setTIIThreshold (v);
 }
 
 void	RadioInterface::show_tii_spectrum	() {
@@ -3799,15 +3799,15 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if (!theTIIProcessor. has_tiiFile ())
 	   return;
 
-	if (theOFDMHandler -> get_ecc () == 0) 
+	if (theOFDMHandler -> getEcc () == 0) 
 	   return;
 
 //	probably yes, get the country code
-	if (!channel. has_ecc) {
-	   channel. ecc_byte	= theOFDMHandler -> get_ecc ();
-	   QString country	= find_ITU_code (channel. ecc_byte,
+	if (!channel. hasEcc) {
+	   channel. eccByte	= theOFDMHandler -> getEcc ();
+	   QString country	= find_ITU_code (channel. eccByte,
 	                                         (channel. Eid >> 12) &0xF);
-	   channel. has_ecc	= true;
+	   channel. hasEcc	= true;
 	   channel. countryName	= country;
 	   channel. transmitterName = "";
 	   transmitter_country	-> setText (country);
@@ -4048,7 +4048,7 @@ void	RadioInterface::show_rsCorrections	(int c, int ec) {
 	if (!running)
 	   return;
 	if (!techWindow_p -> isHidden ())
-	   techWindow_p -> show_rsCorrections (c, ec);
+	   techWindow_p -> showRsCorrections (c, ec);
 }
 //
 //	called from the ofdm handler
@@ -4096,15 +4096,15 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 }
 
 void    RadioInterface::handle_presetButton     () {    
-	int mode = the_ensembleHandler ->  get_showMode ();
+	int mode = theEnsembleHandler ->  getShowMode ();
 	if (inputDevice_p -> isFileInput ()) {
 	   mode = SHOW_ENSEMBLE;
 	   presetButton -> setText ("favorites");
-	   the_ensembleHandler -> set_showMode (mode);
+	   theEnsembleHandler -> setShowMode (mode);
 	   return;
 	}
 	mode = mode == SHOW_ENSEMBLE ? SHOW_PRESETS : SHOW_ENSEMBLE;
-	the_ensembleHandler -> set_showMode (mode);
+	theEnsembleHandler -> setShowMode (mode);
 	presetButton -> setText (mode == SHOW_ENSEMBLE ? "favorites" : "ensemble");
 }     
 
@@ -4133,7 +4133,7 @@ void	RadioInterface::handle_aboutLabel   () {
 //	on the servicename, swrvice is known to be in current ensemble
 void	RadioInterface::handle_backgroundTask (const QString &service) {
 audiodata ad;
-	int index = theOFDMHandler -> get_serviceComp (service);
+	int index = theOFDMHandler -> getServiceComp (service);
 	if (index < 0)
 	   return;
 	if (theOFDMHandler -> serviceType (index) != AUDIO_SERVICE)
@@ -4371,15 +4371,15 @@ void	RadioInterface::handle_tiiButton () {
 }
 
 void	RadioInterface::handle_tiiCollisions     (int b) {
-	theOFDMHandler	-> set_tiiCollisions (b);
+	theOFDMHandler	-> setTIICollisions (b);
 }
 
 void	RadioInterface::handle_tiiFilter         (bool b) {
-	theOFDMHandler	-> set_tiiFilter	(b);
+	theOFDMHandler	-> setTIIFilter	(b);
 }
 
 void	RadioInterface::process_tiiSelector	(bool b) {
-	theOFDMHandler	-> select_TII (b ? 1 : 0);
+	theOFDMHandler	-> selectTII (b ? 1 : 0);
 }
 
 void	RadioInterface::deviceListChanged	() {
@@ -4554,8 +4554,8 @@ void	RadioInterface::report_completeDir () {
 }
 
 void    RadioInterface::lto_ecc (int lto, int ecc) {
-	channel. ecc_byte = ecc; 
-	channel. has_ecc = true;
+	channel. eccByte = ecc; 
+	channel. hasEcc = true;
 	channel. lto	= lto;
 }
 
@@ -4571,6 +4571,7 @@ void	RadioInterface::setFreqList	() {
 
 void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,
 	                                  const QString &s) {
+	(void)IR;
 	return;
 	if (s == "")
 	   fprintf (stderr, "einde fragment\n");

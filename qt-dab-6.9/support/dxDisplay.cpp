@@ -89,12 +89,12 @@ uint16_t	secondDigit (v % 10);
 	l -> addWidget (theDial);
 	myWidget	-> setLayout (l);
 	myWidget	-> setWindowTitle ("dx display");
-	set_position_and_size (s, myWidget, "DX_DISPLAY");
+	setPositionAndSize (s, myWidget, "DX_DISPLAY");
 	theChannel	= "";
 }
 
 	dxDisplay::~dxDisplay () {
-	store_widget_position (dxSettings, myWidget, "DX_DISPLAY");
+	storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
 	int16_t	rows	= tableWidget -> rowCount ();
 	for (int row = rows; row > 0; row --)
 	   tableWidget -> removeRow (row);

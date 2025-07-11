@@ -51,7 +51,7 @@
 	                                            hostLineEdit (nullptr) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, SPY_SERVER_8_SETTINGS);
+	setPositionAndSize (s, &myFrame, SPY_SERVER_8_SETTINGS);
 	myFrame. show		();
 	hostLineEdit. hide ();
 
@@ -99,7 +99,7 @@
 	                         "spyServer_client-gain", settings. gain);
 	if (!theServer. isNull ())
 	   theServer. reset ();
-	store_widget_position (spyServer_settings, &myFrame,
+	storeWidgetPosition (spyServer_settings, &myFrame,
 	                                 SPY_SERVER_8_SETTINGS);
 }
 //
@@ -201,8 +201,9 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 
+	targetRate	= 0;
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
-	   int targetRate = (uint32_t)(max_samp_rate / (1 << i));
+	   targetRate = (uint32_t)(max_samp_rate / (1 << i));
 	   if (targetRate == SAMPLERATE) {
 	      desired_decim_stage = i;
 	      resample_ratio = 1;
@@ -267,7 +268,7 @@ QString theAddress	= QHostAddress (s). toString ();
 }
 
 int32_t	spyServer_client_8::getRate	() {
-	return SAMPLERATE;
+	return targetRate;
 }
 
 bool	spyServer_client_8::restartReader	(int32_t freq, int skipped) {

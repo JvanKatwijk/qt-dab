@@ -172,7 +172,7 @@ QString scanmodeText (int e) {
 	LV		-> addWidget (contentWidget);
         myWidget. setLayout (LV);
 	myWidget. setWindowTitle ("scan monitor");
-	set_position_and_size (dabSettings, &myWidget, SCAN_HANDLER);
+	setPositionAndSize (dabSettings, &myWidget, SCAN_HANDLER);
 
 	if (!no_scanTables)
 	   scanTable. setup_scanTable (selectedBand);
@@ -223,7 +223,7 @@ QString scanmodeText (int e) {
 }
 
 	scanHandler::~scanHandler () {
-	store_widget_position (dabSettings, &myWidget, SCAN_HANDLER);
+	storeWidgetPosition (dabSettings, &myWidget, SCAN_HANDLER);
 	clearTable	();
 	scanTable. hide_scanTable ();
         delete  contentWidget;

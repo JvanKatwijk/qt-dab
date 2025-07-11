@@ -71,7 +71,7 @@ public:
 	void		startDump		();
 	void		stopDump		();
 
-	void            update_PowerOverload (
+	void            updatePowerOverload (
 	                                 sdrplay_api_EventParamsT *params);
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
 	std::atomic<bool>	receiverRuns;
@@ -97,7 +97,7 @@ public:
 	sdrplay_api_Update_t            sdrplay_api_Update;
 	sdrplay_api_SwapRspDuoActiveTuner_t sdrplay_api_SwapRspDuoActiveTuner;
 	sdrplay_api_DeviceT             *chosenDevice;
-	QScopedPointer<Rsp_device>	theRsp;
+	QScopedPointer<RspDevice>	theRsp;
 
 	std::atomic<bool>	failFlag;
 	std::atomic<bool>	successFlag;
@@ -112,7 +112,7 @@ public:
 	QSettings		*sdrplaySettings;
 	bool			agcMode;
 	int16_t			nrBits;
-	int			lna_upperBound;
+	int			lnaUpperBound;
 	float			apiVersion;
 	QString			serial;
 	QString			deviceModel;
@@ -122,45 +122,45 @@ public:
 	double			ppmValue;
 	bool			biasT;
 	xml_fileWriter		*xmlWriter;
-	bool			setup_xmlDump		(bool);
-	void			close_xmlDump		();
+	bool			setupXmlDump		(bool);
+	void			closeXmlDump		();
 	std::atomic<bool>	dumping;
-	std::queue<generalCommand *>	server_queue;
-	QSemaphore		serverjobs;
+	std::queue<generalCommand *>	serverQueue;
+	QSemaphore		serverJobs;
 	HINSTANCE               fetchLibrary            ();
 	void                    releaseLibrary          ();
 	bool			loadFunctions		();
 	int			errorCode;
-	int			set_antennaSelect	(int);
+	int			setAntennaSelect	(int);
 
 signals:
-	void			new_GRdBValue		(int);
-	void			new_lnaValue		(int);
-	void			new_agcSetting		(bool);
-	void			show_tuner_gain		(double);
+	void			newGRdBValue		(int);
+	void			newLnaValue		(int);
+	void			newAgcSetting		(bool);
+	void			showTunerGain		(double);
 private slots:
-	void			set_ifgainReduction	(int);
-	void			set_lnagainReduction	(int);
-	void			set_agcControl		(int);
-	void			set_ppmControl		(int);
-	void			set_selectAntenna	(const QString &);
-	void			set_selectTuner		(const QString &);
-	void			set_biasT		(int);
-	void			set_notch		(int);
-	void			report_overload_state	(bool);
-	void			display_gain		(double);
+	void			setIfGainReduction	(int);
+	void			setLnaGainReduction	(int);
+	void			setAgcControl		(int);
+	void			setPpmControl		(int);
+	void			setSelectAntenna	(const QString &);
+	void			setSelectTuner		(const QString &);
+	void			setBiasT		(int);
+	void			setNotch		(int);
+	void			reportOverloadState	(bool);
+	void			displayGain		(double);
 public slots:
-	void			set_lnabounds		(int, int);
-	void			set_serial		(const QString &);
-	void			set_apiVersion		(float);
-	void			set_xmlDump		();
-	void			show_lnaGain		(int);
+	void			setLnaBounds		(int, int);
+	void			setSerial		(const QString &);
+	void			setApiVersion		(float);
+	void			setXmlDump		();
+	void			showLnaGain		(int);
 signals:
-	void			set_lnabounds_signal	(int, int);
-	void			set_deviceName_signal	(const QString &);
-	void			set_serial_signal	(const QString &);
-	void			set_apiVersion_signal	(float);
-	void			set_antennaSelect_signal	(bool);
-	void			overload_state_changed	(bool);
+	void			setLnaBoundsSignal	(int, int);
+	void			setDeviceNameSignal	(const QString &);
+	void			setSerialSignal		(const QString &);
+	void			setApiVersionSignal	(float);
+	void			setAntennaSelectSignal	(bool);
+	void			overloadStateChanged	(bool);
 };
 

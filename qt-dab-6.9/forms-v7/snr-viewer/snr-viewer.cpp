@@ -40,7 +40,7 @@ QString	colorString	= "black";
 	this		-> dabSettings		= s;
 
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, "snrViewer");
+	setPositionAndSize (s, &myFrame, "snrViewer");
 	dabSettings	-> beginGroup ("snrViewer");
 	plotLength	= dabSettings -> value ("snrLength", 312). toInt ();
 	plotHeight	= dabSettings -> value ("snrHeight", 15). toInt ();
@@ -114,7 +114,7 @@ QString	colorString	= "black";
 
 	snrViewer::~snrViewer () {
 	stopDumping 	();
-	store_widget_position (dabSettings, &myFrame, "snrViewer");
+	storeWidgetPosition (dabSettings, &myFrame, "snrViewer");
 }
 
 void	snrViewer::show () {

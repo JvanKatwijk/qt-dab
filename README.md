@@ -65,10 +65,11 @@ Features
 	- **untested** UHD (anyone wants to help testing?)
 	- Soapy (Linux only), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
 	- ExtIO (experimental, Windows only),
-	- input from servers. support for a spyServer (both 8 bit and a 16 bit version) and an rtl_tcp server,
-  * Always supported input from files:
-   	- prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
-  * with, obviously, the possibility of generating such files from the input.
+	- input from servers. support for a **spyServer** (both 8 bit and a 16 bit version) and an rtl_tcp server,
+  * Always supported for files:
+  	* the possibility of generating ".sdr" type files from the input.
+   	- reading prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
+	- NEW is the ability of Qt-DAB to generate "sdr" type files with a size larger than 4 Gb, and (obviously) the ability of the ".sdr" reader to read such files.
   * Qt-DAB supports so-called *Favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB recognizes and interprets *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separare tool is available to download the required database.
   * Qt-DAB allows running an arbitrary amount of services from tne current ensemble as *background service*. with the output sent to a file,

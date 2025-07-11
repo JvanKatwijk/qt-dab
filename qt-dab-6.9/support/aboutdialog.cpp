@@ -26,7 +26,12 @@
 #include	"ui_aboutdialog.h"
 #include	"dab-constants.h"
 #include	<QDateTime>
+#ifdef	__WITH_FDK_AAC__
+#include <aacdecoder_lib.h>
+#else
+#include        "neaacdec.h"
 
+#endif
 	AboutDialog::AboutDialog (QWidget *parent) :
 	                                  QDialog(parent),
 	                                  ui (new Ui::AboutDialog) {
@@ -43,6 +48,29 @@
 #else
 	support		= "(yang scalar)";
 #endif
+QString	aacSupport;
+#ifdef __WITH_FDK_AAC__
+	LIB_INFO libInfo[FDK_MODULE_LAST];
+	FDKinitLibInfo(libInfo);
+	aacDecoder_GetLibInfo(libInfo);
+	
+	for (int i = 0; i < FDK_MODULE_LAST; i++) {
+	   if (libInfo[i].module_id == FDK_AACDEC) {
+	      aacSupport = QString(libInfo[i].title) + " " + QString(libInfo[i].versionStr);
+	      break;
+	   }
+	}
+#else
+	aacSupport	= QString ("faad2 ") + QString (FAAD2_VERSION);
+#endif
+QString aacComment;
+#ifdef __WITH_FDK_AAC__
+	aacComment =   "<li> " + aacSupport + " , <a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft " +
+                           "zur Förderung der angewandten Forschung e.V.</li>";
+#else
+	aacComment =  "<li>" + aacSupport + " <a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>";
+#endif
+
 	ui -> setupUi (this);
 	QPixmap p;
 	p. load (":res/pauze-slide.png", "png");
@@ -58,21 +86,16 @@
 	ui -> qtVersion		-> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));
 
 	ui -> libraries -> setText (tr("Qt-DAB uses following libraries (and greatly acknowledges the copyright):")+
-                           "<ul>"
-	                   "<li>The excellent Qt framework by Qt, and the Qwt library (version 6.2) by Uwe Rathmann</li>"
-                           "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>"
-                           "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solonon</a> by Phil Karn, KA9Q</li>"
-                           "<li><a href=\"https://www.spiral.net/software/viterbi.html\">viterbi code generator</a> by the Spiral project</li>"
-                           "<li><a href=\"https://github.com/williamyang98/ViterbiDecoderCpp\"> the excellent header only viterbi library</a> by  William Yang, based on Phil Karn's library</li>"
-                           "<li><a href=\"www.portaudio.com/\">Portaudio</a> by Ross Bencina, Phil Burke and many others</li>"
-                           "<li>An MP2 decoder by Martin J Fiedler (martin.fiedler@gmx.net)</li>"
-	                  "<li>\"NewsService Journaline(R) Decoder\", CopyRight (c) 2003, 2001-2014 Fraunhofer IID, Erlangen, Germany</li>"
-#ifdef __WITH_FDK_AAC__
-                           "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft "
-                           "zur Förderung der angewandten Forschung e.V.</li>"
-#else
-                           "<li><a href=\"https://github.com/knik0/faad2\">FAAD2</a> Copyright © 2003-2005 M. Bakker, Nero AG</li>"
-#endif
+                           "<ul>" +
+	                   "<li>The excellent Qt framework by Qt, and the Qwt library (version 6.2) by Uwe Rathmann</li>" +
+                           "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>" +
+                           "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solonon</a> by Phil Karn, KA9Q</li>" +
+                           "<li><a href=\"https://www.spiral.net/software/viterbi.html\">viterbi code generator</a> by the Spiral project</li>" +
+                           "<li><a href=\"https://github.com/williamyang98/ViterbiDecoderCpp\"> the excellent header only viterbi library</a> by  William Yang, based on Phil Karn's library</li>" +
+                           "<li><a href=\"www.portaudio.com/\">Portaudio</a> by Ross Bencina, Phil Burke and many others</li>" +
+                           "<li>An MP2 decoder by Martin J Fiedler (martin.fiedler@gmx.net)</li>" +
+	                  "<li>\"NewsService Journaline(R) Decoder\", CopyRight (c) 2003, 2001-2014 Fraunhofer IID, Erlangen, Germany</li>" +
+	                   aacComment +
 				   "</ul>");
 	ui -> acknowledgementsLabel -> setText (tr("Special thanks to") +
                          "<ul>"

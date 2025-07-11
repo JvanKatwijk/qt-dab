@@ -26,7 +26,7 @@
 #include	<sdrplay_api.h>
 #include	"sdrplay-handler-v3.h"
 
-	Rsp_device::Rsp_device 	(sdrplayHandler_v3 *parent,
+	RspDevice::RspDevice 	(sdrplayHandler_v3 *parent,
 	                         sdrplay_api_DeviceT *chosenDevice,
 	                         int startFreq,
 	                         bool agcMode,
@@ -43,10 +43,10 @@ sdrplay_api_ErrT        err;
 	this	-> GRdB		= GRdB;
 	this	-> biasT	= biasT;
 
-	connect (this, &Rsp_device::set_lnabounds_signal,
-                 parent, &sdrplayHandler_v3::set_lnabounds);
-	connect (this, &Rsp_device::show_lnaGain,
-	         parent, &sdrplayHandler_v3::show_lnaGain);
+	connect (this, &RspDevice::setLnaBoundsSignal,
+                 parent, &sdrplayHandler_v3::setLnaBounds);
+	connect (this, &RspDevice::showLnaGain,
+	         parent, &sdrplayHandler_v3::showLnaGain);
 
 	err = parent -> sdrplay_api_GetDeviceParams (chosenDevice -> dev,
 	                                             &deviceParams);
@@ -104,30 +104,29 @@ sdrplay_api_ErrT        err;
 	}
 }
 
-	Rsp_device::~Rsp_device	() {}
+	RspDevice::~RspDevice	() {}
 
 //
 //	lna states are model dependent
-int	Rsp_device::lnaStates	(int frequency) {
+int	RspDevice::lnaStates	(int frequency) {
 	(void)frequency;
 	return 0;
 }
 
 //	restart is model deependent
-bool	Rsp_device::restart	(int freq) {
+bool	RspDevice::restart	(int freq) {
 	(void)freq;
 	return false;
 }
 
 //	setting an lna state is model deoendent
-bool	Rsp_device::set_lna	(int lnaState) {
+bool	RspDevice::setLna	(int lnaState) {
 	(void)lnaState;
 	return false;
 }
 //
-//
 //	setting agc is common to all models
-bool	Rsp_device::set_agc	(int setPoint, bool on) {
+bool	RspDevice::setAgc	(int setPoint, bool on) {
 sdrplay_api_ErrT err;
 
 	if (on) {
@@ -145,7 +144,7 @@ sdrplay_api_ErrT err;
 }
 
 //	setting  GRdB is common to all models
-bool	Rsp_device::set_GRdB	(int GRdBValue) {
+bool	RspDevice::setGRdB	(int GRdBValue) {
 sdrplay_api_ErrT err;
 
 	chParams -> tunerParams. gain.gRdB = GRdBValue;
@@ -161,7 +160,7 @@ sdrplay_api_ErrT err;
 }
 //
 //	setting ppm is common to all models
-bool	Rsp_device::set_ppm	(double ppmValue) {
+bool	RspDevice::setPpm	(double ppmValue) {
 sdrplay_api_ErrT err;
 
 	deviceParams -> devParams -> ppm = ppmValue;
@@ -173,30 +172,30 @@ sdrplay_api_ErrT err;
 }
 
 //	setting an antenna select is model dependent
-bool	Rsp_device::set_antenna	(int antenna) {
+bool	RspDevice::setAntenna	(int antenna) {
 	(void)antenna;
 	return false;
 }
 
 //	setting amPort is model dependent
-bool	Rsp_device::set_amPort 	(int amPort) {
+bool	RspDevice::setAmPort 	(int amPort) {
 	(void)amPort;
 	return false;
 }
 
 //	setting the bias is model dependent, RspI does not have it
-bool	Rsp_device::set_biasT (bool  b) {
+bool	RspDevice::setBiasT (bool  b) {
 	(void)b;
 	return false;
 }
 
 //	setting the notch is model dependent (RspI does not have it)
-bool	Rsp_device::set_notch (bool  b) {
+bool	RspDevice::setNotch (bool  b) {
 	(void)b;
 	return false;
 }
 
-bool	Rsp_device::set_tuner	(int tuner) {
+bool	RspDevice::setTuner	(int tuner) {
 	(void)tuner;
 	return false;
 }

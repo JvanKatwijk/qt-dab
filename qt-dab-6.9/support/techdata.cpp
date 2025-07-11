@@ -51,13 +51,13 @@
         setupUi (&myFrame);
 	QString settingsHeader	= TECHDATA_SETTING;
 
-	set_position_and_size (dabSettings, &myFrame, TECHDATA_SETTING);
+	setPositionAndSize (dabSettings, &myFrame, TECHDATA_SETTING);
 
 //	formLayout -> setLabelAlignment (Qt::AlignLeft);
 //	myFrame. setWindowFlag (Qt::Tool, true);
 	myFrame. hide ();
 	timeTable_button	-> setEnabled (false);
-	the_audioDisplay	= new audioDisplay (mr, audio, dabSettings);
+	theAudioDisplay	= new audioDisplay (mr, audio, dabSettings);
 
 	QString framedumpButton_color = 
            value_s (dabSettings, COLOR_SETTINGS, 
@@ -85,22 +85,22 @@
 	connect (&myFrame, &superFrame::frameClosed,
 	         this,  &techData::frameClosed);
 	connect (framedumpButton, &smallPushButton::rightClicked,
-                 this, &techData::color_framedumpButton);
+                 this, &techData::colorFramedumpButton);
         connect (audiodumpButton, &smallPushButton::rightClicked,
-                 this, &techData::color_audiodumpButton); 
+                 this, &techData::colorAudiodumpButton); 
 
 	connect	(framedumpButton, &QPushButton::clicked,
-	         this, &techData::handle_frameDumping);
+	         this, &techData::handleFrameDumping);
 	connect (audiodumpButton, &QPushButton::clicked,
-	         this, &techData::handle_audioDumping);
+	         this, &techData::handleAudioDumping);
 
 	connect (timeTable_button, &QPushButton::clicked,
-	         this, &techData::handle_timeTable);
+	         this, &techData::handleTimeTable);
 }
 
 		techData::~techData	() {
-	store_widget_position (dabSettings, &myFrame, TECHDATA_SETTING);
-	delete the_audioDisplay;
+	storeWidgetPosition (dabSettings, &myFrame, TECHDATA_SETTING);
+	delete theAudioDisplay;
 }
 
 void	techData::cleanUp	() {
@@ -121,17 +121,17 @@ void	techData::cleanUp	() {
 	audioRate		-> display (0);
 }
 
-void	techData::show_serviceData	(audiodata *ad) {
-	show_serviceName	(ad -> serviceName, ad -> shortName);
-	show_serviceId		(ad -> SId);
-	show_startAddress	(ad -> startAddr);
-	show_length		(ad -> length);
-	show_subChId		(ad -> subchId);
-	show_uep		(ad -> shortForm, ad -> protLevel);
-	show_ASCTy		(ad -> ASCTy);
-	show_codeRate		(ad -> shortForm, ad -> protLevel);
-	show_language		(ad -> language);
-	show_fm			(ad -> fmFrequencies);
+void	techData::showServiceData	(audiodata *ad) {
+	showServiceName		(ad -> serviceName, ad -> shortName);
+	showServiceId		(ad -> SId);
+	showStartAddress	(ad -> startAddr);
+	showLength		(ad -> length);
+	showSubChId		(ad -> subchId);
+	showUep			(ad -> shortForm, ad -> protLevel);
+	showASCTy		(ad -> ASCTy);
+	showCodeRate		(ad -> shortForm, ad -> protLevel);
+	showLanguage		(ad -> language);
+	showFm			(ad -> fmFrequencies);
 	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
 }
 
@@ -147,7 +147,7 @@ bool	techData::isHidden	() {
 	return myFrame. isHidden ();
 }
 
-void	techData::show_frameErrors	(int e) {
+void	techData::showFrameErrors	(int e) {
 	QPalette p	= frameError_display -> palette();
 	if (100 - 4 * e < 80)
 	   p. setColor (QPalette::Highlight, Qt::red);
@@ -158,7 +158,7 @@ void	techData::show_frameErrors	(int e) {
 	frameError_display	-> setValue (100 - 4 * e);
 }
 
-void	techData::show_aacErrors	(int e) {
+void	techData::showAacErrors	(int e) {
 	QPalette p      = aacError_display -> palette();
         if (100 - 4 * e < 80)
            p. setColor (QPalette::Highlight, Qt::red);
@@ -168,7 +168,7 @@ void	techData::show_aacErrors	(int e) {
         aacError_display      -> setValue (100 - 4 * e);
 }
 
-void	techData::show_rsErrors		(int e) {
+void	techData::showRsErrors		(int e) {
 	QPalette p	= rsError_display -> palette();
 	if (100 - 4 * e < 80)
 	   p. setColor (QPalette::Highlight, Qt::red);
@@ -178,12 +178,12 @@ void	techData::show_rsErrors		(int e) {
 	rsError_display	-> setValue (100 - 4 * e);
 }
 
-void	techData::show_rsCorrections	(int c, int ec) {
+void	techData::showRsCorrections	(int c, int ec) {
 	rsCorrections -> display (c);
 	ecCorrections -> display (ec);
 }
 
-void	techData::show_timetableButton	(bool b) {
+void	techData::showTimetableButton	(bool b) {
 	if (b)
 	   timeTable_button	-> setEnabled (true);
 	else
@@ -193,22 +193,23 @@ void	techData::show_timetableButton	(bool b) {
 void	techData::updateFM		(std::vector<int> &fmFrequencies) {
 	if (fmFrequencies. size () == 0)
 	   return;
-	show_fm		(fmFrequencies);
+	showFm		(fmFrequencies);
 }
 
-void	techData::show_frameDumpButton	(bool b) {
+void	techData::showFrameDumpButton	(bool b) {
 	if (b)
 	   framedumpButton	-> show ();
 	else
 	   framedumpButton	-> hide ();
 }
 
-void	techData::show_serviceName	(const QString &s1, const QString &s2) {
+void	techData::showServiceName	(const QString &s1, const QString &s2) {
 	if ((s2 != "") && (s1 != s2)) 
 	   programName	-> setText (s1 + "(" + s2 + ")");
 	else
 	   programName -> setText (s1);
 }
+
 static
 QString hextoString (int v) {
 QString res;
@@ -221,29 +222,29 @@ QString res;
         return res;
 }
 
-void	techData::show_serviceId		(int SId) {
+void	techData::showServiceId		(int SId) {
 QString text	= hextoString (SId);
 	serviceIdDisplay -> setText (text);
 }
 
-void	techData::show_startAddress	(int sa) {
+void	techData::showStartAddress	(int sa) {
 	startAddressDisplay	-> setText (QString::number (sa));
 }
 
-void	techData::show_length		(int l) {
+void	techData::showLength		(int l) {
 	lengthDisplay		-> setText (QString::number (l));
 }
 
-void	techData::show_subChId		(int subChId) {
+void	techData::showSubChId		(int subChId) {
 	subChIdDisplay		-> setText (QString::number (subChId));
 }
 
-void	techData::show_language		(int l) {
+void	techData::showLanguage		(int l) {
 	language	-> setAlignment (Qt::AlignRight);
 	language	-> setText (getLanguage (l));
 }
 
-void	techData::show_ASCTy		(int a) {
+void	techData::showASCTy		(int a) {
 	ASCTy	-> setText (a == 077 ? "DAB+"  : "DAB");
 	if (a == 077) {
 	   rsError_display	-> show ();
@@ -255,16 +256,16 @@ void	techData::show_ASCTy		(int a) {
 	}
 }
 
-void	techData::show_uep		(int shortForm, int protLevel) {
+void	techData::showUep		(int shortForm, int protLevel) {
 	QString protL = getProtectionLevel (shortForm, protLevel);
 	uepField	-> setText (protL);
 }
 
-void	techData::show_codeRate		(int shortForm, int protLevel) {
+void	techData::showCodeRate		(int shortForm, int protLevel) {
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 
-void	techData::show_fm		(std::vector<int> &v) {
+void	techData::showFm		(std::vector<int> &v) {
 	if (v. size () == 0) {
 	   fmFrequency	-> hide ();
 	   fmLabel	-> hide ();
@@ -291,19 +292,19 @@ std::complex<int16_t> buffer [amount];
 	audioData -> getDataFromBuffer (buffer, amount);
 	if (myFrame. isHidden ())
 	   return;
-	the_audioDisplay -> createSpectrum (buffer, amount, rate);
+	theAudioDisplay -> createSpectrum (buffer, amount, rate);
 	
 }
 
-void    techData::color_framedumpButton   ()      {
-        set_buttonColors (framedumpButton, FRAMEDUMP_BUTTON);
+void    techData::colorFramedumpButton   ()      {
+        setButtonColors (framedumpButton, FRAMEDUMP_BUTTON);
 }
 
-void    techData::color_audiodumpButton   ()      {
-        set_buttonColors (audiodumpButton, AUDIODUMP_BUTTON);
+void    techData::colorAudiodumpButton   ()      {
+        setButtonColors (audiodumpButton, AUDIODUMP_BUTTON);
 }
 
-void	techData::set_buttonColors	(QPushButton *b,
+void	techData::setButtonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
 QColor	baseColor;
 QColor	textColor;
@@ -345,7 +346,7 @@ void	techData::audiodumpButton_text	(const QString &text, int size) {
 	audiodumpButton	-> update ();
 }
 
-void	techData::show_rate	(int rate, bool ps, bool sbr) {
+void	techData::showRate	(int rate, bool ps, bool sbr) {
 	if (!ps)
 	   psLabel -> setText (" ");
 	else {
@@ -379,7 +380,7 @@ void	techData::hideMissed	() {
 	missedSamples	-> hide ();
 }
 
-void	techData::is_DAB_plus	(bool b) {
+void	techData::isDABPlus	(bool b) {
 	if (b) {	// yes it is DAB+
 	   rsErrorLabel		-> show ();
 	   aacErrorLabel	-> show ();
@@ -394,7 +395,7 @@ void	techData::is_DAB_plus	(bool b) {
 	}
 }
 
-void	techData::hide_missedLabel	() {
+void	techData::hideMissedLabel	() {
 	missedLabel	-> hide ();
 	missedSamples	-> hide ();
 }

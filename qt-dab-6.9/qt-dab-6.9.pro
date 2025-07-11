@@ -215,7 +215,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/dab-tables.h \
-	   ../includes/support/preset-handler.h \
+#	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
 	   ../includes/support/scanlist-handler.h \
 	   ../includes/support/scheduler.h \
@@ -355,7 +355,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/dab-tables.cpp \
-	   ../src/support/preset-handler.cpp \
+#	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
 	   ../src/support/scanlist-handler.cpp \
 	   ../src/support/scheduler.cpp \

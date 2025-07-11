@@ -199,7 +199,7 @@ int	ret;
 	(void)theLogger;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, PLUTO_SETTINGS);
+	setPositionAndSize (s, &myFrame, PLUTO_SETTINGS);
 	myFrame. show	();
 
 #ifdef	__MINGW32__
@@ -387,7 +387,7 @@ int	ret;
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
 	stopReader();
-	store_widget_position (plutoSettings, &myFrame, PLUTO_SETTINGS);
+	storeWidgetPosition (plutoSettings, &myFrame, PLUTO_SETTINGS);
 	store (plutoSettings, PLUTO_SETTINGS,
 	                            "pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);

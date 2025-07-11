@@ -117,8 +117,8 @@ public:
 	QString		serviceName;
 	uint32_t	SId;
 	int		subChId;
-	bool		valid;
-	bool		is_audio;
+	bool		isValid;
+	bool		isAudio;
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
@@ -128,8 +128,8 @@ public:
 	   serviceName	= "";
 	   SId		= 0;
 	   subChId	= 77;
-	   valid	= false;
-	   is_audio	= false;
+	   isValid	= false;
+	   isAudio	= false;
 	   fd		= nullptr;
 	   frameDumper	= nullptr;
 	   runsBackground	= false;
@@ -171,8 +171,8 @@ public:
 	int		serviceCount;	// from FIC or nothing
 	dabService	currentService;
 	std::vector<dabService> runningTasks;
-	bool		has_ecc;
-	uint8_t		ecc_byte;
+	bool		hasEcc;
+	uint8_t		eccByte;
 	int		lto;
 	QString		countryName;
 	int		nrTransmitters;
@@ -194,13 +194,12 @@ public:
 	servicePictures. resize (0);
 	realChannel	= true;
 	serviceCount	= -1;
-	currentService. valid	= false;
 	nrServices	= 0;
 	tunedFrequency	= -1;
 	ensembleName	=  "";
 	nrTransmitters	= 0;
 	countryName	= "";
-	has_ecc		= false;
+	hasEcc		= false;
 	Eid		= 0;
 	targetPos	= position {0, 0};
 	mainId		= -1;
@@ -211,7 +210,7 @@ public:
 	height		= -1;
 	distance	= -1;
 	audioActive	= false;
-	currentService. valid		= false;
+	currentService. isValid	= false;
 	currentService. frameDumper	= nullptr;
 	}
 };
@@ -264,14 +263,14 @@ private:
 	dxDisplay		theDXDisplay;
 	logger			theLogger;
 	scanHandler		theSCANHandler;
-	timeTableHandler	my_timeTable;
+	timeTableHandler	myTimeTable;
 	xmlExtractor		xmlHandler;
 	epgCompiler		epgVertaler;
 
 //	end of variables that are initalized
 
 	QScopedPointer<configHandler>	configHandler_p;
-	QScopedPointer<ensembleHandler> the_ensembleHandler;
+	QScopedPointer<ensembleHandler> theEnsembleHandler;
 	QScopedPointer<ofdmHandler>	theOFDMHandler;
 	QScopedPointer<deviceHandler>	inputDevice_p;
 	bool			autoStart_http		();
@@ -365,17 +364,17 @@ private:
 //
 	void			startAudioservice	(audiodata &);
 	void			startPacketservice	(packetdata &);
-	void			startAudiodumping	();
-	void			stopAudiodumping	();
+	void			startAudioDumping	();
+	void			stopAudioDumping	();
 	void			scheduledAudioDumping	();
 	void			scheduledDLTextDumping	();
 	void			scheduledFICDumping	();
 	FILE			*ficDumpPointer;
 
-	void			startSourcedumping	();
-	void			stopSourcedumping	();
-	void			startFramedumping	();
-	void			stopFramedumping	();
+	void			startSourceDumping	();
+	void			stopSourceDumping	();
+	void			startFrameDumping	();
+	void			stopFrameDumping	();
 	void			scheduled_frameDumping	(const QString &);
 	void			startChannel		(const QString &,
 	                                                 const QString firstService = "");
@@ -546,8 +545,8 @@ private slots:
 
 	void			handle_scanListButton	();
 	void			handle_presetButton	();
-	void			handle_framedumpButton	();
-	void			handle_audiodumpButton 	();
+	void			handleFramedumpButton	();
+	void			handleAudiodumpButton 	();
 	void			handle_prevServiceButton        ();
 	void			handle_nextServiceButton        ();
 
@@ -558,7 +557,7 @@ private slots:
 	void			handle_muteButton		();
 	void			handle_folderButton		();
 
-	void			handle_scanListSelect	(const QString &);
+	void			handleScanListSelect	(const QString &);
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
 	void			channel_timeOut		();

@@ -47,7 +47,7 @@
 	(void)mr;
 	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
 	setupUi (&myFrame);
-	set_position_and_size (dabSettings_p, &myFrame, 
+	setPositionAndSize (dabSettings_p, &myFrame, 
 	                           DISPLAY_WIDGET_SETTINGS);
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ())); 
@@ -142,7 +142,7 @@
 }
 
 	displayWidget::~displayWidget () {
-	store_widget_position (dabSettings_p, &myFrame,
+	storeWidgetPosition (dabSettings_p, &myFrame,
 	                                 DISPLAY_WIDGET_SETTINGS);
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
 	                       "iqSliderValue", scopeSlider -> value ());

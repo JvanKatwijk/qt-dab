@@ -94,6 +94,7 @@ private:
 	std::atomic<bool>	onConnect;
 	bool		timedOut;
 
+	int		targetRate;
 	int16_t         convBufferSize; 
         int16_t         convIndex;
         std::vector <std::complex<float> >      convBuffer;

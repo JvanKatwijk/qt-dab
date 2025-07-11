@@ -45,36 +45,36 @@ public:
 	                                 const QString & favoritesFile);
 		~ensembleHandler	();
 	void	reset			();
-	bool	add_to_ensemble		(serviceId &);
+	bool	addToEnsemble		(serviceId &);
 	bool	alreadyIn		(serviceId &);
 	void	remove			(const QString &);
-	void	add_favorite_from_scanList	(const QString &);
+	void	addFavoriteFromScanList	(const QString &);
 
-	void	handle_scheduledSelect	(const QString &, const QString &);
+	void	handleScheduledSelect	(const QString &, const QString &);
 	QStringList	getSelectables	();
-	QStringList	get_epgServices	();
-	int	get_serviceCount	();
+	QStringList	getEpgServices	();
+	int	getServiceCount		();
 	void	selectPrevService	();
 	void	selectNextService	();
 
 	void	reportStart		(const QString &);
 	void	setMode			(bool);
-	int	get_showMode		();
-	void	set_showMode		(int);
+	int	getShowMode		();
+	void	setShowMode		(int);
 
 	int	nrFavorites		();
 	bool	hasFavorite		(const QString &);
 	uint16_t extract_SId		(const QString &);
-	QString	extract_name		(uint32_t);
+	QString	extractName		(uint32_t);
 	int	serviceOrder;
 private	slots:
-	void	click_on_service	(int, int);
+	void	clickOnService	(int, int);
 public slots:
-	void	handle_fontSelect	();
-	void	handle_fontColorSelect	();
-	void	handle_fontSizeSelect	(int);
-	void	handle_rightMouseClick	(const QString &);
-	void	set_serviceOrder	(int);
+	void	handleFontSelect	();
+	void	handleFontColorSelect	();
+	void	handleFontSizeSelect	(int);
+	void	handleRightMouseClick	(const QString &);
+	void	setServiceOrder		(int);
 private:
 	QFont		normalFont;
 	QFont		markedFont;

@@ -84,7 +84,7 @@ int	index_for_key (int key) {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
 	this -> setupUi (&myFrame);
-	set_position_and_size (settings, &myFrame, CONFIG_HANDLER);
+	setPositionAndSize (settings, &myFrame, CONFIG_HANDLER);
 	hide ();
 	connect (&myFrame, &superFrame::frameClosed,
 	         this, &configHandler::frameClosed);
@@ -241,7 +241,7 @@ int	index_for_key (int key) {
 }
 
 	configHandler::~configHandler	() {
-	store_widget_position (dabSettings, &myFrame, CONFIG_HANDLER);
+	storeWidgetPosition (dabSettings, &myFrame, CONFIG_HANDLER);
 }
 
 void	configHandler::show		() {

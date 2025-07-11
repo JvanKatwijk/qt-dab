@@ -33,7 +33,7 @@
 	                                bool	biasT,
 	                                bool	notch,
 	                                double	ppmValue) :
-	                                Rsp_device (parent,
+	                                RspDevice (parent,
 	                                           chosenDevice, 
 	                                           freq,
 	                                           agcMode,
@@ -44,20 +44,19 @@
 	(void)antennaValue;
 	(void)tuner;
 	this	-> parent		= parent;
-	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
-	this    -> lna_upperBound =  lnaStates (freq);
-	set_lnabounds_signal    (0, lna_upperBound);
-        if (lnaState > lna_upperBound)
-           this -> lnaState = lna_upperBound;
-        set_lna (this -> lnaState);
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	this    -> lnaUpperBound	=  lnaStates (freq);
+	setLnaBoundsSignal    (0, lnaUpperBound);
+        if (lnaState > lnaUpperBound)
+           this -> lnaState = lnaUpperBound;
+        setLna (this -> lnaState);
+	showLnaGain (getLnaGain (lnaState, freq));
 
 	if (biasT)
-	   set_biasT (true);
+	   setBiasT (true);
 	if (notch)
-	   set_notch (true);
+	   setNotch (true);
 
 	currentTuner	= 1;
 }
@@ -87,14 +86,13 @@ int band	= bankFor_rspDuo (frequency);
 	return RSPDuo_Table [band][0];
 }
 
-int	RspDuo_handler::get_lnaGain (int lnaState, int freq) {
+int	RspDuo_handler::getLnaGain (int lnaState, int freq) {
 int	band	= bankFor_rspDuo (freq);
 	return RSPDuo_Table [band][lnaState + 1];
 }
 
 bool	RspDuo_handler::restart (int freq) {
 sdrplay_api_ErrT        err;
-
 	
 	chParams -> tunerParams. rfFreq. rfHz = (float)freq;
 	err =parent ->  sdrplay_api_Update (chosenDevice -> dev,
@@ -109,18 +107,18 @@ sdrplay_api_ErrT        err;
 
 	this -> freq	= freq;
 	if (freq < MHz (60))
-	   this -> lna_upperBound = RSPDUO_NUM_LNA_STATES_AM;
+	   this -> lnaUpperBound = RSPDUO_NUM_LNA_STATES_AM;
 	else
 	if  (freq < MHz (1000))
-	   this -> lna_upperBound = RSPDUO_NUM_LNA_STATES;
+	   this -> lnaUpperBound = RSPDUO_NUM_LNA_STATES;
 	else	
-	   this -> lna_upperBound = RSPDUO_NUM_LNA_STATES_LBAND;
-	set_lnabounds_signal	(0, lna_upperBound);
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	   this -> lnaUpperBound = RSPDUO_NUM_LNA_STATES_LBAND;
+	setLnaBoundsSignal	(0, lnaUpperBound);
+	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
 
-bool	RspDuo_handler::set_lna	(int lnaState) {
+bool	RspDuo_handler::setLna	(int lnaState) {
 sdrplay_api_ErrT        err;
 
 	chParams -> tunerParams. gain. LNAstate = lnaState;
@@ -134,11 +132,11 @@ sdrplay_api_ErrT        err;
 	   return false;
 	}
 	this	-> lnaState	= lnaState;
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
 
-bool	RspDuo_handler::set_antenna (int antenna) {
+bool	RspDuo_handler::setAntenna (int antenna) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
 
@@ -159,7 +157,7 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-bool	RspDuo_handler::set_tuner	(int tuner) {
+bool	RspDuo_handler::setTuner	(int tuner) {
 	if (tuner == currentTuner)
 	   return true;;
 
@@ -178,7 +176,7 @@ bool	RspDuo_handler::set_tuner	(int tuner) {
 	return true;
 }
 
-bool	RspDuo_handler::set_biasT	(bool biasT_value) {
+bool	RspDuo_handler::setBiasT	(bool biasT_value) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
 
@@ -191,7 +189,7 @@ sdrplay_api_ErrT        err;
 	return err == sdrplay_api_Success;
 }
 
-bool	RspDuo_handler::set_notch (bool on) {
+bool	RspDuo_handler::setNotch (bool on) {
 sdrplay_api_ErrT err;
 sdrplay_api_RspDuoTunerParamsT * rspDuoTunerParams;
 

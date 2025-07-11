@@ -63,7 +63,7 @@
 	                           QStringList () << tr ("service") <<
 	                                             tr ("fav"));
 	   connect (this, &QTableWidget::cellClicked,
-	            this, &ensembleHandler::click_on_service);
+	            this, &ensembleHandler::clickOnService);
 	   this -> verticalHeader () -> setVisible (false);
 	   loadFavorites (favFile);
 	   handlePresets	= true;	// for now
@@ -154,7 +154,7 @@ void	ensembleHandler::unSelect	() {
 	   }
 }
 
-void	ensembleHandler::click_on_service	(int row, int column) {
+void	ensembleHandler::clickOnService	(int row, int column) {
 	QTableWidgetItem *theItem_0 = this -> item (row, 0);
 	QString theService	= theItem_0 -> text ();
 	QTableWidgetItem *theItem_1 = this -> item (row, 1);
@@ -275,7 +275,7 @@ void	ensembleHandler::selectPrevService	() {
 	updateList ();
 }
 
-void	ensembleHandler::handle_rightMouseClick	(const QString &text) {
+void	ensembleHandler::handleRightMouseClick	(const QString &text) {
 	if ((text == " ") || (text == "*"))
 	   return;
 
@@ -437,7 +437,7 @@ bool	ensembleHandler::alreadyIn	(serviceId &ed) {
 	return false;
 }
 
-bool	ensembleHandler::add_to_ensemble (serviceId &ed) {
+bool	ensembleHandler::addToEnsemble (serviceId &ed) {
 	if (alreadyIn (ed))
 	   return false;
 
@@ -465,7 +465,7 @@ void	ensembleHandler::remove (const QString &s) {
 	   updateList ();
 }
 
-void	ensembleHandler::add_favorite_from_scanList (const QString &service) {
+void	ensembleHandler::addFavoriteFromScanList (const QString &service) {
 	if (!handlePresets)
 	   return;
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
@@ -590,7 +590,7 @@ QStringList res;
 	return res;
 }
 
-QStringList ensembleHandler::get_epgServices () {
+QStringList ensembleHandler::getEpgServices () {
 QStringList res;
 	for (auto &serv : ensembleList) {
 	   if (seems_epg (serv. name)) {
@@ -600,7 +600,7 @@ QStringList res;
 	return res;
 }
 
-int	ensembleHandler::get_serviceCount	() {
+int	ensembleHandler::getServiceCount	() {
 	return ensembleList. size ();
 }
 
@@ -614,7 +614,7 @@ void	ensembleHandler::setFont (int mark, int index) {
 	   this -> item (index, 0) -> setFont (normalFont);
 }
 
-void	ensembleHandler::handle_fontSelect () {
+void	ensembleHandler::handleFontSelect () {
 int fontSize;
 	fontSize	= value_i (ensembleSettings, ENSEMBLE,
 	                                         "fontSize", 10);
@@ -654,7 +654,7 @@ QString	theFont;
 #endif
 }
 
-void	ensembleHandler::handle_fontColorSelect () {
+void	ensembleHandler::handleFontColorSelect () {
 QColor	color;
 
 	color	= QColorDialog::getColor (color, nullptr, "fontColor");
@@ -665,7 +665,7 @@ QColor	color;
 	updateList ();
 }
 
-void	ensembleHandler::handle_fontSizeSelect	(int fontSize) {
+void	ensembleHandler::handleFontSizeSelect	(int fontSize) {
 QString	theFont	= ensembleSettings -> value ("theFont", "Times"). toString ();
 
 	if (fontSize < 8) 
@@ -700,11 +700,11 @@ void	ensembleHandler::setMode	(bool b) {
 	}
 }
 
-int	ensembleHandler::get_showMode	() {
+int	ensembleHandler::getShowMode	() {
 	return ensembleMode;
 }
 
-void	ensembleHandler::set_showMode	(int m) {
+void	ensembleHandler::setShowMode	(int m) {
 	if (!handlePresets)
 	   return;
 	if (ensembleMode == m)
@@ -722,14 +722,14 @@ uint16_t	ensembleHandler::extract_SId	(const QString &name) {
 	return 0;
 }
 
-QString		ensembleHandler::extract_name	(uint32_t sid) {
+QString		ensembleHandler::extractName	(uint32_t sid) {
 	for (auto &serv: ensembleList)
 	   if (serv. SId == sid)
 	      return serv. name;
 	return "";
 }
 
-void	ensembleHandler::handle_scheduledSelect (const QString &name,
+void	ensembleHandler::handleScheduledSelect (const QString &name,
 	                                         const QString &channel) {
 	unSelect ();
 	int index = inEnsembleList (name);
@@ -741,7 +741,7 @@ void	ensembleHandler::handle_scheduledSelect (const QString &name,
 	   ensembleList [index]. selected = true;
 	   selectService (name, channel);
 	   if (ensembleMode == SHOW_PRESETS)
-	      set_showMode (SHOW_ENSEMBLE);
+	      setShowMode (SHOW_ENSEMBLE);
 	   updateList ();
 	}
 	else {		// may be in favorites?
@@ -755,11 +755,11 @@ void	ensembleHandler::handle_scheduledSelect (const QString &name,
 	   favorites [index]. selected = true;
 	   selectService (name, channel);
 	   if (ensembleMode == SHOW_ENSEMBLE)
-	      set_showMode (SHOW_PRESETS);
+	      setShowMode (SHOW_PRESETS);
 	}
 }
 
-void	ensembleHandler::set_serviceOrder	(int order) {
+void	ensembleHandler::setServiceOrder	(int order) {
 	store (ensembleSettings, ENSEMBLE, "serviceOrder", order);
 	serviceOrder	= order;
 }

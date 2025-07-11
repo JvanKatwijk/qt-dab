@@ -52,7 +52,7 @@
 	                                  recorderVersion (recVersion) {
 	(void)theLogger;
         setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, HACKRF_SETTINGS);
+	setPositionAndSize (s, &myFrame, HACKRF_SETTINGS);
 
 #ifdef  __MINGW32__
 	const char *libraryString = "libhackrf.dll";
@@ -202,7 +202,7 @@
 	hackrfHandler::~hackrfHandler() {
 	stopReader();
 	myFrame. hide ();
-	store_widget_position (hackrfSettings, &myFrame, HACKRF_SETTINGS);
+	storeWidgetPosition (hackrfSettings, &myFrame, HACKRF_SETTINGS);
 	store (hackrfSettings, HACKRF_SETTINGS,
 	                         "hack_lnaGain", lnaGainSlider -> value());
 	store (hackrfSettings, HACKRF_SETTINGS,

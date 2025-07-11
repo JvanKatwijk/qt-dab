@@ -51,7 +51,7 @@
 	                                        hostLineEdit (nullptr) {
 	spyServer_settings	= s;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, SPY_SERVER_16_SETTINGS);
+	setPositionAndSize (s, &myFrame, SPY_SERVER_16_SETTINGS);
 	myFrame. show		();
 	hostLineEdit. hide ();
 
@@ -100,7 +100,7 @@
 	                              "spyServer_client-gain", settings. gain);
 	if (!theServer. isNull ())
 	   theServer. reset ();
-	store_widget_position (spyServer_settings, &myFrame,
+	storeWidgetPosition (spyServer_settings, &myFrame,
 	                           SPY_SERVER_16_SETTINGS);
 }
 //

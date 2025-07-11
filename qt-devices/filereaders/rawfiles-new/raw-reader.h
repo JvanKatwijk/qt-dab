@@ -29,23 +29,26 @@
 #include	<atomic>
 class	rawFiles;
 
+#define RAW_BUFFERSIZE      32768
+
 class	rawReader:public QThread {
 Q_OBJECT
 public:
 			rawReader	(rawFiles *,
 	                                 FILE *, RingBuffer<std::complex<float>> *); 
-			~rawReader();
-	void		startReader();
-	void		stopReader();
+			~rawReader	();
+	void		startReader	();
+	void		stopReader	();
 private:
-virtual void		run();
+virtual void		run		();
 	FILE		*filePointer;
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 	uint64_t	period;
 	std::atomic<bool>	running;
-	uint8_t		*bi;
+	uint8_t		rawDataBuffer [RAW_BUFFERSIZE];;
 	rawFiles	*parent;
 	int64_t		fileLength;
+	float		mapTable [256];
 signals:
 	void		setProgress	(int, float);
 };

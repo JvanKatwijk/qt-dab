@@ -47,12 +47,12 @@
 	rawFilesSettings	= s;
 	this -> fileName	= fileName;
 	setupUi	(&myFrame);
-	set_position_and_size (s, &myFrame, RAWSETTINGS);
+	setPositionAndSize (s, &myFrame, RAWSETTINGS);
 	myFrame. show	();
 
-	filePointer	= fopen (fileName. toUtf8(). data(), "rb");
+	filePointer	= fopen (fileName. toUtf8 (). data (), "rb");
 	if (filePointer == nullptr) {
-	   const QString str = QString("Cannot open file '%1'").arg (fileName);
+	   const QString str = QString ("Cannot open file '%1'").arg (fileName);
 	   throw device_exception (str. toStdString ());
 	}
 
@@ -74,7 +74,7 @@
 	      usleep (100);
 	   readerTask. reset ();
 	}
-	store_widget_position (rawFilesSettings, &myFrame, RAWSETTINGS);
+	storeWidgetPosition (rawFilesSettings, &myFrame, RAWSETTINGS);
 	if (filePointer != nullptr)
 	   fclose (filePointer);
 }

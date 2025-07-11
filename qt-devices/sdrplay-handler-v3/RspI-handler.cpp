@@ -37,7 +37,7 @@ int	RSP1_Table [3][5] = {
 	                              int 	GRdB,
 	                              bool	biasT,
 	                              double	ppmValue):
-	                              Rsp_device (parent,
+	                              RspDevice (parent,
 	                                          chosenDevice, 
 	                                          freq,
 	                                          agcMode,
@@ -47,14 +47,14 @@ int	RSP1_Table [3][5] = {
 
 	this	-> deviceModel		= "RSP-1";
 	this	-> nrBits		= 12;
-	this	-> lna_upperBound =  lnaStates (freq);
-	set_lnabounds_signal	(0, lna_upperBound);
-	if (lnaState > lna_upperBound)
-	   this -> lnaState = lna_upperBound;
-	set_lna (this -> lnaState);
+	this	-> lnaUpperBound =  lnaStates (freq);
+	setLnaBoundsSignal	(0, lnaUpperBound);
+	if (lnaState > lnaUpperBound)
+	   this -> lnaState = lnaUpperBound;
+	setLna (this -> lnaState);
 
 	if (biasT)
-	   set_biasT (true);
+	   setBiasT (true);
 }
 
 	Rsp1_handler::~Rsp1_handler	() {}
@@ -72,7 +72,7 @@ int band	= bankFor_rsp1 (frequency);
 	return RSP1_Table [band][0];
 }
 
-int	Rsp1_handler::get_lnaGain (int lnaState, int freq) {
+int	Rsp1_handler::getLnaGain (int lnaState, int freq) {
 int	band	= bankFor_rsp1 (freq);
 	return RSP1_Table [band][lnaState + 1];
 }
@@ -92,13 +92,13 @@ sdrplay_api_ErrT        err;
 	}
 
 	this -> freq	= freq;
-	this	-> lna_upperBound	= 3;
-	set_lnabounds_signal	(0, lna_upperBound);
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	this	-> lnaUpperBound	= 3;
+	setLnaBoundsSignal	(0, lnaUpperBound);
+	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
 
-bool	Rsp1_handler::set_lna	(int lnaState) {
+bool	Rsp1_handler::setLna	(int lnaState) {
 sdrplay_api_ErrT        err;
 
 	chParams -> tunerParams. gain. LNAstate = lnaState;
@@ -112,16 +112,16 @@ sdrplay_api_ErrT        err;
 	   return false;
 	}
 	this	-> lnaState	= lnaState;
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
 
-bool	Rsp1_handler::set_biasT	(bool biasT_value) {
+bool	Rsp1_handler::setBiasT	(bool biasT_value) {
 	(void)biasT_value;
 	return true;
 }
 
-bool	Rsp1_handler::set_notch	(bool on) {
+bool	Rsp1_handler::setNotch	(bool on) {
 	(void)on;
 	return true;
 }

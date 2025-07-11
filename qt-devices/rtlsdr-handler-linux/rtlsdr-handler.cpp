@@ -80,7 +80,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, "rtlsdrSettings");
+	setPositionAndSize (s, &myFrame, "rtlsdrSettings");
 	myFrame. show ();
 	filtering			= false;
 
@@ -245,7 +245,7 @@ char	manufac [256], product [256], serial [256];
 	   _I_Buffer. FlushRingBuffer();
 	   workerHandle. reset ();
 	}
-	store_widget_position (rtlsdrSettings, &myFrame, "rtlsdrSettings");
+	storeWidgetPosition (rtlsdrSettings, &myFrame, "rtlsdrSettings");
 	QString gainText	= gainControl -> currentText ();
 	store (rtlsdrSettings, "er;sdrSettings",
 	                       "externalGain", gainText);

@@ -43,43 +43,43 @@ public:
 	                         QSettings *,
 	                         RingBuffer<std::complex<int16_t>> *audioData);
 		~techData	();
-	void	show_serviceData	(audiodata *);
+	void	showServiceData	(audiodata *);
 	void	cleanUp			();
 	void	show			();
 	void	hide			();
 	bool	isHidden		();
-	void	is_DAB_plus		(bool);
-	void	hide_missedLabel	();
-	void	show_timetableButton	(bool);
+	void	isDABPlus		(bool);
+	void	hideMissedLabel	();
+	void	showTimetableButton	(bool);
 	void	updateFM		(std::vector<int> &);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
 	RingBuffer<std::complex<int16_t>>	*audioData;
 	superFrame		myFrame;
-	audioDisplay		*the_audioDisplay;
+	audioDisplay		*theAudioDisplay;
 
-	void			set_buttonColors	(QPushButton *,
+	void			setButtonColors	(QPushButton *,
 	                                            const QString &buttonName);
 
 public slots:
-	void		show_frameErrors	(int);
-	void		show_aacErrors		(int);
-	void		show_rsErrors		(int);
-	void		show_rsCorrections	(int, int);
-	void		show_frameDumpButton	(bool);
-	void		show_serviceName	(const QString &,
+	void		showFrameErrors		(int);
+	void		showAacErrors		(int);
+	void		showRsErrors		(int);
+	void		showRsCorrections	(int, int);
+	void		showFrameDumpButton	(bool);
+	void		showServiceName		(const QString &,
 	                                         const QString &);
-	void		show_serviceId		(int);
-	void		show_subChId		(int);
-	void		show_startAddress	(int);
-	void		show_length		(int);
-	void		show_language		(int);
-	void		show_ASCTy		(int);
-	void		show_uep		(int, int);
-	void		show_codeRate		(int, int);
-	void		show_fm			(std::vector<int> &);
-	void		show_rate		(int, bool, bool);
+	void		showServiceId		(int);
+	void		showSubChId		(int);
+	void		showStartAddress	(int);
+	void		showLength		(int);
+	void		showLanguage		(int);
+	void		showASCTy		(int);
+	void		showUep			(int, int);
+	void		showCodeRate		(int, int);
+	void		showFm			(std::vector<int> &);
+	void		showRate		(int, bool, bool);
 	void		showStereo		(bool);
 
 	void		hideMissed		();
@@ -90,13 +90,13 @@ public slots:
 	void		audiodumpButton_text	(const QString &s, int);
 
 private slots:
-	void		color_framedumpButton	();
-	void		color_audiodumpButton	();
+	void		colorFramedumpButton	();
+	void		colorAudiodumpButton	();
 
 signals:
-	void		handle_timeTable	();
-	void		handle_audioDumping	();
-	void		handle_frameDumping	();
+	void		handleTimeTable		();
+	void		handleAudioDumping	();
+	void		handleFrameDumping	();
 	void		frameClosed		();
 };
 

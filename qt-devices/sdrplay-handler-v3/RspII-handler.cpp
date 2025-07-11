@@ -32,7 +32,7 @@
 	                              bool 	biasT,
 	                              bool	notch,
 	                              double	ppmValue) :
-	                              Rsp_device (parent,
+	                              RspDevice (parent,
 	                                          chosenDevice, 
 	                                          freq,
 	                                          agcMode,
@@ -40,21 +40,21 @@
 	                                          GRdB,
 	                                          biasT,
 	                                          ppmValue) {
-	set_antenna (antennaValue);
+	setAntenna (antennaValue);
 	this	-> deviceModel		= "RSP-II";
 	this	-> nrBits		= 14;
 	if (freq < Mhz (420))
-	   lna_upperBound = 9;
+	   lnaUpperBound = 9;
 	else
-	   lna_upperBound = 6;
-	set_lnabounds_signal (0, lna_upperBound);
-	if (lnaState > lna_upperBound)
-	   this -> lnaState = lna_upperBound - 1;
-	set_lna (this -> lnaState);
+	   lnaUpperBound = 6;
+	setLnaBoundsSignal (0, lnaUpperBound);
+	if (lnaState > lnaUpperBound)
+	   this -> lnaState = lnaUpperBound - 1;
+	setLna (this -> lnaState);
 	if (biasT)
-	   set_biasT (true);
+	   setBiasT (true);
 	if (notch)
-	   set_notch (true);
+	   setNotch (true);
 }
 
 	RspII_handler::~RspII_handler	() {}
@@ -79,7 +79,7 @@ int band	= bankFor_rspII (frequency);
 	return RSPII_Table [band][0];
 }
 
-int	RspII_handler::get_lnaGain (int lnaState, int freq) {
+int	RspII_handler::getLnaGain (int lnaState, int freq) {
 int	band	= bankFor_rspII (freq);
 	return RSPII_Table [band][lnaState + 1];
 }
@@ -100,17 +100,17 @@ sdrplay_api_ErrT        err;
 
 	this -> freq	= freq;
 	if (freq < MHz (420))
-	   this	-> lna_upperBound	= 9;
+	   this	-> lnaUpperBound	= 9;
 	else
-	   this -> lna_upperBound	= 6;
+	   this -> lnaUpperBound	= 6;
 	
-	set_lnabounds_signal	(0, lna_upperBound);
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	setLnaBoundsSignal	(0, lnaUpperBound);
+	showLnaGain (getLnaGain (lnaState, freq));
 	
 	return true;
 }
 
-bool	RspII_handler::set_lna	(int lnaState) {
+bool	RspII_handler::setLna	(int lnaState) {
 sdrplay_api_ErrT        err;
 
 	chParams -> tunerParams. gain. LNAstate = lnaState;
@@ -124,11 +124,11 @@ sdrplay_api_ErrT        err;
 	   return false;
 	}
 	this	-> lnaState	= lnaState;
-	show_lnaGain (get_lnaGain (lnaState, freq));
+	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
 
-bool	RspII_handler::set_antenna (int antenna) {
+bool	RspII_handler::setAntenna (int antenna) {
 sdrplay_api_Rsp2TunerParamsT *rsp2TunerParams;
 sdrplay_api_ErrT        err;
 
@@ -148,7 +148,7 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-bool	RspII_handler::set_biasT (bool biasT_value) {
+bool	RspII_handler::setBiasT (bool biasT_value) {
 sdrplay_api_Rsp2TunerParamsT *rsp2TunerParams;
 sdrplay_api_ErrT        err;
 
@@ -164,7 +164,7 @@ sdrplay_api_ErrT        err;
 	return true;
 }
 
-bool	RspII_handler::set_notch (bool on) {
+bool	RspII_handler::setNotch (bool on) {
 sdrplay_api_ErrT err;
 sdrplay_api_Rsp2TunerParamsT *rspIITunerParams;
 

@@ -50,7 +50,7 @@ uint32_t samplerateCount;
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, AIRSPY_SETTINGS);
+	setPositionAndSize (s, &myFrame, AIRSPY_SETTINGS);
 	myFrame. show		();
 //
 //	Since we have different tabs, with different sliders for
@@ -209,7 +209,7 @@ uint32_t samplerateCount;
 	airspy_2::~airspy_2 () {
 	stopReader ();
 	myFrame. hide ();
-	store_widget_position (airspySettings, &myFrame, AIRSPY_SETTINGS);
+	storeWidgetPosition (airspySettings, &myFrame, AIRSPY_SETTINGS);
 	store (airspySettings, AIRSPY_SETTINGS, TAB_SETTINGS,
 	                                   tabWidget -> currentIndex ());
 	if (device != nullptr) {

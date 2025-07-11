@@ -98,6 +98,9 @@
    </item>
    <item>
     <widget class="QLabel" name="label">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The url  &amp;quot;https://airspy.com/directory/&amp;quot; shows a list of publicly available spyservers. Note however that for Qt-DAB one needs at least 2 Msamples/sec, which, for 16 bit samples means 8 Mb/sec. So you need a pretty fast connection.&lt;/p&gt;&lt;p/&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>spy-server 16 bits</string>
      </property>

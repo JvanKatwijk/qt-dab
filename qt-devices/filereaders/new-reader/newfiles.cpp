@@ -39,7 +39,7 @@
 	                                  theReader (fileName) {
 	newFilesSettings	= s;
 	setupUi (&myFrame);
-	set_position_and_size (s, &myFrame, WAVSETTINGS);
+	setPositionAndSize (s, &myFrame, WAVSETTINGS);
 	myFrame. show	();
 	this -> fileName	= fileName;
 
@@ -58,7 +58,7 @@
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
 	      usleep (500);
-	   store_widget_position (newFilesSettings, &myFrame, WAVSETTINGS);
+	   storeWidgetPosition (newFilesSettings, &myFrame, WAVSETTINGS);
 	   readerTask. reset ();
 	}
 }
@@ -115,5 +115,4 @@ int	newFiles::getVFOFrequency	() {
 QString	newFiles::deviceName	() {
 	return QString (".wav file: ") + fileName;
 }
-
 

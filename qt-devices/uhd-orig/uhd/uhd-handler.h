@@ -21,61 +21,56 @@
  */
 #pragma once
 
-#include "virtual-input.h"
-
-#include	<uhd/usrp/multi_usrp.hpp>
-#include	"ringbuffer.h"
-#include	<QThread>
-#include	<QSettings>
-#include	<QFrame>
-#include	<QObject>
-#include	<atomic>
-#include	<complex>
-#include	"ui_uhd-widget.h"
+#include  <QThread>
+#include  <QSettings>
+#include  <QFrame>
+#include  <QObject>
+#include  <uhd/usrp/multi_usrp.hpp>
+#include  "ui_uhd-widget.h"
+#include  "device-handler.h"
+#include  "ringbuffer.h"
 
 class uhdHandler;
-//
-//	the real worker:
+
 class uhd_streamer : public QThread {
 public:
-	uhd_streamer (uhdHandler *d);
-	void stop();
+		uhd_streamer	(uhdHandler *);
+		~uhd_streamer	();
+	void	stop		();
 
 private:
-	uhdHandler	* m_theStick;
-virtual void 		run	();
-	std:atomic<bool> m_stop_signal_called;
+	uhdHandler	*theStick;
+	void	run		();
+	std::atomic<bool> stop_called;
 };
 
-
-class	uhdHandler: public deviceHandler, public Ui_uhdWidget {
+class uhdHandler : public deviceHandler, public Ui_uhdWidget {
 Q_OBJECT
 	friend class uhd_streamer;
 public:
-		uhdHandler 	(QSettings *dabSettings);
-	 	~uhdInput 	();
-	int32_t	getVFOFrequency	();
-	bool	restartReader	(int32_t, int32_t);
+		uhdHandler	(QSettings * dabSettings);
+		~uhdHandler	();
+
+	bool	restartReader	(int32_t freq, int skipped = 0);
 	void	stopReader	();
-	int32_t	getSamples	(std::complex<float> *, int32_t size);
-	int32_t	Samples		();
+	int32_t getSamples	(std::complex<float> *, int32_t size);
+	int32_t Samples		();
 	void	resetBuffer	();
-	int16_t	maxGain		();
-	int16_t	bitDepth	();
-	QString	deviceName	();
-//
+	int16_t bitDepth	();
+	QString deviceName	();
+
 private:
 	QSettings	*uhdSettings;
-	QFrame		*myFrame;
 	uhd::usrp::multi_usrp::sptr m_usrp;
-	uhd::rx_streamer::sptr m_rx_stream;
-	RingBuffer<std::complex<float> > *theBuffer;
-	uhd_streamer* m_workerHandle;
-	int32_t		inputRate;
-	int32_t		ringbufferSize;
+	uhd::rx_streamer::sptr rx_stream;
+	uhd_streamer * m_workerHandle = nullptr;
+	RingBuffer<std::complex<float>> * theBuffer;
+	int32_t		ringBufferSize;
+	int16_t		maxGain		();
+	int		inputRate;
+
 private slots:
 	void	setExternalGain	(int);
-	void	set_fCorrection	(int);
-	void	set_KhzOffset	(int);
+	void 	handle_ant_selector (const QString &);
 };
 

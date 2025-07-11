@@ -38,11 +38,11 @@ public:
 	                                 const QString fileName);
 		~scanListHandler	();
 	void	addElement	(const QString &, const QString &);
-	void	clear_scanList	();
+	void	clearScanList	();
 public slots:
 	void	selectElement	(QModelIndex);
 signals:
-	void	handle_scanListSelect (const QString &);
+	void	handleScanListSelect (const QString &);
 private:
 	QStringList	scanList;
 	QStringListModel	displayList;

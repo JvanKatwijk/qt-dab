@@ -44,7 +44,7 @@ struct timeval  tv;
 	fileLength		= theReader -> elementCount ();
 	fprintf (stderr, "fileLength = %ld\n",  (int64_t)fileLength);
 	theReader	-> reset ();
-	period          = (32768 * 1000) / (SAMPLERATE / 1000);// full IQś read
+	period          = (BUFFERSIZE * 1000) / (SAMPLERATE / 1000);// full IQś read
 	fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
 	start ();
@@ -63,10 +63,9 @@ void	newReader::stopReader	() {
 }
 
 void	newReader::run	() {
-int32_t	bufferSize	= 32768;
 int64_t	nextStop;
 int	teller		= 0;
-std::complex<float> bi [bufferSize];
+std::complex<float> inputBuffer [BUFFERSIZE];
 
 	connect (this, &newReader::setProgress,
 	         parent,  &newFiles::setProgress);
@@ -77,7 +76,7 @@ std::complex<float> bi [bufferSize];
 	nextStop	= getMyTime();
 	try {
 	   while (running. load()) {
-	      while (theBuffer -> WriteSpace () < bufferSize) {
+	      while (theBuffer -> WriteSpace () < BUFFERSIZE) {
 	         if (!running. load())
 	            throw (33);
 	         usleep (100);
@@ -91,13 +90,13 @@ std::complex<float> bi [bufferSize];
 	      }
 
 	      nextStop += period;
-	      int n = theReader -> read (bi, bufferSize);
+	      int n = theReader -> read (inputBuffer, BUFFERSIZE);
 	      if (n < bufferSize) {
 	         theReader -> reset ();
-	         for (int i = n; i < bufferSize; i ++)
-	            bi [i] = std::complex <float> (0, 0);
+	         for (int i = n; i < BUFFERSIZE; i ++)
+	            inputBuffer [i] = std::complex <float> (0, 0);
 	      }
-	      theBuffer -> putDataIntoBuffer (bi, bufferSize);
+	      theBuffer -> putDataIntoBuffer (inputBuffer, BUFFERSIZE);
 	      if (nextStop - getMyTime() > 0)
 	         usleep (nextStop - getMyTime());
 	   }

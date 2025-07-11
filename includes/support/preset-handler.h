@@ -50,13 +50,13 @@ public:
 	void	addElement	(const QString &, const QString  &);
 	void	addElement	(const QString &);
 	void	removeElement	(const QString &);
-	void	clear_presetList	();
+	void	clearPresetList	();
 	int	nrElements	();
 	QString	candidate	(int i);
 public	slots:
 	void	selectElement	(QModelIndex);
 signals:
-	void	handle_presetSelect	(const QString &, const QString &);
+	void	handlePresetSelect	(const QString &, const QString &);
 private:
 	RadioInterface	*radio_p;
 	std::vector<presetData> thePresets;

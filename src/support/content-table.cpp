@@ -38,7 +38,7 @@
 	this	-> columns	= cols;
 	myWidget        = new QScrollArea (nullptr);
         myWidget        -> setWidgetResizable (true);
-	set_position_and_size (dabSettings, myWidget,  CONTENT_TABLE);
+	setPositionAndSize (dabSettings, myWidget,  CONTENT_TABLE);
 	
         contentWidget	= new QTableWidget (0, cols);
 	contentWidget	-> setColumnWidth (0, 150);
@@ -56,7 +56,7 @@
 }
 
 	contentTable::~contentTable () {
-	store_widget_position (dabSettings, myWidget, CONTENT_TABLE);
+	storeWidgetPosition (dabSettings, myWidget, CONTENT_TABLE);
 	clearTable ();
         delete  contentWidget;
         delete  myWidget;

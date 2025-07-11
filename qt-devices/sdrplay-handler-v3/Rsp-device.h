@@ -28,7 +28,7 @@
 
 class	sdrplayHandler_v3;
 
-class Rsp_device : public QObject {
+class RspDevice : public QObject {
 Q_OBJECT
 protected:
 	sdrplay_api_DeviceT *chosenDevice;
@@ -39,34 +39,34 @@ protected:
 	sdrplay_api_RxChannelParamsT	*chParams;
 	sdrplay_api_DeviceParamsT	*deviceParams;
 	sdrplayHandler_v3	*parent;
-	int	lna_upperBound;
+	int	lnaUpperBound;
 	QString	deviceModel;
 	bool	antennaSelect;
 	int	nrBits;
 	bool	biasT;
 public:
-		Rsp_device 	(sdrplayHandler_v3 *parent,
+		RspDevice 	(sdrplayHandler_v3 *parent,
 	                         sdrplay_api_DeviceT *chosenDevice,
 	                         int startFrequency,
 	                         bool agcMode,
 	                         int lnaState,
 	                         int GRdB,
 	                         bool biasT, double ppmValue);
-	virtual	~Rsp_device	();
+	virtual	~RspDevice	();
 virtual int	lnaStates	(int frequency);
 
 virtual	bool	restart		(int freq);
-	bool	set_agc		(int setPoint, bool on);
-virtual	bool	set_lna		(int lnaState);
-	bool	set_GRdB	(int GRdBValue);
-	bool	set_ppm		(double ppm);
-virtual	bool	set_antenna	(int antenna);
-virtual	bool	set_amPort 	(int amPort);
-virtual	bool	set_biasT 	(bool biasT);
-virtual	bool	set_notch 	(bool notch);
-virtual	bool	set_tuner	(int tuner);
+	bool	setAgc		(int setPoint, bool on);
+virtual	bool	setLna		(int lnaState);
+	bool	setGRdB		(int GRdBValue);
+	bool	setPpm		(double ppm);
+virtual	bool	setAntenna	(int antenna);
+virtual	bool	setAmPort 	(int amPort);
+virtual	bool	setBiasT 	(bool biasT);
+virtual	bool	setNotch 	(bool notch);
+virtual	bool	setTuner	(int tuner);
 signals:
-	void	set_lnabounds_signal	(int, int);
-	void	show_lnaGain		(int);
+	void	setLnaBoundsSignal	(int, int);
+	void	showLnaGain		(int);
 };
 

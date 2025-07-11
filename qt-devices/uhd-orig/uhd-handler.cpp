@@ -3,23 +3,23 @@
  *    Copyright (C) 2015
  *    Sebastian Held <sebastian.held@imst.de>
  *
- *    This file is adapted for use with Qt-DAB
+ *    This file is adapted for use with dab-cmdline
  *
- *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    dab-cmdline is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    Qt-DAB is distributed in the hope that it will be useful,
+ *    dab-cmdline is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB; if not, write to the Free Software
+ *    along with dab-cmdline; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"uhd-handler.h"
+#include	"uhd-input.h"
 
 #include <uhd/types/tune_request.hpp>
 #include <uhd/utils/thread_priority.hpp>
@@ -31,9 +31,9 @@
 #include <complex>
 #include	"settings-handler.h"
 
-	uhd_streamer::uhd_streamer (uhdHandler *d) {
-	m_theStick		= d;
-	m_stop_signal_called. store (false);
+	uhd_streamer::uhd_streamer (uhdHandler *d):
+	                                     m_theStick (d) {
+	m_stop_signal_called	= false;
 //create a receive streamer
 	uhd::stream_args_t stream_args( "fc32", "sc16" );
 	m_theStick -> m_rx_stream =
@@ -42,20 +42,20 @@
 	uhd::stream_cmd_t stream_cmd (uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS );
 	stream_cmd.num_samps	= 0;
 	stream_cmd.stream_now	= true;
-	stream_cmd.time_spec	= uhd::time_spec_t();
+	stream_cmd.time_spec	= uhd::time_spec_t ();
 	m_theStick -> m_rx_stream -> issue_stream_cmd (stream_cmd);
 
 	start();
 }
 
 void	uhd_streamer::stop () {
-	m_stop_signal_called. store (true);
+	m_stop_signal_called = true;
 	while (isRunning ())
-	   wait(1);
+	   wait (1);
 }
 
 void	uhd_streamer::run () {
-	while (!m_stop_signal_called. load ()) {
+	while (!m_stop_signal_called) {
 //	get write position, ignore data2 and size2
 	   int32_t size1, size2;
 	   void *data1, *data2;
@@ -87,17 +87,17 @@ void	uhd_streamer::run () {
 	   }
 
 //	   if (md.error_code != uhd::rx_metadata_t::ERROR_CODE_NONE) {
-//	      std::cerr << boost::format("Receiver error: %s") % md.strerror() << std::endl;
+//	      std::cerr << "Receiver error: %s" % md.strerror() << std::endl;
 //	      continue;
 //	   }
 	}
 }
 
-	uhdHandler::uhdHandler (QSettings *s ) {
+	uhdHandler::uhdHandler (QSettings *s) {
 	this	-> uhdSettings	= s;
-	setupUi (&myFrame);
+	setupUi (this	-> myFrame)
 	setPositionAndSize (s, &myFrame, "uhdSettings");
-	myFrame. show ();
+	this	-> myFrame	-> show ();
 	this	-> inputRate	= Khz (2048);
 	this	-> ringbufferSize	= 1024;	// blocks of 1024 complexes
 	this	-> theBuffer	= nullptr;	// also indicates good init or not
@@ -105,24 +105,23 @@ void	uhd_streamer::run () {
 	m_workerHandle		= nullptr;
 //	create a usrp device.
 	std::string args;
+	std::cout << std::endl;
 	try {
 	   m_usrp = uhd::usrp::multi_usrp::make (args);
 //	Lock mboard clocks
-
 	   std::string ref ("internal");
 	   m_usrp -> set_clock_source (ref);
 
 //	set sample rate
 	   m_usrp -> set_rx_rate (inputRate);
 	   inputRate = m_usrp -> get_rx_rate ();
-	   fprintf (stderr, "Actual RX Rate: %f Msps...\n", inputRate/1e6);
+	   fprintf (stderr, "Actual samplerate %f Msps\n", inputRate / 1e6);
 
 //	allocate the rx buffer
 	   theBuffer	= new RingBuffer<std::complex<float> >(ringbufferSize * 1024);
 	}
 	catch (...) {
-	   fprintf (stderr, "No luck with uhd\n");
-	   throw (std_exception_string ("No luck with USRP device");
+	   throw (device_exception ("No luck with UHD");
 	}
 //	some housekeeping for the local frame
 	externalGain		-> setMaximum (maxGain ());
@@ -137,14 +136,15 @@ void	uhd_streamer::run () {
 
 	setExternalGain	(externalGain	-> value ());
 	set_KhzOffset	(KhzOffset	-> value ());
-	connect (externalGain, SIGNAL (valueChanged (int)),
-	         this, SLOT (setExternalGain (int)));
+	connect (externalGain, qOverload<int>(QSpinBox::valueChanged),
+	         this, &uhdHandler::setExternalGain);
 	connect (KhzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_KhzOffset (int)));
 }
 
 	uhdHandler::~uhdHandler () {
 	storeWidgetPosition (uhdSettings, &myFrame, "uhdSettings");
+
 	if (theBuffer != NULL) {
 	   stopReader();
 	   uhdSettings	-> beginGroup ("uhdSettings");
@@ -159,16 +159,11 @@ void	uhd_streamer::run () {
 	}
 }
 
-int32_t	uhdhandler::getVFOFrequency	() {
-int32_t freq = m_usrp -> get_rx_freq ();
-	std::cout << boost::format("Actual RX Freq: %f MHz...") % (freq/1e6) << std::endl << std::endl;
-	return freq;
-}
-
-bool	uhdHandler::restartReader	(int32_t freq, int32_t skipped) {
-	if (m_workerHandle != 0)
+bool	uhdHandler::restartReader	(int32_t freq, int skipped) {
+	if (m_workerHandle != nullptr)
 	   return true;
 
+	(void)skipped;
 	uhd::tune_request_t tune_request (freq);
 	m_usrp->set_rx_freq (tune_request);
 	theBuffer -> FlushRingBuffer ();
@@ -185,7 +180,14 @@ void	uhdHandler::stopReader	() {
 	m_workerHandle = 0;
 }
 //
-int32_t	uhdHandler::getSamples	(DSPCOMPLEX *v, int32_t size) {
+
+int32_t uhdJandler::getVFOFrequency	() {
+int32_t freq = m_usrp -> get_rx_freq ();
+        return freq;
+}
+
+
+int32_t	uhdHandler::getSamples	(std::complex<float> *v, int32_t size) {
 	size = std::min ((uint32_t)size,
 	                 (uint32_t)(theBuffer -> GetRingBufferReadAvailable ()));
 	theBuffer -> getDataFromBuffer (v, size);
@@ -207,14 +209,14 @@ int16_t	uhdHandler::maxGain		() {
 
 void	uhdHandler::setExternalGain	(int32_t gain) {
 	m_usrp -> set_rx_gain (gain);
+	double gain_f = m_usrp -> get_rx_gain ();
 }
 
 int16_t	uhdHandler::bitDepth	() {
 	return 16;
 }
 
-QString uhdHandler::deviceName	() {
-	return "USRP device";
+QString	uhdHandler::deviceName	() {
+	return "USRP";
 }
-
 
