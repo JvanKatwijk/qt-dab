@@ -252,7 +252,6 @@ private:
 	displayWidget		theNewDisplay;
 	snrViewer		theSNRViewer;
 	dlCache			theDLCache;
-	tiiMapper		theTIIProcessor;
 	findfileNames		theFilenameFinder;
 	Scheduler		theScheduler;
 	RingBuffer<std::complex<int16_t>>	theTechData;
@@ -263,6 +262,7 @@ private:
 	dxDisplay		theDXDisplay;
 	logger			theLogger;
 	scanHandler		theSCANHandler;
+	tiiMapper		theTIIProcessor;
 	timeTableHandler	myTimeTable;
 	xmlExtractor		xmlHandler;
 	epgCompiler		epgVertaler;
@@ -456,9 +456,9 @@ public slots:
 	void			show_clock_error	(int);
 
 	void			show_Corrector		(int, float);
-	void			add_to_ensemble		(const QString &,
+	void			addToEnsemble		(const QString &,
 	                                                          int, int);
-	void			name_of_ensemble	(int, const QString &);
+	void			ensembleName		(int, const QString &);
 	void			nrServices		(int);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);

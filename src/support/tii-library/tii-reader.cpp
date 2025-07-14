@@ -29,6 +29,8 @@
 #include	"tii-reader.h"
 #include	<QSettings>
 
+#include	"scan-handler.h"
+
 #define	SEPARATOR	';'
 #define	COUNTRY		1
 #define	CHANNEL		2
@@ -112,6 +114,10 @@ std::vector<cacheElement> res;
 	      ed. valid = false;
 	   if (count >= (int) res. size ())
 	      res. resize (res. size () + 100);
+	   ed. key_1	= (ed. Eid << 16) | (ed. mainId << 8) +  ed. subId; 
+	   bool ok;
+	   uint16_t cc	= ed. channel. toInt (&ok, 16);
+	   ed. key_2	= ok ? cc : 0;
 	   res. at (count) = ed;
 	   count ++;
 	}

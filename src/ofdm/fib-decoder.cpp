@@ -46,8 +46,8 @@
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
 
-	connect (this, &fibDecoder::name_of_ensemble,
-	         myRadioInterface, &RadioInterface::name_of_ensemble);
+	connect (this, &fibDecoder::ensembleName,
+	         myRadioInterface, &RadioInterface::ensembleName);
 	connect (this, &fibDecoder::clockTime,
 	         myRadioInterface, &RadioInterface::clockTime);
 	connect (this, &fibDecoder::changeinConfiguration,
@@ -78,7 +78,7 @@
 //	FIB's are segments of 256 bits. When here, we already
 //	passed the crc and we start unpacking into FIGs
 //	This is merely a dispatcher
-void	fibDecoder::process_FIB (uint8_t *p, uint16_t fib) {
+void	fibDecoder::processFIB (uint8_t *p, uint16_t fib) {
 int8_t	processedBytes	= 0;
 uint8_t	*d		= p;
 
@@ -891,7 +891,7 @@ fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset		+= 6;
 	   for (auto &ac : localBase -> announcement_table) {
 	      if ((ac. clusterId == clusterId) && newFlag)
-	         handle_announcement (ac. SId,
+	         handleAnnouncement (ac. SId,
 	                               ac. asuFlags & AswFlags, subChId);
 	   }
 	}
@@ -1025,7 +1025,7 @@ char		label [17];
 	      theEnsemble ->  ensembleName	= realName;
 	      theEnsemble ->  EId	= EId;
 	      theEnsemble ->  namePresent	= true;
-	      name_of_ensemble (EId, name);
+	      ensembleName (EId, name);
 	   }
 	   theEnsemble	-> isSynced = true;
 	}
@@ -1076,7 +1076,7 @@ char		label [17];
 	   if ((comp. compNr == 0) && (comp. SId == SId))
 	      subChId	= currentConfig -> subChannelOf (i);
 	}
-	add_to_ensemble (dataName, SId, subChId);
+	addToEnsemble (dataName, SId, subChId);
 	if (theEnsemble -> primaries. size () >= 2)
 	   theEnsemble	-> isSynced = true;
 }
@@ -1132,7 +1132,7 @@ uint32_t	SId;
 	prim. SId	= SId;
 	prim. SCIds	= SCIds;
 	theEnsemble -> secondaries. push_back (prim);
-	add_to_ensemble (dataName, SId, -1);
+	addToEnsemble (dataName, SId, -1);
 }
 
 //	Data service label - 32 bits 8.1.14.2
@@ -1175,23 +1175,23 @@ int16_t		bitOffset	= 48;
 	prim. shortName = shortName;
 	prim. SId	= SId;
 	theEnsemble -> primaries. push_back (prim);
-	add_to_ensemble (dataName, SId, -1);
+	addToEnsemble (dataName, SId, -1);
 }
 
-void	fibDecoder::connect_channel () {
+void	fibDecoder::connectChannel () {
 	fibLocker. lock();
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	theEnsemble	-> reset ();
-	connect (this, &fibDecoder::add_to_ensemble,
-	         myRadioInterface, &RadioInterface::add_to_ensemble);
+	connect (this, &fibDecoder::addToEnsemble,
+	         myRadioInterface, &RadioInterface::addToEnsemble);
 	fibLocker. unlock();
 }
 
-void	fibDecoder::disconnect_channel () {
+void	fibDecoder::disconnectChannel () {
 	fibLocker. lock ();
-	disconnect (this, &fibDecoder::add_to_ensemble,
-	            myRadioInterface, &RadioInterface::add_to_ensemble);
+	disconnect (this, &fibDecoder::addToEnsemble,
+	            myRadioInterface, &RadioInterface::addToEnsemble);
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	theEnsemble	-> reset ();
@@ -1202,7 +1202,7 @@ bool	fibDecoder::syncReached() {
 	return  theEnsemble -> isSynced;
 }
 
-uint32_t fibDecoder::get_SId	(int index) {
+uint32_t fibDecoder::getSId	(int index) {
 	return currentConfig -> SC_C_table [index]. SId;
 }
 
@@ -1271,7 +1271,7 @@ fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
 	pd. defined = true;
 }
 
-int	fibDecoder::get_nrComps			(uint32_t SId) {
+int	fibDecoder::getNrComps			(uint32_t SId) {
 	for (auto &SId_element : currentConfig -> SId_table)
 	   if (SId_element. SId == SId)
 	      return SId_element. comps. size ();
@@ -1282,7 +1282,7 @@ int	fibDecoder::get_nrComps			(uint32_t SId) {
 //	component, the secondary services, the index of the
 //	component with the matching SCIds
 //	
-int	fibDecoder::get_serviceComp		(const QString &service) {
+int	fibDecoder::getServiceComp		(const QString &service) {
 //	first we check to see if the service is a primary one
 	for (auto &serv : theEnsemble -> primaries) {
 	   if (serv. name != service)
@@ -1296,12 +1296,12 @@ int	fibDecoder::get_serviceComp		(const QString &service) {
 	for (auto &serv : theEnsemble -> secondaries) {
 	   if (serv. name != service)
 	      continue;
-	   return get_serviceComp_SCIds (serv. SId, serv. SCIds);
+	   return getServiceComp_SCIds (serv. SId, serv. SCIds);
 	}
 	return -1;
 }
 
-int	fibDecoder::get_serviceComp		(uint32_t SId, int compnr) {
+int	fibDecoder::getServiceComp		(uint32_t SId, int compnr) {
 	for (auto &SId_element : currentConfig -> SId_table) {
 	   if (SId_element. SId == SId) {
 	      return SId_element. comps [compnr];
@@ -1310,7 +1310,8 @@ int	fibDecoder::get_serviceComp		(uint32_t SId, int compnr) {
 	return -1;
 }
 
-int	fibDecoder::get_serviceComp_SCIds	(uint32_t SId, int SCIds) {
+int	fibDecoder::getServiceComp_SCIds	(uint32_t SId, int SCIds) {
+	fprintf (stderr, "Looking for serviceComp %X %d\n", SId, SCIds);
 	for (auto &SId_element : currentConfig -> SId_table) {
 	   if (SId_element. SId != SId)
 	      continue;
@@ -1350,7 +1351,7 @@ int	fibDecoder::nrChannels	() {
 }
 //
 //	needed for generating eti files
-void	fibDecoder::get_channelInfo (channel_data *d, int n) {
+void	fibDecoder::getChannelInfo (channel_data *d, int n) {
 	d       -> in_use	= true;
 	d       -> id		= currentConfig -> subChannel_table [n]. subChId;
 	d       -> start_cu	= currentConfig -> subChannel_table [n]. startAddr;
@@ -1360,11 +1361,11 @@ void	fibDecoder::get_channelInfo (channel_data *d, int n) {
 	d       -> uepFlag	= currentConfig -> subChannel_table [n]. shortForm;
 }
 
-int32_t	fibDecoder::get_CIFcount		() {
+int32_t	fibDecoder::getCIFcount		() {
 	return CIFcount;
 }
 	
-void	fibDecoder::get_CIFcount		(int16_t &high, int16_t &low) {
+void	fibDecoder::getCIFcount		(int16_t &high, int16_t &low) {
 	high	= CIFcount_hi;
 	low	= CIFcount_lo;
 }
@@ -1384,7 +1385,7 @@ fibPrinter thePrinter (currentConfig, theEnsemble);
 	return thePrinter. scanWidth ();
 }
 
-void	fibDecoder::handle_announcement (uint16_t SId, uint16_t flags,
+void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
 	                                                uint8_t subChId) {
 	(void)subChId;
 	for (auto &serv : currentConfig -> SId_table)
@@ -1395,7 +1396,7 @@ void	fibDecoder::handle_announcement (uint16_t SId, uint16_t flags,
 	   }
 }
 
-uint16_t fibDecoder::get_announcing	(uint16_t SId) {
+uint16_t fibDecoder::getAnnouncing	(uint16_t SId) {
 	for (auto &serv : currentConfig -> SId_table)
 	   if (serv. SId == SId)
 	      return serv. announcing;

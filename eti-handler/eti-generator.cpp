@@ -198,7 +198,7 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	      }
 	   }
 	   Minor	= 0;
-	   my_ficHandler -> get_CIFcount  (CIFCount_hi, CIFCount_lo);
+	   my_ficHandler -> getCIFcount  (CIFCount_hi, CIFCount_lo);
 	}
 //	
 //	adding the MSC blocks. Blocks 5 .. 76 are "transformed"
@@ -305,7 +305,7 @@ channel_data data;
 	int NST		= 0;			// number of streams
 	int FL		= 0;			// Frame Length
 	for (int j = 0; j < my_ficHandler -> nrChannels ();  j++) {
-	   my_ficHandler -> get_channelInfo (&data, j);
+	   my_ficHandler -> getChannelInfo (&data, j);
 	   if (data. in_use) {
 	      NST++;
 	      FL += (data. bitrate * 3) / 4;		// words remember
@@ -325,7 +325,7 @@ channel_data data;
 //	on how to get it
 //	STC ()
 	for (int j = 0; j < my_ficHandler -> nrChannels (); j ++) {
-	   my_ficHandler -> get_channelInfo (&data, j);
+	   my_ficHandler -> getChannelInfo (&data, j);
 	   if (data. in_use) {
 	      int SCID	= data. id;
 	      int  SAD	= data. start_cu;
@@ -380,7 +380,7 @@ std::vector<parameter *> theParameters;
 
 	for (int i = 0; i < my_ficHandler -> nrChannels (); i ++) {
 	   channel_data data;
-	   my_ficHandler -> get_channelInfo (&data, i);
+	   my_ficHandler -> getChannelInfo (&data, i);
 	   if (data. in_use) {
 	      parameter *t	= new parameter;
 	      t -> input	= input;

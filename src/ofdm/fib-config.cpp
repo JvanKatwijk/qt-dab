@@ -37,7 +37,9 @@
 //	cycles, but at least the code now is (in my opinion)
 //	reasonable clear.
 
-	fibConfig::fibConfig	() {}
+	fibConfig::fibConfig	() {
+	reset ();
+}
 	fibConfig::~fibConfig	() {}
 
 void	fibConfig::reset	() {

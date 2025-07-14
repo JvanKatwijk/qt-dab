@@ -91,7 +91,7 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 
 	      nextStop += period;
 	      int n = theReader -> read (inputBuffer, BUFFERSIZE);
-	      if (n < bufferSize) {
+	      if (n < BUFFERSIZE) {
 	         theReader -> reset ();
 	         for (int i = n; i < BUFFERSIZE; i ++)
 	            inputBuffer [i] = std::complex <float> (0, 0);
@@ -101,6 +101,6 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	         usleep (nextStop - getMyTime());
 	   }
 	} catch (int e) {}
-	fprintf (stderr, "taak voor replay eindigt hier\n"); fflush (stderr);
+	fprintf (stderr, "replay ends\n"); fflush (stderr);
 }
 

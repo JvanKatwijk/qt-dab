@@ -59,7 +59,7 @@ public:
 //	The "C" stands for Common
 	typedef struct {
 	   uint32_t	SId;
-	   uint8_t	SCId;
+	   uint16_t	SCId;
 	   uint8_t	subChId;
 	   uint8_t	TMid;
 	   int		compNr;

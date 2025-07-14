@@ -513,6 +513,13 @@ QString	scanHandler::getChannel	(int frequency) {
 	return "";
 }
 
+int16_t scanHandler::channelIndex (const QString &channel) {
+	for (int i = 0; selectedBand [i]. key != nullptr; i ++)
+	   if (selectedBand [i]. key == channel)
+	      return i;
+	return 0;
+}
+
 bool	scanHandler::dumpInFile	() {
 	return dumpChecker -> isChecked ();
 }

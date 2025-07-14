@@ -362,7 +362,7 @@ int	snrCount	= 0;
 	      sampleCount	+= T_u;
 	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&
-	                     ((theFicHandler. get_CIFcount () & 0x7) == 0);
+	                     ((theFicHandler. getCIFcount () & 0x7) == 0);
 	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer,
 	                                             frame_with_TII);
 #ifdef	__MSC_THREAD__
@@ -566,15 +566,15 @@ void	ofdmHandler::getFrameQuality	(int	*totalFrames,
 //	ficHandler abstracts channel data
 
 int	ofdmHandler::getServiceComp	(const QString &s) {
-	return theFicHandler. get_serviceComp (s);
+	return theFicHandler. getServiceComp (s);
 }
 
 int	ofdmHandler::getServiceComp	(uint32_t SId, int compnr) {
-	return theFicHandler. get_serviceComp (SId, compnr);
+	return theFicHandler. getServiceComp (SId, compnr);
 }
 
 int	ofdmHandler::getServiceComp_SCIds	(uint32_t SId, int SCIds) {
-	return theFicHandler. get_serviceComp (SId, SCIds);
+	return theFicHandler. getServiceComp (SId, SCIds);
 }
 
 bool	ofdmHandler::isPrimary (const QString &s) {
@@ -582,15 +582,15 @@ bool	ofdmHandler::isPrimary (const QString &s) {
 }
 
 uint16_t ofdmHandler::getAnnouncing	(uint16_t SId) {
-	return theFicHandler. get_announcing (SId);
+	return theFicHandler. getAnnouncing (SId);
 }
 
 int	ofdmHandler::getNrComps	(uint32_t SId) {
-	return theFicHandler. get_nrComps (SId);
+	return theFicHandler. getNrComps (SId);
 }
 
 uint32_t ofdmHandler::getSId			(int index) {
-	return theFicHandler. get_SId (index);
+	return theFicHandler. getSId (index);
 }
 
 uint8_t	ofdmHandler::serviceType		(int index) {

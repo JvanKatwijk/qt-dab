@@ -27,10 +27,9 @@
 
 static inline
 uint16_t	getBits (const uint8_t *d, int32_t offset, int16_t size) {
-int16_t	i;
 uint16_t	res	= 0;
 
-	for (i = 0; i < size; i ++) {
+	for (uint16_t i = 0; i < size; i ++) {
 	   res <<= 1;
 	   res |= (d [offset + i]) & 01;
 	}

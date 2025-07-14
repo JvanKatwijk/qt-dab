@@ -63,6 +63,7 @@ public:
 	QString	getFirstChannel	();
 	QString	getNextChannel	();	
 	QString	getNextChannel	(const QString &);	
+	int16_t	channelIndex	(const QString &);
 	bool	active		();
 	void	setStop		();
 	FILE	*askFileName	();

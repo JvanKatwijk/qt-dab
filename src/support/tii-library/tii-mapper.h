@@ -21,13 +21,13 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #pragma once
+
 #include	<stdint.h>
 #include	<QString>
 #include	<stdio.h>
 #include	<vector>
 #include	<QSettings>
 #include	"distances.h"
-
 #include	"cacheElement.h"
 
 typedef struct {
@@ -44,15 +44,18 @@ public:
 	void	reload		();
 	
 	cacheElement *
-                get_transmitter (const QString &channel,
-                                 uint16_t Eid,
-                                 uint8_t mainId, uint8_t subId);
-	bool	is_black	(uint16_t, uint8_t, uint8_t);
-	void	set_black	(uint16_t, uint8_t, uint8_t);	
+                getTransmitter (const QString &,
+                                const uint16_t,
+                                uint8_t mainId, uint8_t subId);
+	cacheElement *
+                getTransmitter (const uint16_t,
+                                uint8_t mainId, uint8_t subId);
+//	bool	is_black	(uint16_t, uint8_t, uint8_t);
+//	void	set_black	(uint16_t, uint8_t, uint8_t);	
 
 private:
-std::vector<black> blackList;
-std::vector<cacheElement> theCache;
+	std::vector<black> blackList;
+	std::vector<cacheElement> theDataBase;
 	QString	tiifileName;
 };
 

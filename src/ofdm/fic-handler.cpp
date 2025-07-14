@@ -278,12 +278,12 @@ int16_t	inputCount	= 0;
 	      successRatio ++;
 	   if (fibCounter == 0)
 	      showFICQuality (successRatio, 100 / RANGE);
-	   fibDecoder::process_FIB (p, ficno);
+	   fibDecoder::processFIB (p, ficno);
 	}
 }
 
 void	ficHandler::stop	() {
-	disconnect_channel	();
+	disconnectChannel	();
 //	clearEnsemble	();
 	running. store (false);
 }
@@ -297,7 +297,7 @@ void	ficHandler::restart	() {
 	ficErrors	= 0;
 	ficBits		= 0;
 	starter		= 0;
-	connect_channel	();
+	connectChannel	();
 	running. store (true);
 }
 

@@ -291,6 +291,13 @@ void	bandHandler::updateEntry (const QString &channel) {
 	}
 }
 
+int16_t bandHandler::channelIndex	(const QString &channel) {
+	for (int i = 0; selectedband [i]. key != nullptr; i ++)
+	   if (selectedBand [i]. key == channel)
+	      return i;
+	return 255;
+}
+
 //	find the frequency for a given channel in a given band
 int32_t	bandHandler::Frequency (const QString  &Channel) {
 int32_t	tunedFrequency		= 0;

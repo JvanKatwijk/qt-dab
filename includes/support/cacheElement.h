@@ -31,6 +31,8 @@
 
 class cacheElement {
 public:
+	uint32_t	key_1;	// Eid + mainId + subId
+	uint16_t	key_2;	// channel in Hex format
 	bool		valid;
 	QString		ensemble;
 	QString		country;
@@ -60,6 +62,8 @@ public:
 	bool		collision;
 	
 	cacheElement	() {
+	   key_1		= 0;
+	   key_2		= 0;
 	   valid		= false;
 	   ensemble		= "";
 	   country		= "not known";

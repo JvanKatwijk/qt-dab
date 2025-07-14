@@ -40,35 +40,35 @@ public:
 			fibDecoder		(RadioInterface *);
 			~fibDecoder		();
 
-	void		clear_ensemble		();
-	void		connect_channel		();
-	void		disconnect_channel	();
+	void		clearEnsemble		();
+	void		connectChannel		();
+	void		disconnectChannel	();
 	bool		syncReached		();
 
-	uint16_t	get_announcing		(uint16_t);
-	uint32_t	get_SId			(int);
+	uint16_t	getAnnouncing		(uint16_t);
+	uint32_t	getSId			(int);
 	uint8_t		serviceType		(int);
-	int		get_serviceComp		(const QString &);
-	int		get_serviceComp		(uint32_t, int);
-	int		get_serviceComp_SCIds	(uint32_t, int);
+	int		getServiceComp		(const QString &);
+	int		getServiceComp		(uint32_t, int);
+	int		getServiceComp_SCIds	(uint32_t, int);
 	bool		isPrimary		(const QString &);
 	void		audioData		(int, audiodata &);
 	void		packetData		(int, packetdata &);
-	int		get_nrComps		(uint32_t);
-	QString		find_service		(uint32_t, int);
+	int		getNrComps		(uint32_t);
+	QString		findService		(uint32_t, int);
 	int		nrChannels		();
         uint8_t		get_ecc			();
 	std::vector<int>	getFrequency		(const QString &);
-	void		get_channelInfo		(channel_data *, int);
-	int32_t		get_CIFcount		();	
-	void		get_CIFcount		(int16_t &, int16_t &);
+	void		getChannelInfo		(channel_data *, int);
+	int32_t		getCIFcount		();	
+	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	QStringList	basicPrint 		();
 	int		scanWidth		();
 
 	int		freeSpace		();
 protected:
-	void		process_FIB		(uint8_t *, uint16_t);
+	void		processFIB		(uint8_t *, uint16_t);
 private:
 	std::vector<serviceId> insert (std::vector<serviceId> &l,
                                           serviceId n, int order);
@@ -144,12 +144,12 @@ private:
 	int16_t		CIFcount_lo;
 	uint32_t	mjd;			// julianDate
 
-	void		handle_announcement	(uint16_t SId,
+	void		handleAnnouncement	(uint16_t SId,
 	                                         uint16_t flags,
 	                                         uint8_t SubChId);
 signals:
-	void		add_to_ensemble		(const QString &, int, int);
-	void		name_of_ensemble	(int, const QString &);
+	void		addToEnsemble		(const QString &, int, int);
+	void		ensembleName		(int, const QString &);
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);
 	void		changeinConfiguration	();

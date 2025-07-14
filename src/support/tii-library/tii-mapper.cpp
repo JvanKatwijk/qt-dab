@@ -40,7 +40,7 @@ tiiReader theReader;
 	tiifileName =
 	   value_s (dabSettings, DAB_GENERAL, "tiiFileName", tiifileName);                                         
 	if (tiifileName != "")
-	   theCache	= theReader. readFile (tiifileName);
+	   theDataBase	= theReader. readFile (tiifileName);
 }
 		tiiMapper::~tiiMapper	() {
 }
@@ -49,45 +49,60 @@ void	tiiMapper::reload	() {
 tiiReader theReader;
 	if (tiifileName == "")
 	   return;
-	theCache. resize (0);
-	theCache	= theReader. readFile (tiifileName);
+	theDataBase. resize (0);
+	theDataBase	= theReader. readFile (tiifileName);
 }
 
 bool	tiiMapper::has_tiiFile	() {
-	return theCache. size () > 10;
+	return theDataBase. size () > 10;
 }
 
 cacheElement *tiiMapper::
-		get_transmitter (const QString &channel,
-	                         uint16_t Eid, 
+		getTransmitter (const QString  &channelName,
+	                         const uint16_t Eid, 
 	                         uint8_t mainId, uint8_t subId) {
-	for (int i = 1; i < (int)(theCache. size ()); i ++) {
-	   if (((channel == "any") ||
-	        (channel ==  theCache [i]. channel)) &&
-	        (theCache [i]. Eid == Eid) &&
-	        (theCache [i]. mainId == mainId) &&
-	        (theCache [i]. subId == subId)) {
-	      return &theCache [i];
+	bool ok;
+	int key_2 = channelName. toInt (&ok, 16);
+	if (!ok)
+	   key_2 = 0;
+	uint32_t key_1 = (Eid << 16) | (mainId << 8) | subId;
+	for (int i = 1; i < (int)(theDataBase. size ()); i ++) {
+	   if (theDataBase [i]. key_1 == key_1) {
+	      if (!ok || (theDataBase [i]. key_2 == key_2))
+	          return &theDataBase [i];
 	   }
 	}
-	return &theCache [0];
+	return &theDataBase [0];
+}
+//
+//	if the input is from a file, then we usually do not have
+//	the right channel info
+cacheElement *tiiMapper::
+		getTransmitter (const uint16_t Eid, 
+	                        uint8_t mainId, uint8_t subId) {
+	uint32_t key_1 = (Eid << 16) | (mainId << 8) | subId;
+	for (int i = 1; i < (int)(theDataBase. size ()); i ++) {
+	   if (theDataBase [i]. key_1 == key_1) 
+	      return &theDataBase [i];
+	}
+	return &theDataBase [0];
 }
 
-void	tiiMapper::set_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
-black element;
-	element. Eid = Eid;
-	element. mainId	= mainId;
-	element. subId	= subId;
-	blackList. push_back (element);
-}
-
-bool	tiiMapper::is_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
-
-	for (int i = 0; i < (int)(blackList. size ()); i ++)
-	   if ((blackList [i]. Eid == Eid) &&
-	       (blackList [i]. mainId == mainId) &&
-	       (blackList [i]. subId == subId))
-	      return true;
-	return false;
-}
-
+//void	tiiMapper::set_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
+//black element;
+//	element. Eid = Eid;
+//	element. mainId	= mainId;
+//	element. subId	= subId;
+//	blackList. push_back (element);
+//}
+//
+//bool	tiiMapper::is_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
+//
+//	for (int i = 0; i < (int)(blackList. size ()); i ++)
+//	   if ((blackList [i]. Eid == Eid) &&
+//	       (blackList [i]. mainId == mainId) &&
+//	       (blackList [i]. subId == subId))
+//	      return true;
+//	return false;
+//}
+//

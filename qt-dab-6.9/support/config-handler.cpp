@@ -965,7 +965,7 @@ bool	configHandler::get_correlationSelector () {
 }
 
 bool	configHandler::get_allTIISelector () {
-	return allTIISelector -> isChecked ();
+	return allTIISelector -> isChecked () ? true : false;
 }
 
 void	configHandler::handle_allTIISelector	(int d) {

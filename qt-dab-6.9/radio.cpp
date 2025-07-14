@@ -79,7 +79,7 @@ __int64 FileTimeToInt64 (FILETIME & ft) {
 	return (foo.QuadPart);
 }
 
-bool get_cpu_times (size_t &idle_time, size_t &total_time) {
+bool getCpuTimes (size_t &idle_time, size_t &total_time) {
 FILETIME IdleTime, KernelTime, UserTime;
 size_t	thisIdle, thisKernel, thisUser;
 
@@ -93,7 +93,7 @@ size_t	thisIdle, thisKernel, thisUser;
 	return true;
 }
 #else
-std::vector<size_t> get_cpu_times() {
+std::vector<size_t> getCpuTimes() {
 	std::ifstream proc_stat ("/proc/stat");
 	proc_stat. ignore (5, ' ');    // Skip the 'cpu' prefix.
 	std::vector<size_t> times;
@@ -101,8 +101,8 @@ std::vector<size_t> get_cpu_times() {
 	return times;
 }
  
-bool get_cpu_times (size_t &idle_time, size_t &total_time) {
-	const std::vector <size_t> cpu_times = get_cpu_times();
+bool getCpuTimes (size_t &idle_time, size_t &total_time) {
+	const std::vector <size_t> cpu_times = getCpuTimes();
 	if (cpu_times. size() < 4)
 	   return false;
 	idle_time  = cpu_times [3];
@@ -122,7 +122,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 #define	YELLOW	"#f9f06b"
 
 static inline
-QString ids_to_string (int mainId, int subId) {
+QString idsToString (int mainId, int subId) {
 	return  "(" + QString::number (mainId) + "-"
 	            + QString::number (subId)  + ")";
 }
@@ -165,7 +165,6 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theNewDisplay (this, Si),
 	                                        theSNRViewer (this, Si),
 	                                        theDLCache (10),
-	                                        theTIIProcessor (Si),
 	                                        theFilenameFinder (Si),
 	                                        theScheduler (this, schedule),
 	                                        theTechData (16 * 32768),
@@ -177,6 +176,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si,
 	                                                        freqExtension),
+	                                        theTIIProcessor (Si),
 	                                        myTimeTable (this, Si) {
 int16_t k;
 QString h;
@@ -713,7 +713,7 @@ void	RadioInterface::no_signal_found () {
 ///////////////////////////////////////////////////////////////////////////
 //
 //	a slot, called by the fic/fib handlers
-void	RadioInterface::add_to_ensemble (const QString &serviceName,
+void	RadioInterface::addToEnsemble (const QString &serviceName,
 	                                           int32_t SId, int  subChId) {
 	if (!running. load())
 	   return;
@@ -760,14 +760,14 @@ QString res;
 }
 
 //	a slot, called by the fib processor
-void	RadioInterface::name_of_ensemble (int id, const QString &v) {
+void	RadioInterface::ensembleName (int id, const QString &v) {
 QString s;
 	if (!running. load())
 	   return;
 
 	ensembleId	-> setText (v + QString ("(") + hextoString (id) + QString (")"));
 
-	transmitter_country	-> setText (channel. countryName);
+//	transmitter_country	-> setText (channel. countryName);
 	channel. ensembleName	= v;
 	channel. Eid		= id;
 	dynamicLabel		-> setText ("");
@@ -1331,7 +1331,7 @@ void	RadioInterface::updateTimeDisplay() {
 	runtimeDisplay	-> setText (text);
 	if ((numberofSeconds % 2) == 0) {
 	   size_t idle_time	= 0, total_time;
-	   get_cpu_times (idle_time, total_time);
+	   getCpuTimes (idle_time, total_time);
 	   const float idle_time_delta =
 	                 static_cast<float>(idle_time - previous_idle_time);
 	   const float total_time_delta =
@@ -2824,7 +2824,7 @@ QString	theAzimuth;
 QString	theHeight;
 
 	if (channel. mainId != -1) 
-	   tii		= ids_to_string (channel. mainId,
+	   tii		= idsToString (channel. mainId,
 	                                     channel. subId);
 	else
 	   tii		= "???";
@@ -2885,8 +2885,7 @@ QString	theName;
 QString	RadioInterface::build_transmitterLine (const cacheElement &c) {
 QString res	= "";
 	res += ";";
-	res += "(" + QString::number (c. mainId) + "-" +
-	             QString::number (c. subId) + ")" + ";";
+	res += idsToString (c. mainId, c. subId) + ";";
 	res += c. transmitterName + ";";
 	res += QString::number (c. distance, 'f', 1) + "km;";
 	res += QString::number (c. azimuth, 'f', 1) +
@@ -2934,7 +2933,7 @@ QString theDistance;
 QString theCorner;
 QString theHeight;
 
-	tii		= ids_to_string (tr. theTransmitter. mainId,
+	tii		= idsToString (tr. theTransmitter. mainId,
 	                                 tr. theTransmitter. subId) + ";" ;
 	if (tr. theTransmitter. transmitterName != "")
 	   theName	= tr. theTransmitter. transmitterName;
@@ -2996,7 +2995,6 @@ void	RadioInterface::muteButton_timeOut	() {
 	if (muteDelay > 0) {
 	   stillMuting -> display (muteDelay);
 	   muteTimer. start (1000);
-	   return;
 	}
 	else {
 	   disconnect (&muteTimer, &QTimer::timeout,
@@ -3037,7 +3035,6 @@ void	RadioInterface::newChannelIndex (int index) {
 //	Lots of code, about 400 lines, just for a gadget
 //	
 void	RadioInterface::set_Colors () {
-
 QString scanButton_color =
 	   value_s (dabSettings_p, COLOR_SETTINGS, SCAN_BUTTON + "_color",
 	                                             GREEN);
@@ -3769,7 +3766,7 @@ void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
 	         break;
 	   }
 }
-
+//
 cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 	for (auto &tr: channel. transmitters) 
 	   if ((tr. theTransmitter. mainId == mainId) &&
@@ -3799,22 +3796,18 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if (!theTIIProcessor. has_tiiFile ())
 	   return;
 
-	if (theOFDMHandler -> getEcc () == 0) 
+	if (channel. Eid == 0)
 	   return;
-
 //	probably yes, get the country code
-	if (!channel. hasEcc) {
-	   channel. eccByte	= theOFDMHandler -> getEcc ();
+	if ((channel. countryName == "") && (channel. hasEcc)) {
 	   QString country	= find_ITU_code (channel. eccByte,
 	                                         (channel. Eid >> 12) &0xF);
-	   channel. hasEcc	= true;
 	   channel. countryName	= country;
 	   channel. transmitterName = "";
 	   transmitter_country	-> setText (country);
 	}
 
 //	The data in the vector is sorted on signal strength
-//	int strongest = (r [0]. mainId << 8) | r [0]. subId;
 
 //	first step
 //	see whether or not the data is already in the list
@@ -3840,22 +3833,15 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   }
 
 	   cacheElement * tr =
-	      theTIIProcessor. get_transmitter (channel. realChannel?
-	                                         channel. channelName :
-	                                         "any",
-	                                         channel. Eid,
-	                                         r [i]. mainId,  r [i]. subId);
-//	   if (tr -> ensemble. trimmed () !=
-//	       channel. ensembleName. trimmed ()) { // fake 
-//	      continue;
-//	   }
-//	if the (mainId, subId) is alreay known but without a name found
-//	and we see now a good element, throuw the old one out
-//	we have to add the entry to the list
-//	   need_to_print = true;
+	       channel. realChannel ?
+	         theTIIProcessor. getTransmitter (channel. channelName,
+	                                          channel. Eid,
+	                                          r [i]. mainId,  r [i]. subId):
+	         theTIIProcessor. getTransmitter (channel. Eid,
+	                                          r [i]. mainId, r [i]. subId);
 	   cacheElement theTransmitter = *tr;
 	   theTransmitter. strength	= r [i]. strength;
-	   if (theTransmitter. mainId == 255) {	// apparently not founda
+	   if (!theTransmitter. valid) {
 	      if (!configHandler_p -> get_allTIISelector ())
 	         continue;
 	      theTransmitter. ensemble	= channel. ensembleName;
