@@ -81,6 +81,8 @@ bool		error_report	= false;
 int		fmFrequency	= 110000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
 
+QString	tiiFileName		= QDir::homePath () + "/" + ".txdata.tii";
+
 QTranslator	theTranslator;
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
@@ -91,6 +93,10 @@ QTranslator	theTranslator;
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
+	         break;
+
+	      case 't':
+	         tiiFileName	= QDir::homePath () + "/" + QString (optarg);
 	         break;
 
 	      case 'P':
@@ -164,6 +170,7 @@ QTranslator	theTranslator;
 	                                       presetFile,
 	                                       freqExtension,
 	                                       scheduleFile,
+	                                       tiiFileName,
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,

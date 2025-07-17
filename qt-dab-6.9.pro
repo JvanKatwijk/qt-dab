@@ -152,7 +152,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/msc-handler.h \
 	   ./sources/backend/reed-solomon/galois.h \
 	   ./sources/backend/reed-solomon/reed-solomon.h \
-	   ./sources/backend/charsets.h \
 	   ./sources/backend/frame-processor.h \
 	   ./sources/backend/backend.h \
 	   ./sources/backend/backend-driver.h \
@@ -185,6 +184,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/output/audio-player.h \
 	   ./sources/support/dab-constants.h \
 	   ./sources/support/bit-extractors.h \
+	   ./sources/support/charsets.h \
 	   ./sources/support/crc-handlers.h \
 	   ./sources/support/mot-content-types.h \
 	   ./sources/support/distances.h \
@@ -303,7 +303,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/msc-handler.cpp \
 	   ./sources/backend/reed-solomon/galois.cpp \
 	   ./sources/backend/reed-solomon/reed-solomon.cpp \
-	   ./sources/backend/charsets.cpp \
 	   ./sources/backend/backend.cpp \
            ./sources/backend/backend-driver.cpp \
            ./sources/backend/backend-deconvolver.cpp \
@@ -331,6 +330,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/epg/epg-compiler.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
 	   ./sources/output/audio-player.cpp \
+	   ./sources/support/charsets.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/time-converter.cpp \
 	   ./sources/support/logger.cpp \

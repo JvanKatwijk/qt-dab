@@ -145,6 +145,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
+	                                const QString	&tiiFile,
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
@@ -176,7 +177,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si,
 	                                                        freqExtension),
-	                                        theTIIProcessor (Si),
+	                                        theTIIProcessor (tiiFile),
 	                                        myTimeTable (this, Si) {
 int16_t k;
 QString h;

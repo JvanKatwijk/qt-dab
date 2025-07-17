@@ -8,7 +8,14 @@
 Restructured source tree
 --------------------------------------------------------------------------
 
-Note that the sourcetree is now restructured.
+Note that the sourcetree is now restructured. All sources are now
+grouped in the directory sources. That one contains three main subdirectories
+
+ * main for the main program (as the name suggests)
+ * frontend for converting input samples into sequences of softbits (-127 .. 127)
+ * backend for the actual decoding of the softbits to either audio, data or both
+
+ Furthermore there are a few other subdirectories with support functions
 
 --------------------------------------------------------------------------
 About Qt-DAB

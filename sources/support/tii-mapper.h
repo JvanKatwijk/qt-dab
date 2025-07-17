@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,7 +27,6 @@
 #include	<stdio.h>
 #include	<vector>
 #include	<QSettings>
-#include	"distances.h"
 #include	"cacheElement.h"
 
 typedef struct {
@@ -38,7 +37,7 @@ typedef struct {
 
 class	tiiMapper {
 public:
-		tiiMapper	(QSettings *);
+		tiiMapper	(const QString &);
 		~tiiMapper	();
 	bool	has_tiiFile 	();
 	void	reload		();
@@ -56,6 +55,6 @@ public:
 private:
 	std::vector<black> blackList;
 	std::vector<cacheElement> theDataBase;
-	QString	tiifileName;
+	QString	tiiFile;
 };
 

@@ -223,6 +223,7 @@ public:
 	                                 const QString	&,	//presets
 	                                 const QString	&,	//freqExt
 	                                 const QString	&,	//schedule
+	                                 const QString	&,	//tiiFile
 	                                 bool,			// errorreport
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,

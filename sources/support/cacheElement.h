@@ -28,7 +28,7 @@
 //	struct
 #include	<string>
 #include	<QString>
-
+#include	"distances.h"
 class cacheElement {
 public:
 	uint32_t	key_1;	// Eid + mainId + subId

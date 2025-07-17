@@ -66,15 +66,16 @@ private:
 	faadDecoder	aacDecoder;
 #endif
 
-	void		handleRS (uint8_t frameBytes [], int16_t base,
-                                  uint8_t outVector [],
+	void		handleRS (const std::vector<uint8_t> &frameBytes,
+	                          int16_t base,
+                                  std::vector<uint8_t> &outVector,
 	                          int16_t &errorLines, int16_t &repairs);
 
-	bool		processSuperframe (uint8_t []);
+	bool		processSuperframe (std::vector<uint8_t> &);
 	int		build_aacFile (int16_t aac_frame_len,
-                                     stream_parms *sp,
-                                     uint8_t	*data,
-                                     std::vector<uint8_t> &fileBuffer);
+                                       stream_parms *sp,
+                                       uint8_t	*data,
+                                       std::vector<uint8_t> &fileBuffer);
 
 	FILE		*dump;
 	uint8_t		procMode;

@@ -29,28 +29,22 @@
 #include	"tii-mapper.h"
 #include	"ITU_Region_1.h"
 #include	"tii-reader.h"
-#include	<QSettings>
-#include	"tii-reader.h"
-#include	"settingNames.h"
-#include	"settings-handler.h"
 
-		tiiMapper::tiiMapper	(QSettings *dabSettings) {
+		tiiMapper::tiiMapper	(const QString &tiiFile) {
 tiiReader theReader;
-	tiifileName = QDir::homePath () + "/.txdata.tii";
-	tiifileName =
-	   value_s (dabSettings, DAB_GENERAL, "tiiFileName", tiifileName);                                         
-	if (tiifileName != "")
-	   theDataBase	= theReader. readFile (tiifileName);
+	this	-> tiiFile	= tiiFile;
+	if (tiiFile != "")
+	   theDataBase	= theReader. readFile (tiiFile);
 }
 		tiiMapper::~tiiMapper	() {
 }
 
 void	tiiMapper::reload	() {
 tiiReader theReader;
-	if (tiifileName == "")
+	if (tiiFile == "")
 	   return;
 	theDataBase. resize (0);
-	theDataBase	= theReader. readFile (tiifileName);
+	theDataBase	= theReader. readFile (tiiFile);
 }
 
 bool	tiiMapper::has_tiiFile	() {

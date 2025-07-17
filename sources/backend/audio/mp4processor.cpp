@@ -132,20 +132,19 @@ uint8_t	temp	= 0;
   *	and adjust the buffer here for the next round
   *	if the firecode check fails, we shift one block
   */
-	   handleRS (frameBytes. data (), blockFillIndex * nbits / 8,
-	                                     outVector. data (),
-	                                     frameErrors, rsErrors);
+	   handleRS (frameBytes, blockFillIndex * nbits / 8,
+	             outVector, frameErrors, rsErrors);
 	   if (frameErrors > 0) {	// cannot fix the potential frame 
 	      blocksInBuffer = 4;
 	      return;
 	   }
 	   
-	   if (!fc. check (&outVector [0])) {
+	   if (!fc. check (outVector. data ())) {
 	      blocksInBuffer = 4;
 	      return;
 	   }
 
-	   if (!processSuperframe (outVector. data ())) {
+	   if (!processSuperframe (outVector)) {
 	      frameErrors ++;
 	      blocksInBuffer = 0;
 	      return;
@@ -175,8 +174,9 @@ uint8_t	temp	= 0;
   *	We correct the errors using RS
   */
 
-void	mp4Processor::handleRS (uint8_t frameBytes [], int16_t base, 
-	                        uint8_t outVector [],
+void	mp4Processor::handleRS (const std::vector<uint8_t> &frameBytes, 
+	                        int16_t base, 
+	                        std::vector<uint8_t> &outVector,
 	                        int16_t &errorLines, int16_t &repairs) {
 uint8_t		rsIn	[120];
 uint8_t		rsOut	[110];
@@ -202,7 +202,7 @@ int16_t		ler;
 	}
 }
 
-bool	mp4Processor::processSuperframe (uint8_t outVector []) {
+bool	mp4Processor::processSuperframe (std::vector<uint8_t> &outVector){
 uint8_t		num_aus;
 int		tmp;
 stream_parms    streamParameters;

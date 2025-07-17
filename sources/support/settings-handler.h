@@ -25,7 +25,6 @@
 #include	<QString>
 #include	<QSettings>
 
-
 void	store (QSettings *s, QString paragraph, QString key, QString v);
 void	store (QSettings *s, QString paragraph, QString key, int value);
 int	value_i (QSettings *s, QString paragraph, QString key, int def);

@@ -18,7 +18,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 unix {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
-QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
@@ -40,369 +40,360 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #       defines
 #DEFINES	+= __MSC_THREAD__
 DEFINES		+= __THREADED_BACKEND__
+DEFINES	+= __FFT_CORR__
 
 #For showing trace output
 #DEFINES	+= __EPG_TRACE__  
 DEPENDPATH += . \
-	      ./support \
-	      ./forms-v7 \
-	      ./forms-v7/new-display \
-	      ./forms-v7/new-display/scopes \
-	      ./forms-v7/snr-viewer \
-	      ../eti-handler \
-	      ../src \
-	      ../includes \
-	      ../src/ofdm \
-	      ../src/protection \
-	      ../src/backend \
-	      ../src/backend/audio \
-	      ../src/backend/data \
-	      ../src/backend/data/mot \
-	      ../src/backend/data/epg \
-	      ../src/backend/data/journaline \
-	      ../src/output \
-	      ../src/support \
-	      ../src/support/tii-library \
-	      ../src/support/buttons \
-	      ../includes/ofdm \
-	      ../includes/protection \
-	      ../includes/backend \
-	      ../includes/backend/audio \
-	      ../includes/backend/data \
-	      ../includes/backend/data/mot \
-	      ../includes/backend/data/journaline \
-	      ../includes/backend/data/epg \
-	      ../includes/output \
-	      ../includes/support \
-	      ../src/support/tii-library \
-	      ../includes/support/buttons \
-#	      ../includes/scopes-qwt6 \
-	      ../qt-devices \
-	      ../qt-devices/filereaders/ \
-	      ../qt-devices/filereaders/new-reader \
-	      ../qt-devices/filereaders/rawfiles-new \
-	      ../qt-devices/filereaders/xml-filereader 
+	      ..sources \
+	      ./sources/backend\
+	      ./sources/backend/reed-solomon \
+	      ./sources/backend/audio \
+	      ./sources/backend/data \
+	      ./sources/backend/data/epg \
+	      ./sources/backend/data/mot \
+	      ./sources/backend/data/journaline \
+	      ./sources/eti-handler \
+	      ./sources/main \
+	      ./sources/main/forms-v7 \
+	      ./sources/main/forms-v7/new-display \
+	      ./sources/main/forms-v7/new-display/scopes \
+	      ./sources/main/forms-v7/snr-viewer \
+	      ./sources/frontend \
+	      ./sources/output \
+	      ./sources/output/portaudio \
+	      ./sources/protection \
+	      ./sources/qt-devices \
+#	      ./sources/scopes-qwt6 \
+	      ./sources/support \
+	      ./sources/support/gui-elements \
+	      ./sources/qt-devices \
+	      ./sources/qt-devices/filereaders/ \
+	      ./sources/qt-devices/filereaders/new-reader \
+	      ./sources/qt-devices/filereaders/rawfiles-new \
+	      ./sources/qt-devices/filereaders/xml-filereader 
 	
-	      
 
 INCLUDEPATH += . \
-	       ./support \
-	      ./forms-v7 \
-	      ./forms-v7/new-display \
-	      ./forms-v7/new-display/scopes \
-	      ./forms-v7/snr-viewer \
-	      ../ \
-	      ../eti-handler \
-	      ../src \
-	      ../includes \
-	      ../includes/protection \
-	      ../includes/ofdm \
-	      ../includes/backend \
-	      ../includes/backend/audio \
-	      ../includes/backend/data \
-	      ../includes/backend/data/mot \
-	      ../includes/backend/data/journaline \
-	      ../includes/backend/data/epg \
-	      ../includes/output \
-	      ../includes/support \
-	      ../src/support/tii-library \
-	      ../includes/support/buttons \
-#	      ../includes/scopes-qwt6 \
-	      ../qt-devices \
-	      ../qt-devices/filereaders \
-	      ../qt-devices/filereaders/rawfiles-new \
-	      ../qt-devices/filereaders/new-reader \
-	      ../qt-devices/filereaders/xml-filereader 
+	      ..sources \
+	      ./sources/backend\
+	      ./sources/backend/reed-solomon \
+	      ./sources/backend/audio \
+	      ./sources/backend/data \
+	      ./sources/backend/data/epg \
+	      ./sources/backend/data/mot \
+	      ./sources/backend/data/journaline \
+	      ./sources/eti-handler \
+	      ./sources/main \
+	      ./sources/main/forms-v7 \
+	      ./sources/main/forms-v7/new-display \
+	      ./sources/main/forms-v7/new-display/scopes \
+	      ./sources/main/forms-v7/snr-viewer \
+	      ./sources/frontend \
+	      ./sources/output \
+	      ./sources/output/portaudio \
+	      ./sources/protection \
+	      ./sources/qt-devices \
+#	      ./sources/scopes-qwt6 \
+	      ./sources/support \
+	      ./sources/support/gui-elements \
+	      ./sources/qt-devices \
+	      ./sources/qt-devices/filereaders/ \
+	      ./sources/qt-devices/filereaders/new-reader \
+	      ./sources/qt-devices/filereaders/rawfiles-new \
+	      ./sources/qt-devices/filereaders/xml-filereader 
+	
 
 # Input
-HEADERS += ./radio.h \
-	   ./support/techdata.h \
-	   ./support/super-frame.h \
-	   ./support/clickable-label.h \
-	   ./support/icon-label.h \
-	   ./support/scan-handler.h \
-	   ./support/scantable-handler.h \
-	   ./support/aboutdialog.h \
-	   ./support/ensemble-handler.h \
-	   ./support/config-handler.h \
-	   ./support/audiosystem-selector.h \
-	   ./support/dxDisplay.h \
-	   ./forms-v7/qwt-2.h \
-	   ./forms-v7/new-display/display-widget.h \
-	   ./forms-v7/new-display/scopes/spectrum-scope.h \
-	   ./forms-v7/new-display/scopes/correlation-scope.h \
-	   ./forms-v7/new-display/scopes/null-scope.h \
-	   ./forms-v7/new-display/scopes/channel-scope.h \
-	   ./forms-v7/new-display/scopes/dev-scope.h \
-	   ./forms-v7/new-display/scopes/waterfall-scope.h \
-	   ./forms-v7/new-display/scopes/iqdisplay.h \
-	   ./forms-v7/new-display/scopes/audio-display.h \
-	   ./forms-v7/new-display/scopes/spectrogramdata.h \
-	   ./forms-v7/snr-viewer/snr-viewer.h \
-	   ../ofdm-handler.h \
-	   ../eti-handler/eti-generator.h \
-	   ../includes/dab-constants.h \
-	   ../includes/bit-extractors.h \
-	   ../includes/crc-handlers.h \
-	   ../includes/mot-content-types.h \
-	   ../includes/ofdm/timesyncer.h \
-	   ../includes/ofdm/sample-reader.h \
-	   ../includes/ofdm/ofdm-decoder.h \
-	   ../includes/ofdm/correlator.h \
-	   ../includes/ofdm/freqsyncer.h \
-	   ../includes/ofdm/phasetable.h \
-	   ../includes/ofdm/freq-interleaver.h \
-	   ../includes/ofdm/tii-detector.h \
-	   ../includes/ofdm/tii-detector-1.h \
-	   ../includes/ofdm/tii-detector-2.h \
-	   ../includes/ofdm/fic-handler.h \
-	   ../includes/ofdm/ensemble.h  \
-	   ../includes/ofdm/fib-config.h  \
-	   ../includes/ofdm/fib-printer.h  \
-	   ../includes/ofdm/fib-decoder.h  \
-	   ../includes/ofdm/fib-table.h \
-	   ../includes/ofdm/estimator.h \
-	   ../includes/protection/protTables.h \
-	   ../includes/protection/protection.h \
-	   ../includes/protection/eep-protection.h \
-	   ../includes/protection/uep-protection.h \
-	   ../includes/backend/msc-handler.h \
-	   ../includes/backend/galois.h \
-	   ../includes/backend/reed-solomon.h \
-	   ../includes/backend/charsets.h \
-	   ../includes/backend/firecode-checker.h \
-	   ../includes/backend/frame-processor.h \
-	   ../includes/backend/backend.h \
-	   ../includes/backend/backend-driver.h \
-	   ../includes/backend/backend-deconvolver.h \
-	   ../includes/backend/audio/mp2processor.h \
-	   ../includes/backend/audio/mp4processor.h \
-	   ../includes/backend/audio/bitWriter.h \
-	   ../includes/backend/data/data-processor.h \
-	   ../includes/backend/data/pad-handler.h \
-	   ../includes/backend/data/virtual-datahandler.h \
-	   ../includes/backend/data/tdc-datahandler.h \
-	   ../includes/backend/data/ip-datahandler.h \
-	   ../includes/backend/data/adv-datahandler.h \
-	   ../includes/backend/data/mot/mot-handler.h \
-	   ../includes/backend/data/mot/mot-object.h \
-	   ../includes/backend/data/mot/mot-dir.h \
-	   ../includes/backend/data/journaline-datahandler.h \
-	   ../includes/backend/data/journaline-screen.h \
-	   ../includes/backend/data/journaline/dabdatagroupdecoder.h \
-	   ../includes/backend/data/journaline/crc_8_16.h \
-	   ../includes/backend/data/journaline/log.h \
-	   ../includes/backend/data/journaline/newssvcdec_impl.h \
-	   ../includes/backend/data/journaline/Splitter.h \
-	   ../includes/backend/data/journaline/dabdgdec_impl.h \
-	   ../includes/backend/data/journaline/newsobject.h \
-	   ../includes/backend/data/journaline/NML.h \
-	   ../includes/backend/data/epg/epg-compiler.h \
-	   ../includes/backend/data/epg/xml-extractor.h \
-	   ../includes/output/audio-player.h \
-	   ../includes/support/distances.h \
-	   ../includes/support/time-converter.h \
-	   ../includes/support/logger.h \
-	   ../includes/support/settings-handler.h \
-	   ../includes/support/position-handler.h \
-	   ../includes/support/cacheElement.h \
-	   ../includes/support/settingNames.h \
-	   ../includes/support/fft-handler.h \
-	   ../includes/support/wavWriter.h \
-	   ../includes/support/converter_48000.h \
-	   ../includes/support/process-params.h \
-	   ../includes/support/ringbuffer.h \
-	   ../includes/support/dab-params.h \
-	   ../includes/support/dab-tables.h \
-	   ../includes/support/preset-handler.h \
-	   ../includes/support/presetcombobox.h \
-	   ../includes/support/scanlist-handler.h \
-	   ../includes/support/scheduler.h \
-	   ../includes/support/schedule-selector.h \
-	   ../includes/support/element-selector.h \
-	   ../includes/support/time-table.h \
-	   ../includes/support/findfilenames.h \
-	   ../includes/support/dl-cache.h \
-	   ../includes/support/content-table.h \
-	   ../includes/support/ITU_Region_1.h \
-	   ../includes/support/coordinates.h \
-	   ../includes/support/skin-handler.h \
-	   ../includes/support/mapport.h \
-	   ../includes/support/bandpass-filter.h \
-	   ../includes/support/fir-filters.h \
-	   ../includes/support/font-chooser.h \
-	   ../src/support/tii-library/tii-mapper.h \
-	   ../src/support/tii-library/tii-reader.h \
-	   ../src/support/tii-library/uploader.h \
-	   ../includes/support/buttons/smallcombobox.h \
-	   ../includes/support/buttons/newpushbutton.h \
-	   ../includes/support/buttons/normalpushbutton.h \
-	   ../includes/support/buttons/smallpushbutton.h \
-	   ../includes/support/buttons/verysmallpushbutton.h \
-	   ../includes/support/buttons/smallqlistview.h \
-	   ../includes/support/buttons/smallspinbox.h \
-	   ../includes/support/buttons/circular-button.h \
-	   ../qt-devices/device-handler.h \
-	   ../qt-devices/device-chooser.h \
-	   ../qt-devices/device-exceptions.h \
-	   ../qt-devices/xml-filewriter.h \
-	   ../qt-devices/filereaders/new-reader/newfiles.h \
-	   ../qt-devices/filereaders/new-reader/new-reader.h \
-	   ../qt-devices/filereaders/new-reader/riff-reader.h \
-	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
-	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
-	   ../qt-devices/filereaders/xml-filereader/element-reader.h \
-	   ../qt-devices/filereaders/xml-filereader/xml-filereader.h \
-	   ../qt-devices/filereaders/xml-filereader/xml-reader.h \
-	   ../qt-devices/filereaders/xml-filereader/xml-descriptor.h 
+HEADERS += ./sources/main/radio.h \
+	   ./sources/main/forms-v7/qwt-2.h \
+	   ./sources/main/forms-v7/new-display/display-widget.h \
+	   ./sources/main/forms-v7/new-display/scopes/spectrum-scope.h \
+	   ./sources/main/forms-v7/new-display/scopes/correlation-scope.h \
+	   ./sources/main/forms-v7/new-display/scopes/null-scope.h \
+	   ./sources/main/forms-v7/new-display/scopes/channel-scope.h \
+	   ./sources/main/forms-v7/new-display/scopes/dev-scope.h \
+	   ./sources/main/forms-v7/new-display/scopes/waterfall-scope.h \
+	   ./sources/main/forms-v7/new-display/scopes/iqdisplay.h \
+	   ./sources/main/forms-v7/new-display/scopes/audio-display.h \
+	   ./sources/main/forms-v7/new-display/scopes/spectrogramdata.h \
+	   ./sources/main/forms-v7/snr-viewer/snr-viewer.h \
+	   ./sources/main/ensemble-handler.h \
+	   ./sources/main/config-handler.h \
+	   ./sources/main/techdata.h \
+	   ./sources/main/aboutdialog.h \
+	   ./sources/support/scan-handler.h \
+	   ./sources/support/scantable-handler.h \
+	   ./sources/support/dxDisplay.h \
+	   ./sources/support/audiosystem-selector.h \
+	   ./sources/eti-handler/eti-generator.h \
+	   ./sources/frontend/ofdm-handler.h \
+	   ./sources/frontend/timesyncer.h \
+	   ./sources/frontend/sample-reader.h \
+	   ./sources/frontend/ofdm-decoder.h \
+	   ./sources/frontend/correlator.h \
+	   ./sources/frontend/freqsyncer.h \
+	   ./sources/frontend/phasetable.h \
+	   ./sources/frontend/freq-interleaver.h \
+	   ./sources/frontend/tii-detector.h \
+	   ./sources/frontend/tii-detector-1.h \
+	   ./sources/frontend/tii-detector-2.h \
+	   ./sources/frontend/fic-handler.h \
+	   ./sources/frontend/ensemble.h  \
+	   ./sources/frontend/fib-config.h  \
+	   ./sources/frontend/fib-printer.h  \
+	   ./sources/frontend/fib-decoder.h  \
+	   ./sources/frontend/fib-table.h \
+	   ./sources/frontend/estimator.h \
+	   ./sources/protection/protTables.h \
+	   ./sources/protection/protection.h \
+	   ./sources/protection/eep-protection.h \
+	   ./sources/protection/uep-protection.h \
+	   ./sources/backend/msc-handler.h \
+	   ./sources/backend/reed-solomon/galois.h \
+	   ./sources/backend/reed-solomon/reed-solomon.h \
+	   ./sources/backend/frame-processor.h \
+	   ./sources/backend/backend.h \
+	   ./sources/backend/backend-driver.h \
+	   ./sources/backend/backend-deconvolver.h \
+	   ./sources/backend/audio/firecode-checker.h \
+	   ./sources/backend/audio/mp2processor.h \
+	   ./sources/backend/audio/mp4processor.h \
+	   ./sources/backend/audio/bitWriter.h \
+	   ./sources/backend/data/data-processor.h \
+	   ./sources/backend/data/pad-handler.h \
+	   ./sources/backend/data/virtual-datahandler.h \
+	   ./sources/backend/data/tdc-datahandler.h \
+	   ./sources/backend/data/ip-datahandler.h \
+	   ./sources/backend/data/adv-datahandler.h \
+	   ./sources/backend/data/mot/mot-handler.h \
+	   ./sources/backend/data/mot/mot-object.h \
+	   ./sources/backend/data/mot/mot-dir.h \
+	   ./sources/backend/data/journaline-datahandler.h \
+	   ./sources/backend/data/journaline-screen.h \
+	   ./sources/backend/data/journaline/dabdatagroupdecoder.h \
+	   ./sources/backend/data/journaline/crc_8_16.h \
+	   ./sources/backend/data/journaline/log.h \
+	   ./sources/backend/data/journaline/newssvcdec_impl.h \
+	   ./sources/backend/data/journaline/Splitter.h \
+	   ./sources/backend/data/journaline/dabdgdec_impl.h \
+	   ./sources/backend/data/journaline/newsobject.h \
+	   ./sources/backend/data/journaline/NML.h \
+	   ./sources/backend/data/epg/epg-compiler.h \
+	   ./sources/backend/data/epg/xml-extractor.h \
+	   ./sources/output/audio-player.h \
+	   ./sources/support/dab-constants.h \
+	   ./sources/support/bit-extractors.h \
+	   ./sources/support/charsets.h \
+	   ./sources/support/crc-handlers.h \
+	   ./sources/support/mot-content-types.h \
+	   ./sources/support/distances.h \
+	   ./sources/support/time-converter.h \
+	   ./sources/support/logger.h \
+	   ./sources/support/settings-handler.h \
+	   ./sources/support/position-handler.h \
+	   ./sources/support/cacheElement.h \
+	   ./sources/support/settingNames.h \
+	   ./sources/support/fft-handler.h \
+	   ./sources/support/wavWriter.h \
+	   ./sources/support/converter_48000.h \
+	   ./sources/support/process-params.h \
+	   ./sources/support/ringbuffer.h \
+	   ./sources/support/dab-params.h \
+	   ./sources/support/dab-tables.h \
+	   ./sources/support/presetcombobox.h \
+	   ./sources/support/scanlist-handler.h \
+	   ./sources/support/scheduler.h \
+	   ./sources/support/schedule-selector.h \
+	   ./sources/support/element-selector.h \
+	   ./sources/support/time-table.h \
+	   ./sources/support/findfilenames.h \
+	   ./sources/support/dl-cache.h \
+	   ./sources/support/content-table.h \
+	   ./sources/support/ITU_Region_1.h \
+	   ./sources/support/coordinates.h \
+	   ./sources/support/skin-handler.h \
+	   ./sources/support/mapport.h \
+	   ./sources/support/bandpass-filter.h \
+	   ./sources/support/fir-filters.h \
+	   ./sources/support/tii-mapper.h \
+	   ./sources/support/tii-reader.h \
+	   ./sources/support//uploader.h \
+	   ./sources/support/gui-elements/circular-button.h \
+	   ./sources/support/gui-elements/clickable-label.h \
+	   ./sources/support/gui-elements/color-selector.h \
+	   ./sources/support/gui-elements/font-chooser.h \
+	   ./sources/support/gui-elements/icon-label.h \
+	   ./sources/support/gui-elements/newpushbutton.h \
+	   ./sources/support/gui-elements/normalpushbutton.h \
+	   ./sources/support/gui-elements/smallcombobox.h \
+	   ./sources/support/gui-elements/smallpushbutton.h \
+	   ./sources/support/gui-elements/smallqlistview.h \
+	   ./sources/support/gui-elements/smallspinbox.h \
+	   ./sources/support/gui-elements/super-frame.h \
+	   ./sources/support/gui-elements/verysmallpushbutton.h \
+	   ./sources/qt-devices/device-handler.h \
+	   ./sources/qt-devices/device-chooser.h \
+	   ./sources/qt-devices/device-exceptions.h \
+	   ./sources/qt-devices/xml-filewriter.h \
+	   ./sources/qt-devices/filereaders/new-reader/newfiles.h \
+	   ./sources/qt-devices/filereaders/new-reader/new-reader.h \
+	   ./sources/qt-devices/filereaders/new-reader/riff-reader.h \
+	   ./sources/qt-devices/filereaders/rawfiles-new/rawfiles.h \
+	   ./sources/qt-devices/filereaders/rawfiles-new/raw-reader.h \
+	   ./sources/qt-devices/filereaders/xml-filereader/element-reader.h \
+	   ./sources/qt-devices/filereaders/xml-filereader/xml-filereader.h \
+	   ./sources/qt-devices/filereaders/xml-filereader/xml-reader.h \
+	   ./sources/qt-devices/filereaders/xml-filereader/xml-descriptor.h 
 
-FORMS	+= ./forms-v7/technical_data.ui
-FORMS	+= ./forms-v7/dabradio-6.ui 
-FORMS	+= ./forms-v7/config-helper.ui 
-FORMS	+= ./forms-v7/audio-description.ui
-FORMS	+= ./forms-v7/data-description.ui
-FORMS	+= ./forms-v7/new-display/scopewidget.ui
-FORMS	+= ./forms-v7/snr-viewer/snr-widget.ui
-FORMS	+= ./support/aboutdialog.ui
-#FORMS	+= ../qt-devices/filereaders/filereader-widget.ui 
-FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
+FORMS	+= ./sources/main/forms-v7/technical_data.ui
+FORMS	+= ./sources/main/forms-v7/dabradio-6.ui 
+FORMS	+= ./sources/main/forms-v7/config-helper.ui 
+FORMS	+= ./sources/main/forms-v7/audio-description.ui
+FORMS	+= ./sources/main/forms-v7/data-description.ui
+FORMS	+= ./sources/main/forms-v7/new-display/scopewidget.ui
+FORMS	+= ./sources/main/forms-v7/snr-viewer/snr-widget.ui
+FORMS	+= ./sources/main/aboutdialog.ui
+#FORMS	+= ./sources/qt-devices/filereaders/filereader-widget.ui 
+FORMS	+= ./sources/qt-devices/filereaders/xml-filereader/xmlfiles.ui
 
-SOURCES += ./main.cpp \
-	   ./radio.cpp \
-	   ./support/techdata.cpp \
-	   ./support/super-frame.cpp \
-           ./support/clickable-label.cpp \
-           ./support/icon-label.cpp \
-	   ./support/scan-handler.cpp \
-	   ./support/scantable-handler.cpp \
-	   ./support/aboutdialog.cpp \
-	   ./support/ensemble-handler.cpp \
-	   ./support/config-handler.cpp \
-	   ./support/audiosystem-selector.cpp \
-	   ./support/dxDisplay.cpp \
-	   ./forms-v7/new-display/display-widget.cpp \
-           ./forms-v7/new-display/scopes/correlation-scope.cpp \
-           ./forms-v7/new-display/scopes/spectrum-scope.cpp \
-           ./forms-v7/new-display/scopes/null-scope.cpp \
-           ./forms-v7/new-display/scopes/channel-scope.cpp \
-           ./forms-v7/new-display/scopes/dev-scope.cpp \
-           ./forms-v7/new-display/scopes/waterfall-scope.cpp \
-	   ./forms-v7/new-display/scopes/iqdisplay.cpp \
-	   ./forms-v7/new-display/scopes/audio-display.cpp \
-	   ./forms-v7/new-display/scopes/spectrogramdata.cpp \
-	   ./forms-v7/snr-viewer/snr-viewer.cpp \
-	   ../ofdm-handler.cpp \
-	   ../eti-handler/eti-generator.cpp \
-	   ../src/ofdm/timesyncer.cpp \
-	   ../src/ofdm/sample-reader.cpp \
-	   ../src/ofdm/ofdm-decoder.cpp \
-	   ../src/ofdm/correlator.cpp \
-	   ../src/ofdm/freqsyncer.cpp \
-	   ../src/ofdm/phasetable.cpp \
-	   ../src/ofdm/freq-interleaver.cpp \
-	   ../src/ofdm/tii-detector.cpp \
-	   ../src/ofdm/tii-detector-1.cpp \
-	   ../src/ofdm/tii-detector-2.cpp \
-	   ../src/ofdm/fic-handler.cpp \
-	   ../src/ofdm/ensemble.cpp  \
-	   ../src/ofdm/fib-config.cpp  \
-	   ../src/ofdm/fib-printer.cpp  \
-	   ../src/ofdm/fib-decoder.cpp  \
-	   ../src/ofdm/estimator.cpp \
-	   ../src/protection/protTables.cpp \
-	   ../src/protection/protection.cpp \
-	   ../src/protection/eep-protection.cpp \
-	   ../src/protection/uep-protection.cpp \
-	   ../src/backend/msc-handler.cpp \
-	   ../src/backend/galois.cpp \
-	   ../src/backend/reed-solomon.cpp \
-	   ../src/backend/charsets.cpp \
-	   ../src/backend/backend.cpp \
-           ../src/backend/backend-driver.cpp \
-           ../src/backend/backend-deconvolver.cpp \
-	   ../src/backend/firecode-checker.cpp \
-	   ../src/backend/audio/mp2processor.cpp \
-	   ../src/backend/audio/mp4processor.cpp \
-	   ../src/backend/audio/bitWriter.cpp \
-	   ../src/backend/data/pad-handler.cpp \
-	   ../src/backend/data/data-processor.cpp \
-	   ../src/backend/data/tdc-datahandler.cpp \
-	   ../src/backend/data/ip-datahandler.cpp \
-	   ../src/backend/data/adv-datahandler.cpp \
-	   ../src/backend/data/mot/mot-handler.cpp \
-	   ../src/backend/data/mot/mot-object.cpp \
-	   ../src/backend/data/mot/mot-dir.cpp \
-	   ../src/backend/data/journaline-datahandler.cpp \
-	   ../src/backend/data/journaline-screen.cpp \
-	   ../src/backend/data/journaline/crc_8_16.c \
-	   ../src/backend/data/journaline/log.c \
-	   ../src/backend/data/journaline/newssvcdec_impl.cpp \
-	   ../src/backend/data/journaline/Splitter.cpp \
-	   ../src/backend/data/journaline/dabdgdec_impl.c \
-	   ../src/backend/data/journaline/newsobject.cpp \
-	   ../src/backend/data/journaline/NML.cpp \
-	   ../src/backend/data/epg/epg-compiler.cpp \
-	   ../src/backend/data/epg/xml-extractor.cpp \
-	   ../src/output/audio-player.cpp \
-	   ../src/support/distances.cpp \
-	   ../src/support/time-converter.cpp \
-	   ../src/support/logger.cpp \
-	   ../src/support/settings-handler.cpp \
-	   ../src/support/position-handler.cpp \
-	   ../src/support/wavWriter.cpp \
-	   ../src/support/converter_48000.cpp \
-	   ../src/support/fft-handler.cpp \
-	   ../src/support/dab-params.cpp \
-	   ../src/support/dab-tables.cpp \
-	   ../src/support/preset-handler.cpp \
-	   ../src/support/presetcombobox.cpp \
-	   ../src/support/scanlist-handler.cpp \
-	   ../src/support/scheduler.cpp \
-	   ../src/support/schedule-selector.cpp \
-	   ../src/support/element-selector.cpp \
-	   ../src/support/time-table.cpp \
-	   ../src/support/findfilenames.cpp \
-	   ../src/support/content-table.cpp \
-	   ../src/support/ITU_Region_1.cpp \
-	   ../src/support/coordinates.cpp \
-	   ../src/support/skin-handler.cpp \
-	   ../src/support/mapport.cpp \
-	   ../src/support/bandpass-filter.cpp \
-	   ../src/support/fir-filters.cpp \
-	   ../src/support/font-chooser.cpp \
-	   ../src/support/tii-library/tii-mapper.cpp \
-	   ../src/support/tii-library/tii-reader.cpp \
-	   ../src/support/tii-library/uploader.cpp \
-	   ../src/support/buttons/smallcombobox.cpp \
-	   ../src/support/buttons/newpushbutton.cpp \
-	   ../src/support/buttons/normalpushbutton.cpp \
-	   ../src/support/buttons/smallpushbutton.cpp \
-	   ../src/support/buttons/verysmallpushbutton.cpp \
-	   ../src/support/buttons/smallqlistview.cpp \
-	   ../src/support/buttons/smallspinbox.cpp \
-	   ../src/support/buttons/circular-button.cpp \
-	   ../qt-devices/device-handler.cpp \
-	   ../qt-devices/device-chooser.cpp \
-	   ../qt-devices/xml-filewriter.cpp \
-	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
-	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
-           ../qt-devices/filereaders/new-reader/newfiles.cpp \
-           ../qt-devices/filereaders/new-reader/new-reader.cpp \
-           ../qt-devices/filereaders/new-reader/riff-reader.cpp \
-#	   ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
-#	   ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
-	   ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp \
-	   ../qt-devices/filereaders/xml-filereader/xml-reader.cpp \
-	   ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp 
+SOURCES += ./sources/main/main.cpp \
+	   ./sources/main/radio.cpp \
+	   ./sources/main/forms-v7/new-display/display-widget.cpp \
+           ./sources/main/forms-v7/new-display/scopes/correlation-scope.cpp \
+           ./sources/main/forms-v7/new-display/scopes/spectrum-scope.cpp \
+           ./sources/main/forms-v7/new-display/scopes/null-scope.cpp \
+           ./sources/main/forms-v7/new-display/scopes/channel-scope.cpp \
+           ./sources/main/forms-v7/new-display/scopes/dev-scope.cpp \
+           ./sources/main/forms-v7/new-display/scopes/waterfall-scope.cpp \
+	   ./sources/main/forms-v7/new-display/scopes/iqdisplay.cpp \
+	   ./sources/main/forms-v7/new-display/scopes/audio-display.cpp \
+	   ./sources/main/forms-v7/new-display/scopes/spectrogramdata.cpp \
+	   ./sources/main/forms-v7/snr-viewer/snr-viewer.cpp \
+	   ./sources/main/aboutdialog.cpp \
+	   ./sources/main/ensemble-handler.cpp \
+	   ./sources/main/techdata.cpp \
+	   ./sources/main/config-handler.cpp \
+	   ./sources/support/scan-handler.cpp \
+	   ./sources/support/scantable-handler.cpp \
+	   ./sources/support/audiosystem-selector.cpp \
+	   ./sources/support/dxDisplay.cpp \
+	   ./sources/eti-handler/eti-generator.cpp \
+	   ./sources/frontend/ofdm-handler.cpp \
+	   ./sources/frontend/timesyncer.cpp \
+	   ./sources/frontend/sample-reader.cpp \
+	   ./sources/frontend/ofdm-decoder.cpp \
+	   ./sources/frontend/correlator.cpp \
+	   ./sources/frontend/freqsyncer.cpp \
+	   ./sources/frontend/phasetable.cpp \
+	   ./sources/frontend/freq-interleaver.cpp \
+	   ./sources/frontend/tii-detector.cpp \
+	   ./sources/frontend/tii-detector-1.cpp \
+	   ./sources/frontend/tii-detector-2.cpp \
+	   ./sources/frontend/fic-handler.cpp \
+	   ./sources/frontend/ensemble.cpp  \
+	   ./sources/frontend/fib-config.cpp  \
+	   ./sources/frontend/fib-printer.cpp  \
+	   ./sources/frontend/fib-decoder.cpp  \
+	   ./sources/frontend/estimator.cpp \
+	   ./sources/protection/protTables.cpp \
+	   ./sources/protection/protection.cpp \
+	   ./sources/protection/eep-protection.cpp \
+	   ./sources/protection/uep-protection.cpp \
+	   ./sources/backend/msc-handler.cpp \
+	   ./sources/backend/reed-solomon/galois.cpp \
+	   ./sources/backend/reed-solomon/reed-solomon.cpp \
+	   ./sources/backend/backend.cpp \
+           ./sources/backend/backend-driver.cpp \
+           ./sources/backend/backend-deconvolver.cpp \
+	   ./sources/backend/audio/firecode-checker.cpp \
+	   ./sources/backend/audio/mp2processor.cpp \
+	   ./sources/backend/audio/mp4processor.cpp \
+	   ./sources/backend/audio/bitWriter.cpp \
+	   ./sources/backend/data/pad-handler.cpp \
+	   ./sources/backend/data/data-processor.cpp \
+	   ./sources/backend/data/tdc-datahandler.cpp \
+	   ./sources/backend/data/ip-datahandler.cpp \
+	   ./sources/backend/data/adv-datahandler.cpp \
+	   ./sources/backend/data/mot/mot-handler.cpp \
+	   ./sources/backend/data/mot/mot-object.cpp \
+	   ./sources/backend/data/mot/mot-dir.cpp \
+	   ./sources/backend/data/journaline-datahandler.cpp \
+	   ./sources/backend/data/journaline-screen.cpp \
+	   ./sources/backend/data/journaline/crc_8_16.c \
+	   ./sources/backend/data/journaline/log.c \
+	   ./sources/backend/data/journaline/newssvcdec_impl.cpp \
+	   ./sources/backend/data/journaline/Splitter.cpp \
+	   ./sources/backend/data/journaline/dabdgdec_impl.c \
+	   ./sources/backend/data/journaline/newsobject.cpp \
+	   ./sources/backend/data/journaline/NML.cpp \
+	   ./sources/backend/data/epg/epg-compiler.cpp \
+	   ./sources/backend/data/epg/xml-extractor.cpp \
+	   ./sources/output/audio-player.cpp \
+	   ./sources/support/charsets.cpp \
+	   ./sources/support/distances.cpp \
+	   ./sources/support/time-converter.cpp \
+	   ./sources/support/logger.cpp \
+	   ./sources/support/settings-handler.cpp \
+	   ./sources/support/position-handler.cpp \
+	   ./sources/support/wavWriter.cpp \
+	   ./sources/support/converter_48000.cpp \
+	   ./sources/support/fft-handler.cpp \
+	   ./sources/support/dab-params.cpp \
+	   ./sources/support/dab-tables.cpp \
+#	   ./sources/support/preset-handler.cpp \
+	   ./sources/support/presetcombobox.cpp \
+	   ./sources/support/scanlist-handler.cpp \
+	   ./sources/support/scheduler.cpp \
+	   ./sources/support/schedule-selector.cpp \
+	   ./sources/support/element-selector.cpp \
+	   ./sources/support/time-table.cpp \
+	   ./sources/support/findfilenames.cpp \
+	   ./sources/support/content-table.cpp \
+	   ./sources/support/ITU_Region_1.cpp \
+	   ./sources/support/coordinates.cpp \
+	   ./sources/support/skin-handler.cpp \
+	   ./sources/support/mapport.cpp \
+	   ./sources/support/bandpass-filter.cpp \
+	   ./sources/support/fir-filters.cpp \
+	   ./sources/support/tii-mapper.cpp \
+	   ./sources/support/tii-reader.cpp \
+	   ./sources/support/uploader.cpp \
+	   ./sources/support/gui-elements/circular-button.cpp \
+	   ./sources/support/gui-elements/clickable-label.cpp \
+	   ./sources/support/gui-elements/color-selector.cpp \
+	   ./sources/support/gui-elements/font-chooser.cpp \
+	   ./sources/support/gui-elements/icon-label.cpp \
+	   ./sources/support/gui-elements/newpushbutton.cpp \
+	   ./sources/support/gui-elements/normalpushbutton.cpp \
+	   ./sources/support/gui-elements/smallcombobox.cpp \
+	   ./sources/support/gui-elements/smallpushbutton.cpp \
+	   ./sources/support/gui-elements/smallqlistview.cpp \
+	   ./sources/support/gui-elements/smallspinbox.cpp \
+	   ./sources/support/gui-elements/super-frame.cpp \
+	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
+	   ./sources/qt-devices/device-handler.cpp \
+	   ./sources/qt-devices/device-chooser.cpp \
+	   ./sources/qt-devices/xml-filewriter.cpp \
+	   ./sources/qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
+	   ./sources/qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
+           ./sources/qt-devices/filereaders/new-reader/newfiles.cpp \
+           ./sources/qt-devices/filereaders/new-reader/new-reader.cpp \
+           ./sources/qt-devices/filereaders/new-reader/riff-reader.cpp \
+#	   ./sources/qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
+#	   ./sources/qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
+	   ./sources/qt-devices/filereaders/xml-filereader/xml-filereader.cpp \
+	   ./sources/qt-devices/filereaders/xml-filereader/xml-reader.cpp \
+	   ./sources/qt-devices/filereaders/xml-filereader/xml-descriptor.cpp 
 
 #
 unix {
 DESTDIR		= ./linux-bin
 	equals (QT_MAJOR_VERSION, 5) {
-	TARGET		= qt-dab-qt5-6.9.2
+	TARGET		= qt-dab-qt5-6.9.3
 	}
 	else {
-	TARGET		= qt-dab-qt6-6.9.2
+	TARGET		= qt-dab-qt6-6.9.3
 	}
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
@@ -449,8 +440,8 @@ equals (QT_MAJOR_VERSION, 6) {
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-CONFIG		+= double
-#CONFIG		+= single
+#CONFIG		+= double
+CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -482,9 +473,9 @@ CONFIG		+= datastreamer
 CONFIG		+= local-audio
 
 #CONFIG		+= viterbi-scalar
-CONFIG		+= viterbi-sse
+#CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
-#CONFIG		+= spiral-sse
+CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
@@ -527,20 +518,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3.2
-	}
-	else {
-	   TARGET		= qt-dab32-qt6-6.9V3.2
-	}
-	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9.2
+#	   TARGET		= qt-dab32-qt5-6.9V3.3
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9.2
+#	   TARGET		= qt-dab32-qt6-6.9V3.3
 #	}
-#	CONFIG		+= dabstick-win-v4
+#	CONFIG		+= dabstick-win-v3
+	equals (QT_MAJOR_VERSION, 5) {
+	   TARGET		= qt-dab32-qt5-6.9.3
+	}
+	else {
+	   TARGET		= qt-dab32-qt6-6.9.3
+	}
+	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
@@ -608,40 +599,41 @@ DEFINES	+= __DUMP_SNR__		# for experiments only
 #	linux version loads the function from the so
 dabstick-linux {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux
-	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/rtlsdr-handler-linux 
+	INCLUDEPATH	+= ./sources/qt-devices/rtlsdr-handler-linux 
+	HEADERS		+= ./sources/qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
+	                   ./sources/qt-devices/rtlsdr-handler-linux/dll-driver.h \
+	                   ./sources/qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	SOURCES		+= ./sources/qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
+	                   ./sources/qt-devices/rtlsdr-handler-linux/dll-driver.cpp \
+	                   ./sources/qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	FORMS		+= ./sources/qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
 }
 
 dabstick-win-v4 {
 	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
+	DEPENDPATH	+= ./sources/qt-devices/rtlsdr-handler-win 
+	INCLUDEPATH	+= ./sources/qt-devices/rtlsdr-handler-win 
 	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4
 	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4/x86
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
+	HEADERS		+= ./sources/qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
+	                   ./sources/qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
+	SOURCES		+= ./sources/qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
+	                   ./sources/qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
+	FORMS		+= ./sources/qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x86/rtlsdr.dll
 }
 
 dabstick-win-v3 {
 	DEFINES		+= HAVE_RTLSDR_V3
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/rtlsdr-handler-win 
+	INCLUDEPATH	+= ./sources/qt-devices/rtlsdr-handler-win 
+	INCLUDEPATH	+= ./sources/qt-devices/rtlsdr-handler-common
+	HEADERS		+= ./sources/qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
+	                   ./sources/qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
+	SOURCES		+= ./sources/qt-devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
+	                   ./sources/qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
+	FORMS		+= ./sources/qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
 #	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
 	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
 }
@@ -651,38 +643,39 @@ dabstick-win-v3 {
 #
 sdrplay-v2 {
 	DEFINES		+= HAVE_SDRPLAY_V2
-	DEPENDPATH	+= ../qt-devices/sdrplay-handler-v2
-	INCLUDEPATH	+= ../qt-devices/sdrplay-handler-v2
-	HEADERS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
-	                   ../qt-devices/sdrplay-handler-v2/sdrplayselect.h 
-	SOURCES		+= ../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 
-	                   ../qt-devices/sdrplay-handler-v2/sdrplayselect.cpp 
-	FORMS		+= ../qt-devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
+	DEPENDPATH	+= ./sources/qt-devices/sdrplay-handler-v2
+	INCLUDEPATH	+= ./sources/qt-devices/sdrplay-handler-v2
+	INCLUDEPATH	+= ./sources/qt-devices/rtlsdr-handler-common
+	HEADERS		+= ./sources/qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
+	                   ./sources/qt-devices/sdrplay-handler-v2/sdrplayselect.h 
+	SOURCES		+= ./sources/qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 
+	                   ./sources/qt-devices/sdrplay-handler-v2/sdrplayselect.cpp 
+	FORMS		+= ./sources/qt-devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }
 #
 #	the SDRplay
 #
 sdrplay-v3 {
 	DEFINES		+= HAVE_SDRPLAY_V3
-	DEPENDPATH	+= ../qt-devices/sdrplay-handler-v3
-	INCLUDEPATH	+= ../qt-devices/sdrplay-handler-v3 \
-	                   ../qt-devices/sdrplay-handler-v3/include
-        HEADERS         += ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
-                           ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
-	                   ../qt-devices/sdrplay-handler-v3/Rsp-device.h \
-	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.h \
-	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
-	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.h \
-	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
-	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
-        SOURCES         += ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
-	                   ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
-	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp \
-	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
-	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
-	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
-	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
-	FORMS		+= ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	DEPENDPATH	+= ./sources/qt-devices/sdrplay-handler-v3
+	INCLUDEPATH	+= ./sources/qt-devices/sdrplay-handler-v3 \
+	                   ./sources/qt-devices/sdrplay-handler-v3/include
+        HEADERS         += ./sources/qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
+                           ./sources/qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
+	                   ./sources/qt-devices/sdrplay-handler-v3/Rsp-device.h \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspI-handler.h \
+	                   ./sources/qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspII-handler.h \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspDx-handler.h
+        SOURCES         += ./sources/qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
+	                   ./sources/qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspI-handler.cpp \
+	                   ./sources/qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
+	                   ./sources/qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
+	FORMS		+= ./sources/qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
 #	LIBS		+= -ldl
 }
 #
@@ -690,22 +683,22 @@ sdrplay-v3 {
 #
 lime  {
 	DEFINES		+= HAVE_LIME
-	INCLUDEPATH	+= ../qt-devices/lime-handler
-	DEPENDPATH	+= ../qt-devices/lime-handler
-        HEADERS         += ../qt-devices/lime-handler/lime-handler.h \	
-	                   ../qt-devices/lime-handler/lime-widget.h
-        SOURCES         += ../qt-devices/lime-handler/lime-handler.cpp 
+	INCLUDEPATH	+= ./sources/qt-devices/lime-handler
+	DEPENDPATH	+= ./sources/qt-devices/lime-handler
+        HEADERS         += ./sources/qt-devices/lime-handler/lime-handler.h \	
+	                   ./sources/qt-devices/lime-handler/lime-widget.h
+        SOURCES         += ./sources/qt-devices/lime-handler/lime-handler.cpp 
 }
 #
 #	the hackrf
 #
 hackrf {
 	DEFINES		+= HAVE_HACKRF
-	DEPENDPATH	+= ../qt-devices/hackrf-handler 
-	INCLUDEPATH	+= ../qt-devices/hackrf-handler 
-	HEADERS		+= ../qt-devices/hackrf-handler/hackrf-handler.h 
-	SOURCES		+= ../qt-devices/hackrf-handler/hackrf-handler.cpp 
-	FORMS		+= ../qt-devices/hackrf-handler/hackrf-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/hackrf-handler 
+	INCLUDEPATH	+= ./sources/qt-devices/hackrf-handler 
+	HEADERS		+= ./sources/qt-devices/hackrf-handler/hackrf-handler.h 
+	SOURCES		+= ./sources/qt-devices/hackrf-handler/hackrf-handler.cpp 
+	FORMS		+= ./sources/qt-devices/hackrf-handler/hackrf-widget.ui
 }
 #
 #
@@ -713,152 +706,152 @@ hackrf {
 #
 airspy {
 	DEFINES		+= HAVE_AIRSPY
-	DEPENDPATH	+= ../qt-devices/airspy 
-	INCLUDEPATH	+= ../qt-devices/airspy-handler \
-	                   ../qt-devices/airspy-handler/libairspy
-	HEADERS		+= ../qt-devices/airspy-handler/airspy-handler.h \
-	                   ../qt-devices/airspy-handler/airspyselect.h \
-	                   ../qt-devices/airspy-handler/libairspy/airspy.h
-	SOURCES		+= ../qt-devices/airspy-handler/airspy-handler.cpp \
-	                   ../qt-devices/airspy-handler/airspyselect.cpp
-	FORMS		+= ../qt-devices/airspy-handler/airspy-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/airspy 
+	INCLUDEPATH	+= ./sources/qt-devices/airspy-handler \
+	                   ./sources/qt-devices/airspy-handler/libairspy
+	HEADERS		+= ./sources/qt-devices/airspy-handler/airspy-handler.h \
+	                   ./sources/qt-devices/airspy-handler/airspyselect.h \
+	                   ./sources/qt-devices/airspy-handler/libairspy/airspy.h
+	SOURCES		+= ./sources/qt-devices/airspy-handler/airspy-handler.cpp \
+	                   ./sources/qt-devices/airspy-handler/airspyselect.cpp
+	FORMS		+= ./sources/qt-devices/airspy-handler/airspy-widget.ui
 }
 
 airspy-2 {
 	DEFINES		+= HAVE_AIRSPY_2
-	DEPENDPATH	+= ../qt-devices/airspy-2 
-	INCLUDEPATH	+= ../qt-devices/airspy-2 \
-	                   ../qt-devices/airspy-2/libairspy
-	HEADERS		+= ../qt-devices/airspy-2/airspy-2.h \
-	                   ../qt-devices/airspy-2/airspyselect.h \
-	                   ../qt-devices/airspy-2/libairspy/airspy.h
-	SOURCES		+= ../qt-devices/airspy-2/airspy-2.cpp \
-	                   ../qt-devices/airspy-2/airspyselect.cpp
-	FORMS		+= ../qt-devices/airspy-2/airspy-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/airspy-2 
+	INCLUDEPATH	+= ./sources/qt-devices/airspy-2 \
+	                   ./sources/qt-devices/airspy-2/libairspy
+	HEADERS		+= ./sources/qt-devices/airspy-2/airspy-2.h \
+	                   ./sources/qt-devices/airspy-2/airspyselect.h \
+	                   ./sources/qt-devices/airspy-2/libairspy/airspy.h
+	SOURCES		+= ./sources/qt-devices/airspy-2/airspy-2.cpp \
+	                   ./sources/qt-devices/airspy-2/airspyselect.cpp
+	FORMS		+= ./sources/qt-devices/airspy-2/airspy-widget.ui
 }
 
 #	extio dependencies, windows only
 #
 extio {
 	DEFINES		+= HAVE_EXTIO
-	INCLUDEPATH	+= ../qt-devices/extio-handler
-	HEADERS		+= ../qt-devices/extio-handler/extio-handler.h \
-	                   ../qt-devices/extio-handler/common-readers.h \
-	                   ../qt-devices/extio-handler/virtual-reader.h
-	SOURCES		+= ../qt-devices/extio-handler/extio-handler.cpp \
-	                   ../qt-devices/extio-handler/common-readers.cpp \
-	                   ../qt-devices/extio-handler/virtual-reader.cpp
+	INCLUDEPATH	+= ./sources/qt-devices/extio-handler
+	HEADERS		+= ./sources/qt-devices/extio-handler/extio-handler.h \
+	                   ./sources/qt-devices/extio-handler/common-readers.h \
+	                   ./sources/qt-devices/extio-handler/virtual-reader.h
+	SOURCES		+= ./sources/qt-devices/extio-handler/extio-handler.cpp \
+	                   ./sources/qt-devices/extio-handler/common-readers.cpp \
+	                   ./sources/qt-devices/extio-handler/virtual-reader.cpp
 }
 
 #
 rtl_tcp {
 	DEFINES		+= HAVE_RTL_TCP
 	QT		+= network
-	INCLUDEPATH	+= ../qt-devices/rtl_tcp
-	HEADERS		+= ../qt-devices/rtl_tcp/rtl_tcp_client.h
-	SOURCES		+= ../qt-devices/rtl_tcp/rtl_tcp_client.cpp
-	FORMS		+= ../qt-devices/rtl_tcp/rtl_tcp-widget.ui
+	INCLUDEPATH	+= ./sources/qt-devices/rtl_tcp
+	HEADERS		+= ./sources/qt-devices/rtl_tcp/rtl_tcp_client.h
+	SOURCES		+= ./sources/qt-devices/rtl_tcp/rtl_tcp_client.cpp
+	FORMS		+= ./sources/qt-devices/rtl_tcp/rtl_tcp-widget.ui
 }
 
 soapy {
 	DEFINES		+= HAVE_SOAPY
-	DEPENDPATH	+= ../qt-devices/soapy
-	INCLUDEPATH     += ../qt-devices/soapy
-        HEADERS         += ../qt-devices/soapy/soapy-handler.h \
-	                   ../qt-devices/soapy/soapy-converter.h
-        SOURCES         += ../qt-devices/soapy/soapy-handler.cpp \
-	                   ../qt-devices/soapy/soapy-converter.cpp
-        FORMS           += ../qt-devices/soapy/soapy-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/soapy
+	INCLUDEPATH     += ./sources/qt-devices/soapy
+        HEADERS         += ./sources/qt-devices/soapy/soapy-handler.h \
+	                   ./sources/qt-devices/soapy/soapy-converter.h
+        SOURCES         += ./sources/qt-devices/soapy/soapy-handler.cpp \
+	                   ./sources/qt-devices/soapy/soapy-converter.cpp
+        FORMS           += ./sources/qt-devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
 }
 
 pluto-rxtx	{
 	DEFINES		+= HAVE_PLUTO_RXTX
 	QT		+= network
-	INCLUDEPATH	+= ../qt-devices/pluto-rxtx
-	INCLUDEPATH	+= ../qt-devices/pluto-rxtx/dab-streamer
-	HEADERS		+= ../qt-devices/pluto-rxtx/dabFilter.h
-	HEADERS		+= ../qt-devices/pluto-rxtx/pluto-rxtx-handler.h 
-	HEADERS		+= ../qt-devices/pluto-rxtx/dab-streamer/dab-streamer.h 
-	HEADERS		+= ../qt-devices/pluto-rxtx/dab-streamer/up-filter.h
-	SOURCES		+= ../qt-devices/pluto-rxtx/pluto-rxtx-handler.cpp 
-	SOURCES		+= ../qt-devices/pluto-rxtx/dab-streamer/dab-streamer.cpp
-	SOURCES		+= ../qt-devices/pluto-rxtx/dab-streamer/up-filter.cpp
-	FORMS		+= ../qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
+	INCLUDEPATH	+= ./sources/qt-devices/pluto-rxtx
+	INCLUDEPATH	+= ./sources/qt-devices/pluto-rxtx/dab-streamer
+	HEADERS		+= ./sources/qt-devices/pluto-rxtx/dabFilter.h
+	HEADERS		+= ./sources/qt-devices/pluto-rxtx/pluto-rxtx-handler.h 
+	HEADERS		+= ./sources/qt-devices/pluto-rxtx/dab-streamer/dab-streamer.h 
+	HEADERS		+= ./sources/qt-devices/pluto-rxtx/dab-streamer/up-filter.h
+	SOURCES		+= ./sources/qt-devices/pluto-rxtx/pluto-rxtx-handler.cpp 
+	SOURCES		+= ./sources/qt-devices/pluto-rxtx/dab-streamer/dab-streamer.cpp
+	SOURCES		+= ./sources/qt-devices/pluto-rxtx/dab-streamer/up-filter.cpp
+	FORMS		+= ./sources/qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
 #	LIBS		+= -liio -lad9361
 }
 
 pluto	{
 	DEFINES		+= HAVE_PLUTO
 	QT		+= network
-	INCLUDEPATH	+= ../qt-devices/pluto-handler
-	HEADERS		+= ../qt-devices/pluto-handler/dabFilter.h
-	HEADERS		+= ../qt-devices/pluto-handler/pluto-handler.h
-	SOURCES		+= ../qt-devices/pluto-handler/pluto-handler.cpp
-	FORMS		+= ../qt-devices/pluto-handler/pluto-widget.ui
+	INCLUDEPATH	+= ./sources/qt-devices/pluto-handler
+	HEADERS		+= ./sources/qt-devices/pluto-handler/dabFilter.h
+	HEADERS		+= ./sources/qt-devices/pluto-handler/pluto-handler.h
+	SOURCES		+= ./sources/qt-devices/pluto-handler/pluto-handler.cpp
+	FORMS		+= ./sources/qt-devices/pluto-handler/pluto-widget.ui
 }
 
 elad-device	{
 	DEFINES		+= HAVE_ELAD
-	DEPENDPATH	+= ../qt-devices/elad-s1-handler
-	INCLUDEPATH	+= ../qt-devices/elad-s1-handler
-	HEADERS		+= ../qt-devices/elad-s1-handler/elad-handler.h
-	HEADERS		+= ../qt-devices/elad-s1-handler/elad-loader.h
-	HEADERS		+= ../qt-devices/elad-s1-handler/elad-worker.h
-	SOURCES		+= ../qt-devices/elad-s1-handler/elad-handler.cpp
-	SOURCES		+= ../qt-devices/elad-s1-handler/elad-loader.cpp
-	SOURCES		+= ../qt-devices/elad-s1-handler/elad-worker.cpp
-	FORMS		+= ../qt-devices/elad-s1-handler/elad-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/elad-s1-handler
+	INCLUDEPATH	+= ./sources/qt-devices/elad-s1-handler
+	HEADERS		+= ./sources/qt-devices/elad-s1-handler/elad-handler.h
+	HEADERS		+= ./sources/qt-devices/elad-s1-handler/elad-loader.h
+	HEADERS		+= ./sources/qt-devices/elad-s1-handler/elad-worker.h
+	SOURCES		+= ./sources/qt-devices/elad-s1-handler/elad-handler.cpp
+	SOURCES		+= ./sources/qt-devices/elad-s1-handler/elad-loader.cpp
+	SOURCES		+= ./sources/qt-devices/elad-s1-handler/elad-worker.cpp
+	FORMS		+= ./sources/qt-devices/elad-s1-handler/elad-widget.ui
 }
 
 spyServer-8  {
 	DEFINES		+= HAVE_SPYSERVER_8
-	DEPENDPATH	+= ../qt-devices/spy-server-8
-	INCLUDEPATH	+= ../qt-devices/spy-server-8
-	HEADERS		+= ../qt-devices/spy-server-8/spyserver-protocol.h 
-	HEADERS		+= ../qt-devices/spy-server-8/tcp-client-8.h 
-	HEADERS		+= ../qt-devices/spy-server-8/spy-handler-8.h 
-	HEADERS		+= ../qt-devices/spy-server-8/spyserver-client-8.h
-	SOURCES		+= ../qt-devices/spy-server-8/tcp-client-8.cpp 
-	SOURCES		+= ../qt-devices/spy-server-8/spy-handler-8.cpp 
-	SOURCES		+= ../qt-devices/spy-server-8/spyserver-client-8.cpp 
-	FORMS		+= ../qt-devices/spy-server-8/spyserver-widget-8.ui
+	DEPENDPATH	+= ./sources/qt-devices/spy-server-8
+	INCLUDEPATH	+= ./sources/qt-devices/spy-server-8
+	HEADERS		+= ./sources/qt-devices/spy-server-8/spyserver-protocol.h 
+	HEADERS		+= ./sources/qt-devices/spy-server-8/tcp-client-8.h 
+	HEADERS		+= ./sources/qt-devices/spy-server-8/spy-handler-8.h 
+	HEADERS		+= ./sources/qt-devices/spy-server-8/spyserver-client-8.h
+	SOURCES		+= ./sources/qt-devices/spy-server-8/tcp-client-8.cpp 
+	SOURCES		+= ./sources/qt-devices/spy-server-8/spy-handler-8.cpp 
+	SOURCES		+= ./sources/qt-devices/spy-server-8/spyserver-client-8.cpp 
+	FORMS		+= ./sources/qt-devices/spy-server-8/spyserver-widget-8.ui
 }
 	
 spyServer-16  {
 	DEFINES		+= HAVE_SPYSERVER_16
-	DEPENDPATH	+= ../qt-devices/spy-server-16
-	INCLUDEPATH	+= ../qt-devices/spy-server-16
-	HEADERS		+= ../qt-devices/spy-server-16/spyserver-protocol.h 
-	HEADERS		+= ../qt-devices/spy-server-16/tcp-client.h 
-	HEADERS		+= ../qt-devices/spy-server-16/spy-handler.h 
-	HEADERS		+= ../qt-devices/spy-server-16/spyserver-client.h
-	SOURCES		+= ../qt-devices/spy-server-16/tcp-client.cpp 
-	SOURCES		+= ../qt-devices/spy-server-16/spy-handler.cpp 
-	SOURCES		+= ../qt-devices/spy-server-16/spyserver-client.cpp 
-	FORMS		+= ../qt-devices/spy-server-16/spyserver-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/spy-server-16
+	INCLUDEPATH	+= ./sources/qt-devices/spy-server-16
+	HEADERS		+= ./sources/qt-devices/spy-server-16/spyserver-protocol.h 
+	HEADERS		+= ./sources/qt-devices/spy-server-16/tcp-client.h 
+	HEADERS		+= ./sources/qt-devices/spy-server-16/spy-handler.h 
+	HEADERS		+= ./sources/qt-devices/spy-server-16/spyserver-client.h
+	SOURCES		+= ./sources/qt-devices/spy-server-16/tcp-client.cpp 
+	SOURCES		+= ./sources/qt-devices/spy-server-16/spy-handler.cpp 
+	SOURCES		+= ./sources/qt-devices/spy-server-16/spyserver-client.cpp 
+	FORMS		+= ./sources/qt-devices/spy-server-16/spyserver-widget.ui
 }
 	
 uhd	{
 	DEFINES		+= HAVE_UHD
-	DEPENDPATH	+= ../qt-devices/uhd
-	INCLUDEPATH	+= ../qt-devices/uhd
-	HEADERS		+= ../qt-devices/uhd/uhd-handler.h
-	SOURCES		+= ../qt-devices/uhd/uhd-handler.cpp
-	FORMS		+= ../qt-devices/uhd/uhd-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/uhd
+	INCLUDEPATH	+= ./sources/qt-devices/uhd
+	HEADERS		+= ./sources/qt-devices/uhd/uhd-handler.h
+	SOURCES		+= ./sources/qt-devices/uhd/uhd-handler.cpp
+	FORMS		+= ./sources/qt-devices/uhd/uhd-widget.ui
 	LIBS		+= -luhd
 }
 
 colibri	{
 	DEFINES		+= HAVE_COLIBRI
-	DEPENDPATH	+= ../qt-devices/colibri-handler
-	INCLUDEPATH	+= ../qt-devices/colibri-handler
-	HEADERS		+= ../qt-devices/colibri-handler/common.h
-	HEADERS		+= ../qt-devices/colibri-handler/LibLoader.h
-	HEADERS		+= ../qt-devices/colibri-handler/colibri-handler.h
-	SOURCES		+= ../qt-devices/colibri-handler/LibLoader.cpp
-	SOURCES		+= ../qt-devices/colibri-handler/colibri-handler.cpp
-	FORMS		+= ../qt-devices/colibri-handler/colibri-widget.ui
+	DEPENDPATH	+= ./sources/qt-devices/colibri-handler
+	INCLUDEPATH	+= ./sources/qt-devices/colibri-handler
+	HEADERS		+= ./sources/qt-devices/colibri-handler/common.h
+	HEADERS		+= ./sources/qt-devices/colibri-handler/LibLoader.h
+	HEADERS		+= ./sources/qt-devices/colibri-handler/colibri-handler.h
+	SOURCES		+= ./sources/qt-devices/colibri-handler/LibLoader.cpp
+	SOURCES		+= ./sources/qt-devices/colibri-handler/colibri-handler.cpp
+	FORMS		+= ./sources/qt-devices/colibri-handler/colibri-widget.ui
 }
 	
 send_datagram {
@@ -869,8 +862,8 @@ send_datagram {
 tcp-streamer	{
 	DEFINES		+= TCP_STREAMER
 	QT		+= network
-	HEADERS		+= ../includes/output/tcp-streamer.h
-	SOURCES		+= ../src/output/tcp-streamer.cpp
+	HEADERS		+= ./sources/output/tcp-streamer.h
+	SOURCES		+= ./sources/output/tcp-streamer.cpp
 }
 
 local-audio {
@@ -879,44 +872,45 @@ local-audio {
 	QT		+= multimedia 
 
 	equals (QT_MAJOR_VERSION, 5) {
-	INCLUDEPATH	+= ../includes/output/Qt5
-	HEADERS		+= ../includes/output/Qt5/Qt-audio.h \	
-	                   ../includes/output/Qt5/Qt-audiodevice.h \
-	                   ../includes/output/audiosink.h 
-	SOURCES		+= ../src/output/Qt5/Qt-audio.cpp \
-	                   ../src/output/Qt5/Qt-audiodevice.cpp \
-	                   ../src/output/audiosink.cpp 
+	INCLUDEPATH	+= ./sources/output/Qt5
+	INCLUDEPATH	+= ./sources/output/portaudio
+	HEADERS		+= ./sources/output/Qt5/Qt-audio.h \	
+	                   ./sources/output/Qt5/Qt-audiodevice.h \
+	                   ./sources/output/portaudio/audiosink.h 
+	SOURCES		+= ./sources/output/Qt5/Qt-audio.cpp \
+	                   ./sources/output/Qt5/Qt-audiodevice.cpp \
+	                   ./sources/output/portaudio/audiosink.cpp 
 	LIBS		+= -lportaudio
 	} else {
-	INCLUDEPATH	+= ../includes/output/Qt6
-	HEADERS		+= ../includes/output/Qt6/Qt-audio.h \	
-	                   ../includes/output/Qt6/Qt-audiodevice.h \
-	                   ../includes/output/audiosink.h 
-	SOURCES		+= ../src/output/Qt6/Qt-audio.cpp \
-	                   ../src/output/Qt6/Qt-audiodevice.cpp \
-	                   ../src/output/audiosink.cpp 
+	INCLUDEPATH	+= ./sources/output/Qt6
+	INCLUDEPATH	+= ./sources/output/portaudio
+	HEADERS		+= ./sources/output/Qt6/Qt-audio.h \	
+	                   ./sources/output/Qt6/Qt-audiodevice.h \
+	                   ./sources/output/portaudio/audiosink.h 
+	SOURCES		+= ./sources/output/Qt6/Qt-audio.cpp \
+	                   ./sources/output/Qt6/Qt-audiodevice.cpp \
+	                   ./sources/output/portaudio/audiosink.cpp 
 	LIBS		+= -lportaudio
 	}
-
 }
 
 datastreamer	{
 	DEFINES		+= DATA_STREAMER
 	DEFINES		+= CLOCK_STREAMER
-	INCLUDEPATH	+= ../server-thread
-	HEADERS		+= ../server-thread/tcp-server.h
-	SOURCES		+= ../server-thread/tcp-server.cpp
+	INCLUDEPATH	+= ./sources/server-thread
+	HEADERS		+= ./sources/server-thread/tcp-server.h
+	SOURCES		+= ./sources/server-thread/tcp-server.cpp
 }
 
 viterbi-scalar {
-	DEPENDPATH	+= ../src/support/viterbi
-	INCLUDEPATH	+= ../src/support/viterbi
-	HEADERS		+= ../src/support/viterbi/viterbi.h 
-	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+	DEPENDPATH	+= ./sources/support/viterbi
+	INCLUDEPATH	+= ./sources/support/viterbi
+	HEADERS		+= ./sources/support/viterbi/viterbi.h 
+	SOURCES		+= ./sources/support/viterbi/viterbi.cpp 
 }
 
 viterbi-sse {
-	DEPENDPATH	+= ../src/support/viterbi
+	DEPENDPATH	+= ./sources/support/viterbi
 	QMAKE_CFLAGS    +=  -msse4
 	QMAKE_CXXFLAGS  +=  -msse4
 	QMAKE_CFLAGS    +=  -mavx2 
@@ -925,63 +919,63 @@ viterbi-sse {
 	DEFINES		+= __SSE4_1__
 	DEFINES		+= __ARCH_X86__
 	#DEFINES	+= __ARCH_AARCH64__
-	INCLUDEPATH	+= ../src/support/viterbi
-	HEADERS		+= ../src/support/viterbi/viterbi.h 
-	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+	INCLUDEPATH	+= ./sources/support/viterbi
+	HEADERS		+= ./sources/support/viterbi/viterbi.h 
+	SOURCES		+= ./sources/support/viterbi/viterbi.cpp 
 }
 
 viterbi-avx2 {
-	DEPENDPATH	+= ../src/support/viterbi
+	DEPENDPATH	+= ./sources/support/viterbi
 	QMAKE_CFLAGS    +=  -mavx2 
 	QMAKE_CXXFLAGS  +=  -mavx2
 	QMAKE_LFLAGS    +=  -mavx2
 	DEFINES		+= __AVX2__
 	DEFINES		+= __ARCH_X86__
 	#DEFINES	+= __ARCH_AARCH64__
-	INCLUDEPATH	+= ../src/support/viterbi
-	HEADERS		+= ../src/support/viterbi/viterbi.h 
-	SOURCES		+= ../src/support/viterbi/viterbi.cpp 
+	INCLUDEPATH	+= ./sources/support/viterbi
+	HEADERS		+= ./sources/support/viterbi/viterbi.h 
+	SOURCES		+= ./sources/support/viterbi/viterbi.cpp 
 }
 
 spiral-sse	{
-	DEPENDPATH     +=  ../src/support/viterbi-spiral 
-	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
+	DEPENDPATH     +=  ./sources/support/viterbi-spiral 
+	INCLUDEPATH     +=  ./sources/support/viterbi-spiral 
 	DEFINES		+=  SSE_AVAILABLE
-	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
-	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-sse.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-sse.c
+	HEADERS		+= ./sources/support/viterbi-spiral/viterbi.h 
+	SOURCES		+= ./sources/support/viterbi-spiral/viterbi.cpp 
+	HEADERS		+= ./sources/support/viterbi-spiral/spiral-sse.h
+	SOURCES		+= ./sources/support/viterbi-spiral/spiral-sse.c
 }
 
 spiral-no-sse	{
-	DEPENDPATH     +=  ../src/support/viterbi-spiral 
-	INCLUDEPATH     +=  ../src/support/viterbi-spiral 
+	DEPENDPATH     +=  ./sources/support/viterbi-spiral 
+	INCLUDEPATH     +=  ./sources/support/viterbi-spiral 
 	DEFINES		+= NO_SSE_AVAILABLE
-	HEADERS		+= ../src/support/viterbi-spiral/viterbi.h 
-	SOURCES		+= ../src/support/viterbi-spiral/viterbi.cpp 
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
+	HEADERS		+= ./sources/support/viterbi-spiral/viterbi.h 
+	SOURCES		+= ./sources/support/viterbi-spiral/viterbi.cpp 
+	HEADERS		+= ./sources/support/viterbi-spiral/spiral-no-sse.h
+	SOURCES		+= ./sources/support/viterbi-spiral/spiral-no-sse.c
 }
 
 faad	{
 	DEFINES		+= __WITH_FAAD__
-	HEADERS		+= ../includes/backend/audio/faad-decoder.h 
-	SOURCES		+= ../src/backend/audio/faad-decoder.cpp 
+	HEADERS		+= ./sources/backend/audio/faad-decoder.h 
+	SOURCES		+= ./sources/backend/audio/faad-decoder.cpp 
 	LIBS		+= -lfaad
 }
 
 fdk-aac {
         DEFINES         += __WITH_FDK_AAC__
-        INCLUDEPATH     += ../helpers/specials/fdk-aac
-        HEADERS         += ../includes/backend/audio/fdk-aac.h
-        SOURCES         += ../src/backend/audio/fdk-aac.cpp
+        INCLUDEPATH     += ./helpers/specials/fdk-aac
+        HEADERS         += ./sources/backend/audio/fdk-aac.h
+        SOURCES         += ./sources/backend/audio/fdk-aac.cpp
         PKGCONFIG       += fdk-aac
 }
 
 mapserver {
 	DEFINES		+= __HAVE_MAP_SERVER__
-	HEADERS		+= ../includes/support/http-handler.h
-	SOURCES		+= ../src/support/http-handler.cpp
+	HEADERS		+= ./sources/support/http-handler.h
+	SOURCES		+= ./sources/support/http-handler.cpp
 }
 
 double	{

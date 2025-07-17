@@ -218,6 +218,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/bandpass-filter.h
 	     ./sources/support/bit-extractor.h
 	     ./sources/support/cacheElement.h
+	     ./sources/support/charsets.h
 	     ./sources/support/content-table.h
 	     ./sources/support/converter_48000.h
 	     ./sources/support/coordinates.h
@@ -273,7 +274,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/backend.h
 	     ./sources/backend/backend-deconvolver.h
 	     ./sources/backend/backend-driver.h
-	     ./sources/backend/charsets.h
 	     ./sources/backend/frame-processor.h
 	     ./sources/backend/msc-handler.h
 	     ./sources/backend/reed-solomon/galois.h
@@ -353,6 +353,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/protection/uep-protection.cpp
 	     ./sources/protection/eep-protection.cpp
 	     ./sources/support/audiosystem-selector.cpp
+	     ./sources/support/charsets.cpp
 	     ./sources/support/bandpass-filter.cpp
 	     ./sources/support/content-table.cpp
 	     ./sources/support/converter_48000.cpp
@@ -401,7 +402,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/backend.cpp
 	     ./sources/backend/backend-deconvolver.cpp
 	     ./sources/backend/backend-driver.cpp
-	     ./sources/backend/charsets.cpp
 	     ./sources/backend/msc-handler.cpp
 	     ./sources/backend/reed-solomon/galois.cpp
 	     ./sources/backend/reed-solomon/reed-solomon.cpp

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -29,7 +29,7 @@
 #include	"tii-reader.h"
 #include	<QSettings>
 
-#include	"scan-handler.h"
+//#include	"scan-handler.h"
 
 #define	SEPARATOR	';'
 #define	COUNTRY		1
