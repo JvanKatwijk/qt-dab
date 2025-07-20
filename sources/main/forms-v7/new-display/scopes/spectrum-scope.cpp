@@ -85,8 +85,8 @@ bool	brush;
 	lm_picker       -> setStateMachine (lpickerMachine);
         lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
                                             Qt::RightButton);
-        connect (lm_picker, SIGNAL (selected (const QPointF&)),
-                 this, SLOT (rightMouseClick (const QPointF &)));
+        connect (lm_picker,qOverload<const QPointF&>(&QwtPlotPicker::selected),
+                 this, &spectrumScope::rightMouseClick);
 
 	spectrumCurve. setPen (QPen (curveColor, 2.0));
 	spectrumCurve. setOrientation (Qt::Horizontal);

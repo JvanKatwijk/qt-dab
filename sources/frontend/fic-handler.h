@@ -77,6 +77,7 @@ private:
 	std::atomic<bool> running;
 	int		successRatio;
 	int		fibCounter;
+	uint16_t	starter;
 signals:
 	void		showFICQuality	(int, int);
 	void		showFICBER	(float);

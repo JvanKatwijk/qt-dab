@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -30,17 +30,17 @@
 
 class	riffReader {
 public:
-		riffReader	(const QString &);
-		~riffReader	();
-	void	reset		();
-	int	read		(std::complex<float> *, uint64_t);
+			riffReader	(const QString &);
+			~riffReader	();
+	void		reset		();
+	int		read		(std::complex<float> *, uint64_t);
 	uint64_t	elementCount	();
 	uint64_t	currentPos	();
 
-	int	getVFOFrequency	();
+	int		getVFOFrequency	();
 private:
 
-	QString	fileName;
+	QString		fileName;
 	uint16_t	formatTag;
         uint16_t	nrChannels;
         uint32_t	samplingRate;
@@ -58,6 +58,5 @@ private:
 	int		tunedFrequency;
 	int		bitDepth;
 	float		denominator;
-
 	int		readBytes;
 };

@@ -223,7 +223,7 @@ std::string	ctype;
 	               keepalive ? "keep-alive" : "close",
 	               (int)(strlen (content. c_str ())));
 	      int hdrlen = strlen (hdr);
-///	      fprintf (stderr, "reply header %s \n", hdr);
+//	      fprintf (stderr, "reply header %s \n", hdr);
 	      if (jsonUpdate) {
 //	         fprintf (stderr, "Json update requested\n");
 //	         fprintf (stderr, "%s\n", content. c_str ());

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -135,7 +135,7 @@ uint8_t patternTable [] = {
         }
 }
 
-		TII_Detector::~TII_Detector () {
+	TII_Detector::~TII_Detector () {
 }
 
 void	TII_Detector::resetBuffer	() {

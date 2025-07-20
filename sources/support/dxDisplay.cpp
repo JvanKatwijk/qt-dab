@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2024
+ *    Copyright (C) 2024 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -94,7 +94,8 @@ uint16_t	secondDigit (v % 10);
 }
 
 	dxDisplay::~dxDisplay () {
-	storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
+	if (!myWidget -> isHidden ())
+	   storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
 	int16_t	rows	= tableWidget -> rowCount ();
 	for (int row = rows; row > 0; row --)
 	   tableWidget -> removeRow (row);

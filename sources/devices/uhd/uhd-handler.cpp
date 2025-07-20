@@ -137,10 +137,10 @@ void	uhd_streamer::run () {
 
 	setExternalGain	(externalGain	-> value ());
 	set_KhzOffset	(KhzOffset	-> value ());
-	connect (externalGain, SIGNAL (valueChanged (int)),
-	         this, SLOT (setExternalGain (int)));
-	connect (KhzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_KhzOffset (int)));
+	connect (externalGain, &QSpinBox::valueChanged,
+	         this, &uhdHandler::setExternalGain);
+	connect (KhzOffset, &QSpinBox::valueChanged,
+	         this, &uhdHandler::set_KhzOffset);
 }
 
 	uhdHandler::~uhdHandler () {

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2024
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,12 +33,13 @@
 #include        "dab-constants.h"
 #include        "radio.h"
 #define DEFAULT_INI     ".qt-dab-6.8.ini"
-#define	SCHEDULE	".qt-dab-schedule"
+#define	SCHEDULE	".qt-dab-schedule.sch"
+#define	TII_FILENAME	".txdata.tii"
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
 
-QString fullPathfor (QString v) {
+QString fullPathfor (const QString &v, const QString &ending) {
 QString fileName;
 
 	if (v == QString (""))
@@ -51,7 +52,8 @@ QString fileName;
 	char *PathFile;
 	PathFile = getenv ("HOME");
 	fileName = PathFile;
-	fileName.append ("/.qt-dab.ini");
+	fileName.append ("/");
+	fileName. append (v);
 	qDebug() << fileName;
 #else
 	fileName = QDir::homePath();
@@ -59,8 +61,8 @@ QString fileName;
 	fileName. append (v);
 	fileName = QDir::toNativeSeparators (fileName);
 #endif
-	if (!fileName. endsWith (".ini"))
-	   fileName. append (".ini");
+	if (!fileName. endsWith (ending))
+	   fileName. append (ending);
 
 	return fileName;
 }
@@ -68,20 +70,24 @@ QString fileName;
 void    setTranslator (QTranslator *, QString Language);
 
 int     main (int argc, char **argv) {
-QString initFileName = fullPathfor (QString (DEFAULT_INI));
-RadioInterface  *myRadioInterface;
+QString initFileName	= fullPathfor (QString (DEFAULT_INI), QString (".ini"));
+QString	scheduleFile	= fullPathfor (QString (SCHEDULE), QString (".sch"));
+QString	tiiFileName	= fullPathfor (QString (TII_FILENAME), 
+	                                                 QString (".tii"));
+QString presetFile	= fullPathfor (QString (".qt-dab-presets.xml"),
+	                                                 QString (".xml"));
+QString scanListFile	= fullPathfor (QString (".qt-scanList.xml"),
+	                                                 QString (".xml"));
+RadioInterface	* myRadioInterface;
 
 // Default values
-QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
 int32_t		clockPort	= 8889;
 int		opt;
 QString		freqExtension	= "";
 bool		error_report	= false;
 int		fmFrequency	= 110000;
-QString	scheduleFile		= fullPathfor (SCHEDULE);
 
-QString	tiiFileName		= QDir::homePath () + "/" + ".txdata.tii";
 
 QTranslator	theTranslator;
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
@@ -91,12 +97,12 @@ QTranslator	theTranslator;
 
 	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
-	      case 'i':
-	         initFileName = fullPathfor (QString (optarg));
+	      case 'i':		// alternative for ini file
+	         initFileName = fullPathfor (QString (optarg), QString (".ini"));
 	         break;
 
-	      case 't':
-	         tiiFileName	= QDir::homePath () + "/" + QString (optarg);
+	      case 't':		// alternative for unencoded tiifile
+	         tiiFileName	= fullPathfor (QString (optarg), QString (".csv"));
 	         break;
 
 	      case 'P':
@@ -127,12 +133,8 @@ QTranslator	theTranslator;
 	   }
 	}
 
-	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
+	QSettings dabSettings (initFileName, QSettings::IniFormat);
 	
-	QString presetFile = QDir::homePath () + "/" + ".qt-dab-presets.xml";
-	presetFile	= QDir::toNativeSeparators (presetFile);
-	QString scanListFile = QDir::homePath () + "/.qt-scanList.xml";
-	scanListFile	= QDir::toNativeSeparators (scanListFile);
 /*
  *      Before we connect control to the gui, we have to
  *      instantiate
@@ -141,9 +143,9 @@ QTranslator	theTranslator;
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 
-	dabSettings	-> beginGroup ("SKIN_HANDLING");
-	QString skin    = dabSettings -> value ("skin", "globstyle"). toString ();
-	dabSettings	-> endGroup ();
+	dabSettings. beginGroup ("SKIN_HANDLING");
+	QString skin    = dabSettings. value ("skin", "globstyle"). toString ();
+	dabSettings. endGroup ();
 
 	skin    = skin == "Combinear" ? ":res/Combinear.qss" :
 	          skin == "globstyle" ? ":res/globstyle.qss":
@@ -165,22 +167,23 @@ QTranslator	theTranslator;
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (&theTranslator, locale);
 	a. setWindowIcon (QIcon (":/res/qt-dab-6-128x128.png"));
-	myRadioInterface = new RadioInterface (dabSettings,
-	                                       scanListFile,
-	                                       presetFile,
-	                                       freqExtension,
-	                                       scheduleFile,
-	                                       tiiFileName,
-	                                       error_report,
-	                                       dataPort,
-	                                       clockPort,
-	                                       fmFrequency
-	                                       );
-	myRadioInterface -> show ();
+//
+//	here we go for real!!
 	qRegisterMetaType<tiiData> ("tiiData");
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	qRegisterMetaType<QVector<tiiData> >("QVector<tiiData>");
-	
+	myRadioInterface = new RadioInterface (&dabSettings,
+	                                        scanListFile,
+	                                        presetFile,
+	                                        freqExtension,
+	                                        scheduleFile,
+	                                        tiiFileName,
+	                                        error_report,
+	                                        dataPort,
+	                                        clockPort,
+	                                        fmFrequency
+	                                       );
+	myRadioInterface -> show ();
 	a. exec();
 /*
  *      done:
@@ -189,8 +192,6 @@ QTranslator	theTranslator;
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
-	delete myRadioInterface;
-	delete dabSettings;
 	return 1;
 }
 

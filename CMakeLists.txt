@@ -166,11 +166,11 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/output
 	           ./sources/output/portaudio
 	           ./sources/output/Qt6
-	           ./sources/qt-devices
-	           ./sources/qt-devices/filereaders/
-	           ./sources/qt-devices/filereaders/new-reader
-	           ./sources/qt-devices/filereaders/rawfiles-new
-	           ./sources/qt-devices/filereaders/xml-filereader
+	           ./sources/devices
+	           ./sources/devices/filereaders/
+	           ./sources/devices/filereaders/new-reader
+	           ./sources/devices/filereaders/rawfiles-new
+	           ./sources/devices/filereaders/xml-filereader
 	           /usr/include/
 	)
 
@@ -306,8 +306,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/mot/mot-handler.h
 	     ./sources/backend/data/mot/mot-object.h
 	     ./sources/output/audio-player.h
-	     ./sources/qt-devices/device-handler.h
-	     ./sources/qt-devices/device-exceptions.h
+	     ./sources/devices/device-handler.h
+	     ./sources/devices/device-exceptions.h
 	     ./sources/qt-devicces/xml-filewriter.h
 	)
 
@@ -430,8 +430,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/mot/mot-handler.cpp
 	     ./sources/backend/data/mot/mot-object.cpp
 	     ./sources/output/audio-player.cpp
-	     ./sources/qt-devices/device-handler.cpp
-	     ./sources/qt-devices/xml-filewriter.cpp
+	     ./sources/devices/device-handler.cpp
+	     ./sources/devices/xml-filewriter.cpp
 	)
 
 	set (${objectName}_MOCS
@@ -516,7 +516,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/forms-v7/config-helper.ui
 	     ./sources/main/forms-v7/new-display/scopewidget.ui
 	     ./sources/main/forms-v7/snr-viewer/snr-widget.ui
-	     ./sources/qt-devices/filereaders/xml-filereader/xmlfiles.ui
+	     ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
 	   )
 
 
@@ -681,7 +681,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	endif (NOT TCP_STREAMER)
 
 	QT6_WRAP_UI (UIS ${${objectName}_UIS}
-	             ./sources/qt-devices/filereaders/filereader-widget.ui)
+	             ./sources/devices/filereaders/filereader-widget.ui)
 
 	include_directories (
 	          ${SDRPLAY_INCLUDES}
@@ -715,7 +715,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	                       ${CMAKE_DL_LIBS}
 	)
 
-	add_subdirectory (./sources/qt-devices/ /tmp)
+	add_subdirectory (./sources/devices/ /tmp)
 	target_link_libraries (${objectName} PRIVATE ${objectName}_devices)
 
 	INSTALL (TARGETS ${objectName} DESTINATION  ${CMAKE_INSTALL_PREFIX})

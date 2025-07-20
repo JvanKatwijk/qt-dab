@@ -30,7 +30,6 @@
 #include	<complex>
 #include	"findfilenames.h"
 
-
 class Blocks	{
 public:
 			Blocks		() {}

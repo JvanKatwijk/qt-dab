@@ -77,11 +77,10 @@ DABFLOAT	sum	= 0.0;
 //	we process the samples backwards rather than reversing
 //	the kernel
 Complex	 BandPassFIR::Pass (Complex z) {
-int16_t	i;
 Complex	tmp	= 0;
 
 	buffer [ip]	= z;
-	for (i = 0; i < filterSize; i ++) {
+	for (uint16_t i = 0; i < filterSize; i ++) {
 	   int16_t index = ip - i;
 	   if (index < 0)
 	      index += filterSize;
@@ -93,11 +92,10 @@ Complex	tmp	= 0;
 }
 
 DABFLOAT	BandPassFIR::Pass (DABFLOAT v) {
-int16_t		i;
 DABFLOAT	tmp	= 0;
 
 	buffer [ip] = Complex (v, 0);
-	for (i = 0; i < filterSize; i ++) {
+	for (uint16_t i = 0; i < filterSize; i ++) {
 	   int16_t index = ip - i;
 	   if (index < 0)
 	      index += filterSize;

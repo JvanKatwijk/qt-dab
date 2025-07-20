@@ -53,8 +53,8 @@ void	constrain (int32_t & testVal, const int32_t limit) {
         lm_picker       -> setStateMachine (lpickerMachine);
         lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
                                             Qt::RightButton);
-        connect (lm_picker, SIGNAL (selected (const QPointF&)), 
-                 this, SLOT (rightMouseClick (const QPointF &)));
+        connect (lm_picker, qOverload<const QPointF&>(&QwtPlotPicker::selected),
+                 this, qOverload<const QPointF&>(&IQDisplay::rightMouseClick));
  
 
 	CycleCount	= 0;

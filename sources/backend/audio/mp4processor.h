@@ -99,12 +99,6 @@ private:
 	int16_t		RSDims;
 	int16_t		au_start	[10];
 	firecode_checker	fc;
-//	and for the aac decoder
-//#ifdef	__WITH_FDK_AAC__
-//	fdkAAC		*aacDecoder;
-//#else
-//	faadDecoder	*aacDecoder;
-//#endif
 signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);
@@ -112,6 +106,5 @@ signals:
 	void		isStereo			(bool);
 	void		newFrame			(int);
 	void		show_rsCorrections		(int, int);
-	void		show_emptyLabel			(const QString &);
 };
 

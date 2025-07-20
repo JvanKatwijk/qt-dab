@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -90,14 +90,14 @@
 #include	"spyserver-client-8.h"
 #define	SPYSERVER_DEVICE_8	0215
 #endif
-#ifdef	HAVE_COLIBRI
-#include	"colibri-handler.h"
-#define	COLIBRI_DEVICE		0216
-#endif
-#ifdef	HAVE_ELAD
-#include	"elad-handler.h"
-#define	ELAD_S1_DEVICE		0217
-#endif
+//#ifdef	HAVE_COLIBRI
+//#include	"colibri-handler.h"
+//#define	COLIBRI_DEVICE		0216
+//#endif
+//#ifdef	HAVE_ELAD
+//#include	"elad-handler.h"
+//#define	ELAD_S1_DEVICE		0217
+//#endif
 
 #include	"xml-filereader.h"
 //	wavfiles is replaced by newfiles
@@ -124,17 +124,17 @@
 #ifdef	HAVE_SDRPLAY_V2
 	deviceList. push_back (deviceItem ("sdrplay-v2", SDRPLAY_V2_DEVICE));
 #endif
-//#ifdef	__MINGW32__
+//
+//	RTLSDR  handlers for windows differ from the one for Linux
 #ifdef	HAVE_RTLSDR_V3
 	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
 #elif	HAVE_RTLSDR_V4
 	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
 #endif
-//#else
+//	This is the one for linux
 #ifdef	HAVE_RTLSDR
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 #endif
-//#endif
 #ifdef	HAVE_AIRSPY_2
 	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
 #endif

@@ -48,7 +48,6 @@
   *	The data is sent through to the fib processor
   */
 
-static int starter	= 0;
 		ficHandler::ficHandler (RadioInterface *mr,
 	                                uint8_t dabMode,
 	                                uint8_t cpuSupport):
@@ -62,6 +61,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	ficno		= 0;
 	ficBlocks	= 0;
 
+	starter		= 0;
 	ficErrors	= 0;
 	ficBits		= 0;
 

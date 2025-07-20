@@ -73,22 +73,30 @@
 	vfoFrequency	= DEFAULT_FREQUENCY;
 	connected	= false;
 //
-	connect (tcp_connect, SIGNAL (clicked ()),
-	         this, SLOT (wantConnect ()));
-	connect (tcp_disconnect, SIGNAL (clicked ()),
-	         this, SLOT (setDisconnect ()));
-	connect (gainSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (sendGain (int)));
-	connect (PpmSelector, SIGNAL (valueChanged (double)),
-	         this, SLOT (set_fCorrection (double)));
-	connect (agcSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (setAgcMode (int)));
-	connect (biasTSelector, SIGNAL(stateChanged(int)),
-	         this, SLOT (setBiasT (int)));
-	connect (portSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (setPort (int)));
-	connect (addressSelector, SIGNAL (returnPressed()),
-	         this, SLOT (setAddress()));
+	connect (tcp_connect, &QPushButton::clicked,
+	         this, &rtl_tcp_client::wantConnect);
+	connect (tcp_disconnect, &QPushButton::clicked,
+	         this, &rtl_tcp_client::setDisconnect);
+	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &rtl_tcp_client::sendGain);
+	connect (PpmSelector, qOverload<double>(&QDoubleSpinBox::valueChanged),
+	         this, &rtl_tcp_client::set_fCorrection);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (agcSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (agcSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &rtl_tcp_client::setAgcMode);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+	connect (biasTSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (biasTSelector, &QCkeckBox::stateChanged,
+#endif
+	         this, &rtl_tcp_client::setBiasT);
+	connect (portSelector, &QSpinBox::valueChanged,
+	         this, &rtl_tcp_client::setPort);
+	connect (addressSelector, &QLineEdit::returnPressed,
+	         this, &rtl_tcp_client::setAddress);
 	theState -> setText("waiting to start");
 }
 
@@ -140,8 +148,8 @@ bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
 	this -> toSkip = skipped;
 //	here the command to set the frequency
 	sendVFO (freq);
-	connect (&toServer, SIGNAL(readyRead ()),
-	         this, SLOT (readData ()));
+	connect (&toServer, &QIODevice::readyRead,
+	         this, &rtl_tcp_client::readData);
 	return true;
 }
 
@@ -149,8 +157,8 @@ void	rtl_tcp_client::stopReader	() {
 
 	if (!connected)
 	   return;
-	disconnect (&toServer, SIGNAL (readyRead ()),
-	            this, SLOT (readData ()));
+	disconnect (&toServer, &QIODevice::readyRead,
+	            this, &rtl_tcp_client::readData);
 	_I_Buffer. FlushRingBuffer ();
 }
 

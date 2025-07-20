@@ -99,7 +99,8 @@
 }
 
 		techData::~techData	() {
-	storeWidgetPosition (dabSettings, &myFrame, TECHDATA_SETTING);
+	if (!myFrame. isHidden ())
+	   storeWidgetPosition (dabSettings, &myFrame, TECHDATA_SETTING);
 	delete theAudioDisplay;
 }
 

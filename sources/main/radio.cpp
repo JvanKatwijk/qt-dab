@@ -189,10 +189,10 @@ QString h;
 	this	-> ficDumpPointer	= nullptr;
 	this	-> the_aboutLabel	= nullptr;
 	running. 		store (false);
-	stereoSetting		= false;
-	contentTable_p		= nullptr;
-	scanTable_p		= nullptr;
-	mapHandler		= nullptr;
+	stereoSetting			= false;
+	contentTable_p			= nullptr;
+	scanTable_p			= nullptr;
+	mapHandler			= nullptr;
 	theDXDisplay. hide ();
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
@@ -752,7 +752,7 @@ static
 QString hextoString (int v) {
 QString res;
 	for (int i = 0; i < 4; i ++) {
-	   uint8_t t = (v & 0xF000) >> 12;
+	   const uint8_t t = (v & 0xF000) >> 12;
 	   QChar c = t <= 9 ? (char)('0' + t) : (char) ('A' + t - 10);
 	   res. append (c);
 	   v <<= 4;
@@ -1248,37 +1248,30 @@ float	absPeakRight	= 0;
   */
 void	RadioInterface::TerminateProcess () {
 	running. store	(false);
-	theSCANHandler. hide ();
-	store (dabSettings_p, SOUND_HANDLING, QT_AUDIO_VOLUME, audioVolume);
-	myTimeTable. hide ();
+	storeWidgetPosition (dabSettings_p, this, S_MAIN_WIDGET);
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
+	theSCANHandler. hide ();
+	myTimeTable. hide ();
+	if (scanTable_p != nullptr) {
+	   scanTable_p	-> clearTable ();
+	   scanTable_p	-> hide ();
+	   delete scanTable_p;
+	}
 	hideButtons	();
 
-	theDXDisplay. hide ();
-	storeWidgetPosition (dabSettings_p, this, S_MAIN_WIDGET);
-	theNewDisplay. hide ();
-//
-#ifdef	DATA_STREAMER
-	fprintf (stderr, "going to close the dataStreamer\n");
-	delete		dataStreamer_p;
-#endif
-#ifdef	CLOCK_STREAMER
-	fprintf (stderr, "going to close the clockstreamer\n");
-	delete	clockStreamer_p;
-#endif
+//	stop the timers
 	displayTimer.	stop	();
 	channelTimer.	stop	();
 	presetTimer.	stop	();
 	epgTimer.	stop	();
-	if (dlTextFile != nullptr)
-	   fclose (dlTextFile);
-#ifdef	HAVE_PLUTO_RXTX
-	if (streamerOut_p != nullptr)
-	   streamerOut_p	-> stop ();
-#endif
-	theOFDMHandler		-> stop ();
+	pauzeTimer.	stop	();
+	muteTimer.	stop	();
+//
+//	hide the windows
+	theNewDisplay.		hide ();
+	theDXDisplay.		hide ();
 	theEnsembleHandler	-> hide ();
 	configHandler_p		-> hide ();
 	techWindow_p		-> hide ();
@@ -1291,30 +1284,40 @@ void	RadioInterface::TerminateProcess () {
 	   contentTable_p -> hide ();
 	   delete contentTable_p;
 	}
+	theSNRViewer.	hide ();
+	theScheduler.	hide	();
+	theScanlistHandler. hide ();
+//
+#ifdef	DATA_STREAMER
+	fprintf (stderr, "going to close the dataStreamer\n");
+	delete		dataStreamer_p;
+#endif
+#ifdef	CLOCK_STREAMER
+	fprintf (stderr, "going to close the clockstreamer\n");
+	delete	clockStreamer_p;
+#endif
+	if (dlTextFile != nullptr)
+	   fclose (dlTextFile);
+#ifdef	HAVE_PLUTO_RXTX
+	if (streamerOut_p != nullptr)
+	   streamerOut_p	-> stop ();
+#endif
 	if (mapHandler != nullptr)
 	   mapHandler ->  stop ();
 //	just save a few checkbox settings that are not
 
-	if (scanTable_p != nullptr) {
-	   scanTable_p	-> clearTable ();
-	   scanTable_p	-> hide ();
-	   delete scanTable_p;
-	}
-	theSCANHandler. hide ();
-
 	stopFrameDumping	();
 	stopSourceDumping	();
 	stopAudioDumping	();
-	theScheduler. hide	();
+	theOFDMHandler		-> stop ();
+	if (soundOut_p)
+	   delete soundOut_p;
 	theLogger. log (logger::LOG_RADIO_STOPS);
 	usleep (1000);		// pending signals
 //	everything should be halted by now
 	dabSettings_p	-> sync ();
-	theSNRViewer. hide ();
 	theOFDMHandler. reset ();
-	inputDevice_p. reset ();;
-	delete		soundOut_p;
-	theScanlistHandler. hide ();
+	inputDevice_p. reset ();
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -3924,7 +3927,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      }
 	      
 	      if (bestIndex == teller) {
-	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
+	         QString labelText = createTIILabel (&theTr. theTransmitter);
 	         distanceLabel	-> setText (labelText);
 	      }
 	      theDXDisplay. addRow (theTr. theTransmitter,
@@ -3937,7 +3940,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      if (theTr. theTransmitter. distance < 0)
 	         continue;
 	      if (theTr. isStrongest) {
-	         QString labelText = create_tiiLabel (&theTr. theTransmitter);
+	         QString labelText = createTIILabel (&theTr. theTransmitter);
 	         distanceLabel	-> setText (labelText);
 	         break;
 	      }
@@ -4208,6 +4211,7 @@ void	RadioInterface::setVolume	(int n) {
 	   if (channel. audioActive)
 	      setSoundLabel (true);
 	   ((Qt_Audio *)soundOut_p) -> setVolume (n);
+	   store (dabSettings_p, SOUND_HANDLING, QT_AUDIO_VOLUME, audioVolume);
 	}
 }
 
@@ -4271,7 +4275,7 @@ int direction	= (azimuth) / 22.5;
 	return directionTable [(direction + 1) / 2];
 }
 
-QString	RadioInterface::create_tiiLabel	(const cacheElement *transmitter) {
+QString	RadioInterface::createTIILabel	(const cacheElement *transmitter) {
 	uint8_t mainId		= transmitter -> mainId;
 	uint8_t subId		= transmitter -> subId;
 	const QString & transmitterName
@@ -4402,7 +4406,7 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	   }
 	   else
 	   if (theElement. tagName () == "service")
-	      process_service (theElement);
+	      processService (theElement);
 	}
 }
 
@@ -4434,7 +4438,7 @@ int picturesSeen = 0;
 	for (QDomElement service = node. firstChildElement ("service");
 	     !service. isNull ();
 	     service = service. nextSiblingElement ("service")) {
-	    picturesSeen += process_service (service);
+	    picturesSeen += processService (service);
 	}
 	return picturesSeen > 0;
 }
@@ -4447,7 +4451,7 @@ bool	containsPicture (mmDescriptor &set, multimediaElement &m) {
 	return false;
 }
 
-int	RadioInterface::process_service (const QDomElement &service) {
+int	RadioInterface::processService (const QDomElement &service) {
 mmDescriptor pictures;
 	uint32_t serviceId =
 	             xmlHandler. serviceSid (service);

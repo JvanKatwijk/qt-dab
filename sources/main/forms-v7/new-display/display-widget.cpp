@@ -49,8 +49,8 @@
 	setupUi (&myFrame);
 	setPositionAndSize (dabSettings_p, &myFrame, 
 	                           DISPLAY_WIDGET_SETTINGS);
-	connect (&myFrame, SIGNAL (frameClosed ()),
-	         this, SIGNAL (frameClosed ())); 
+	connect (&myFrame, &superFrame::frameClosed,
+	         this, &displayWidget::frameClosed); 
 	connect (&myFrame, &superFrame::makePicture, 
                  this, &displayWidget::handle_mouseClicked);
 //
@@ -128,12 +128,16 @@
 	else
 	   show_marksButton	-> setText ("set markers");
 //
-	connect (tabWidget, SIGNAL (currentChanged (int)),
-                 this, SLOT (switch_tab (int)));
-	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
-	         this, SLOT (rightMouseClick ()));
-	connect (ncpScope_checkBox, SIGNAL (stateChanged (int)),
-	         this, SLOT (handleNcpScope_checkBox (int)));
+	connect (tabWidget, &QTabWidget::currentChanged,
+                 this, &displayWidget::switch_tab);
+	connect (IQDisplay_p, qOverload<>(&IQDisplay::rightMouseClick),
+	         this, &displayWidget::rightMouseClick);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+	connect (ncpScope_checkBox, &QCheckBox::checkStateChanged,
+#else
+	connect (ncpScope_checkBox, &QCheckBox::stateChanged,
+#endif
+	         this, &displayWidget::handleNcpScope_checkBox);
 	connect (show_marksButton, &QPushButton::clicked,
 	         this, &displayWidget::handleMarksButton);
 //
@@ -142,21 +146,23 @@
 }
 
 	displayWidget::~displayWidget () {
-	storeWidgetPosition (dabSettings_p, &myFrame,
+	if (!myFrame. isHidden ()) {
+	   storeWidgetPosition (dabSettings_p, &myFrame,
 	                                 DISPLAY_WIDGET_SETTINGS);
-	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
-	                       "iqSliderValue", scopeSlider -> value ());
-	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
-	                     "spectrumSlider", spectrumSlider -> value ());
-	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
-	                     "correlationSlider", correlationSlider -> value ());
-	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
-	                     "tiiSlider", tiiSlider -> value ());
-	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
-	                     "deviationSlider", deviationSlider -> value ());
-	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	                          "iqSliderValue", scopeSlider -> value ());
+	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	                        "spectrumSlider", spectrumSlider -> value ());
+	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	                        "correlationSlider", correlationSlider -> value ());
+	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	                        "tiiSlider", tiiSlider -> value ());
+	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
+	                        "deviationSlider", deviationSlider -> value ());
+	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
 	                     "channelSlider", channelSlider -> value ());
-	myFrame. hide	();
+	   myFrame. hide	();
+	}
 	delete		spectrumScope_p;
 	delete		waterfallScope_p;
 	delete		nullScope_p;

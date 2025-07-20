@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2024
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -52,37 +52,37 @@ float Length	= jan_abs (V);
 
 #define	GRANULARITY	5000
 #define	TABLE_SIZE	(int)(GRANULARITY + RAD_PER_DEGREE * 30.0)
-Complex makeComplex (DABFLOAT phase) {
-DABFLOAT p2	= phase * phase;
-DABFLOAT p3	= p2 * phase;
-DABFLOAT p4	= p3 * phase;
-DABFLOAT p5	= p4 * phase;
-DABFLOAT p6	= p5 * phase;
-DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
-DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
-	return Complex (cosi, sine);
-}
+//Complex makeComplex (DABFLOAT phase) {
+//DABFLOAT p2	= phase * phase;
+//DABFLOAT p3	= p2 * phase;
+//DABFLOAT p4	= p3 * phase;
+//DABFLOAT p5	= p4 * phase;
+//DABFLOAT p6	= p5 * phase;
+//DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
+//DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
+//	return Complex (cosi, sine);
+//}
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
 	                                 RingBuffer<float>   *devBuffer_i,
 	                                 RingBuffer<Complex> *iqBuffer_i) :
-	                                 myRadioInterface (mr),
-	                                 params (dabMode),
-	                                 theTable (dabMode),
-	                                 myMapper (dabMode),
-	                                 fft (params. get_T_u (), false),
-	                                 devBuffer (devBuffer_i),
-	                                 iqBuffer (iqBuffer_i),
-	                                 phaseReference (params. get_T_u ()),
-	                                 conjVector (params. get_T_u ()),
-	                                 fft_buffer (params. get_T_u ()),
-		                         stdDevVector (params. get_T_u ()),
-	                                 IntegAbsPhaseVector (params. get_T_u ()),
-	                                 meanLevelVector (params. get_T_u ()),
-	                                 meanPowerVector (params. get_T_u ()),
-	                                 meanSigmaSqVector (params. get_T_u ())
+	                                    myRadioInterface (mr),
+	                                    params (dabMode),
+	                                    theTable (dabMode),
+	                                    myMapper (dabMode),
+	                                    fft (params. get_T_u (), false),
+	                                    devBuffer (devBuffer_i),
+	                                    iqBuffer (iqBuffer_i),
+	                                    phaseReference (params. get_T_u ()),
+	                                    conjVector (params. get_T_u ()),
+	                                    fft_buffer (params. get_T_u ()),
+		                            stdDevVector (params. get_T_u ()),
+	                                    IntegAbsPhaseVector (params. get_T_u ()),
+	                                    meanLevelVector (params. get_T_u ()),
+	                                    meanPowerVector (params. get_T_u ()),
+	                                    meanSigmaSqVector (params. get_T_u ())
 {
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
@@ -92,11 +92,11 @@ DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
 	connect (this, &ofdmDecoder::show_stdDev,
 	         myRadioInterface, &RadioInterface::show_stdDev);
 //
-	this	-> T_s			= params. get_T_s	();
-	this	-> T_u			= params. get_T_u	();
-	this	-> nrBlocks		= params. get_L		();
-	this	-> carriers		= params. get_carriers	();
-	this	-> T_g			= T_s - T_u;
+	this	-> T_s		= params. get_T_s	();
+	this	-> T_u		= params. get_T_u	();
+	this	-> nrBlocks	= params. get_L		();
+	this	-> carriers	= params. get_carriers	();
+	this	-> T_g		= T_s - T_u;
 
 	repetitionCounter	= 10;
 
@@ -134,10 +134,9 @@ void	ofdmDecoder::setPowerLevel	(DABFLOAT level) {
 float	ofdmDecoder::processBlock_0 (
 	                std::vector <Complex> buffer, bool withTII) {
 	fft. fft (buffer);
-/**
-  *	we are now in the frequency domain, and we keep the carriers
-  *	as coming from the FFT as phase reference.
-  */
+//	we are now in the frequency domain, and we keep the carriers
+//	as coming from the FFT as phase reference.
+//
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
 
@@ -169,12 +168,11 @@ static float f_d = 1;
 	}
 	return 10 * log10 (f_n / f_d + 0.1);
 }
-/**
-  *	for the other blocks of data, the first step is to go from
-  *	time to frequency domain, to get the carriers.
-  *	we distinguish between FIC blocks and other blocks,
-  *	only to spare a test. The mapping code is the same
-  */
+
+//	for the other blocks of data, the first step is to go from
+//	time to frequency domain, to get the carriers.
+//	we distinguish between FIC blocks and other blocks,
+//	only to spare a test. The mapping code is the same
 
 static	int	cnt	= 0;
 
@@ -223,31 +221,30 @@ DABFLOAT sum = 0;
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
 	      index += T_u;
-/**
-  *     decoding is computing the phase difference between
-  *     carriers with the same index in subsequent blocks.
-  *     The carrier of a block is the reference for the carrier
-  *     on the same position in the next block
-  */
+//
+//     decoding is computing the phase difference between
+//     carriers with the same index in subsequent blocks.
+//     The carrier of a block is the reference for the carrier
+//     on the same position in the next block
+
 	   Complex fftBinRaw = fft_buffer [index] *
 	                       normalize (conj (phaseReference [index]));
 	   conjVector   [index] = fftBinRaw;
-
 //	   Complex fftBin	= fftBinRaw;
 //
 //	In the original code, "borrowed" from Tomneda, the
 //	correction factor was dynamically computed, i.e
-	Complex fftBin	= fftBinRaw *
-	                     makeComplex (-IntegAbsPhaseVector [index]);
+//	Complex fftBin	= fftBinRaw *
+//	                     makeComplex (-IntegAbsPhaseVector [index]);
 //	It turned out that the makeComplex function took app 10 % of the
 //	overall processing time.
 //	Table lookup was the answer, accuracy of the table increases
 //	by making the table longer
 //	since we are dealing with non int values, choosing the length
 //	requires attention
-//	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
-//	                                                 TABLE_SIZE / 2);
-//	   Complex fftBin	= fftBinRaw * compTable [dd];
+	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
+	                                                 TABLE_SIZE / 2);
+	   Complex fftBin	= fftBinRaw * compTable [dd];
 //	Get the phase (real and absolute) 
 	   DABFLOAT	re	= real (fftBin);
 	   DABFLOAT	im	= imag (fftBin);
@@ -263,27 +260,27 @@ DABFLOAT sum = 0;
 	   limit_symmetrically (IntegAbsPhaseVector [index],
 	                                RAD_PER_DEGREE * (DABFLOAT)9.9);
 
-/**
-  *	When trying alternative decoder implementations
-  *	as implemented in DABstar by Rolf Zerr (aka old-dab) and
-  *	Thomas Neder (aka) Tomneda,  I wanted to do some investigation
-  *	to get  actual figures.
-  *	The different decoders were tested with an old file
-  *	with a recording of a poor signal, that ran for (almost) exact
-  *	two  minutes from the start, and the BER results were accumulated
-  *	to get a more or less reliable answer.
-  *	It turned out that the major effect on the decoding quality 
-  *	was with the phase shifting as done above.
-  *	With that setting there turned out to be a marginal difference
-  *	between decoders 1 and decoder 4,
-  *	the other two decoders 2 and 3 performed
-  *	slightly less (roughly speaking app 740000 repairs by
-  *	decoder 1 and 4, and 746000 by decoders 2 and 3).
-  *	So, we have chosen decoders 1 (most simple one) and 4 (log likelihood)
-  *	as decoders here.
-  *	the contributions of Rolf Zerr (aka OldDab) and
-  *	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
-  */
+//
+//	When trying alternative decoder implementations
+//	as implemented in DABstar by Rolf Zerr (aka old-dab) and
+//	Thomas Neder (aka) Tomneda,  I wanted to do some investigation
+//	to get  actual figures.
+//	The different decoders were tested with an old file
+//	with a recording of a poor signal, that ran for (almost) exact
+//	two  minutes from the start, and the BER results were accumulated
+//	to get a more or less reliable answer.
+//	It turned out that the major effect on the decoding quality 
+//	was with the phase shifting as done above.
+//	With that setting there turned out to be a marginal difference
+//	between decoders 1 and decoder 4,
+//	the other two decoders 2 and 3 performed
+//	slightly less (roughly speaking app 740000 repairs by
+//	decoder 1 and 4, and 746000 by decoders 2 and 3).
+//	So, we have chosen decoders 1 (most simple one) and 4 (log likelihood)
+//	as decoders here.
+//	the contributions of Rolf Zerr (aka OldDab) and
+//	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
+//
 #define	__ZERR__
 #ifdef	__ZERR__
 	   DABFLOAT	stdDev		= phaseError * phaseError;
@@ -437,9 +434,7 @@ Complex sum	= Complex (0, 0);
 //	Ideally, the processed carrier should have a value
 //	equal to (2 * k + 1) * PI / 4
 //	The offset is a measure of the frequency "error"
-float	ofdmDecoder::compute_frequencyOffset (Complex *r,
-	                                      Complex *c) {
-
+float	ofdmDecoder::compute_frequencyOffset (Complex *r, Complex *c) {
 Complex theta = Complex (0, 0);
 static float vv	=  0;
 

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -57,12 +57,12 @@ cacheElement *tiiMapper::
 	                         uint8_t mainId, uint8_t subId) {
 	bool ok;
 	int key_2 = channelName. toInt (&ok, 16);
-	if (!ok)
-	   key_2 = 0;
+	if (!ok) 
+	   return getTransmitter (Eid, mainId, subId);
 	uint32_t key_1 = (Eid << 16) | (mainId << 8) | subId;
 	for (int i = 1; i < (int)(theDataBase. size ()); i ++) {
 	   if (theDataBase [i]. key_1 == key_1) {
-	      if (!ok || (theDataBase [i]. key_2 == key_2))
+	      if (theDataBase [i]. key_2 == key_2)
 	          return &theDataBase [i];
 	   }
 	}

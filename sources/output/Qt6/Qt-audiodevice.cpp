@@ -39,14 +39,14 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	(void)mr;
 	totalBytes_l	= 0;
 	missedBytes_l	= 0;
-	connect (this, SIGNAL (readyRead ()),
-	         this, SLOT (print_readyRead ()));
-	connect (this, SIGNAL (readChannelFinished ()),
-	         this, SLOT (print_readChannelFinished ()));
-	connect (this, SIGNAL (channelReadyRead (int)),
-	         this, SLOT (print_channelReadyRead (int)));
-	connect (this, SIGNAL (aboutToClose ()),
-	         this, SLOT (print_aboutToClose ()));
+	connect (this, &QIODevice::readyRead,
+	         this, &Qt_AudioDevice::print_readyRead);
+	connect (this, &QIODevice::readChannelFinished,
+	         this, &Qt_AudioDevice::print_readChannelFinished);
+	connect (this, &QIODevice::channelReadyRead,
+	         this, &Qt_AudioDevice::print_channelReadyRead);
+	connect (this, &QIODevice::aboutToClose,
+	         this, &Qt_AudioDevice::print_aboutToClose);
 //	start ();
 }
 

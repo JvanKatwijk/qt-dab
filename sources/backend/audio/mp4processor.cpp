@@ -70,8 +70,6 @@
 	         mr, &RadioInterface::newFrame);
 	connect (this, &mp4Processor::show_rsCorrections,
 	         mr, &RadioInterface::show_rsCorrections);
-//	connect (this, &mp4Processor::show_emptyLabel,
-//	         mr, &RadioInterface::show_label);
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;
@@ -325,7 +323,7 @@ stream_parms    streamParameters;
 	            uint8_t L1	= buffer [count - 2];
 	            my_padhandler. processPAD (buffer, count - 3, L1, L0);
 	         }
-	         else  {// no PAD data, so no dynamic labe;
+	         else  {// no PAD data, so no dynamic label;
 	         }
 //
 //	then handle the audio

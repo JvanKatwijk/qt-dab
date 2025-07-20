@@ -53,9 +53,10 @@
 
 void	mapPortHandler::handle_acceptButton () {
 int	portNumber	= 0;
-	try {
-		portNumber = mapPortSetting -> text (). toInt ();
-	} catch (...) {}
+bool	ok	= false;
+	portNumber = mapPortSetting -> text (). toInt (&ok);
+	if (!ok)
+	   portNumber = 0;
 	QDialog::done (portNumber);
 }
 

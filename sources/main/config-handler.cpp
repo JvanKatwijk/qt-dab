@@ -240,7 +240,8 @@ int	index_for_key (int key) {
 }
 
 	configHandler::~configHandler	() {
-	storeWidgetPosition (dabSettings, &myFrame, CONFIG_HANDLER);
+	if (!myFrame. isHidden ())
+	   storeWidgetPosition (dabSettings, &myFrame, CONFIG_HANDLER);
 }
 
 void	configHandler::show		() {

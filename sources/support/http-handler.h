@@ -44,10 +44,10 @@ typedef struct {
 	QString 	channelName;
 	QString		dateTime;
 	QString		polarization;
-	QString		direction;
 	uint16_t	Eid;
 	uint8_t		mainId;
 	uint8_t		subId;
+	QString		direction;
 	float		snr;
 	int		distance;
 	int		azimuth;

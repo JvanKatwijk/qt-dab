@@ -142,13 +142,13 @@ static int expected_cntidx = 0;
 //	fprintf (stderr, "packet crc OK %d\n", Length);
 
 //	Continuity index:
-	uint8_t cntIdx	= getBits (vec, 2, 2);
+	const uint8_t cntIdx	= getBits (vec, 2, 2);
 //	First/Last flag:
-	uint8_t flflg	= getBits (vec, 4, 2);
+	const uint8_t flflg	= getBits (vec, 4, 2);
 //	Packet address
-	uint16_t paddr	= getBits (vec, 6, 10);
+	const uint16_t paddr	= getBits (vec, 6, 10);
 //	Useful data length
-	uint8_t udlen	= getBits (vec, 17,7); 
+	const uint8_t udlen	= getBits (vec, 17,7); 
 //	fprintf (stderr, "udlen = %d\n", udlen);
 	if (udlen == 0)
 	   return;

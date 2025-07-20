@@ -28,11 +28,11 @@
 	this	-> port		= port;
 	connected		= false;
 //	Now for the communication
-	connect (&streamer, SIGNAL (newConnection ()),
-	                this, SLOT (acceptConnection ()));
+	connect (&streamer, &QTcpServer::newConnection,
+	                this, &tcpStreamer::acceptConnection);
 	streamer. listen (QHostAddress::Any, port);
-	connect (this, SIGNAL (handleSamples ()),
-	         this, SLOT (processSamples ()));
+	connect (this, &tcpStreamer::handleSamples,
+	         this, &tcpStreamer::processSamples);
 }
 
 		tcpStreamer::~tcpStreamer	(void) {

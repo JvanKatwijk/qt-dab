@@ -69,6 +69,8 @@ class	RadioInterface;
 	   m_audioSink -> stop ();
 	}
 	theIODevice. stop ();
+	if (deviceList != nullptr)
+	   delete deviceList;
 }
 
 bool	Qt_Audio::is_QtAudio		() {

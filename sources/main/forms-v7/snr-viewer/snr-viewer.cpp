@@ -60,14 +60,15 @@ QString	colorString	= "black";
 	snrSlider	-> setValue (plotHeight);
 	snrCompressionSelector -> setValue (delayCount);
 	snrDumpFile. store (nullptr);
-	connect (snrDumpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_snrDumpButton ()));
-	connect (snrSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_snrHeight (int)));
-	connect (snrCompressionSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_snrDelay (int)));
-	connect (snrLengthSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_snrLength (int)));
+	connect (snrDumpButton, &QPushButton::clicked,
+	         this, &snrViewer::handle_snrDumpButton);
+	connect (snrSlider, &QSlider::valueChanged,
+	         this, &snrViewer::set_snrHeight);
+	connect (snrCompressionSelector,
+	                qOverload<int>(&QSpinBox::valueChanged),
+	         this, &snrViewer::set_snrDelay);
+	connect (snrLengthSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &snrViewer::set_snrLength);
 	plotgrid	= snrPlot;
 	plotgrid	-> setCanvasBackground (displayColor);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
@@ -90,10 +91,10 @@ QString	colorString	= "black";
 	lm_picker	-> setStateMachine (lpickerMachine);
 	lm_picker	-> setMousePattern (QwtPlotPicker::MouseSelect1,
 	                                            Qt::RightButton);
-	connect (lm_picker, SIGNAL (selected (const QPointF &)),
-	         this, SLOT (rightMouseClick (const QPointF &)));
+	connect (lm_picker, qOverload<const QPointF&>(&QwtPlotPicker::selected),
+	         this, &snrViewer::rightMouseClick);
 
-   	spectrum_curve. setPen (QPen(curveColor, 2.0));
+   	spectrum_curve. setPen (QPen (curveColor, 2.0));
 	spectrum_curve. setOrientation (Qt::Horizontal);
 	spectrum_curve. setBaseline	(0);
 	spectrum_curve. attach (plotgrid);
@@ -114,7 +115,8 @@ QString	colorString	= "black";
 
 	snrViewer::~snrViewer () {
 	stopDumping 	();
-	storeWidgetPosition (dabSettings, &myFrame, "snrViewer");
+	if (!myFrame. isHidden ())
+	   storeWidgetPosition (dabSettings, &myFrame, "snrViewer");
 }
 
 void	snrViewer::show () {

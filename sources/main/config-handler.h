@@ -146,8 +146,8 @@ private slots:
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);
-	void	set_transmitterNames	(int);
-	void	set_tii_detectorMode	(bool);
+//	void	set_transmitterNames	(int);
+//	void	set_tii_detectorMode	(bool);
 
 	void	handle_fontSelect	();
 	void	handle_fontColorSelect	();
@@ -161,6 +161,5 @@ signals:
 	void	process_tiiFilter	(bool);
 
 	void	process_tiiSelector	(bool);
-
 };
 

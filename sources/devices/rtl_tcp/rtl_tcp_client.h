@@ -77,7 +77,7 @@ private:
 
 private slots:
 	void		sendGain	(int);
-	void		set_fCorrection(double);
+	void		set_fCorrection	(double);
 	void		readData	();
 	void		wantConnect	();
 	void		setDisconnect	();

@@ -510,11 +510,11 @@ int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
 	   return;
 	}
 	   
-uint8_t		groupType	=  data [0] & 0xF;
+const uint8_t	groupType	=  data [0] & 0xF;
 //uint8_t	continuityIndex = (data [1] & 0xF0) >> 4;
 //uint8_t	repetitionIndex =  data [1] & 0xF;
-int16_t		segmentNumber	= -1;		// default
 uint16_t	transportId	= 0;	// default
+int16_t		segmentNumber	= -1;		// default
 bool		lastFlag	= false;	// default
 uint16_t	index;
 
@@ -623,6 +623,7 @@ uint16_t	index;
 void	padHandler::add_toDL2 (const QString &text) {
 	if (the_DL2. dlsText != text) {
 	   the_DL2. dlsText = text;
+//	   fprintf (stderr, "dl2 fragment %s\n", text. toLatin1 (). data ());
 	   the_DL2. valid = true;	// non existent key
 	   for (int i = 0; i < 4; i ++)
 	      the_DL2. entity [i]. ct = 65;
@@ -633,52 +634,24 @@ void	padHandler::add_toDL2 (const uint8_t *data) {
 int IT	= (data [0] & 0x08) >> 3;
 int IR	= (data [2] & 0x04) >> 2; 
 int NT	= data [2] & 0x03;
-	if ((the_DL2. IT != IT) ||
-	    (the_DL2. IR != IR)) {
-	   the_DL2. IT = IT;
-	   the_DL2. IR = IR;
-	   if (IR == 0)
-	      show_title (0, 63, "");
-	   for (int i = 0; i < 4; i ++) {
-	      the_DL2. entity [i]. ct = 65;
-	      the_DL2. entity [i]. str = "";
-	   }
-	}
-	if (the_DL2. dlsText. size () < 2)
+
+	if ((the_DL2. IT == IT) && (the_DL2. IR == IR))
 	   return;
 
-	for (int i = 0; i < NT; i ++) {
-	   uint8_t ct	= data [1 + i * 3] & 0x7F;
-	   uint8_t sm	= data [2 + i * 3] & 0x7F;
-	   uint8_t ln	= data [3 + i * 3] & 0x7F;
-	   if ((the_DL2. entity [i]. ct == ct) &&
-	       (the_DL2. entity [i]. base == sm) &&
-	       (the_DL2. entity [i]. len == ln))
-	   continue;	// no change needed
-	   if ((ct == 0) || (ct > 63))
-	      continue;
-	   if ((ct != 1) && (ct != 4))
-	      continue;
-	   the_DL2. entity [i]. ct = ct;
-	   the_DL2. entity [i]. base = sm;
-	   the_DL2. entity [i]. len = ln;
-	   if (ln == 0) {
-	      show_title (IR, ct, "");
-	      the_DL2. entity [i]. str = "";
-	      continue;
-	   }
-	   if ((ln > the_DL2. dlsText. size ()) ||
-	       (sm + ln > the_DL2. dlsText. size ()))
-	      continue;
-	   char resText [ln + 2];
-	   resText [ln + 1] = 0;
-	   for (int j = sm; j < sm + ln + 1; j ++)
-	      resText [j - sm] = the_DL2. dlsText. toUtf8 (). data () [j];
-	   the_DL2. entity [i]. str = QString (resText);
-	   show_title (IR, ct, the_DL2. entity [i]. str);
-//	still have to figure out what to do when with these DL elements
-//	   fprintf (stderr, "Object index %d (of %d)  with %d %d, type %d %d %d %s\n",
-//	             i, NT, IT, IR , ct, sm, ln, resText);
+	if (the_DL2. IT != IT) {	// toggle bit changed
+	   the_DL2. IT = IT;
+//	   if (IR != 0)
+//	      fprintf (stderr, "Show a message\n");
+//	   else
+//	      fprintf (stderr, "hide a message\n");
+	}
+	else
+	if (the_DL2. IR != IR) {
+//	   if (IR == 0)
+//	      fprintf (stderr, "Stop met de message\n");
+//	   else
+//	      fprintf (stderr, "Restart de message\n");
+	   the_DL2. IR = IR;
 	}
 }
 

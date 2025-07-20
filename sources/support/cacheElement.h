@@ -26,6 +26,8 @@
 //	In case there is access to a database, the elements of
 //	that database are read in and per line converted to am accessible
 //	struct
+//
+//	we use the "key's" for fast detecting the database index (if any)
 #include	<string>
 #include	<QString>
 #include	"distances.h"
@@ -37,12 +39,12 @@ public:
 	QString		ensemble;
 	QString		country;
 	QString		channel;
+	QString		transmitterName;
 	QString		location;
 	uint16_t 	Eid;
 	uint8_t		mainId;
 	uint16_t	pattern;
 	uint8_t		subId;
-	QString		transmitterName;
 	float		latitude;
 	float		longitude;
 	float		power;

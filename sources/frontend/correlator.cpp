@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -69,6 +69,8 @@
   */
 //
 //	Pre v. size () >= T_u
+//	Note that "v" is being modified by the fft function
+//	that is why it is a value parameter
 int32_t	correlator::findIndex (std::vector <Complex> v,
 	                       bool firstFound, int threshold ) {
 int32_t	i;

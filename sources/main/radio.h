@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2024
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -421,7 +421,7 @@ private:
 	void			stopScan_continuous	();
 
 	void			setPeakLevel	(const std::vector<float> &);
-	QString			create_tiiLabel (const cacheElement *);
+	QString			createTIILabel	(const cacheElement *);
 	void			addtoLogFile	(const cacheElement *);
 	void			removeFromList	(uint8_t, uint8_t);
 	cacheElement		*inList		(uint8_t, uint8_t);
@@ -432,7 +432,7 @@ private:
 	void			saveServiceInfo	(const QDomDocument &, 
 	                                                      uint32_t);
 	bool			process_ensemble (const QDomElement &, uint32_t);
-	int			process_service	(const QDomElement &);
+	int			processService	(const QDomElement &);
 	QString			extractName	(const QString &);
 
 	void			announcement_start	(uint16_t, uint16_t);	
@@ -448,7 +448,6 @@ public slots:
 	void			report_startDir		(int);
 	void			report_completeDir	();
 	void			channelSignal		(const QString &);
-	void			handle_correlationSelector	(int);
 	void			show_dcOffset		(float);
 	void			startScanning		();
 	void			stopScanning		();
@@ -535,6 +534,7 @@ public slots:
  
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			handle_aboutLabel	();
 	void			show_pauzeSlide		();
 	void			handle_timeTable	();
 	void			handle_contentButton	();
@@ -589,15 +589,14 @@ private slots:
 //
 //	config handlers
 public slots:
+	void			selectDecoder			(int);
 	void			set_transmitters_local		(bool);
+	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
 //	void			handle_transmSelector		(int);
 	void			handle_eti_activeSelector	(int);
 	void			handle_loadTable		();
-	void			selectDecoder			(int);
-	
-	void			handle_aboutLabel		();
 	void			handle_tiiCollisions		(int);
 	void			handle_tiiFilter		(bool);
 

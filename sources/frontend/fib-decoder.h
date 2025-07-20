@@ -49,17 +49,16 @@ public:
 	uint32_t	getSId			(int);
 	uint8_t		serviceType		(int);
 	int		getServiceComp		(const QString &);
-	int		getServiceComp		(uint32_t, int);
-	int		getServiceComp_SCIds	(uint32_t, int);
+	int		getServiceComp		(const uint32_t, const int);
+	int		getServiceComp_SCIds	(const uint32_t, const int);
 	bool		isPrimary		(const QString &);
-	void		audioData		(int, audiodata &);
-	void		packetData		(int, packetdata &);
-	int		getNrComps		(uint32_t);
-	QString		findService		(uint32_t, int);
+	void		audioData		(const int, audiodata &);
+	void		packetData		(const int, packetdata &);
+	int		getNrComps		(const uint32_t);
 	int		nrChannels		();
         uint8_t		get_ecc			();
-	std::vector<int>	getFrequency		(const QString &);
-	void		getChannelInfo		(channel_data *, int);
+	std::vector<int>	getFrequency	(const QString &);
+	void		getChannelInfo		(channel_data *, const int);
 	int32_t		getCIFcount		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
@@ -110,25 +109,39 @@ private:
 
 	int16_t		HandleFIG0Extension1	(uint8_t *,
 	                                         int16_t,
-	                                         uint8_t, uint8_t, uint8_t);
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 	int16_t		HandleFIG0Extension2	(uint8_t *,
 	                                         int16_t,
-	                                         uint8_t, uint8_t, uint8_t);
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 	int16_t		HandleFIG0Extension3	(uint8_t *,
 	                                         int16_t,
-	                                         uint8_t, uint8_t, uint8_t);
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 	int16_t		HandleFIG0Extension5	(uint8_t *,
-	                                         uint8_t, uint8_t, uint8_t,
-	                                         int16_t);
+	                                         uint16_t,
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 	int16_t		HandleFIG0Extension8	(uint8_t *,
 	                                         int16_t,
-	                                         uint8_t, uint8_t, uint8_t);
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 	int16_t		HandleFIG0Extension13	(uint8_t *,
 	                                         int16_t,
-	                                         uint8_t, uint8_t, uint8_t);
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 	int16_t		HandleFIG0Extension21	(uint8_t*,
-	                                         uint8_t, uint8_t, uint8_t,
-	                                         int16_t);
+	                                         uint16_t,
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
 
 	void		FIG1Extension0		(uint8_t *);
 	void		FIG1Extension1		(uint8_t *);

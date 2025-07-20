@@ -223,7 +223,8 @@ QString scanmodeText (int e) {
 }
 
 	scanHandler::~scanHandler () {
-	storeWidgetPosition (dabSettings, &myWidget, SCAN_HANDLER);
+	if (!myWidget. isHidden ())
+	   storeWidgetPosition (dabSettings, &myWidget, SCAN_HANDLER);
 	clearTable	();
 	scanTable. hide_scanTable ();
         delete  contentWidget;
