@@ -187,7 +187,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	   nameOfDevice	-> setText ("RTLSDR");
 	}
 	else {
-	   theState -> setText ("not supported device");
+	   theState -> setText ("unsupported device");
 	   return;
 	}
 

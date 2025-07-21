@@ -40,8 +40,6 @@
 	Dongles = QStringList();
 	dongleList. setStringList (Dongles);
 	selectorDisplay	-> setModel (&dongleList);
-	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectDongle (QModelIndex)));
 	connect (selectorDisplay, &QListView::clicked,
 	         this, rtl_dongeselect::selectDongle);
 	selectedItem	= -1;

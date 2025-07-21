@@ -95,7 +95,7 @@ bool	RspDuo_handler::restart (int freq) {
 sdrplay_api_ErrT        err;
 	
 	chParams -> tunerParams. rfFreq. rfHz = (float)freq;
-	err =parent ->  sdrplay_api_Update (chosenDevice -> dev,
+	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
 	                                    chosenDevice -> tuner,
                                             sdrplay_api_Update_Tuner_Frf,
                                             sdrplay_api_Update_Ext1_None);
@@ -161,13 +161,39 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	if (tuner == currentTuner)
 	   return true;;
 
+	fprintf (stderr, "setTuner to %d (from %d)\n", tuner, currentTuner);
 	sdrplay_api_ErrT res =
 	           parent -> sdrplay_api_SwapRspDuoActiveTuner (
 	                          chosenDevice ->  dev,
 	                          &chosenDevice -> tuner, 
-	                          sdrplay_api_RspDuo_AMPORT_1);
+	                          sdrplay_api_RspDuo_AMPORT_2);
 	if (res != sdrplay_api_Success) {
-	   fprintf (stderr, "Swapping tuner failed\n");
+	   QString error = "";
+	   switch (res) {
+	      case sdrplay_api_Fail:
+	         error = "Command failed";
+	         break;
+	      case sdrplay_api_InvalidParam:
+	         error = "NULL pointer or invalid operating mode";
+	         break;
+	      case sdrplay_api_OutOfRange:
+	         error = "One or more parameters are set incorrectly";
+	         break;
+	      case sdrplay_api_HwError:
+	         error = "Hw error occurred during tuner initialization";
+	         break;
+	      case sdrplay_api_RfUpdateError:
+	         error = "Failed to update Rf frequency";
+	         break;
+	      case sdrplay_api_ServiceNotResponding:
+	         error = "Communication with the service is broken";
+	         break;
+	      default:
+	         error = "Unknown error";
+	         break;
+	   }
+	   fprintf (stderr, "tuner switch error %s\n", 
+	                             error. toLatin1 (). data ());
 	}
 	else {
 	   fprintf (stderr, "Swapping tuner success\n");

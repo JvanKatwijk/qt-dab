@@ -67,8 +67,6 @@
 #include	<QScreen>
 #include	<QDomElement>
 
-static float peakLeftDamped = 0;
-static float peakRightDamped = 0;
 #if defined (__MINGW32__) || defined (_WIN32)
 #include <windows.h>
 __int64 FileTimeToInt64 (FILETIME & ft) {
@@ -328,6 +326,10 @@ QString h;
 	else
 	   theNewDisplay. hide ();
 
+	peakLeftDamped	= 0;
+	peakRightDamped = 0;
+	audioTeller	= 0;	// counting audio frames
+	pauzeSlideTeller	= 0; // counting pause slides
 	labelStyle	= value_s (dabSettings_p, DAB_GENERAL, LABEL_COLOR,
 	                                                     LABEL_STYLE);
 	QFont font	= serviceLabel -> font ();
@@ -1176,10 +1178,9 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	if (!running. load ())
 	   return;
 
-static int teller	= 0;
-	teller ++;
-	if (teller > 10) {
-	   teller = 0;
+	audioTeller ++;
+	if (audioTeller > 10) {
+	   audioTeller = 0;
 	   if (!techWindow_p -> isHidden ())
 	      techWindow_p	-> showRate (rate, ps, sbr);
 	   audiorateLabel	-> setStyleSheet ("color:cyan");
@@ -1309,8 +1310,9 @@ void	RadioInterface::TerminateProcess () {
 	stopFrameDumping	();
 	stopSourceDumping	();
 	stopAudioDumping	();
-	theOFDMHandler		-> stop ();
-	if (soundOut_p)
+	if (!theOFDMHandler. isNull ())
+	   theOFDMHandler		-> stop ();
+	if (soundOut_p != nullptr)
 	   delete soundOut_p;
 	theLogger. log (logger::LOG_RADIO_STOPS);
 	usleep (1000);		// pending signals
@@ -3591,14 +3593,13 @@ int h   = 3 * w / 4;
 
 void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
-static int teller	= 0;
 QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	pauzeTimer. stop ();
 //	int nr		= rand () % 11;
-	slideName	= slideName. arg (teller);
+	slideName	= slideName. arg (pauzeSlideTeller);
 	if (p. load (slideName, "png")) {
 	QString tooltipText;
-	   switch (teller) {
+	   switch (pauzeSlideTeller) {
 	      case 2:
 	         tooltipText = "homebrew 60-ies";
 	         break;
@@ -3630,7 +3631,7 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	}
 	  
 	pauzeTimer. start (1 * 30 * 1000);
-	teller = (teller + 1) % 11;
+	pauzeSlideTeller = (pauzeSlideTeller + 1) % 11;
 }
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti

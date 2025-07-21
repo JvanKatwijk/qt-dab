@@ -345,6 +345,10 @@ private:
 	size_t			previous_idle_time;
 	size_t			previous_total_time;
 
+	float			peakLeftDamped;
+	float			peakRightDamped;
+	int			audioTeller;
+	int			pauzeSlideTeller;
 	QPixmap			fetchAnnouncement (int id);
 
 	QString			convertTime		(int, int, int, int, int);

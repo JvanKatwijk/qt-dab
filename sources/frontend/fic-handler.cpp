@@ -42,7 +42,7 @@
 /**
   *	\class ficHandler
   * 	We get in - through process_ficBlock - the FIC data
-  * 	in units of 768 bits.
+  * 	in units of 768 bits (i.e. FIC_BLOCKSIZE / 4)
   * 	We follow the standard and apply convolution decoding and
   * 	puncturing.
   *	The data is sent through to the fib processor
@@ -65,7 +65,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	ficErrors	= 0;
 	ficBits		= 0;
 
-	for (int i = 0; i < 768; i ++) {
+	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++) {
 	   PRBS [i] = shiftRegister [8] ^ shiftRegister [4];
 	   for (int j = 8; j > 0; j --)
 	      shiftRegister [j] = shiftRegister [j - 1];
@@ -234,7 +234,7 @@ int16_t	inputCount	= 0;
 	   bitBuffer_out [i] ^= PRBS [i];
 
 	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
-	   fibBits [ficno * 768 + i] = bitBuffer_out [i];
+	   fibBits [ficno * FIC_BLOCKSIZE / 4 + i] = bitBuffer_out [i];
 /**
   *	each of the fib blocks is protected by a crc
   *	(we know that there are three fib blocks each time we are here)

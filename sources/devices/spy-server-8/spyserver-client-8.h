@@ -67,6 +67,7 @@ struct {
 	int		auto_gain;
 } settings;
 
+	float		convTable [256];
 private slots:
 	void		setConnection	();
 	void		wantConnect	();

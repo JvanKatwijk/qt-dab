@@ -4,19 +4,6 @@
 
 ![6.9](/res/read_me/front-picture.png?raw=true)
 
--------------------------------------------------------------------------
-Restructured source tree
---------------------------------------------------------------------------
-
-Note that the sourcetree is now restructured. All sources are now
-grouped in the directory sources. That one contains three main subdirectories
-
- * main for the main program (as the name suggests)
- * frontend for converting input samples into sequences of softbits (-127 .. 127)
- * backend for the actual decoding of the softbits to either audio, data or both
-
- Furthermore there are a few other subdirectories with support functions
-
 --------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------
@@ -65,6 +52,11 @@ Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 is always visible. This main widget contains selectors
 for controlling the visibility of (the) other widgets.
 
+There is - on the surface - not much difference betweem the 6.9.2 and
+6.9.3 version. An error that sometime caused problems with a data service
+(insufficent data) to run.
+Furthermore, the sourcetree was changed completely.
+
 Features
 =================================================================
 
@@ -98,7 +90,7 @@ The *main widget* (see picture) of Qt-DAB (always visible), contains settings fo
 It shows - left half - a list of services (either from the currently selected channel or from the favourites), seleting a service is just by clicking on the name.
 On the right half of the widget it shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
-* touching the *ensemble name* (NPO (8001) in the picture) makes the
+* touching the *ensemble name* (5B Z-H/ZEELAND (805B) in the picture) makes the
 *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a ".csv" format. If  the data is visible, touching will hide it;
  * touching the small icon left on the top of the right half
  will show (or hide) the *technical widget*,
@@ -108,7 +100,7 @@ a spectrum of the audio of the selected service;
  * touching the icon showing a *speaker* controls muting the signal and shows
 whether or not a signal should be audible.
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
- * touching with the *right hand mouse button* the text of the dynamic label (NPO Radio 1- NOS Langs de lijn - NOS) shows a small menu to put the text on the clipboard;
+ * touching with the *right hand mouse button* the text of the dynamic label (JE HOORT ANDRE HAZES - N VRIEND) a small menu shows to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map )with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;

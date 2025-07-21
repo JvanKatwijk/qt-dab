@@ -50,7 +50,7 @@ class	logger;
 typedef	struct rtlsdr_dev rtlsdr_dev_t;
 extern "C"  {
 typedef	void (*rtlsdr_read_async_cb_t) (uint8_t *buf, uint32_t len, void *ctx);
-typedef	 int (*  pfnrtlsdr_open )(rtlsdr_dev_t **, uint32_t);
+typedef int (*  pfnrtlsdr_open )(rtlsdr_dev_t **, uint32_t);
 typedef	int (*  pfnrtlsdr_close) (rtlsdr_dev_t *);
 typedef int (*  pfnrtlsdr_get_usb_strings) (rtlsdr_dev_t *, char *, char *, char *);
 typedef	int (*  pfnrtlsdr_set_center_freq) (rtlsdr_dev_t *, uint32_t);
@@ -78,8 +78,8 @@ typedef	int (* pfnrtlsdr_set_freq_correction)(rtlsdr_dev_t *, int);
 typedef	char *(* pfnrtlsdr_get_device_name)(int);
 }
 //	This class is a simple wrapper around the
-//	rtlsdr library that is read in  as dll (or .so file in linux)
-//	It does not do any processing
+//	rtlsdr library, the relevant functions of it
+//	are read in  from the dll (or .so file in linux)
 class	rtlsdrHandler final: 
 	               public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
@@ -133,6 +133,7 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 
+	float		convTable	[256];
 	void		reportOverflow		(bool);
 	float		m_dcI;
 	float		m_dcQ;
