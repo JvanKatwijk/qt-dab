@@ -98,7 +98,8 @@ public:
 
 	void		startDump		();
 	void		stopDump		();
-	
+
+	void		showStatus		(const QString);
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int8_t>>	_I_Buffer;
 	hackrf_device	*theDevice;

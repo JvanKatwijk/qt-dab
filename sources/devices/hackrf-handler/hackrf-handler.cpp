@@ -76,6 +76,7 @@
 //
 //	From here we have a library available
 
+	showStatus ("");
 	lastFrequency	= Khz (220000);
 //
 //	See if there are settings from previous incarnations
@@ -224,6 +225,7 @@ int	res;
 	if ((newGain <= 40) && (newGain >= 0)) {
 	   res	= this -> hackrf_set_lna_gain (theDevice, newGain);
 	   if (res != HACKRF_SUCCESS) {
+	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	      fprintf (stderr, "Problem with hackrf_lna_gain :\n");
 	      fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
@@ -238,6 +240,7 @@ int	res;
 	if ((newGain <= 62) && (newGain >= 0)) {
 	   res	= this -> hackrf_set_vga_gain (theDevice, newGain);
 	   if (res != HACKRF_SUCCESS) {
+	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	      fprintf (stderr, "Problem with hackrf_vga_gain :\n");
 	      fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
@@ -256,6 +259,7 @@ bool	b;
 	res = this -> hackrf_set_antenna_enable (theDevice, b);
 //	fprintf(stderr,"Passed %d\n",(int)b);
 	if (res != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   fprintf (stderr, "Problem with hackrf_set_antenna_enable :\n");
 	   fprintf (stderr, "%s \n",
 	                    this -> hackrf_error_name (hackrf_error (res)));
@@ -272,6 +276,7 @@ bool	b;
 	b = AmpEnableButton	-> checkState() == Qt::Checked;
 	res = this -> hackrf_set_amp_enable (theDevice, b);
 	if (res != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   fprintf (stderr, "Problem with hackrf_set_amp_enable :\n");
 	   fprintf (stderr, "%s \n",
 	                   this -> hackrf_error_name (hackrf_error (res)));
@@ -341,6 +346,7 @@ int	res;
 
 	res	= this -> hackrf_set_freq (theDevice, freq);
 	if (res != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   fprintf (stderr, "Problem with hackrf_set_freq: \n");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
@@ -348,12 +354,15 @@ int	res;
 	}
 	res	= this -> hackrf_start_rx (theDevice, callback, this);	
 	if (res != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   fprintf (stderr, "Problem with hackrf_start_rx :\n");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	   return false;
 	}
 	running. store (this -> hackrf_is_streaming (theDevice));
+	showStatus (QString ("Restart at ") + QString::number (freq / 1000) +
+	                                   QString ("Khz"));
 	return running. load();
 }
 
@@ -365,6 +374,7 @@ int	res;
 
 	res	= this -> hackrf_stop_rx (theDevice);
 	if (res != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   fprintf (stderr, "Problem with hackrf_stop_rx :\n");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
@@ -672,3 +682,8 @@ QString freqS		= QString::number (freq);
 //	   usleep (1000);
 	AmpEnableButton	-> blockSignals (false);
 }
+
+void	hackrfHandler::showStatus	(const QString s) {
+	statusLabel -> setText (s);
+}
+

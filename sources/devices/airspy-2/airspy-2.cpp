@@ -254,12 +254,13 @@ int	result;
 	result = my_airspy_set_freq (device, freq);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
 	            my_airspy_error_name((airspy_error)result), result);
 	}
-	_I_Buffer. FlushRingBuffer ();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("my_airspy_set_sample_type() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	   return false;
@@ -268,6 +269,7 @@ int	result;
 	result = my_airspy_start_rx (device,
 	            (airspy_sample_block_cb_fn)callback, this);
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("my_airspy_start_rx() failed: %s (%d)\n",
 	         my_airspy_error_name((airspy_error)result), result);
 	   return false;
@@ -277,6 +279,9 @@ int	result;
 //	Hier moeten we de tab en gain weer zetten
 	restore_gainSliders (freq / MHz (1), tab);
 	restore_gainSettings (tab);
+	showStatus (QString ("Restart at ") +
+	            QString::number (freq / 1000) + QString ("Khz"));
+	_I_Buffer. FlushRingBuffer ();
 //
 	running. store (true);
 	return true;
@@ -296,9 +301,11 @@ int	result;
 	                           tabWidget -> currentIndex ());
 	result = my_airspy_stop_rx (device);
 
-	if (result != AIRSPY_SUCCESS ) 
+	if (result != AIRSPY_SUCCESS ) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("my_airspy_stop_rx() failed: %s (%d)\n",
 	          my_airspy_error_name ((airspy_error)result), result);
+	}
 	running. store (false);
 	resetBuffer ();
 }
@@ -835,6 +842,7 @@ void	airspy_2::set_linearity (int value) {
 int	result = my_airspy_set_linearity_gain (device, value);
 int	temp;
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_lna_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	   return;
@@ -852,6 +860,7 @@ void	airspy_2::set_sensitivity (int value) {
 int	result = my_airspy_set_sensitivity_gain (device, value);
 int	temp;
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_mixer_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	   return;
@@ -871,6 +880,7 @@ void	airspy_2::set_lna_gain (int value) {
 int result = my_airspy_set_lna_gain (device, lnaGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_lna_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
@@ -883,6 +893,7 @@ void	airspy_2::set_mixer_gain (int value) {
 int result = my_airspy_set_mixer_gain (device, mixerGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_mixer_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
@@ -895,6 +906,7 @@ void	airspy_2::set_vga_gain (int value) {
 int result = my_airspy_set_vga_gain (device, vgaGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_vga_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
@@ -913,6 +925,7 @@ void	airspy_2::set_lna_agc	(int dummy) {
 	int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_lna_agc() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
@@ -929,11 +942,11 @@ void	airspy_2::set_mixer_agc	(int dummy) {
 int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf ("airspy_set_mixer_agc() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
 }
-
 
 /* Parameter value shall be 0=Disable BiasT or 1=Enable BiasT */
 void	airspy_2::set_rf_bias (int dummy) {
@@ -942,8 +955,13 @@ void	airspy_2::set_rf_bias (int dummy) {
 int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
+	   showStatus (my_airspy_error_name ((airspy_error)result));
 	   printf("airspy_set_rf_bias() failed: %s (%d)\n",
 	           my_airspy_error_name ((airspy_error)result), result);
 	}
+}
+
+void	airspy_2::showStatus	(const QString s) {
+	statusLabel -> setText (s);
 }
 

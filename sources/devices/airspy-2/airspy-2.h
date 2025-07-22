@@ -119,7 +119,7 @@ private:
 	void		restore_gainSliders	(int, int);
 	void		restore_gainSettings	(int);
 	QSettings	*airspySettings;
-
+	void		showStatus		(const QString);
 	QScopedPointer<LowPassFIR>	theFilter;
 	int		filterDepth;
 private slots:
@@ -191,4 +191,5 @@ static
 const	char *		getSerial();
 	int		open();
 };
+
 

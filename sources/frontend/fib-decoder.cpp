@@ -198,6 +198,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 20:		// service component information (8.1.4)
+	      FIG0Extension20 (d);
 	      break;		// to be implemented
 
 	   case 21:		// frequency information (8.1.8)
@@ -897,7 +898,49 @@ fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	}
 	return;
 }
+//
+//	Service Component Information
+void	fibDecoder::FIG0Extension20 (uint8_t *d) {
+int16_t	used		= 2;		// offset in bytes
+const int16_t	Length	= getBits_5 (d, 3);
+const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
+const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
+const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
+	return;
+	while (used < Length) 
+	   used = HandleFIG0Extension21 (d, used, CN_bit, OE_bit, PD_bit);
+}
+
+int16_t	fibDecoder::HandleFIG0Extension20 (uint8_t	*d,
+	                                   uint16_t	offset,
+	                                   const uint8_t CN_bit,
+	                                   const uint8_t OE_bit,
+	                                   const uint8_t PD_bit) {
+	uint32_t SId		= PD_bit? getLBits (d, offset, 32) :
+	                                  getLBits (d, offset, 16);
+	offset += PD_bit ? 32 : 16;
+	uint8_t SCIds		= getBits_4 (d, offset); offset += 4;
+	uint8_t ChangeFlags	= getBits_2 (d, offset); offset += 2;
+	uint8_t PT_flag		= getBits_1 (d, offset); offset += 1;
+	uint8_t SC_flag		= getBits_1 (d, offset); offset += 1;
+	uint8_t AD_flag		= getBits_1 (d, offset + 1); offset += 2;
+	uint8_t SCTy		= getBits_6 (d, offset); offset += 6;
+	uint8_t Date		= getBits_5 (d, offset); offset += 5;
+	uint8_t Hour		= getBits_5 (d, offset); offset += 5;
+	uint8_t Minutes		= getBits_6 (d, offset); offset += 6;
+	uint8_t Seconds		= getBits_6 (d, offset); offset += 6;
+	uint8_t SId_flag	= getBits_1 (d, offset); offset += 1;
+	uint8_t Eid_flag	= getBits_1 (d, offset); offset += 1;
+	uint32_t Transfer_Id	= PD_bit ? getLBits (d, offset, 32) :
+	                                   getLBits (d, offset, 16);
+	offset += PD_bit ? 32 : 16;
+	uint16_t Transfer_EId	= Eid_flag ? getLBits (d, offset, 16) : 0;
+	offset += Eid_flag ? 16 : 0;
+	fprintf (stderr, "%X (%d) is in fig 20\n", SId, SCIds); 
+	return offset;
+}
+	   
 //	Frequency information (FI) 8.1.8
 void	fibDecoder::FIG0Extension21 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes

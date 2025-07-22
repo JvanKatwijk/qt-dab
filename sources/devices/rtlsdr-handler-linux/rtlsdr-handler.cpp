@@ -266,7 +266,6 @@ bool	rtlsdrHandler::restartReader	(int32_t freq, int skipped) {
 //	reset endpoint
 	   (void)this -> rtlsdr_reset_buffer (theDevice);
 	   workerHandle. reset (new dll_driver (this));
-	   fprintf (stderr, "worker handler started\n");
 	}
 	_I_Buffer. FlushRingBuffer();
 	isActive. store (true);
@@ -287,7 +286,6 @@ void	rtlsdrHandler::stopReader () {
         }
         close_xmlDump();
 
-	fprintf (stderr, "workerhandler stopped\n");
 	close_xmlDump ();
 	if (save_gainSettings)
 	   record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (theDevice)) / MHz (1));

@@ -99,7 +99,7 @@ private:
 	void		FIG0Extension17		(uint8_t *);
 	void		FIG0Extension18		(uint8_t *);
 	void		FIG0Extension19		(uint8_t *);
-//	void		FIG0Extension20		(uint8_t *);
+	void		FIG0Extension20		(uint8_t *);
 	void		FIG0Extension21		(uint8_t *);
 //	void		FIG0Extension22		(uint8_t *);
 //	void		FIG0Extension23		(uint8_t *);
@@ -134,6 +134,11 @@ private:
 	                                         const uint8_t);
 	int16_t		HandleFIG0Extension13	(uint8_t *,
 	                                         int16_t,
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
+	int16_t		HandleFIG0Extension20	(uint8_t *,
+	                                         uint16_t,
 	                                         const uint8_t,
 	                                         const uint8_t,
 	                                         const uint8_t);
