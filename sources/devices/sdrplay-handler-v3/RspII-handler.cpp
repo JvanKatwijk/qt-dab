@@ -93,8 +93,7 @@ sdrplay_api_ErrT        err;
                                             sdrplay_api_Update_Tuner_Frf,
                                             sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "restart: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
+	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
 	   return false;
 	}
 
@@ -106,7 +105,7 @@ sdrplay_api_ErrT        err;
 	
 	setLnaBoundsSignal	(0, lnaUpperBound);
 	showLnaGain (getLnaGain (lnaState, freq));
-	
+	showState (QString ("Restarted at ") + QString::number (freq / 1000) + "Khz");
 	return true;
 }
 
@@ -119,6 +118,7 @@ sdrplay_api_ErrT        err;
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	   fprintf (stderr, "grdb: error %s\n",
 	                         parent -> sdrplay_api_GetErrorString (err));
 	   return false;
@@ -142,10 +142,9 @@ sdrplay_api_ErrT        err;
 	                                     chosenDevice -> tuner,
 	                                     sdrplay_api_Update_Rsp2_AntennaControl,
 	                                     sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success)
-	   return false;
-
-	return true;
+	if (err != sdrplay_api_Success) 
+	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
+	return err == sdrplay_api_Success;
 }
 
 bool	RspII_handler::setBiasT (bool biasT_value) {
@@ -159,9 +158,8 @@ sdrplay_api_ErrT        err;
                                        sdrplay_api_Update_Rsp2_BiasTControl,
                                        sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success)
-	   return false;
-
-	return true;
+	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
+	return err == sdrplay_api_Success;
 }
 
 bool	RspII_handler::setNotch (bool on) {
@@ -174,6 +172,8 @@ sdrplay_api_Rsp2TunerParamsT *rspIITunerParams;
                                             chosenDevice -> tuner,
                                             sdrplay_api_Update_Rsp2_RfNotchControl,
                                             sdrplay_api_Update_Ext1_None);
+	if (err != sdrplay_api_Success)
+	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
 	return err == sdrplay_api_Success;
 }
 

@@ -155,6 +155,7 @@ public slots:
 	void			setApiVersion		(float);
 	void			setXmlDump		();
 	void			showLnaGain		(int);
+	void			showState		(const QString &);
 signals:
 	void			setLnaBoundsSignal	(int, int);
 	void			setDeviceNameSignal	(const QString &);

@@ -92,8 +92,7 @@ sdrplay_api_ErrT        err;
                                             sdrplay_api_Update_Tuner_Frf,
                                             sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "restart: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	   return false;
 	}
 
@@ -107,6 +106,7 @@ sdrplay_api_ErrT        err;
 	   this -> lnaUpperBound = RSPIA_NUM_LNA_STATES_LBAND;
 	setLnaBoundsSignal	(0, lnaUpperBound);
 	showLnaGain (getLnaGain (lnaState, freq));
+	showState (QString ("Restart ") + QString::number(freq / 1000) + "Khz");
 	return true;
 }
 
@@ -119,8 +119,7 @@ sdrplay_api_ErrT        err;
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "grdb: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	   return false;
 	}
 	this	-> lnaState	= lnaState;
@@ -139,7 +138,8 @@ sdrplay_api_ErrT        err;
 	                          sdrplay_api_Update_Rsp1a_BiasTControl,
 		                  sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "setBiasY: error %s\n",
+	   showState (parent -> sdrplay_api_GetErrorString (err));
+	   fprintf (stderr, "setBiasT: error %s\n",
 	                         parent -> sdrplay_api_GetErrorString (err));
 	   return false;
 	}
@@ -152,7 +152,8 @@ sdrplay_api_ErrT err;
 	deviceParams -> devParams -> rsp1aParams. rfNotchEnable = on;
 	err = parent -> sdrplay_api_Update (chosenDevice -> dev,
                                            chosenDevice -> tuner,
-                                           sdrplay_api_Update_Rsp1a_RfNotchControl,
-                                           sdrplay_api_Update_Ext1_None);
+                                           sdrplay_api_Update_Rsp1a_RfNotchControl, sdrplay_api_Update_Ext1_None);
+	if (err != sdrplay_api_Success)
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	return err == sdrplay_api_Success;
 }

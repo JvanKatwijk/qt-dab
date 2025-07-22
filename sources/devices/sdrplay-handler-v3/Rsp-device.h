@@ -68,5 +68,6 @@ virtual	bool	setTuner	(int tuner);
 signals:
 	void	setLnaBoundsSignal	(int, int);
 	void	showLnaGain		(int);
+	void	showState		(const QString &);
 };
 

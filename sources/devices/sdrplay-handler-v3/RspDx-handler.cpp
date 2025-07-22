@@ -106,15 +106,14 @@ sdrplay_api_ErrT        err;
                                             sdrplay_api_Update_Tuner_Frf,
                                             sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "restart: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	   return false;
 	}
 
 	this	-> freq	= freq;
 	setLnaBoundsSignal	(0, lnaStates (freq));
 	showLnaGain (getLnaGain (lnaState, freq));
-
+	showState (QString ("Restart at ") + QString::number (freq / 1000) + "Khz");
 	return true;
 }
 
@@ -127,8 +126,7 @@ sdrplay_api_ErrT        err;
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "grdb: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	   return false;
 	}
 
@@ -152,6 +150,7 @@ sdrplay_api_ErrT        err;
 	                                     sdrplay_api_Update_None,
 	                                     sdrplay_api_Update_RspDx_AntennaControl);
 	if (err != sdrplay_api_Success) {
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	   fprintf (stderr, "Updating antenna to %c failst\n", antenna);
 	   return false;
 	}
@@ -166,6 +165,8 @@ sdrplay_api_ErrT        err;
 	                                    chosenDevice -> tuner,
 	                                    sdrplay_api_Update_None,
 	                                    sdrplay_api_Update_RspDx_HdrEnable);
+	if (err != sdrplay_api_Success) 
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	return err == sdrplay_api_Success;
 }
 
@@ -181,7 +182,8 @@ sdrplay_api_ErrT        err;
 	                                 chosenDevice -> tuner,
 	                                 sdrplay_api_Update_None,
 	               	                 sdrplay_api_Update_RspDx_BiasTControl);
-
+	if (err != sdrplay_api_Success) 
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	return err == sdrplay_api_Success;
 }
 
@@ -198,5 +200,7 @@ sdrplay_api_RspDxParamsT * rspDxParams;
 	                                    chosenDevice -> tuner,
 	                                    sdrplay_api_Update_None,
 	                                    sdrplay_api_Update_RspDx_RfNotchControl);
+	if (err != sdrplay_api_Success) 
+	   showState (parent -> sdrplay_api_GetErrorString (err));
 	return err == sdrplay_api_Success;
 }

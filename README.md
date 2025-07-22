@@ -41,10 +41,11 @@ Table of Contents
 Introduction
 =================================================================
 
-*Qt-DAB* is designed to be used  with a broad variety of SDR devices.
-Qt-DAB  supports  a DABsticks, all models of the SDRplay,
+*Qt-DAB* is designed to be used  with different SDR devices.
+Qt-DAB  supports a DABsticks, all models of the SDRplay,
 Airspy, HackRF, LimeSDR, Adalm Pluto etc.
-Precompiled versions for Windows and Linux (x64) are available.
+Precompiled versions for Windows and Linux (x64) are available
+that support most of these devices (see below).
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 
 *Qt-DAB* is GUI driven, the full GUI shows 4+ widgets, one of them, the
@@ -52,10 +53,10 @@ Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 is always visible. This main widget contains selectors
 for controlling the visibility of (the) other widgets.
 
-There is - on the surface - not much difference betweem the 6.9.2 and
-6.9.3 version. An error that sometime caused problems with a data service
-(insufficent data) to run.
-Furthermore, the sourcetree was changed completely.
+There is - on the surface - not much difference between the 6.9.3 and
+6.9.2 version. An error that sometimes caused problems with a data service
+(insufficent data) to run was corrected. Furthermore, the sourcetree
+was changed completely, but that does not affect the executables.
 
 Features
 =================================================================
@@ -68,16 +69,17 @@ Features
 	- LimeSDR, 
 	- Adalm Pluto,
 	- **untested** UHD (anyone wants to help testing?)
-	- Soapy (Linux only), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
+	- Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
 	- ExtIO (experimental, Windows only),
-	- input from servers. support for a **spyServer** (both 8 bit and a 16 bit version) and an rtl_tcp server,
+	- input from an rtl_tcp server connected to an RTLSDR device.
+	- input from a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot handle the required samplerate.
   * Always supported for files:
   	* the possibility of generating ".sdr" type files from the input.
    	- reading prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
 	- NEW is the ability of Qt-DAB to generate "sdr" type files with a size larger than 4 Gb, and (obviously) the ability of the ".sdr" reader to read such files.
-  * Qt-DAB supports so-called *Favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
+  * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB recognizes and interprets *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separare tool is available to download the required database.
-  * Qt-DAB allows running an arbitrary amount of services from tne current ensemble as *background service*. with the output sent to a file,
+  * Qt-DAB allows running an arbitrary amount of audio services from tne current ensemble as *background service*. with the output sent to a file,
   * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
   * and much more ...
 
@@ -91,29 +93,29 @@ It shows - left half - a list of services (either from the currently selected ch
 On the right half of the widget it shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
 * touching the *ensemble name* (5B Z-H/ZEELAND (805B) in the picture) makes the
-*content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a ".csv" format. If  the data is visible, touching will hide it;
+*content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible, touching the name agian will hide it;
  * touching the small icon left on the top of the right half
  will show (or hide) the *technical widget*,
 a widget showing all technical details as well as strength indicators and 
 a spectrum of the audio of the selected service;
- * touching the small icon next, the folder/directory in which the slides, the tii log and the log file are written is shown;
- * touching the icon showing a *speaker* controls muting the signal and shows
+ * touching the small icon to the right next, the folder/directory in which the slides, the tii log and the log file are written is shown;
+ * touching the icon showing a *speaker* controls **muting** the signal and shows
 whether or not a signal should be audible.
- * touching the *copyright symbol* shows (or, if visible, hides) a small widget with some acknowledgements for using external libraries;
- * touching with the *right hand mouse button* the text of the dynamic label (JE HOORT ANDRE HAZES - N VRIEND) a small menu shows to put the text on the clipboard;
+ * touching the *copyright symbol* shows (or, if visible, hides) a small widget with acknowledgements for using external libraries;
+ * touching with the *right hand mouse button* the text on the dynamic label (JE HOORT ANDRE HAZES - N VRIEND) a small menu shows to put the text on the clipboard;
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map )with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
  * the button labeled *favourites* controls  whether the list of services
-from the currently selected channel of the list of favourites is shown,
+from the currently selected channel or the list of favourites is shown,
  * the button labeled *scanlist* controls the visibility
 of the scan list, i.e the list of services seen at the most recent scan.;
  * the bottom line shows the transmitter name from which the data is received.
 
 (Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
 
-As mentioned, Qt-DAB supports **Favourites**, i.e. a list of (channel, service pairs),
+As mentioned, Qt-DAB supports **favourites**, i.e. a list of (channel, service pairs),
 the list is maintained between program invocations. 
 The *services list* on the main widget is shown in one of two modes, selectable by the button (in the picture labeled favourites). In *ensemble view* mode, the services in the current ensemble are shown, in the *favourites view* mode, the favourites are shown.
 In both views, selecting a service is just by clicking on the service name.
@@ -129,11 +131,11 @@ service from the list, as does clicking on the field in the *favourites view*.
 
 The technical widget shows - as the name suggests - some technical details of
 the  selected audio service. If the audio of the service is also transmitted
-on FM, the FM frequency - derived from additional data in the DAB datastream -
+on FM, the FM frequency (frequencies) - derived from additional data in the DAB datastream -
 is shown as well.
 
-The buttons at the top of the widget control dumping the audio
-(".wav" file) resp. the AAC frames into a file. The latter can be processed
+The buttons at the top of the widget control *dumping* the audio
+(".wav" file) resp. the AAC frames into a file. AAC encoded files can be processed
 by e.g. VLC.
 The **timeTable** button has only effect if on this channel (ensemble) an EPG 
 service is of was active. Data from the EPG service is stored, and the
@@ -143,10 +145,11 @@ The three progress bars (quality indicators) for DAB+ give success rates of
 resp. detecting a DAB+ frame, the RS error repair and the AAC decoding.
 (For "old" DAB transmissions only a single quality indicator appears).
 
-Below the progress bars the *rsCorrections/100* indicator shows how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames.
-Of course, the parity bits used by the RS decoding may contain bit errors themselves, the second indicator shows the amount of CRC errors detected after thecorrection by the RS decoding.
+Below the progress bars the *rsCorrections/100* indicator shows how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames (only used for DAB+ services).
+Of course, the parity bits used by the RS decoding may contain bit errors themselves, which mot likely lead to CRC errors, the second indicator shows the amount of CRC errors detected after thecorrection by the RS decoding.
 
-The third indicator tells the percentage of the audio that was OK. If - for
+The third indicator tells the percentage of the AAC (or MP2) data that was
+found to be OK. If - for
 whatever reason - the audio frames in the selected audio service could not
 be translated into PCM data, NULL values are inserted to ensure that the
 demands of the outputrate are met.
@@ -187,7 +190,8 @@ the first samples *with* data of a DAB frame.
 
 ![6.8](/res/read_me/qt-dab-tii-data.png)
 
-In reality the NULL period is not completely without signal, each second NULL period may contain an encoding of the TII data. The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 4 out of 8 code as the picture clearly shows.
+In reality the NULL period is - in most cases - not completely without signal,
+each second NULL period may contain an encoding of the TII data. The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 4 out of 8 code as the picture clearly shows.
 The picture clearly shows twice the pattern 0x1e.
 This TII data - when decoded leads to 2 2 digit numbers -  is used to
 identify the transmitter of the signal received, these numbers can be mapped upon a name and location of the transmitter.
@@ -219,13 +223,12 @@ A Note on using an RTLSDR device
 ======================================================================
 
 RTLSDR devices are - because of their price - rather popular.
-In Qt-DAB  different versions for the support library are provided,
 It turns out that for support of the V4 version of the
 sticks a new version of the library (".dll") is required. Unfortunately,
 using that library for "older" models (i.e. V3) models of the stick
 seems the device to make rather "deaf".
 
-Two precompiled versions are available, one with support for the V3
+Two precompiled Windows installers are available, one with support for the V3
 and one with support for the V4 version of the stick.
 
 Scan control
@@ -262,11 +265,13 @@ transmitters that were identified are shown as well.
 Displaying TII data
 =======================================================================
 
-As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses a database to map the decoded TII data to name and location of the transmitter.
+As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses a database (gratefully made available by "www.fmList.org") to map the decoded TII data to name and location of the transmitter.
 
-DAB transmissions are usually  transmitted by an SFN (Single Frequency Network), where all transmitters transmit the same content on the same frequency (each 
-with unique TII data). As was shown in the correlation view in the spectrum widget, one may receive a signal from more than one transmitter.
-If the *DX* selector on the *configuration and control* widget is set, Qt-DAB tries to identify as much as possible transmitters from the SFN and shows them.
+DAB transmissions are usually transmitted by an SFN (Single Frequency Network), where all transmitters transmit the same content on the same frequency.
+Each of these transmittersthen adds a code to the NULL periods on the DAB frames.
+ As was shown in the correlation view in the spectrum widget, one may receive a signal from more than one transmitter. The bottomline of the Qt-DAB's main
+widget shows the current transmitter.
+If the *DX* selector on the bottomline is set,  Qt-DAB shows data of all identified transmitters on a small separate window.
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 
@@ -275,10 +280,6 @@ I can identify a couple of different transmitters in the received signal.
 The left column in the widget shows the transmitter whose TII data is 
 strongest. New is the addition of a "compass" to show the direction
 from which the signal comes from the selected transmitter.
-
-If the DX mode is set - the button on the bottom line of the mainwidget -,
-Qt-DAB-6.9 will save the transmitters that are identified in a text file.
-By default files are placed in a folder (directory)  *Qt-DAB-files*, a folder that is to be found in the user's home folder.
 
 ![6.8](/res/read_me/QTmap.png?raw=true)
 
@@ -290,12 +291,12 @@ Note that two preconditions have to be met:
  * the TII database is installed (see the button *refresh table*)l
 
 New in the current version of Qt-DAB is the display of the channels that
-contain data, together with the TII value (mainId, subId) of the transmitter.
+contain data, together with the TII value (mainId, subId) of the transmitter on the map.
 Clicking on a transmitterlocation, displays the details of that location, i.e.
 the distance and some data of the transmitters on that location.
 (Clicking a second time causes that detailed specification to disappear from the screen.
 
-The picture shows some channels I receive with a simple whip net to my "lazy chair".
+The picture shows some channels I receive with a simple whip next to my "lazy chair".
 
 Of course, using a more advanced antenna. more transmitters show, as seen on the picture below (courtesy of Herman Wijnants)
 
@@ -311,7 +312,7 @@ See the manual for entering the home position to Qt-DAB.
 EPG Handling and time tables
 =================================================================
 
-While not here in the Nertherlands, in many other countries an ensemble
+While not here in the Netherlands, in many other countries an ensemble
 contains an *epg* or *spi* service.
 Such a service contains **time table** data. If such a service is 
 part of the ensemble, it will be started automatically to run as background
@@ -322,7 +323,6 @@ If sufficient data is read in and stored, a time table for the selected
 service can be shown by touching the timeTable button on the technical widget.
 
 ![6.8](/res/read_me/timetable.png?raw=true)
-
 
 Documentation
 =================================================================

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>407</width>
-    <height>266</height>
+    <width>375</width>
+    <height>312</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,13 +24,6 @@
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QLabel" name="deviceLabel">
-         <property name="text">
-          <string>mirics-SDRplay</string>
-         </property>
-        </widget>
-       </item>
        <item>
         <widget class="QLCDNumber" name="api_version">
          <property name="toolTip">
@@ -63,15 +56,33 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="serialNumber">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_11">
+     <item>
+      <widget class="QLabel" name="deviceLabel">
+       <property name="text">
+        <string>mirics-SDRplay</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="serialNumber">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="stateLabel">
      <property name="text">
-      <string/>
+      <string>TextLabel</string>
      </property>
     </widget>
    </item>

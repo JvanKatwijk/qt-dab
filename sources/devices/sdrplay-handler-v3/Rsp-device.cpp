@@ -47,6 +47,8 @@ sdrplay_api_ErrT        err;
                  parent, &sdrplayHandler_v3::setLnaBounds);
 	connect (this, &RspDevice::showLnaGain,
 	         parent, &sdrplayHandler_v3::showLnaGain);
+	connect (this, &RspDevice::showState,
+	         parent, &sdrplayHandler_v3::showState);
 
 	err = parent -> sdrplay_api_GetDeviceParams (chosenDevice -> dev,
 	                                             &deviceParams);

@@ -554,6 +554,7 @@ int	deviceIndex	= 0;
         threadRuns. store (false);
 	receiverRuns. store (false);
 
+	showState ("");
 	chosenDevice		= nullptr;
 
 	connect (this, &sdrplayHandler_v3::setSerialSignal,
@@ -1096,5 +1097,10 @@ void	sdrplayHandler_v3::reportOverloadState (bool b) {
 
 void	sdrplayHandler_v3::displayGain	(double gain) {
 	gainDisplay -> setText (QString::number (gain, 'f', 0) + "dB");
+}
+
+void	sdrplayHandler_v3::showState	(const QString &s) {
+	stateLabel	-> setAlignment (Qt::AlignCenter);
+	stateLabel	-> setText (s);
 }
 
