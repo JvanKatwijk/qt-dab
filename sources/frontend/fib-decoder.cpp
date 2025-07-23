@@ -42,7 +42,9 @@
 //	The fibDecoder was rewritten since the "old" one
 //	contained (a) errors and (b) was incomplete on
 //	some issues.
-//	The current one is straight forward.
+//	The current one is a straight forward implementation,
+//	where the FIG's are stored in a (kind of) database
+
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
 
@@ -179,7 +181,8 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension14 (d);
 	      break;
 
-	   case 15:		// Reserved
+	   case 15:		// Emergency warning (ETSI TS 104 089
+	                       	// Not implemented yet
 	      break;
 
 	   case 16:		// Reserved

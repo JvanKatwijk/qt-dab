@@ -56,14 +56,13 @@ private:
 	dabParams	params;
 	viterbi		myViterbi;
 //	viterbiSpiral	myViterbi;
-	uint8_t		bitBuffer_out	[768];
-        int16_t		ofdm_input	[2304];
+	uint8_t		hardBits	[768];
+        int16_t		ficInput	[2304];
 	uint8_t		punctureTable	[3072 + 24];
 	uint8_t		fibBits		[4 * 768];
 	bool		ficValid	[4];
-	uint8_t		ficBuffer	[256];
 	uint8_t		PRBS		[768];
-	void		processFICInput	(int16_t, bool *);
+	bool		processFICInput	(int16_t);
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;

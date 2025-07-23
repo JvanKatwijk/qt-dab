@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2024
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -40,7 +40,7 @@
 	                         FILE *dump, int flag,
 	                         uint8_t	cpuSupport):
 	                                    deconvolver (d, cpuSupport),
-	                                    outV (d -> bitRate * 24),
+	                                    hardBits (d -> bitRate * 24),
 	                                    driver (mr,
 	                                            theLogger, 
 	                                            d,
@@ -70,7 +70,7 @@
 	interleaveData. resize (16);
 	for (int i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
-	   memset (interleaveData [i]. data(), 0,
+	   memset (interleaveData [i]. data (), 0,
 	                               fragmentSize * sizeof (int16_t));
 	}
 
@@ -108,29 +108,29 @@
 #endif
 }
 
-int32_t	Backend::process	(int16_t *v, int16_t cnt) {
+int32_t	Backend::process	(int16_t *softBits, int16_t cnt) {
 	(void)cnt;
 #ifdef	__THREADED_BACKEND__
 	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
 	      return 0;
-	memcpy (theData [nextIn]. data(), v, fragmentSize * sizeof (int16_t));
+	memcpy (theData [nextIn]. data (), softBits,
+	                           fragmentSize * sizeof (int16_t));
 	nextIn = (nextIn + 1) % NUMBER_SLOTS;
 	usedSlots. release (1);
 #else
-	processSegment (v);
+	processSegment (softBits);
 #endif
 	return 1;
 }
 
 const	int16_t interleaveMap [] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
-void	Backend::processSegment (int16_t *Data) {
-int16_t	i;
+void	Backend::processSegment (int16_t *softBits_in) {
 
-	for (i = 0; i < fragmentSize; i ++) {
+	for (uint16_t i = 0; i < fragmentSize; i ++) {
 	   tempX [i] = interleaveData [(interleaverIndex + 
 	                                interleaveMap [i & 017]) & 017][i];
-	   interleaveData [interleaverIndex][i] = Data [i];
+	   interleaveData [interleaverIndex][i] = softBits_in [i];
 	}
 
 	interleaverIndex = (interleaverIndex + 1) & 0x0F;
@@ -145,12 +145,12 @@ int16_t	i;
 	   return;
 	}
 
-	deconvolver. deconvolve (tempX. data(), fragmentSize, outV. data());
+	deconvolver. deconvolve (tempX. data(), fragmentSize, hardBits. data());
 //	and the energy dispersal
-	for (i = 0; i < bitRate * 24; i ++)
-	   outV [i] ^= disperseVector [i];
+	for (uint16_t i = 0; i < bitRate * 24; i ++)
+	   hardBits [i] ^= disperseVector [i];
 
-	driver. addtoFrame (outV);
+	driver. addtoFrame (hardBits);
 }
 
 #ifdef	__THREADED_BACKEND__

@@ -76,7 +76,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 //	Since the depuncturing is the same throughout all calls
 //	(even through all instances, so we could create a static
 //	table), we make an punctureTable that contains the indices of
-//	the ofdmInput table
+//	the ficInput table
 	memset (punctureTable, (uint8_t)false,
 	                       (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (uint8_t));
 	int	local	= 0;
@@ -116,9 +116,9 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	         mr, &RadioInterface::show_ficBER);
 
 	ficPointer	= 0;
-	ficDumpPointer	= nullptr;
 	fibCounter	= 1;
 	successRatio	= 0;
+	ficDumpPointer	= nullptr;
 }
 
 		ficHandler::~ficHandler () {
@@ -140,7 +140,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
   */
 //
 //	pre data. size () >= BitsperBlock
-void	ficHandler::processFICBlock (std::vector<int16_t> &data,
+void	ficHandler::processFICBlock (std::vector<int16_t> &softBits,
 	                              int16_t blkno) {
 	if (blkno == 1) {
 	   index = 0;
@@ -159,9 +159,9 @@ void	ficHandler::processFICBlock (std::vector<int16_t> &data,
 
 	if ((1 <= blkno) && (blkno <= 3)) {
 	   for (int i = 0; i < BitsperBlock; i ++) {
-	      ofdm_input [index ++] = data [i];
+	      ficInput [index ++] = softBits [i];
 	      if (index >= FIC_INPUT) {
-	         processFICInput (ficno, &ficValid [ficno]);
+	         ficValid [ficno] = processFICInput (ficno);
 	         index = 0;
 	         ficno ++;
 	      }
@@ -182,36 +182,36 @@ void	ficHandler::processFICBlock (std::vector<int16_t> &data,
   *	In the next coding step, we will combine this function with the
   *	one above
   */
-void	ficHandler::processFICInput (int16_t ficno, bool *valid) {
+bool	ficHandler::processFICInput (int16_t ficno) {
 static
-int16_t	viterbiBlock [FIC_BLOCKSIZE + FIC_RESIDU] = {0};
+int16_t	viterbiInput [FIC_BLOCKSIZE + FIC_RESIDU] = {0};
 static
 uint8_t	checkBlock   [FIC_BLOCKSIZE + FIC_RESIDU] = {0};
 int16_t	inputCount	= 0;
 
 	if (!running. load ())
-	   return;
-	memset (viterbiBlock, 0, (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
+	   return false;
+	memset (viterbiInput, 0, (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
 
 	for (int i = 0; i < FIC_BLOCKSIZE + FIC_RESIDU; i ++)
 	   if (punctureTable [i])
-	      viterbiBlock [i] = ofdm_input [inputCount ++];
+	      viterbiInput [i] = ficInput [inputCount ++];
 /**
   *	Now we have the full word ready for deconvolution
   *	deconvolution is according to DAB standard section 11.2
   */
-	myViterbi. deconvolve (viterbiBlock, bitBuffer_out);
+	myViterbi. deconvolve (viterbiInput, hardBits);
 //
 //	we reconstruct the input as it should have been:
-	myViterbi. convolve (bitBuffer_out, checkBlock, FIC_BLOCKSIZE / 4);
+	myViterbi. convolve (hardBits, checkBlock, FIC_BLOCKSIZE / 4);
 //
 //	and compute the errors
 	for (int i = 0; i < 3072 + 24; i ++) {
 	   if (punctureTable [i]) {
-	      if ((checkBlock [i] == 0) && viterbiBlock [i] >= 0)
+	      if ((checkBlock [i] == 0) && viterbiInput [i] >= 0)
 	         ficErrors ++;
 	      else
-	      if ((checkBlock [i] != 0) && viterbiBlock [i] < 0)
+	      if ((checkBlock [i] != 0) && viterbiInput [i] < 0)
 	         ficErrors ++;
 	   }
 	}
@@ -225,35 +225,34 @@ int16_t	inputCount	= 0;
 	}
 /**
   *	if everything worked as planned, we now have a
-  *	768 bit vector containing three FIB's
+  *	768 bit vector containing three FIB's (fib blocks) with "hard" bits
   *
   *	first step: energy dispersal according to the DAB standard
   *	We use a predefined vector PRBS
   */
 	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
-	   bitBuffer_out [i] ^= PRBS [i];
+	   hardBits [i] ^= PRBS [i];
 
 	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
-	   fibBits [ficno * FIC_BLOCKSIZE / 4 + i] = bitBuffer_out [i];
+	   fibBits [ficno * FIC_BLOCKSIZE / 4 + i] = hardBits [i];
 /**
-  *	each of the fib blocks is protected by a crc
+  *	each of the 3 fib blocks is protected by a crc
   *	(we know that there are three fib blocks each time we are here)
-  *	we keep track of the successrate
-  *	and show that per 100 fic blocks
+  *	we keep track of the successrate and show that per 100 fic blocks
   *	One issue is what to do when we really believe the synchronization
   *	was lost.
   */
 
 #define	RANGE 50
-//	default	
-	*valid = true;		// default, can be changed
+//	default
+	bool	valid = true;	// default, can be changed	
 	for (int i = ficno * 3; i < ficno * 3 + 3; i ++) {
-	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
+	   uint8_t *bitIndex = &hardBits [(i % 3) * 256];
 	   fibCounter ++;
 	   if (fibCounter >= RANGE)
 	      fibCounter = 0;
-	   if (!check_CRC_bits (p, 256)) {
-	      *valid = false;
+	   if (!check_CRC_bits (bitIndex, 256)) {
+	      valid = false;
 	      if (successRatio > 0)
 	         successRatio --;	
 	      if (fibCounter == 0)
@@ -261,30 +260,32 @@ int16_t	inputCount	= 0;
 	      continue;
 	   }
 
-	   for (int j = 0; j < 32; j ++) {
-	      ficBuffer [j] = 0;
-	      for (int k = 0; k < 8; k ++) {
-	         ficBuffer [j] <<= 1;
-	         ficBuffer [j] &= 0xFE;
-	         ficBuffer [j] |= p [8 * j + k] ? 1 : 0;
+	   {   int8_t ficDumpBuffer [32];
+	       for (int j = 0; j < 32; j ++) {
+	         ficDumpBuffer [j] = 0;
+	         for (int k = 0; k < 8; k ++) {
+	            ficDumpBuffer [j] <<= 1;
+	            ficDumpBuffer [j] &= 0xFE;
+	            ficDumpBuffer [j] |= bitIndex [8 * j + k] ? 1 : 0;
+	         }
 	      }
+	      ficLocker. lock ();
+	      if (ficDumpPointer != nullptr) 
+	         fwrite (ficDumpBuffer, 1, 32, ficDumpPointer);
+	      ficLocker. unlock ();
 	   }
 
-	   ficLocker. lock ();
-	   if (ficDumpPointer != nullptr) 
-	      fwrite (ficBuffer, 1, 32, ficDumpPointer);
-	   ficLocker. unlock ();
 	   if (successRatio < RANGE)
 	      successRatio ++;
 	   if (fibCounter == 0)
 	      showFICQuality (successRatio, 100 / RANGE);
-	   fibDecoder::processFIB (p, ficno);
+	   fibDecoder::processFIB (bitIndex, ficno);
 	}
+	return valid;
 }
 
 void	ficHandler::stop	() {
 	disconnectChannel	();
-//	clearEnsemble	();
 	running. store (false);
 }
 

@@ -60,7 +60,7 @@ static int cifTable [] = {18, 72, 0, 36};
 	this	-> cpuSupport	= cpuSupport;
 	cifVector. resize (55296);
 	BitsperBlock		= 2 * params. get_carriers();
-	ibits. resize (BitsperBlock);
+	softBits. resize (BitsperBlock);
 	nrBlocks		= params. get_L();
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
@@ -154,14 +154,14 @@ int	carriers	= params. get_carriers ();
 	            conjVector [index] = r1;
 
 	            float ab1	= jan_abs (r1);
-                    ibits [i]	=  (int16_t) (- real (r1) * MAX_VITERBI / ab1);
-                    ibits [carriers + i] =
+                    softBbits [i]	=  (int16_t) (- real (r1) * MAX_VITERBI / ab1);
+                    softBits [carriers + i] =
 	                           (int16_t) (- imag (r1) * MAX_VITERBI / ab1);
                  }
 
-	         process_mscBlock (ibits, currentBlock);
+	         processMscBlock (softBits, currentBlock);
 	      }
-	      memcpy (phaseReference. data(), fft_buffer,
+	      memcpy (phaseReference. data (), fft_buffer,
 	                 params. get_T_u() * sizeof (Complex));
               bufferSpace. release (1);
               helper. lock();
@@ -253,13 +253,13 @@ bool	mscHandler::setChannel (descriptorType &d,
 //	gui thread, so some locking is added
 //
 
-void	mscHandler::processMscBlock	(std::vector<int16_t> &fbits,
+void	mscHandler::processMscBlock	(std::vector<int16_t> &softBits,
 	                                 int16_t blkno) { 
 int16_t	currentblk	= (blkno - 4) % numberofblocksperCIF;
 
 //	and the normal operation is:
 	memcpy (&cifVector [currentblk * BitsperBlock],
-	                    fbits. data(), BitsperBlock * sizeof (int16_t));
+	                    softBits. data(), BitsperBlock * sizeof (int16_t));
 	if (currentblk < numberofblocksperCIF - 1) 
 	   return;
 

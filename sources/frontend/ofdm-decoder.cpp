@@ -204,7 +204,7 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
-	                     std::vector<int16_t> &ibits) {
+	                     std::vector<int16_t> &softbits) {
 DABFLOAT sum = 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
@@ -325,9 +325,9 @@ DABFLOAT sum = 0;
 	      default:
 	      case DECODER_1:
 	         R1		= fftBin;
-	         ibits [i]
+	         softbits [i]
 	                   = - real (R1) / binAbsLevel * MAX_VITERBI;
-	         ibits [carriers + i]
+	         softbits [carriers + i]
 	                   = - imag (R1) / binAbsLevel * MAX_VITERBI; 
 	         break;
 #ifdef	__ZERR__
@@ -335,8 +335,8 @@ DABFLOAT sum = 0;
 	         R1 =  normalize (fftBin) * ff *
 	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
 	         weight_r = weight_i	= -100 / meanValue;
-	         ibits [i]		= (int16_t)(real (R1) * weight_r);
-	         ibits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
+	         softbits [i]		= (int16_t)(real (R1) * weight_r);
+	         softbits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
 	         break;
 #endif
 	   }

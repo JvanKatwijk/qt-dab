@@ -214,7 +214,7 @@ freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable,
 estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
-std::vector<int16_t> ibits;
+std::vector<int16_t> softbits;
 int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
@@ -224,7 +224,7 @@ bool	inSync		= false;
 int	tryCounter	= 0;
 Complex tester	[T_u / 2];
 int	snrCount	= 0;
-	ibits. resize (2 * params. get_carriers());
+	softbits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
 	correctionNeeded	= true;
@@ -427,13 +427,14 @@ int	snrCount	= 0;
 //	If "eti_on" we process all data here
 	         if (etiOn) {
 	            theOfdmDecoder.
-	                   decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	                   decode (ofdmBuffer, ofdmSymbolCount, softbits);
 	            if (ofdmSymbolCount <= 3) 
 	               theFicHandler.
-	                    processFICBlock (ibits, ofdmSymbolCount);
+	                    processFICBlock (softbits, ofdmSymbolCount);
 	            else 
-	               theMscHandler. processMscBlock (ibits, ofdmSymbolCount);
-	            theEtiGenerator. processBlock (ibits, ofdmSymbolCount);
+	               theMscHandler. processMscBlock (softbits,
+	                                             ofdmSymbolCount);
+	            theEtiGenerator. processBlock (softbits, ofdmSymbolCount);
 	            continue;
 	         }
 //
@@ -444,9 +445,9 @@ int	snrCount	= 0;
 //	the payload at all
 	         if (ofdmSymbolCount <= 3) {
 	            theOfdmDecoder.
-                           decode (ofdmBuffer, ofdmSymbolCount, ibits);
+                           decode (ofdmBuffer, ofdmSymbolCount, softbits);
 	            theFicHandler.   
-                            processFICBlock (ibits, ofdmSymbolCount);
+                            processFICBlock (softbits, ofdmSymbolCount);
 	         }
 	         if (scanMode)
 	            continue;
@@ -455,9 +456,9 @@ int	snrCount	= 0;
 #else
 	         if (ofdmSymbolCount >= 4) {
 	            theOfdmDecoder.
-	                    decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	                    decode (ofdmBuffer, ofdmSymbolCount, softbits);
 	            theMscHandler.
-	                    processMscBlock (ibits, ofdmSymbolCount);
+	                    processMscBlock (softbits, ofdmSymbolCount);
 	         }
 #endif
 	      }

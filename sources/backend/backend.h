@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -67,7 +67,7 @@ public:
 	FILE		*dump;
 private:
 	backendDeconvolver	deconvolver;
-	std::vector<uint8_t>	outV;
+	std::vector<uint8_t>	hardBits;
 	backendDriver		driver;
 #ifdef	__THREADED_BACKEND__
 void	run();

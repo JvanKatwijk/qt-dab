@@ -92,7 +92,7 @@ private:
 	int16_t		cifCount;
 	int16_t		blkCount;
 	int16_t		BitsperBlock;
-	std::vector<int16_t> ibits;
+	std::vector<int16_t> softBits;
 
 	int16_t		numberofblocksperCIF;
 	int16_t		blockCount;

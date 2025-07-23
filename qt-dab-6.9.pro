@@ -473,8 +473,8 @@ CONFIG		+= datastreamer
 CONFIG		+= local-audio
 
 #CONFIG		+= viterbi-scalar
-#CONFIG		+= viterbi-sse
-CONFIG		+= viterbi-avx2
+CONFIG		+= viterbi-sse
+#CONFIG		+= viterbi-avx2
 #CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
