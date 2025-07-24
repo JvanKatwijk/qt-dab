@@ -229,12 +229,10 @@ QString   saveDir =  basicPath ();
 	return fopen (fileName. toUtf8 (). data (), "w");
 }
 
-FILE	* findfileNames::find_ficDump_file	(const QString &channel) {
+QString	findfileNames::find_ficDump_file	(const QString &channel) {
 QString	saveDir = basicPath ();
 	QString fileName = outputDialog (saveDir, channel, ".fic", true);
-	if (fileName == "")
-	   return nullptr;
-	return fopen (fileName. toUtf8 (). data (), "w+b");
+	return fileName;
 }
 
 QString	findfileNames::findMaps_fileName () {

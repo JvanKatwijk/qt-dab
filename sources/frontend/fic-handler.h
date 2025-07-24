@@ -48,7 +48,8 @@ public:
 	void	processFICBlock		(std::vector<int16_t> &, int16_t);
 	void	stop			();
 	void	restart			();
-	void	startFICDump		(FILE *);
+	void	startFICDump		(const QString &);
+	bool	ficDumping_on		();
 	void	stopFICDump		();
 	void	getFIBBits		(uint8_t *, bool *);
 	int	getFICQuality		();
@@ -67,7 +68,7 @@ private:
 	int16_t		BitsperBlock;
 	int16_t		ficno;
 	uint16_t	convState;
-	FILE		*ficDumpPointer;
+	std::atomic<FILE*>ficDumpPointer;
 	QMutex          ficLocker;
 	int		ficBlocks;
 	int		ficErrors;
@@ -77,6 +78,7 @@ private:
 	int		successRatio;
 	int		fibCounter;
 	uint16_t	starter;
+	void		dumpFicBlock	(uint8_t *);
 signals:
 	void		showFICQuality	(int, int);
 	void		showFICBER	(float);

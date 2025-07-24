@@ -26,7 +26,8 @@
 #include	"crc-handlers.h"
 #include	"protTables.h"
 #include	"dab-params.h"
-//
+//	From 2304 incoming (soft) bits, a "motherword" of 3072 bits
+//	is formed by depuncturing with predefined puncture tables.
 //	The 3072 bits of the serial motherword shall be split into
 //	24 blocks of 128 bits each.
 //	The first 21 blocks shall be subjected to
@@ -118,7 +119,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	ficPointer	= 0;
 	fibCounter	= 1;
 	successRatio	= 0;
-	ficDumpPointer	= nullptr;
+	ficDumpPointer. store (nullptr);
 }
 
 		ficHandler::~ficHandler () {
@@ -247,11 +248,13 @@ int16_t	inputCount	= 0;
 //	default
 	bool	valid = true;	// default, can be changed	
 	for (int i = ficno * 3; i < ficno * 3 + 3; i ++) {
-	   uint8_t *bitIndex = &hardBits [(i % 3) * 256];
+	   uint8_t *ficBlock = &hardBits [(i % 3) * 256];
 	   fibCounter ++;
 	   if (fibCounter >= RANGE)
 	      fibCounter = 0;
-	   if (!check_CRC_bits (bitIndex, 256)) {
+	   if (ficDumpPointer. load () != nullptr) 
+	      dumpFicBlock (ficBlock);
+	   if (!check_CRC_bits (ficBlock, 256)) {
 	      valid = false;
 	      if (successRatio > 0)
 	         successRatio --;	
@@ -260,28 +263,29 @@ int16_t	inputCount	= 0;
 	      continue;
 	   }
 
-	   {   int8_t ficDumpBuffer [32];
-	       for (int j = 0; j < 32; j ++) {
-	         ficDumpBuffer [j] = 0;
-	         for (int k = 0; k < 8; k ++) {
-	            ficDumpBuffer [j] <<= 1;
-	            ficDumpBuffer [j] &= 0xFE;
-	            ficDumpBuffer [j] |= bitIndex [8 * j + k] ? 1 : 0;
-	         }
-	      }
-	      ficLocker. lock ();
-	      if (ficDumpPointer != nullptr) 
-	         fwrite (ficDumpBuffer, 1, 32, ficDumpPointer);
-	      ficLocker. unlock ();
-	   }
-
 	   if (successRatio < RANGE)
 	      successRatio ++;
 	   if (fibCounter == 0)
 	      showFICQuality (successRatio, 100 / RANGE);
-	   fibDecoder::processFIB (bitIndex, ficno);
+	   fibDecoder::processFIB (ficBlock, ficno);
 	}
 	return valid;
+}
+
+void	ficHandler::dumpFicBlock (uint8_t *ficBlock) {
+int8_t ficDumpBuffer [32];
+	for (int j = 0; j < 32; j ++) {
+	   ficDumpBuffer [j] = 0;
+	   for (int k = 0; k < 8; k ++) {
+	      ficDumpBuffer [j] <<= 1;
+	      ficDumpBuffer [j] &= 0xFE;
+	      ficDumpBuffer [j] |= ficBlock [8 * j + k] ? 1 : 0;
+	   }
+	   ficLocker. lock ();
+	   if (ficDumpPointer. load () != nullptr) 
+	      fwrite (ficDumpBuffer, 1, 32, ficDumpPointer. load ());
+	   ficLocker. unlock ();
+	}
 }
 
 void	ficHandler::stop	() {
@@ -302,15 +306,18 @@ void	ficHandler::restart	() {
 	running. store (true);
 }
 
-void	ficHandler::startFICDump	(FILE *f) {
-	if (ficDumpPointer != nullptr)
-	   return;
-	ficDumpPointer = f;
+void	ficHandler::startFICDump	(const QString &fileName) {
+	ficDumpPointer. store (fopen (fileName. toUtf8 (). data (), "w + b"));
+}
+
+bool	ficHandler::ficDumping_on () {
+	return ficDumpPointer. load () != nullptr;
 }
 
 void	ficHandler::stopFICDump	() {
 	ficLocker. lock ();
-	ficDumpPointer = nullptr;
+	fclose (ficDumpPointer. load ());
+	ficDumpPointer. store (nullptr);
 	ficLocker. unlock ();
 }
 

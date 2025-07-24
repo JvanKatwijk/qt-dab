@@ -608,4 +608,5 @@ public slots:
 	void			show_title			(uint8_t,
 	                                                         uint8_t,
 	                                                         const QString &);
+	void			nrActiveServices		(int);
 };

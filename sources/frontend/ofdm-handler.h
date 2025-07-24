@@ -93,7 +93,8 @@ public:
 	QStringList	basicPrint		();
 	int		freeSpace		();
 	int		scanWidth		();
-	void		startFicDump		(FILE *);
+	void		startFicDump		(const QString &);
+	bool		ficDumping_on		();
 	void		stopFicDump		();
 
 	void		setSpeedUp		(bool);

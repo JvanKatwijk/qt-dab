@@ -184,7 +184,6 @@ QString h;
 	this	-> error_report		= error_report;
 	this	-> fmFrequency		= fmFrequency;
 	this	-> dlTextFile		= nullptr;
-	this	-> ficDumpPointer	= nullptr;
 	this	-> the_aboutLabel	= nullptr;
 	running. 		store (false);
 	stereoSetting			= false;
@@ -585,6 +584,7 @@ QString h;
 	nextService. serviceName = "";
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
+	nrServicesLabel	-> display (QString::number (0));
 	connectGUI ();
 //
 	this	-> cpuSupport	= 0;
@@ -2152,7 +2152,6 @@ QString serviceName	= s. serviceName;
 	         if (hasIcon)
 	            myTimeTable. addLogo (p);
 	      }
-
 	      techWindow_p	-> isDABPlus  (ad. ASCTy == 077);
 	   }
 	}
@@ -2467,10 +2466,7 @@ void	RadioInterface::stopChannel	() {
 	}
 //	note framedumping - if any - was already stopped
 //	ficDumping - if on - is stopped here
-	if (ficDumpPointer != nullptr) {
-	   theOFDMHandler -> stopFicDump ();
-	   ficDumpPointer = nullptr;
-	}
+	theOFDMHandler -> stopFicDump ();	// just in case ...
 	theOFDMHandler		-> stop ();
 	theDXDisplay. cleanUp ();
 	usleep (1000);
@@ -3268,16 +3264,16 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 }
 
 void	RadioInterface::scheduledFICDumping () {
-	if (ficDumpPointer == nullptr) {
-	   ficDumpPointer     =
-	     theFilenameFinder. find_ficDump_file (channel. channelName);
-	   if (ficDumpPointer == nullptr)
-	      return;
-	   theOFDMHandler -> startFicDump (ficDumpPointer);
+	if (theOFDMHandler -> ficDumping_on ()) {
+	   theOFDMHandler	-> stopFicDump ();
 	   return;
 	}
-	theOFDMHandler	-> stopFicDump ();
-	ficDumpPointer = nullptr;
+
+	QString ficDumpFileName =
+	     theFilenameFinder. find_ficDump_file (channel. channelName);
+	if (ficDumpFileName == "")
+	   return;
+	theOFDMHandler -> startFicDump (ficDumpFileName);
 }
 
 //------------------------------------------------------------------------
@@ -4573,5 +4569,9 @@ void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,
 	else
 	if (ct == 4)
 	   fprintf (stderr, "Artist: %s\n", s. toUtf8 (). data ());
+}
+
+void	RadioInterface::nrActiveServices	(int activeServices) {
+//	nrServicesLabel	-> display (activeServices);
 }
 

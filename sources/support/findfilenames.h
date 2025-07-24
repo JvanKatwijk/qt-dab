@@ -51,7 +51,7 @@ public:
 const	QString	findskipFile_fileName		();
 	QString	finddlText_fileName		(bool);
 	FILE	*findLogFileName		();
-	FILE	*find_ficDump_file		(const QString &);
+	QString	find_ficDump_file		(const QString &);
 	QString findMaps_fileName		();
 	QString	find_eti_fileName		(const QString &, const QString &);
 	QString	find_xmlName			(const QString &,

@@ -62,6 +62,9 @@ static int cifTable [] = {18, 72, 0, 36};
 	BitsperBlock		= 2 * params. get_carriers();
 	softBits. resize (BitsperBlock);
 	nrBlocks		= params. get_L();
+	connect (this, &mscHandler::nrServices,
+	         mr, &RadioInterface::nrActiveServices);
+	
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 #ifdef	__MSC_THREAD__
@@ -221,6 +224,7 @@ void	mscHandler::stopService	(int subchId, int flag) {
 	   }
 	}
 	locker. unlock ();
+	nrServices ((int)(theBackends. size ()));
 }
 //
 //	Note that - in general - the backens run in their own thread
@@ -240,8 +244,7 @@ bool	mscHandler::setChannel (descriptorType &d,
 	                                     dump,
 	                                     flag,
 	                                     cpuSupport)); 
-	fprintf (stderr, "we have now %d backends running\n",
-	                        (int)(theBackends. size ()));
+	nrServices ((int)(theBackends. size ()));
 	return true;
 }
 

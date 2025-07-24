@@ -1,8 +1,10 @@
 
-THIS IS WORK IN PROGRESS
+		THIS IS WORK IN PROGRESS
 
-The structure of the source tree for Qt-DAB
--------------------------------------------------------------------
+	   The structure of the source tree for Qt-DAB
+		J van Katwijk, Lazy Chair Computing
+-------------------------------------------------------------------------
+------------------------------------------------------------------------
 
 The basic operation of Qt-DAB - or any DAB decoder - is rather simple,
 a stream of IQ samples - rate 2048000 samples/second - comes in, is interpreted, a user chooses a service, and a selection of the incoming samples is made and transformed to an audio stream with a samplerate of 48000 samples/second.
@@ -45,7 +47,6 @@ A device driver shows a (usually small) window with controls for e.g. gain and o
 Some devices (AIRspy and Pluto) are not capable of outputting samples
 with the required samplerate, in which case the device driver has to do dome  samplerate conversion.
 
-
 The Frontend
 ----------------------------------------------------------------------------
 
@@ -59,57 +60,47 @@ The input data, a DAB frames, consists of three parts,
 The first step is synchronization, i.e. ensuring that the front end takes
 the right samples for converting them into bits.
 
-The class "sampleReader" implements reading the input and ensuring samples are available;
+ * The class "sampleReader" implements reading the input and ensuring samples are available;
 
-The class "timeSyncer" implements the time synchronisation, i.e. it reports - when asked for - whether or not the transition between NULL symbol and first data element of a DAB frame seems to be detected;
+ * The class "timeSyncer" implements the time synchronisation, i.e. it reports - when asked for - whether or not the transition between NULL symbol and first data element of a DAB frame seems to be detected;
 
-The class "correlator" then implements the fine tuning here, it determines
+ * The class "correlator" then implements the fine tuning here, it determines
 the exactposition of the first sample of the first datablock of a DAB frame;
 
-The class "freqSyncer" then implements the search for the required correction
-of the tuned frequency.
-Note that the actual correction of the frequency of the incoming sample stream
-is done in the "sampleReader" class
+ * The class "freqSyncer" then implements the search for the required correction
+of the tuned frequency. (Note that the actual correction of the frequency of the incoming sample stream is done in the "sampleReader" class);
 
-The class "ofdmDecoder" implements the conversion from the samples in the subsequent datablocks of the DAB frame to a sequence of soft bits, encoded in the range -127 .. 127.
+ * The class "ofdmDecoder" implements the conversion from the samples in the subsequent datablocks of the DAB frame to a sequence of soft bits, encoded in the range -127 .. 127.
 
-The class "ofdmHandler" is the controller here, it sends the data of the
+ * The class "ofdmHandler" is the controller here, it is aware of the state of the synchronization, takes action when needed, and sends the soft bits that
+return from the functions in the "ofdmDecoder" from the
 data blocks 2..4 for processing the FIC, i.e. the "catalog", and the
-data in the blocks 5 .. 76 to the backend.
+softbits derived from the blocks 5 .. 76 to the backend.
 
-The class "ficHandler" takes its input - soft bits - from the ofdmHandler, applies deconvolution on the input and prepares segments with hard bits for
+ * The class "ficHandler" takes its input - soft bits - from the ofdmHandler, applies deconvolution on the input and prepares segments with hard bits for
 processing by the fibDecoder.
 
-The class "fibDecoder" - together with the class "ensemble" and the class "fibConfig" - implements the actual processing of the FIC data (i.e. the "FIG's").
-A database (fibConfig) is filled, the GUI controller is informed about
-the ensemble and the services  that are described in the database,
-and the class provides functions  to inspect and extract attribute values of the services.
+ * The class "fibDecoder" - together with the class "ensemble" and the class "fibConfig" - implements the actual processing of the FIC data (i.e. the "FIG's").
+A database (the class "fibConfig" and the class "ensemble") is filled,
+the GUI controller is informed ("signalled") about the ensemble and the services  that are described in the database, and the class provides functions  to inspect and extract attribute values of the services.
 
-The classes "tii-detexctor-xx"  implement the extraction of TII data from the
-NULL periods starting DAB frames.
-They report their findings (i.e. basically mainId and subId) to the GUI controller.
+ * The classes "tii-detector-xx"  implement the extraction of TII data from the NULL periods starting DAB frames. They report ("signal") their findings (i.e. basically mainId and subId) to the GUI controller.
 
 The Backend
 --------------------------------------------------------------------------
 
 The directory "backend" contains the sources for the backend functionality.
-DAB services are either "audio" or data oriented. Two audio modes are implemented, one for the "old" MP2 mode used for DAB services, and one for MP4, used for DAB+.
-For data, Qt-DAB supports a few common data modes, Slides through MOT, IP, EPG, TDC and journaline.
+DAB services are either "audio" or data oriented. For "audio", two modes are implemented, one for the "old" MP2 mode used for DAB services, and one for MP4, used for DAB+.
+For "data", Qt-DAB supports a few common data modes, Slides through MOT, IP, EPG, TDC and journaline.
 
   * The class "mscHandler" is the interface class, it gets its input from the
 class "ofdmhandler" (i.e. the soft bits resulting from the conversion of the
 blocks 5 .. 76 of the DAB frames, as well as "instructions" from the
-GUI controller about the services that should run.
-
-The functions in the class build cokmplete CIF vectors (i.e. vectors of 55296 soft bits) containing the data for ALL services in the ensemble.
-Based on the instructions from the GUI controller, it selects segments and
+GUI controller about the services that should run. The functions in the class build cokmplete CIF vectors (i.e. vectors of 55296 soft bits) containing the data for ALL services in the ensemble.
+Based on the instructions from the GUI controller,  it instantiates backend classes for the selected services, and it selects segments from the CIF vector and
 passes them on to backend drivers.
 
-For each selected service a backend is instatiated.
-
-  * The class "Backend" implements the conversion from a segment of
-softbits as passed on by the mscHandler, to output using the other
-classes in the directory
+  * The class "Backend" is the generic backend controller, it implements the conversion from a segment of softbits that is passed on from the mscHandler, to output using the other classes in the directory;
 
   * The class "backend-deconvolver" does the deconvolution, after the deinterleaving was done. The deconvolution transforms the "soft bits" into hard bits.
 
@@ -135,11 +126,17 @@ passes them on the the actual interpreter.
 
   * a class "ip_datahandler" implementing the collection of "ip" packets and sending them out as datagram;
 
-  * a class "journaline-dataHandler" and a class "jourmalineScreen" that together implement the functionality of decoding and displaying journaline data;
+  * a class "journaline-dataHandler" and a class "journalineScreen" that together implement the functionality of decoding and displaying journaline data;
 
-  * a class "padHandler" that handles the Program Associated Data, varying from Dynamic Label to MOT data;
+  * a class "padHandler" that handles the "PAD",  Program Associated Data, varying from Dynamic Label to MOT data;
 
   * subdirectory for MOT data, containing classes for handling a variety of MOT objects, i.e. Slides and EPG data;
+
+     * a class "motHandler", the common interface from the providers of the MOT data to the "motDirectory" and "motObject" classes;
+
+     * a class "motDirectory", that implements - using the functionality of the class "motObject: a caroussel with mot objects;
+
+     * a class "motObject" that implements functions to collect the data for MOT objects; Resulting objects are passed on to the GUI controller.
 
   * a class "tdc_dataHandler", for implementing the extraction of TPEG type data, most of which is protected by a security key. Frames of the data can ne send to a separate server;
 
@@ -149,6 +146,7 @@ passes them on the the actual interpreter.
 
      * a class xmlExtractor, that helps interpreting the xml data
 
+Note that handling the EPG data is done by the GUI controller, since the binary encoded EPG segments are sent as MOT objects from the "motObject" class to the GUI controller.
 
 The GUI controller
 ---------------------------------------------------------------------------

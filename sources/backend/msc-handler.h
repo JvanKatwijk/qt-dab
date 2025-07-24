@@ -28,6 +28,8 @@
 #include	<QWaitCondition>
 #include	<QSemaphore>
 #include	"fft-handler.h"
+#else
+#include	<QObject>
 #endif
 #include	<QMutex>
 #include	<atomic>
@@ -49,8 +51,9 @@ class	logger;
 #ifdef	__MSC_THREAD__
 class mscHandler: public QThread  {
 #else
-class	mscHandler {
+class	mscHandler: public QObject {
 #endif
+Q_OBJECT
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
@@ -108,5 +111,7 @@ private:
         QWaitCondition  commandHandler;
         std::atomic<bool>       running;
 #endif
+signals:
+	void		nrServices	(int);
 };
 
