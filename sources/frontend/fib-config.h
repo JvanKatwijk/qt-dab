@@ -53,6 +53,7 @@ public:
 	   int32_t	protLevel;
 	   int32_t	bitRate;
 	   int16_t	FEC_scheme;
+	   uint8_t	compLanguage;
 	} subChannel;
 
 //	service components	filled by FIG0/2

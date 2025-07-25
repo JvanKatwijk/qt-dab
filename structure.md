@@ -18,9 +18,9 @@ still applies, and essentially determines the structure of the software.
 
 This structure is reflected in the structure of the sourcetree:
 
- * a group of sources implements functions for the radio handling and generating input samples with the aforementioned samplerate of 2048000, i.e. "Input Handling";
+ * a group of sources implements functionality for handling the radio input devices - tuning to a frequency, gain setting, reading in samples and making IQ samples with a rate of 2048000 S.s available,  i.e. "Input Handling";
 
- * a second group of sources implements functions for the interpretation of the samples, i.e. converting them into a bit stream, i.e. the "Frontend";
+ * a second group of sources implements functions for the interpretation of the samples, transforming them into (soft) bits and building up a description of the payload of the datastream, i.e. the "Frontend";
 
  * a third group of sources implements the functions for the interpretation and conversion of (user) selected portions of the bitstream to audio and/or data, i.e. the "Backend";
 
@@ -51,14 +51,15 @@ The Frontend
 ----------------------------------------------------------------------------
 
 The directory "sources/frontend" contains the sources implementing the
-front end functionality.  As mentioned, the front end implements the functionality for inputting a stream of samples from a device driver,  doing the required synchronizations on that stream, and converting samples to bits and interpreting the data.
+front end functionality.  As mentioned, the front end implements the functionality for inputting a stream of samples from a device driver, doing the required synchronizations on that stream, converting samples to (soft) bits, building up a database with the descriptions of the services.
 
-The input data, a DAB frames, consists of three parts,
+One should realize that the input data, consists of DAB frames, where a DAB frame contains three parts:
   * a so-called NULL part followed by a data block with predefined contents usedfor synchronization;
-  * a few datablocks containing a description of the content, i.e. the services;  * data blocks with the actual content, data for services.
+  * a few datablocks containing  data for the description of the content, i.e. the services;
+  * data blocks with the actual content, the data for services.
 
 The first step is synchronization, i.e. ensuring that the front end takes
-the right samples for converting them into bits.
+the right samples for converting them into bits, including correction for frequency errors of the tuning of the signal, the functionality is implemented by:
 
  * The class "sampleReader" implements reading the input and ensuring samples are available;
 
@@ -70,12 +71,10 @@ the exactposition of the first sample of the first datablock of a DAB frame;
  * The class "freqSyncer" then implements the search for the required correction
 of the tuned frequency. (Note that the actual correction of the frequency of the incoming sample stream is done in the "sampleReader" class);
 
+The second step is implemented by 
+
  * The class "ofdmDecoder" implements the conversion from the samples in the subsequent datablocks of the DAB frame to a sequence of soft bits, encoded in the range -127 .. 127.
 
- * The class "ofdmHandler" is the controller here, it is aware of the state of the synchronization, takes action when needed, and sends the soft bits that
-return from the functions in the "ofdmDecoder" from the
-data blocks 2..4 for processing the FIC, i.e. the "catalog", and the
-softbits derived from the blocks 5 .. 76 to the backend.
 
  * The class "ficHandler" takes its input - soft bits - from the ofdmHandler, applies deconvolution on the input and prepares segments with hard bits for
 processing by the fibDecoder.
@@ -86,10 +85,17 @@ the GUI controller is informed ("signalled") about the ensemble and the services
 
  * The classes "tii-detector-xx"  implement the extraction of TII data from the NULL periods starting DAB frames. They report ("signal") their findings (i.e. basically mainId and subId) to the GUI controller.
 
+The execution of the functionality is controlled by
+
+ * The class "ofdmHandler" is the controller here, it is aware of the state of the synchronization, takes action when needed, and sends the soft bits that
+return from the functions in the "ofdmDecoder" from the
+data blocks 2..4 for processing the FIC, i.e. the "catalog", and the
+softbits derived from the blocks 5 .. 76 to the backend.
+
 The Backend
 --------------------------------------------------------------------------
 
-The directory "backend" contains the sources for the backend functionality.
+The directory "/sources/backend" contains the sources for the backend functionality.
 DAB services are either "audio" or data oriented. For "audio", two modes are implemented, one for the "old" MP2 mode used for DAB services, and one for MP4, used for DAB+.
 For "data", Qt-DAB supports a few common data modes, Slides through MOT, IP, EPG, TDC and journaline.
 
@@ -100,13 +106,13 @@ GUI controller about the services that should run. The functions in the class bu
 Based on the instructions from the GUI controller,  it instantiates backend classes for the selected services, and it selects segments from the CIF vector and
 passes them on to backend drivers.
 
-  * The class "Backend" is the generic backend controller, it implements the conversion from a segment of softbits that is passed on from the mscHandler, to output using the other classes in the directory;
+  * The class "Backend" is the generic backend controller, it implements the conversion from a segment of softbits that is passed on from the mscHandler, to output using the functionality the other classes in the directory;
 
   * The class "backend-deconvolver" does the deconvolution, after the deinterleaving was done. The deconvolution transforms the "soft bits" into hard bits.
 
-  * The class "backendDriver" is the class that allocates and instantiates - based on the kind of service selected, a "processor" for further processing the data. 
+  * The class "backendDriver" is the class that allocates and instantiates - based on the kind of service selected - a "processor" for further processing the data. 
 
-The subdirectory "audio" contains sources for two classes
+The subdirectory "audio" contains sources for two classes rach implementing such an "audio" processor
 
  * a class mp2Processor, for handling the original DAB data, in MP2 format;
 
@@ -146,27 +152,30 @@ passes them on the the actual interpreter.
 
      * a class xmlExtractor, that helps interpreting the xml data
 
-Note that handling the EPG data is done by the GUI controller, since the binary encoded EPG segments are sent as MOT objects from the "motObject" class to the GUI controller.
+Note that handling the EPG data is done by functions in the GUI controller.
+The binary encoded EPG segments are sent as MOT objects from the "motObject" class to the GUI controller.
 
 The GUI controller
 ---------------------------------------------------------------------------
 
+The directory "sources/main" contains the sources of the GUI controller.
 Qt-DAB is GUI oriented, i.e. apart from some (obscure) command line parameters that can be passed to the program, all interaction is using a GUI.
 
-Somewhere else the elements of the GUI are detailed.
+Somewhere else the elements and the use of the GUI are detailed.
 
 The Qt-DAB main program, traditionally called "main.cpp" "knows" a single
 class that seems to do all the work
 
-  * RadioInterface is the class that controls the GUI. It ensures that on program startup a device is started, or if requiored, is selected first, and it starts the processing.
-  It uses the functionality of the class "ensembleHandler" for managing and displaying the services list.
+  * the class  RadioInterface controls the GUI. It ensures that on program startup a device is started, or if requiored, is selected first, and it starts the processing.
+ 
+* the class "ensembleHandler" implements the management and display  of the services list.
 
   * the class "configHandler" "owns" the window with the same name and is
 responsible for setting and registering the settings for the processes
 
   * the class "techData" "owns" the window with the same name and is responsible for displaying the parameters - and the spectrum - of the selected audio.
 
-  * the class "displayWidget" in the directory /sources/main/forms-v7/new-display" implements the functionality of the spectrum display,
+  * the class "displayWidget" in the directory /sources/main/forms-v7/new-display" implements the functionality of the spectrum display, it contains subclasses implementing the various scopes.
 
 
 Other directories in the source tree

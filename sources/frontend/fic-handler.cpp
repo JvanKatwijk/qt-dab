@@ -316,8 +316,10 @@ bool	ficHandler::ficDumping_on () {
 
 void	ficHandler::stopFICDump	() {
 	ficLocker. lock ();
-	fclose (ficDumpPointer. load ());
-	ficDumpPointer. store (nullptr);
+	if (ficDumpPointer. load () != nullptr) {
+	   fclose (ficDumpPointer. load ());
+	   ficDumpPointer. store (nullptr);
+	}
 	ficLocker. unlock ();
 }
 

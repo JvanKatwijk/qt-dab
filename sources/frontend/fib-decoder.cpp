@@ -44,6 +44,7 @@
 //	some issues.
 //	The current one is a straight forward implementation,
 //	where the FIG's are stored in a (kind of) database
+//	maintained in a class fibConfig
 
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
@@ -512,25 +513,39 @@ fibConfig::SC_language comp;
 	comp. LS_flag = LS_flag;
 	if (LS_flag == 0) {
 	   comp. subChId = getBits (d, bitOffset + 2, 6);
-	   for (int i = 0; i < (int) localBase -> language_table. size (); i ++)
-	      if ((localBase -> language_table [i]. LS_flag == 0) &&
-	          (localBase -> language_table [i]. subChId == comp. subChId)) {
-	         bitOffset += 16;
-	         return bitOffset / 8;
+	   comp. SCId	= 255;
+	   uint8_t language = getBits (d, bitOffset + 8, 8);
+	   for (auto &scId : localBase -> subChannel_table) {
+	      if (scId. subChId == comp. subChId) {
+	         comp. language = language;
+	         break;
 	      }
-	   comp. language = getBits (d, bitOffset + 8, 8);
+	   }
 	   bitOffset += 16;
 	}
 	else {
 	   comp. SCId = getBits (d, bitOffset + 4, 12);
-	   for (int i = 0; i < (int)localBase ->  language_table. size (); i ++)
-	      if ((localBase -> language_table [i]. LS_flag == 0) &&
-	          (localBase -> language_table [i]. SCId == comp. SCId)) {
-	         bitOffset += 24;
-	         return bitOffset / 8;
+	   comp. subChId = 255;
+	   uint8_t language = getBits (d, bitOffset + 16, 8);
+	   for (auto & scId : localBase -> SC_P_table) {
+	      if (scId. SCId == comp. SCId) {
+	         for (auto &subch : localBase -> subChannel_table) {
+	            if (subch. subChId == scId. subChId) {
+	               comp. language = language;
+	               break;
+	            }
+	         }
 	      }
-	   comp. language = getBits (d, bitOffset + 16, 8);
+	   }
 	   bitOffset += 24;
+	}
+	for (auto &lanComp : localBase -> language_table) {
+	   if ((lanComp. LS_flag == 0) &&
+	       (lanComp. subChId == comp. subChId))	
+	      return bitOffset / 8;
+	   if ((lanComp. LS_flag != 0) &&
+	       (lanComp. SCId == comp. SCId))
+	      return bitOffset / 8;
 	}
 	localBase -> language_table. push_back (comp);
 	return bitOffset / 8;

@@ -584,7 +584,7 @@ QString h;
 	nextService. serviceName = "";
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
-	nrServicesLabel	-> display (QString::number (0));
+//	nrServicesLabel	-> display (QString::number (0));
 	connectGUI ();
 //
 	this	-> cpuSupport	= 0;
