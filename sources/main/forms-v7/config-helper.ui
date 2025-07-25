@@ -176,6 +176,13 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
+          <widget class="clickablelabel" name="activeServices">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="label_3">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The CPU load is an indication of the load when executing the program. The load tells the total load on the CPU, i.e. inclusing the load of other programs that might be running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -637,6 +644,11 @@
    <class>smallSpinBox</class>
    <extends>QSpinBox</extends>
    <header location="global">smallspinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>clickablelabel</class>
+   <extends>QLabel</extends>
+   <header location="global">clickable-label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

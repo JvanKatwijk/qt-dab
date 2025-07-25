@@ -166,9 +166,9 @@ Somewhere else the elements and the use of the GUI are detailed.
 The Qt-DAB main program, traditionally called "main.cpp" "knows" a single
 class that seems to do all the work
 
-  * the class  RadioInterface controls the GUI. It ensures that on program startup a device is started, or if requiored, is selected first, and it starts the processing.
+  * the class  RadioInterface controls the GUI. It ensures that on program startup a device is started, or if required, is selected first, after which processing is started.
  
-* the class "ensembleHandler" implements the management and display  of the services list.
+  * the class "ensembleHandler" implements the management and display  of the services list.
 
   * the class "configHandler" "owns" the window with the same name and is
 responsible for setting and registering the settings for the processes

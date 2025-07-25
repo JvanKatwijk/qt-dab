@@ -46,6 +46,8 @@ public:
 	void	hide			();
 	bool	isHidden		();
 	void	set_connections		();
+
+	void	set_activeServices	(int);
 //
 //	the value extractors
 	bool	upload_selector_active	();

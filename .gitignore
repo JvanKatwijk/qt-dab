@@ -1,7 +1,7 @@
 ./obsolete/
 ./Makefile
 .qmake.stash
-./linux-bin/
+./linux-bin/*
 ./moc*
 ./*.o
 ./build

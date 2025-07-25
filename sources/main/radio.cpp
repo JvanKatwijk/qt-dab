@@ -272,6 +272,7 @@ QString h;
 	                                                       presetFile));
 //	we have the configuration handler and the ensemble handler,
 //	connect some signals directly
+	configHandler_p		-> set_activeServices (0);
 	configHandler_p		-> set_connections ();
 	configHandler_p		-> setDeviceList (theDeviceChoser.
 	                                            getDeviceList ());
@@ -508,7 +509,7 @@ QString h;
 	epgP. load (":res/epgLabel.png", "png");
 	epgLabel	-> setPixmap (epgP. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
-	epgLabel	-> setToolTip ("this icon is visible when the EPG processor runs, in the background");
+	epgLabel	-> setToolTip ("this icon is visible when the EPG processor is active,  it will always run in the background");
 	epgLabel	-> hide ();
 	show_pauzeSlide ();
 
@@ -1168,6 +1169,7 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 	   else
 	      startService (serv, index);
 	}
+
 }
 
 //
@@ -4571,7 +4573,7 @@ void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,
 	   fprintf (stderr, "Artist: %s\n", s. toUtf8 (). data ());
 }
 
-void	RadioInterface::nrActiveServices	(int activeServices) {
-//	nrServicesLabel	-> display (activeServices);
+void	RadioInterface::nrActiveServices	(int n) {
+	configHandler_p -> set_activeServices (n);
 }
 

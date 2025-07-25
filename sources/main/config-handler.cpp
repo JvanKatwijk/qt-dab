@@ -1041,3 +1041,7 @@ QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
 	myFrame. grab (). save (fileName);
 }
 
+void	configHandler::set_activeServices	(int activeS) {
+	activeServices	-> setText (QString::number (activeS));
+}
+
