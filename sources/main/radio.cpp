@@ -60,6 +60,7 @@
 #include	"audiosink.h"
 #endif
 
+#include	"dab-tables.h"
 #include	"device-exceptions.h"
 #include	"settingNames.h"
 #include	"uploader.h"
@@ -808,7 +809,8 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-QStringList s	= theOFDMHandler -> basicPrint ();
+//QStringList s	= theOFDMHandler -> basicPrint ();
+QStringList s	= basicPrint ();
 
 	if (contentTable_p != nullptr) {
 	   contentTable_p -> hide ();
@@ -820,7 +822,7 @@ QStringList s	= theOFDMHandler -> basicPrint ();
 	
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
-	                                            theOFDMHandler -> scanWidth ());
+	                                            scanWidth ());
 	connect (contentTable_p, &contentTable::goService,
 	         this, &RadioInterface::handle_contentSelector);
 
@@ -2586,7 +2588,7 @@ void	RadioInterface::startScan_single () {
 
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
-	                                       theOFDMHandler -> scanWidth ());
+	                                       scanWidth ());
 	else					// should not happen
 	   scanTable_p -> clearTable ();
 
@@ -2617,7 +2619,7 @@ void	RadioInterface::startScan_single () {
 void	RadioInterface::startScan_continuous () {
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
-	                                     theOFDMHandler -> scanWidth ());
+	                                                   scanWidth ());
 	else					// should not happen
 	   scanTable_p -> clearTable ();
 
@@ -2908,7 +2910,8 @@ QString	headLine = build_kop ();
 	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
            scanTable_p	-> addLine (transmitterLine);
         }
-	QStringList s = theOFDMHandler -> basicPrint ();
+//	QStringList s = theOFDMHandler -> basicPrint ();
+	QStringList s = basicPrint ();
 	for (const auto &l : s)
 	   scanTable_p -> addLine (l);
 	scanTable_p -> addLine ("\n;\n;\n");
@@ -4575,5 +4578,126 @@ void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,
 
 void	RadioInterface::nrActiveServices	(int n) {
 	configHandler_p -> set_activeServices (n);
+}
+//
+/////////////////////////////////////////////////////////////////////////
+
+QStringList RadioInterface::basicPrint () {
+QStringList out;
+	bool hasContents = false;
+	QList<contentType> serviceData = theOFDMHandler -> contentPrint ();
+	for (auto &ct : serviceData) {
+	   if (ct. TMid != 0)	// no audio
+	      continue;
+	   if (!hasContents)
+	      out << audioHeader ();
+	   hasContents = true;
+	   out << audioData (ct);
+	}
+	hasContents = false;
+	for (auto &ct : serviceData) {
+	   if (ct. TMid != 3)	// no packet
+	      continue;
+	   if (!hasContents)
+	      out << packetHeader ();
+	   hasContents = true;
+	   out << packetData (ct);
+	}
+	return out;
+}
+
+QString	RadioInterface::audioHeader		() {
+	return	QString (" ;") +
+	        QString ("serviceName") + ";" +
+	        "serviceId" + ";" +
+		"subChannel" + ";" +
+		"start address (CU's)" + ";" +
+		"length (CU's)" + ";" +
+		"protection" + ";" +
+		"code rate" + ";" +
+	        "bitrate" + ";" +
+		"dab type" + ";" +
+		"language" + ";" +
+		"program type" + ";" +
+		"fm freq" + ";";
+}
+
+QString	RadioInterface::packetHeader		() {
+	return	QString (" ;") +
+	        QString ("serviceName") + ";" +
+	        "serviceId" + ";" + 
+		"subChannel" + ";" +
+		"start address" + ";" +
+		"length" + ";" +
+		"protection" + ";" +
+		"code rate" + ";" +
+	        "appType" + ";" +
+	        "FEC_scheme" + ";" +
+	        "packetAddress" + ";" +
+	        "DSCTy" + ";";
+}
+
+QString	RadioInterface::audioData		(contentType &ct) {
+QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
+	return runs + ";" +
+	       QString (ct. serviceName)+ ";" +
+	       QString::number (ct. SId, 16) + ";" +
+	       QString::number (ct. subChId) + ";" +
+	       QString::number (ct. startAddress)+ ";" +
+	       QString::number (ct. length) + ";" +
+	       ct. protLevel + ";" +
+	       ct. codeRate + ";" +
+	       QString::number (ct. bitRate) + ";" +
+	       (ct. ASCTy_DSCTy == 077 ? "DAB+" : "DAB") + ";" +
+	       getLanguage (ct. language) + ";" +
+	       getProgramType (ct. programType) + ";" +
+	       ((ct. fmFrequencies. size () > 0) ?
+                   QString::number (ct. fmFrequencies [0]) : " ");
+}
+
+QString	RadioInterface::packetData	(contentType &ct) {
+QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
+QString res	= runs + ";" +
+	           QString (ct. serviceName)+ ";" +
+	          QString::number (ct. SId, 16) + ";" +
+	          QString::number (ct. subChId) + ";" +
+	          QString::number (ct. startAddress)+ ";" +
+	          QString::number (ct. length) + ";" +
+	          ct. protLevel + ";" +
+	          ct. codeRate + ";" +
+//	          QString::number (ct. bitRate) + ";" +
+	          QString::number (ct. appType) + ";" +
+	          QString::number (ct. FEC_scheme) + ";" +
+	          QString::number (ct. packetAddress) + ";";
+	          QString dtype;
+	          switch (ct. ASCTy_DSCTy) {
+	             case 60 :
+	                dtype = "mot data";
+	                break;
+	             case 59:
+	                dtype = "ip data";
+	                break;
+	             case 44 :
+	                dtype =  "journaline data";
+	                break;
+	             case  5 :
+	                dtype =  "tdc data";
+	                break;
+	             default:
+	                dtype = "unknown data";
+	          }
+	         res = res + dtype + ";";
+	         return res;
+}
+
+
+//	We terminate the sequences with a ";", so that is why the
+//	actual number is 1 smaller
+int	RadioInterface::scanWidth	() {
+QString s1	= audioHeader ();
+QString s2	= packetHeader ();
+QStringList l1 = s1. split (";");
+QStringList l2 = s2. split (";");
+	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
 }
 

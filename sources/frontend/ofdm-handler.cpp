@@ -614,16 +614,18 @@ std::vector<int>	ofdmHandler::getFrequency	(const QString &s) {
 	return theFicHandler. getFrequency (s);
 }
 
-QStringList ofdmHandler::basicPrint	() {
-QStringList res;
-	return theFicHandler. basicPrint ();
-	return res;;
+QList<contentType> ofdmHandler::contentPrint	() {
+	return theFicHandler. contentPrint ();
 }
 
-int	ofdmHandler::scanWidth		() {
-	return theFicHandler. scanWidth ();
-	return 0;
-}
+//QStringList ofdmHandler::basicPrint	() {
+//	return theFicHandler. basicPrint ();
+//}
+//
+//int	ofdmHandler::scanWidth		() {
+//	return theFicHandler. scanWidth ();
+//	return 0;
+//}
 
 int	ofdmHandler::freeSpace		() {
 	return theFicHandler. freeSpace ();
@@ -725,4 +727,9 @@ void	ofdmHandler::setSpeedUp	(bool b) {
 void	ofdmHandler::setFreqCorrelator	(uint8_t corr) {
 	store (settings_p, CONFIG_HANDLER, "SELECT_CORR", corr);
 }
+
+bool	ofdmHandler::serviceRuns	(uint32_t SId, uint16_t subChId) {
+	return theMscHandler. serviceRuns (SId, subChId);
+}
+
 

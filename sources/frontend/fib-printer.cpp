@@ -33,7 +33,7 @@
 }
 
 	fibPrinter::~fibPrinter () {}
-	
+
 QStringList	fibPrinter::basicPrint () {
 QStringList out;
 	bool hasContents = false;
@@ -62,6 +62,7 @@ QStringList out;
 	}
 	return out;
 }
+
 //
 QString	fibPrinter::serviceName		(int index) { 
 uint32_t sid	=  currentConfig -> serviceIdOf (index);
@@ -195,6 +196,7 @@ QString	fibPrinter::audioData		(int index) {
 	       fmFreqOf (index) + ";";
 }
 //
+//
 QString	fibPrinter::packetHeader		() {
 	return	QString ("serviceName") + ";" +
 	        "serviceId" + ";" + 
@@ -222,6 +224,7 @@ QString	fibPrinter::packetData	(int index) {
 	       packetAddress (index) + ";" +
 	       DSCTy (index) + ";";
 }
+
 //
 //	We terminate the sequences with a ";", so that is why the
 //	actual number is 1 smaller

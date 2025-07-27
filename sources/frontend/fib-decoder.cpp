@@ -35,8 +35,10 @@
 #include	"fib-table.h"
 #include	<QStringList>
 #include	"dab-tables.h"
-#include	"fib-printer.h"
+//#include	"fib-printer.h"
 #include	"time-converter.h"
+
+#include	"dab-tables.h"
 //
 //
 //	The fibDecoder was rewritten since the "old" one
@@ -1432,16 +1434,15 @@ uint32_t fibDecoder::julianDate		() {
 	return mjd;
 }
 
-
-QStringList	fibDecoder::basicPrint	() {
-fibPrinter thePrinter (currentConfig, theEnsemble);
-	return thePrinter. basicPrint ();
-}
-
-int	fibDecoder::scanWidth	() {
-fibPrinter thePrinter (currentConfig, theEnsemble);
-	return thePrinter. scanWidth ();
-}
+//QStringList	fibDecoder::basicPrint	() {
+//fibPrinter thePrinter (currentConfig, theEnsemble);
+//	return thePrinter. basicPrint ();
+//}
+//
+//int	fibDecoder::scanWidth	() {
+//fibPrinter thePrinter (currentConfig, theEnsemble);
+//	return thePrinter. scanWidth ();
+//}
 
 void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
 	                                                uint8_t subChId) {
@@ -1465,3 +1466,61 @@ int	fibDecoder::freeSpace		() {
 	return currentConfig -> freeSpace ();
 }
 
+QList<contentType> fibDecoder::contentPrint () {
+QList<contentType> res;
+	for (int i = 0; i < currentConfig -> SC_C_table. size (); i ++) {
+	   fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [i];
+	   contentType theData;
+	   theData. TMid	= comp. TMid;
+	   theData. SId		= comp. SId;
+	   theData. isActive	= false;
+	   if (comp. TMid == 0) {	// audio data
+	      audiodata ad;
+	      audioData (i, ad);
+	      if (!ad. defined)		// should not happen
+	         continue;
+	      theData. serviceName	= ad. serviceName;
+	      theData. subChId		= ad. subchId;
+	      theData. SCIds		= ad. SCIds;
+	      theData. startAddress	= ad. startAddr;
+	      theData. length		= ad. length;
+	      theData. codeRate		= getCodeRate (ad. shortForm,
+	                                               ad. protLevel);
+	      theData. protLevel	= getProtectionLevel (ad. shortForm,
+	                                                      ad. protLevel);
+	      theData. bitRate		= ad. bitRate;
+	      theData. language		= ad. language;
+	      theData. FEC_scheme	= 0;
+	      theData. packetAddress	= 0;
+	      theData. ASCTy_DSCTy	= ad. ASCTy;
+	      theData. programType	= theEnsemble -> programType (ad. SId);
+	      theData. fmFrequencies	= theEnsemble -> fmFrequencies (ad. SId);
+	      res. push_back (theData);
+	   }
+	   else
+	   if (comp. TMid == 3) {	// packet 
+	      packetdata pd;
+	      packetData (i, pd);
+	      if (!pd. defined)		// should not happen
+	         continue;
+	      theData. serviceName	= pd. serviceName;
+	      theData. subChId		= pd. subchId;
+	      theData. SCIds		= pd. SCIds;
+	      theData. startAddress	= pd. startAddr;
+	      theData. length		= pd. length;
+	      theData. codeRate		= getCodeRate (pd. shortForm,
+	                                               pd. protLevel);
+	      theData. protLevel	= getProtectionLevel (pd. shortForm,
+	                                                      pd. protLevel);
+	      theData. bitRate		= pd. bitRate;
+	      theData. FEC_scheme	= pd. FEC_scheme;
+	      theData. packetAddress	= pd. packetAddress;
+	      theData. ASCTy_DSCTy	= pd. DSCTy;
+	      theData. appType		= pd. appType;
+	      theData. language		= 0;
+	      theData. programType	= 0;
+	      res. push_back (theData);
+	   }
+	}
+	return res;
+}

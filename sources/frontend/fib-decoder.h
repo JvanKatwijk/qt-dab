@@ -63,8 +63,10 @@ public:
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	QStringList	basicPrint 		();
+	QList<contentType> contentPrint		();
 	int		scanWidth		();
 	int		freeSpace		();
+
 protected:
 	void		processFIB		(uint8_t *, uint16_t);
 private:
@@ -164,6 +166,7 @@ private:
 	void		handleAnnouncement	(uint16_t SId,
 	                                         uint16_t flags,
 	                                         uint8_t SubChId);
+
 signals:
 	void		addToEnsemble		(const QString &, int, int);
 	void		ensembleName		(int, const QString &);

@@ -27,6 +27,7 @@
 #pragma once
 
 #include	<QString>
+#include	<QStringList>
 #include	<cmath>
 #include	<cstdint>
 #include	<cstdlib>
@@ -234,7 +235,39 @@ typedef struct {
 	int16_t bitrate;
 	int16_t ASCTy; 
 } channel_data;
- 
+
+class	contentType {
+public:
+	uint8_t		TMid;		// TMId value
+	uint8_t		isActive;
+	QString		serviceName;
+	uint32_t	SId;
+	uint16_t	SCIds;
+//	the following values are subChannel values
+	uint16_t	subChId;
+	uint16_t	startAddress;
+	uint16_t	length;
+	QString		protLevel;
+	QString		codeRate;
+	uint16_t	bitRate;
+	uint8_t		FEC_scheme;
+	uint16_t	language;
+//
+	uint16_t	programType;
+	std::vector<int> fmFrequencies;
+	uint16_t	ASCTy_DSCTy;
+	uint16_t	packetAddress;
+	uint16_t	appType;
+	contentType () {
+	   isActive = 0;
+	   FEC_scheme	= 0;
+	   packetAddress	= 0;
+	}
+	~contentType () {}
+};
+	
+
+
 //	40 up shows good results
 #define		DIFF_LENGTH	60
 

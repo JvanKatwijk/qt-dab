@@ -73,6 +73,7 @@ public:
 	void		resetChannel		();
 	void		stopService		(int, int);
 	void		resetBuffers		();
+	bool		serviceRuns		(uint32_t SId, uint16_t subChId);
 private:
 
 	dabParams	params;

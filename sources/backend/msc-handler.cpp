@@ -248,6 +248,13 @@ bool	mscHandler::setChannel (descriptorType &d,
 	return true;
 }
 
+bool	mscHandler::serviceRuns	(uint32_t SId, uint16_t subChId) {
+	for (auto &backend : theBackends)
+	   if ((backend -> serviceId == SId) && (backend -> subChId == subChId))
+	      return true;
+	return false;
+}
+
 //
 //	add blocks. First is (should be) block 4, last is (should be) 
 //	nrBlocks -1.

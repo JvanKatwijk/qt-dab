@@ -70,6 +70,10 @@ public:
 	void		setScanMode		(bool);
 	void		getFrameQuality		(int *, int*, int *);
 //
+//	just a gadget
+	bool		serviceRuns		(uint32_t SId, uint16_t SCIds);
+
+//
 //	for the tii settings
 	void		setTIIThreshold		(int16_t);
 	void		setTIICollisions	(bool);
@@ -90,9 +94,10 @@ public:
         uint8_t		getEcc			();
 	uint32_t	julianDate		();
 	std::vector<int>	getFrequency	(const QString &);
-	QStringList	basicPrint		();
+	QList<contentType>	contentPrint	();
+//	QStringList	basicPrint		();
+//	int		scanWidth		();
 	int		freeSpace		();
-	int		scanWidth		();
 	void		startFicDump		(const QString &);
 	bool		ficDumping_on		();
 	void		stopFicDump		();
