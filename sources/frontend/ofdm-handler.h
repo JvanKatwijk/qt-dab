@@ -82,7 +82,7 @@ public:
 //	for the ficHandler:
 	int		getServiceComp		(const QString &);
 	int		getServiceComp		(uint32_t, int);
-	int		getServiceComp_SCIds	(uint32_t SId, int SCIds);
+//	int		getServiceComp_SCIds	(uint32_t SId, int SCIds);
 	bool		isPrimary		(const QString &);
 
 	uint16_t	getAnnouncing		(uint16_t);
@@ -91,12 +91,9 @@ public:
         void		audioData		(int, audiodata &);
         void		packetData		(int, packetdata &);
 	int		getNrComps		(uint32_t);
-        uint8_t		getEcc			();
 	uint32_t	julianDate		();
 	std::vector<int>	getFrequency	(const QString &);
 	QList<contentType>	contentPrint	();
-//	QStringList	basicPrint		();
-//	int		scanWidth		();
 	int		freeSpace		();
 	void		startFicDump		(const QString &);
 	bool		ficDumping_on		();

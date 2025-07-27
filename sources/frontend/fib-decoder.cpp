@@ -1235,6 +1235,8 @@ int16_t		bitOffset	= 48;
 	theEnsemble -> primaries. push_back (prim);
 	addToEnsemble (dataName, SId, -1);
 }
+//
+//////////////////////////////////////////////////////////////////////
 
 void	fibDecoder::connectChannel () {
 	fibLocker. lock();
@@ -1255,7 +1257,8 @@ void	fibDecoder::disconnectChannel () {
 	theEnsemble	-> reset ();
 	fibLocker. unlock();
 }
-
+//
+//	ofdmHandler ask for syncReached
 bool	fibDecoder::syncReached() {
 	return  theEnsemble -> isSynced;
 }
@@ -1392,10 +1395,6 @@ bool	fibDecoder::isPrimary	(const QString &s) {
 	return false;
 }
 	
-uint8_t	 fibDecoder:: get_ecc			() {
-	return theEnsemble -> eccByte;
-}
-
 std::vector<int> fibDecoder::getFrequency	(const QString &s) {
 std::vector<int> res;
 	for (auto &serv : theEnsemble -> primaries) {
@@ -1434,16 +1433,6 @@ uint32_t fibDecoder::julianDate		() {
 	return mjd;
 }
 
-//QStringList	fibDecoder::basicPrint	() {
-//fibPrinter thePrinter (currentConfig, theEnsemble);
-//	return thePrinter. basicPrint ();
-//}
-//
-//int	fibDecoder::scanWidth	() {
-//fibPrinter thePrinter (currentConfig, theEnsemble);
-//	return thePrinter. scanWidth ();
-//}
-
 void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
 	                                                uint8_t subChId) {
 	(void)subChId;
@@ -1465,7 +1454,12 @@ uint16_t fibDecoder::getAnnouncing	(uint16_t SId) {
 int	fibDecoder::freeSpace		() {
 	return currentConfig -> freeSpace ();
 }
-
+//
+//	Some GUI functions, such as content printer and
+//	printer with the scan function, need to get a description
+//	of the attributes of the service.
+//	Here we collect all attributes as specified by "contentType"
+//	
 QList<contentType> fibDecoder::contentPrint () {
 QList<contentType> res;
 	for (int i = 0; i < currentConfig -> SC_C_table. size (); i ++) {

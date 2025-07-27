@@ -236,6 +236,8 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_allTIISelector);
 	connect (this, &configHandler::process_tiiSelector,
 	         myRadioInterface, &RadioInterface::process_tiiSelector);
+	connect (activeServices, &clickablelabel::clicked,
+	         myRadioInterface, &RadioInterface::handle_activeServices);
 	set_Colors ();
 }
 

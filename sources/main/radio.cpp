@@ -809,7 +809,6 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-//QStringList s	= theOFDMHandler -> basicPrint ();
 QStringList s	= basicPrint ();
 
 	if (contentTable_p != nullptr) {
@@ -1171,7 +1170,6 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 	   else
 	      startService (serv, index);
 	}
-
 }
 
 //
@@ -2910,7 +2908,6 @@ QString	headLine = build_kop ();
 	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
            scanTable_p	-> addLine (transmitterLine);
         }
-//	QStringList s = theOFDMHandler -> basicPrint ();
 	QStringList s = basicPrint ();
 	for (const auto &l : s)
 	   scanTable_p -> addLine (l);
@@ -4581,7 +4578,10 @@ void	RadioInterface::nrActiveServices	(int n) {
 }
 //
 /////////////////////////////////////////////////////////////////////////
-
+//
+//	the fib decoder passes on the (more or less) raw data,
+//	needed to show the attributes of the different services
+//
 QStringList RadioInterface::basicPrint () {
 QStringList out;
 	bool hasContents = false;
@@ -4607,37 +4607,37 @@ QStringList out;
 }
 
 QString	RadioInterface::audioHeader		() {
-	return	QString (" ;") +
-	        QString ("serviceName") + ";" +
-	        "serviceId" + ";" +
-		"subChannel" + ";" +
-		"start address (CU's)" + ";" +
-		"length (CU's)" + ";" +
-		"protection" + ";" +
-		"code rate" + ";" +
-	        "bitrate" + ";" +
-		"dab type" + ";" +
-		"language" + ";" +
-		"program type" + ";" +
-		"fm freq" + ";";
+	return	QString (" ;" \
+	        "serviceName;" \
+	        "serviceId;" \
+		"subChannel;" \
+		"start address (CU's);" \
+		"length (CU's);" \
+		"protection;" \
+		"code rate;" \
+	        "bitrate;" \
+		"dab type;" \
+		"language;" \
+		"program type;" \
+		"fm freq;");
 }
 
 QString	RadioInterface::packetHeader		() {
-	return	QString (" ;") +
-	        QString ("serviceName") + ";" +
-	        "serviceId" + ";" + 
-		"subChannel" + ";" +
-		"start address" + ";" +
-		"length" + ";" +
-		"protection" + ";" +
-		"code rate" + ";" +
-	        "appType" + ";" +
-	        "FEC_scheme" + ";" +
-	        "packetAddress" + ";" +
-	        "DSCTy" + ";";
+	return	QString (" ;" \
+	        "serviceName;" \
+	        "serviceId;" \
+		"subChannel;" \
+		"start address;" \
+		"length;" \
+		"protection;" \
+		"code rate;" \
+	        "appType;" \
+	        "FEC_scheme;" \
+	        "packetAddress;" \
+	        "DSCTy;");
 }
 
-QString	RadioInterface::audioData		(contentType &ct) {
+QString	RadioInterface::audioData	(contentType &ct) {
 QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
 	return runs + ";" +
 	       QString (ct. serviceName)+ ";" +
@@ -4655,41 +4655,44 @@ QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
                    QString::number (ct. fmFrequencies [0]) : " ");
 }
 
+static
+QString kindOfService (uint8_t type) {
+QString dtype;
+	switch (type) {
+	   case 60 :
+	      dtype = "mot data";
+	      break;
+	   case 59:
+	      dtype = "ip data";
+	      break;
+	   case 44 :
+	      dtype =  "journaline data";
+	      break;
+	   case  5 :
+	      dtype =  "tdc data";
+	      break;
+	   default:
+	      dtype = "unknown data";
+	}
+	return QString (dtype);
+}
+	
 QString	RadioInterface::packetData	(contentType &ct) {
 QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
 QString res	= runs + ";" +
-	           QString (ct. serviceName)+ ";" +
+	          QString (ct. serviceName)+ ";" +
 	          QString::number (ct. SId, 16) + ";" +
 	          QString::number (ct. subChId) + ";" +
 	          QString::number (ct. startAddress)+ ";" +
 	          QString::number (ct. length) + ";" +
 	          ct. protLevel + ";" +
 	          ct. codeRate + ";" +
-//	          QString::number (ct. bitRate) + ";" +
 	          QString::number (ct. appType) + ";" +
 	          QString::number (ct. FEC_scheme) + ";" +
-	          QString::number (ct. packetAddress) + ";";
-	          QString dtype;
-	          switch (ct. ASCTy_DSCTy) {
-	             case 60 :
-	                dtype = "mot data";
-	                break;
-	             case 59:
-	                dtype = "ip data";
-	                break;
-	             case 44 :
-	                dtype =  "journaline data";
-	                break;
-	             case  5 :
-	                dtype =  "tdc data";
-	                break;
-	             default:
-	                dtype = "unknown data";
-	          }
-	         res = res + dtype + ";";
+	          QString::number (ct. packetAddress) + ";" +
+	          kindOfService (ct. ASCTy_DSCTy) + ";";
 	         return res;
 }
-
 
 //	We terminate the sequences with a ";", so that is why the
 //	actual number is 1 smaller
@@ -4701,3 +4704,20 @@ QStringList l2 = s2. split (";");
 	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
 }
 
+/////////////////////////////////////////////////////////////////////////////
+//
+//	work in progress
+void	RadioInterface::handle_activeServices () {
+QList<contentType> serviceData = theOFDMHandler -> contentPrint ();
+bool	serviceAvailable	= false;
+	for (auto &ct : serviceData) {
+	   if (theOFDMHandler -> serviceRuns (ct. SId, ct. subChId)) {
+	      serviceAvailable = true;
+	      fprintf (stderr, "Service %s (%X, %d) runs\n",
+	                      ct. serviceName. toLatin1 (). data (),
+	                      ct. SId, ct. subChId);
+	   }
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////

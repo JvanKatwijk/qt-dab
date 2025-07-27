@@ -202,7 +202,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/fic-handler.h
 	     ./sources/frontend/ensemble.h
 	     ./sources/frontend/fib-config.h
-	     ./sources/frontend/fib-printer.h
 	     ./sources/frontend/fib-decoder.h
 	     ./sources/frontend/fib-table.h
 	     ./sources/frontend/tii-detector.h
@@ -341,7 +340,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/fic-handler.cpp
 	     ./sources/frontend/ensemble.cpp
 	     ./sources/frontend/fib-config.cpp
-	     ./sources/frontend/fib-printer.cpp
 	     ./sources/frontend/fib-decoder.cpp
 	     ./sources/frontend/tii-detector.cpp
 	     ./sources/frontend/tii-detector-1.cpp

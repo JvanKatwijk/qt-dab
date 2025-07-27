@@ -141,7 +141,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/fic-handler.h \
 	   ./sources/frontend/ensemble.h  \
 	   ./sources/frontend/fib-config.h  \
-#	   ./sources/frontend/fib-printer.h  \
 	   ./sources/frontend/fib-decoder.h  \
 	   ./sources/frontend/fib-table.h \
 	   ./sources/frontend/estimator.h \
@@ -293,7 +292,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/frontend/fic-handler.cpp \
 	   ./sources/frontend/ensemble.cpp  \
 	   ./sources/frontend/fib-config.cpp  \
-#	   ./sources/frontend/fib-printer.cpp  \
 	   ./sources/frontend/fib-decoder.cpp  \
 	   ./sources/frontend/estimator.cpp \
 	   ./sources/protection/protTables.cpp \

@@ -203,7 +203,7 @@ int16_t	inputCount	= 0;
   */
 	myViterbi. deconvolve (viterbiInput, hardBits);
 //
-//	we reconstruct the input as it should have been:
+//	we reconstruct the input as it should have been for this result:
 	myViterbi. convolve (hardBits, checkBlock, FIC_BLOCKSIZE / 4);
 //
 //	and compute the errors

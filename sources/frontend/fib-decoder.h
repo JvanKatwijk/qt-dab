@@ -56,15 +56,12 @@ public:
 	void		packetData		(const int, packetdata &);
 	int		getNrComps		(const uint32_t);
 	int		nrChannels		();
-        uint8_t		get_ecc			();
 	std::vector<int>	getFrequency	(const QString &);
 	void		getChannelInfo		(channel_data *, const int);
 	int32_t		getCIFcount		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
-	QStringList	basicPrint 		();
 	QList<contentType> contentPrint		();
-	int		scanWidth		();
 	int		freeSpace		();
 
 protected:

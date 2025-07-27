@@ -209,9 +209,10 @@ void	mscHandler::resetChannel () {
 	}
 	theBackends. resize (0);
 	locker. unlock ();
+	nrServices ((int)(theBackends. size ()));
 }
 
-void	mscHandler::stopService	(int subchId, int flag) {
+void	mscHandler::stopBackend	(int subchId, int flag) {
 	locker. lock ();
 	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
@@ -228,10 +229,10 @@ void	mscHandler::stopService	(int subchId, int flag) {
 }
 //
 //	Note that - in general - the backens run in their own thread
-bool	mscHandler::setChannel (descriptorType &d,
-	                        RingBuffer<std::complex<int16_t>> *audioBuffer,
-	                        RingBuffer<uint8_t> *dataBuffer,
-	                        FILE *dump, int flag) {
+bool	mscHandler::startBackend (descriptorType &d,
+	                          RingBuffer<std::complex<int16_t>> *audioBuffer,
+	                          RingBuffer<uint8_t> *dataBuffer,
+	                          FILE *dump, int flag) {
 //	fprintf (stderr, "going to open %s\n",
 //	                d. serviceName. toLatin1 (). data ());
 

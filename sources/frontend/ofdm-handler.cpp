@@ -574,9 +574,9 @@ int	ofdmHandler::getServiceComp	(uint32_t SId, int compnr) {
 	return theFicHandler. getServiceComp (SId, compnr);
 }
 
-int	ofdmHandler::getServiceComp_SCIds	(uint32_t SId, int SCIds) {
-	return theFicHandler. getServiceComp (SId, SCIds);
-}
+//int	ofdmHandler::getServiceComp_SCIds	(uint32_t SId, int SCIds) {
+//	return theFicHandler. getServiceComp (SId, SCIds);
+//}
 
 bool	ofdmHandler::isPrimary (const QString &s) {
 	return theFicHandler. isPrimary (s);
@@ -606,10 +606,6 @@ void	ofdmHandler::packetData			(int index, packetdata &pd) {
 	theFicHandler. packetData (index, pd);
 }
 
-uint8_t	ofdmHandler::getEcc 		() {
-	return theFicHandler. get_ecc();
-}
-
 std::vector<int>	ofdmHandler::getFrequency	(const QString &s) {
 	return theFicHandler. getFrequency (s);
 }
@@ -618,15 +614,6 @@ QList<contentType> ofdmHandler::contentPrint	() {
 	return theFicHandler. contentPrint ();
 }
 
-//QStringList ofdmHandler::basicPrint	() {
-//	return theFicHandler. basicPrint ();
-//}
-//
-//int	ofdmHandler::scanWidth		() {
-//	return theFicHandler. scanWidth ();
-//	return 0;
-//}
-
 int	ofdmHandler::freeSpace		() {
 	return theFicHandler. freeSpace ();
 }
@@ -634,14 +621,14 @@ int	ofdmHandler::freeSpace		() {
 //
 void	ofdmHandler::stopService (int subChId, int flag) {
 	if (!scanMode)
-	   theMscHandler. stopService (subChId, flag);
+	   theMscHandler. stopBackend (subChId, flag);
 }
 
 bool    ofdmHandler::setAudioChannel (audiodata &d,
 	                               RingBuffer<std::complex<int16_t>> *b,
 	                               FILE *dump, int flag) {
 	if (!scanMode)
-	   return theMscHandler. setChannel (d, b,
+	   return theMscHandler. startBackend (d, b,
 	                         (RingBuffer<uint8_t> *)nullptr, dump, flag);
 	else
 	   return false;
@@ -650,7 +637,7 @@ bool    ofdmHandler::setAudioChannel (audiodata &d,
 bool    ofdmHandler::setDataChannel (packetdata &d,
 	                               RingBuffer<uint8_t> *b, int flag) {
 	if (!scanMode)
-	   return theMscHandler. setChannel (d,
+	   return theMscHandler. startBackend (d,
 	                     (RingBuffer<std::complex<int16_t>> *)nullptr, b,
 	                      nullptr, flag);
 	else

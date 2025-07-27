@@ -617,4 +617,5 @@ public slots:
 	                                                         uint8_t,
 	                                                         const QString &);
 	void			nrActiveServices		(int);
+	void			handle_activeServices		();
 };

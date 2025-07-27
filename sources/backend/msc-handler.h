@@ -66,12 +66,12 @@ public:
 	                                                  int, int);
 	void		processMscBlock		(std::vector<int16_t> &,
 	                                                  int16_t);
-	bool		setChannel		(descriptorType &,
+	bool		startBackend		(descriptorType &,
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);
+	void		stopBackend		(int, int);
 	void		resetChannel		();
-	void		stopService		(int, int);
 	void		resetBuffers		();
 	bool		serviceRuns		(uint32_t SId, uint16_t subChId);
 private:
@@ -88,7 +88,6 @@ private:
 #endif
 
 	RingBuffer<uint8_t>	*dataBuffer;
-
 	QMutex		locker;
 	bool		audioService;
 	std::vector<Backend*>theBackends;
