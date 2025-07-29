@@ -1707,24 +1707,30 @@ void	RadioInterface::stopFrameDumping () {
 
 	theLogger. log (logger::LOG_FRAMEDUMP_STOPS);
 	fclose (channel. currentService. frameDumper);
-	techWindow_p ->  framedumpButton_text ("frame dump", 10);
+	techWindow_p ->  framedumpButton_text ("save AAC/MP2", 10);
 	channel. currentService. frameDumper	= nullptr;
 }
 
 void	RadioInterface::startFrameDumping () {
+	if (!channel. currentService. isAudio)
+	   return;
 	channel. currentService. frameDumper	=
 	     theFilenameFinder.
 	      findFrameDump_fileName (channel. currentService. serviceName,
-	                                                              true);
+	                              channel. currentService. ASCTy, true);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 	theLogger. log (logger::LOG_FRAMEDUMP_STARTS, 
 	                                         channel. channelName,
 	                                         channel. currentService. serviceName);
-	techWindow_p ->  framedumpButton_text ("recording", 12);
+	QString mode = channel. currentService. ASCTy == 077 ? "recording aac" :
+	                                                       "recording mp2";
+	techWindow_p ->  framedumpButton_text (mode, 12);
 }
 
 void	RadioInterface::scheduled_frameDumping (const QString &s) {
+	if (channel. currentService. ASCTy != 077)
+	   return;
 	if (channel. currentService. frameDumper != nullptr) {
 	   fclose (channel. currentService. frameDumper);
 	   techWindow_p ->  framedumpButton_text ("frame dump", 10);
@@ -1733,7 +1739,7 @@ void	RadioInterface::scheduled_frameDumping (const QString &s) {
 	}
 	   
 	channel. currentService. frameDumper	=
-	     theFilenameFinder. findFrameDump_fileName (s, false);
+	     theFilenameFinder. findFrameDump_fileName (s, 077, false);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 	techWindow_p ->  framedumpButton_text ("recording", 12);
@@ -1815,11 +1821,11 @@ void	RadioInterface::connectGUI	() {
 	connect (scanButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_scanButton);
 //
-//	and for the techWindow
-	connect (techWindow_p. data (), &techData::handleAudioDumping,
-	         this, &RadioInterface::handleAudiodumpButton);
-	connect (techWindow_p. data (), &techData::handleFrameDumping,
-	         this, &RadioInterface::handleFramedumpButton);
+////	and for the techWindow
+//	connect (techWindow_p. data (), &techData::handleAudioDumping,
+//	         this, &RadioInterface::handleAudiodumpButton);
+//	connect (techWindow_p. data (), &techData::handleFrameDumping,
+//	         this, &RadioInterface::handleFramedumpButton);
 }
 
 void	RadioInterface::disconnectGUI () {
@@ -2133,6 +2139,7 @@ QString serviceName	= s. serviceName;
 	   if (ad. defined) {
 	      channel. currentService. isValid	= true;
 	      channel. currentService. isAudio	= true;
+	      channel. currentService. ASCTy	= ad. ASCTy;
 	      channel. currentService. subChId	= ad. subchId;
 	      techWindow_p -> showTimetableButton (true);
 	      startAudioservice (ad);
@@ -4144,7 +4151,7 @@ audiodata ad;
 	   teller ++;
 	}
 
-	FILE *f = theFilenameFinder. findFrameDump_fileName (service, true);
+	FILE *f = theFilenameFinder. findFrameDump_fileName (service, 077, true);
 	if (f == nullptr)
 	   return;
 

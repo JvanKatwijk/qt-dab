@@ -223,6 +223,7 @@ struct quantizer_spec quantizer_table [17] = {
 	mp2Processor::mp2Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
 	                            RingBuffer<complex16> *buffer,
+	                            RingBuffer<uint8_t> *frameBuffer,
 	                            bool backgroundFlag):
 	                                my_padhandler (mr, backgroundFlag) {
 int16_t	i, j;
@@ -242,6 +243,7 @@ int16_t *nPtr = &N [0][0];
 
 	myRadioInterface	= mr;
 	this	-> buffer	= buffer;
+	this	-> frameBuffer	= frameBuffer;
 	this	-> bitRate	= bitRate;
 	connect (this, &mp2Processor::show_frameErrors,
 	         mr, &RadioInterface::show_frameErrors);
@@ -249,6 +251,8 @@ int16_t *nPtr = &N [0][0];
 	         mr, &RadioInterface::newAudio);
 	connect (this, &mp2Processor::isStereo,
 	         mr, &RadioInterface::setStereo);
+	connect (this, &mp2Processor::newFrame,
+	         mr, &RadioInterface::newFrame);
 
 	Voffs		= 0;
 	baudRate	= 48000;	// default for DAB
@@ -375,7 +379,7 @@ uint32_t bit_rate_index_minus1;
 uint32_t sampling_frequency;
 uint32_t padding_bit;
 uint32_t mode;
-uint32_t frame_size;
+uint32_t frameSize;
 int32_t	bound, sblimit;
 int32_t sb, ch, gr, part, idx, nch, i, j, sum;
 int32_t table_idx;
@@ -434,12 +438,14 @@ int32_t table_idx;
 	   get_bits(16);
 
 // compute the frame size
-	frame_size = (144000 * bitrates[bit_rate_index_minus1]
+	frameSize = (144000 * bitrates[bit_rate_index_minus1]
 	   / sample_rates [sampling_frequency]) + padding_bit;
 
 	if (!pcm)
-	   return frame_size;  // no decoding
+	   return frameSize;  // no decoding
 
+	frameBuffer	-> putDataIntoBuffer (frame, frameSize);
+	newFrame ((int)frameSize);
 // prepare the quantizer table lookups
 	if (sampling_frequency & 4) {
 	// MPEG-2 (LSR)
@@ -575,7 +581,7 @@ int32_t table_idx;
 	      pcm += 192;
 	   } // decoding of the granule finished
 	}
-	return frame_size;
+	return frameSize;
 }
 
 //

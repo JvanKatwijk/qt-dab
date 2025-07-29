@@ -89,10 +89,10 @@
         connect (audiodumpButton, &smallPushButton::rightClicked,
                  this, &techData::colorAudiodumpButton); 
 
-	connect	(framedumpButton, &QPushButton::clicked,
-	         this, &techData::handleFrameDumping);
 	connect (audiodumpButton, &QPushButton::clicked,
-	         this, &techData::handleAudioDumping);
+	         mr, &RadioInterface::handleAudiodumpButton);
+	connect	(framedumpButton, &QPushButton::clicked,
+	         mr, &RadioInterface::handleFramedumpButton);
 
 	connect (timeTable_button, &QPushButton::clicked,
 	         this, &techData::handleTimeTable);

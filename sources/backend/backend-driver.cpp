@@ -44,6 +44,7 @@
               theProcessor. reset (new mp2Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
+	                                       frameBuffer,
 	                                       backgroundFlag));
 	   }
            else

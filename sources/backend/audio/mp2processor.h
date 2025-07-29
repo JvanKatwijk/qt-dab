@@ -58,6 +58,7 @@ public:
 			mp2Processor	(RadioInterface *,
 	                                 int16_t,
 	                                 RingBuffer<complex16> *,
+	                                 RingBuffer<uint8_t> *,
 	                                 bool);
 			~mp2Processor	();
 	void		addtoFrame	(const std::vector<uint8_t> &);
@@ -69,6 +70,7 @@ private:
 	int32_t		mp2sampleRate	(uint8_t *);
 	int32_t		mp2decodeFrame	(uint8_t *, int16_t *);
 	RingBuffer<complex16>	*buffer;
+	RingBuffer<uint8_t>	*frameBuffer;
 	int32_t		baudRate;
 	void		setSamplerate		(int32_t);
 	struct quantizer_spec *read_allocation (int, int);
@@ -99,5 +101,6 @@ signals:
 	void		show_frameErrors	(int);
 	void		newAudio		(int, int, bool, bool);
 	void		isStereo		(bool);
+	void		newFrame		(int);
 };
 

@@ -35,7 +35,6 @@
 #include	"fib-table.h"
 #include	<QStringList>
 #include	"dab-tables.h"
-//#include	"fib-printer.h"
 #include	"time-converter.h"
 
 #include	"dab-tables.h"

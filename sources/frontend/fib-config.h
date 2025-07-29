@@ -136,11 +136,11 @@ public:
 	int	serviceIdOf		(int index);
 	int	SCIdsOf			(int index);
 	int	subChannelOf		(int index);
-	int	startAddressOf		(int index);
-	int	lengthOf 		(int index);
-	bool	shortFormOf		(int index);
-	int16_t	protLevelOf		(int index);
-	int	bitRateOf 		(int index);
+//	int	startAddressOf		(int index);
+//	int	lengthOf 		(int index);
+//	bool	shortFormOf		(int index);
+//	int16_t	protLevelOf		(int index);
+//	int	bitRateOf 		(int index);
 	int	dabTypeOf		(int index);
 	int	languageOf 		(int index);
 	int	appTypeOf		(int index);

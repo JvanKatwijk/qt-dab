@@ -103,46 +103,49 @@ int	fibConfig::findIndex_subChannel_table (uint8_t subChId) {
 	return -1;
 }
 
-int	fibConfig::startAddressOf	(int index) {
-int subChId = subChannelOf (index);
-int subCh_index = findIndex_subChannel_table (subChId);
-	if (subCh_index < 0)
-	   return -1;
-	return subChannel_table [subCh_index]. startAddr;
-}
-
-int	fibConfig::lengthOf 		(int index) {
-int subChId = subChannelOf (index);
-int subCh_index = findIndex_subChannel_table (subChId);	
-	if (subCh_index < 0)
-	   return -1;
-	return subChannel_table [subCh_index]. Length;
-}
-
-bool	fibConfig::shortFormOf		(int index) {
-int subChId = subChannelOf (index);
-int subCh_index = findIndex_subChannel_table (subChId);	
-	if (subCh_index < 0)
-	   return -1;
-	return subChannel_table [subCh_index]. shortForm;
-}
-
-int16_t	fibConfig::protLevelOf		(int index) {
-int subChId = subChannelOf (index);
-int subCh_index = findIndex_subChannel_table (subChId);	
-	if (subCh_index < 0)
-	   return -1;
-	return subChannel_table [subCh_index]. protLevel;
-}
-
-int	fibConfig::bitRateOf 		(int index) {
-int16_t subChId = subChannelOf (index);
-int subCh_index = findIndex_subChannel_table (subChId);
-	if (subCh_index < 0)
-	   return -1;
-	return subChannel_table [subCh_index]. bitRate;
-}
-
+//
+//	For the following few functions, it holds that thet all
+//	fetch attributes from the subChannel, 
+//int	fibConfig::startAddressOf	(int index) {
+//int subChId = subChannelOf (index);
+//int subCh_index = findIndex_subChannel_table (subChId);
+//	if (subCh_index < 0)
+//	   return -1;
+//	return subChannel_table [subCh_index]. startAddr;
+//}
+//
+//int	fibConfig::lengthOf 		(int index) {
+//int subChId = subChannelOf (index);
+//int subCh_index = findIndex_subChannel_table (subChId);	
+//	if (subCh_index < 0)
+//	   return -1;
+//	return subChannel_table [subCh_index]. Length;
+//}
+//
+//bool	fibConfig::shortFormOf		(int index) {
+//int subChId = subChannelOf (index);
+//int subCh_index = findIndex_subChannel_table (subChId);	
+//	if (subCh_index < 0)
+//	   return -1;
+//	return subChannel_table [subCh_index]. shortForm;
+//}
+//
+//int16_t	fibConfig::protLevelOf		(int index) {
+//int subChId = subChannelOf (index);
+//int subCh_index = findIndex_subChannel_table (subChId);	
+//	if (subCh_index < 0)
+//	   return -1;
+//	return subChannel_table [subCh_index]. protLevel;
+//}
+//
+//int	fibConfig::bitRateOf 		(int index) {
+//int16_t subChId = subChannelOf (index);
+//int subCh_index = findIndex_subChannel_table (subChId);
+//	if (subCh_index < 0)
+//	   return -1;
+//	return subChannel_table [subCh_index]. bitRate;
+//}
+//
 int	fibConfig::dabTypeOf		(int index) {
 	if (SC_C_table [index]. TMid != 0)
 	   return -1;

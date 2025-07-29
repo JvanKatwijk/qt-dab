@@ -113,8 +113,12 @@ QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 
 //
 FILE	*findfileNames::findFrameDump_fileName (const QString &service,
-	                                                      bool flag) {
-QString	fileName	= outputDialog (basicPath (), service, ".aac", flag);
+	                                        uint8_t ASCTy, bool flag) {
+	QString ending;
+	ending = ASCTy == 077 ? ".aac" : ".mp2";
+	   
+	QString	fileName	= outputDialog (basicPath (),
+	                                service, ending, flag);
 
 	if (fileName == "")
 	   return nullptr;

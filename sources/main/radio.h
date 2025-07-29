@@ -119,6 +119,7 @@ public:
 	int		subChId;
 	bool		isValid;
 	bool		isAudio;
+	uint8_t		ASCTy;		// only for audio
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
@@ -131,6 +132,7 @@ public:
 	   isValid	= false;
 	   isAudio	= false;
 	   fd		= nullptr;
+	   ASCTy	= 0;
 	   frameDumper	= nullptr;
 	   runsBackground	= false;
 	}
@@ -543,7 +545,11 @@ public slots:
                                           	  const QStringList notInNew);
 
 	void			process_tiiSelector	(bool);
- 
+//
+//	triggered from the techdata
+	void			handleFramedumpButton	();
+	void			handleAudiodumpButton 	();
+
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_aboutLabel	();
@@ -558,8 +564,6 @@ private slots:
 
 	void			handle_scanListButton	();
 	void			handle_presetButton	();
-	void			handleFramedumpButton	();
-	void			handleAudiodumpButton 	();
 	void			handle_prevServiceButton        ();
 	void			handle_nextServiceButton        ();
 

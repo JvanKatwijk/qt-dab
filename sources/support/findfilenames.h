@@ -40,7 +40,8 @@ public:
 		~findfileNames			();
 	QString	basicPath			();
 	FILE	*findContentDump_fileName	(const QString &channel);
-	FILE	*findFrameDump_fileName		(const QString &service, bool);
+	FILE	*findFrameDump_fileName		(const QString &service,
+	                                         uint8_t, bool);
 	QString	findAudioDump_fileName		(const QString &service, bool);
 	QString findRawDump_fileName		(const QString &deviceName,
 	                                       	 const QString &channelName);
