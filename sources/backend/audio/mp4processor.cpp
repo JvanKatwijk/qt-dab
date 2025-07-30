@@ -48,8 +48,8 @@
 	                            int16_t		bitRate,
 	                            RingBuffer<complex16> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
-	                            bool		backgroundFlag,
-	                            FILE		*dump):
+	                            FILE		*dump,
+	                            bool		backgroundFlag):
 	                                my_padhandler (mr, backgroundFlag),
  	                                my_rsDecoder (8, 0435, 0, 1, 10),
 	                                aacDecoder (mr, b) {

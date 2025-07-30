@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -124,8 +124,8 @@ using namespace std;
 
 #define	CURRENT_VERSION	"6.9"
 
-#define		DAB		0100
-#define		DAB_PLUS	0101
+//#define		DAB		0100
+//#define		DAB_PLUS	0101
 
 #define		AUDIO_SERVICE	0
 #define		PACKET_SERVICE	3
@@ -149,6 +149,9 @@ using namespace std;
 
 #define		FORE_GROUND	0000
 #define		BACK_GROUND	0100
+
+#define		DAB_PLUS	077
+#define		DAB_OLD		0
 
 //	order by id order by name
 #define ID_BASED        1

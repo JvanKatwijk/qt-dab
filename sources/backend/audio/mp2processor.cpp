@@ -224,7 +224,8 @@ struct quantizer_spec quantizer_table [17] = {
 	                            int16_t		bitRate,
 	                            RingBuffer<complex16> *buffer,
 	                            RingBuffer<uint8_t> *frameBuffer,
-	                            bool backgroundFlag):
+	                            FILE		*dump,
+	                            bool		backgroundFlag):
 	                                my_padhandler (mr, backgroundFlag) {
 int16_t	i, j;
 int16_t *nPtr = &N [0][0];
@@ -244,6 +245,7 @@ int16_t *nPtr = &N [0][0];
 	myRadioInterface	= mr;
 	this	-> buffer	= buffer;
 	this	-> frameBuffer	= frameBuffer;
+	this	-> dump		= dump;
 	this	-> bitRate	= bitRate;
 	connect (this, &mp2Processor::show_frameErrors,
 	         mr, &RadioInterface::show_frameErrors);
@@ -265,7 +267,7 @@ int16_t *nPtr = &N [0][0];
 	errorFrames	= 0;
 }
 
-	mp2Processor::~mp2Processor() {
+	mp2Processor::~mp2Processor () {
 	delete[] MP2frame;
 }
 //
@@ -444,8 +446,13 @@ int32_t table_idx;
 	if (!pcm)
 	   return frameSize;  // no decoding
 
-	frameBuffer	-> putDataIntoBuffer (frame, frameSize);
-	newFrame ((int)frameSize);
+	if (dump == nullptr) {
+	   frameBuffer	-> putDataIntoBuffer (frame, frameSize);
+	   newFrame ((int)frameSize);
+	}
+	else 		// some background dumping in the file "dump"
+	   fwrite (frame, 1, frameSize, dump);
+
 // prepare the quantizer table lookups
 	if (sampling_frequency & 4) {
 	// MPEG-2 (LSR)

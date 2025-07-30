@@ -23,7 +23,7 @@
 //
 //	This software is a rewrite of the original kjmp2 software,
 //	Rewriting in the form of a class
-//	for use in the sdr-j DAB/DAB+ receiver
+//	for use in Qt-DAB
 //	all rights remain where they belong
 
 #pragma once
@@ -59,18 +59,20 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,
+	                                 FILE		*,
 	                                 bool);
 			~mp2Processor	();
 	void		addtoFrame	(const std::vector<uint8_t> &);
 
 private:
 	RadioInterface	*myRadioInterface;
+	RingBuffer<complex16>	*buffer;
+	RingBuffer<uint8_t>	*frameBuffer;
+	FILE		*dump;
 	int16_t		bitRate;
 	padHandler	my_padhandler;
 	int32_t		mp2sampleRate	(uint8_t *);
 	int32_t		mp2decodeFrame	(uint8_t *, int16_t *);
-	RingBuffer<complex16>	*buffer;
-	RingBuffer<uint8_t>	*frameBuffer;
 	int32_t		baudRate;
 	void		setSamplerate		(int32_t);
 	struct quantizer_spec *read_allocation (int, int);

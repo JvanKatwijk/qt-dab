@@ -38,25 +38,26 @@
 	                              RingBuffer<uint8_t> *frameBuffer,
 	                              FILE *dump) {
 	if (d -> type == AUDIO_SERVICE) {
-	   if (((audiodata *)d) -> ASCTy != 077) {
+	   if (((audiodata *)d) -> ASCTy == DAB_OLD) {
 	      theLogger ->  log (logger::LOG_SERVICE_STARTS,
 	                               "MP2 service ", d -> bitRate);
               theProcessor. reset (new mp2Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
 	                                       frameBuffer,
+	                                       dump,
 	                                       backgroundFlag));
 	   }
            else
-           if (((audiodata *)d) -> ASCTy == 077) {
+           if (((audiodata *)d) -> ASCTy == DAB_PLUS) {
 	      theLogger -> log (logger::LOG_SERVICE_STARTS,
 	                               "MP4 service ", d -> bitRate);
               theProcessor. reset (new mp4Processor (mr,
 	                                        d -> bitRate,
                                                 audioBuffer,
 	                                        frameBuffer,
-	                                        backgroundFlag,
-	                                        dump));
+	                                        dump,
+	                                        backgroundFlag));
 	   }
 	   else
 	      theProcessor. reset (new frameProcessor ());	// should not happen

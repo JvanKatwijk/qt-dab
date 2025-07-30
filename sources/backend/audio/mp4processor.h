@@ -52,8 +52,8 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,
-	                                 bool,
-	                                 FILE *);
+	                                 FILE		*,
+	                                 bool);
 			~mp4Processor	();
 	void		addtoFrame	(const std::vector<uint8_t> &);
 private:

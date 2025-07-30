@@ -1723,23 +1723,29 @@ void	RadioInterface::startFrameDumping () {
 	theLogger. log (logger::LOG_FRAMEDUMP_STARTS, 
 	                                         channel. channelName,
 	                                         channel. currentService. serviceName);
-	QString mode = channel. currentService. ASCTy == 077 ? "recording aac" :
-	                                                       "recording mp2";
+	QString mode = channel. currentService. ASCTy == DAB_PLUS ?
+	                                       "recording aac" : "recording mp2";
 	techWindow_p ->  framedumpButton_text (mode, 12);
 }
 
 void	RadioInterface::scheduled_frameDumping (const QString &s) {
-	if (channel. currentService. ASCTy != 077)
-	   return;
 	if (channel. currentService. frameDumper != nullptr) {
 	   fclose (channel. currentService. frameDumper);
 	   techWindow_p ->  framedumpButton_text ("frame dump", 10);
 	   channel. currentService. frameDumper	= nullptr;
 	   return;
 	}
-	   
+	audiodata ad;
+	int index = theOFDMHandler -> getServiceComp (s);
+        if (index < 0)       
+           return;
+	
+	theOFDMHandler -> audioData (index, ad);
+	if (!ad. defined)
+	   return;
+	
 	channel. currentService. frameDumper	=
-	     theFilenameFinder. findFrameDump_fileName (s, 077, false);
+	     theFilenameFinder. findFrameDump_fileName (s, ad. ASCTy, false);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 	techWindow_p ->  framedumpButton_text ("recording", 12);
@@ -2161,7 +2167,7 @@ QString serviceName	= s. serviceName;
 	         if (hasIcon)
 	            myTimeTable. addLogo (p);
 	      }
-	      techWindow_p	-> isDABPlus  (ad. ASCTy == 077);
+	      techWindow_p	-> isDABPlus  (ad. ASCTy == DAB_PLUS);
 	   }
 	}
 	else 
@@ -4135,9 +4141,9 @@ audiodata ad;
 	if (theOFDMHandler -> serviceType (index) != AUDIO_SERVICE)
 	   return;
 	theOFDMHandler -> audioData (index, ad);
-	if ((!ad. defined) || (ad. ASCTy != 077))
+	if (!ad. defined)
 	   return;
-
+	
 	int teller	= 0;
 	for (auto &task: channel. runningTasks) {
 	   if (task. serviceName == service) {
@@ -4150,8 +4156,9 @@ audiodata ad;
 	   }
 	   teller ++;
 	}
-
-	FILE *f = theFilenameFinder. findFrameDump_fileName (service, 077, true);
+	uint8_t audioType	= ad. ASCTy;
+	FILE *f = theFilenameFinder. findFrameDump_fileName (service,
+	                                                     audioType, true);
 	if (f == nullptr)
 	   return;
 
@@ -4162,6 +4169,7 @@ audiodata ad;
 	s. serviceName	= ad. serviceName;
 	s. SId		= ad. SId;
 	s. subChId	= ad. subchId;
+	s. ASCTy	= ad. ASCTy;
 	s. fd		= f;
 	s. runsBackground	= true;
 	channel. runningTasks. push_back (s);
@@ -4655,7 +4663,7 @@ QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
 	       ct. protLevel + ";" +
 	       ct. codeRate + ";" +
 	       QString::number (ct. bitRate) + ";" +
-	       (ct. ASCTy_DSCTy == 077 ? "DAB+" : "DAB") + ";" +
+	       (ct. ASCTy_DSCTy == DAB_PLUS ? "DAB+" : "DAB") + ";" +
 	       getLanguage (ct. language) + ";" +
 	       getProgramType (ct. programType) + ";" +
 	       ((ct. fmFrequencies. size () > 0) ?
