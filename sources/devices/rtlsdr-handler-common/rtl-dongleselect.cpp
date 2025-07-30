@@ -41,7 +41,7 @@
 	dongleList. setStringList (Dongles);
 	selectorDisplay	-> setModel (&dongleList);
 	connect (selectorDisplay, &QListView::clicked,
-	         this, rtl_dongeselect::selectDongle);
+	         this, rtl_dongleSelect::selectDongle);
 	selectedItem	= -1;
 }
 
