@@ -110,7 +110,11 @@ int	startPoint	= filePointer;
 	nextStop = currentTime ();
 	for (int blocks = 0; blocks < fd -> nrBlocks; blocks ++) {
 	   samplesToRead	= compute_nrSamples (file, blocks);
+#ifdef	__MINGW32__
+	   fprintf (stderr, "samples to read %lld\n", samplesToRead);
+#else
 	   fprintf (stderr, "samples to read %ld\n", samplesToRead);
+#endif
 	   samplesRead		= 0;
 	   do {
 	      while ((samplesRead <= samplesToRead) && running. load ()) {
@@ -168,8 +172,11 @@ uint64_t	samplesToRead	= 0;
 	}
 	else	// typeofUnit = "sample"
 	   samplesToRead = nrElements;
-
+#ifdef __MINGW32__
+	fprintf (stderr, "%lld samples have to be read, order is %s\n",
+#else
 	fprintf (stderr, "%ld samples have to be read, order is %s\n",
+#endif
 	                 samplesToRead, fd -> iqOrder. toLatin1 (). data ());
 	return samplesToRead;
 }
@@ -326,31 +333,52 @@ float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "float32") {
 	   auto *lbuf = dynVec (uint8_t, 8 * amount);
+	   bitsToFloat bTf_real, bTf_imag;
            size_t objectsRead = fread (lbuf, 4, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (size_t i = 0; i < objectsRead / 2; i ++) {
-                 int32_t temp_32_1 = (lbuf [8 * i] << 24) |
-	                             (lbuf [8 * i + 1] << 16) |
-	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
-	         float t1	=*(float *)(&temp_32_1);
-                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
-	                             (lbuf [8 * i + 5] << 16) |
-	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
-	         float t2	=*(float *)(&temp_32_2);
-	         buffer [i] = std::complex<float> (t1, t2);
+//	         int32_t temp_32_1 = (lbuf [8 * i] << 24) |
+//	                             (lbuf [8 * i + 1] << 16) |
+//	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
+//	         float t1	=*(float *)(&temp_32_1);
+//                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
+//	                             (lbuf [8 * i + 5] << 16) |
+//	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
+//	         float t2	=*(float *)(&temp_32_2);
+//	         buffer [i] = std::complex<float> (t1, t2);
+                 bTf_real. bitValue = (lbuf [8 * i] << 24) |
+	                              (lbuf [8 * i + 1] << 16) |
+	                              (lbuf [8 * i + 2] << 8) |
+	                               lbuf [8 * i + 3];
+                 bTf_imag. bitValue = (lbuf [8 * i + 4] << 24) |
+	                              (lbuf [8 * i + 5] << 16) |
+	                              (lbuf [8 * i + 6] << 8) |
+	                               lbuf [8 * i + 7];
+	         buffer [i] = std::complex<float> (bTf_real. floatValue, 
+	                                           bTf_imag. floatValue);
 	      }
 	   }
 	   else {
               for (size_t i = 0; i < objectsRead / 2; i ++) {
-                 int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
-	                             (lbuf [8 * i + 2] << 16) |
-	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
-	         float t1	=*(float *)(&temp_32_1);
-                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
-	                             (lbuf [8 * i + 6] << 16) |
-	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
-	         float t2	=*(float *)(&temp_32_2);
-	         buffer [i] = std::complex<float> (t1, t2);
+//	         int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
+//	                             (lbuf [8 * i + 2] << 16) |
+//	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
+//	         float t1	=*(float *)(&temp_32_1);
+//                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
+//	                             (lbuf [8 * i + 6] << 16) |
+//	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
+//	         float t2	=*(float *)(&temp_32_2);
+//	         buffer [i] = std::complex<float> (t1, t2);
+                 bTf_real. bitValue = (lbuf [8 * i + 3] << 24) |
+	                              (lbuf [8 * i + 2] << 16) |
+	                              (lbuf [8 * i + 1] << 8)  |
+	                               lbuf [8 * i];
+                 bTf_imag. bitValue = (lbuf [8 * i + 7] << 24) |
+	                              (lbuf [8 * i + 6] << 16) |
+	                              (lbuf [8 * i + 5] << 8)  |
+	                               lbuf [8 * i + 4];
+	         buffer [i] = std::complex<float> (bTf_real. floatValue,
+	                                           bTf_imag. floatValue);
 	      }
 	   }
 	   return;
@@ -471,30 +499,51 @@ float	scaler	= float (shift (nrBits));
 	if (fd -> container == "float32") {
 	   auto *lbuf = dynVec (uint8_t, 6 * amount);
            size_t objectsRead = fread (lbuf, 4, 2 * amount, theFile);
+	   bitsToFloat bTf_real, bTf_imag;
            if (fd -> byteOrder == "MSB") {
               for (size_t i = 0; i < objectsRead / 2; i ++) {
-                 int32_t temp_32_1 = (lbuf [8 * i] << 24) |
-	                             (lbuf [8 * i + 1] << 16) |
-	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
-	         float t1	=*(float *)(&temp_32_1);
-                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
-	                             (lbuf [8 * i + 5] << 16) |
-	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
-	         float t2	=*(float *)(&temp_32_2);
-	         buffer [i] = std::complex<float> (t1, t2);
+//	         int32_t temp_32_1 = (lbuf [8 * i] << 24) |
+//	                             (lbuf [8 * i + 1] << 16) |
+//	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
+//	         float t1	=*(float *)(&temp_32_1);
+//                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
+//	                             (lbuf [8 * i + 5] << 16) |
+//	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
+//	         float t2	=*(float *)(&temp_32_2);
+//	         buffer [i] = std::complex<float> (t1, t2);
+                 bTf_real. bitValue = (lbuf [8 * i] << 24) |
+	                              (lbuf [8 * i + 1] << 16) |
+	                              (lbuf [8 * i + 2] << 8)  |
+	                               lbuf [8 * i + 3];
+                 bTf_imag. bitValue = (lbuf [8 * i + 4] << 24) |
+	                              (lbuf [8 * i + 5] << 16) |
+	                              (lbuf [8 * i + 6] << 8)  |
+	                               lbuf [8 * i + 7];
+	         buffer [i] = std::complex<float> (bTf_real. floatValue,
+	                                           bTf_imag. floatValue);
 	      }
 	   }
 	   else {
               for (size_t i = 0; i < objectsRead / 2; i ++) {
-                 int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
-	                             (lbuf [8 * i + 2] << 16) |
-	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
-	         float t1	=*(float *)(&temp_32_1);
-                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
-	                             (lbuf [8 * i + 6] << 16) |
-	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
-	         float t2	=*(float *)(&temp_32_2);
-	         buffer [i] = std::complex<float> (t1, t2);
+//	         int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
+//	                             (lbuf [8 * i + 2] << 16) |
+//	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
+//	         float t1	=*(float *)(&temp_32_1);
+//                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
+//	                             (lbuf [8 * i + 6] << 16) |
+//	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
+//	         float t2	=*(float *)(&temp_32_2);
+//	         buffer [i] = std::complex<float> (t1, t2);
+                 bTf_real. bitValue = (lbuf [8 * i + 3] << 24) |
+	                              (lbuf [8 * i + 2] << 16) |
+	                              (lbuf [8 * i + 1] << 8)  |
+	                               lbuf [8 * i];
+                 bTf_imag. bitValue = (lbuf [8 * i + 7] << 24) |
+	                              (lbuf [8 * i + 6] << 16) |
+	                              (lbuf [8 * i + 5] << 8)  |
+	                               lbuf [8 * i + 4];
+	         buffer [i] = std::complex<float> (bTf_real. floatValue,
+		                                   bTf_imag. floatValue);
 	      }
 	   }
 	   return;
@@ -597,23 +646,34 @@ float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "float32") {
 	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+	   bitsToFloat bTf_real;
            size_t samplesRead = fread (lbuf, 4, amount, theFile);
            if (fd -> byteOrder == "MSB") {
-              for (size_t i = 0; i < samplesRead; i ++) {
-                 int32_t temp_32_1 = (lbuf [4 * i] << 24) |
-	                             (lbuf [4 * i + 1] << 16) |
-	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
-	         float t1	=*(float *)(&temp_32_1);
-	         buffer [i] = std::complex<float> (t1, 0);
+	      for (size_t i = 0; i < samplesRead; i ++) {
+//	         int32_t temp_32_1 = (lbuf [4 * i] << 24) |
+//	                             (lbuf [4 * i + 1] << 16) |
+//	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+//	         float t1	=*(float *)(&temp_32_1);
+//	         buffer [i] = std::complex<float> (t1, 0);
+	         bTf_real. bitValue = (lbuf [4 * i] << 24) |
+	                              (lbuf [4 * i + 1] << 16) |
+	                              (lbuf [4 * i + 2] << 8)  |
+	                               lbuf [4 * i + 3];
+	         buffer [i] = std::complex<float> (bTf_real. floatValue, 0);
 	      }
 	   }
 	   else {
               for (size_t i = 0; i < samplesRead; i ++) {
-                 int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
-	                             (lbuf [4 * i + 2] << 16) |
-	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
-	         float t1	=*(float *)(&temp_32_1);
-	         buffer [i] = std::complex<float> (t1, 0);
+//	         int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
+//	                             (lbuf [4 * i + 2] << 16) |
+//	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+//	         float t1	=*(float *)(&temp_32_1);
+//	         buffer [i] = std::complex<float> (t1, 0);
+	         bTf_real. bitValue = (lbuf [4 * i + 3] << 24) |
+	                              (lbuf [4 * i + 2] << 16) |
+	                              (lbuf [4 * i + 1] << 8)  |
+	                               lbuf [4 * i];
+	         buffer [i] = std::complex<float> (bTf_real. floatValue, 0);
 	      }
 	   }
 	   return;
@@ -716,23 +776,34 @@ float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "float32") {
 	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+	   bitsToFloat bTf_imag;
            size_t samplesRead = fread (lbuf, 4, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (size_t i = 0; i < samplesRead; i ++) {
-                 int32_t temp_32_1 = (lbuf [4 * i] << 24) |
-	                             (lbuf [4 * i + 1] << 16) |
-	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
-	         float t1	=*(float *)(&temp_32_1);
-	         buffer [i] = std::complex<float> (0, t1);
+//	         int32_t temp_32_1 = (lbuf [4 * i] << 24) |
+//	                             (lbuf [4 * i + 1] << 16) |
+//	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+//	         float t1	=*(float *)(&temp_32_1);
+//	         buffer [i] = std::complex<float> (0, t1);
+                 bTf_imag. bitValue = (lbuf [4 * i] << 24) |
+	                              (lbuf [4 * i + 1] << 16) |
+	                              (lbuf [4 * i + 2] << 8)  |
+	                               lbuf [4 * i + 3];
+	         buffer [i] = std::complex<float> (0, bTf_imag. floatValue);
 	      }
 	   }
 	   else {
               for (size_t i = 0; i < samplesRead; i ++) {
-                 int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
-	                             (lbuf [4 * i + 2] << 16) |
-	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
-	         float t1	=*(float *)(&temp_32_1);
-	         buffer [i] = std::complex<float> (0, t1);
+//	         int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
+//	                             (lbuf [4 * i + 2] << 16) |
+//	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+//	         float t1	=*(float *)(&temp_32_1);
+//	         buffer [i] = std::complex<float> (0, t1);
+                 bTf_imag. bitValue = (lbuf [4 * i + 3] << 24) |
+	                              (lbuf [4 * i + 2] << 16) |
+	                              (lbuf [4 * i + 1] << 8)  |
+	                               lbuf [4 * i];
+	         buffer [i] = std::complex<float> (0, bTf_imag. floatValue);
 	      }
 	   }
 	   return;

@@ -61,8 +61,8 @@ int RetCode;
 #endif
 	SendingSocket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 #ifdef	__MINGW32__
-	if (SendingSocket == INVALID_SOCKET) {
-	   fprintf (stderr, "Client: socket failed: Error code: %ld\n", WSAGetLastError());
+	if (SendingSocket == (int)INVALID_SOCKET) {
+	   fprintf (stderr, "Client: socket failed: Error code: %d\n", WSAGetLastError());
 	   WSACleanup ();
 	   return;
 	}

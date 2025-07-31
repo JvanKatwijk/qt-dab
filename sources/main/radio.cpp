@@ -732,6 +732,14 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	if (theEnsembleHandler -> alreadyIn (ed))
 	   return;
 
+	if (configHandler_p -> get_audioServices_only ()) {
+	   int index =
+             theOFDMHandler -> getServiceComp (ed. SId, 0);
+           if ((index < 0) ||
+               (theOFDMHandler -> serviceType (index) == PACKET_SERVICE))
+	      return;
+	}
+	   
 	bool added	= theEnsembleHandler -> addToEnsemble (ed);
 	if (added) {
 	   channel. nrServices ++;
@@ -4728,11 +4736,12 @@ bool	serviceAvailable	= false;
 	for (auto &ct : serviceData) {
 	   if (theOFDMHandler -> serviceRuns (ct. SId, ct. subChId)) {
 	      serviceAvailable = true;
-	      fprintf (stderr, "Service %s (%X, %d) runs\n",
-	                      ct. serviceName. toLatin1 (). data (),
-	                      ct. SId, ct. subChId);
+//	      fprintf (stderr, "Service %s (%X, %d) runs\n",
+//	                      ct. serviceName. toLatin1 (). data (),
+//	                      ct. SId, ct. subChId);
 	   }
 	}
+	(void)serviceAvailable;
 }
 
 ////////////////////////////////////////////////////////////////////////////

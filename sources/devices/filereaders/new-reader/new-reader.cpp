@@ -42,10 +42,8 @@ struct timeval  tv;
 	this	-> theReader	= theReader;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= theReader -> elementCount ();
-	fprintf (stderr, "fileLength = %ld\n",  (int64_t)fileLength);
 	theReader	-> reset ();
 	period          = (BUFFERSIZE * 1000) / (SAMPLERATE / 1000);// full IQś read
-	fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
 	start ();
 }
@@ -101,6 +99,5 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	         usleep (nextStop - getMyTime());
 	   }
 	} catch (int e) {}
-	fprintf (stderr, "replay ends\n"); fflush (stderr);
 }
 

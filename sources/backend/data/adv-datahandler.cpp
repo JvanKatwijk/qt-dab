@@ -65,6 +65,7 @@ uint16_t segmentNumber	= 0;
 	   next = next + 15;
 	}
 
+	(void)segmentNumber;
 	if (userAccessFlag) {
 	   int lengthInd = getBits (data, next + 4, 4);
 	   uint8_t transportFlag = getBits (data,  next + 3, 1);

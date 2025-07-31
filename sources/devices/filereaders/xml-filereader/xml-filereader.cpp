@@ -94,7 +94,11 @@
 	recordingTime		-> setText (theDescriptor -> recordingTime);
 	QString res = QString::number (theDescriptor -> blockList [0]. nrElements);
 	nrElementsDisplay	-> display (res);
+#ifdef __MINGW32__
+	fprintf (stderr, "nrElements = %lld\n",
+#else
 	fprintf (stderr, "nrElements = %ld\n",
+#endif
 	             theDescriptor -> blockList [0].nrElements);
 	connect (continuousButton, &QPushButton::clicked,
 	         this, &xml_fileReader::handle_continuousButton);

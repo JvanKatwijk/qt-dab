@@ -633,7 +633,7 @@ void	padHandler::add_toDL2 (const QString &text) {
 void	padHandler::add_toDL2 (const uint8_t *data) {
 int IT	= (data [0] & 0x08) >> 3;
 int IR	= (data [2] & 0x04) >> 2; 
-int NT	= data [2] & 0x03;
+//int NT	= data [2] & 0x03;
 
 	if ((the_DL2. IT == IT) && (the_DL2. IR == IR))
 	   return;

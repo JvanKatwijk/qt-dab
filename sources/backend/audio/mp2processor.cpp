@@ -34,7 +34,9 @@
 #ifdef _MSC_VER
     #define FASTCALL __fastcall
 #else
+#ifndef	FASTCALL
     #define FASTCALL
+#endif
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -604,7 +606,7 @@ auto	*help	= dynVec (uint8_t, vLength);
 //fprintf (stderr, "baudrate = %d, inputsize = %d\n",
 //	          baudRate, v. size ());
 //	fprintf (stderr, "\n");
-	for (int i = 0; i < 24 * bitRate / 8; i ++) {
+	for (int i = 0; i < vLength; i ++) {
 	   help [i] = 0;
 	   for (j = 0; j < 8; j ++) {
 	      help [i] <<= 1;

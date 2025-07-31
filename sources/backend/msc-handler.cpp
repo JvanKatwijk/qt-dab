@@ -251,7 +251,7 @@ bool	mscHandler::startBackend (descriptorType &d,
 
 bool	mscHandler::serviceRuns	(uint32_t SId, uint16_t subChId) {
 	for (auto &backend : theBackends)
-	   if ((backend -> serviceId == SId) && (backend -> subChId == subChId))
+	   if ((backend -> serviceId == (int) SId) && (backend -> subChId == subChId))
 	      return true;
 	return false;
 }

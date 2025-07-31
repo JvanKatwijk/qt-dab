@@ -34,18 +34,18 @@
 class	journaline_dataHandler: public virtual_dataHandler {
 Q_OBJECT
 public:
-		journaline_dataHandler();
-		~journaline_dataHandler();
+		journaline_dataHandler	();
+		~journaline_dataHandler	();
 	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 	void	add_to_dataBase		(NML *);
 private:
+	std::vector<tableElement> table;
 	journalineScreen	theScreen;
 	DAB_DATAGROUP_DECODER_t theDecoder;
 	DAB_DATAGROUP_DECODER_data	myCallBack;
 	void		init_dataBase	();
 	void		destroy_dataBase ();
 	int		findIndex	(int);
-	std::vector<tableElement> table;
 signals:
 	void		start		(int);
 };

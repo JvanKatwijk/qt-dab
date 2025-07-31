@@ -55,7 +55,7 @@ struct timeval  tv;
 	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
 	fseek (filePointer, 0, SEEK_SET);
 	period          = (RAW_BUFFERSIZE * 1000) / (2 * SAMPLERATE / 1000);  // full IQś read
-	fprintf (stderr, "Period = %ld\n", period);
+	fprintf (stderr, "Period = %d\n", (int)period);
 	for (int i = 0; i < 256; i ++)
 	   mapTable [i] = ((float)i - 128.0) / 128.0;
 	running. store (false);

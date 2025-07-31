@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -50,6 +50,10 @@ public:
 	void		stopReader	();
 	bool		handle_continuousButton	();
 private:
+	union bitsToFloat {
+	   uint32_t bitValue;
+	   float    floatValue;
+	};
 	std::atomic<bool>	continuous;
 	FILE		*file;
 	xmlDescriptor	*fd;

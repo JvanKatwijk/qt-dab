@@ -201,8 +201,8 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 20:		// service component information (8.1.4)
-	      FIG0Extension20 (d);
-	      break;		// to be implemented
+	      FIG0Extension20 (d);	 // not encountered yet
+	      break;	
 
 	   case 21:		// frequency information (8.1.8)
 	      FIG0Extension21 (d);
@@ -934,6 +934,7 @@ int16_t	fibDecoder::HandleFIG0Extension20 (uint8_t	*d,
 	                                   const uint8_t CN_bit,
 	                                   const uint8_t OE_bit,
 	                                   const uint8_t PD_bit) {
+	(void)CN_bit; (void)OE_bit;
 	uint32_t SId		= PD_bit? getLBits (d, offset, 32) :
 	                                  getLBits (d, offset, 16);
 	offset += PD_bit ? 32 : 16;
@@ -955,6 +956,10 @@ int16_t	fibDecoder::HandleFIG0Extension20 (uint8_t	*d,
 	uint16_t Transfer_EId	= Eid_flag ? getLBits (d, offset, 16) : 0;
 	offset += Eid_flag ? 16 : 0;
 	fprintf (stderr, "%X (%d) is in fig 20\n", SId, SCIds); 
+	(void)ChangeFlags; (void)PT_flag; (void) SC_flag; 
+	(void)AD_flag; (void)SCTy; (void)Date; (void)Hour;
+	(void)Minutes; (void)Seconds; (void)SId_flag;
+	(void)Transfer_Id; (void)Transfer_EId;
 	return offset;
 }
 	   
@@ -1165,6 +1170,7 @@ uint32_t	SId;
 	   if (serv. SId == SId)
 	     return;
 
+	
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
@@ -1181,12 +1187,18 @@ uint32_t	SId;
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
 	      shortName. append (dataName. at (i));
 
-	ensemble::service prim;
-	prim. name = dataName;
-	prim. shortName	= shortName;
-	prim. SId	= SId;
-	prim. SCIds	= SCIds;
-	theEnsemble. secondaries. push_back (prim);
+	ensemble::service seco;
+	seco. name = dataName;
+	seco. shortName	= shortName;
+	seco. SId	= SId;
+	seco. SCIds	= SCIds;
+	theEnsemble. secondaries. push_back (seco);
+//
+//	if a secondary service has the name of an existing primary one,
+//	we do not want it in the list
+	for (auto &prim : theEnsemble. primaries)
+	   if (prim. name == seco. name)
+	      return;
 	addToEnsemble (dataName, SId, -1);
 }
 
@@ -1459,7 +1471,7 @@ int	fibDecoder::freeSpace		() {
 //	
 QList<contentType> fibDecoder::contentPrint () {
 QList<contentType> res;
-	for (int i = 0; i < currentConfig -> SC_C_table. size (); i ++) {
+	for (int i = 0; i < (int)(currentConfig -> SC_C_table. size ()); i ++) {
 	   fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [i];
 	   contentType theData;
 	   theData. TMid	= comp. TMid;

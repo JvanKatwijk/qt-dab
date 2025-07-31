@@ -177,6 +177,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="clickablelabel" name="activeServices">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of active (sub)services. Each (sub)service runs in ots own thread.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>0</string>
            </property>

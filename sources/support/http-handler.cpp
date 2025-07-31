@@ -95,7 +95,7 @@ void	httpHandler::start	() {
 	if (autoBrowser_off)
 	   return;
 #ifdef	__MINGW32__
-	fprintf (stderr, "browser address %s\n", browserAddress. c_str ());
+	fprintf (stderr, "Lbrowser address %s\n", browserAddress. c_str ());
 	ShellExecute (nullptr, L"open", browserAddress. c_str (),
 	                                   nullptr, nullptr, SW_SHOWNORMAL);
 #else

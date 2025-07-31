@@ -119,7 +119,7 @@ int32_t	rawFiles::Samples() {
 
 void	rawFiles::setProgress (int progress, float timelength) {
 	fileProgress      -> setValue (progress);
-	currentTime       -> display (timelength);
+	currentTime       -> display (timelength / 1000);
 }
 
 bool	rawFiles::isFileInput	() {

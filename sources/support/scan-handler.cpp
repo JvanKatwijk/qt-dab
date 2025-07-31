@@ -114,10 +114,12 @@ QString scanmodeText (int e) {
 	this	-> theRadio		= theRadio;
 	this	-> dabSettings		= s;
 	this	-> selectedBand		= nullptr;
-	this	->  no_scanTables	= false;
+	this	-> no_scanTables	= false;
 #ifndef	__MINGW32__
 	if (extFile != "") 
 	   selectedBand = load_extFile (extFile);
+#else
+	(void)extFile;
 #endif
 	if (selectedBand != nullptr)
 	   no_scanTables	= true;

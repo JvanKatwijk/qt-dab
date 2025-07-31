@@ -40,13 +40,12 @@
 //
 //	apparently bytes are read in from low byte to high byte
 void	reader_16::processData	(float IQoffs, void *data, int cnt) {
-int32_t	i;
 std::complex<float> IQData [blockSize];
 uint8_t	*p	= (uint8_t *)data;
 	(void)IQoffs;
 	(void)cnt;
 
-	for (i = 0; i < blockSize; i ++) {
+	for (int i = 0; i < blockSize; i ++) {
 	   uint8_t r0	= p [4 * i];
 	   uint8_t r1	= p [4 * i + 1];
 	   uint8_t i0	= p [4 * i + 2];
@@ -76,13 +75,12 @@ int16_t reader_16::bitDepth	(void) {
 }
 
 void	reader_24::processData	(float IQoffs, void *data, int cnt) {
-int32_t	i;
 std::complex<float>	IQData [blockSize];
 uint8_t	*p	= (uint8_t *)data;
 	(void)IQoffs;
 	(void)cnt;
 
-	for (i = 0; i < blockSize; i ++) {
+	for (int i = 0; i < blockSize; i ++) {
 	   uint8_t r0	= p [6 * i];
 	   uint8_t r1	= p [6 * i + 1];
 	   uint8_t r2	= p [6 * i + 2];
@@ -114,13 +112,12 @@ int16_t reader_24::bitDepth	(void) {
 }
 
 void	reader_32::processData	(float IQoffs, void *data, int cnt) {
-int32_t	i;
 std::complex<float> IQData [blockSize];
 uint8_t	*p	= (uint8_t *)data;
 	(void)IQoffs;
 	(void)cnt;
 
-	for (i = 0; i < blockSize; i ++) {
+	for (int i = 0; i < blockSize; i ++) {
 	   uint8_t r0	= p [8 * i];
 	   uint8_t r1	= p [8 * i + 1];
 	   uint8_t r2	= p [8 * i + 2];
@@ -149,20 +146,18 @@ int16_t	reader_32::bitDepth	(void) {
 	reader_float::reader_float (RingBuffer<std::complex<float>> *p,
 	                                                     int32_t rate):
 	                                             virtualReader (p, rate) {
-int16_t	i;
 }
 
-	reader_float::~reader_float (void) {
+	reader_float::~reader_float () {
 }
 //
 void	reader_float::processData	(float IQoffs, void *data, int cnt) {
-int32_t	i, j;
 std::complex<float> IQData [blockSize];
 float	*p	= (float *)data;
 	(void)IQoffs;
 	(void)cnt;
 
-	for (i = 0; i < blockSize; i ++) 
+	for (int i = 0; i < blockSize; i ++) 
 	   IQData [i]	= std::complex<float> (p [2 * i], p [2 * i + 1]);
 
 	convertandStore (IQData, blockSize);
