@@ -60,7 +60,7 @@ std::vector<cacheElement> res;
 	}
 
 	res. resize (0);
-	Rflag =  s. endsWith ("/.txdata.tii");
+	Rflag =  s. endsWith (".txdata.tii");
 	FILE	*f	= fopen (s. toUtf8 (). data (), "r+b");
 #ifdef	__TRACE__
 	if (f == nullptr)

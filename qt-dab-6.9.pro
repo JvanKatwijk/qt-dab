@@ -470,8 +470,8 @@ CONFIG		+= datastreamer
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-#CONFIG		+= viterbi-scalar
-CONFIG		+= viterbi-sse
+CONFIG		+= viterbi-scalar
+#CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
 #CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
@@ -516,20 +516,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9V3.3
-#	}
-#	else {
-#	   TARGET		= qt-dab32-qt6-6.9V3.3
-#	}
-#	CONFIG		+= dabstick-win-v3
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9.3
+	   TARGET		= qt-dab32-qt5-6.9V3.3
 	}
 	else {
-	   TARGET		= qt-dab32-qt6-6.9.3
+	   TARGET		= qt-dab32-qt6-6.9V3.3
 	}
-	CONFIG		+= dabstick-win-v4
+	CONFIG		+= dabstick-win-v3
+#	equals (QT_MAJOR_VERSION, 5) {
+#	   TARGET		= qt-dab32-qt5-6.9.3
+#	}
+#	else {
+#	   TARGET		= qt-dab32-qt6-6.9.3
+#	}
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

@@ -68,7 +68,6 @@
 //	Note that they may change "roles", 
 	currentConfig	= new fibConfig();
 	nextConfig	= new fibConfig();
-	theEnsemble	= new ensemble ();
 	CIFcount	= 0;
 	mjd		= 0;
 }
@@ -76,7 +75,6 @@
 	fibDecoder::~fibDecoder () {
 	delete	nextConfig;
 	delete	currentConfig;
-	delete	theEnsemble;
 }
 
 //	FIB's are segments of 256 bits. When here, we already
@@ -646,8 +644,8 @@ int16_t	used	= 2;		// offset in bytes
 
 	uint8_t	LTO	= currentConfig -> dateTime [6];
 	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
-	theEnsemble	-> eccByte	= ecc;
-	theEnsemble	-> lto		= LTO;
+	theEnsemble.	eccByte	= ecc;
+	theEnsemble.	lto	= LTO;
 	lto_ecc (LTO, ecc);
 }
 
@@ -832,9 +830,9 @@ int16_t	offset	= 16;
 	while (offset < length * 8) {
 	   uint16_t	SId	= getBits (d, offset, 16);
 	   uint8_t typeCode	= getBits_5 (d, offset + 27);
-	   for (uint16_t i = 0; i < theEnsemble -> primaries. size (); i ++) {
-	      if (theEnsemble -> primaries [i]. SId == SId) {
-	         theEnsemble -> primaries [i]. programType = typeCode;
+	   for (uint16_t i = 0; i < theEnsemble. primaries. size (); i ++) {
+	      if (theEnsemble. primaries [i]. SId == SId) {
+	         theEnsemble. primaries [i]. programType = typeCode;
 	         break;
 	      }
 	   }
@@ -996,7 +994,7 @@ int16_t		base		= l_offset + 16;
 	   if (RandM == 0x08) {
 	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
 	      int32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
-	      for (auto &serv : theEnsemble -> primaries) {
+	      for (auto &serv : theEnsemble. primaries) {
 	         if ((serv. SId == idField)) {
 	            bool alreadyIn = false;
 	            for (auto freq : serv. fmFrequencies) {
@@ -1078,13 +1076,13 @@ char		label [17];
 	   QString realName = name;
 	   for (int i = name. length (); i < 16; i ++)
 	      realName. append (' ');
-	   if (!theEnsemble -> namePresent) {
-	      theEnsemble ->  ensembleName	= realName;
-	      theEnsemble ->  EId	= EId;
-	      theEnsemble ->  namePresent	= true;
+	   if (!theEnsemble. namePresent) {
+	      theEnsemble. ensembleName	= realName;
+	      theEnsemble. EId		= EId;
+	      theEnsemble. namePresent	= true;
 	      ensembleName (EId, name);
 	   }
-	   theEnsemble	-> isSynced = true;
+	   theEnsemble. isSynced = true;
 	}
 }
 //
@@ -1103,7 +1101,7 @@ char		label [17];
 	if (charSet >= 16) 	// does not seem right
 	   return;
 	
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (SId == serv. SId) 
 	      return;
 	}
@@ -1126,7 +1124,7 @@ char		label [17];
 	prim. shortName		= shortName;
 	prim. SId		= SId;
 	prim. fmFrequencies. resize (0);
-	theEnsemble -> primaries. push_back (prim);
+	theEnsemble. primaries. push_back (prim);
 	int subChId = -1;
 	for (int i = 0; i < (int)(currentConfig -> SC_C_table. size ()); i ++) {
 	   fibConfig::serviceComp_C  comp  = currentConfig -> SC_C_table [i];
@@ -1134,8 +1132,8 @@ char		label [17];
 	      subChId	= currentConfig -> subChannelOf (i);
 	}
 	addToEnsemble (dataName, SId, subChId);
-	if (theEnsemble -> primaries. size () >= 2)
-	   theEnsemble	-> isSynced = true;
+	if (theEnsemble. primaries. size () >= 2)
+	   theEnsemble. isSynced = true;
 }
 
 //	service component label - 32 bits 8.1.14.3
@@ -1160,10 +1158,10 @@ uint32_t	SId;
 	}
 //
 //	just a check if we already have the servicename
-	for (auto &serv : theEnsemble -> secondaries)
+	for (auto &serv : theEnsemble. secondaries)
 	   if (serv. SId == SId)
 	      return;
-	for (auto &serv :theEnsemble -> primaries)
+	for (auto &serv :theEnsemble. primaries)
 	   if (serv. SId == SId)
 	     return;
 
@@ -1188,7 +1186,7 @@ uint32_t	SId;
 	prim. shortName	= shortName;
 	prim. SId	= SId;
 	prim. SCIds	= SCIds;
-	theEnsemble -> secondaries. push_back (prim);
+	theEnsemble. secondaries. push_back (prim);
 	addToEnsemble (dataName, SId, -1);
 }
 
@@ -1206,7 +1204,7 @@ int16_t		bitOffset	= 48;
 	label [16]      = 0x00;
 	(void)Rfu; (void)extension;
 
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (SId == serv. SId) 
 	      return;
 	}
@@ -1231,7 +1229,7 @@ int16_t		bitOffset	= 48;
 	prim. name 	= dataName;
 	prim. shortName = shortName;
 	prim. SId	= SId;
-	theEnsemble -> primaries. push_back (prim);
+	theEnsemble. primaries. push_back (prim);
 	addToEnsemble (dataName, SId, -1);
 }
 //
@@ -1241,7 +1239,7 @@ void	fibDecoder::connectChannel () {
 	fibLocker. lock();
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
-	theEnsemble	-> reset ();
+	theEnsemble.	reset ();
 	connect (this, &fibDecoder::addToEnsemble,
 	         myRadioInterface, &RadioInterface::addToEnsemble);
 	fibLocker. unlock();
@@ -1253,13 +1251,13 @@ void	fibDecoder::disconnectChannel () {
 	            myRadioInterface, &RadioInterface::addToEnsemble);
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
-	theEnsemble	-> reset ();
+	theEnsemble.	reset ();
 	fibLocker. unlock();
 }
 //
 //	ofdmHandler ask for syncReached
 bool	fibDecoder::syncReached() {
-	return  theEnsemble -> isSynced;
+	return  theEnsemble. isSynced;
 }
 
 uint32_t fibDecoder::getSId	(const int index) {
@@ -1272,7 +1270,7 @@ uint8_t	fibDecoder::serviceType (const int index) {
 
 void	fibDecoder::audioData	(const int index, audiodata &ad) {
 fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (serv. SId == comp. SId) {
 	      ad. serviceName	= serv. name;
 	      ad. shortName	= serv. shortName;
@@ -1302,7 +1300,7 @@ fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
 
 void	fibDecoder::packetData		(const int index, packetdata &pd) {
 fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (serv. SId == comp. SId) {
 	      pd. serviceName	= serv. name;
 	      pd. shortName	= serv. shortName;
@@ -1344,7 +1342,7 @@ int	fibDecoder::getNrComps			(const uint32_t SId) {
 //	
 int	fibDecoder::getServiceComp		(const QString &service) {
 //	first we check to see if the service is a primary one
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (serv. name != service)
 	      continue;
 	   for (auto & SId_element: currentConfig -> SId_table) {
@@ -1353,7 +1351,7 @@ int	fibDecoder::getServiceComp		(const QString &service) {
 	   }
 	}
 	
-	for (auto &serv : theEnsemble -> secondaries) {
+	for (auto &serv : theEnsemble. secondaries) {
 	   if (serv. name != service)
 	      continue;
 	   return getServiceComp_SCIds (serv. SId, serv. SCIds);
@@ -1387,7 +1385,7 @@ int	fibDecoder::getServiceComp_SCIds	(const uint32_t SId,
 }
 
 bool	fibDecoder::isPrimary	(const QString &s) {
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (s == serv. name)
 	      return true;
 	}
@@ -1396,7 +1394,7 @@ bool	fibDecoder::isPrimary	(const QString &s) {
 	
 std::vector<int> fibDecoder::getFrequency	(const QString &s) {
 std::vector<int> res;
-	for (auto &serv : theEnsemble -> primaries) {
+	for (auto &serv : theEnsemble. primaries) {
 	   if (serv. name == s)
 	      return serv. fmFrequencies;
 	}
@@ -1486,8 +1484,8 @@ QList<contentType> res;
 	      theData. FEC_scheme	= 0;
 	      theData. packetAddress	= 0;
 	      theData. ASCTy_DSCTy	= ad. ASCTy;
-	      theData. programType	= theEnsemble -> programType (ad. SId);
-	      theData. fmFrequencies	= theEnsemble -> fmFrequencies (ad. SId);
+	      theData. programType	= theEnsemble. programType (ad. SId);
+	      theData. fmFrequencies	= theEnsemble. fmFrequencies (ad. SId);
 	      res. push_back (theData);
 	   }
 	   else

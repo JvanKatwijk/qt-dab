@@ -30,8 +30,8 @@
 #include	"msc-handler.h"
 #include	<QMutex>
 
+#include	"ensemble.h"
 class	RadioInterface;
-class	ensemble;
 class	fibConfig;
 
 class	fibDecoder: public QObject {
@@ -70,9 +70,9 @@ private:
 	std::vector<serviceId> insert (std::vector<serviceId> &l,
                                           serviceId n, int order);
 	RadioInterface	*myRadioInterface;
+	ensemble	theEnsemble;
 	fibConfig	*currentConfig;
 	fibConfig	*nextConfig;
-	ensemble	*theEnsemble;
 	void		adjustTime		(int32_t *dateTime);
 
 	void		process_FIG0		(uint8_t *);
