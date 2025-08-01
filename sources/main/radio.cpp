@@ -717,6 +717,19 @@ void	RadioInterface::no_signal_found () {
 
 ///////////////////////////////////////////////////////////////////////////
 //
+static
+bool	seems_epg (const QString &name) {
+	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
+               name. contains (" EPG   ", Qt::CaseInsensitive) ||
+               name. contains ("Spored", Qt::CaseInsensitive) ||
+               name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
+               name. contains ("SPI", Qt::CaseSensitive) ||
+               name. contains ("BBC Guide", Qt::CaseInsensitive) ||
+               name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
+               name. contains ("EPG_", Qt::CaseInsensitive) ||
+               name. contains ("EPG-", Qt::CaseInsensitive) ||
+               name. startsWith ("EPG ", Qt::CaseInsensitive);
+}
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addToEnsemble (const QString &serviceName,
 	                                           int32_t SId, int  subChId) {
@@ -735,8 +748,10 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	if (configHandler_p -> get_audioServices_only ()) {
 	   int index =
              theOFDMHandler -> getServiceComp (ed. SId, 0);
-           if ((index < 0) ||
-               (theOFDMHandler -> serviceType (index) == PACKET_SERVICE))
+           if (index < 0)
+	      return;
+           if ((theOFDMHandler -> serviceType (index) == PACKET_SERVICE) &&
+	       (!seems_epg (serviceName)))
 	      return;
 	}
 	   
@@ -4602,9 +4617,20 @@ void	RadioInterface::nrActiveServices	(int n) {
 //
 /////////////////////////////////////////////////////////////////////////
 //
+//	Printing the content of the current ensemble:
 //	the fib decoder passes on the (more or less) raw data,
 //	needed to show the attributes of the different services
 //
+static 
+const char * audioHeader = 
+  " ;serviceName;serviceId;subChannel;startAddr (CU's);length (CU's);"\
+  "protection;code rate; bitRate;dab type; language;program type; fm freq;";
+
+static 
+const char * packetHeader = 
+   " ;serviceName;serviceId;subChannel;startAddr (CU's);length (CU's);"\
+   "protection;code rate;app type;FEC scheme;packetAddr; DSCTy;";
+
 QStringList RadioInterface::basicPrint () {
 QStringList out;
 	bool hasContents = false;
@@ -4613,7 +4639,7 @@ QStringList out;
 	   if (ct. TMid != 0)	// no audio
 	      continue;
 	   if (!hasContents)
-	      out << audioHeader ();
+	      out <<  QString (audioHeader);
 	   hasContents = true;
 	   out << audioData (ct);
 	}
@@ -4622,43 +4648,14 @@ QStringList out;
 	   if (ct. TMid != 3)	// no packet
 	      continue;
 	   if (!hasContents)
-	      out << packetHeader ();
+	      out << QString (packetHeader);
 	   hasContents = true;
 	   out << packetData (ct);
 	}
 	return out;
 }
 
-QString	RadioInterface::audioHeader		() {
-	return	QString (" ;" \
-	        "serviceName;" \
-	        "serviceId;" \
-		"subChannel;" \
-		"start address (CU's);" \
-		"length (CU's);" \
-		"protection;" \
-		"code rate;" \
-	        "bitrate;" \
-		"dab type;" \
-		"language;" \
-		"program type;" \
-		"fm freq;");
-}
-
-QString	RadioInterface::packetHeader		() {
-	return	QString (" ;" \
-	        "serviceName;" \
-	        "serviceId;" \
-		"subChannel;" \
-		"start address;" \
-		"length;" \
-		"protection;" \
-		"code rate;" \
-	        "appType;" \
-	        "FEC_scheme;" \
-	        "packetAddress;" \
-	        "DSCTy;");
-}
+//
 
 QString	RadioInterface::audioData	(contentType &ct) {
 QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
@@ -4679,25 +4676,41 @@ QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
 }
 
 static
+struct {
+	int type;
+	const char *dtype;
+} packetTypes [] = {
+	{60, "mot data"},
+	{59, "ip data"},
+	{44, "journaline data"},
+	{ 5, "tdc data"},
+	{ 0, "unknown data"}
+};
+
+static
 QString kindOfService (uint8_t type) {
 QString dtype;
-	switch (type) {
-	   case 60 :
-	      dtype = "mot data";
-	      break;
-	   case 59:
-	      dtype = "ip data";
-	      break;
-	   case 44 :
-	      dtype =  "journaline data";
-	      break;
-	   case  5 :
-	      dtype =  "tdc data";
-	      break;
-	   default:
-	      dtype = "unknown data";
-	}
-	return QString (dtype);
+	for (int i = 0; packetTypes [i]. type != 0; i ++)
+	   if (type == packetTypes [i]. type)
+	      return QString (packetTypes [i]. dtype);
+	return "unknown data";
+//	switch (type) {
+//	   case 60 :
+//	      dtype = "mot data";
+//	      break;
+//	   case 59:
+//	      dtype = "ip data";
+//	      break;
+//	   case 44 :
+//	      dtype =  "journaline data";
+//	      break;
+//	   case  5 :
+//	      dtype =  "tdc data";
+//	      break;
+//	   default:
+//	      dtype = "unknown data";
+//	}
+//	return QString (dtype);
 }
 	
 QString	RadioInterface::packetData	(contentType &ct) {
@@ -4720,8 +4733,9 @@ QString res	= runs + ";" +
 //	We terminate the sequences with a ";", so that is why the
 //	actual number is 1 smaller
 int	RadioInterface::scanWidth	() {
-QString s1	= audioHeader ();
-QString s2	= packetHeader ();
+//QString s1	= audioHeader ();
+QString s1	= QString (audioHeader);
+QString s2	= QString (packetHeader);
 QStringList l1 = s1. split (";");
 QStringList l2 = s2. split (";");
 	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;

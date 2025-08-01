@@ -446,8 +446,8 @@ private:
 //
 //	new printing approach
 	QStringList		basicPrint		();
-	QString			audioHeader		();
-	QString			packetHeader		();
+//	QString			audioHeader		();
+//	QString			packetHeader		();
 	QString			audioData		(contentType &);
 	QString			packetData		(contentType &);
 	int			scanWidth		();

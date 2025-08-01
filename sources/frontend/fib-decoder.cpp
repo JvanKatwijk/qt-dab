@@ -1169,7 +1169,6 @@ uint32_t	SId;
 	for (auto &serv :theEnsemble. primaries)
 	   if (serv. SId == SId)
 	     return;
-
 	
 	label [16]      = 0x00;
 	(void)Rfu;
@@ -1188,7 +1187,7 @@ uint32_t	SId;
 	      shortName. append (dataName. at (i));
 
 	ensemble::service seco;
-	seco. name = dataName;
+	seco. name 	= dataName;
 	seco. shortName	= shortName;
 	seco. SId	= SId;
 	seco. SCIds	= SCIds;

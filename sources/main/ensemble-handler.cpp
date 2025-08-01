@@ -341,9 +341,9 @@ int currentRow	= 0;
 	                           QStringList () << tr ("service") <<
 	                                             tr ("fav"));
 	   for (uint16_t i = 0; i < ensembleList. size (); i ++) {
-	      if (!(seems_epg (ensembleList [i]. name) ||
-	            isAudio (ensembleList [i]. SId)))
-	         continue;
+//	      if (!(seems_epg (ensembleList [i]. name) ||
+//	            isAudio (ensembleList [i]. SId)))
+//	         continue;
 	      bool toMark = false;
 	      if (handlePresets)
 	         toMark = inFavorites (ensembleList [i]. name) >= 0;
