@@ -76,7 +76,8 @@
 	settings. sample_bits		= 16;
 //
 	for (int i = 0; i < 256; i ++)
-	   convTable [i] = (-128.0 + i) / 128.0;
+	   convTable [i] = ((float)i -128.0) / 128.0;
+
 	connect (spyServer_connect, &QPushButton::clicked,
                  this, &spyServer_client_8::wantConnect);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)

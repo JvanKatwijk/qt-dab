@@ -50,7 +50,7 @@
 	ipAddress	= "127.0.0.1";
 
 	for (int i = 0; i < 256; i ++)
-	   convTable [i] = (float)(i - 128.0) / 128.0;
+	   convTable [i] = ((float)i - 128.0) / 128.0;
 
 	Gain		=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "Gain", 20);

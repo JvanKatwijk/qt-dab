@@ -95,7 +95,7 @@ void	httpHandler::start	() {
 	if (autoBrowser_off)
 	   return;
 #ifdef	__MINGW32__
-	fprintf (stderr, "Lbrowser address %s\n", browserAddress. c_str ());
+	fprintf (stderr, "Lbrowser address %ls\n", browserAddress. c_str ());
 	ShellExecute (nullptr, L"open", browserAddress. c_str (),
 	                                   nullptr, nullptr, SW_SHOWNORMAL);
 #else
@@ -227,6 +227,7 @@ std::string	ctype;
 	      if (jsonUpdate) {
 //	         fprintf (stderr, "Json update requested\n");
 //	         fprintf (stderr, "%s\n", content. c_str ());
+	         (void)jsonUpdate;
 	      }
 //	and send the reply
 	      if (write (ClientSocket, hdr, hdrlen) != hdrlen ||
@@ -311,7 +312,7 @@ struct addrinfo hints;
 	listen (ListenSocket, 5);
 	while (running. load ()) {
 	   ClientSocket = accept (ListenSocket, nullptr, nullptr);
-	   if (ClientSocket == -1)  {
+	   if (ClientSocket == INVALID_SOCKET)  {
 	      usleep (2000000);
 	      continue;
 	   }

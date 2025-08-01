@@ -89,9 +89,9 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 	void		reportOverflow		(bool);
-
-	double		m_dcI;
-	double		m_dcQ;
+	float		convTable		[256];
+//	double		m_dcI;
+//	double		m_dcQ;
 
 signals:
 	void		new_gainIndex		(int);
