@@ -168,7 +168,6 @@ int	journalineScreen::findIndex	(int key) {
 }
 
 void	journalineScreen::start		(int index) {
-	fprintf (stderr, "we zijn in start\n");
 	pathVector. push_back (0);
 	displayElement (*(*table) [index]. element);
 }

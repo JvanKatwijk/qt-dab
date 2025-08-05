@@ -93,10 +93,6 @@
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
-	this	-> freqSpeedUp		= 
-	         value_i (dabSettings, CONFIG_HANDLER, "SPEED_UP", 0) != 0;
-	this	-> freqCorrelator		=
-	         value_i (dabSettings, CONFIG_HANDLER, "SELECT_CORR", 0);
 	this	-> tiiDelay		= p -> tii_delay;
 	this	-> tiiCounter		= 0;
 	this	-> correlationOrder	= 
@@ -209,8 +205,7 @@ timeSyncer	myTimeSyncer (&theReader);
 phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
-freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable,
-	                                freqSpeedUp, freqCorrelator);
+freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
 estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
@@ -375,7 +370,7 @@ int	snrCount	= 0;
 	      correctionNeeded = !theFicHandler. syncReached ();
 	      if (correctionNeeded && (tryCounter == 0)) {
 	         int correction	=
-	            myFreqSyncer. estimate_CarrierOffset (ofdmBuffer);
+	            myFreqSyncer. estimateCarrierOffset (ofdmBuffer);
 	         if (correction != 100) {
 	            if (abs (coarseOffset) > Khz (35))
 	               coarseOffset = 0;

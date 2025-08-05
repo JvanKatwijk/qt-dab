@@ -56,7 +56,7 @@ public:
 	                                 int index,
 	                                 int32_t n, int32_t phase, bool saving);
 	      void	startDumping	(const QString &, int, int);
-	      void	stopDumping();
+	      void	stopDumping	();
 private:
 	      wavWriter		sourceDumper;
 	      RadioInterface	*myRadioInterface;

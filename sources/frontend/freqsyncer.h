@@ -36,22 +36,17 @@
 
 class	RadioInterface;
 
-#define	FFT_CORR	0100
 class freqSyncer : public QObject {
 Q_OBJECT
 public:
 			freqSyncer 		(RadioInterface *,
 	                                         processParams *,
-	                                         phaseTable *,
-	                                         bool speedUp = false,
-	                                         uint8_t correlator = 0);
+	                                         phaseTable *);
 			~freqSyncer		();
-	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
+	int16_t		estimateCarrierOffset	(std::vector<Complex>);
 private:
 	dabParams	params;
 	phaseTable	*theTable;
-	std::vector<float> phaseDifferences;
-	int16_t		diff_length;
 	int32_t		T_u;
 	int32_t		T_g;
 	int16_t		carriers;
@@ -61,7 +56,5 @@ private:
 	fftHandler	go_backwards;
 	Complex		t1 [TEST_SIZE];
 	Complex		t2 [TEST_SIZE];
-	bool		speedUp;
-	uint8_t		correlator;
 };
 

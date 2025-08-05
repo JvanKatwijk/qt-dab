@@ -49,7 +49,7 @@
 #include	"mapport.h"
 #include	"techdata.h"
 #include	"aboutdialog.h"
-#include	"cacheElement.h"
+#include	"db-element.h"
 #include	"distances.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
@@ -717,19 +717,6 @@ void	RadioInterface::no_signal_found () {
 
 ///////////////////////////////////////////////////////////////////////////
 //
-static
-bool	seems_epg (const QString &name) {
-	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
-               name. contains (" EPG   ", Qt::CaseInsensitive) ||
-               name. contains ("Spored", Qt::CaseInsensitive) ||
-               name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
-               name. contains ("SPI", Qt::CaseSensitive) ||
-               name. contains ("BBC Guide", Qt::CaseInsensitive) ||
-               name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
-               name. contains ("EPG_", Qt::CaseInsensitive) ||
-               name. contains ("EPG-", Qt::CaseInsensitive) ||
-               name. startsWith ("EPG ", Qt::CaseInsensitive);
-}
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addToEnsemble (const QString &serviceName,
 	                                           int32_t SId, int  subChId) {
@@ -745,16 +732,6 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	if (theEnsembleHandler -> alreadyIn (ed))
 	   return;
 
-	if (configHandler_p -> get_audioServices_only ()) {
-	   int index =
-             theOFDMHandler -> getServiceComp (ed. SId, 0);
-           if (index < 0)
-	      return;
-           if ((theOFDMHandler -> serviceType (index) == PACKET_SERVICE) &&
-	       (!seems_epg (serviceName)))
-	      return;
-	}
-	   
 	bool added	= theEnsembleHandler -> addToEnsemble (ed);
 	if (added) {
 	   channel. nrServices ++;
@@ -2922,7 +2899,7 @@ QString	theName;
 	return headLine;
 }
 
-QString	RadioInterface::build_transmitterLine (const cacheElement &c) {
+QString	RadioInterface::build_transmitterLine (const transmitter &c) {
 QString res	= "";
 	res += ";";
 	res += idsToString (c. mainId, c. subId) + ";";
@@ -2957,7 +2934,7 @@ void	RadioInterface::show_for_continuous () {
 
 	for (auto &tr: channel. transmitters) {
 	   if (!tr. isStrongest) {
-	      QString line = build_cont_addLine (tr);
+	      QString line = build_cont_addLine (tr. theTransmitter);
 	      if (line == "")
 	         continue;
 	      scanTable_p -> addLine (line);
@@ -2966,25 +2943,24 @@ void	RadioInterface::show_for_continuous () {
 	scanTable_p -> show ();
 }
 
-QString RadioInterface::build_cont_addLine (transmitterDesc &tr) {
+QString RadioInterface::build_cont_addLine (const transmitter &tr) {
 QString tii;
 QString theName;
 QString theDistance;
 QString theCorner;
 QString theHeight;
 
-	tii		= idsToString (tr. theTransmitter. mainId,
-	                                 tr. theTransmitter. subId) + ";" ;
-	if (tr. theTransmitter. transmitterName != "")
-	   theName	= tr. theTransmitter. transmitterName;
+	tii		= idsToString (tr. mainId, tr. subId) + ";" ;
+	if (tr. transmitterName != "")
+	   theName	= tr. transmitterName;
 	else
 	   theName 	= "";
 	
-	if (tr. theTransmitter. distance > 0) {
-	   theDistance	= QString::number (tr. theTransmitter. distance, 'f', 1) + " km ";
-	   theCorner	= QString::number (tr. theTransmitter. azimuth, 'f', 1)
+	if (tr. distance > 0) {
+	   theDistance	= QString::number (tr. distance, 'f', 1) + " km ";
+	   theCorner	= QString::number (tr. azimuth, 'f', 1)
 	                      + QString::fromLatin1 (" \xb0 ");
-	   theHeight	= " (" + QString::number (tr. theTransmitter. height, 'f', 1) +  "m)";
+	   theHeight	= " (" + QString::number (tr. height, 'f', 1) +  "m)";
 	}
 	else {
 	   theName	= "unknown";
@@ -3806,7 +3782,7 @@ void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
 	   }
 }
 //
-cacheElement *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
+transmitter *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 	for (auto &tr: channel. transmitters) 
 	   if ((tr. theTransmitter. mainId == mainId) &&
 	       (tr. theTransmitter. subId ==  subId))
@@ -3859,7 +3835,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 //	It the new TII data make sense and there is already
 //	an item in the transmitterList, then just check whether
 //	or not that item as recognized
-	   cacheElement *to = inList (r [i]. mainId, r [i]. subId);
+	   transmitter *to = inList (r [i]. mainId, r [i]. subId);
 	   if (to != nullptr) {
 	      if (to -> transmitterName == "not in database") {
 	         removeFromList (to -> mainId, to -> subId);
@@ -3871,16 +3847,16 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      }
 	   }
 
-	   cacheElement * tr =
+	   dbElement * tr =
 	       channel. realChannel ?
 	         theTIIProcessor. getTransmitter (channel. channelName,
 	                                          channel. Eid,
 	                                          r [i]. mainId,  r [i]. subId):
 	         theTIIProcessor. getTransmitter (channel. Eid,
 	                                          r [i]. mainId, r [i]. subId);
-	   cacheElement theTransmitter = *tr;
-	   theTransmitter. strength	= r [i]. strength;
-	   if (!theTransmitter. valid) {
+	   transmitter theTransmitter (tr);
+//
+	   if (!tr -> valid) {		// nothing found
 	      if (!configHandler_p -> get_allTIISelector ())
 	         continue;
 	      theTransmitter. ensemble	= channel. ensembleName;
@@ -3892,10 +3868,12 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theTransmitter. transmitterName	= "not in database";
 	      theTransmitter. distance	=  -1;
 	      theTransmitter. strength	= r [i]. strength;
-	      transmitterDesc t = {false,  false, false, theTransmitter};
+	      transmitterDesc t = {false, false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
-	   else {	// valid, compute distance
+	   else {
+//	first copy the db data, theTransmitter is properly initalized
+//	with the db Calues, now the dynamics
 	      position thePosition;
 	      thePosition. latitude     = theTransmitter. latitude;
 	      thePosition. longitude    = theTransmitter. longitude;
@@ -3906,7 +3884,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theTransmitter. norm	= r [i]. norm;
 	      theTransmitter. collision	= r [i]. collision;
 	      theTransmitter. pattern	= r [i]. pattern;
-	      transmitterDesc t = {true,  false, false, theTransmitter};
+	      transmitterDesc t = {true,  false, theTransmitter};
 	      channel. transmitters. push_back (t);	
 	   }
 	   if (dxMode)
@@ -3915,15 +3893,13 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	}
 
 //
-//	uint8_t mainId = strongest >> 8;
-//	uint8_t subId  = strongest  & 0xFF;
 	int	bestIndex = -1;
-
 	float Strength	= 0;
 //	Now the list is updated, see whether or not the strongest is ...
 	int teller = 0;
 	for (auto &transm : channel. transmitters) {
-	   if (transm. theTransmitter. strength > Strength) {
+	   if (transm. isValid &&
+	                  (transm. theTransmitter. strength > Strength)) {
 	      bestIndex = teller;
 	      Strength  = transm. theTransmitter. strength;
 	   }
@@ -3938,7 +3914,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 //	for content maps etc we need to have the data of the strongest
 //	signal
 	if (bestIndex >= 0) {
-	   cacheElement *ce = &channel. transmitters [bestIndex]. theTransmitter;	
+	   transmitter *ce = &channel. transmitters [bestIndex]. theTransmitter;	
 	   channel. mainId		= ce -> mainId;
 	   channel. subId		= ce -> subId;
 	   channel. transmitterName	= ce -> transmitterName;
@@ -3983,7 +3959,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	}
 //
 	if (mapHandler == nullptr)
-	      return;
+	   return;
 //
 	for (auto &theTr : channel. transmitters) {
 	   if (theTr. theTransmitter. transmitterName == "not in database")
@@ -3998,10 +3974,10 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	                                     QDateTime::currentDateTime ();
 
 	   mapHandler -> putData (key,
-	                          &theTr,
-	                          theTime. toString (Qt::TextDate),
-	                          channel. channelName,
-	                          channel. snr);
+	                          theTr. theTransmitter,
+	                          theTime. toString (Qt::TextDate));
+//	                          channel. channelName,
+//	                          channel. snr);
 	}
 }
 
@@ -4312,21 +4288,21 @@ int direction	= (azimuth) / 22.5;
 	return directionTable [(direction + 1) / 2];
 }
 
-QString	RadioInterface::createTIILabel	(const cacheElement *transmitter) {
-	uint8_t mainId		= transmitter -> mainId;
-	uint8_t subId		= transmitter -> subId;
-	const QString & transmitterName
-	                        = transmitter -> transmitterName;
-	float	theDistance	= transmitter -> distance;
-	float	theAzimuth	= transmitter -> azimuth;
+QString	RadioInterface::createTIILabel	(const transmitter *theTransmitter) {
+	uint8_t mainId		= theTransmitter -> mainId;
+	uint8_t subId		= theTransmitter -> subId;
+	const QString & theTransmitterName
+	                        = theTransmitter -> transmitterName;
+	float	theDistance	= theTransmitter -> distance;
+	float	theAzimuth	= theTransmitter -> azimuth;
 	QString direction	= fromAzimuth_toDirection (theAzimuth);
-//	int	theAltitude	= transmitter -> altitude;
-//	int	theHeight	= transmitter -> height;
-//	float	thePower	= transmitter -> power;
+//	int	theAltitude	= theTransmitter -> altitude;
+//	int	theHeight	= theTransmitter -> height;
+//	float	thePower	= theTransmitter -> power;
 
 QString labelText = "(" + QString::number (mainId) + ","
 	               + QString::number (subId) + ") ";
-	labelText += transmitterName;
+	labelText += theTransmitterName;
 	labelText += QString ("  ")
 	             + "(" + direction + ") "
 	             + QString::number (theDistance, 'f', 1) + " km " 
@@ -4338,7 +4314,7 @@ QString labelText = "(" + QString::number (mainId) + ","
 	return labelText;
 }
 
-void	RadioInterface::addtoLogFile (const cacheElement *theTransmitter) {
+void	RadioInterface::addtoLogFile (const transmitter *theTransmitter) {
 FILE	*theFile = nullptr;
 bool exists	= false;
 
@@ -4617,19 +4593,19 @@ void	RadioInterface::nrActiveServices	(int n) {
 //
 /////////////////////////////////////////////////////////////////////////
 //
-//	Printing the content of the current ensemble:
 //	the fib decoder passes on the (more or less) raw data,
 //	needed to show the attributes of the different services
 //
-static 
-const char * audioHeader = 
-  " ;serviceName;serviceId;subChannel;startAddr (CU's);length (CU's);"\
-  "protection;code rate; bitRate;dab type; language;program type; fm freq;";
-
-static 
-const char * packetHeader = 
-   " ;serviceName;serviceId;subChannel;startAddr (CU's);length (CU's);"\
-   "protection;code rate;app type;FEC scheme;packetAddr; DSCTy;";
+static
+const char *audioHeader =
+	" ; serviceName; serviceId; subChannel; start address (CU's); "\
+	" length (CU's); protection; code rate; bitrate; dab type;" \
+	" language; program type; fm freq;";
+static
+const char *packetHeader =
+	" ; serviceName; serviceId; subChannel; start address (CU's); "\
+	" length (CU's); protection; code rate; appType; FEC_scheme;" \
+	 "packetAddress; DSCTy;";
 
 QStringList RadioInterface::basicPrint () {
 QStringList out;
@@ -4655,8 +4631,6 @@ QStringList out;
 	return out;
 }
 
-//
-
 QString	RadioInterface::audioData	(contentType &ct) {
 QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
 	return runs + ";" +
@@ -4676,41 +4650,49 @@ QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
 }
 
 static
-struct {
-	int type;
-	const char *dtype;
-} packetTypes [] = {
-	{60, "mot data"},
-	{59, "ip data"},
-	{44, "journaline data"},
-	{ 5, "tdc data"},
-	{ 0, "unknown data"}
-};
-
-static
-QString kindOfService (uint8_t type) {
+QString kindOfService (uint8_t DSCTy, uint16_t appType) {
 QString dtype;
-	for (int i = 0; packetTypes [i]. type != 0; i ++)
-	   if (type == packetTypes [i]. type)
-	      return QString (packetTypes [i]. dtype);
-	return "unknown data";
-//	switch (type) {
-//	   case 60 :
-//	      dtype = "mot data";
-//	      break;
-//	   case 59:
-//	      dtype = "ip data";
-//	      break;
-//	   case 44 :
-//	      dtype =  "journaline data";
-//	      break;
-//	   case  5 :
-//	      dtype =  "tdc data";
-//	      break;
-//	   default:
-//	      dtype = "unknown data";
-//	}
-//	return QString (dtype);
+	switch (DSCTy) {
+	   case 1:
+	      return "TMC (unsupported)";
+	   case 2:
+	      return "EWS, (unsupported)";
+	   case 3:
+	      return "ITTS, (unsupported)";
+	   case 4:
+	      return "paging";
+	   case 5 :
+	      if (appType == 0x44a)
+	         return "journaline";
+	      else
+	      if (appType == 1500)
+	         return "adv_adc data";
+	      else
+	      if (appType == 4)
+	         return "tdc data";
+	      else
+	         return "unsupported";
+	      break;
+	   case 24:
+	      return "MPEG-2 Transport stream";
+	   case 44 :
+	      dtype =  "journaline";
+	      break;
+	   case 59:
+	      dtype = "ip data";
+	      break;
+	   case  60 :
+	      if (appType == 7)
+	         return "EPG/SPI";
+	      else
+	         return "MOT data";
+	      break;
+	   case 61:
+	      return "Proprietary";
+	   default:
+	      return "unsupported";
+	}
+	return QString ("");
 }
 	
 QString	RadioInterface::packetData	(contentType &ct) {
@@ -4726,16 +4708,15 @@ QString res	= runs + ";" +
 	          QString::number (ct. appType) + ";" +
 	          QString::number (ct. FEC_scheme) + ";" +
 	          QString::number (ct. packetAddress) + ";" +
-	          kindOfService (ct. ASCTy_DSCTy) + ";";
+	          kindOfService (ct. ASCTy_DSCTy, ct. appType) + ";";
 	         return res;
 }
 
 //	We terminate the sequences with a ";", so that is why the
 //	actual number is 1 smaller
 int	RadioInterface::scanWidth	() {
-//QString s1	= audioHeader ();
-QString s1	= QString (audioHeader);
-QString s2	= QString (packetHeader);
+QString s1	= audioHeader;
+QString s2	= packetHeader;
 QStringList l1 = s1. split (";");
 QStringList l2 = s2. split (";");
 	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
@@ -4750,12 +4731,11 @@ bool	serviceAvailable	= false;
 	for (auto &ct : serviceData) {
 	   if (theOFDMHandler -> serviceRuns (ct. SId, ct. subChId)) {
 	      serviceAvailable = true;
-//	      fprintf (stderr, "Service %s (%X, %d) runs\n",
-//	                      ct. serviceName. toLatin1 (). data (),
-//	                      ct. SId, ct. subChId);
+	      fprintf (stderr, "Service %s (%X, %d) runs\n",
+	                      ct. serviceName. toLatin1 (). data (),
+	                      ct. SId, ct. subChId);
 	   }
 	}
-	(void)serviceAvailable;
 }
 
 ////////////////////////////////////////////////////////////////////////////

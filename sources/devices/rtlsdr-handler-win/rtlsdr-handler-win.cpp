@@ -36,6 +36,7 @@
 #include	"logger.h"
 #include	"settings-handler.h"
 
+#define	CORRF		0.005
 #define	READLEN_DEFAULT	(4 * 8192)
 //
 //	For the callback, we do need some environment which
@@ -85,6 +86,12 @@ void	run () {
 };
 //
 //	Our wrapper is a simple classs
+//
+//	The Windows implementation differs from the Linux one. It
+//	turns out that windows has some (well, a lot) problems with
+//	enthousiastic killing and restarting the usb-interfacing thread
+//	So, here we have the solution that the support thread remains
+//	active during stop/restart sequences
 	rtlsdrHandler_win::rtlsdrHandler_win (QSettings *s,
 	                                      const QString &recorderVersion,
 	                                      logger *theLogger): // dummy now
@@ -319,28 +326,9 @@ void	rtlsdrHandler_win::set_ppmCorrection	(int32_t ppm) {
 }
 
 int32_t	rtlsdrHandler_win::getSamples (std::complex<float> *V, int32_t size) { 
-std::complex<uint8_t> temp [size];
-int	amount;
-
 	if (!isActive. load ())
 	   return 0;
-
-	amount = _I_Buffer. getDataFromBuffer (temp, size);
-	if (filtering) {
-	   if (filterDepth -> value () != currentDepth) {
-	      currentDepth = filterDepth -> value ();
-	      theFilter. resize (currentDepth);
-	   }
-	   for (int i = 0; i < amount; i ++) 
-	      V [i] = theFilter. Pass (
-	               std::complex<float> (convTable [real (temp [i]) & 0xFF],
-	                                    convTable [imag (temp [i]) & 0xFF]));
-	}
-	else
-	   for (int i = 0; i < amount; i ++) 
-	      V [i] = std::complex<float> (convTable [real (temp [i]) & 0xFF],
-	                                   convTable [imag (temp [i]) & 0xFF]);
-	return amount;
+	return _I_Buffer. getDataFromBuffer (V, size);
 }
 
 int32_t	rtlsdrHandler_win::Samples () {
@@ -492,9 +480,17 @@ QString freqS		= QString::number (freq);
 
 #define	IQ_BUFSIZE	4096
 void	rtlsdrHandler_win::processBuffer (uint8_t *buf, uint32_t len) {
+float	sumI	= 0;
+floar	sumQ	= 0;
+static
+float	m_dcI	= 0;
+static
+float	m_dcQ	= 0;
+uint32_t	nrSamples = len / 2;
+auto	*tempBuf	= dynVec (std::complex<float>, nrSamples);
 static uint8_t dumpBuffer [2 * IQ_BUFSIZE];
 static int iqTeller	= 0;
-uint32_t	nrSamples = len / 2;
+
 	if (!isActive. load ()) 
 	   return;
 
@@ -516,14 +512,31 @@ uint32_t	nrSamples = len / 2;
 	      }
 	   }
 	}
-	uint32_t space = _I_Buffer. GetRingBufferWriteAvailable ();
-	if (space < nrSamples) {
-	   reportOverflow (true);
-	   nrSamples = space;
+
+	if ((filtering) && (filterDepth -> value () != currentDepth)) {
+	   currentDepth = filterDepth -> value ();
+	   theFilter. resize (currentDepth);
 	}
+	float dcI	= m_dcI;
+	float dcQ	= m_dcQ;
+	for (uint32_t i = 0; i < nrSamples; i ++) {
+	   float tempI	= convTable [buf [2 * i]];
+	   float tempQ	= convTable [buf [2 * i + 1]];
+	   sumI		+= tempI;
+	   sumQ		+= tempQ;
+	   tempBuf [i] = std::complex<float> (tempI, tempQ);
+	   if (filtering)
+	      tempBuf [i] = theFilter. Pass (tempBuf [i]);
+	}
+// calculate correction values for next input buffer
+	m_dcI = sumI / nrSamples * CORRF + (1 - CORRF) * dcI;
+	m_dcQ = sumQ / nrSamples * CORRF + (1 - CORRF) * dcQ;
+	int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - nrSamples;
+	if (ovf < 0)
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples + ovf);
 	else
-	   reportOverflow (false);
-	_I_Buffer. putDataIntoBuffer (buf, nrSamples);
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2);
+	reportOverflow (ovf < 0);
 }
 
 QString	rtlsdrHandler_win::get_tunerType	(int tunerType) {

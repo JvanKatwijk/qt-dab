@@ -67,11 +67,11 @@
 	setLayout (total);
 
 	connect (latitude, &QLineEdit::returnPressed,
-	         this, &coordinates::set_latitude);
+	         this, &coordinates::setLatitude);
 	connect (longitude, &QLineEdit::returnPressed,
-	         this, &coordinates::set_longitude);
+	         this, &coordinates::setLongitude);
 	connect (acceptButton, &QPushButton::clicked,
-	         this, &coordinates::handle_acceptButton);
+	         this, &coordinates::handleAcceptButton);
 	show ();
 	latitudeValue	= false;	
 	longitudeValue	= false;
@@ -86,15 +86,15 @@
 	delete	longitude;	
 }
 
-void	coordinates::set_latitude () {
+void	coordinates::setLatitude () {
 	latitudeValue	= true;
 }
 
-void	coordinates::set_longitude () {
+void	coordinates::setLongitude () {
 	longitudeValue = true;
 }
 
-void	coordinates::handle_acceptButton () {
+void	coordinates::handleAcceptButton () {
 	if (!latitude || !longitude)
 	   return;
 	QString lat	= latitude -> text ();

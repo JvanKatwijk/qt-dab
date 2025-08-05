@@ -61,7 +61,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
-	setPositionAndSize (s, &myFrame, "rtlsdrSettings");
+//	setPositionAndSize (s, &myFrame, "rtlsdrSettings");
 	myFrame. show ();
 	filtering			= false;
 
@@ -667,7 +667,8 @@ QString freqVal		= QString::number (freq);
 void	rtlsdrHandler::processBuffer (uint8_t *buf, uint32_t len) {
 float	sumI	= 0;
 float	sumQ	= 0;
-auto	*tempBuf 	= dynVec (std::complex<float>, len / 2);
+int	nrSamples	= len / 2;
+auto	*tempBuf 	= dynVec (std::complex<float>, nrSamples);
 static uint8_t dumpBuffer [2 * IQ_BUFSIZE];
 static int iqTeller	= 0;
 
@@ -679,10 +680,10 @@ static int iqTeller	= 0;
 	   return;
 	}
 	if (xml_dumping. load ())
-	   xmlWriter -> add ((std::complex<uint8_t> *)buf, len / 2);
+	   xmlWriter -> add ((std::complex<uint8_t> *)buf, nrSamples);
 
 	if (iq_dumping. load ()) {
-	   for (uint32_t i = 0; i < len / 2; i ++) {
+	   for (uint32_t i = 0; i < nrSamples; i ++) {
 	      dumpBuffer [2 * iqTeller]	= buf [2 * i];
 	      dumpBuffer [2 * iqTeller + 1] = buf [2 * i + 1];
 	      iqTeller ++;
@@ -698,7 +699,7 @@ static int iqTeller	= 0;
 	}
 	float dcI	= m_dcI;
 	float dcQ	= m_dcQ;
-	for (uint32_t i = 0; i < len / 2; i ++) {
+	for (uint32_t i = 0; i < nrSamples; i ++) {
 	   float tempI	= convTable [buf [2 * i]];
 	   float tempQ	= convTable [buf [2 * i + 1]];
 	   sumI		+= tempI;
@@ -710,11 +711,11 @@ static int iqTeller	= 0;
 // calculate correction values for next input buffer
 	m_dcI = sumI / (len / 2) * CORRF + (1 - CORRF) * dcI;
 	m_dcQ = sumQ / (len / 2) * CORRF + (1 - CORRF) * dcQ;
-	int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - len / 2;
+	int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - nrSamples;
 	if (ovf < 0)
-	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2 + ovf);
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples + ovf);
 	else
-	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, len / 2);
+	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples);
 	reportOverflow (ovf < 0);
 }
 

@@ -191,7 +191,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/logger.h \
 	   ./sources/support/settings-handler.h \
 	   ./sources/support/position-handler.h \
-	   ./sources/support/cacheElement.h \
+	   ./sources/support/db-element.h \
 	   ./sources/support/settingNames.h \
 	   ./sources/support/fft-handler.h \
 	   ./sources/support/wavWriter.h \

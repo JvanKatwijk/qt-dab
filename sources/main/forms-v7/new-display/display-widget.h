@@ -30,7 +30,7 @@
 #include	<QByteArray>
 #include	"fft-handler.h"
 #include	"super-frame.h"
-#include	"cacheElement.h"
+#include	"db-element.h"
 #include	"ui_scopewidget.h"
 
 #define	SHOW_SPECTRUM		0

@@ -129,7 +129,7 @@ void	dxDisplay::hide	() {
 	myWidget	-> hide ();
 }
 
-void	dxDisplay::addRow (cacheElement &theTransmitter, bool isStrongest) {
+void	dxDisplay::addRow (transmitter &theTransmitter, bool isStrongest) {
 int16_t	row	= tableWidget -> rowCount ();
 
 	const QString &transmitterName = theTransmitter. transmitterName;	

@@ -31,41 +31,114 @@
 #include	<string>
 #include	<QString>
 #include	"distances.h"
-class cacheElement {
+//
+//	The dbElements are the ones in the database, they contain
+//	the (apparently) static data
+class dbElement {
 public:
 	uint32_t	key_1;	// Eid + mainId + subId
 	uint16_t	key_2;	// channel in Hex format
 	bool		valid;
-	QString		ensemble;
+//
+//	data returned from the database
 	QString		country;
 	QString		channel;
-	QString		transmitterName;
-	QString		location;
+	QString		ensemble;
 	uint16_t 	Eid;
 	uint8_t		mainId;
-	uint16_t	pattern;
 	uint8_t		subId;
+	QString		transmitterName;
 	float		latitude;
 	float		longitude;
-	float		power;
 	float		altitude;
 	float		height;
 	QString		polarization;
 	float		frequency;
+	float		power;
 	QString		direction;
+//
+	dbElement	() {
+	   key_1		= 0;
+	   key_2		= 0;
+	   valid		= false;
+	   ensemble		= "";
+	   country		= "not known";
+	   channel		= "";
+	   ensemble		= "";
+	   Eid			= 0;
+	   mainId		= 255;
+	   subId		= 255;
+	   transmitterName	= "not in database";
+	   latitude		= 0;
+	   longitude		= 0;
+	   power		= 0;
+	   height		= 0;
+	   power		= 0;
+	   polarization		= "";
+	   frequency		= 0;
+	   direction		= "";
+	}
+	~dbElement	()	{}
+};
+
+//
+class	transmitter: public dbElement  {
+public:
+//	bool		valid;
+////
+////	data returned from the database
+//	QString		country;
+//	QString		channel;
+//	QString		ensemble;
+//	uint16_t 	Eid;
+//	uint8_t		mainId;
+//	uint8_t		subId;
+//	QString		transmitterName;
+//	float		latitude;
+//	float		longitude;
+//	float		altitude;
+//	float		height;
+//	QString		polarization;
+//	float		frequency;
+//	float		power;
+//	QString		direction;
 //
 //	There are values differing per instance of the 
 //	same transmitter
+	uint16_t	pattern;
 	float		strength;
 	float		distance;
 	float		azimuth;
 	float		phase;
 	bool		norm;
 	bool		collision;
-	
-	cacheElement	() {
-	   key_1		= 0;
-	   key_2		= 0;
+//
+//	for the http driver
+	uint8_t		type;
+	QString		dateTime;
+	transmitter	(const dbElement *dbE) {
+	   country	= dbE -> country;
+           channel	= dbE -> channel;
+	   ensemble	= dbE -> ensemble;
+	   Eid		= dbE -> Eid;
+	   mainId	= dbE -> mainId;
+	   subId	= dbE -> subId;
+	   transmitterName = dbE -> transmitterName;
+	   latitude	= dbE -> latitude;
+	   longitude	= dbE -> longitude;
+	   altitude	= dbE -> altitude;
+	   height	= dbE -> height;
+	   polarization	= dbE -> polarization;
+	   frequency	= dbE -> frequency;
+	   power	= dbE -> power;
+	   direction	= dbE -> direction;
+
+	   phase	= 0;
+	   norm		= false;
+	   collision	= false;
+	}
+
+	transmitter () {
 	   valid		= false;
 	   ensemble		= "";
 	   country		= "not known";
@@ -87,14 +160,12 @@ public:
 	   norm			= false;
 	   collision		= false;
 	}
-	~cacheElement	()	{}
+	~transmitter	()	{}
 };
-
 
 struct transmitterDesc {
 	bool	isValid;
 	bool	isStrongest;
-	bool	isFurthest;
-	cacheElement theTransmitter;
+	transmitter theTransmitter;
 };
 

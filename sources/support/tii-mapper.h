@@ -27,7 +27,7 @@
 #include	<stdio.h>
 #include	<vector>
 #include	<QSettings>
-#include	"cacheElement.h"
+#include	"db-element.h"
 
 typedef struct {
 	uint16_t Eid;
@@ -42,11 +42,11 @@ public:
 	bool	has_tiiFile 	();
 	void	reload		();
 	
-	cacheElement *
+	dbElement *
                 getTransmitter (const QString &,
                                 const uint16_t,
                                 uint8_t mainId, uint8_t subId);
-	cacheElement *
+	dbElement *
                 getTransmitter (const uint16_t,
                                 uint8_t mainId, uint8_t subId);
 //	bool	is_black	(uint16_t, uint8_t, uint8_t);
@@ -54,7 +54,7 @@ public:
 
 private:
 	std::vector<black> blackList;
-	std::vector<cacheElement> theDataBase;
+	std::vector<dbElement> theDataBase;
 	QString	tiiFile;
 };
 

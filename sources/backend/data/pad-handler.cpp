@@ -378,8 +378,10 @@ int16_t  dataLength                = 0;
 #ifdef	_PAD_TRACE_
 	            fprintf (stderr, "DL plus command\n");
 #endif
-	            if (!backgroundFlag)
-	               add_toDL2 (&data [2]);
+	            if (!backgroundFlag) {
+	               if (dataLength > 2)
+	                  add_toDL2 (&data [2]);
+	            }
 	            break;
 	         default:
 //	            fprintf (stderr, "unknown command %d\n", Command);
@@ -623,7 +625,7 @@ uint16_t	index;
 void	padHandler::add_toDL2 (const QString &text) {
 	if (the_DL2. dlsText != text) {
 	   the_DL2. dlsText = text;
-//	   fprintf (stderr, "dl2 fragment %s\n", text. toLatin1 (). data ());
+	   fprintf (stderr, "dl2 fragment %s\n", text. toLatin1 (). data ());
 	   the_DL2. valid = true;	// non existent key
 	   for (int i = 0; i < 4; i ++)
 	      the_DL2. entity [i]. ct = 65;
@@ -634,6 +636,7 @@ void	padHandler::add_toDL2 (const uint8_t *data) {
 int IT	= (data [0] & 0x08) >> 3;
 int IR	= (data [2] & 0x04) >> 2; 
 //int NT	= data [2] & 0x03;
+
 
 	if ((the_DL2. IT == IT) && (the_DL2. IR == IR))
 	   return;

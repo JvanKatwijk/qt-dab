@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2023
+ *    Copyright (C)  2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -36,7 +36,7 @@
 
 class	RadioInterface;
 
-	class	converter_48000: public QObject {
+class	converter_48000: public QObject {
 Q_OBJECT
 public:
 			converter_48000		(RadioInterface *);

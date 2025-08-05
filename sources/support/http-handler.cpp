@@ -95,7 +95,7 @@ void	httpHandler::start	() {
 	if (autoBrowser_off)
 	   return;
 #ifdef	__MINGW32__
-	fprintf (stderr, "Lbrowser address %ls\n", browserAddress. c_str ());
+	fprintf (stderr, "browser address %s\n", browserAddress. c_str ());
 	ShellExecute (nullptr, L"open", browserAddress. c_str (),
 	                                   nullptr, nullptr, SW_SHOWNORMAL);
 #else
@@ -227,7 +227,6 @@ std::string	ctype;
 	      if (jsonUpdate) {
 //	         fprintf (stderr, "Json update requested\n");
 //	         fprintf (stderr, "%s\n", content. c_str ());
-	         (void)jsonUpdate;
 	      }
 //	and send the reply
 	      if (write (ClientSocket, hdr, hdrlen) != hdrlen ||
@@ -312,7 +311,7 @@ struct addrinfo hints;
 	listen (ListenSocket, 5);
 	while (running. load ()) {
 	   ClientSocket = accept (ListenSocket, nullptr, nullptr);
-	   if (ClientSocket == INVALID_SOCKET)  {
+	   if (ClientSocket == -1)  {
 	      usleep (2000000);
 	      continue;
 	   }
@@ -494,7 +493,7 @@ std::string s = std::to_string (f);
 	return std::string (temp);
 }
 //
-std::string httpHandler::coordinatesToJson (std::vector<httpData> &t) {
+std::string httpHandler::coordinatesToJson (std::vector<transmitter> &t) {
 char buf [512];
 QString Jsontxt;
 
@@ -513,15 +512,15 @@ QString Jsontxt;
 	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%f,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d, \"height\":%d, \"direction\":\"%s\", \"polarisation\":\"%s\"}",
 	       t [0]. type,
 	       t [0]. ensemble. toUtf8 (). data (),
-	       dotNumber (t [0]. coords. latitude). c_str (),
-	       dotNumber (t [0]. coords. longitude). c_str (),
+	       dotNumber (t [0]. latitude). c_str (),
+	       dotNumber (t [0]. longitude). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
-	       t [0]. channelName. toUtf8 (). data (),
+	       t [0]. channel. toUtf8 (). data (),
 	       t [0]. dateTime. toUtf8 (). data (),
 	       (t [0]. mainId << 8) | (t [0]. subId),
-	       10 * log10 (t [0]. snr + 0.01),
-	       t [0]. distance,
-	       t [0]. azimuth,
+	       10 * log10 (t [0]. strength + 0.01),
+	       (int)(t [0]. distance),
+	       (int)(t [0]. azimuth),
 	       (int)(t [0]. power * 100),
 	       (int)(t [0]. altitude),
 	       (int)(t [0]. height),
@@ -540,29 +539,31 @@ QString Jsontxt;
 void	httpHandler::putData	(uint8_t type,
 	                         position target) {
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
-	   if ((transmitterList [i]. coords. latitude == target. latitude) &&
-	       (transmitterList [i]. coords. longitude == target. longitude))
+	   if ((transmitterList [i]. latitude == target. latitude) &&
+	       (transmitterList [i]. longitude == target. longitude))
 	      return;
 	   
-	httpData t;
+	transmitter t;
 	t. type			= type;
+	t. country		= "unknown";
+	t. channel		= "unknown";
+	t. ensemble		= "unknown";
 	t. Eid			= 0;
-	t. ensemble		= "";
-	t. coords		= target;
-	t. transmitterName	= "";
-	t. channelName		= "";
-	t. dateTime		= "";
-	t. polarization		= "";
-	t. direction		= "";
 	t. mainId		= 0;
 	t. subId		= 0;
-	t. snr			= 0;
-	t. distance		= 0;
-	t. azimuth		= 0;
-	t. power		= 0;
+	t. transmitterName	= "not in database";
 	t. altitude		= 0;
 	t. height		= 0;
+	t. latitude		= target. latitude;
+	t. longitude		= target. longitude;
+	t. polarization		= "";
+	t. power		= 0;
+	t. direction		= "";
 
+	t. strength		= 0;
+	t. distance		= 0;
+	t. azimuth		= 0;
+	t. dateTime		= "";
 	locker. lock ();
 	if (type == MAP_RESET)
 	   transmitterList. resize (0);
@@ -571,52 +572,34 @@ void	httpHandler::putData	(uint8_t type,
 }
 
 void	httpHandler::putData	(uint8_t	type,
-	                         struct transmitterDesc	*theTr,
-	                         const QString		&theTime,
-	                         const QString		&channelName,
-	                         float	 snr) {
-	(void)snr;
-	float latitude	= theTr -> theTransmitter. latitude;
-	float longitude	= theTr -> theTransmitter. longitude;
+	                         transmitter	&theTr,
+	                         const QString	&theTime) {
+//	                         const QString	&channelName,
+//	                         float	 snr) {
+	float latitude	= theTr. latitude;
+	float longitude	= theTr. longitude;
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
-	   if ((transmitterList [i]. coords. latitude == latitude) &&
-	       (transmitterList [i]. coords. longitude == longitude ) &&
+	   if ((transmitterList [i]. latitude == latitude) &&
+	       (transmitterList [i]. longitude == longitude ) &&
 	       (transmitterList [i]. type == type))
 	      return;
 
-	         
-	httpData t;
-	t. type			= type;
-	t. ensemble		= theTr -> theTransmitter. ensemble;
-	t. Eid			= theTr -> theTransmitter. Eid;
-	t. coords. latitude	= latitude;
-	t. coords. longitude	= longitude;
-	t. transmitterName	= theTr -> theTransmitter. transmitterName;
-	t. channelName		= channelName;
-	t. dateTime		= theTime;
-	t. polarization		= theTr -> theTransmitter. polarization;
-	t. direction		= theTr -> theTransmitter. direction;
-	t. mainId		= theTr -> theTransmitter. mainId;
-	t. subId		= theTr -> theTransmitter. subId;
-	t. snr			= theTr -> theTransmitter. strength;
-	t. distance		= theTr -> theTransmitter. distance;
-	t. azimuth		= theTr -> theTransmitter. azimuth;
-	t. power		= theTr -> theTransmitter. power;
-	t. altitude		= theTr -> theTransmitter. altitude;
-	t. height		= theTr -> theTransmitter. height;
+	theTr. type		= type;
+	theTr. dateTime		= theTime;
+//	theTr. strength		= snr;
 
 	locker. lock ();
-	transmitterList. push_back (t);
+	transmitterList. push_back (theTr);
+//	transmitterList. push_back (t);
 	locker. unlock ();
-//	fprintf (stderr, "Vectorsize %d\n", transmitterList. size ());
 
 	for (int i = 0; i < (int)(transmitterVector. size ()); i ++) {
 	   if ((transmitterVector. at (i). transmitterName ==
-	               t. transmitterName) &&
-	       (transmitterVector. at (i). channelName ==
-	               t. channelName) &&
+	               theTr. transmitterName) &&
+	       (transmitterVector. at (i). channel ==
+	               theTr. channel) &&
 	       (transmitterVector. at (i). type ==
-	                         t. type)) {
+	                         theTr. type)) {
 	      return;
 	   }
 	}
@@ -624,20 +607,20 @@ void	httpHandler::putData	(uint8_t	type,
 	if ((saveFile != nullptr)  &&
 	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
 	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f, %d, %d, %s\n",
-	                      channelName. toUtf8 (). data (),
-	                      t. coords. latitude,
-	                      t. coords. longitude,
-	                      t. transmitterName. toUtf8 (). data (),
-	                      t. dateTime. toUtf8 (). data (),
-	                      t. mainId,
-	                      t. subId,
-	                      (int)(t. distance),
-	                      (int)(t. azimuth),
-	                      t. power,
-	                      (int)(t. altitude),
-	                      (int)(t. height),
-	                      t. direction. toUtf8 (). data ());
-	   transmitterVector. push_back (t);
+	                      theTr. channel. toUtf8 (). data (),
+	                      theTr. latitude,
+	                      theTr. longitude,
+	                      theTr. transmitterName. toUtf8 (). data (),
+	                      theTr. dateTime. toUtf8 (). data (),
+	                      theTr. mainId,
+	                      theTr. subId,
+	                      (int)(theTr. distance),
+	                      (int)(theTr. azimuth),
+	                      theTr. power,
+	                      (int)(theTr. altitude),
+	                      (int)(theTr. height),
+	                      theTr. direction. toUtf8 (). data ());
+	   transmitterVector. push_back (theTr);
 	}
 }
 

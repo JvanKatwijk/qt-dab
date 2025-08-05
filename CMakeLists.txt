@@ -216,7 +216,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/audiosystem-selector.h
 	     ./sources/support/bandpass-filter.h
 	     ./sources/support/bit-extractor.h
-	     ./sources/support/cacheElement.h
+	     ./sources/support/db-element.h
 	     ./sources/support/charsets.h
 	     ./sources/support/content-table.h
 	     ./sources/support/converter_48000.h

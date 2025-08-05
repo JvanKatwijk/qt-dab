@@ -155,6 +155,7 @@ typedef struct {
 //
 //	Pretty important, the channel descriptor is supposed to
 //	contain all data related to the currently selected class
+
 class	channelDescriptor {
 public:
 	channelDescriptor () {
@@ -395,8 +396,8 @@ private:
 
 	QString			buildHeadLine		();
 	QString			build_kop		();
-	QString			build_cont_addLine	(transmitterDesc &);
-	QString		        build_transmitterLine	(const cacheElement &);
+	QString			build_cont_addLine	(const transmitter &);
+	QString		        build_transmitterLine	(const transmitter &);
 
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
@@ -427,10 +428,10 @@ private:
 	void			stopScan_continuous	();
 
 	void			setPeakLevel	(const std::vector<float> &);
-	QString			createTIILabel	(const cacheElement *);
-	void			addtoLogFile	(const cacheElement *);
+	QString			createTIILabel	(const transmitter *);
+	void			addtoLogFile	(const transmitter *);
 	void			removeFromList	(uint8_t, uint8_t);
-	cacheElement		*inList		(uint8_t, uint8_t);
+	transmitter		*inList		(uint8_t, uint8_t);
 //
 //	EPG extraction
 	void			extractServiceInformation (const QDomDocument &,
@@ -446,8 +447,6 @@ private:
 //
 //	new printing approach
 	QStringList		basicPrint		();
-//	QString			audioHeader		();
-//	QString			packetHeader		();
 	QString			audioData		(contentType &);
 	QString			packetData		(contentType &);
 	int			scanWidth		();

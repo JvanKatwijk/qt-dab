@@ -37,7 +37,7 @@
 #define	ENSEMBLE	3
 #define	EID		4
 #define	TII		5
-#define	LOCATION	6
+#define	TRANSMITTERNAME	6
 #define	LATITUDE	7
 #define	LONGITUDE	8
 #define	ALTITUDE	9
@@ -53,8 +53,8 @@
 		tiiReader::~tiiReader	() {
 }
 //
-std::vector<cacheElement> tiiReader::readFile (const QString &s) {
-std::vector<cacheElement> res;
+std::vector<dbElement> tiiReader::readFile (const QString &s) {
+std::vector<dbElement> res;
 	if (s == "") {
 	   return res;
 	}
@@ -73,7 +73,7 @@ std::vector<cacheElement> res;
 #ifdef	__TRACE__
 	fprintf (stderr, "File %s is opened\n", s. toUtf8 (). data ());
 #endif
-	cacheElement ed;
+	dbElement ed;
 	res. push_back (ed);	// the dummy one
 	int	count = 1; 
 	char	buffer [1024];
@@ -82,7 +82,7 @@ std::vector<cacheElement> res;
 	if (Rflag)
 	   shift	= fgetc (f);
 	while (eread  (buffer, 1024, f, shift) != nullptr) {
-	   cacheElement ed;
+	   dbElement ed;
 	   if (feof (f))
 	      break;
 	   columnVector. resize (0);
@@ -96,7 +96,7 @@ std::vector<cacheElement> res;
 	   ed. subId		= get_subId (columnVector [TII]);
 	   ed. channel		= columnVector [CHANNEL]. trimmed ();
 	   ed. ensemble 	= columnVector [ENSEMBLE]. trimmed ();
-	   ed. transmitterName	= columnVector [LOCATION];
+	   ed. transmitterName	= columnVector [TRANSMITTERNAME];
 	   ed. latitude		= convert (columnVector [LATITUDE]);
 	   ed. longitude	= convert (columnVector [LONGITUDE]);
 	   ed. power		= convert (columnVector [POWER]);
@@ -114,7 +114,7 @@ std::vector<cacheElement> res;
 	      ed. valid = false;
 	   if (count >= (int) res. size ())
 	      res. resize (res. size () + 100);
-	   ed. key_1	= ((ed. Eid << 16) | (ed. mainId << 8)) |  ed. subId; 
+	   ed. key_1	= (ed. Eid << 16) | (ed. mainId << 8) +  ed. subId; 
 	   bool ok;
 	   uint16_t cc	= ed. channel. toInt (&ok, 16);
 	   ed. key_2	= ok ? cc : 0;

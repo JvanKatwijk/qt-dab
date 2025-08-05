@@ -26,7 +26,7 @@
 #include	<QString>
 #include	<math.h>
 #include	"dab-constants.h"
-#include	"cacheElement.h"
+#include	"db-element.h"
 #include	<QSettings>
 
 #ifdef	__MING32__
@@ -39,7 +39,7 @@ public:
 		tiiReader	();
 		~tiiReader	();
 //
-	std::vector<cacheElement>
+	std::vector<dbElement>
 	        readFile	(const QString &s);
 	int	readColumns	(std::vector<QString> &v, char *b, int N);
 	char	*eread		(char *buffer, int amount,

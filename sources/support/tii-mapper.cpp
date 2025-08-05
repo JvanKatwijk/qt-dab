@@ -51,7 +51,7 @@ bool	tiiMapper::has_tiiFile	() {
 	return theDataBase. size () > 10;
 }
 
-cacheElement *tiiMapper::
+dbElement *tiiMapper::
 		getTransmitter (const QString  &channelName,
 	                         const uint16_t Eid, 
 	                         uint8_t mainId, uint8_t subId) {
@@ -71,7 +71,7 @@ cacheElement *tiiMapper::
 //
 //	if the input is from a file, then we usually do not have
 //	the right channel info
-cacheElement *tiiMapper::
+dbElement *tiiMapper::
 		getTransmitter (const uint16_t Eid, 
 	                        uint8_t mainId, uint8_t subId) {
 	uint32_t key_1 = (Eid << 16) | (mainId << 8) | subId;

@@ -58,11 +58,11 @@ void	deviceHandler::resetBuffer	() {
 }
 
 void	deviceHandler::setVisibility	(bool b) {
-//	if (b) {
-//	   myFrame. show ();
-//	}
-//	else
-//	   myFrame. hide ();
+	if (b) {
+	   myFrame. show ();
+	}
+	else
+	   myFrame. hide ();
 }
 
 bool	deviceHandler::getVisibility	() { 

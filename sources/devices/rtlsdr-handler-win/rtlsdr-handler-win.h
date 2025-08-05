@@ -59,11 +59,11 @@ public:
 	QString		deviceName		();
 
 //	These need to be visible for the separate usb handling thread
-	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	struct rtlsdr_dev	*theDevice;
 	std::atomic<bool>	isActive;
 	void		processBuffer (uint8_t *, uint32_t);
 private:
+	RingBuffer<std::complex<float>> _I_Buffer;
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;

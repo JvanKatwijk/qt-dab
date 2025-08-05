@@ -33,28 +33,9 @@
 #include	<QString>
 #include	<QSettings>
 #include	"tii-mapper.h"
-#include	"cacheElement.h"
+#include	"db-element.h"
 class	RadioInterface;
-
-typedef struct {
-	uint8_t		type;
-	QString		ensemble;
-	position	coords;
-	QString		transmitterName;
-	QString 	channelName;
-	QString		dateTime;
-	QString		polarization;
-	uint16_t	Eid;
-	uint8_t		mainId;
-	uint8_t		subId;
-	QString		direction;
-	float		snr;
-	int		distance;
-	int		azimuth;
-	float		power;
-	float		altitude;
-	float		height;
-} httpData;
+//
 
 class	httpHandler: public QObject {
 Q_OBJECT
@@ -72,10 +53,10 @@ public:
 	void	run		();
 	void	putData		(uint8_t, position);
 	void	putData		(uint8_t	type,
-	                         struct transmitterDesc *theTr,
-	                         const QString & theTime,
-	                         const QString & channelName,
-	                         float snr);
+	                         transmitter	&Tr,
+	                         const QString & theTime);
+//	                         const QString & channelName,
+//	                         float snr);
 	
 private:
 	QSettings		*dabSettings;
@@ -84,7 +65,7 @@ private:
 	RadioInterface		*parent;
 	QString			mapPort;
 	position		homeAddress;
-	std::vector<httpData> transmitterVector;
+	std::vector<transmitter> transmitterVector;
 
 #ifdef	__MINGW32__
 	std::wstring	browserAddress;
@@ -94,8 +75,8 @@ private:
 	std::atomic<bool>	running;
 	std::thread	threadHandle;
 	std::string     theMap		(position address);
-	std::string	coordinatesToJson (std::vector<httpData> &t);
-	std::vector<httpData>	transmitterList;
+	std::string	coordinatesToJson (std::vector<transmitter> &t);
+	std::vector<transmitter> transmitterList;
 	std::mutex	locker;
 	bool		autoBrowser_off;
 signals:
