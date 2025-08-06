@@ -217,6 +217,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/bandpass-filter.h
 	     ./sources/support/bit-extractor.h
 	     ./sources/support/db-element.h
+	     ./sources/support/basic-print.h
 	     ./sources/support/charsets.h
 	     ./sources/support/content-table.h
 	     ./sources/support/converter_48000.h
@@ -351,6 +352,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/protection/uep-protection.cpp
 	     ./sources/protection/eep-protection.cpp
 	     ./sources/support/audiosystem-selector.cpp
+	     ./sources/support/basic-print.cpp
 	     ./sources/support/charsets.cpp
 	     ./sources/support/bandpass-filter.cpp
 	     ./sources/support/content-table.cpp

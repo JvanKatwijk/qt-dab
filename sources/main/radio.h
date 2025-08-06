@@ -446,11 +446,6 @@ private:
 	void			announcement_start	(uint16_t, uint16_t);	
 	void			announcement_stop	();
 //
-//	new printing approach
-	QStringList		basicPrint		();
-	QString			audioData		(contentType &);
-	QString			packetData		(contentType &);
-	int			scanWidth		();
 signals:
 	void			select_ensemble_font	();
 	void			select_ensemble_fontSize	();

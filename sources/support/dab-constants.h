@@ -262,10 +262,12 @@ public:
 	uint16_t	ASCTy_DSCTy;
 	uint16_t	packetAddress;
 	uint16_t	appType;
+	bool		isRunning;
 	contentType () {
 	   isActive = 0;
 	   FEC_scheme	= 0;
 	   packetAddress	= 0;
+	   isRunning		= false;
 	}
 	~contentType () {}
 };

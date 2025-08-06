@@ -68,6 +68,8 @@
 #include	<QScreen>
 #include	<QDomElement>
 
+#include	"basic-print.h"
+
 #if defined (__MINGW32__) || defined (_WIN32)
 #include <windows.h>
 __int64 FileTimeToInt64 (FILETIME & ft) {
@@ -809,7 +811,8 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-QStringList s	= basicPrint ();
+basicPrint thePrinter;
+QStringList s	= thePrinter. print (theOFDMHandler -> contentPrint ());
 
 	if (contentTable_p != nullptr) {
 	   contentTable_p -> hide ();
@@ -821,7 +824,7 @@ QStringList s	= basicPrint ();
 	
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
-	                                            scanWidth ());
+	                                            thePrinter. scanWidth ());
 	connect (contentTable_p, &contentTable::goService,
 	         this, &RadioInterface::handle_contentSelector);
 
@@ -2595,11 +2598,12 @@ void	RadioInterface::startScan_to_data () {
 }
 
 void	RadioInterface::startScan_single () {
+basicPrint thePrinter;
 	theScanlistHandler. clearScanList ();
-
+	
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
-	                                       scanWidth ());
+	                                       thePrinter. scanWidth ());
 	else					// should not happen
 	   scanTable_p -> clearTable ();
 
@@ -2628,9 +2632,10 @@ void	RadioInterface::startScan_single () {
 }
 
 void	RadioInterface::startScan_continuous () {
+basicPrint thePrinter;
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
-	                                                   scanWidth ());
+	                                              thePrinter.scanWidth ());
 	else					// should not happen
 	   scanTable_p -> clearTable ();
 
@@ -2921,7 +2926,8 @@ QString	headLine = build_kop ();
 	   QString transmitterLine = build_transmitterLine (tr);
            scanTable_p	-> addLine (transmitterLine);
         }
-	QStringList s = basicPrint ();
+	basicPrint thePrinter;
+	QStringList s = thePrinter. print (theOFDMHandler -> contentPrint ());
 	for (const auto &l : s)
 	   scanTable_p -> addLine (l);
 	scanTable_p -> addLine ("\n;\n;\n");
@@ -4596,137 +4602,6 @@ void	RadioInterface::nrActiveServices	(int n) {
 	configHandler_p -> set_activeServices (n);
 }
 //
-/////////////////////////////////////////////////////////////////////////
-//
-//	the fib decoder passes on the (more or less) raw data,
-//	needed to show the attributes of the different services
-//
-static
-const char *audioHeader =
-	" ; serviceName; serviceId; subChannel; start address (CU's); "\
-	" length (CU's); protection; code rate; bitrate; dab type;" \
-	" language; program type; fm freq;";
-static
-const char *packetHeader =
-	" ; serviceName; serviceId; subChannel; start address (CU's); "\
-	" length (CU's); protection; code rate; appType; FEC_scheme;" \
-	 "packetAddress; DSCTy;";
-
-QStringList RadioInterface::basicPrint () {
-QStringList out;
-	bool hasContents = false;
-	QList<contentType> serviceData = theOFDMHandler -> contentPrint ();
-	for (auto &ct : serviceData) {
-	   if (ct. TMid != 0)	// no audio
-	      continue;
-	   if (!hasContents)
-	      out <<  QString (audioHeader);
-	   hasContents = true;
-	   out << audioData (ct);
-	}
-	hasContents = false;
-	for (auto &ct : serviceData) {
-	   if (ct. TMid != 3)	// no packet
-	      continue;
-	   if (!hasContents)
-	      out << QString (packetHeader);
-	   hasContents = true;
-	   out << packetData (ct);
-	}
-	return out;
-}
-
-QString	RadioInterface::audioData	(contentType &ct) {
-QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
-	return runs + ";" +
-	       QString (ct. serviceName)+ ";" +
-	       QString::number (ct. SId, 16) + ";" +
-	       QString::number (ct. subChId) + ";" +
-	       QString::number (ct. startAddress)+ ";" +
-	       QString::number (ct. length) + ";" +
-	       ct. protLevel + ";" +
-	       ct. codeRate + ";" +
-	       QString::number (ct. bitRate) + ";" +
-	       (ct. ASCTy_DSCTy == DAB_PLUS ? "DAB+" : "DAB") + ";" +
-	       getLanguage (ct. language) + ";" +
-	       getProgramType (ct. programType) + ";" +
-	       ((ct. fmFrequencies. size () > 0) ?
-                   QString::number (ct. fmFrequencies [0]) : " ");
-}
-
-static
-QString kindOfService (uint8_t DSCTy, uint16_t appType) {
-QString dtype;
-	switch (DSCTy) {
-	   case 1:
-	      return "TMC (unsupported)";
-	   case 2:
-	      return "EWS, (unsupported)";
-	   case 3:
-	      return "ITTS, (unsupported)";
-	   case 4:
-	      return "paging";
-	   case 5 :
-	      if (appType == 0x44a)
-	         return "journaline";
-	      else
-	      if (appType == 1500)
-	         return "adv_adc data";
-	      else
-	      if (appType == 4)
-	         return "tdc data";
-	      else
-	         return "unsupported";
-	      break;
-	   case 24:
-	      return "MPEG-2 Transport stream";
-	   case 44 :
-	      dtype =  "journaline";
-	      break;
-	   case 59:
-	      dtype = "ip data";
-	      break;
-	   case  60 :
-	      if (appType == 7)
-	         return "EPG/SPI";
-	      else
-	         return "MOT data";
-	      break;
-	   case 61:
-	      return "Proprietary";
-	   default:
-	      return "unsupported";
-	}
-	return QString ("");
-}
-	
-QString	RadioInterface::packetData	(contentType &ct) {
-QString runs = theOFDMHandler -> serviceRuns (ct. SId, ct. subChId) ? "+" : " ";
-QString res	= runs + ";" +
-	          QString (ct. serviceName)+ ";" +
-	          QString::number (ct. SId, 16) + ";" +
-	          QString::number (ct. subChId) + ";" +
-	          QString::number (ct. startAddress)+ ";" +
-	          QString::number (ct. length) + ";" +
-	          ct. protLevel + ";" +
-	          ct. codeRate + ";" +
-	          QString::number (ct. appType) + ";" +
-	          QString::number (ct. FEC_scheme) + ";" +
-	          QString::number (ct. packetAddress) + ";" +
-	          kindOfService (ct. ASCTy_DSCTy, ct. appType) + ";";
-	         return res;
-}
-
-//	We terminate the sequences with a ";", so that is why the
-//	actual number is 1 smaller
-int	RadioInterface::scanWidth	() {
-QString s1	= audioHeader;
-QString s2	= packetHeader;
-QStringList l1 = s1. split (";");
-QStringList l2 = s2. split (";");
-	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 //
 //	work in progress

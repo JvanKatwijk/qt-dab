@@ -606,7 +606,10 @@ std::vector<int>	ofdmHandler::getFrequency	(const QString &s) {
 }
 
 QList<contentType> ofdmHandler::contentPrint	() {
-	return theFicHandler. contentPrint ();
+	QList<contentType> res = theFicHandler. contentPrint ();
+	for (auto &ct : res) 
+	   ct. isRunning = serviceRuns (ct. SId, ct. subChId);
+	return res;
 }
 
 int	ofdmHandler::freeSpace		() {

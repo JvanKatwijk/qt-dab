@@ -217,7 +217,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/fir-filters.h \
 	   ./sources/support/tii-mapper.h \
 	   ./sources/support/tii-reader.h \
-	   ./sources/support//uploader.h \
+	   ./sources/support/uploader.h \
+	   ./sources/support/basic-print.h \
 	   ./sources/support/gui-elements/circular-button.h \
 	   ./sources/support/gui-elements/clickable-label.h \
 	   ./sources/support/gui-elements/color-selector.h \
@@ -357,6 +358,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/tii-mapper.cpp \
 	   ./sources/support/tii-reader.cpp \
 	   ./sources/support/uploader.cpp \
+	   ./sources/support/basic-print.cpp \
 	   ./sources/support/gui-elements/circular-button.cpp \
 	   ./sources/support/gui-elements/clickable-label.cpp \
 	   ./sources/support/gui-elements/color-selector.cpp \
