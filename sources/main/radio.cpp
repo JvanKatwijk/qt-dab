@@ -827,7 +827,7 @@ QStringList s	= basicPrint ();
 
 	contentTable_p		-> addLine (headLine);
 	for (auto &tr : channel. transmitters) {
-	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
+	   QString transmitterLine = build_transmitterLine (tr);
 	   contentTable_p	-> addLine (transmitterLine);
 	}
   
@@ -2765,7 +2765,7 @@ void	RadioInterface::channel_timeOut () {
 	   if (channel. transmitters. size () > 0) {
 	      QStringList ss;
 	      for (auto &tr : channel. transmitters)
-	         ss << tr. theTransmitter. transmitterName;
+	         ss << tr. transmitterName;
 	      theSCANHandler.
 	                 addTransmitters (ss, channel. channelName);
 	   }
@@ -2918,7 +2918,7 @@ QString	headLine = build_kop ();
 	scanTable_p -> addLine (headLine);
 	scanTable_p -> addLine ("\n");
 	for (const auto &tr : channel. transmitters) {
-	   QString transmitterLine = build_transmitterLine (tr. theTransmitter);
+	   QString transmitterLine = build_transmitterLine (tr);
            scanTable_p	-> addLine (transmitterLine);
         }
 	QStringList s = basicPrint ();
@@ -2934,7 +2934,7 @@ void	RadioInterface::show_for_continuous () {
 
 	for (auto &tr: channel. transmitters) {
 	   if (!tr. isStrongest) {
-	      QString line = build_cont_addLine (tr. theTransmitter);
+	      QString line = build_cont_addLine (tr);
 	      if (line == "")
 	         continue;
 	      scanTable_p -> addLine (line);
@@ -3774,8 +3774,8 @@ Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 
 void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
 	for (uint16_t i = 0; i < channel. transmitters. size (); i ++)
-	   if ((mainId == channel. transmitters [i]. theTransmitter. mainId) &&
-	       (subId == channel. transmitters [i]. theTransmitter. subId)) {
+	   if ((mainId == channel. transmitters [i]. mainId) &&
+	       (subId == channel. transmitters [i]. subId)) {
 	          channel. transmitters. erase
 	                         (channel. transmitters. begin () + i);
 	         break;
@@ -3784,9 +3784,9 @@ void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
 //
 transmitter *RadioInterface::inList (uint8_t mainId, uint8_t subId) {
 	for (auto &tr: channel. transmitters) 
-	   if ((tr. theTransmitter. mainId == mainId) &&
-	       (tr. theTransmitter. subId ==  subId))
-	     return &tr. theTransmitter;
+	   if ((tr. mainId == mainId) &&
+	       (tr. subId ==  subId))
+	     return &tr;
 	return nullptr;
 }
 
@@ -3859,6 +3859,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   if (!tr -> valid) {		// nothing found
 	      if (!configHandler_p -> get_allTIISelector ())
 	         continue;
+	      theTransmitter. valid	= false;
 	      theTransmitter. ensemble	= channel. ensembleName;
 	      theTransmitter. mainId	= r [i]. mainId;
 	      theTransmitter. subId	= r [i]. subId;
@@ -3868,12 +3869,15 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theTransmitter. transmitterName	= "not in database";
 	      theTransmitter. distance	=  -1;
 	      theTransmitter. strength	= r [i]. strength;
-	      transmitterDesc t = {false, false, theTransmitter};
-	      channel. transmitters. push_back (t);	
+	      theTransmitter. isStrongest	= false;
+//	      transmitterDesc t = {false, false, theTransmitter};
+//	      channel. transmitters. push_back (t);	
+	      channel. transmitters. push_back (theTransmitter);	
 	   }
 	   else {
 //	first copy the db data, theTransmitter is properly initalized
 //	with the db Calues, now the dynamics
+	      theTransmitter. valid	= true;
 	      position thePosition;
 	      thePosition. latitude     = theTransmitter. latitude;
 	      thePosition. longitude    = theTransmitter. longitude;
@@ -3884,8 +3888,10 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theTransmitter. norm	= r [i]. norm;
 	      theTransmitter. collision	= r [i]. collision;
 	      theTransmitter. pattern	= r [i]. pattern;
-	      transmitterDesc t = {true,  false, theTransmitter};
-	      channel. transmitters. push_back (t);	
+	      theTransmitter. isStrongest	= false;
+	      channel. transmitters. push_back (theTransmitter);	
+//	      transmitterDesc t = {true,  false, theTransmitter};
+//	      channel. transmitters. push_back (t);	
 	   }
 	   if (dxMode)
 	      addtoLogFile (&theTransmitter);
@@ -3894,18 +3900,19 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 
 //
 	int	bestIndex = -1;
-	float Strength	= 0;
+	float Strength	= -100;
 //	Now the list is updated, see whether or not the strongest is ...
 	int teller = 0;
 	for (auto &transm : channel. transmitters) {
-	   if (transm. isValid &&
-	                  (transm. theTransmitter. strength > Strength)) {
+	   if (transm. valid &&
+	                  (transm. strength > Strength)) {
 	      bestIndex = teller;
-	      Strength  = transm. theTransmitter. strength;
+	      Strength  = transm. strength;
 	   }
 	   transm. isStrongest = false;
 	   teller ++;
 	}
+
 
 	if (bestIndex >= 0) {
 	   channel. transmitters [bestIndex]. isStrongest = true;
@@ -3914,7 +3921,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 //	for content maps etc we need to have the data of the strongest
 //	signal
 	if (bestIndex >= 0) {
-	   transmitter *ce = &channel. transmitters [bestIndex]. theTransmitter;	
+	   transmitter *ce = &channel. transmitters [bestIndex];	
 	   channel. mainId		= ce -> mainId;
 	   channel. subId		= ce -> subId;
 	   channel. transmitterName	= ce -> transmitterName;
@@ -3932,26 +3939,26 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   int teller = 0;
 	   for (auto &theTr : channel. transmitters) {
 	      if (!configHandler_p -> get_allTIISelector ()) {
-	         if (theTr. theTransmitter. distance < 0) {
+	         if (theTr. distance < 0) {
 	            continue;
 	         }
 	      }
 	      
 	      if (bestIndex == teller) {
-	         QString labelText = createTIILabel (&theTr. theTransmitter);
+	         QString labelText = createTIILabel (theTr);
 	         distanceLabel	-> setText (labelText);
 	      }
-	      theDXDisplay. addRow (theTr. theTransmitter,
+	      theDXDisplay. addRow (theTr,
 	                             bestIndex == teller);
 	      teller ++;
 	   }
 	}
 	else {	// just show on the main widget the strongest
 	   for (auto &theTr: channel. transmitters) {
-	      if (theTr. theTransmitter. distance < 0)
+	      if (theTr. distance < 0)
 	         continue;
 	      if (theTr. isStrongest) {
-	         QString labelText = createTIILabel (&theTr. theTransmitter);
+	         QString labelText = createTIILabel (theTr);
 	         distanceLabel	-> setText (labelText);
 	         break;
 	      }
@@ -3962,7 +3969,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   return;
 //
 	for (auto &theTr : channel. transmitters) {
-	   if (theTr. theTransmitter. transmitterName == "not in database")
+	   if (theTr. transmitterName == "not in database")
 	      continue;
 
 	   uint8_t key = configHandler_p -> showAll_Selector_active () ?
@@ -3974,10 +3981,8 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	                                     QDateTime::currentDateTime ();
 
 	   mapHandler -> putData (key,
-	                          theTr. theTransmitter,
+	                          theTr,
 	                          theTime. toString (Qt::TextDate));
-//	                          channel. channelName,
-//	                          channel. snr);
 	}
 }
 
@@ -4288,17 +4293,17 @@ int direction	= (azimuth) / 22.5;
 	return directionTable [(direction + 1) / 2];
 }
 
-QString	RadioInterface::createTIILabel	(const transmitter *theTransmitter) {
-	uint8_t mainId		= theTransmitter -> mainId;
-	uint8_t subId		= theTransmitter -> subId;
+QString	RadioInterface::createTIILabel	(const transmitter &theTransmitter) {
+	uint8_t mainId		= theTransmitter. mainId;
+	uint8_t subId		= theTransmitter. subId;
 	const QString & theTransmitterName
-	                        = theTransmitter -> transmitterName;
-	float	theDistance	= theTransmitter -> distance;
-	float	theAzimuth	= theTransmitter -> azimuth;
+	                        = theTransmitter. transmitterName;
+	float	theDistance	= theTransmitter. distance;
+	float	theAzimuth	= theTransmitter. azimuth;
 	QString direction	= fromAzimuth_toDirection (theAzimuth);
-//	int	theAltitude	= theTransmitter -> altitude;
-//	int	theHeight	= theTransmitter -> height;
-//	float	thePower	= theTransmitter -> power;
+//	int	theAltitude	= theTransmitter. altitude;
+//	int	theHeight	= theTransmitter. height;
+//	float	thePower	= theTransmitter. power;
 
 QString labelText = "(" + QString::number (mainId) + ","
 	               + QString::number (subId) + ") ";
@@ -4314,12 +4319,12 @@ QString labelText = "(" + QString::number (mainId) + ","
 	return labelText;
 }
 
-void	RadioInterface::addtoLogFile (const transmitter *theTransmitter) {
+void	RadioInterface::addtoLogFile (const transmitter &theTransmitter) {
 FILE	*theFile = nullptr;
 bool exists	= false;
 
-	if ((theTransmitter -> mainId == 0) ||
-	                        (theTransmitter -> mainId == 255))
+	if ((theTransmitter. mainId == 0) ||
+	                        (theTransmitter. mainId == 255))
 	   return;
 
 	QString fileName = path_for_files + "tii-files.csv";
@@ -4342,19 +4347,19 @@ bool exists	= false;
 
 	fprintf (theFile, "%s;\"%s\";\"%s\";\"%s\"; \"(%f, %f)\";\"%d\";\"%d\";\"%.1f km\";\"%.1f %s\"  ;\"%.1f kW\";\"%d m\";\"%d m\";\"%s\"\n",
 	         tod. toLatin1 (). data (),	// the time
-	         theTransmitter -> channel. toLatin1 (). data (),
-	         theTransmitter -> ensemble. toLatin1 (). data (), +
-	         theTransmitter -> transmitterName. toLatin1 (). data (),
-	         theTransmitter -> latitude,
-	         theTransmitter -> longitude,
-	         theTransmitter -> mainId,
-	         theTransmitter -> subId,
-	         theTransmitter -> distance,
-	         theTransmitter -> azimuth, symb. toLatin1 (). data (),
-	         theTransmitter -> power,
-	         (int)(theTransmitter -> altitude),
-	         (int)(theTransmitter -> height),
-	         theTransmitter -> direction. toLatin1 (). data ());
+	         theTransmitter. channel. toLatin1 (). data (),
+	         theTransmitter. ensemble. toLatin1 (). data (), +
+	         theTransmitter. transmitterName. toLatin1 (). data (),
+	         theTransmitter. latitude,
+	         theTransmitter. longitude,
+	         theTransmitter. mainId,
+	         theTransmitter. subId,
+	         theTransmitter. distance,
+	         theTransmitter. azimuth, symb. toLatin1 (). data (),
+	         theTransmitter. power,
+	         (int)(theTransmitter. altitude),
+	         (int)(theTransmitter. height),
+	         theTransmitter. direction. toLatin1 (). data ());
 	fclose (theFile);
 }
 
@@ -4736,6 +4741,7 @@ bool	serviceAvailable	= false;
 	                      ct. SId, ct. subChId);
 	   }
 	}
+	(void)serviceAvailable;
 }
 
 ////////////////////////////////////////////////////////////////////////////

@@ -233,7 +233,8 @@ static floatQwt avg [4 * 512];
 void	displayWidget::showCorrelation	(const std::vector<float> &v,
 	                                 QVector<int> &maxVals,
 	                                 int T_g,
-	                                 std::vector<transmitterDesc> &theTr) {
+	                                 std::vector<transmitter> &theTr) {
+//	                                 std::vector<transmitterDesc> &theTr) {
 std::vector<corrElement> showData;
 	if (currentTab != SHOW_CORRELATION)
 	   return;
@@ -242,12 +243,12 @@ std::vector<corrElement> showData;
 	
 	for (auto &theTransm : theTr) {
 	   corrElement t;
-	   t. mainId	= theTransm. theTransmitter. mainId;
-	   t. subId	= theTransm. theTransmitter. subId;
-	   t. phase	= theTransm. theTransmitter. phase;
-	   t. Name	= theTransm. theTransmitter. transmitterName;
-	   t. strength	= theTransm. theTransmitter. strength;
-	   t. norm	= theTransm. theTransmitter. norm;
+	   t. mainId	= theTransm. mainId;
+	   t. subId	= theTransm. subId;
+	   t. phase	= theTransm. phase;
+	   t. Name	= theTransm. transmitterName;
+	   t. strength	= theTransm. strength;
+	   t. norm	= theTransm. norm;
 
 	   showData. push_back (t);
 	}
@@ -503,11 +504,11 @@ void	displayWidget::showCPULoad	(float use) {
 	(void)use;
 }
 
-void	displayWidget::showTransmitters (std::vector<transmitterDesc> &tr) {
+void	displayWidget::showTransmitters (std::vector<transmitter> &tr) {
 QString textList;
 	for (uint16_t i = 0; i < tr. size (); i ++) {
-	   uint16_t mainId	= tr [i]. theTransmitter. mainId;
-	   uint16_t subId	= tr [i]. theTransmitter. subId;
+	   uint16_t mainId	= tr [i]. mainId;
+	   uint16_t subId	= tr [i]. subId;
 	   QString trId = QString ("(") + QString::number (mainId) +
 	                  " " + QString::number (subId) + ") ";
 	   textList. append (trId);

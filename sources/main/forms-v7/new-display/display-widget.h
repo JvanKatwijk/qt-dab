@@ -65,7 +65,8 @@ public:
 	void	showNULL	(Complex *, int, int);
 	void	showCorrelation	(const std::vector<float> &,
 	                                 QVector<int> &, int,
-	                                 std::vector<transmitterDesc> &);
+	                                 std::vector<transmitter> &);
+//	                                 std::vector<transmitterDesc> &);
 	void	showTII		(std::vector<Complex>, int, int);
 	void	showChannel	(const std::vector<Complex>);
 	void	showStdDev	(const std::vector<float>);
@@ -82,7 +83,7 @@ public:
 
 	void	cleanTII	();
 	void	showCPULoad	(float);
-	void	showTransmitters	(std::vector<transmitterDesc> &);
+	void	showTransmitters	(std::vector<transmitter> &);
 
 	void	showDCOffset	(float);
 	void	setDCRemoval	(bool);

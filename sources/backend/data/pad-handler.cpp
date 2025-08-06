@@ -625,7 +625,7 @@ uint16_t	index;
 void	padHandler::add_toDL2 (const QString &text) {
 	if (the_DL2. dlsText != text) {
 	   the_DL2. dlsText = text;
-	   fprintf (stderr, "dl2 fragment %s\n", text. toLatin1 (). data ());
+//	   fprintf (stderr, "dl2 fragment %s\n", text. toLatin1 (). data ());
 	   the_DL2. valid = true;	// non existent key
 	   for (int i = 0; i < 4; i ++)
 	      the_DL2. entity [i]. ct = 65;

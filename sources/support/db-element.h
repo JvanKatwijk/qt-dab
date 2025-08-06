@@ -34,6 +34,7 @@
 //
 //	The dbElements are the ones in the database, they contain
 //	the (apparently) static data
+//	keys are added for easyier lookup
 class dbElement {
 public:
 	uint32_t	key_1;	// Eid + mainId + subId
@@ -82,26 +83,10 @@ public:
 };
 
 //
+//	During processing we add some non-static data
+//	and call the stuff "transmitter"
 class	transmitter: public dbElement  {
 public:
-//	bool		valid;
-////
-////	data returned from the database
-//	QString		country;
-//	QString		channel;
-//	QString		ensemble;
-//	uint16_t 	Eid;
-//	uint8_t		mainId;
-//	uint8_t		subId;
-//	QString		transmitterName;
-//	float		latitude;
-//	float		longitude;
-//	float		altitude;
-//	float		height;
-//	QString		polarization;
-//	float		frequency;
-//	float		power;
-//	QString		direction;
 //
 //	There are values differing per instance of the 
 //	same transmitter
@@ -112,6 +97,8 @@ public:
 	float		phase;
 	bool		norm;
 	bool		collision;
+
+	bool		isStrongest;
 //
 //	for the http driver
 	uint8_t		type;
@@ -136,36 +123,32 @@ public:
 	   phase	= 0;
 	   norm		= false;
 	   collision	= false;
+	   isStrongest	= false;
 	}
 
 	transmitter () {
 	   valid		= false;
-	   ensemble		= "";
-	   country		= "not known";
-	   channel		= "";
-	   ensemble		= "";
-	   Eid			= 0;
-	   mainId		= 255;
-	   subId		= 255;
-	   transmitterName	= "not in database";
-	   latitude		= 0;
-	   longitude		= 0;
-	   power		= 0;
-	   height		= 0;
-	   power		= 0;
-	   polarization		= "";
-	   frequency		= 0;
-	   direction		= "";
-	   phase		= 0;
-	   norm			= false;
-	   collision		= false;
+//	   ensemble		= "";
+//	   country		= "not known";
+//	   channel		= "";
+//	   ensemble		= "";
+//	   Eid			= 0;
+//	   mainId		= 255;
+//	   subId		= 255;
+//	   transmitterName	= "not in database";
+//	   latitude		= 0;
+//	   longitude		= 0;
+//	   power		= 0;
+//	   height		= 0;
+//	   power		= 0;
+//	   polarization		= "";
+//	   frequency		= 0;
+//	   direction		= "";
+//	   phase		= 0;
+//	   norm			= false;
+//	   collision		= false;
+//	   isStrongest		= false;
 	}
 	~transmitter	()	{}
-};
-
-struct transmitterDesc {
-	bool	isValid;
-	bool	isStrongest;
-	transmitter theTransmitter;
 };
 

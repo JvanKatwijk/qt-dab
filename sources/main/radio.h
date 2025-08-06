@@ -179,42 +179,43 @@ public:
 	int		lto;
 	QString		countryName;
 	int		nrTransmitters;
-	std::vector<transmitterDesc>	transmitters;
+	std::vector<transmitter>	transmitters;
+	QString		transmitterName;
 	int		snr;
 	bool		announcing;
 	position	targetPos;
 	QDate		theDate;
 	int8_t		mainId;
 	int8_t		subId;
-	QString		transmitterName;
 	float		height;
 	float		distance;
 	float		azimuth;
 	bool		audioActive;
 	std::vector<mmDescriptor>servicePictures;
 	void	cleanChannel () {
-	transmitters. resize (0);
-	servicePictures. resize (0);
-	realChannel	= true;
-	serviceCount	= -1;
-	nrServices	= 0;
-	tunedFrequency	= -1;
-	ensembleName	=  "";
-	nrTransmitters	= 0;
-	countryName	= "";
-	hasEcc		= false;
-	Eid		= 0;
-	targetPos	= position {0, 0};
-	mainId		= -1;
-	subId		= -1;
-	transmitterName	= "";
-	snr		= 0;
-	announcing	= false;
-	height		= -1;
-	distance	= -1;
-	audioActive	= false;
-	currentService. isValid	= false;
-	currentService. frameDumper	= nullptr;
+	   transmitters. resize (0);
+	   servicePictures. resize (0);
+	   runningTasks. resize (0);
+	   realChannel		= true;
+	   serviceCount		= -1;
+	   nrServices		= 0;
+	   tunedFrequency	= -1;
+	   ensembleName		=  "";
+	   nrTransmitters	= 0;
+	   countryName		= "";
+	   hasEcc		= false;
+	   Eid			= 0;
+	   targetPos		= position {0, 0};
+	   mainId		= -1;
+	   subId		= -1;
+	   transmitterName	= "";
+	   snr			= 0;
+	   announcing		= false;
+	   height		= -1;
+	   distance		= -1;
+	   audioActive	 	= false;
+	   currentService. isValid	= false;
+	   currentService. frameDumper	= nullptr;
 	}
 };
 
@@ -428,8 +429,8 @@ private:
 	void			stopScan_continuous	();
 
 	void			setPeakLevel	(const std::vector<float> &);
-	QString			createTIILabel	(const transmitter *);
-	void			addtoLogFile	(const transmitter *);
+	QString			createTIILabel	(const transmitter &);
+	void			addtoLogFile	(const transmitter &);
 	void			removeFromList	(uint8_t, uint8_t);
 	transmitter		*inList		(uint8_t, uint8_t);
 //
