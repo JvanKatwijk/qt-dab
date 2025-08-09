@@ -55,13 +55,10 @@ public:
 	void	putData		(uint8_t	type,
 	                         transmitter	&Tr,
 	                         const QString & theTime);
-//	                         const QString & channelName,
-//	                         float snr);
 	
 private:
 	QSettings		*dabSettings;
 	FILE			*saveFile;
-	QString			*saveName;
 	RadioInterface		*parent;
 	QString			mapPort;
 	position		homeAddress;

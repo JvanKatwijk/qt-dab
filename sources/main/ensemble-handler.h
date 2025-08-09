@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015, 2025
+ *    Copyright (C)  2016, 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -112,5 +112,4 @@ signals:
 	void	selectService		(const QString &, const QString &);
 	void	start_background_task	(const QString &);
 };
-
 

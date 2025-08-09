@@ -148,9 +148,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           ./sources/main
 	           ./sources/main/forms-v7
-	           ./sources/main/forms-v7/new-display
-	           ./sources/main/forms-v7/new-display/scopes
-	           ./sources/main/forms-v7/snr-viewer
+	           ./sources/main/scopes
+	           ./sources/main/snr-viewer
 	           ./sources/eti-handler
 	           ./sources/support
 	           ./sources/support/gui-elements
@@ -180,17 +179,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/config-handler.h
 	     ./sources/main/ensemble-handler.h
 	     ./sources/main/techdata.h
-	     ./sources/main/forms-v7/new-display/display-widget.h 
-             ./sources/main/forms-v7/new-display/scopes/correlation-scope.h 
-             ./sources/main/forms-v7/new-display/scopes/spectrum-scope.h 
-             ./sources/main/forms-v7/new-display/scopes/null-scope.h 
-             ./sources/main/forms-v7/new-display/scopes/channel-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/dev-scope.h
-             ./sources/main/forms-v7/new-display/scopes/waterfall-scope.h 
-             ./sources/main/forms-v7/new-display/scopes/iqdisplay.h 
-	     ./sources/main/forms-v7/new-display/scopes/audio-display.h
-	     ./sources/main/forms-v7/new-display/scopes/spectrogramdata.h
-	     ./sources/main/forms-v7/snr-viewer/snr-viewer.h
+	     ./sources/main/display-widget.h 
+             ./sources/main/scopes/spectrum-scope.h 
+             ./sources/main/scopes/correlation-scope.h 
+             ./sources/main/scopes/null-scope.h 
+             ./sources/main/scopes/channel-scope.h 
+	     ./sources/main/scopes/dev-scope.h
+             ./sources/main/scopes/waterfall-scope.h 
+             ./sources/main/scopes/iqdisplay.h 
+	     ./sources/main/scopes/audio-display.h
+	     ./sources/main/scopes/spectrogramdata.h
+	     ./sources/main/snr-viewer/snr-viewer.h
 	     ./sources/eti-handler/eti-generator.h
 	     ./sources/frontend/ofdm-handler.h
              ./sources/frontend/sample-reader.h
@@ -213,6 +212,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/protection/protection.h
 	     ./sources/protection/uep-protection.h
 	     ./sources/protection/eep-protection.h
+	     ./sources/support/qwt-2.h
 	     ./sources/support/audiosystem-selector.h
 	     ./sources/support/bandpass-filter.h
 	     ./sources/support/bit-extractor.h
@@ -319,17 +319,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/config-handler.cpp
 	     ./sources/main/ensemble-handler.cpp
 	     ./sources/main/techdata.cpp
-	     ./sources/main/forms-v7/new-display/display-widget.cpp 
-             ./sources/main/forms-v7/new-display/scopes/correlation-scope.cpp 
-             ./sources/main/forms-v7/new-display/scopes/spectrum-scope.cpp 
-             ./sources/main/forms-v7/new-display/scopes/null-scope.cpp 
-             ./sources/main/forms-v7/new-display/scopes/channel-scope.cpp 
-	     ./sources/main/forms-v7/new-display/scopes/dev-scope.cpp
-             ./sources/main/forms-v7/new-display/scopes/waterfall-scope.cpp 
-             ./sources/main/forms-v7/new-display/scopes/iqdisplay.cpp 
-	     ./sources/main/forms-v7/new-display/scopes/audio-display.cpp
-	     ./sources/main/forms-v7/new-display/scopes/spectrogramdata.cpp
-	     ./sources/main/forms-v7/snr-viewer/snr-viewer.cpp
+	     ./sources/main/display-widget.cpp 
+             ./sources/main/scopes/correlation-scope.cpp 
+             ./sources/main/scopes/spectrum-scope.cpp 
+             ./sources/main/scopes/null-scope.cpp 
+             ./sources/main/scopes/channel-scope.cpp 
+	     ./sources/main/scopes/dev-scope.cpp
+             ./sources/main/scopes/waterfall-scope.cpp 
+             ./sources/main/scopes/iqdisplay.cpp 
+	     ./sources/main/scopes/audio-display.cpp
+	     ./sources/main/scopes/spectrogramdata.cpp
+	     ./sources/main/snr-viewer/snr-viewer.cpp
 	     ./sources/eti-handler/eti-generator.cpp
 	     ./sources/frontend/ofdm-handler.cpp
              ./sources/frontend/sample-reader.cpp
@@ -440,16 +440,16 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/config-handler.h 
 	     ./sources/main/techdata.h
 	     ./sources/main/aboutdialog.h 
-	     ./sources/main/forms-v7/new-display/display-widget.h 
-	     ./sources/main/forms-v7/new-display/scopes/correlation-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/spectrum-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/null-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/channel-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/dev-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/waterfall-scope.h 
-	     ./sources/main/forms-v7/new-display/scopes/iqdisplay.h 
-	     ./sources/main/forms-v7/new-display/scopes/audio-display.h
- 	     ./sources/main/forms-v7/snr-viewer/snr-viewer.h
+	     ./sources/main/display-widget.h 
+	     ./sources/main/scopes/correlation-scope.h 
+	     ./sources/main/scopes/spectrum-scope.h 
+	     ./sources/main/scopes/null-scope.h 
+	     ./sources/main/scopes/channel-scope.h 
+	     ./sources/main/scopes/dev-scope.h 
+	     ./sources/main/scopes/waterfall-scope.h 
+	     ./sources/main/scopes/iqdisplay.h 
+	     ./sources/main/scopes/audio-display.h
+ 	     ./sources/main/snr-viewer/snr-viewer.h
 	     ./sources/frontend/ofdm-handler.h
 	     ./sources/frontend/sample-reader.h
 	     ./sources/frontend/ofdm-decoder.h
@@ -510,12 +510,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	     ./sources/main/aboutdialog.ui
-	     ./sources/main/forms-v7/dabradio-6.ui
 	     ./sources/main/forms-v7/technical_data.ui
+	     ./sources/main/forms-v7/dabradio-6.ui
 	     ./sources/main/forms-v7/config-helper.ui
-	     ./sources/main/forms-v7/new-display/scopewidget.ui
-	     ./sources/main/forms-v7/snr-viewer/snr-widget.ui
+	     ./sources/main/forms-v7/scopewidget.ui
+	     ./sources/main/forms-v7/aboutdialog.ui
+	     ./sources/main/snr-viewer/snr-widget.ui
 	     ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
 	   )
 

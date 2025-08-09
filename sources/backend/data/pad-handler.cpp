@@ -42,7 +42,6 @@
 	         mr, &RadioInterface::show_mothandling);
 	connect (this, &padHandler::show_title,
 	         mr, &RadioInterface::show_title);
-//	currentSlide	= nullptr;
 //
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.
@@ -73,8 +72,6 @@
 }
 
 	padHandler::~padHandler() {
-//	if (currentSlide != nullptr)
-//	   delete currentSlide;
 }
 
 //	Data is stored reverse, we pass the vector and the index of the
@@ -143,10 +140,11 @@ int16_t	i;
 	         if (firstSegment && !lastSegment) {
 	            segmentNumber   = b [last - 2] >> 4;
 	            if (dynamicLabelText. size () > 0) { 
-	             QString displayText =  toQStringUsingCharset 
-	                                  ((char *)(dynamicLabelText. data()),
-	                                  (CharacterSet)charSet,
-	                                  dynamicLabelText. size());
+	             QString displayText =
+	                     toQStringUsingCharset (
+	                                 (char *)(dynamicLabelText. data()),
+	                                 (CharacterSet)charSet,
+	                                 dynamicLabelText. size());
 	               show_label (displayText, (int)charSet);
 	            }
 	            dynamicLabelText = "";
@@ -573,15 +571,15 @@ uint16_t	index;
 //	handling MOT in the PAD, we only deal here with type 3/4
 	switch (groupType) {
 	   case 3:
-	      if (currentSlide == nullptr) {
+	      if (currentSlide. isNull ()) {
 //	         fprintf (stderr, "creating %d\n", transportId);
 	         currentSlide. reset (new motObject (myRadioInterface,
-	                                         false,
-	   	                                 transportId,
-	                                         &data [index + 2],
-	                                         segmentSize,
-	                                         lastFlag,
-	                                         backgroundFlag));
+	                                             false,
+	   	                                     transportId,
+	                                             &data [index + 2],
+	                                             segmentSize,
+	                                             lastFlag,
+	                                             backgroundFlag));
 	      }
 	      else {
 	         if (currentSlide -> get_transportId() == transportId)
@@ -602,7 +600,7 @@ uint16_t	index;
 	      break;
 
 	   case 4:
-	      if (currentSlide == nullptr)
+	      if (currentSlide. isNull ())
 	         return;
 	      if (currentSlide -> get_transportId() == transportId) {
 //	         fprintf (stderr, "add segment %d of  %d\n",
@@ -614,14 +612,15 @@ uint16_t	index;
 	      }
 	      break;
 
-	   default:		// cannot happen
+	   default:		// cannot (should not) happen
 	      fprintf (stderr, "Not yet handled mot in pad %d (%X)\n",
 	                                          groupType, transportId);
 	      break;
 	}
 }
 
-
+//
+//	Experimental code
 void	padHandler::add_toDL2 (const QString &text) {
 	if (the_DL2. dlsText != text) {
 	   the_DL2. dlsText = text;
@@ -636,7 +635,6 @@ void	padHandler::add_toDL2 (const uint8_t *data) {
 int IT	= (data [0] & 0x08) >> 3;
 int IR	= (data [2] & 0x04) >> 2; 
 //int NT	= data [2] & 0x03;
-
 
 	if ((the_DL2. IT == IT) && (the_DL2. IR == IR))
 	   return;

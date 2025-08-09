@@ -124,7 +124,7 @@ struct protectionProfile {
 static
 int16_t	findIndex (int16_t bitRate, int16_t protLevel) {
 
-	for (int i = 0; profileTable [i].bitRate != 0; i ++)
+	for (int i = 0; profileTable [i]. bitRate != 0; i ++)
 	   if ((profileTable [i]. bitRate == bitRate) &&
 	       (profileTable [i]. protLevel == protLevel))
 	      return i;

@@ -55,7 +55,6 @@ int16_t	fdkAAC::MP42PCM (stream_parms *sp,
 	                 uint8_t   packet [],
 	                 int16_t   packetLength) {
 uint32_t	packet_size;
-uint32_t	valid;
 AAC_DECODER_ERROR err;
 uint8_t		*ptr	= packet;
 INT_PCM 	decode_buf [8 * sizeof (INT_PCM) * 2048];
@@ -68,13 +67,12 @@ int		output_size	= 8 * 2048;
 	if ((packet [0] != 0x56)  || ((packet [1] >> 5) != 7)) 
 	   return -1;
 
-
 	packet_size  = (((packet [1] & 0x1F) << 8) | packet [2]) + 3;
 	if (packet_size != (uint32_t)packetLength)
 	   return -1;
 
-	valid = packet_size;
-	err = aacDecoder_Fill (handle, &ptr, &packet_size, &valid);
+	uint32_t	valid_size = packet_size;
+	err = aacDecoder_Fill (handle, &ptr, &packet_size, &valid_size);
 	if (err != AAC_DEC_OK) 
 	   return -1;
 
@@ -91,7 +89,7 @@ int		output_size	= 8 * 2048;
 	if (!info || info -> sampleRate <= 0) 
 	   return -1;
 
-	if (info -> numChannels == 2) {
+	if (info -> numChannels == 2) {		// default for DAB+
 	   for (int i = 0; i < info -> frameSize; i ++) {
 	      complex16 s = complex16 (bufp [2 * i], bufp [2 * i + 1]);
 	      audioBuffer  -> putDataIntoBuffer (&s, 1);
@@ -112,7 +110,6 @@ int		output_size	= 8 * 2048;
 
 	   audioBuffer  -> putDataIntoBuffer ((complex16 *)buffer,
 	                                      info -> frameSize);
-//	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
 	      newAudio (info -> frameSize, info -> sampleRate,

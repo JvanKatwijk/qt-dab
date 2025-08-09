@@ -36,8 +36,6 @@
 #include	<QStringList>
 #include	"dab-tables.h"
 #include	"time-converter.h"
-
-#include	"dab-tables.h"
 //
 //
 //	The fibDecoder was rewritten since the "old" one
@@ -376,7 +374,6 @@ uint8_t		ecc = 0;
 uint8_t		cId;
 uint32_t	SId;
 int16_t		numberofComponents;
-
 fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	
 	(void)OE_bit;
@@ -507,8 +504,9 @@ int16_t	bitOffset	= offset * 8;
 const uint8_t	LS_flag	= getBits_1 (d, bitOffset);
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 fibConfig::SC_language comp;
-	(void)OE_bit;
-	(void)PD_bit;
+
+	(void)OE_bit; (void)PD_bit;
+
 	comp. LS_flag = LS_flag;
 	if (LS_flag == 0) {
 	   comp. subChId = getBits (d, bitOffset + 2, 6);
@@ -559,20 +557,20 @@ const uint8_t OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
 
 const int serviceCount	= getBits_6 (d, used * 8);
-//int     counter		= getBits   (d, used * 8 + 6, 10);
+int     counter		= getBits   (d, used * 8 + 6, 10);
 
-	(void)Length;
-	(void)CN_bit; (void)OE_bit; (void)PD_bit;
+	(void)Length; (void)OE_bit; (void)PD_bit;
+
 //	fprintf (stderr, "services : %d\n", serviceCount);
 	if (CN_bit == 0)	// only current configuration for now
 	   nrServices (serviceCount);
-//	(void)counter;
+	(void)counter;
 }
 
 // FIG0/8:  Service Component Global Definition (6.3.5)
 void	fibDecoder::FIG0Extension8 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
-int16_t	Length		= getBits_5 (d, 3);
+const int16_t	Length	= getBits_5 (d, 3);
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
@@ -592,9 +590,10 @@ const uint32_t	SId	= getLBits (d, bitOffset, PD_bit == 1 ? 32 : 16);
 uint8_t		LS_flag;
 uint8_t		extensionFlag;
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
 fibConfig::serviceComp_G comp;
+
 	(void)OE_bit;
+
 	bitOffset	+= PD_bit == 1 ? 32 : 16;
 	extensionFlag   = getBits_1 (d, bitOffset);
 	uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
@@ -1204,14 +1203,14 @@ uint32_t	SId;
 //	Data service label - 32 bits 8.1.14.2
 void	fibDecoder::FIG1Extension5 (uint8_t *d) {
 char		label [17];
-
 uint32_t	SId	= getLBits (d, 16, 32);
 int16_t		bitOffset	= 48;
 
 //      from byte 1 we deduce:
-	uint8_t charSet	= getBits_4 (d, 8);
-	uint8_t Rfu	= getBits_1 (d, 8 + 4);
-	uint8_t	extension	= getBits_3 (d, 8 + 5);
+uint8_t charSet		= getBits_4 (d, 8);
+uint8_t Rfu		= getBits_1 (d, 8 + 4);
+uint8_t	extension	= getBits_3 (d, 8 + 5);
+
 	label [16]      = 0x00;
 	(void)Rfu; (void)extension;
 

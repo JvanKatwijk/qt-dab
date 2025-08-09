@@ -56,15 +56,12 @@ DEPENDPATH += . \
 	      ./sources/eti-handler \
 	      ./sources/main \
 	      ./sources/main/forms-v7 \
-	      ./sources/main/forms-v7/new-display \
-	      ./sources/main/forms-v7/new-display/scopes \
-	      ./sources/main/forms-v7/snr-viewer \
+	      ./sources/main/snr-viewer \
 	      ./sources/frontend \
 	      ./sources/output \
 	      ./sources/output/portaudio \
 	      ./sources/protection \
 	      ./sources/devices \
-#	      ./sources/scopes-qwt6 \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
 	      ./sources/devices \
@@ -86,9 +83,8 @@ INCLUDEPATH += . \
 	      ./sources/eti-handler \
 	      ./sources/main \
 	      ./sources/main/forms-v7 \
-	      ./sources/main/forms-v7/new-display \
-	      ./sources/main/forms-v7/new-display/scopes \
-	      ./sources/main/forms-v7/snr-viewer \
+	      ./sources/main/scopes \
+	      ./sources/main/snr-viewer \
 	      ./sources/frontend \
 	      ./sources/output \
 	      ./sources/output/portaudio \
@@ -106,22 +102,22 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./sources/main/radio.h \
-	   ./sources/main/forms-v7/qwt-2.h \
-	   ./sources/main/forms-v7/new-display/display-widget.h \
-	   ./sources/main/forms-v7/new-display/scopes/spectrum-scope.h \
-	   ./sources/main/forms-v7/new-display/scopes/correlation-scope.h \
-	   ./sources/main/forms-v7/new-display/scopes/null-scope.h \
-	   ./sources/main/forms-v7/new-display/scopes/channel-scope.h \
-	   ./sources/main/forms-v7/new-display/scopes/dev-scope.h \
-	   ./sources/main/forms-v7/new-display/scopes/waterfall-scope.h \
-	   ./sources/main/forms-v7/new-display/scopes/iqdisplay.h \
-	   ./sources/main/forms-v7/new-display/scopes/audio-display.h \
-	   ./sources/main/forms-v7/new-display/scopes/spectrogramdata.h \
-	   ./sources/main/forms-v7/snr-viewer/snr-viewer.h \
+	   ./sources/main/display-widget.h \
+	   ./sources/main/scopes/spectrum-scope.h \
+	   ./sources/main/scopes/correlation-scope.h \
+	   ./sources/main/scopes/null-scope.h \
+	   ./sources/main/scopes/channel-scope.h \
+	   ./sources/main/scopes/dev-scope.h \
+	   ./sources/main/scopes/waterfall-scope.h \
+	   ./sources/main/scopes/iqdisplay.h \
+	   ./sources/main/scopes/audio-display.h \
+	   ./sources/main//scopes/spectrogramdata.h \
+	   ./sources/main/snr-viewer/snr-viewer.h \
 	   ./sources/main/ensemble-handler.h \
 	   ./sources/main/config-handler.h \
 	   ./sources/main/techdata.h \
 	   ./sources/main/aboutdialog.h \
+	   ./sources/support/qwt-2.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
 	   ./sources/support/dxDisplay.h \
@@ -249,27 +245,27 @@ HEADERS += ./sources/main/radio.h \
 FORMS	+= ./sources/main/forms-v7/technical_data.ui
 FORMS	+= ./sources/main/forms-v7/dabradio-6.ui 
 FORMS	+= ./sources/main/forms-v7/config-helper.ui 
-FORMS	+= ./sources/main/forms-v7/audio-description.ui
-FORMS	+= ./sources/main/forms-v7/data-description.ui
-FORMS	+= ./sources/main/forms-v7/new-display/scopewidget.ui
-FORMS	+= ./sources/main/forms-v7/snr-viewer/snr-widget.ui
-FORMS	+= ./sources/main/aboutdialog.ui
+#FORMS	+= ./sources/main/forms-v7/audio-description.ui
+#FORMS	+= ./sources/main/forms-v7/data-description.ui
+FORMS	+= ./sources/main/forms-v7/scopewidget.ui
+FORMS	+= ./sources/main/forms-v7/aboutdialog.ui
+FORMS	+= ./sources/main/snr-viewer/snr-widget.ui
 #FORMS	+= ./sources/devices/filereaders/filereader-widget.ui 
 FORMS	+= ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
 
 SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/radio.cpp \
-	   ./sources/main/forms-v7/new-display/display-widget.cpp \
-           ./sources/main/forms-v7/new-display/scopes/correlation-scope.cpp \
-           ./sources/main/forms-v7/new-display/scopes/spectrum-scope.cpp \
-           ./sources/main/forms-v7/new-display/scopes/null-scope.cpp \
-           ./sources/main/forms-v7/new-display/scopes/channel-scope.cpp \
-           ./sources/main/forms-v7/new-display/scopes/dev-scope.cpp \
-           ./sources/main/forms-v7/new-display/scopes/waterfall-scope.cpp \
-	   ./sources/main/forms-v7/new-display/scopes/iqdisplay.cpp \
-	   ./sources/main/forms-v7/new-display/scopes/audio-display.cpp \
-	   ./sources/main/forms-v7/new-display/scopes/spectrogramdata.cpp \
-	   ./sources/main/forms-v7/snr-viewer/snr-viewer.cpp \
+	   ./sources/main/display-widget.cpp \
+           ./sources/main/scopes/correlation-scope.cpp \
+           ./sources/main/scopes/spectrum-scope.cpp \
+           ./sources/main/scopes/null-scope.cpp \
+           ./sources/main/scopes/channel-scope.cpp \
+           ./sources/main/scopes/dev-scope.cpp \
+           ./sources/main/scopes/waterfall-scope.cpp \
+	   ./sources/main/scopes/iqdisplay.cpp \
+	   ./sources/main/scopes/audio-display.cpp \
+	   ./sources/main/scopes/spectrogramdata.cpp \
+	   ./sources/main/snr-viewer/snr-viewer.cpp \
 	   ./sources/main/aboutdialog.cpp \
 	   ./sources/main/ensemble-handler.cpp \
 	   ./sources/main/techdata.cpp \

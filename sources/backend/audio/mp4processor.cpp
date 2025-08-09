@@ -53,7 +53,6 @@
 	                                my_padhandler (mr, backgroundFlag),
  	                                my_rsDecoder (8, 0435, 0, 1, 10),
 	                                aacDecoder (mr, b) {
-
 	myRadioInterface	= mr;
 	this	-> bitRate	= bitRate;	// input rate
 	this	-> frameBuffer	= frameBuffer;

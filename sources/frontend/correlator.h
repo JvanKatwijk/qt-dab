@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -63,9 +63,7 @@ private:
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
 
-
 signals:
 	void		showCorrelation	(int, int, QVector<int>);
 };
-//#endif
 

@@ -71,7 +71,6 @@ private:
 	bool		pad_crc			(uint8_t *, int16_t);
 	QByteArray	dynamicLabelText;
 	int16_t		charSet;
-//	motObject	*currentSlide;
 	QScopedPointer<motObject>	currentSlide;
 	uint8_t		last_appType;
 	bool		mscGroupElement;
