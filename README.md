@@ -219,12 +219,13 @@ Qt-DAB has a (relatively) simple interface, coupling device handlers to the main
 In a separate document this interface is described.
 
 ![6.9](/res/read_me/rtlsdr-control.png?raw=true)
+![6.9](/res/read_me/hackrf-control.png?raw=true)
+
 ![6.9](/res/read_me/limeSDR-control.png?raw=true)
 
-![6.9](/res/read_me/hackrf-control.png?raw=true)
 ![6.9](/res/read_me/sdrplay-v3-control.png?raw=true)
-
 ![6.9](/res/read_me/airspy-control.png?raw=true)
+
 ![6.9](/res/read_me/pluto-control.png?raw=true)
 
 To allow configurations with devices that are not on the user's system, Qt-DAB dynamically loads the required functions from the library provided by the device manufacturer. For the Windows version(s), most device libraries are provided in the installer.
