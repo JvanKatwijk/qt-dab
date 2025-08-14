@@ -220,9 +220,10 @@ In a separate document this interface is described.
 
 ![6.9](/res/read_me/rtlsdr-control.png?raw=true)
 ![6.9](/res/read_me/limeSDR-control.png?raw=true)
-![6.9](/res/read_me/hackrf-control.png?raw=true)
 
+![6.9](/res/read_me/hackrf-control.png?raw=true)
 ![6.9](/res/read_me/sdrplay-v3-control.png?raw=true)
+
 ![6.9](/res/read_me/airspy-control.png?raw=true)
 ![6.9](/res/read_me/pluto-control.png?raw=true)
 
@@ -235,7 +236,8 @@ Qt-DAB also supports input from
   * Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
 
 ![6.9](/res/read_me/rtl_tcp-control.png?raw=true)
-![6.9](/res/read_me/spyserver16-control.png?raw=true)
+![6.9](/res/read_me/spy-server16-control.png?raw=true)
+
 ![6.9](/res/read_me/soapy-control.png?raw=true)
 
 Qt-DAB obviously supports input from - and generation of - files
