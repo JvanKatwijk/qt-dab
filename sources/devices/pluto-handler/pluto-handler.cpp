@@ -205,7 +205,7 @@ int	ret;
 #ifdef	__MINGW32__
 	const char * libName = "libiio.dll";
 #else
-	const char * libName= "libiio.so";
+	const char * libName= "libiio.so.0";
 #endif
 
 	pHandle		= new QLibrary (libName);
@@ -265,10 +265,12 @@ int	ret;
 
 	if (ctx == nullptr) {
 	   ctx = iio_create_network_context ("pluto.local");
+	   contextName	-> setText ("pluto.local");
 	}
 
 	if (ctx == nullptr) {
 	   ctx = iio_create_network_context ("192.168.2.1");
+	   contextName	-> setText ("192.168.2.1");
 	}
 
 	if (ctx == nullptr) {

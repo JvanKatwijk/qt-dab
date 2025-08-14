@@ -291,7 +291,9 @@ channels.push_back(0);
            int ret = SoapySDRDevice_readStream (m_device, rxStream,
 	                                        buffs, samplesToRead, &flags,
 	                                        &timeNs, 100000);
-	   
+
+	   if (ret <= 0)
+	      continue;
 	   theConverter. add (buf. data (), ret);
 	   frames ++;
 	   if (m_sw_agc and (frames >= 200)) {

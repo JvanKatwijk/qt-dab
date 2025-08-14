@@ -36,8 +36,8 @@
 	                              myRadioInterface (mr) {
 	this	-> backgroundFlag	= backgroundFlag;
 
-	connect (this, &padHandler::show_label,
-	         mr, &RadioInterface::show_label);
+	connect (this, &padHandler::showLabel,
+	         mr, &RadioInterface::showLabel);
 	connect (this, &padHandler::show_mothandling,
 	         mr, &RadioInterface::show_mothandling);
 	connect (this, &padHandler::show_title,
@@ -145,7 +145,7 @@ int16_t	i;
 	                                 (char *)(dynamicLabelText. data()),
 	                                 (CharacterSet)charSet,
 	                                 dynamicLabelText. size());
-	               show_label (displayText, (int)charSet);
+	               showLabel (displayText, (int)charSet);
 	            }
 	            dynamicLabelText = "";
 	         }
@@ -195,7 +195,7 @@ int16_t	i;
 	                               (CharacterSet) charSet,
 	                               dynamicLabelText. size ());
 //	            fprintf (stderr, "%s \n", displayText. toLatin1 (). data ());
-	            show_label (displayText, (int)charSet);
+	            showLabel (displayText, (int)charSet);
 	         }
 	         dynamicLabelText. clear();
 	      }
@@ -409,7 +409,7 @@ int16_t  dataLength                = 0;
 	                              dynamicLabelText. size ());
 	            if (!backgroundFlag) {
 	               add_toDL2 (displayText);
-	               show_label (displayText, (int)charSet);
+	               showLabel (displayText, (int)charSet);
 	            }
 	            segmentno = -1;
 	         }
@@ -435,14 +435,14 @@ int16_t  dataLength                = 0;
 	   
 	   dynamicLabelText. append ((const char *)data, dataLength);
 	   if (!moreXPad && isLastSegment) {
-	             QString displayText =  toQStringUsingCharset 
+	      QString displayText =  toQStringUsingCharset 
 	                                  ((char *)(dynamicLabelText. data()),
 	                                  (CharacterSet)charSet,
 	                                  dynamicLabelText. size());
-	             if (!backgroundFlag) {
-	                add_toDL2 (displayText);
-	                show_label (displayText, (int)charSet);
-	             }
+	      if (!backgroundFlag) {
+	         add_toDL2 (displayText);
+	         showLabel (displayText, (int)charSet);
+	      }
 	   }
 	}
 }

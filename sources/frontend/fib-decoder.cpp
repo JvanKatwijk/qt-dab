@@ -1064,30 +1064,29 @@ char		label [17];
 
 //      from byte 1 we deduce:
 	const uint8_t charSet	= getBits_4 (d, 8);
+//	charSet 0 .. 15, 4 bits, checks are superfluous
 	const uint8_t Rfu	= getBits_1 (d, 8 + 4);
 	label [16]      = 0x00;
 	(void)Rfu;
 
 	const uint16_t EId	= getBits (d, 16, 16);
 	offset	= 32;
-	if ((charSet <= 16)) { // EBU Latin based repertoire
-	   for (int i = 0; i < 16; i ++) {
-	      label [i] = getBits_8 (d, offset + 8 * i);
-	   }
-	   const QString name = toQStringUsingCharset (
-	                                        (const char *) label,
-	                                        (CharacterSet) charSet);
-	   QString realName = name;
-	   for (int i = name. length (); i < 16; i ++)
-	      realName. append (' ');
-	   if (!theEnsemble. namePresent) {
-	      theEnsemble. ensembleName	= realName;
-	      theEnsemble. EId		= EId;
-	      theEnsemble. namePresent	= true;
-	      ensembleName (EId, name);
-	   }
-	   theEnsemble. isSynced = true;
+	for (int i = 0; i < 16; i ++) {
+	   label [i] = getBits_8 (d, offset + 8 * i);
 	}
+	const QString name = toQStringUsingCharset (
+	                                     (const char *) label,
+	                                     (CharacterSet) charSet);
+	QString realName = name;
+	for (int i = name. length (); i < 16; i ++)
+	   realName. append (' ');
+	if (!theEnsemble. namePresent) {
+	   theEnsemble. ensembleName	= realName;
+	   theEnsemble. EId		= EId;
+	   theEnsemble. namePresent	= true;
+	   ensembleName (EId, name);
+	}
+	theEnsemble. isSynced = true;
 }
 //
 //	Name of service
@@ -1102,8 +1101,8 @@ char		label [17];
 	const uint32_t SId	= getBits (d, 16, 16);
 	label [16]      = 0x00;
 	(void)Rfu; (void)extension;
-	if (charSet >= 16) 	// does not seem right
-	   return;
+//	if (charSet >= 16) 	// cannot  happen
+//	   return;
 	
 	for (auto &serv : theEnsemble. primaries) {
 	   if (SId == serv. SId) 
@@ -1219,8 +1218,8 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	      return;
 	}
 
-	if (charSet > 16) 
-	   return;	// something wrong
+//	if (charSet > 16) 	// 4 bits = 0 .. 15
+//	   return;
 
 	for (int i = 0; i < 16; i ++) {
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);

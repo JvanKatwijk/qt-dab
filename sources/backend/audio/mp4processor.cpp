@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2024
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -57,6 +57,7 @@
 	this	-> bitRate	= bitRate;	// input rate
 	this	-> frameBuffer	= frameBuffer;
 	this	-> dump		= dump;
+	this	-> backgroundFlag	= backgroundFlag;
 	connect (this, &mp4Processor::show_frameErrors,
 	         mr, &RadioInterface::show_frameErrors);
 	connect (this, &mp4Processor::show_rsErrors,
@@ -129,6 +130,7 @@ uint8_t	temp	= 0;
   *	and adjust the buffer here for the next round
   *	if the firecode check fails, we shift one block
   */
+	
 	   handleRS (frameBytes, blockFillIndex * nbits / 8,
 	             outVector, frameErrors, rsErrors);
 	   if (frameErrors > 0) {	// cannot fix the potential frame 
@@ -283,78 +285,64 @@ stream_parms    streamParameters;
 //	just a sanity check
 	   if ((aac_frame_length >=  960) || (aac_frame_length < 0)) {
 //	      fprintf (stderr, "aac_frame_length = %d\n", aac_frame_length);
-//	      return false;
+	      return false;
 	   }
 
 //	but first the crc check
-	   if (check_crc_bytes (&outVector [au_start [i]],
+	   if (!check_crc_bytes (&outVector [au_start [i]],
 	                                aac_frame_length)) {
-//
-//	first prepare dumping
+	      crcErrors ++;
+	      return true;
+	   }
 //
 //	It is a litle tricky, but we deal with foreground and background
 //	tasks. For the foreground task, the user might - or might not -
 //	push the button to store the aac data,
 //	for a background task - indicated by having the var "dump" not NULL,
 //	the aac output is always written to a file
-	      std::vector<uint8_t> fileBuffer;
-	      int segmentSize =
+	   std::vector<uint8_t> fileBuffer;
+	   int segmentSize =
 	              build_aacFile (aac_frame_length,
 	                             &streamParameters,
 	                             &(outVector [au_start [i]]),
 	                             fileBuffer);
-	      if (dump == nullptr) {
-	         frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
+	   if (dump == nullptr) {
+	      frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
 	                                                  segmentSize);
-	         newFrame (segmentSize);
-	      }
-	      else
-	         fwrite (fileBuffer. data (), 1, segmentSize, dump);
+	      newFrame (segmentSize);
+	   }
+	   else
+	      fwrite (fileBuffer. data (), 1, segmentSize, dump);
 
-//	first handle the pad data if any
-	      if (dump == nullptr) {
-	         if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
-	            int16_t count = outVector [au_start [i] + 1];
-	            auto  *buffer = dynVec (uint8_t, count);
-//	            uint8_t  *buffer = (uint8_t *) alloca (count * sizeof (uint8_t));
-	            memcpy (buffer, &outVector [au_start [i] + 2], count);
-	            uint8_t L0	= buffer [count - 1];
-	            uint8_t L1	= buffer [count - 2];
-	            my_padhandler. processPAD (buffer, count - 3, L1, L0);
-	         }
-	         else  {// no PAD data, so no dynamic label;
-	         }
+//	first handle the pad data if any, but only for foreground services
+//	notice that backgroundFlag <==> (dump != nullptr)
+	   if (!backgroundFlag) 
+	      if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) 
+	         handle_PAD (outVector, au_start [i]);
 //
 //	then handle the audio
 #ifdef	__WITH_FDK_AAC__
-	         tmp = aacDecoder. MP42PCM (&streamParameters, 
+	   tmp = aacDecoder. MP42PCM (&streamParameters, 
 	                                      fileBuffer. data (), 
 	                                      segmentSize);
 #else
-	         uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
-
-	         memcpy (theAudioUnit,
-	                    &outVector [au_start [i]], aac_frame_length);
-	         memset (&theAudioUnit [aac_frame_length], 0, 10);
-
-	         tmp = aacDecoder. MP42PCM (&streamParameters,
+	   uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
+	   memcpy (theAudioUnit,
+	                 &outVector [au_start [i]], aac_frame_length);
+	   memset (&theAudioUnit [aac_frame_length], 0, 10);
+	   tmp = aacDecoder. MP42PCM (&streamParameters,
 	                                      theAudioUnit,
 	                                      aac_frame_length);
 #endif
-	         emit isStereo ((streamParameters. aacChannelMode == 1) ||
+	   emit isStereo ((streamParameters. aacChannelMode == 1) ||
 	                        (streamParameters. psFlag == 1));
 
-	         if (tmp <= 0) 
-	            aacErrors ++;
-	         if (++aacFrames > 25) {
-	            show_aacErrors (aacErrors);
-	            aacErrors	= 0;
-	            aacFrames	= 0;
-	         }
-	      }
-	   }
-	   else {
-	      crcErrors ++;
+	   if (tmp <= 0) 
+	      aacErrors ++;
+	   if (++aacFrames > 25) {
+	      show_aacErrors (aacErrors);
+	      aacErrors	= 0;
+	      aacFrames	= 0;
 	   }
 //
 //	what would happen if the errors were in the 10 parity bytes
@@ -410,5 +398,15 @@ BitWriter	au_bw;
 	au_bw. WriteAudioMuxLengthBytes ();
 	fileBuffer	= au_bw. GetData ();
 	return fileBuffer. size ();
+}
+
+void    mp4Processor::handle_PAD (const std::vector<uint8_t> &v,
+                                          int startIndex) {
+int16_t count = v [startIndex + 1];
+uint8_t buffer [count];
+        memcpy (buffer, &v [startIndex + 2], count);
+        uint8_t L0  = buffer [count - 1];
+        uint8_t L1  = buffer [count - 2];
+        my_padhandler. processPAD (buffer, count - 3, L1, L0);
 }
 

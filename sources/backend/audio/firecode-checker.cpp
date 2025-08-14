@@ -1,6 +1,4 @@
 #
-#
-/* -*- c++ -*- */
 /*
  * Copyright 2004,2010 Free Software Foundation, Inc.
  *
@@ -23,14 +21,18 @@
  */
 //
 //	This is a (partial) rewrite of the GNU radio code, for use
-//	within the DAB/DAB+ sdr-j receiver software
-//	all rights are acknowledged.
+//	within the DAB/DAB+  software
 //
 #include "firecode-checker.h"
 #include <cstring>
 
-//	g(x)=(x^11+1)(x^5+x^3+x^2+x+1)=1+x+x^2+x^3+x^5+x^11+x^12+x^13+x^14+x^16
-const uint8_t firecode_checker::g[16]={1,1,1,1,0,1,0,0,0,0,0,1,1,1,1,0};
+#include	<stdio.h>
+
+//	g (x) = (x^11 + 1) (x^5+x^3+x^2+x+1)
+//	      = 1+x+x^2+x^3+x^5+x^11+x^12+x^13+x^14+x^16
+const uint8_t firecode_checker::g [16] = { 
+	      1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0};
+//	0xF81D
 
 	firecode_checker::firecode_checker() {
 // prepare the table

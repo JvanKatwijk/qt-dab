@@ -26,7 +26,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
-* [A note on using an RTLSDR device](#a-note-on-using-an-RTLSDR-device)
+* [Devices and device support](#devices-and-device-support)
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
@@ -61,22 +61,6 @@ was changed completely, but that does not affect the executables.
 Features
 =================================================================
 
-  * Qt-DAB supports input device:
-   	- SDR DAB sticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick, 
-  	- All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library,
-	- HACKRF One, 
-  	- Airspy, including Airspy mini,
-	- LimeSDR, 
-	- Adalm Pluto,
-	- **untested** UHD (anyone wants to help testing?)
-	- Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
-	- ExtIO (experimental, Windows only),
-	- input from an rtl_tcp server connected to an RTLSDR device.
-	- input from a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot handle the required samplerate.
-  * Always supported for files:
-  	* the possibility of generating ".sdr" type files from the input.
-   	- reading prerecorded dump (`.raw`, `.iq`, '.sdr`, and '.uff' (xml)) files,
-	- NEW is the ability of Qt-DAB to generate "sdr" type files with a size larger than 4 Gb, and (obviously) the ability of the ".sdr" reader to read such files.
   * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB recognizes and interprets *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separare tool is available to download the required database.
   * Qt-DAB allows running an arbitrary amount of audio services from tne current ensemble as *background service*. with the output sent to a file,
@@ -219,14 +203,48 @@ At starting up Qt-DAB for the (very) first time, no device is selected yet, and 
 
 For a detailed description of all selectors, see the manual (or read the tooltips).
 
-A Note on using an RTLSDR device
+Devices and device support
 ======================================================================
 
-RTLSDR devices are - because of their price - rather popular.
-It turns out that for support of the V4 version of the
-sticks a new version of the library (".dll") is required. Unfortunately,
-using that library for "older" models (i.e. V3) models of the stick
-seems the device to make rather "deaf".
+Qt-DAB supports a broad variety of input device:
+  * SDR DAB sticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick, 
+  *  All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library,
+  * HACKRF One, 
+  * Airspy, including Airspy mini (bot AirspyHF is not suited for DAB),
+  * LimeSDR, 
+  * Adalm Pluto,
+  * **untested** UHD (anyone wants to help testing?)
+
+Qt-DAB has a (relatively) simple interface, coupling device handlers to the main processing part.
+In a separate document this interface is described.
+
+![6.9](/res/read_me/rtlsdr-control.png?raw=true)
+![6.9](/res/read_me/limeSDR-control.png?raw=true)
+![6.9](/res/read_me/hackrf-control.png?raw=true)
+
+![6.9](/res/read_me/sdrplay-v3-control.png?raw=true)
+![6.9](/res/read_me/airspy-control.png?raw=true)
+![6.9](/res/read_me/pluto-control.png?raw=true)
+
+To allow configurations with devices that are not on the user's system, Qt-DAB dynamically loads the required functions from the library provided by the device manufacturer. For the Windows version(s), most device libraries are provided in the installer.
+
+Qt-DAB also supports input from
+
+  * an rtl_tcp server connected to an RTLSDR device.
+  *  a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot handle the required samplerate.
+  * Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
+
+![6.9](/res/read_me/rtl_tcp-control.png?raw=true)
+![6.9](/res/read_me/spyserver16-control.png?raw=true)
+![6.9](/res/read_me/soapy-control.png?raw=true)
+
+Qt-DAB obviously supports input from - and generation of - files
+
+ * the possibility of reading from and  generation of ".sdr" type files from the input.  NEW is the ability of Qt-DAB to generate "sdr" type files with a size  **larger than 4 Gb**, and (obviously) the ability of the ".sdr" reader to read such files.
+
+ * reading prerecorded dump rtlsdr type "raw" (8 bits) files;
+
+ * reading and writing so-called "xml" files )see below)
 
 Two precompiled Windows installers are available, one with support for the V3
 and one with support for the V4 version of the stick.

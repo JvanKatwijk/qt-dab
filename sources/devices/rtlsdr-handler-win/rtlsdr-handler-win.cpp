@@ -481,7 +481,7 @@ QString freqS		= QString::number (freq);
 #define	IQ_BUFSIZE	4096
 void	rtlsdrHandler_win::processBuffer (uint8_t *buf, uint32_t len) {
 float	sumI	= 0;
-floar	sumQ	= 0;
+float	sumQ	= 0;
 static
 float	m_dcI	= 0;
 static

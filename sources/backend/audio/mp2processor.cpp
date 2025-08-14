@@ -217,6 +217,9 @@ struct quantizer_spec quantizer_table [17] = {
 };
 
 
+#define	NOT_SYNCED	0
+#define	GETTING_RATE	1
+#define	GETTING_DATA	2
 ////////////////////////////////////////////////////////////////////////////////
 //	The initialization is now done in the constructor
 //	(J van Katwijk)
@@ -229,19 +232,18 @@ struct quantizer_spec quantizer_table [17] = {
 	                            FILE		*dump,
 	                            bool		backgroundFlag):
 	                                my_padhandler (mr, backgroundFlag) {
-int16_t	i, j;
 int16_t *nPtr = &N [0][0];
 
 	// compute N[i][j]
-	for (i = 0;  i < 64;  i ++)
-	   for (j = 0;  j < 32;  ++j)
+	for (int16_t i = 0;  i < 64;  i ++)
+	   for (int16_t j = 0;  j < 32;  ++j)
 	      *nPtr++ = (int16_t) (256.0 *
 	                           cos(((16 + i) * ((j << 1) + 1)) *
 	                           0.0490873852123405));
 
 	// perform local initialization:
-	for (i = 0;  i < 2;  ++i)
-	   for (j = 1023;  j >= 0;  j--)
+	for (int i = 0;  i < 2;  ++i)
+	   for (int16_t j = 1023;  j >= 0;  j--)
 	      V [i][j] = 0;
 
 	myRadioInterface	= mr;
@@ -261,8 +263,8 @@ int16_t *nPtr = &N [0][0];
 	Voffs		= 0;
 	baudRate	= 48000;	// default for DAB
 	MP2framesize	= 24 * bitRate;	// may be changed
-	MP2frame	= new uint8_t [2 * MP2framesize];
-	MP2Header_OK	= 0;
+	MP2frame. resize (2 * MP2framesize);
+	MP2Header_state	= NOT_SYNCED;
 	MP2headerCount	= 0;
 	MP2bitCount	= 0;
 	numberofFrames	= 0;
@@ -270,7 +272,6 @@ int16_t *nPtr = &N [0][0];
 }
 
 	mp2Processor::~mp2Processor () {
-	delete[] MP2frame;
 }
 //
 
@@ -289,8 +290,8 @@ void	mp2Processor::setSamplerate (int32_t rate) {
 // //
 ////////////////////////////////////////////////////////////////////////////////
 
-int32_t	mp2Processor::mp2sampleRate	(uint8_t *frame) {
-	if (!frame)
+int32_t	mp2Processor::mp2sampleRate	(std::vector<uint8_t> &frame) {
+	if (frame. size () == 0)
 	   return 0;
 	if (( frame[0]         != 0xFF)   // no valid syncword?
 	    ||  ((frame[1] & 0xF6) != 0xF4)   // no MPEG-1/2 Audio Layer II?
@@ -299,7 +300,6 @@ int32_t	mp2Processor::mp2sampleRate	(uint8_t *frame) {
 	return sample_rates[(((frame[1] & 0x08) >> 1) ^ 4)  // MPEG-1/2 switch
                       + ((frame[2] >> 2) & 3)];         // actual rate
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // DECODE HELPER FUNCTIONS                                                    //
@@ -314,7 +314,7 @@ int table_idx = quant_lut_step3 [b2_table][sb];
 
 void 	mp2Processor::read_samples (struct quantizer_spec *q,
 	                            int scalefactor, int *sample) {
-int idx, adj, scale;
+int adj, scale;
 int val;
 
 	if (!q) {
@@ -340,23 +340,22 @@ int val;
 	   sample [1] = val % adj;
 	   sample [2] = val / adj;
 	} else { // decode direct samples
-	   for (idx = 0;  idx < 3;  ++idx)
+	   for (int idx = 0;  idx < 3;  ++idx)
 	      sample [idx] = get_bits (q -> cw_bits);
 	}
 
 	// postmultiply samples
 	scale = 65536 / (adj + 1);
 	adj = ((adj + 1) >> 1) - 1;
-	for (idx = 0;  idx < 3;  ++idx) {
+	for (int idx = 0;  idx < 3;  ++idx) {
         // step 1: renormalization to [-1..1]
-        val = (adj - sample[idx]) * scale;
+	   val = (adj - sample[idx]) * scale;
         // step 2: apply scalefactor
-        sample[idx] = ( val * (scalefactor >> 12)                  // upper part
+	   sample[idx] = ( val * (scalefactor >> 12)     // upper part
                     + ((val * (scalefactor & 4095) + 2048) >> 12)) // lower part
                     >> 12;  // scale adjust
 	}
 }
-
 
 #define show_bits(bit_count) (bit_window >> (24 - (bit_count)))
 
@@ -373,19 +372,20 @@ int32_t	result	= bit_window >> (24 - bit_count);
 	return result;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // FRAME DECODE FUNCTION                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 
-int32_t	mp2Processor::mp2decodeFrame (uint8_t *frame, int16_t *pcm) {
+int32_t	mp2Processor::mp2decodeFrame (std::vector<uint8_t> &frame,
+	                                                  int16_t *pcm) {
 uint32_t bit_rate_index_minus1;
 uint32_t sampling_frequency;
 uint32_t padding_bit;
 uint32_t mode;
 uint32_t frameSize;
 int32_t	bound, sblimit;
-int32_t sb, ch, gr, part, idx, nch, i, j, sum;
+//int32_t sb, ch, gr, part, idx, nch, i, j,
+int32_t nch, sum;
 int32_t table_idx;
 
 	numberofFrames ++;
@@ -402,7 +402,6 @@ int32_t table_idx;
 	   errorFrames ++;
 	   return 0;
 	}
-
 
 	// set up the bitstream reader
 	bit_window	= frame [2] << 16;
@@ -449,11 +448,11 @@ int32_t table_idx;
 	   return frameSize;  // no decoding
 
 	if (dump == nullptr) {
-	   frameBuffer	-> putDataIntoBuffer (frame, frameSize);
+	   frameBuffer	-> putDataIntoBuffer (frame. data (), frameSize);
 	   newFrame ((int)frameSize);
 	}
 	else 		// some background dumping in the file "dump"
-	   fwrite (frame, 1, frameSize, dump);
+	   fwrite (frame. data (), 1, frameSize, dump);
 
 // prepare the quantizer table lookups
 	if (sampling_frequency & 4) {
@@ -473,18 +472,18 @@ int32_t table_idx;
 	   bound = sblimit;
 
 	// read the allocation information
-	for (sb = 0; sb < bound; ++sb)
-	   for (ch = 0; ch < 2; ++ch)
+	for (int sb = 0; sb < bound; ++sb)
+	   for (uint16_t ch = 0; ch < 2; ++ch)
 	      allocation [ch][sb] = read_allocation(sb, table_idx);
 
-	for (sb = bound;  sb < sblimit;  ++sb)
+	for (int sb = bound;  sb < sblimit;  ++sb)
 	   allocation[0][sb] =
 	   allocation[1][sb] = read_allocation (sb, table_idx);
 
 	// read scale factor selector information
 	nch = (mode == MONO) ? 1 : 2;
-	for (sb = 0;  sb < sblimit;  ++sb) {
-	   for (ch = 0;  ch < nch;  ++ch)
+	for (int sb = 0;  sb < sblimit;  ++sb) {
+	   for (int16_t ch = 0;  ch < nch;  ++ch)
 	      if (allocation [ch][sb])
 	         scfsi [ch][sb] = get_bits (2);
 
@@ -493,8 +492,8 @@ int32_t table_idx;
 	}
 
 	// read scale factors
-	for (sb = 0;  sb < sblimit;  ++sb) {
-	   for (ch = 0;  ch < nch;  ++ch) {
+	for (int16_t sb = 0;  sb < sblimit;  ++sb) {
+	   for (int16_t ch = 0;  ch < nch;  ++ch) {
 	      if (allocation[ch][sb]) {
 	         switch (scfsi[ch][sb]) {
                     case 0: scalefactor[ch][sb][0] = get_bits(6);
@@ -517,42 +516,42 @@ int32_t table_idx;
 	      }
 	   }
 	   if (mode == MONO)
-	      for (part = 0;  part < 3;  ++part)
+	      for (int16_t part = 0;  part < 3;  ++part)
 	         scalefactor[1][sb][part] = scalefactor[0][sb][part];
 	}
 
 // coefficient input and reconstruction
-	for (part = 0;  part < 3;  ++part) {
-	   for (gr = 0;  gr < 4;  ++gr) {
+	for (int16_t part = 0;  part < 3;  ++part) {
+	   for (int16_t gr = 0;  gr < 4;  ++gr) {
 // read the samples
-	      for (sb = 0;  sb < bound;  ++sb)
-	         for (ch = 0;  ch < 2;  ++ch)
+	      for (int16_t sb = 0;  sb < bound;  ++sb)
+	         for (uint16_t ch = 0;  ch < 2;  ++ch)
 	            read_samples (allocation[ch][sb],
 	                             scalefactor[ch][sb][part],
 	                             &sample[ch][sb][0]);
-	      for (sb = bound;  sb < sblimit;  ++sb) {
+	      for (int16_t sb = bound;  sb < sblimit;  ++sb) {
 	         read_samples (allocation[0][sb],
 	                             scalefactor[0][sb][part],
 	                             &sample[0][sb][0]);
-	         for (idx = 0;  idx < 3;  ++idx)
+	         for (int16_t idx = 0;  idx < 3;  ++idx)
 	            sample[1][sb][idx] = sample[0][sb][idx];
 	      }
 
-	      for (ch = 0;  ch < 2;  ++ch)
-	         for (sb = sblimit;  sb < 32;  ++sb)
-	            for (idx = 0;  idx < 3;  ++idx)
+	      for (int16_t ch = 0;  ch < 2;  ++ch)
+	         for (uint16_t sb = sblimit;  sb < 32;  ++sb)
+	            for (int16_t idx = 0;  idx < 3;  ++idx)
 	               sample[ch][sb][idx] = 0;
 
 // synthesis loop
-	      for (idx = 0;  idx < 3;  ++idx) {
+	      for (int16_t idx = 0;  idx < 3;  ++idx) {
 // shifting step
 	         Voffs = table_idx = (Voffs - 64) & 1023;
 
-	         for (ch = 0;  ch < 2;  ++ch) {
+	         for (int16_t ch = 0;  ch < 2;  ++ch) {
 // matrixing
-	            for (i = 0;  i < 64;  ++i) {
+	            for (int16_t i = 0;  i < 64;  ++i) {
 	               sum = 0;
-	               for (j = 0;  j < 32;  ++j) // 8b*15b=23b
+	               for (int16_t j = 0;  j < 32;  ++j) // 8b*15b=23b
 	                  sum += N[i][j] * sample[ch][j][idx];
 // intermediate value is 28 bit (23 + 5), clamp to 14b
 //
@@ -560,8 +559,8 @@ int32_t table_idx;
 	            }
 
 // construction of U
-	            for (i = 0;  i < 8;  ++i)
-	               for (j = 0;  j < 32;  ++j) {
+	            for (int16_t i = 0;  i < 8;  ++i)
+	               for (int16_t j = 0;  j < 32;  ++j) {
 	                  U [(i << 6) + j]
 	                           = V [ch][(table_idx + (i << 7) + j) & 1023];
 	                  U [(i << 6) + j + 32] =
@@ -569,13 +568,13 @@ int32_t table_idx;
 	               }
 
 // apply window
-	            for (i = 0;  i < 512;  ++i)
+	            for (int16_t i = 0;  i < 512;  ++i)
 	               U [i] = (U [i] * D [i] + 32) >> 6;
 
 // output samples
-	            for (j = 0;  j < 32;  ++j) {
+	            for (int16_t j = 0;  j < 32;  ++j) {
 	               sum = 0;
-	               for (i = 0;  i < 16;  ++i)
+	               for (uint16_t i = 0;  i < 16;  ++i)
 	                  sum -= U [(i << 5) + j];
 	               sum = (sum + 8) >> 4;
 	               if (sum < -32768)
@@ -596,33 +595,14 @@ int32_t table_idx;
 //
 //	bits to MP2 frames, amount is amount of bits
 void	mp2Processor::addtoFrame (const std::vector<uint8_t> &v) {
-int16_t	i, j;
 int16_t	lf	= baudRate == 48000 ? MP2framesize : 2 * MP2framesize;
 int16_t	amount	= MP2framesize;
-int16_t	vLength	= 24 * bitRate / 8;
-auto	*help	= dynVec (uint8_t, vLength);
-//uint8_t	*help	= (uint8_t *) alloca (vLength * sizeof (uint8_t));
 
-//fprintf (stderr, "baudrate = %d, inputsize = %d\n",
-//	          baudRate, v. size ());
-//	fprintf (stderr, "\n");
-	for (int i = 0; i < vLength; i ++) {
-	   help [i] = 0;
-	   for (j = 0; j < 8; j ++) {
-	      help [i] <<= 1;
-	      help [i] |= v [8 * i + j] & 01;
-	   }
-	}
-	{ uint8_t L0	= help [vLength - 1];
-	  uint8_t L1	= help [vLength - 2];
-	  int16_t down	= bitRate * 1000 >= 56000 ? 4 : 2;
-	  my_padhandler. processPAD (help, vLength - 2 - down - 1, L1, L0);
-	}
-
-	for (i = 0; i < amount; i ++) {
-	   if (MP2Header_OK == 2) {
+	for (int i = 0; i < amount; i ++) {
+	   if (MP2Header_state == GETTING_DATA) {
 	      addbittoMP2 (MP2frame, v [i], MP2bitCount ++);
 	      if (MP2bitCount >= lf) {
+	         handle_PAD (v);
 	         int16_t sample_buf [KJMP2_SAMPLES_PER_FRAME * 2];
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
 	            for (int j = 0; j < KJMP2_SAMPLES_PER_FRAME; j ++) {
@@ -635,37 +615,37 @@ auto	*help	= dynVec (uint8_t, vLength);
 	                         baudRate, false, false);
 	         }
 
-	         MP2Header_OK = 0;
+	         MP2Header_state = NOT_SYNCED;
 	         MP2headerCount = 0;
 	         MP2bitCount = 0;
 	      }
-	   } else 
-	   if (MP2Header_OK == 0) {
-//	apparently , we are not in sync yet
+	   }
+	   else 
+	   if (MP2Header_state == NOT_SYNCED) {
 	      if (v [i] == 01) {
 	         if (++ MP2headerCount == 12) {
 	            MP2bitCount = 0;
-	            for (j = 0; j < 12; j ++)
+	            for (int j = 0; j < 12; j ++)
 	               addbittoMP2 (MP2frame, 1, MP2bitCount ++);
-	            MP2Header_OK = 1;
+	            MP2Header_state = GETTING_RATE;
 	         }
 	      }
 	      else
 	         MP2headerCount = 0;
 	   }
 	   else
-	   if (MP2Header_OK == 1) {
+	   if (MP2Header_state == GETTING_RATE) {
 	      addbittoMP2 (MP2frame, v [i], MP2bitCount ++);
 	      if (MP2bitCount == 24) {
 	         setSamplerate (mp2sampleRate (MP2frame));
-	         MP2Header_OK = 2;
+	         MP2Header_state = GETTING_DATA;
 	      }
 	   }
 	}
-
 }
 
-void	mp2Processor::addbittoMP2 (uint8_t *v, uint8_t b, int16_t nm) {
+void	mp2Processor::addbittoMP2 (std::vector<uint8_t> &v,
+	                                       uint8_t b, int16_t nm) {
 uint8_t	byte	= v [nm / 8];
 int16_t	bitnr	= 7 - (nm & 7);
 uint8_t	newbyte = (01 << bitnr);
@@ -676,4 +656,24 @@ uint8_t	newbyte = (01 << bitnr);
 	   byte |= newbyte;
 	v [nm / 8] = byte;
 }
+
+void    mp2Processor::handle_PAD (const std::vector<uint8_t> &v) {
+int16_t vLength = 24 * bitRate / 8;
+uint8_t temp [vLength];
+        if (v. size () < 24 * bitRate)  // should not happen
+           return;
+        for (int i = 0; i < vLength; i ++) {
+           temp [i] = 0;
+           for (int16_t j = 0; j < 8; j ++) {
+              temp [i] <<= 1;
+              temp [i] |= v [8 * i + j] & 01;
+           }
+        }
+        uint8_t L0     = temp [vLength - 1];
+        uint8_t L1     = temp [vLength - 2];
+        int16_t down   = bitRate * 1000 >= 56000 ? 4 : 2;
+        my_padhandler. processPAD (temp, vLength - 2 - down - 1, L1, L0);
+}
+
+
 

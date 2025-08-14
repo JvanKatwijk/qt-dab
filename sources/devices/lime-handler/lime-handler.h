@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2025
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -26,8 +26,6 @@
 #include	<QThread>
 #include	<QFrame>
 #include	<QSettings>
-#include	<QLibrary>
-#include	<QScopedPointer>
 #include	<atomic>
 #include	<vector>
 #include	"dab-constants.h"
@@ -36,8 +34,13 @@
 #include	"device-handler.h"
 #include	"lime-widget.h"
 #include	"fir-filters.h"
-#include	"xml-filewriter.h"
 class		logger;
+
+#ifdef __MINGW32__
+#define GETPROCADDRESS  GetProcAddress
+#else
+#define GETPROCADDRESS  dlsym
+#endif
 
 class	xml_fileWriter;
 
@@ -101,35 +104,33 @@ public:
 	                                         const QString &, logger *);
 			~limeHandler		();
 
-	bool		restartReader		(int32_t, int skipped = 0);
+	bool		restartReader		(int32_t,
+	                                          int samplesSkipped = 0);
 	void		stopReader		();
 	int32_t         getSamples              (std::complex<float> *, int32_t);
         int32_t         Samples			();
         void            resetBuffer		();
         int16_t         bitDepth		();
 	QString		deviceName		();
-
-	void		startDump		();
-	void		stopDump		();
 private:
-	QFrame		myFrame;
 	RingBuffer<std::complex<int16_t>> _I_Buffer;
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
-	QLibrary	*library_p;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
 	bool		load_limeFunctions();
+	HINSTANCE	Handle;
 	bool		libraryLoaded;
 	lms_stream_meta_t meta;
         lms_stream_t    stream;
         void		run			();
 
-        QScopedPointer<xml_fileWriter>  xmlWriter;
-        bool            setup_xmlDump		(bool);
+        xml_fileWriter  *xmlWriter;
+        bool            setup_xmlDump           ();
         void            close_xmlDump           ();
+        std::atomic<bool> dumping;
 
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);

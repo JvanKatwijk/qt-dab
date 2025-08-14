@@ -358,6 +358,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/content-table.cpp
 	     ./sources/support/converter_48000.cpp
 	     ./sources/support/coordinates.cpp
+	     ./sources/support/crc-handlers.cpp
 	     ./sources/support/dab-params.cpp
 	     ./sources/support/dab-tables.cpp
 	     ./sources/support/distances.cpp

@@ -98,7 +98,7 @@ private:
 	void		add_toDL2		(const QString &);
 	void		add_toDL2		(const uint8_t *);
 signals:
-	void		show_label		(const QString &, int);
+	void		showLabel		(const QString &, int);
 	void		show_mothandling	(bool);
 	void		show_title		(uint8_t, uint8_t,
 	                                         const QString &);

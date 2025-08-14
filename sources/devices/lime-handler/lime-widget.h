@@ -1,5 +1,4 @@
-#ifndef	__LIME_WIDGET__
-#define	__LIME_WIDGET__
+#pragma once
 
 #include	<QLabel>
 #include	<QSpinBox>
@@ -25,12 +24,14 @@ public:
 	QPushButton	*dumpButton;
 	QCheckBox	*filterSelector;
 	QSpinBox	*filterDepth;
+	QLabel		*nameOfDevice;
 
 	limeWidget	() {}
 	~limeWidget	() {}
 
-void	setupUi		(QWidget *qw) {
+void	setupUi		(QFrame *qw) {
 	titleLabel	= new QLabel	("lime handler");
+	nameOfDevice	= new QLabel	("deviceName");
 	gainSelector	= new QSpinBox	();
 	gainLabel	= new QLabel	("gain");
 	actualGain	= new QLCDNumber ();
@@ -82,10 +83,10 @@ void	setupUi		(QWidget *qw) {
 	base		-> addItem	(line3);
 	base		-> addItem	(line4);
 	base		-> addItem	(line5);
+	base		-> addWidget	(nameOfDevice);
 
 	qw	-> setLayout (base);
 }
 };
 
-#endif
 

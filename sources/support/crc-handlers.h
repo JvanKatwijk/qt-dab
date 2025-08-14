@@ -24,6 +24,15 @@
 //	inline functions for crc handling
 #pragma once
 #include	<stdint.h>
+//
+//	there depend on an large table
+//	calc_crc computes - as the name suggests the crc value
+uint16_t calc_crc	(const uint8_t *data, int length);
+//	check_crc_bytes checks the crc assuming it is contained
+//	in the last 16 bits of the data
+bool	check_crc_bytes (const uint8_t *data, int length);
+
+//	this one is inline
 
 static inline
 bool	check_CRC_bits (const uint8_t *inBuf, int32_t size) {
@@ -58,27 +67,36 @@ int16_t	Sum	= 0;
 	return Sum == 0;
 }
 
-static inline
-bool	check_crc_bytes (const uint8_t *msg, int32_t len) {
-uint16_t	accumulator	= 0xFFFF;
-uint16_t	crc;
-uint16_t	genpoly		= 0x1021;
 
-	for (int i = 0; i < len; i ++) {
-	   uint16_t xx = msg [i];
-	   int16_t data = xx << 8;
-	   for (int j = 8; j > 0; j--) {
-	      if ((data ^ accumulator) & 0x8000)
-	         accumulator = ((accumulator << 1) ^ genpoly) & 0xFFFF;
-	      else
-	         accumulator = (accumulator << 1) & 0xFFFF;
-	      data = (data << 1) & 0xFFFF;
-	   }
-	}
+//static inline
+//bool	check_crc_bytes (const uint8_t *msg, int32_t len) {
+//uint16_t	accumulator	= 0xFFFF;
+//uint16_t	crc;
+//uint16_t	genpoly		= 0x1021;
 //
-//	ok, now check with the crc that is contained
-//	in the au
-	crc	= ~((msg [len] << 8) | msg [len + 1]) & 0xFFFF;
-	return (crc ^ accumulator) == 0;
-}
+//uint16_t r1 = calc_crc (msg, len, crctab_1021, 0xFFFF);
+//	for (int i = 0; i < len; i ++) {
+//	   uint16_t xx = msg [i];
+//	   int16_t data = xx << 8;
+//	   for (int j = 8; j > 0; j--) {
+//	      if ((data ^ accumulator) & 0x8000)
+//	         accumulator = ((accumulator << 1) ^ genpoly) & 0xFFFF;
+//	      else
+//	         accumulator = (accumulator << 1) & 0xFFFF;
+//	      data = (data << 1) & 0xFFFF;
+//	   }
+//	}
+////
+////	ok, now check with the crc that is contained
+////	in the au
+//	crc	= ~((msg [len] << 8) | msg [len + 1]) & 0xFFFF;
+//
+//	static int teller = 0 ;
+//	teller ++;
+//	if (teller > 25) {
+//	   fprintf (stderr, "%x - %x\n", r1, crc);
+//	   teller = 0;
+//	}
+//	return (crc ^ accumulator) == 0;
+//}
 

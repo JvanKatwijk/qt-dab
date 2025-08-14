@@ -71,13 +71,14 @@ private:
 	FILE		*dump;
 	int16_t		bitRate;
 	padHandler	my_padhandler;
-	int32_t		mp2sampleRate	(uint8_t *);
-	int32_t		mp2decodeFrame	(uint8_t *, int16_t *);
+	int32_t		mp2sampleRate	(std::vector<uint8_t> &);
+	int32_t		mp2decodeFrame	(std::vector<uint8_t> &, int16_t *);
 	int32_t		baudRate;
 	void		setSamplerate		(int32_t);
 	struct quantizer_spec *read_allocation (int, int);
 	void		read_samples	(struct quantizer_spec *, int, int *);
 	int32_t		get_bits	(int32_t);
+	void		handle_PAD	(const std::vector<uint8_t> &);
 	int16_t		V [2][1024];
 	int16_t		Voffs;
 	int16_t		N [64][32];
@@ -90,13 +91,13 @@ private:
 	int32_t		bit_window;
 	int32_t		bits_in_window;
 	uint8_t		*frame_pos;
-	uint8_t		* MP2frame;
+	std::vector<uint8_t> MP2frame;
 
 	int16_t		MP2framesize;
-	int16_t		MP2Header_OK;
+	uint8_t		MP2Header_state;
 	int16_t		MP2headerCount;
 	int16_t		MP2bitCount;
-	void		addbittoMP2	(uint8_t *, uint8_t, int16_t);
+	void		addbittoMP2	(std::vector<uint8_t> &, uint8_t, int16_t);
 	int16_t		numberofFrames;
 	int16_t		errorFrames;
 signals:

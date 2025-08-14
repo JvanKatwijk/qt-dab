@@ -1547,7 +1547,7 @@ void	RadioInterface::set_synced	(bool b) {
 //	called from the PAD handler
 
 
-void	RadioInterface::show_label	(const QString &s, int charset) {
+void	RadioInterface::showLabel	(const QString &s, int charset) {
 	(void)charset;
 #ifdef	HAVE_PLUTO_RXTX
 	if ((streamerOut_p != nullptr) && (s != ""))
@@ -2259,13 +2259,13 @@ void	RadioInterface::startPacketservice (packetdata &pd) {
 
 	switch (pd. DSCTy) {
 	   default:
-	      show_label (QString ("unimplemented Data"), 1);
+	      showLabel (QString ("unimplemented Data"), 1);
 	      break;
 	   case 5:
-	      show_label (QString ("Transp. Channel partially implemented"), 1);
+	      showLabel (QString ("Transp. Channel partially implemented"), 1);
 	      break;
 	   case 60:
-	      show_label (QString (" processing MOT data"), 1);
+	      showLabel (QString (" processing MOT data"), 1);
 	      break;
 	   case 59: {
 #ifdef	_SEND_DATAGRAM_
@@ -2274,14 +2274,14 @@ void	RadioInterface::startPacketservice (packetdata &pd) {
 	      text. append (" ");
 	      QString n = QString::number (port);
 	      text. append (n);
-	      show_label (text, 1);
+	      showLabel (text, 1);
 #else
-	      show_label ("Embedded IP not supported ", 1);
+	      showLabel ("Embedded IP not supported ", 1);
 #endif
 	   }
 	      break;
 	   case 44:
-	      show_label (QString ("Journaline"), 1);
+	      showLabel (QString ("Journaline"), 1);
 	      break;
 	}
 }
@@ -3659,6 +3659,7 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 /////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_etiHandler	() {
+	fprintf (stderr, "Getikt\n");
 	if (channel. etiActive)
 	   stop_etiHandler ();
 	else
@@ -3694,6 +3695,7 @@ void	RadioInterface::start_etiHandler () {
 
 void	RadioInterface::handle_eti_activeSelector (int k) {
 bool setting	= configHandler_p -> eti_active ();
+	fprintf (stderr, "Hiero setting is %dn", setting ? 1 : 0);
 	(void)k;
 	if (setting) {
 	   stopScanning ();
@@ -3701,8 +3703,9 @@ bool setting	= configHandler_p -> eti_active ();
 	               this, &RadioInterface::handle_scanButton);
 	   connect (scanButton, &QPushButton::clicked,
 	            this, &RadioInterface::handle_etiHandler);
+	   scanButton -> setEnabled (true);
 	   scanButton	-> setText ("eti");
-	   if (!inputDevice_p -> isFileInput ())// restore the button' visibility
+//	   if (!inputDevice_p -> isFileInput ())// restore the button' visibility
 	      scanButton -> show ();
 	   return;
 	}

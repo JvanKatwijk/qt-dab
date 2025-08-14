@@ -77,7 +77,9 @@ private:
                                        uint8_t	*data,
                                        std::vector<uint8_t> &fileBuffer);
 
+	void		handle_PAD	(const std::vector<uint8_t> &, int);
 	FILE		*dump;
+	bool		backgroundFlag;
 	uint8_t		procMode;
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;

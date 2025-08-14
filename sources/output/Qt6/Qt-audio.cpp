@@ -143,10 +143,8 @@ void	Qt_Audio::state_changed (const QAudio::State newState) {
 	      break;
 	   case QAudio::IdleState:
 //	      fprintf (stderr, "State: Idle\n");
-	      if (m_audioSink -> error () != QAudio::NoError)
-	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
-	      fprintf (stderr, "Buffer has %d\n",
-	                   tempBuffer. GetRingBufferReadAvailable ());
+//	      if (m_audioSink -> error () != QAudio::NoError)
+//	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
 	      break;
 	   case QAudio::StoppedState:
 //	      fprintf (stderr, "State: Stopped\n");

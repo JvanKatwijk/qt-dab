@@ -53,16 +53,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
-     <property name="toolTip">
-      <string>Experimental interface for Adalm Pluto. No garantees!!</string>
-     </property>
-     <property name="text">
-      <string>Pluto interface</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="contextName">
      <property name="text">
       <string>context name</string>
@@ -72,7 +62,7 @@
    <item>
     <widget class="QLabel" name="name_of_device">
      <property name="text">
-      <string>device name</string>
+      <string>device name: AD9361</string>
      </property>
     </widget>
    </item>
@@ -105,18 +95,6 @@ filter is disabled, but will be enabled by touching the button.</string>
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QLabel" name="serial_number_display">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

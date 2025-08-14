@@ -190,7 +190,7 @@
    <item>
     <widget class="QLabel" name="statusLabel">
      <property name="text">
-      <string>status</string>
+      <string/>
      </property>
     </widget>
    </item>

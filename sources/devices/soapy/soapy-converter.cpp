@@ -30,7 +30,6 @@ static int qualityTable [] = {
 	soapyConverter::soapyConverter
 	                        (RingBuffer<std::complex<float>> *outBuffer){
 	this	-> outBuffer	= outBuffer;
-
 }
 
 	soapyConverter::~soapyConverter	() {}

@@ -19,12 +19,12 @@ unix {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_LFLAGS	+=  -O3 -ffast-math -g
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -325,6 +325,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/epg/epg-compiler.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
 	   ./sources/output/audio-player.cpp \
+	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/charsets.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/time-converter.cpp \
@@ -448,7 +449,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
 CONFIG		+= hackrf
 CONFIG		+= lime
-#CONFIG		+= soapy
+CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
 CONFIG		+= spyServer-16
@@ -758,6 +759,7 @@ soapy {
         SOURCES         += ./sources/devices/soapy/soapy-handler.cpp \
 	                   ./sources/devices/soapy/soapy-converter.cpp
         FORMS           += ./sources/devices/soapy/soapy-widget.ui
+	LIBS		+= -lsamplerate
 	LIBS		+= -lSoapySDR -lm
 }
 

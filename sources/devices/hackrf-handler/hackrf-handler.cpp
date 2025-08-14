@@ -177,7 +177,10 @@
 	      serialNumber	= serial;
 	   else
 	      serialNumber	= "???";
-	   serial_number_display -> setText (serial);
+	   while ((serialNumber. size () > 0) &&(serialNumber [0] == '0'))
+	      serialNumber. remove (0, 1);
+	     
+	   serial_number_display -> setText (serialNumber);
 	   enum hackrf_usb_board_id board_id =
 	                 deviceList -> usb_board_ids [0];
 	   usb_board_id_display ->

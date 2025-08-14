@@ -1,5 +1,4 @@
-#
-/* -*- c++ -*- */
+
 /*
  * Copyright 2004,2010 Free Software Foundation, Inc.
  *
@@ -20,24 +19,24 @@
  * the Free Software Foundation, Inc., 51 Franklin Street,
  * Boston, MA 02110-1301, USA.
  */
-//
+
 //	This is a (partial) rewrite of the GNU radio code, for use
 //	within the DAB/DAB+ sdr-j receiver software
-//	all rights are acknowledged.
 //
 #pragma once
 #include	<cstdint>
 
-
 class firecode_checker {
 public:
-		firecode_checker();
+		firecode_checker ();
 		~firecode_checker();
 // error detection. x[0-1] contains parity, x[2-10] contains data
-	bool	check (const uint8_t *x); // return true if firecode check is passed
+// return true if firecode check is passed
+	bool	check (const uint8_t *);
+
 private:
-	uint16_t tab[256];
-	uint16_t run8(unsigned char regs[]);
-	static const uint8_t g[16];
+        uint16_t tab [256];
+        uint16_t run8 (unsigned char regs[]);
+        static const uint8_t g[16];
 };
 
