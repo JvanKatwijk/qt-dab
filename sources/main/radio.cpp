@@ -2757,7 +2757,7 @@ void	RadioInterface::stopScan_continuous () {
 //	Also called as a result of time out on channelTimer
 
 void	RadioInterface::channel_timeOut () {
-	fprintf (stderr, "Channel timeout\n");
+// fprintf (stderr, "Channel timeout\n");
 	channelTimer. stop ();
 	if (!theSCANHandler. active ())
 	   return;
@@ -3659,7 +3659,6 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 /////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_etiHandler	() {
-	fprintf (stderr, "Getikt\n");
 	if (channel. etiActive)
 	   stop_etiHandler ();
 	else
@@ -3695,7 +3694,6 @@ void	RadioInterface::start_etiHandler () {
 
 void	RadioInterface::handle_eti_activeSelector (int k) {
 bool setting	= configHandler_p -> eti_active ();
-	fprintf (stderr, "Hiero setting is %dn", setting ? 1 : 0);
 	(void)k;
 	if (setting) {
 	   stopScanning ();
@@ -4614,9 +4612,9 @@ bool	serviceAvailable	= false;
 	for (auto &ct : serviceData) {
 	   if (theOFDMHandler -> serviceRuns (ct. SId, ct. subChId)) {
 	      serviceAvailable = true;
-	      fprintf (stderr, "Service %s (%X, %d) runs\n",
-	                      ct. serviceName. toLatin1 (). data (),
-	                      ct. SId, ct. subChId);
+//	      fprintf (stderr, "Service %s (%X, %d) runs\n",
+//	                      ct. serviceName. toLatin1 (). data (),
+//	                      ct. SId, ct. subChId);
 	   }
 	}
 	(void)serviceAvailable;

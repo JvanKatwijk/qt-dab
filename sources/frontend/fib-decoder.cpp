@@ -958,7 +958,7 @@ int16_t	fibDecoder::HandleFIG0Extension20 (uint8_t	*d,
 	offset += PD_bit ? 32 : 16;
 	uint16_t Transfer_EId	= Eid_flag ? getLBits (d, offset, 16) : 0;
 	offset += Eid_flag ? 16 : 0;
-	fprintf (stderr, "%X (%d) is in fig 20\n", SId, SCIds); 
+//	fprintf (stderr, "%X (%d) is in fig 20\n", SId, SCIds); 
 	(void)ChangeFlags; (void)PT_flag; (void) SC_flag; 
 	(void)AD_flag; (void)SCTy; (void)Date; (void)Hour;
 	(void)Minutes; (void)Seconds; (void)SId_flag;
