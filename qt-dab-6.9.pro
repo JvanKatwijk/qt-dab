@@ -19,12 +19,12 @@ unix {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_LFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -449,7 +449,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
 CONFIG		+= hackrf
 CONFIG		+= lime
-CONFIG		+= soapy
+#CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
 CONFIG		+= spyServer-16

@@ -78,6 +78,8 @@
 //	FIB's are segments of 256 bits. When here, we already
 //	passed the crc and we start unpacking into FIGs
 //	This is merely a dispatcher
+//	The caller, fic-handler, has ensured that the CRC
+//	is correct, we trust the fic handler
 void	fibDecoder::processFIB (uint8_t *p, uint16_t fib) {
 int8_t	processedBytes	= 0;
 uint8_t	*d		= p;
@@ -87,8 +89,10 @@ uint8_t	*d		= p;
 	while (processedBytes  < 30) {
 	   uint8_t FIGtype	= getBits_3 (d, 0);
 	   uint8_t FIGlength	= getBits_5 (d, 3);
-	   if ((FIGtype == 0x07) && (FIGlength == 0x3F))
+	   if ((FIGtype == 0x07) && (FIGlength == 0x3F)) {
+	      fibLocker. unlock ();
 	      return;
+	   }
 
 	   switch (FIGtype) {
 	      case 0:			
