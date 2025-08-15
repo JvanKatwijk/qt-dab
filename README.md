@@ -8,15 +8,15 @@
 About Qt-DAB
 -------------------------------------------------------------------------
 
-![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
-
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 Qt-DAB is GUI based, for a command line version, see "dab-cmdline".
 Qt-DAB  has a single *main* widget that contains essentially all that is needed for selecting channels and services and listening. Other widgets, visible under user control, show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
 
+![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
+
 Of course, as for previous versions, for the current version,
-*Qt-DAB-6.9*, predefined executables and installers are available.
+*Qt-DAB-6.9.3*, predefined executables and installers are available.
 For Windows  **two** 32 bit installers are available, and for Linux there is an x64 AppImage.
 
 ![6.9](/res/read_me/Qt_DAB-6.9.1.png?raw=true)
@@ -38,7 +38,6 @@ Table of Contents
 * [Installation on Linux](#installation-on-Linux)
 * [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
 * [Using user specified bands](#using-user-specified-bands)
-* [xml-files and support](#xml-files-and-support)
 * [Copyright](#copyright)
 
 Introduction
@@ -67,6 +66,8 @@ Features
   * Qt-DAB supports most common SDR devices directly.  Yhe device interface is quite simple and in a different document it is explained in detail how to use the interface for other devices;
   * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB recognizes and interprets *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separare tool is available to download the required database.
+  * Qt-DAB starts EPG/SPI services automatically in the background and provides means to show resulting time tables;
+  * Qt-DAB supports **journaline** often transmitted as subservice, and auto starts a small journaline window;
   * Qt-DAB allows running an arbitrary amount of audio services from tne current ensemble as *background service*. with the output sent to a file,
   * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
   * and much more ...
@@ -155,10 +156,12 @@ i.e. the mapping from the complex signals onto their real
 and imaginary components. If the selector labeled
 "ncp" is set, the centerpoints of the 4 lobs is shown. 
 
-On the right hand side the widget shows some quality indicators of the DAB signal. With the current input device, the frequency correction is just 4 Hz, after which a frequency error seems to remain of 1.3 Hz.
-The SNR is over 15 dB, and time, clock and dc offsets can be neglected.
+On the right hand side the widget shows some quality indicators of the DAB signal. The topline specifies the channel and the selected frequency (in KHz).
+With the current input device, the computed frequency correction is just 4 Hz
+(on 227360 Khz) after which a frequency error seems to remain of 1.3 Hz.
+The SNR is over 15 dB, and time, clock and dc offsets are too small to take in consideration.
 
-At the bottom quality information on the FIC handling is shows, the (here) green bar shows that everything is fine, the BER tells that 4 out of each 1000 input bits were wrong and corrected.
+At the bottom quality information on the FIC handling is shows, the (here) green bar shows that everything with FIC decosing is fine, the BER tells that (on average) 4 out of each 1000 input bits were wrong and were corrected.
 
 ![6.8](/res/read_me/spectrum-ideal.png)
 
@@ -169,20 +172,20 @@ picture above is not often seen with real inputs.
 
 The *correlation* scope shows the correlation between the incoming signal and
 predefined  data, i.e. the data as they should be.
-*Correlation* is used in identifying the precise start of the
-(relevant) data of the frame in the input sample stream.
+*Correlation* is used in identifying the input sample in the input stream
+where the (relevant) data of the frame  starts.
 The picture shows three larger peaks, i.e. the signal from
 more than one transmitter is received. 
 The software chooses either the largest one, or - if selected - the
 first one larger than a threshold.
 The picture shows an estimate of the TII numbers near the peaks, it shows
-that "(4, 5) Rotterdan/Celinex toren" (indeed the first peak) is chosen by the software as signal source.
+that "(4, 5) Rotterdan/Celinex toren" (indeed the first and the strongest peak) is chosen by the software as signal source.
 
 ![6.8](/res/read_me/qt-dab-null-period.png)
 
 A DAB signal is received as a sequence of samples, and can be thought to
 be built up from *frames* (DAB frames),  each frame consisting of 199608 consecutive samples.
-The first app. 2500 samples of a frame do not carry a signal, the NULL period.
+The amplitude of the first app. 2500 samples is (almost) zero, the NULL period.
 The *NULL scope* shows the samples in the transition from the NULL period to
 the first samples *with* data of a DAB frame. It shows samples 504 and up in the first data block are used.
 
@@ -191,8 +194,9 @@ the first samples *with* data of a DAB frame. It shows samples 504 and up in the
 In reality the NULL period is - in most cases - not completely without signal,
 each second NULL period may contain an encoding of the TII data.
 The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 4 out of 8 code. Indeed, four larger (and four smaller) peaks can be seen in the picture. The pattern shown is  0x1e.
+
 This TII data - when decoded leads to 2 2 digit numbers -  is used to
-identify the transmitter of the signal received, these numbers can be mapped upon a name and location of the transmitter.
+identify the transmitter of the signal received.
 
 ![6.8](/res/read_me/qt-dab-channel.png)
 
@@ -234,13 +238,14 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
 ![6.9](/res/read_me/sdrplay-v3-control.png?raw=true)
 ![6.9](/res/read_me/pluto-control.png?raw=true)
 
-Aaprt from the untested UHD device, support for these 6 devices is usually
+Apart from the untested UHD device, support for these 6 devices is commonly
 included in the precompiled versions.
-For the use of RTLSDR devces it was noted that the support library for the V4 version of these devices - when used with V3 devices - was rather deaf. So,
-there are two precompiled Windows versions, one with "built-in" support
-for the V4 versions, and one supporting the V3 versions of the DAB sticks.
+By users, it was noted that when using the support library for the V4 version of the RTLSDR (aka DABsticks)  devices  with V3 devices  the software was rather deaf.
+To acocmodate that, there are two precompiled Windows versions,
+one with "built-in" support for the V4 versions, and one supporting the V3 versions of the DAB sticks.
 
-To allow  running Qt-DAB programs that are configured with devices not installed on the user's system, Qt-DAB **dynamically** loads the required functions from the library provided by the device manufacturer.
+In Qt-DAB the appeoach is to **dynamically* load the functions from the manufacturer's device library as soon as a device is selected (and not sooner).
+This  allows  distributing versions that are configured with devices not installed on the user's systemr.
 (For the Windows version(s), the  device libraries for almost all configured devices are provided in the installer. The exception is the SDRplay device, for SDRplay devices, the user has to install the drivers from the SDRplay site.
 
 Qt-DAB also supports input from
@@ -260,7 +265,9 @@ Qt-DAB obviously supports
 
  * reading prerecorded dump rtlsdr type "raw" (8 bits) files;
 
- * reading and writing so-called "xml" files (see below)
+ * reading and writing so-called "xml" files, i.e. a file format preserving the precise structure of the data. 
+
+![6.8](/res/read_me/xml-reader.png?raw=true)
 
 The device widgets for the various devices contain a "dump" button, that button controls the dumping of the unaltered input into a so-called xml file.
 
@@ -272,8 +279,7 @@ Scan control
 A separate widget - visible under control of the *scan* button on the
 main widget - provides full control on scanning. Qt-DAB provides different scanning modes: scan to data, single scan and scan continuously.
 
- * With *single scan* a listing is produced of (the contents of) all
-ensembled ecountered.
+ * With *single scan* a listing is produced of (the contents of) all ensembled ecountered (see the picture above);
  * With *scan to data* scanning starts and continues until a channel is detected
 that carries DAB data (or scanning is stopped by touching the *stop* button).
  * With *scan continuously* a single line is shown for each ensemble
@@ -312,8 +318,8 @@ If the *DX* selector on the bottomline is set,  Qt-DAB shows data of all identif
 
 The picture shows that in my environment, on channel 12C, the national network,
 I can identify a couple of different transmitters in the received signal.
-The left column in the widget shows the transmitter whose TII data is 
-strongest. New is the addition of a "compass" to show the direction
+The left column in the widget the transmitter whose TII data is 
+strongest is marked. The "compass" shows the direction
 from which the signal comes from the selected transmitter.
 
 ![6.8](/res/read_me/QTmap.png?raw=true)
@@ -323,7 +329,7 @@ when touched, a small webserver starts that shows
 the position(s) of the transmitter(s) received on the map. 
 Note that two preconditions have to be met:
  * a "home" location has to be known (see the button *coordinates*);
- * the TII database is installed (see the button *refresh table*);
+ * wa TII database is installed (see the **db-loader** mentioned above).
 
 New in the current version of Qt-DAB is the display of the channels that
 contain data, together with the TII value (mainId, subId) of the transmitter on the map.
@@ -331,7 +337,7 @@ Clicking on a transmitterlocation, displays the details of that location, i.e.
 the distance and some data of the transmitters on that location.
 (Clicking a second time causes that detailed specification to disappear from the screen.
 
-The picture shows some channels I receive with a simple whip next to my "lazy chair".  Of course, using a more advanced antenna. more transmitters show, as seen on the picture below (courtesy of Herman Wijnants)
+The picture shows some channels I receive with a simple whip next to my "lazy chair". Of course, using a more advanced antenna. more transmitters show, as seen on the picture below (courtesy of Herman Wijnants)
 
 ![6.8](/res/read_me/good-antenna.png?raw=true)
 
@@ -340,33 +346,32 @@ on the system is activated. The *configuration and control* widget
 contains a selector for switching this off, so that one might choose
 one's own browser.
 
-See the manual for entering the home position to Qt-DAB.
-
 EPG Handling and time tables
 =================================================================
 
 While not here in the Netherlands, in many other countries an ensemble
 contains an *epg* or *spi* service.
-Such a service contains service logo's and  **time table** data.
+Such a service contains data for service logo's and for  **time tables**.
 **If such a service is part of the ensemble, it will be started automatically to run as background task**.
 
 . Data will be stored in a separate directory that is itself stored
 in the user's Qt-DAB-files directory.
 
-If sufficient data is read in that directory, the software might find a service logo and a time table for the selected service.
-The logo is shown on the main widget, the time table can be shown by touching the timeTable button on the technical widget.
-
 ![6.9](/res/read_me/bbc-3.png?raw=true)
+
+If sufficient data is read in that directory, the software **might** find a service logo and a time table for the selected service.
+The logo - if found - is shown on the main widget (picture above) next to the service name.  The time table can be shown by touching the timeTable button on the technical widget. The timeTable window contains a "next" and "prev" button to scan through different dates. Of course the data for the selected date should be on board to show it.
+
 ![6.9](/res/read_me/timetable.png?raw=true)
 
 Journaline data
-=================================================================
+================================================================
 
 While not in the region where I live, in some countries (Germany) DAB services are sometimes augmented with Journaline data. This data is - at least in the examples I have - transmitted in a subservice as shown in the picture
 
 ![6.9](/res/read_me/journaline-1.png?raw=true)
 
-Since it is a data subservice, it will be automatically activated (and made visible) when the primary service is selected.
+Since it is a secondary **data service**, it is automatically activated (and made visible) when the primary service is selected.
 It shows as given below and is selectable by clicking on the items
 in the journaline window.
 
@@ -634,12 +639,6 @@ one's own band. Specify in a file a list of channels, e.g.
 	four	252650
 
 and pass the file on program start-up with the `-A` command line switch. The channel name is just any identifier, the channel frequency is given in kHz. Your SDR device obviously has to support the frequencies for these channels.
-
-xml-files and support
-=================================================================
-
-*Clemens Schmidt*, author of the QiRX program (https://qirx.softsyst.com/) and me defined a format for storing and exchanging "raw" data: `.xml`-files for
-easier echange of recordings. Such an xml file contains in the first bytes - up to 5000 - a description in xml - as source - of the data contents. This xml description describes in detail the coding of the elements. 
 
 Copyright
 =================================================================
