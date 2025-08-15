@@ -274,10 +274,11 @@ The device widgets for the various devices contain a "dump" button, that button 
 Scan control
 =======================================================================
 
-![6.8](/res/read_me/scan-widget.png?raw=true)
 
 A separate widget - visible under control of the *scan* button on the
 main widget - provides full control on scanning. Qt-DAB provides different scanning modes: scan to data, single scan and scan continuously.
+
+![6.8](/res/read_me/scan-widget.png?raw=true)
 
  * With *single scan* a listing is produced of (the contents of) all ensembled ecountered (see the picture above);
  * With *scan to data* scanning starts and continues until a channel is detected
@@ -307,17 +308,22 @@ precompiled for Windows and Linux-x64.
 ![6.9](/res/read_me/db-loader.png?raw=true)
 
 Alternatively (and for other computing environments) one can download a
-copy of the database from the directory "helpers" in the Qt-DAB repository.
+ reasonably up to date copy of the database from the directory "helpers" in the Qt-DAB repository.
 Unpack the zipped file and name it ".txdata.tii" in the home directory.
+(Qt-DAB expects the downloaded database to be named ".txdata.tii" and to reside in the user's hoe directory.)
 
 As was shown in the correlation view in the spectrum widget, one may receive a signal from more than one transmitter. The bottomline of the Qt-DAB's main
-widget shows the current transmitter.
+widget shows the currently selected transmitter.
 If the *DX* selector on the bottomline is set,  Qt-DAB shows data of all identified transmitters on a small separate window.
 
 ![6.9](/res/read_me/new-dxDisplay.png?raw=true)
 
-The picture shows that in my environment, on channel 12C, the national network,
-I can identify a couple of different transmitters in the received signal.
+The picture shows that the ensemble, transmitted in channel 12C is "NPO",
+and shows for each transmitter that was identified
+the TII value and the recognized pattern, the azimuth and the distance to my home location, the power
+of the transmitter, the altitude (we are in a low-lying part of the country), and the height of the transmitting antenna.
+The strength just ann estimate.
+
 The left column in the widget the transmitter whose TII data is 
 strongest is marked. The "compass" shows the direction
 from which the signal comes from the selected transmitter.
@@ -325,25 +331,24 @@ from which the signal comes from the selected transmitter.
 ![6.8](/res/read_me/QTmap.png?raw=true)
 
 Qt-DAB has - on the main widget -  a button labeled *http*,
-when touched, a small webserver starts that shows
+when touched, a webserver is initiated that - when running - shows
 the position(s) of the transmitter(s) received on the map. 
+
 Note that two preconditions have to be met:
  * a "home" location has to be known (see the button *coordinates*);
  * wa TII database is installed (see the **db-loader** mentioned above).
 
-New in the current version of Qt-DAB is the display of the channels that
-contain data, together with the TII value (mainId, subId) of the transmitter on the map.
+New in the current version of Qt-DAB is the display - per  transmitter - of the channels that contain data, together with the TII value (mainId, subId).
 Clicking on a transmitterlocation, displays the details of that location, i.e.
 the distance and some data of the transmitters on that location.
-(Clicking a second time causes that detailed specification to disappear from the screen.
 
 The picture shows some channels I receive with a simple whip next to my "lazy chair". Of course, using a more advanced antenna. more transmitters show, as seen on the picture below (courtesy of Herman Wijnants)
 
 ![6.8](/res/read_me/good-antenna.png?raw=true)
 
-The webbrowser listens to port 8080. By default, the "standard" browser
+The  webbrowser listens to port 8080. By default, the "standard" browser
 on the system is activated. The *configuration and control* widget
-contains a selector for switching this off, so that one might choose
+contains a selector for switching this off, such that one might choose
 one's own browser.
 
 EPG Handling and time tables
@@ -354,7 +359,7 @@ contains an *epg* or *spi* service.
 Such a service contains data for service logo's and for  **time tables**.
 **If such a service is part of the ensemble, it will be started automatically to run as background task**.
 
-. Data will be stored in a separate directory that is itself stored
+Data will be stored in a separate directory that is itself stored
 in the user's Qt-DAB-files directory.
 
 ![6.9](/res/read_me/bbc-3.png?raw=true)
@@ -371,7 +376,9 @@ While not in the region where I live, in some countries (Germany) DAB services a
 
 ![6.9](/res/read_me/journaline-1.png?raw=true)
 
-Since it is a secondary **data service**, it is automatically activated (and made visible) when the primary service is selected.
+The picture shows that different secondary data services are available, all sharing the same subchannel, the one that actually contains the journaline data.
+
+Since it is a secondary **data service**, such a secondary service is automatically activated (and made visible) when the primary service is selected.
 It shows as given below and is selectable by clicking on the items
 in the journaline window.
 
@@ -459,7 +466,7 @@ Using an MS toolchain on Windows was for me not (yet?) successfull.
 Step 1
 -----------------------------------------------------------------
 
-- :information_source:  In the repository, the sources for the current Qt-DAB version (6.9.3) are in the directory "qt-dab". All sources and include files are found in subdirectories of the subdirectory "sources", 
+- :information_source:  In the repository, the sources for the current Qt-DAB version (6.9.3) are in the directory "qt-dab". All sources and include files are found in subdirectories of the subdirectory "sources". The repository contains a file "structure.md" in which the structure is explained.
 
 The directory "qt-dab" contain a *.pro file with configuration information for use with *qmake*, and a *CMakeLists.txt* file with configuration information for use with *cmake*.
 
@@ -643,12 +650,12 @@ and pass the file on program start-up with the `-A` command line switch. The cha
 Copyright
 =================================================================
 
-	Copyright (C)  2016 .. 2024
+	Copyright (C)  2016 .. 2025
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
-	Copyright of libraries used - Qt-DAB, qwt, fftw, portaudio,
-	libsndfile. libsamplerate, ;ibusb-1, libfaad, libfdk-aac,
+	Copyright of libraries used - Qt, qwt, fftw, portaudio,
+	libsamplerate, ;ibusb-1, libfaad, libfdk-aac,
 	- is gratefully acknowledged.
 	
 	Qt-DAB is distributed under e GPL V2 library,  in the hope that
