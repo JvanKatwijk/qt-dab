@@ -231,6 +231,7 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
   * Adalm Pluto,
   * **untested** UHD (anyone wants to help testing?)
 
+![6.9](/res/read_me/sdrplay-v3-control.png?raw=true)
 ![6.9](/res/read_me/pluto-control.png?raw=true)
 
 Aaprt from the untested UHD device, support for these 6 devices is usually
@@ -371,7 +372,6 @@ in the journaline window.
 
 ![6.9](/res/read_me/journaline-2.png?raw=true)
 ![6.9](/res/read_me/journaline-3.png?raw=true)
-![6.9](/res/read_me/journaline-4.png?raw=true)
 
 Documentation
 =================================================================
