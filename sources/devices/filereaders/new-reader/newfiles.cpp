@@ -47,7 +47,13 @@
 	fileProgress		-> setValue (0);
 	currentTime		-> display (0);
 	int64_t fileLength	= theReader. elementCount ();
+	QString	fileType	= theReader. fileType ();
 	totalTime	-> display ((float)fileLength / SAMPLERATE);
+	typeOfFile	-> setText (fileType);
+	sampleCount	-> setText (QString::number (fileLength));
+	int32_t	Freq	= theReader. getVFOFrequency ();
+	if (Freq > 0)
+	   frequencyLabel -> setText (" Freq:" + QString::number (Freq / 1000));
 	running. store (false);
 }
 //

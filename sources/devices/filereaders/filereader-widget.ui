@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>169</height>
+    <width>460</width>
+    <height>148</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,6 +26,38 @@
       <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>type of file</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="typeOfFile">
+       <property name="text">
+        <string>RIFF</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>nr samples </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="sampleCount">
+       <property name="text">
+        <string>10000000</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QProgressBar" name="fileProgress">

@@ -63,7 +63,8 @@
 	fseek (filePointer, 0, SEEK_SET);
 	fileProgress    -> setValue (0);
         currentTime     -> display (0);
-
+	typeOfFile	-> setText ("raw, 8 bits");
+	sampleCount	-> setText (QString::number (fileLength / 2));
 	running. store (false);
 }
 

@@ -27,10 +27,10 @@
 #include	<stdio.h>
 #include	<stdint.h>
 
-class wavWriter {
+class riffWriter {
 public:
-		wavWriter	();
-		~wavWriter	();
+		riffWriter	();
+		~riffWriter	();
 	bool	init		(const QString &, int,
 	                               int bitDepth = 0, int frequency = 0);
 	void	write		(int16_t *buff, uint64_t samples);

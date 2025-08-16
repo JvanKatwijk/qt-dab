@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2024
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,7 +24,7 @@
 //	The RIFF writer writes the input samples into a "wav" file
 //	with the samplerate of SAMPLERATE (2048000), as 16 bit int's, and a "chunk"
 //	(chunk Id "freq") is added that contains the frequency
-#include	"wavWriter.h"
+#include	"riffWriter.h"
 
 static
 const char	* riff	= "RIFF";
@@ -45,13 +45,13 @@ const char	* aux2	= "bits";
 static
 const char	* data	= "data";
 
-	wavWriter::wavWriter	() {
+	riffWriter::riffWriter	() {
 	isValid = false;
 }
 
-	wavWriter::~wavWriter	() {}
+	riffWriter::~riffWriter	() {}
 
-bool	wavWriter::init	(const QString &fileName, const int sampleRate, 
+bool	riffWriter::init	(const QString &fileName, const int sampleRate, 
 	                 const int frequency, const int bitDepth) {
 	isValid			= false;
 	filePointer		= fopen (fileName. toUtf8 (). data (), "wb");
@@ -133,12 +133,13 @@ bool	wavWriter::init	(const QString &fileName, const int sampleRate,
 	return true;
 }
 
-void	wavWriter::close	() {
+void	riffWriter::close	() {
 	if (!isValid)
 	   return;
 	isValid		= false;
 	uint64_t nrBytes	= nrElements * 2 * sizeof (int16_t);
 
+	fprintf (stderr, "nrBytes = %ld\n", nrBytes);
 //	reset the fp to the location where the nr bytes in the
 //	data chunk should be written
 	fseek (filePointer, 0, SEEK_SET);
@@ -159,7 +160,7 @@ void	wavWriter::close	() {
 	   return;
 	}
 //	a large file, make it BW64
-//
+	fprintf (stderr, "LARGE FILE\n");
 	uint32_t minusOne = 0xFFFFFFFF;
 	fwrite (bw64, 1, 4, filePointer);
 	fwrite (&minusOne, 1, 4, filePointer);
@@ -167,26 +168,35 @@ void	wavWriter::close	() {
 	fwrite (&minusOne, 1, 4, filePointer);
 //	compute the number if of to be recorded in the RIFF count
 	fseek (filePointer, 0, SEEK_END);
-	int riffSize	= ftell (filePointer) - 8;
+	uint64_t riffSize	= ftell (filePointer) - 8;
 //	just fill the ds64 struct
 	fseek (filePointer, 12, SEEK_SET);
 	fwrite (ds64, 1, 4, filePointer);
 	fseek (filePointer, 20, SEEK_SET);
 	uint64_t theSize	= riffSize;
-	fwrite (&theSize, 1, 8, filePointer);
-	fwrite (&nrBytes, 1, 8, filePointer);
+	fprintf (stderr, "riffSize = %ld, bytes %ld\n", 
+	                       riffSize, nrBytes);
+	uint32_t sizeLow	= theSize & 0xFFFFFFFF;
+	uint32_t sizeHigh	= (theSize >> 32) & 0xFFFFFFFF;
+	uint32_t nrBytesLow	= nrBytes & 0xFFFFFFFF;
+	uint32_t nrBytesHigh	= (nrBytes >> 32) & 0xFFFFFFFF;
+	fwrite (&sizeLow, 1, 4, filePointer);
+	fwrite (&sizeHigh, 1, 4, filePointer);
+	fwrite (&nrBytesLow, 1, 4, filePointer);
+	fwrite (&nrBytesHigh, 1, 4, filePointer);
 	fseek (filePointer, 0, SEEK_END);
+	
 	fclose (filePointer);
 }
 
-void	wavWriter::write (int16_t *buff, uint64_t samples) {
+void	riffWriter::write (int16_t *buff, uint64_t samples) {
 	if (!isValid)
 	   return;
 	fwrite (buff, 2 * sizeof (int16_t), (size_t)samples, filePointer);
 	nrElements	+= samples;
 }
 
-bool	wavWriter::isActive	() {
+bool	riffWriter::isActive	() {
 	return isValid;
 }
 

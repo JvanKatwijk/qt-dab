@@ -190,7 +190,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/db-element.h \
 	   ./sources/support/settingNames.h \
 	   ./sources/support/fft-handler.h \
-	   ./sources/support/wavWriter.h \
+	   ./sources/support/riffWriter.h \
 	   ./sources/support/converter_48000.h \
 	   ./sources/support/process-params.h \
 	   ./sources/support/ringbuffer.h \
@@ -332,7 +332,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/logger.cpp \
 	   ./sources/support/settings-handler.cpp \
 	   ./sources/support/position-handler.cpp \
-	   ./sources/support/wavWriter.cpp \
+	   ./sources/support/riffWriter.cpp \
 	   ./sources/support/converter_48000.cpp \
 	   ./sources/support/fft-handler.cpp \
 	   ./sources/support/dab-params.cpp \

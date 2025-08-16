@@ -24,7 +24,7 @@
 #pragma once
 
 #include	<QObject>
-#include	"wavWriter.h"
+#include	"riffWriter.h"
 #include	"dab-constants.h"
 #include	<cstdio>
 #include	<mutex>
@@ -56,7 +56,7 @@ private:
 	                                         int, std::vector<float> &);
 	int		convert_48000		(complex16 *,
 	                                         int, std::vector<float> &);
-	wavWriter	theWriter;
+	riffWriter	theWriter;
 	std::vector<std::complex<float>>	buffer_32_96;
 	LowPassFIR	filter_16_48;
 	LowPassFIR	filter_24_48;

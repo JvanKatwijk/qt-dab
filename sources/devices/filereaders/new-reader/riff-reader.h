@@ -35,6 +35,7 @@ public:
 	void		reset		();
 	int		read		(std::complex<float> *, uint64_t);
 	uint64_t	elementCount	();
+	QString		fileType	();
 	uint64_t	currentPos	();
 
 	int		getVFOFrequency	();
@@ -59,4 +60,5 @@ private:
 	int		bitDepth;
 	float		denominator;
 	int		readBytes;
+	QString		typeOfFile;
 };

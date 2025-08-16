@@ -70,11 +70,23 @@ char header [5];
                    QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
         }
+	typeOfFile = header;
+	if (readBytes == READ4BYTES)
+	   typeOfFile += " int16";
+	if (readBytes == READ6BYTES)
+	   typeOfFile += " int24";
+	if (readBytes == READ8BYTES)
+	   typeOfFile += " int32";
 }
 
 	riffReader::~riffReader () {
 	fclose (filePointer);
 }
+
+QString	riffReader::fileType () {
+	return typeOfFile;
+}
+
 //
 //	To keep things simple, we have
 //	separated "handlers" for the chunk handling for
@@ -88,7 +100,7 @@ char header [5];
 //	fprintf (stderr, "Header %s\n", header);
 	if (QString (header) != "WAVE") {
 	   QString val =
-           QString ("File '%1' is no valid SDR file").arg(fileName);
+              QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
         }
 //	fprintf (stderr, "Header %s\n", header);
@@ -180,14 +192,14 @@ char header [5];
 
 	uint32_t xxx;
 	fread (&xxx, 1, 4, filePointer);
-//	fprintf (stderr, "nrbytes in data %d\n", nrElements);
+	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = xxx / blockAlign;
 	remainingElements	= nrElements;
 	std::fgetpos (filePointer, &baseofData);
 }
 
 void	riffReader::setupFor_bw64Type (uint32_t segmentSize) {
-int	dataSize;
+uint64_t	dataSize;
 char header [5];
 	header [4] = 0;
 //	We expect a "WAVE" header, enclosing an "bw64 " header
@@ -200,7 +212,7 @@ char header [5];
         }
 
 	fread (header, 1, 4, filePointer);
-//	fprintf (stderr, "Header -> %s\n", header);
+	fprintf (stderr, "Header -> %s\n", header);
 	if (QString (header) != "ds64") {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -209,13 +221,20 @@ char header [5];
 
 	int ds64Size;
 	fread (&ds64Size, 1, 4, filePointer);
-//	fprintf (stderr, "ds64Size %d\n", ds64Size);
-	fread (&dataSize, 8, 1, filePointer);
-	fread (&dataSize, 8, 1, filePointer);
+	fprintf (stderr, "ds64Size %d\n", ds64Size);
+	uint32_t a_low;
+	uint32_t a_high;
+	fread (&a_low, 4, 1, filePointer);
+	fread (&a_high, 4, 1, filePointer);
+	dataSize	= ((uint64_t)a_high << 32) | a_low;
+	uint32_t bytesLow;
+	uint32_t bytesHigh;
+	fread (&bytesLow, 4, 1, filePointer);
+	fread (&bytesHigh, 4, 1, filePointer);
+	dataSize = ((uint64_t)bytesHigh << 32) | bytesLow;
 	uint32_t dummy;
 	for (int i = ds64Size - 4 * 4; i < ds64Size; i += 4)
 	   fread (&dummy, 1, 4, filePointer);
-	fprintf (stderr, "Komen we hier nog?\n");
 	fread (header, 1, 4, filePointer);
 	fprintf (stderr, "header -> %s\n", header);
 	if (QString (header) != "fmt ") {
