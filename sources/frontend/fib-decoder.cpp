@@ -439,7 +439,7 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 //	Service component in packet mode 6.3.2
 void	fibDecoder::FIG0Extension3 (uint8_t *d) {
 int16_t used    = 2;            // offset in bytes
-int16_t Length  = getBits_5 (d, 3);
+const int16_t Length  = getBits_5 (d, 3);
 const uint8_t CN_bit  = getBits_1 (d, 8 + 0);
 const uint8_t OE_bit  = getBits_1 (d, 8 + 1);
 const uint8_t PD_bit  = getBits_1 (d, 8 + 2);
@@ -499,7 +499,7 @@ const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
 	}
 }
 
-int16_t	fibDecoder::HandleFIG0Extension5 (uint8_t* d,
+int16_t	fibDecoder::HandleFIG0Extension5 (uint8_t	*d,
 	                                  uint16_t 	offset,
 	                                  const uint8_t CN_bit,
 	                                  const uint8_t OE_bit,
