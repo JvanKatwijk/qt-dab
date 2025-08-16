@@ -4559,16 +4559,6 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	extractServiceInformation	(pictureMappings, Eid, false);
 }
 //
-//	Unused slots, 
-void	RadioInterface::report_startDir	(int objects) {
-	(void)objects;
-//	dynamicLabel	-> setText ("Start of grabbing " + QString::number (objects) + "objects for EPG/SPI");
-}
-
-void	RadioInterface::report_completeDir () {
-//	dynamicLabel	-> setText ("All EPG/SPI data is now in");
-}
-
 void    RadioInterface::lto_ecc (int lto, int ecc) {
 	channel. eccByte = ecc; 
 	channel. hasEcc = true;

@@ -454,8 +454,6 @@ signals:
 public slots:
 	void			lto_ecc			(int, int);
 	void			setFreqList		();
-	void			report_startDir		(int);
-	void			report_completeDir	();
 	void			channelSignal		(const QString &);
 	void			show_dcOffset		(float);
 	void			startScanning		();

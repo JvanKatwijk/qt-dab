@@ -68,8 +68,5 @@ private:
 	   motObject	*motSlide;
 	} motComponentType;
 	std::vector<motComponentType>	motComponents;
-signals:
-	void		report_startDir (int);
-	void		report_completeDir ();
 };
 
