@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>324</width>
-    <height>224</height>
+    <width>290</width>
+    <height>248</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,6 +63,13 @@
     <widget class="QLabel" name="name_of_device">
      <property name="text">
       <string>device name: AD9361</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="statusLabel">
+     <property name="text">
+      <string>statuslabel</string>
      </property>
     </widget>
    </item>

@@ -227,18 +227,18 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
   * SDR DAB sticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick, 
   *  All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library,
   * HACKRF One, 
-  * Airspy, including Airspy mini (bot AirspyHF is not suited for DAB),
+  * Airspy, including Airspy mini (be aware that AirspyHF is **not** able to provide the samplerate required for DAB),
   * LimeSDR, 
   * Adalm Pluto,
   * **untested** UHD (anyone wants to help testing?)
 
-![6.9](/res/read_me/sdrplay-v3-control.png?raw=true)
-![6.9](/res/read_me/pluto-control.png?raw=true)
+![6.9](/res/read_me/rtlsdr-control.png?raw=true)
+![6.9](/res/read_me/hackrf-control.png?raw=true)
 
 Apart from the untested UHD device, support for these 6 devices is commonly
 included in the precompiled versions.
-By users, it was noted that when using the support library for the V4 version of the RTLSDR (aka DABsticks)  devices  with V3 devices  the software was rather deaf.
-To acocmodate that, there are two precompiled Windows versions,
+It was noted by users that when using the support library for the V4 version of the RTLSDR (aka DABsticks)  devices  with V3 devices  the software was rather deaf.
+To acocmodate that, there are **two** precompiled Windows versions,
 one with "built-in" support for the V4 versions, and one supporting the V3 versions of the DAB sticks.
 
 In Qt-DAB the appeoach is to **dynamically* load the functions from the manufacturer's device library as soon as a device is selected (and not sooner).

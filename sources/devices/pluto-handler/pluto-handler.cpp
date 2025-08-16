@@ -536,6 +536,10 @@ iio_channel *gain_channel;
 	else
 	   gainControl	-> show ();
 
+	statusLabel -> setText (QString ("Restart at ") +
+	                                 QString::number (freq / 1000) +
+                                                             QString ("Khz"));
+
 	get_lo_chan (ctx, RX, &lo_channel);
 	rx_cfg. lo_hz = freq;
 	ret = iio_channel_attr_write_longlong (lo_channel,

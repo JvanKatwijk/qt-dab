@@ -19,7 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #include	"xml-descriptor.h"
 #include	"device-handler.h"
@@ -31,15 +30,16 @@ void	xmlDescriptor::printDescriptor	() {
 	fprintf (stderr, "sampleRate =	%d\n", sampleRate);
 	fprintf (stderr, "nrChannels	= %d\n", nrChannels);
 	fprintf (stderr, "bitsperChannel = %d\n", bitsperChannel);
-	fprintf (stderr, "container	= %s\n", container. toLatin1 (). data ());
+	fprintf (stderr, "container	= %s\n",
+	                             container. toLatin1 (). data ());
 	fprintf (stderr, "byteOrder	= %s\n",
-	                              byteOrder. toLatin1 (). data ());
+	                             byteOrder. toLatin1 (). data ());
 	fprintf (stderr, "iqOrder	= %s\n",
-	                              iqOrder. toLatin1 (). data ());
+	                             iqOrder. toLatin1 (). data ());
 	fprintf (stderr, "deviceGain	= %d\n", deviceGain);
 	                               
 	fprintf (stderr, "nrBlocks	= %d (%d)\n",
-	                              nrBlocks,  (int)(blockList. size ()));
+	                             nrBlocks,  (int)(blockList. size ()));
 	for (int i = 0; i < (int)blockList. size (); i ++)
 #ifdef	__MINGW32__
 	   fprintf (stderr, ">>>   %d %lld %s %d %s\n",
@@ -105,7 +105,7 @@ void	xmlDescriptor::add_modtoBlock (int blockno, QString modType) {
 	xmlDescriptor::xmlDescriptor (FILE *f, bool *ok) {
 QDomDocument xmlDoc;
 QByteArray xmlText;
-int	zeroCount = 0;
+int		zeroCount = 0;
 //
 //	set default values
 	nrChannels	= 2;
@@ -113,10 +113,9 @@ int	zeroCount = 0;
 	container	= "int16_t";
 	byteOrder	= QString ("MSB");
 	iqOrder		="IQ";
-	uint8_t		theChar;
 	deviceGain	= -1;
 	while (zeroCount < 500) {
-	   theChar = fgetc (f);
+	   uint8_t theChar = fgetc (f);
 	   if (theChar == 0)
 	      zeroCount ++;
 	   else 
