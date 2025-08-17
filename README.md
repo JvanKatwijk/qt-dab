@@ -59,7 +59,7 @@ was changed completely, but that does not affect the executables.
 Features
 =================================================================
   
-  * Qt-DAB supports most common SDR devices directly. The device interface is quite simple and in a different document it is explained in detail how to use the interface for other devices;
+  * Qt-DAB supports most common SDR devices directly. The device interface is quite simple and in a different document it is explained in detail how to use the interface  to implement control for other devices;
   * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB recognizes and interprets *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separare tool is available to download the required database.
   * Qt-DAB starts EPG/SPI services automatically in the background and provides means to show resulting time tables;
@@ -184,13 +184,13 @@ A DAB signal is received as a sequence of samples, and can be thought to
 be built up from *frames* (DAB frames),  each frame consisting of 199608 consecutive samples.
 The amplitude of the first app. 2500 samples is (almost) zero, the NULL period.
 The *NULL scope* shows the samples in the transition from the NULL period to
-the first samples *with* data of a DAB frame. It shows samples 504 and up in the first data block are used.
+the first samples *with* data of a DAB frame. It shows that samples 504 and up in the first data block are used.
 
 ![6.8](/res/read_me/qt-dab-tii-data.png)
 
 In reality the NULL period is - in most cases - not completely without signal,
 each second NULL period may contain an encoding of the TII data.
-The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 4 out of 8 code. Indeed, four larger (and four smaller) peaks can be seen in the picture. The pattern shown is  0x1e.
+The *TII scope* shows (part of) the spectrum of the data in the NULL period, the TII data is encoded as a 4 out of 8 code. Indeed, four larger (and four smaller) peaks can be seen in the picture. In this picture the pattern shown is 0x1e.
 
 This TII data - when decoded leads to 2 2 digit numbers -  is used to
 identify the transmitter of the signal received.
@@ -241,37 +241,37 @@ To acocmodate that, there are **two** precompiled Windows versions,
 one with "built-in" support for the V4 versions, and one supporting the V3 versions of the DAB sticks.
 
 In Qt-DAB the approach is to **dynamically* load the functions from the manufacturer's device library as soon as a device is selected (and not sooner).
-This  allows  distributing versions that are configured with devices not installed on the user's systemr.
-(For the Windows version(s), the  device libraries for almost all configured devices are provided in the installer. The exception are the SDRplay device nd Pluto.
+This  allows  distributing versions that are configured with devices not installed on the user's system.
+(For the Windows version(s), the  device libraries for almost all configured devices are provided in the installer. The exception are the SDRplay snd Pluto devices.
 For SDRplay devices the user has to install the drivers from the SDRplay site,
 for Pluto support one should see the instructions in "https://github.com/analogdevicesinc/plutosdr-m2k-drivers-win".
 
 Qt-DAB also supports input from
   * an rtl_tcp server connected to an RTLSDR device.
-  *  a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot handle the required samplerate. (Be aware that Qt-DAB processes the input with 2048000 Samples/second. Using the 16 bit version - 4 bytes per sample - requires a bandwidth of at least 8 M. I am using it with a wired connection between two laptops using the 8 bit version, using the WiFi is not likely to be successfull).
+  *  a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot deliver samples at the required samplerate. (Be aware that Qt-DAB processes the input with 2048000 Samples/second. Using the 16 bit version - 4 bytes per sample - requires a bandwidth of at least 8 M. I am using it with a wired connection between two laptops using the 8 bit version, using the WiFi is not likely to be successfull).
 
 ![6.9](/res/read_me/spy-server16-control.png?raw=true)
 
 Qt-DAB furthermore supports
-  * Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000),
+  * Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000).
 
 ![6.9](/res/read_me/soapy-control.png?raw=true)
 
 Qt-DAB obviously supports:
  *  reading and writing ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with inputrate 2048000.
  NEW is the ability of Qt-DAB to generate "sdr" type files with a size  **larger than 4 Gb** (i.e. the BW64 type), and (obviously) the ability of the ".sdr" reader to read such files.
-When reading input from an ".sdr" file that was **generated by Qt-DAB** 
-the channel frequency of the reception is displayed as shown in the picture below:
+The device widget gives information what the "type" of the file is (RIFF or BW64).
+![6.8](/res/read_me/riff-reader-large.png?raw=true)
+![6.8](/res/read_me/riff-reader-small.png?raw=true)
 
-![6.8](/res/read_me/riff-reader.png?raw=true)
+When reading input from an ".sdr" file that was **generated by Qt-DAB** 
+the channel frequency of the reception is displayed as shown in the pictures above.
 
  * reading prerecorded dump rtlsdr type "raw" (8 bits) files. The RTLSDR device handlers show a button "dump" for dumping the raw input into a ".raw" file.
 
- * reading and writing so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. 
+ * reading and writing so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device widget a button to control dumping the unmodified input into an xml file.
 
 ![6.8](/res/read_me/xml-reader.png?raw=true)
-
-The device widgets for the various "hard" devices contain a "dump" button, that button controls the dumping of the unaltered input into a so-called xml file. (See e.g. the above pictures of the SDRplay and Pluto).
 
 Scan control
 =======================================================================
@@ -359,7 +359,8 @@ EPG Handling and time tables
 While not here in the Netherlands, in many other countries an ensemble
 contains an *epg* or *spi* service.
 Such a service contains data for service logo's and for  **time tables**.
-**If such a service is part of the ensemble, it will be started automatically to run as background task**.
+If such a service is detected within a hardful of seconds after the start of the channel, Qt-DAB will attempt to start the service as background task.
+If the EPG/SPI service was identified late, the service can be started manually and will also run as background task.
 
 Data decoded by this service will be stored in a separate directory that is itself stored in the user's Qt-DAB-files directory.
 
@@ -381,6 +382,7 @@ Journaline data
 ================================================================
 
 While not in the region where I live, in some countries (Germany) DAB services are sometimes augmented with Journaline data. This data is - at least in the examples I have - transmitted in a subservice as shown in the picture
+Qt-DAB uses the "NewsService Journaline (R) Decoder" software from Fruanhofer IIS Erlangen (in a slightly modified form (all rights gratefully acknowledged).
 
 ![6.9](/res/read_me/journaline-1.png?raw=true)
 

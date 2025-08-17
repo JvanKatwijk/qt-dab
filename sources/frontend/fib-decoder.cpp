@@ -116,7 +116,6 @@ uint8_t	*d		= p;
 //	Thanks to Ronny Kunze, who discovered that I used
 //	a p rather than a d
 	      processedBytes += getBits_5 (d, 3) + 1;
-//	      processedBytes += getBits (p, 3, 5) + 1;
 	      d = p + processedBytes * 8;
 	}
 	fibLocker. unlock();
@@ -241,15 +240,15 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 //	FIG0/0 indicated a change in channel organization
 //	The info is MCI
 void	fibDecoder::FIG0Extension0 (uint8_t *d) {
+const uint8_t CN_bit	= getBits_1 (d, 8 + 0);
 uint16_t        EId;
 uint8_t         changeFlag;
 uint16_t        highpart, lowpart;
 int16_t         occurrenceChange;
-//uint8_t CN_bit	= getBits_1 (d, 8 + 0);
 uint8_t		alarmFlag;
 static	uint8_t prevChangeFlag	= 0;
 
-//	(void)CN_bit;
+	(void)CN_bit;
 	EId                     = getBits   (d, 16, 16);
 	(void)EId;
 	changeFlag              = getBits_2 (d, 16 + 16);
@@ -268,7 +267,7 @@ static	uint8_t prevChangeFlag	= 0;
 	   fibConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;
-	   nextConfig	->  reset ();
+	   nextConfig		->  reset ();
 //	   cleanupServiceList ();
 	   emit changeinConfiguration ();
 	}
@@ -283,10 +282,10 @@ static	uint8_t prevChangeFlag	= 0;
 //	relevant CIF.
 void	fibDecoder::FIG0Extension1 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes
-int16_t	Length		= getBits_5 (d, 3);
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+const int16_t	Length			= getBits_5 (d, 3);
+const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
+const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
+const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
 	while (used < Length - 1)
 	   used = HandleFIG0Extension1 (d, used, CN_bit, OE_bit, PD_bit);
@@ -297,7 +296,6 @@ int16_t	fibDecoder::HandleFIG0Extension1 (uint8_t *d, int16_t offset,
 	                                  const uint8_t CN_bit,
 	                                  const uint8_t OE_bit,
 	                                  const uint8_t PD_bit) {
-
 int16_t	bitOffset	= offset * 8;
 const int16_t subChId	= getBits_6 (d, bitOffset);
 const int16_t startAdr	= getBits (d, bitOffset + 6, 10);
@@ -315,26 +313,26 @@ static	int table_2 [] = {27, 21, 18, 15};
 	channel. FEC_scheme	= 0;	// corrected later on
 
 	if (getBits_1 (d, bitOffset + 16) == 0) {	// short form
-	   tabelIndex = getBits_6 (d, bitOffset + 18);
+	   tabelIndex		= getBits_6 (d, bitOffset + 18);
 	   channel. Length	= ProtLevel [tabelIndex][0];
 	   channel. shortForm	= true;		// short form
 	   channel. protLevel	= ProtLevel [tabelIndex][1];
-	   channel. bitRate		= ProtLevel [tabelIndex][2];
+	   channel. bitRate	= ProtLevel [tabelIndex][2];
 	   bitOffset += 24;
 	}
 	else { 	// EEP long form
 	   channel. shortForm	= false;
 	   option = getBits_3 (d, bitOffset + 17);
 	   if (option == 0) { 		// A Level protection
-	      protLevel			= getBits (d, bitOffset + 20, 2);
+	      protLevel		= getBits (d, bitOffset + 20, 2);
 	      channel.	protLevel	= protLevel;
-	      chanSize	= getBits (d, bitOffset + 22, 10);
+	      chanSize		= getBits (d, bitOffset + 22, 10);
 	      channel. Length	= chanSize;
 	      channel. bitRate	= chanSize / table_1 [protLevel] * 8;
 	   }
 	   else			// option should be 001
 	   if (option == 001) {		// B Level protection
-	      protLevel			= getBits_2 (d, bitOffset + 20);
+	      protLevel		= getBits_2 (d, bitOffset + 20);
 	      channel. protLevel	= protLevel + (1 << 2);
 	      chanSize		= getBits (d, bitOffset + 22, 10);
 	      channel. Length	= chanSize;
@@ -348,7 +346,6 @@ static	int table_2 [] = {27, 21, 18, 15};
 	if (localBase -> findIndex_subChannel_table (subChId) >= 0)
 	   return bitOffset / 8;
 //
-	
 	localBase -> subChannel_table. push_back (channel);
 	return bitOffset / 8;	// we return bytes
 }
@@ -357,7 +354,7 @@ static	int table_2 [] = {27, 21, 18, 15};
 //	bind channels to SIds
 void	fibDecoder::FIG0Extension2 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
-int16_t	Length	= getBits_5 (d, 3);
+const int16_t	Length	= getBits_5 (d, 3);
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
@@ -381,7 +378,6 @@ int16_t		numberofComponents;
 fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	
 	(void)OE_bit;
-
 	if (PD_bit == 1) {		// long Sid, data
 	   ecc	= getBits_8 (d, bitOffset);	(void)ecc;
 	   cId	= getBits_4 (d, bitOffset + 4);
@@ -489,7 +485,7 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 //	Service component language 8.1.2
 void	fibDecoder::FIG0Extension5 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes
-int16_t	Length		= getBits_5 (d, 3);
+const int16_t Length	= getBits_5 (d, 3);
 const uint8_t CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
@@ -555,7 +551,7 @@ fibConfig::SC_language comp;
 // FIG0/7: Configuration linking information 6.4.2,
 void    fibDecoder::FIG0Extension7 (uint8_t *d) {
 int16_t used		= 2;            // offset in bytes
-int16_t Length          = getBits_5 (d, 3);
+const int16_t Length	= getBits_5 (d, 3);
 const uint8_t CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
@@ -920,13 +916,14 @@ fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 }
 //
 //	Service Component Information
+//	Not encountered yet
 void	fibDecoder::FIG0Extension20 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes
 const int16_t	Length	= getBits_5 (d, 3);
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
-
+	fprintf (stderr, "Fig20\n");
 	return;
 	while (used < Length) 
 	   used = HandleFIG0Extension21 (d, used, CN_bit, OE_bit, PD_bit);
@@ -1082,8 +1079,8 @@ char		label [17];
 	                                     (const char *) label,
 	                                     (CharacterSet) charSet);
 	QString realName = name;
-	for (int i = name. length (); i < 16; i ++)
-	   realName. append (' ');
+//	for (int i = name. length (); i < 16; i ++)
+//	   realName. append (' ');
 	if (!theEnsemble. namePresent) {
 	   theEnsemble. ensembleName	= realName;
 	   theEnsemble. EId		= EId;
@@ -1105,9 +1102,6 @@ char		label [17];
 	const uint32_t SId	= getBits (d, 16, 16);
 	label [16]      = 0x00;
 	(void)Rfu; (void)extension;
-//	if (charSet >= 16) 	// cannot  happen
-//	   return;
-	
 	for (auto &serv : theEnsemble. primaries) {
 	   if (SId == serv. SId) 
 	      return;
@@ -1118,8 +1112,8 @@ char		label [17];
 	QString dataName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
-	for (int i = dataName. length (); i < 16; i ++)
-	   dataName. append (' ');
+//	for (int i = dataName. length (); i < 16; i ++)
+//	   dataName. append (' ');
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
@@ -1175,14 +1169,13 @@ uint32_t	SId;
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
-	if (charSet >= 16) 	// does not seem right
-	   return;
-
 	for (int i = 0; i < 16; i ++) 
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);
 	QString dataName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
+//	for (int i = dataName. length (); i < 16; i ++)
+//	   dataName. append (' ');
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
@@ -1221,21 +1214,20 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	   if (SId == serv. SId) 
 	      return;
 	}
-
-//	if (charSet > 16) 	// 4 bits = 0 .. 15
-//	   return;
-
 	for (int i = 0; i < 16; i ++) {
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);
 	}
 	QString dataName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
+//	for (int i = dataName. length (); i < 16; i ++)
+//	   dataName. append (' ');
+	if (dataName. size () < 16)
+	   fprintf (stderr, "a");
 	QString shortName;		
-	for (int i = 0; i < 16; i ++) 
+	for (int i = 0; i < 16; i ++)  
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
 	      shortName. append (dataName. at (i));
-
 
 	ensemble::service prim;
 	prim. programType	= 0;

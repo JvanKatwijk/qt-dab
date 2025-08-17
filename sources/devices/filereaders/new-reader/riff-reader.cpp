@@ -43,10 +43,10 @@ int res	= 1;
 uint32_t segmentSize;
 char header [5];
 
+        header [4]	= 0;
 	bitDepth	= 15;	// default
 	tunedFrequency	= -1;
 	denominator	= 0;
-        header [4] = 0;
 	filePointer     = fopen (fileName. toLatin1 (). data (), "rb");
         if (filePointer == nullptr) {
 	   QString val =
@@ -95,7 +95,8 @@ QString	riffReader::fileType () {
 //	differences are in the beginning and in the end.
 void	riffReader::setupFor_wavType (uint32_t segmentSize) {
 char header [5];
-	header [0] = 0;
+
+	header [4] = 0;
 	fread (header, 1, 4, filePointer);
 //	fprintf (stderr, "Header %s\n", header);
 	if (QString (header) != "WAVE") {
@@ -192,7 +193,7 @@ char header [5];
 
 	uint32_t xxx;
 	fread (&xxx, 1, 4, filePointer);
-	fprintf (stderr, "nrbytes in data %d\n", nrElements);
+//	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = xxx / blockAlign;
 	remainingElements	= nrElements;
 	std::fgetpos (filePointer, &baseofData);
@@ -201,6 +202,7 @@ char header [5];
 void	riffReader::setupFor_bw64Type (uint32_t segmentSize) {
 uint64_t	dataSize;
 char header [5];
+
 	header [4] = 0;
 //	We expect a "WAVE" header, enclosing an "bw64 " header
 	fread (header, 1, 4, filePointer);
@@ -212,7 +214,7 @@ char header [5];
         }
 
 	fread (header, 1, 4, filePointer);
-	fprintf (stderr, "Header -> %s\n", header);
+//	fprintf (stderr, "Header -> %s\n", header);
 	if (QString (header) != "ds64") {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -221,7 +223,7 @@ char header [5];
 
 	int ds64Size;
 	fread (&ds64Size, 1, 4, filePointer);
-	fprintf (stderr, "ds64Size %d\n", ds64Size);
+//	fprintf (stderr, "ds64Size %d\n", ds64Size);
 	uint32_t a_low;
 	uint32_t a_high;
 	fread (&a_low, 4, 1, filePointer);
@@ -236,7 +238,7 @@ char header [5];
 	for (int i = ds64Size - 4 * 4; i < ds64Size; i += 4)
 	   fread (&dummy, 1, 4, filePointer);
 	fread (header, 1, 4, filePointer);
-	fprintf (stderr, "header -> %s\n", header);
+//	fprintf (stderr, "header -> %s\n", header);
 	if (QString (header) != "fmt ") {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -253,7 +255,7 @@ char header [5];
 	fread (&formatTag, 1, sizeof (uint16_t), filePointer);
 	fread (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	fread (&samplingRate, 1, 4, filePointer);
-	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
+//	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
 	if ((formatTag != 01) ||
 	    (nrChannels != 02) || (samplingRate != SAMPLERATE)) {
 	   QString val =

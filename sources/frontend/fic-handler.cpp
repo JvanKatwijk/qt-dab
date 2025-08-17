@@ -192,7 +192,8 @@ int16_t	inputCount	= 0;
 
 	if (!running. load ())
 	   return false;
-	memset (viterbiInput, 0, (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
+	memset (viterbiInput, 0,
+	              (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
 
 	for (int i = 0; i < FIC_BLOCKSIZE + FIC_RESIDU; i ++)
 	   if (punctureTable [i])

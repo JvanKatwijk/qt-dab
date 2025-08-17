@@ -106,7 +106,7 @@ bool	riffWriter::init	(const QString &fileName, const int sampleRate,
 	if (frequency > 0) {
 	   fwrite (aux1, 1, 4, filePointer);
 	   locationCounter	+= 4;
-	   int freqLen	= sizeof (int32_t);
+	   int freqLen		= sizeof (int32_t);
 	   fwrite (&freqLen, 1, 4, filePointer);
 	   locationCounter	+= 4;
 	   fwrite (&frequency, 1, 4, filePointer);
