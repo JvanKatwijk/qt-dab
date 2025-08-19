@@ -44,9 +44,10 @@ uint32_t segmentSize;
 char header [5];
 
         header [4]	= 0;
-	bitDepth	= 15;	// default
+	bitDepth	= 0;	// i.e. unknown
 	tunedFrequency	= -1;
 	denominator	= 0;
+	theDevice	= "";
 	filePointer     = fopen (fileName. toLatin1 (). data (), "rb");
         if (filePointer == nullptr) {
 	   QString val =
@@ -174,6 +175,12 @@ char header [5];
 	   if (QString (header) == "bits")
 	      fread (&bitDepth, 1, 4, filePointer);
 	   else
+	   if (QString (header) == "sys ") {
+	      char temp [255];
+	      fread (temp, 1, segmentSize, filePointer);
+	      theDevice	= QString (temp);
+	   }
+	   else
 	      fseek (filePointer, segmentSize, SEEK_CUR);
 	   fread (header, 1, 4, filePointer);
 //	   fprintf (stderr, "Now we read %s\n", header);
@@ -184,7 +191,7 @@ char header [5];
            }
 	}
 
-	denominator	= value_for (bitDepth);
+	denominator	= bitDepth != 0 ? value_for (bitDepth) : 32768;
 	if (QString (header) != "data") {	// should not happen
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -299,6 +306,12 @@ char header [5];
 	   if (QString (header) == "bits")
 	      fread (&bitDepth, 1, 4, filePointer);
 	   else
+	   if (QString (header) == "sys ") {
+	      char temp [255];
+	      fread (temp, 1, segmentSize, filePointer);
+	      theDevice	= QString (temp);
+	   }
+	   else
 	      fseek (filePointer, segmentSize, SEEK_CUR);
 	   fread (header, 1, 4, filePointer);
 //	   fprintf (stderr, "Now we read %s\n", header);
@@ -309,7 +322,7 @@ char header [5];
            }
 	}
 
-	denominator	= value_for (bitDepth);
+	denominator	= bitDepth != 0 ? value_for (bitDepth): 32768;
 	if (QString (header) != "data") {	// should not happen
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -403,5 +416,9 @@ uint64_t	riffReader::currentPos		() {
 
 int	riffReader::getVFOFrequency	() {
 	return tunedFrequency;
+}
+
+QString		riffReader::getDevice	() {
+	return theDevice;
 }
 

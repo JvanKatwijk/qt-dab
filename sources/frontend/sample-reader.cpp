@@ -185,8 +185,10 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 }
 
 void	sampleReader::startDumping (const QString &fileName,
-	                                      int freq, int bitDepth) {
-	sourceDumper. init (fileName, SAMPLERATE, freq, bitDepth);
+	                            int freq, int bitDepth, 
+	                            const QString deviceName) {
+	sourceDumper. init (fileName, SAMPLERATE,
+	                    freq, bitDepth, deviceName);
 }
 
 void	sampleReader::stopDumping() {

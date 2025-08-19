@@ -643,8 +643,8 @@ bool    ofdmHandler::setDataChannel (packetdata &d,
 }
 
 void	ofdmHandler::startDumping	(const QString &f, int freq,
-	                                               int bitDepth) {
-	theReader. startDumping (f, freq, bitDepth);
+	                                 int bitDepth, const QString creator) {
+	theReader. startDumping (f, freq, bitDepth, creator);
 }
 
 void	ofdmHandler::stopDumping() {

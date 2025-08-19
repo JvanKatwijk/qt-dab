@@ -32,7 +32,8 @@ public:
 		riffWriter	();
 		~riffWriter	();
 	bool	init		(const QString &, int,
-	                               int bitDepth = 0, int frequency = 0);
+	                         int bitDepth = 0, int frequency = 0,
+	                         QString creator = "Qt-DAB-6.9.3");
 	void	write		(int16_t *buff, uint64_t samples);
 	void	close		();
 	bool	isActive	();

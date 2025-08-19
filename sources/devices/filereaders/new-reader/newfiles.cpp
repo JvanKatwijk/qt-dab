@@ -40,6 +40,7 @@
 	newFilesSettings	= s;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, WAVSETTINGS);
+	myFrame. setWindowTitle ("BW64/RIFF reader");
 	myFrame. show	();
 	this -> fileName	= fileName;
 
@@ -48,7 +49,12 @@
 	currentTime		-> display (0);
 	int64_t fileLength	= theReader. elementCount ();
 	QString	fileType	= theReader. fileType ();
+	QString deviceName	= theReader. getDevice ();
 	totalTime	-> display ((float)fileLength / SAMPLERATE);
+	if (deviceName != "") {
+	   deviceLabel	-> setText ("Generating device: ");
+	   theDevice	-> setText (deviceName);
+	}
 	typeOfFile	-> setText (fileType);
 	sampleCount	-> setText (QString::number (fileLength));
 	int32_t	Freq	= theReader. getVFOFrequency ();

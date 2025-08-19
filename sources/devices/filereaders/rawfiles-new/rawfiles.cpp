@@ -48,6 +48,7 @@
 	this -> fileName	= fileName;
 	setupUi	(&myFrame);
 	setPositionAndSize (s, &myFrame, RAWSETTINGS);
+	myFrame. setWindowTitle ("Reader for raw (8 bit osmocom type) files");
 	myFrame. show	();
 
 	filePointer	= fopen (fileName. toUtf8 (). data (), "rb");

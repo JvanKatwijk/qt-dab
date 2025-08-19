@@ -43,6 +43,8 @@ const char	* aux1	= "freq";
 static
 const char	* aux2	= "bits";
 static
+const char	* aux3	= "sys ";
+static
 const char	* data	= "data";
 
 	riffWriter::riffWriter	() {
@@ -52,7 +54,8 @@ const char	* data	= "data";
 	riffWriter::~riffWriter	() {}
 
 bool	riffWriter::init	(const QString &fileName, const int sampleRate, 
-	                 const int frequency, const int bitDepth) {
+	                         const int frequency, const int bitDepth,
+	                         QString creatorText) {
 	isValid			= false;
 	filePointer		= fopen (fileName. toUtf8 (). data (), "wb");
 	if (filePointer == nullptr)
@@ -122,6 +125,17 @@ bool	riffWriter::init	(const QString &fileName, const int sampleRate,
 	   locationCounter	+= 4;
 	   fwrite (&bitDepth, 1, 4, filePointer);
 	   locationCounter	+= 4;
+	}
+//	the "creator" chunk
+	if (bitDepth > 0) {
+	   fwrite (aux3, 1, 4, filePointer);
+	   locationCounter	+= 4;
+	   int size = strlen (creatorText. toLatin1 (). data ());
+	   locationCounter	+= 4;
+	   fwrite (&size,  1, 4, filePointer);
+	   locationCounter	+= 4;
+	   fwrite (creatorText. toLatin1 (). data (), 1, size, filePointer);
+	   locationCounter	+= size;
 	}
 //
 //	start of the "data" chunk

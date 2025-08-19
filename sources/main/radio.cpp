@@ -3476,7 +3476,9 @@ QString channelName	= channel. channelName;
 	                                     deviceName, channelName);
 	configHandler_p	-> mark_dumpButton (true);
 	theOFDMHandler -> startDumping (rawDumpName,
-	                            channel. tunedFrequency, bitDepth);
+	                                channel. tunedFrequency, 
+	                                bitDepth,
+	                                inputDevice_p -> deviceName ());
 	sourceDumping = true;
 }
 

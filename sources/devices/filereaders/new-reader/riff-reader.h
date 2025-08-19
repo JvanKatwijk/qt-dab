@@ -37,11 +37,12 @@ public:
 	uint64_t	elementCount	();
 	QString		fileType	();
 	uint64_t	currentPos	();
-
 	int		getVFOFrequency	();
+	QString		getDevice	();
 private:
 
 	QString		fileName;
+	QString		theDevice;
 	uint16_t	formatTag;
         uint16_t	nrChannels;
         uint32_t	samplingRate;

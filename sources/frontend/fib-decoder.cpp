@@ -923,7 +923,17 @@ const int16_t	Length	= getBits_5 (d, 3);
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
-	fprintf (stderr, "Fig20\n");
+#ifndef	__MINGW32__
+	static bool shown = false;
+	if (!shown) {
+	   if (theEnsemble. namePresent) {
+	      fprintf (stderr, "FIG0/20 appears in %s\n",
+	                           theEnsemble. ensembleName.
+	                                     toLatin1 (). data ());
+	      shown = true;
+	   }
+	}
+#endif
 	return;
 	while (used < Length) 
 	   used = HandleFIG0Extension21 (d, used, CN_bit, OE_bit, PD_bit);

@@ -55,7 +55,7 @@ public:
 	      void	getSamples	(std::vector<Complex> &v,
 	                                 int index,
 	                                 int32_t n, int32_t phase, bool saving);
-	      void	startDumping	(const QString &, int, int);
+	      void	startDumping	(const QString &, int, int, const QString);
 	      void	stopDumping	();
 private:
 	      riffWriter	sourceDumper;

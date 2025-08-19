@@ -37,6 +37,8 @@ public:
 	QLCDNumber	*currentTime;
 	QLabel		*seconds;
 	QLCDNumber	*totalTime;
+	QLabel		*deviceLabel;
+	QLabel		*theDevice;
 	QLabel		*typeLabel;
 	QLabel		*typeOfFile;
 	QLabel		*amountLabel;
@@ -48,6 +50,8 @@ public:
 void	setupUi		(QWidget *qw) {
 	titleLabel	= new QLabel ("Playing pre-recorded file");
 	nameofFile	= new QLabel ();
+	deviceLabel	= new QLabel ();
+	theDevice	= new QLabel ();
 	typeLabel	= new QLabel ("filetype ");
 	typeOfFile	= new QLabel ();
 	amountLabel	= new QLabel (" nr samples ");
@@ -64,11 +68,14 @@ void	setupUi		(QWidget *qw) {
 	totalTime	->  setFrameShape (QFrame::NoFrame);
 	totalTime	->  setSegmentStyle (QLCDNumber::Flat);
 	QHBoxLayout *line_2	= new QHBoxLayout ();
-	line_2		-> addWidget (typeLabel);
-	line_2		-> addWidget (typeOfFile);
-	line_2		-> addWidget (amountLabel);
-	line_2		-> addWidget (sampleCount);
-	line_2		-> addWidget (frequencyLabel);
+	line_2		-> addWidget	(deviceLabel);
+	line_2		-> addWidget (theDevice);
+	QHBoxLayout *line_3	= new QHBoxLayout ();
+	line_3		-> addWidget (typeLabel);
+	line_3		-> addWidget (typeOfFile);
+	line_3		-> addWidget (amountLabel);
+	line_3		-> addWidget (sampleCount);
+	line_3		-> addWidget (frequencyLabel);
 	QHBoxLayout *bottom	= new QHBoxLayout ();
 	bottom		-> addWidget (currentTime);
 	bottom		-> addWidget (seconds);
@@ -78,6 +85,7 @@ void	setupUi		(QWidget *qw) {
 	base		-> addWidget (titleLabel);
 	base		-> addWidget (nameofFile);
 	base		-> addItem	(line_2);
+	base		-> addItem	(line_3);
 	base		-> addWidget (fileProgress);
 	base		-> addItem   (bottom);
 	
