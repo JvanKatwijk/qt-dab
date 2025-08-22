@@ -132,7 +132,7 @@
                  this, &displayWidget::switch_tab);
 	connect (IQDisplay_p, qOverload<>(&IQDisplay::rightMouseClick),
 	         this, &displayWidget::rightMouseClick);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (ncpScope_checkBox, &QCheckBox::checkStateChanged,
 #else
 	connect (ncpScope_checkBox, &QCheckBox::stateChanged,

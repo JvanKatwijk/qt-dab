@@ -153,13 +153,13 @@
 	         this, &hackrfHandler::handle_LNAGain);
 	connect (vgaGainSlider, &QSlider::valueChanged,
 	         this, &hackrfHandler::handle_VGAGain);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasT_button, &QCheckBox::checkStateChanged,
 #else
 	connect (biasT_button, &QCheckBox::stateChanged,
 #endif
 	         this, &hackrfHandler::handle_biasT);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (AmpEnableButton, &QCheckBox::checkStateChanged,
 #else
 	connect (AmpEnableButton, &QCheckBox::stateChanged,

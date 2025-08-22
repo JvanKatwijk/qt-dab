@@ -132,7 +132,11 @@ void	soapyHandler::createDevice (const QString &deviceString) {
 	hasAgc	= SoapySDRDevice_hasGainMode (m_device, SOAPY_SDR_RX, 0);
 	if (hasAgc) 
 	   SoapySDRDevice_setGainMode (m_device, SOAPY_SDR_RX, 0, false); 
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+	connect (agcControl, &QCheckBox::checkStateChanged,
+#else
 	connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &soapyHandler::setAgc);
 
 

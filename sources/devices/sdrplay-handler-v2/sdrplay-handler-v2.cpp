@@ -257,7 +257,7 @@ mir_sdr_DeviceT devDesc [4];
 	}
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (debugControl, &QCheckBox::checkStateChanged,
 #else
 	connect (debugControl, &QCheckBox::stateChanged,
@@ -267,7 +267,7 @@ mir_sdr_DeviceT devDesc [4];
 	         this, &sdrplayHandler_v2::handle_ppmControl);
 	connect (dumpButton, &QPushButton::clicked,
 	         this, &sdrplayHandler_v2::handle_xmlDump);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasT_selector, &QCheckBox::checkStateChanged,
 #else
 	connect (biasT_selector, &QCheckBox::stateChanged,
@@ -459,7 +459,7 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	if (err != mir_sdr_Success)
            fprintf (stderr, "error = %s\n",
                         errorCodes (err). toLatin1(). data());
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	connect (agcControl, &QCheckBox::stateChanged,
@@ -488,7 +488,7 @@ mir_sdr_ErrT err;
 	            this, &sdrplayHandler_v2::handle_ifgainReduction);
 	disconnect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
 	            this, &sdrplayHandler_v2::handle_lnagainReduction);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	disconnect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	disconnect (agcControl, &QCheckBox::stateChanged,

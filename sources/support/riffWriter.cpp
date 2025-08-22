@@ -24,6 +24,11 @@
 //	The RIFF writer writes the input samples into a "wav" file
 //	with the samplerate of SAMPLERATE (2048000), as 16 bit int's, and a "chunk"
 //	(chunk Id "freq") is added that contains the frequency
+//
+//	The BW64 format is derived from Recommendation ITU-R BS.2088-1 (10/2019)
+//	Long-form file format for the international
+//	exchange of audio programme materials with metadata
+
 #include	"riffWriter.h"
 
 static
@@ -52,7 +57,11 @@ const char	* data	= "data";
 }
 
 	riffWriter::~riffWriter	() {}
-
+//
+//	The riffWriter is used for 
+//	- dumping the source input, i.e. large file with samplerate 2049000
+//	- writing the audio output out
+//	The default values in the init are merely for the source dump
 bool	riffWriter::init	(const QString &fileName, const int sampleRate, 
 	                         const int frequency, const int bitDepth,
 	                         QString creatorText) {

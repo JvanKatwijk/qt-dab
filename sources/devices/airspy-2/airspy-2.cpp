@@ -174,19 +174,19 @@ uint32_t samplerateCount;
 	         this, &airspy_2::set_vga_gain);
 	connect (mixerSlider, &QSlider::valueChanged,
 	         this, &airspy_2::set_mixer_gain);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (lnaButton, &QCheckBox::checkStateChanged,
 #else
 	connect (lnaButton, &QCheckBox::stateChanged,
 #endif
 	         this, &airspy_2::set_lna_agc);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (mixerButton, &QCheckBox::checkStateChanged,
 #else
 	connect (mixerButton, &QCheckBox::stateChanged,
 #endif
 	         this, &airspy_2::set_mixer_agc);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasButton, &QCheckBox::checkStateChanged,
 #else
 	connect (biasButton, &QCheckBox::stateChanged,
@@ -749,19 +749,19 @@ QString	def	= "";
 	}
 //
 //	Now the agc settings
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	disconnect (lnaButton, &QCheckBox::checkStateChanged,
 #else
 	disconnect (lnaButton, &QCheckBox::stateChanged,
 #endif
 	            this, &airspy_2::set_lna_agc);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	disconnect (mixerButton, &QCheckBox::checkStateChanged,
 #else
 	disconnect (mixerButton, &QCheckBox::stateChanged,
 #endif
 	            this, &airspy_2::set_mixer_agc);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	disconnect (biasButton, &QCheckBox::checkStateChanged,
 #else
 	disconnect (biasButton, &QCheckBox::stateChanged,
@@ -773,19 +773,19 @@ QString	def	= "";
 	   mixerButton	-> setChecked (true);
 	if (bias != 0)
 	   biasButton	-> setChecked (true);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (lnaButton, &QCheckBox::checkStateChanged,
 #else
 	connect (lnaButton, &QCheckBox::stateChanged,
 #endif
 	         this, &airspy_2::set_lna_agc);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (mixerButton, &QCheckBox::checkStateChanged,
 #else
 	connect (mixerButton, &QCheckBox::stateChanged,
 #endif
 	         this, &airspy_2::set_mixer_agc);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasButton, &QCheckBox::checkStateChanged,
 #else
 	connect (biasButton, &QCheckBox::stateChanged,

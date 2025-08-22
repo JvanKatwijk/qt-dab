@@ -184,7 +184,7 @@ char	manufac [256], product [256], serial [256];
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
 	         this, &rtlsdrHandler::set_ExternalGain);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	connect (agcControl, &QCheckBox::stateChanged,
@@ -196,13 +196,13 @@ char	manufac [256], product [256], serial [256];
 	         this, &rtlsdrHandler::set_xmlDump);
 	connect (iq_dumpButton, &QPushButton::clicked,
 	         this, &rtlsdrHandler::set_iqDump);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasControl, &QCheckBox::checkStateChanged,
 #else
 	connect (biasControl, &QCheckBox::stateChanged,
 #endif
 	         this, &rtlsdrHandler::set_biasControl);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (filterSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (filterSelector, &QCheckBox::stateChanged,

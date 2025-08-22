@@ -208,7 +208,7 @@ int	index_for_key (int key) {
 	         myRadioInterface, &RadioInterface::handle_tiiFilter);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (auto_http, &QCheckBox::checkStateChanged,
 #else
 	connect (auto_http, &QCheckBox::stateChanged,
@@ -216,19 +216,19 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_auto_http);
 	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_tiiCollisions);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (tiiFilter, &QCheckBox::checkStateChanged,
 #else
 	connect (tiiFilter, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_tiiFilter);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (tiiSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (tiiSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_tiiSelector);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (allTIISelector, &QCheckBox::checkStateChanged,
 #else
 	connect (allTIISelector, &QCheckBox::stateChanged,
@@ -395,13 +395,13 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (audioServices_only, &QCheckBox::checkStateChanged,
 #else
 	connect (audioServices_only, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_audioServices_only);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (correlationSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (correlationSelector, &QCheckBox::stateChanged,
@@ -412,7 +412,7 @@ void	configHandler::set_connections () {
 	int upload = value_i (dabSettings, CONFIG_HANDLER,
 	                              "UPLOAD_ENABLED", 0);
 	if (upload != 0)
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	   connect (upload_selector, &QCheckBox::checkStateChanged,
 #else
 	   connect (upload_selector, &QCheckBox::stateChanged,
@@ -420,7 +420,7 @@ void	configHandler::set_connections () {
 	            this, &configHandler::handle_upload_selector);
 	else
 	   upload_selector -> setEnabled (false);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (logger_selector, &QCheckBox::checkStateChanged,
 #else
 	connect (logger_selector, &QCheckBox::stateChanged,
@@ -429,14 +429,14 @@ void	configHandler::set_connections () {
 
 //	third line
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (utc_selector, &QCheckBox::checkStateChanged,
 #else
 	connect (utc_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_utc_selector);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (onTop, &QCheckBox::checkStateChanged,
 #else
 	connect (onTop, &QCheckBox::stateChanged,
@@ -445,21 +445,21 @@ void	configHandler::set_connections () {
 //
 //	fourthline
 //	here we expect the close without asking
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (epg_selector, &QCheckBox::checkStateChanged,
 #else
 	connect (epg_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_epgSelector);
 	connect (localBrowserSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	             &QCheckBox::checkStateChanged,
 #else
 		     &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_localBrowser);
 //
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (etiActivated_selector, &QCheckBox::checkStateChanged,
 #else
 	connect (etiActivated_selector, &QCheckBox::stateChanged,
@@ -467,14 +467,14 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::handle_eti_activeSelector);
 //
 //	fifh line
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (showAll_selector, &QCheckBox::checkStateChanged,
 #else
 	connect (showAll_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_showAll_Selector);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (saveSlides, &QCheckBox::checkStateChanged,
 #else
 	connect (saveSlides, &QCheckBox::stateChanged,

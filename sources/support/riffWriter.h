@@ -20,6 +20,10 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+//
+//	This version of riffWriter starts assuming the filesize will remain
+//	below 4 G, if - when closing - it turns out the the file size exceeds
+//	the 4G border, the type is changed into BW64
 
 #pragma once
 
@@ -32,7 +36,8 @@ public:
 		riffWriter	();
 		~riffWriter	();
 	bool	init		(const QString &, int,
-	                         int bitDepth = 0, int frequency = 0,
+	                         int bitDepth = 0,
+	                         int frequency = 0,
 	                         QString creator = "Qt-DAB-6.9.3");
 	void	write		(int16_t *buff, uint64_t samples);
 	void	close		();

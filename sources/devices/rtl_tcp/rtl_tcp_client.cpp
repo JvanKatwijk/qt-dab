@@ -81,13 +81,13 @@
 	         this, &rtl_tcp_client::sendGain);
 	connect (PpmSelector, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &rtl_tcp_client::set_fCorrection);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (agcSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (agcSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &rtl_tcp_client::setAgcMode);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (biasTSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (biasTSelector, &QCkeckBox::stateChanged,

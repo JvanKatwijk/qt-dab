@@ -339,7 +339,7 @@ int	ret;
 //	and be prepared for future changes in the settings
 	connect (gainControl, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &plutoHandler::set_gainControl);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	connect (agcControl, &QCheckBox::stateChanged,
@@ -424,14 +424,14 @@ struct iio_channel *chn;
 	      return;
 	   }
 
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	   disconnect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	   disconnect (agcControl, &QCheckBox::stateChanged,
 #endif
 	         this, &plutoHandler::set_agcControl);
 	   agcControl -> setChecked (false);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	   connect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	   connect (agcControl, &QCheckBox::stateChanged,

@@ -78,7 +78,7 @@
 //
 	connect (spyServer_connect, &QPushButton::clicked,
 	         this, &spyServer_client::wantConnect);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
         connect (autogain_selector, &QCheckBox::checkStateChanged,
 #else
         connect (autogain_selector, &QCheckBox::stateChanged,
