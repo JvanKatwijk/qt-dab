@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -26,6 +26,7 @@
 #include	<QThread>
 #include	<QFrame>
 #include	<QSettings>
+#include	<QLibrary>
 #include	<atomic>
 #include	<vector>
 #include	"dab-constants.h"
@@ -77,6 +78,8 @@ typedef	int	(*pfn_LMS_GetNormalizedGain)(lms_device_t *device, bool dir_tx,
 	                                   size_t chan, float_type *gain);
 typedef	int	(*pfn_LMS_GetGaindB)(lms_device_t *device, bool dir_tx,
 	                                   size_t chan, unsigned *gain);
+typedef int	(*pfn_LMS_GetLPFBWRange)(lms_device_t *dev, bool dir_tx,
+	                                               lms_range_t *range);
 typedef	int	(*pfn_LMS_SetLPFBW)(lms_device_t *device, bool dir_tx,
 	                                   size_t chan, float_type bandwidth);
 typedef	int	(*pfn_LMS_GetLPFBW)(lms_device_t *device, bool dir_tx,
@@ -95,6 +98,8 @@ typedef	int	(*pfn_LMS_RecvStream)(lms_stream_t *stream, void *samples,
 	                              unsigned timeout_ms);
 typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 	                               lms_stream_status_t* status);
+//
+/////////////////////////////////////////////////////////////////////////
 
 class	limeHandler:  //public QThread,
 	              public deviceHandler, public limeWidget {
@@ -121,7 +126,7 @@ private:
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
 	bool		load_limeFunctions();
-	HINSTANCE	Handle;
+	QLibrary	*library_p;
 	bool		libraryLoaded;
 	lms_stream_meta_t meta;
         lms_stream_t    stream;
@@ -158,6 +163,7 @@ public:
 	pfn_LMS_SetGaindB	LMS_SetGaindB;
 	pfn_LMS_GetNormalizedGain	LMS_GetNormalizedGain;
 	pfn_LMS_GetGaindB	LMS_GetGaindB;
+	pfn_LMS_GetLPFBWRange	LMS_GetLPFBWRange;
 	pfn_LMS_SetLPFBW	LMS_SetLPFBW;
 	pfn_LMS_GetLPFBW	LMS_GetLPFBW;
 	pfn_LMS_Calibrate	LMS_Calibrate;

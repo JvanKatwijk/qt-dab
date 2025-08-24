@@ -42,14 +42,18 @@
 #include	"position-handler.h"
 #include	"settings-handler.h"
 
+#include	"xml-filewriter.h"
+
 #define	DEFAULT_FREQUENCY	(Khz (227360))
 #define	SPY_SERVER_16_SETTINGS	"SPY_SERVER_16_SETTINGS"
 
-	spyServer_client::spyServer_client	(QSettings *s):
+	spyServer_client::spyServer_client	(QSettings *s,
+	                                         const QString &recorder):
 	                                        _I_Buffer (8 * 32 * 32768),
 	                                        tmpBuffer (32 * 32768),
 	                                        hostLineEdit (nullptr) {
 	spyServer_settings	= s;
+	recorderVersion		= recorder;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, SPY_SERVER_16_SETTINGS);
 	myFrame. show		();
@@ -88,7 +92,13 @@
 	         this, &spyServer_client::setGain);
 	connect (portNumber, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &spyServer_client::set_portNumber);
-	theState	-> setText ("waiting to start");
+	connect (xml_dumpButton, &QPushButton::clicked,
+                 this, &spyServer_client::set_xmlDump);
+        theState        -> setText ("waiting to start");
+        xml_dumpButton  -> setText ("Dump to xml");
+ 
+        xmlWriter       = nullptr;
+        xml_dumping. store (false);
 }
 
 	spyServer_client::~spyServer_client () {
@@ -179,6 +189,8 @@ QString theAddress	= QHostAddress (s). toString ();
 	struct DeviceInfo theDevice;
 	theServer	-> get_deviceInfo (theDevice);
 
+	uint32_t serial	= theServer -> get_deviceInfo (theDevice);
+
 	if (theDevice. DeviceType == DEVICE_AIRSPY_ONE) {
 	   nameOfDevice	-> setText ("Airspy One");
 	}
@@ -191,7 +203,10 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 
-	this -> deviceNumber	-> setText (QString::number (theDevice. DeviceSerial));
+	if (theDevice. DeviceSerial == 0)
+	   this -> deviceNumber -> hide ();
+	else
+	   this -> deviceNumber	-> setText (QString::number (theDevice. DeviceSerial));
 	uint32_t max_samp_rate	= theDevice. MaximumSampleRate;
 	uint32_t decim_stages	= theDevice. DecimationStageCount;
 	int desired_decim_stage = -1;
@@ -214,11 +229,19 @@ QString theAddress	= QHostAddress (s). toString ();
 	      resample_ratio = SAMPLERATE / (double)testRate;
 	      settings. sample_rate = testRate;
 	   }
+	   else
+	   if (testRate < SAMPLERATE) {
+	      desired_decim_stage = i;
+	      resample_ratio = SAMPLERATE / (double)testRate;
+	      settings. sample_rate = testRate;
+	      break;
+	   }
 
 	   if (desired_decim_stage < 0) {
 	      theServer. reset ();
 	      return;
 	   }
+	   rateLabel	-> setText (QString::number (testRate));
 /*
 	   std::cerr << "Desired decimation stage: " <<
 	                 desired_decim_stage <<
@@ -300,6 +323,7 @@ void	spyServer_client::stopReader() {
 	   return;
 	if (!theServer -> is_streaming ())
 	   return;
+	close_xmlDump ();
 	theServer	-> stop_running ();
 	running		= false;
 }
@@ -358,6 +382,10 @@ int16_t buffer_16 [settings. batchSize * 2];
 	   if (!running)
 	      continue;
 
+	   if (xml_dumping. load ())
+              xmlWriter -> add ((std::complex<int16_t> *)buffer_16,
+                                                     settings. batchSize / 2);
+
 	   if (settings. resample_ratio != 1) {
 	      std::complex<float> temp [SAMPLERATE / 1000];
 	      for (uint32_t i = 0; i < samps; i ++) {
@@ -402,3 +430,48 @@ void	spyServer_client::set_portNumber	(int v) {
 	store (spyServer_settings, SPY_SERVER_16_SETTINGS, 
 	                         "spyServer-port", v);
 }
+
+void	spyServer_client::set_xmlDump () {
+	if (!xml_dumping. load ()) {
+	   setup_xmlDump ();
+	}
+	else {
+	   close_xmlDump ();
+	}
+}
+
+bool	spyServer_client::setup_xmlDump () {
+QString channel		= spyServer_settings -> value ("channel", "xx").
+	                                                      toString ();
+
+	xmlWriter	= nullptr;
+	try {
+	   xmlWriter	= new xml_fileWriter (spyServer_settings,
+	                                      channel,
+	                                      16,
+	                                      "int16",
+	                                      theServer -> get_sample_rate (),
+	                                      lastFrequency,
+	                                      settings. gain,
+	                                      "16 Bit",
+	                                      "???",
+	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
+	xml_dumping. store (true);
+	xml_dumpButton	-> setText ("writing xml file");
+	return true;
+}
+	
+void	spyServer_client::close_xmlDump () {
+	if (xmlWriter == nullptr)
+	   return;
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	xmlWriter	= nullptr;
+	xml_dumping. store (false);
+	xml_dumpButton	-> setText ("Dump to xml");
+}
+

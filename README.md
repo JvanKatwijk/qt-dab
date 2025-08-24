@@ -244,6 +244,7 @@ This approach allows  distributing versions that are configured with devices not
 (For the Windows version(s), the  device libraries for almost all configured devices are provided in the installer. The exception are the SDRplay snd Pluto devices.
 For SDRplay devices the user has to install the drivers from the SDRplay site,
 for Pluto support one should see the instructions in "https://github.com/analogdevicesinc/plutosdr-m2k-drivers-win".
+For Linux users, Ubuntu provides the required libraries in a repository (i.e. libii0 and libad9361, for e.g. Fedora the support seems to stop at F33.
 
 Qt-DAB also supports input using a network:
   * an rtl_tcp server connected to an RTLSDR device.
@@ -259,6 +260,7 @@ Qt-DAB furthermore supports
 Qt-DAB obviously supports:
  * reading and writing ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with inputrate 2048000.
 NEW is the ability of Qt-DAB to generate "sdr" type files with a size  **larger than 4 Gb**, their type is BW64.  Obviously Qt-DAB has the ability to read such files back.
+
 ![6.8](/res/read_me/riff-reader-large.png?raw=true)
 ![6.8](/res/read_me/riff-reader-small.png?raw=true)
 

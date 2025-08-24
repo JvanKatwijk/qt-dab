@@ -119,12 +119,19 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="agcSelector">
+       <property name="text">
+        <string>agc</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="agcSelector">
+    <widget class="QPushButton" name="xml_dumpButton">
      <property name="text">
-      <string>agc</string>
+      <string>PushButton</string>
      </property>
     </widget>
    </item>
@@ -150,7 +157,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="tunerLabel">
      <property name="text">
       <string>rtl_tcp_client</string>
      </property>

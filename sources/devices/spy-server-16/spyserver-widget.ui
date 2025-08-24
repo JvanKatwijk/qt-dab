@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>207</width>
-    <height>268</height>
+    <width>205</width>
+    <height>377</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,6 +76,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QPushButton" name="xml_dumpButton">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="theState">
      <property name="text">
       <string>state</string>
@@ -91,6 +98,13 @@
    </item>
    <item>
     <widget class="QLabel" name="deviceNumber">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="rateLabel">
      <property name="text">
       <string>TextLabel</string>
      </property>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>287</width>
-    <height>312</height>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -178,19 +178,19 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="serialNumber">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="versionDisplay">
+     <property name="text">
+      <string>versionDisplay</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="statusLabel">
      <property name="text">
-      <string/>
+      <string>status</string>
      </property>
     </widget>
    </item>

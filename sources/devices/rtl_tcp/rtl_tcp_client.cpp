@@ -32,17 +32,31 @@
 #include	<QDir>
 #include	"dab-constants.h"
 #include	"rtl_tcp_client.h"
+#include	"rtl-sdr.h"
 #include	"device-exceptions.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
 
+#include	"xml-filewriter.h"
+
+#if (!defined (__MINGW32__))
+	#include	<netinet/in.h>
+#endif
+
 #define	RTL_TCP_SETTINGS	"rtl_tcp_settings"
 #define	DEFAULT_FREQUENCY	(kHz (220000))
 
-	rtl_tcp_client::rtl_tcp_client (QSettings *s):
+typedef struct {  	// 12 bytes, 3 * 4 bytes
+	char Magic [4];
+	uint32_t tunerType;
+	uint32_t tunerGainCount;
+} dongleInfo_t;
+
+	rtl_tcp_client::rtl_tcp_client (QSettings *s, const QString &recorder):
 	                                        _I_Buffer (32 * 32768) {
 
 	remoteSettings		= s;
+	this	-> recorderVersion	= recorder;
 	setupUi (&myFrame);
 	QString groupName       = RTL_TCP_SETTINGS;
         setPositionAndSize (s, &myFrame, groupName);
@@ -81,6 +95,8 @@
 	         this, &rtl_tcp_client::sendGain);
 	connect (PpmSelector, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &rtl_tcp_client::set_fCorrection);
+	connect (xml_dumpButton, &QPushButton::clicked,
+	         this, &rtl_tcp_client::set_xmlDump);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (agcSelector, &QCheckBox::checkStateChanged,
 #else
@@ -98,6 +114,10 @@
 	connect (addressSelector, &QLineEdit::returnPressed,
 	         this, &rtl_tcp_client::setAddress);
 	theState -> setText("waiting to start");
+
+	xml_dumpButton	-> setText ("Dump to xml");
+	xmlWriter	= nullptr;
+	xml_dumping. store (false);
 }
 
 	rtl_tcp_client::~rtl_tcp_client () {
@@ -106,7 +126,7 @@
 	if (!connected) 
 	   return;
 // close previous connection
-	   stopReader ();
+	stopReader ();
 	store (remoteSettings, RTL_TCP_SETTINGS, "remoteserver",
 	                                 toServer. peerAddress (). toString ());
 	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
@@ -138,6 +158,7 @@ void	rtl_tcp_client::wantConnect () {
 	setBandwidth	(1536000);
 	setBiasT	(biasT);
 	toServer. waitForBytesWritten ();
+	dongleInfoIn	= false;
 }
 
 bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
@@ -157,6 +178,7 @@ void	rtl_tcp_client::stopReader	() {
 
 	if (!connected)
 	   return;
+	close_xmlDump ();
 	disconnect (&toServer, &QIODevice::readyRead,
 	            this, &rtl_tcp_client::readData);
 	_I_Buffer. FlushRingBuffer ();
@@ -184,19 +206,59 @@ void	rtl_tcp_client::readData () {
 uint8_t buffer [2 * SEGMENT_SIZE];
 std::complex<float> localBuffer [SEGMENT_SIZE];
 
-	while (toServer. bytesAvailable() > 2 * SEGMENT_SIZE) {
-	   toServer. read ((char *)buffer, SEGMENT_SIZE);
-	   for (int i = 0; i < SEGMENT_SIZE; i ++)
-	      localBuffer [i] =
-	        std::complex<float> (convTable [buffer [2 * i]],
-	                             convTable [buffer [2 * i + 1]]);
-	   if (toSkip > 0)
-	      toSkip -= SEGMENT_SIZE;
-	   else
-	      _I_Buffer. putDataIntoBuffer (localBuffer, SEGMENT_SIZE);
+	if (!dongleInfoIn) {
+	   dongleInfo_t dongleInfo;
+	   if (toServer. bytesAvailable () >=
+	                                (qint64)sizeof (dongleInfo)) {
+	      toServer. read ((char *)&dongleInfo, sizeof (dongleInfo));
+	      dongleInfoIn = true;
+	      if (memcmp (dongleInfo. Magic, "RTL0", 4) == 0) {
+	         switch (htonl (dongleInfo. tunerType)) {
+	            case RTLSDR_TUNER_E4000:
+	               tunerText = "E4000";
+                       break;
+                    case RTLSDR_TUNER_FC0012:
+                       tunerText = "FC0012";
+                       break;
+                    case RTLSDR_TUNER_FC0013:
+                       tunerText = "FC0013";
+                       break;
+                    case RTLSDR_TUNER_FC2580:
+                       tunerText = "FC2580";
+                       break;
+                    case RTLSDR_TUNER_R820T:
+                       tunerText = "R820T";
+                       break;
+                    case RTLSDR_TUNER_R828D:
+                       tunerText = "R828D";
+                       break;
+                    default:
+                      tunerText = "unknown";
+	              break;
+	         }
+	         tunerLabel -> setText (tunerText);
+	         fprintf (stderr, "gainType %X\n", dongleInfo. tunerGainCount);
+	      }
+	   }
+	}
+
+	if (dongleInfoIn) {
+	   if (xml_dumping. load ())
+	      xmlWriter -> add ((std::complex<uint8_t> *)buffer, SEGMENT_SIZE);
+
+	   while (toServer. bytesAvailable() > 2 * SEGMENT_SIZE) {
+	      toServer. read ((char *)buffer, SEGMENT_SIZE);
+	      for (int i = 0; i < SEGMENT_SIZE; i ++)
+	         localBuffer [i] =
+	           std::complex<float> (convTable [buffer [2 * i]],
+	                                convTable [buffer [2 * i + 1]]);
+	      if (toSkip > 0)
+	         toSkip -= SEGMENT_SIZE;
+	      else 
+	         _I_Buffer. putDataIntoBuffer (localBuffer, SEGMENT_SIZE);
+	   }
 	}
 }
-
 //
 //	commands are packed in 5 bytes, one "command byte"
 //	and an integer parameter
@@ -291,3 +353,47 @@ void	rtl_tcp_client::resetBuffer	() {
 QString rtl_tcp_client::deviceName	() {
 	return "RtlTcp";
 }
+
+void	rtl_tcp_client::set_xmlDump () {
+	if (!xml_dumping. load ()) {
+	   setup_xmlDump (); 
+	}
+	else {
+	   close_xmlDump ();
+	}
+}
+
+bool	rtl_tcp_client::setup_xmlDump () {
+QString channel		= remoteSettings -> value ("channel", "xx").
+	                                                      toString ();
+	xmlWriter	= nullptr;
+	try {
+	   xmlWriter	= new xml_fileWriter (remoteSettings,
+	                                      channel,
+	                                      8,
+	                                      "uint8",
+	                                      2048000,
+	                                      lastFrequency,
+	                                      100,
+	                                      "RTL_TCP",
+	                                      "rtl_tcp",
+	                                      "rtl_tcp");
+	} catch (...) {
+	   return false;
+	}
+	xml_dumping. store (true);
+	xml_dumpButton	-> setText ("writing xml file");
+	return true;
+}
+	
+void	rtl_tcp_client::close_xmlDump () {
+	if (xmlWriter == nullptr)
+	   return;
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	xmlWriter	= nullptr;
+	xml_dumping. store (false);
+	xml_dumpButton	-> setText ("Dump to xml");
+}
+

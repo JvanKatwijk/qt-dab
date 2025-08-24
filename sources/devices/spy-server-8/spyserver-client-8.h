@@ -41,12 +41,13 @@
 
 #include	"spy-handler-8.h"
 
+class	xml_fileWriter;
 
 class	spyServer_client_8: //public QObject,
 	                    public deviceHandler, Ui_spyServer_widget_8 {
 Q_OBJECT
 public:
-			spyServer_client_8	(QSettings *);
+			spyServer_client_8	(QSettings *, const QString &);
 			~spyServer_client_8	();
 	int32_t		getRate		();
 	bool		restartReader	(int32_t, int skipped = 0);
@@ -75,6 +76,9 @@ private slots:
 	void		handle_autogain (int);
         void            handle_checkTimer       ();
         void            set_portNumber  (int);
+
+	void		set_xmlDump	();
+
 public slots:
 	void		data_ready	();
 private:
@@ -102,6 +106,13 @@ private:
         int16_t         mapTable_int   [SAMPLERATE / 1000];
         float           mapTable_float [SAMPLERATE / 1000];
         int             selectedRate;
+
+
+	QString		recorderVersion;
+	xml_fileWriter  *xmlWriter;
+        bool            setup_xmlDump           ();
+        void            close_xmlDump           ();
+        std::atomic<bool> xml_dumping;
 };
 
 

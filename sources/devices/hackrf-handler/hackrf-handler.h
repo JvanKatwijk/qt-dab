@@ -67,6 +67,7 @@ typedef	int	(*pfn_hackrf_set_sample_rate) (hackrf_device *,
 typedef	int	(*pfn_hackrf_is_streaming) (hackrf_device *);
 typedef	const char	*(*pfn_hackrf_error_name) (enum hackrf_error errcode);
 typedef	const char	*(*pfn_hackrf_usb_board_id_name) (enum hackrf_usb_board_id);
+typedef int	(*pfn_hackrf_version_string_read)(hackrf_device *, char *, int);
 // contributed by Fabio
 typedef int	(*pfn_hackrf_set_antenna_enable)
 	                         (hackrf_device *, const uint8_t);
@@ -122,7 +123,8 @@ private:
 	pfn_hackrf_error_name	hackrf_error_name;
 	pfn_hackrf_usb_board_id_name
 	                        hackrf_usb_board_id_name;
-
+	pfn_hackrf_version_string_read
+	                        hackrf_version_string_read;
 //	aggiunta Fabio
 	pfn_hackrf_set_antenna_enable hackrf_set_antenna_enable;
 	pfn_hackrf_set_amp_enable hackrf_set_amp_enable;

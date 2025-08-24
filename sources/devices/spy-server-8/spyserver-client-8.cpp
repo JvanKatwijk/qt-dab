@@ -42,14 +42,18 @@
 #include	"position-handler.h"
 #include	"settings-handler.h"
 
+#include	"xml-filewriter.h"
+
 #define	DEFAULT_FREQUENCY	(Khz (227360))
 #define	SPY_SERVER_8_SETTINGS	"SPY_SERVER_8_SETTINGS"
 
-	spyServer_client_8::spyServer_client_8	(QSettings *s):
+	spyServer_client_8::spyServer_client_8	(QSettings *s,
+	                                         const QString &recorder):
 	                                            _I_Buffer (32 * 32768),
 	                                            tmpBuffer (32 * 32768),
 	                                            hostLineEdit (nullptr) {
 	spyServer_settings	= s;
+	recorderVersion		= recorder;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, SPY_SERVER_8_SETTINGS);
 	myFrame. show		();
@@ -90,7 +94,13 @@
                  this, &spyServer_client_8::setGain);
         connect (portNumber, qOverload<int>(&QSpinBox::valueChanged),
                  this, &spyServer_client_8::set_portNumber);
+	connect (xml_dumpButton, &QPushButton::clicked,
+	         this, &spyServer_client_8::set_xmlDump);
 	theState	-> setText ("waiting to start");
+	xml_dumpButton	-> setText ("Dump to xml");
+
+	xmlWriter	= nullptr;
+	xml_dumping. store (false);
 }
 
 	spyServer_client_8::~spyServer_client_8 () {
@@ -155,6 +165,7 @@ QString theAddress	= QHostAddress (s). toString ();
                                           tr ("Connection failed"));
 	   return;
 	}
+
 	if (theServer. isNull ()) {
 	   fprintf (stderr, "Connecting failed\n");
 	   return;
@@ -173,6 +184,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	   connected = false;
 	   return;
 	}
+
 	checkTimer. stop ();	
 	disconnect (&checkTimer, &QTimer::timeout,
 	            this, &spyServer_client_8::handle_checkTimer);
@@ -193,7 +205,10 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 
-	this -> deviceNumber	-> setText (QString::number (theDevice. DeviceSerial));
+	if (theDevice. DeviceSerial == 0)
+	   this -> deviceNumber -> hide ();
+	else
+	   this -> deviceNumber	-> setText (QString::number (theDevice. DeviceSerial));
 	uint32_t max_samp_rate	= theDevice. MaximumSampleRate;
 	uint32_t decim_stages	= theDevice. DecimationStageCount;
 	int desired_decim_stage = -1;
@@ -217,12 +232,19 @@ QString theAddress	= QHostAddress (s). toString ();
 	      desired_decim_stage = i;
 	      resample_ratio = SAMPLERATE / (double)targetRate;
 	      settings. sample_rate = targetRate;
-	   }
+	   } else
+           if (targetRate < SAMPLERATE) {
+              desired_decim_stage = i;
+              resample_ratio = SAMPLERATE / (double)targetRate;
+              settings. sample_rate = targetRate;
+	      break;
+           }
 
 	   if (desired_decim_stage < 0) {
 	      theServer. reset ();
 	      return;
 	   }
+
 /*
 	   std::cerr << "Desired decimation stage: " <<
 	                 desired_decim_stage <<
@@ -234,11 +256,13 @@ QString theAddress	= QHostAddress (s). toString ();
  */
 	}
 
+	rateLabel	-> setText (QString::number (targetRate));
 	int maxGain		= theDevice. MaximumGainIndex;
 	spyServer_gain		-> setMaximum (maxGain);
 	settings. resample_ratio	= resample_ratio;
 	settings. desired_decim_stage	= desired_decim_stage;
 	connected	= true;
+	theState	-> setText ("Connected");
 	fprintf (stderr, "going to set samplerate stage %d\n",
 	                                    desired_decim_stage);
 	if (!theServer -> set_sample_rate_by_decim_stage (
@@ -301,6 +325,7 @@ void	spyServer_client_8::stopReader	() {
 	   return;
 	if (!theServer -> is_streaming ())
 	   return;
+	close_xmlDump ();
 	theServer	-> stop_running ();
 	running		= false;
 }
@@ -359,6 +384,11 @@ uint8_t buffer_8 [settings. batchSize * 2];
 	   if (!running)
 	      continue;
 
+	   if (xml_dumping. load ())
+	      xmlWriter -> add ((std::complex<uint8_t> *)buffer_8, 
+	                                             settings. batchSize / 2);
+
+
 	   if (settings. resample_ratio != 1) {
 	      std::complex<float> temp [SAMPLERATE / 1000];
 	      for (uint32_t i = 0; i < samps; i ++) {
@@ -403,3 +433,48 @@ void    spyServer_client_8::set_portNumber        (int v) {
         store (spyServer_settings, SPY_SERVER_8_SETTINGS,  
                                  "spyServer-port", v);
 }
+
+void	spyServer_client_8::set_xmlDump () {
+	if (!xml_dumping. load ()) {
+	   setup_xmlDump ();
+	}
+	else {
+	   close_xmlDump ();
+	}
+}
+
+bool	spyServer_client_8::setup_xmlDump () {
+QString channel		= spyServer_settings -> value ("channel", "xx").
+	                                                      toString ();
+
+	xmlWriter	= nullptr;
+	try {
+	   xmlWriter	= new xml_fileWriter (spyServer_settings,
+	                                      channel,
+	                                      8,
+	                                      "uint8",
+	                                      2048000,
+	                                      lastFrequency,
+	                                      settings. gain,
+	                                      "RTLSDR",
+	                                      "???",
+	                                      recorderVersion);
+	} catch (...) {
+	   return false;
+	}
+	xml_dumping. store (true);
+	xml_dumpButton	-> setText ("writing xml file");
+	return true;
+}
+	
+void	spyServer_client_8::close_xmlDump () {
+	if (xmlWriter == nullptr)
+	   return;
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	xmlWriter	= nullptr;
+	xml_dumping. store (false);
+	xml_dumpButton	-> setText ("Dump to xml");
+}
+

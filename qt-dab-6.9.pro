@@ -469,9 +469,9 @@ CONFIG		+= datastreamer
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-CONFIG		+= viterbi-scalar
+#CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
-#CONFIG		+= viterbi-avx2
+CONFIG		+= viterbi-avx2
 #CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING

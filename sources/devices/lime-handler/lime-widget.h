@@ -25,6 +25,7 @@ public:
 	QCheckBox	*filterSelector;
 	QSpinBox	*filterDepth;
 	QLabel		*nameOfDevice;
+	QLabel		*frequencyLabel;
 
 	limeWidget	() {}
 	~limeWidget	() {}
@@ -44,6 +45,7 @@ void	setupUi		(QFrame *qw) {
 	dumpButton	= new QPushButton	();
 	filterSelector	= new QCheckBox	("filter");
 	filterDepth	= new QSpinBox	();
+	frequencyLabel	= new QLabel ();
 	filterDepth	-> setRange (5, 25);
 	dumpButton	-> setText ("Dump");
 	actualGain	->  setFrameShape (QFrame::NoFrame);
@@ -62,6 +64,7 @@ void	setupUi		(QFrame *qw) {
 	line3		-> addWidget (antennaList);
 	line3		-> addSpacing (3);
 	line3		-> addWidget (antennaLabel);
+	line3		-> addWidget (frequencyLabel);
 
 	QHBoxLayout *line4	= new QHBoxLayout ();
 	line4		-> addWidget (underrunDisplay);

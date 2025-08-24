@@ -256,7 +256,7 @@ int	deviceNumber	= getDeviceIndex (s);
 #endif
 #ifdef HAVE_RTL_TCP
 	   case RTL_TCP_DEVICE:
-	      return new rtl_tcp_client (dabSettings);
+	      return new rtl_tcp_client (dabSettings, version);
 #endif
 #ifdef HAVE_EXTIO
 	   case EXTIO_DEVICE:
@@ -275,12 +275,12 @@ int	deviceNumber	= getDeviceIndex (s);
 #endif
 #ifdef HAVE_SPYSERVER_16
 	   case SPYSERVER_DEVICE_16:
-	      return new spyServer_client (dabSettings);
+	      return new spyServer_client (dabSettings, version);
 	      break;
 #endif
 #ifdef HAVE_SPYSERVER_8
 	   case SPYSERVER_DEVICE_8:
-	      return new spyServer_client_8 (dabSettings);
+	      return new spyServer_client_8 (dabSettings, version);
 	      break;
 #endif
 	   case FILE_INPUT:

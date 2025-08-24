@@ -230,8 +230,14 @@ DABFLOAT sum = 0;
 	   Complex fftBinRaw = fft_buffer [index] *
 	                       normalize (conj (phaseReference [index]));
 	   conjVector   [index] = fftBinRaw;
-//	   Complex fftBin	= fftBinRaw;
-//
+#define	__FAST_DECODING__
+#ifdef	__FAST_DECODING__
+	   float binAbsLevel	= jan_abs (fftBinRaw);
+	   softbits [i] = - real (fftBinRaw) / binAbsLevel * MAX_VITERBI;
+	   softbits [carriers + i]
+	                = - imag (fftBinRaw) / binAbsLevel * MAX_VITERBI; 
+	}
+#else
 //	In the original code, "borrowed" from Tomneda, the
 //	correction factor was dynamically computed, i.e
 //	Complex fftBin	= fftBinRaw *
@@ -281,8 +287,6 @@ DABFLOAT sum = 0;
 //	the contributions of Rolf Zerr (aka OldDab) and
 //	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
 //
-#define	__ZERR__
-#ifdef	__ZERR__
 	   DABFLOAT	stdDev		= phaseError * phaseError;
 	   stdDevVector [index] =
 	        compute_avg (stdDevVector [index], stdDev, ALPHA);
@@ -319,7 +323,6 @@ DABFLOAT sum = 0;
 	   
 	   DABFLOAT weight_r;
 	   DABFLOAT weight_i;
-#endif
 	   Complex R1;
 	   switch (decoder) {
 	      default:
@@ -330,7 +333,6 @@ DABFLOAT sum = 0;
 	         softbits [carriers + i]
 	                   = - imag (R1) / binAbsLevel * MAX_VITERBI; 
 	         break;
-#ifdef	__ZERR__
 	      case DECODER_2:
 	         R1 =  normalize (fftBin) * ff *
 	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
@@ -338,18 +340,13 @@ DABFLOAT sum = 0;
 	         softbits [i]		= (int16_t)(real (R1) * weight_r);
 	         softbits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
 	         break;
-#endif
 	   }
 
-#ifdef	__ZERR__
 	   sum += jan_abs (R1);
 	}	// end of decode loop
 
 	meanValue	= sum / carriers;
-#else
-	}
 #endif
-
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {

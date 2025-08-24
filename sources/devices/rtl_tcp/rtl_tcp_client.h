@@ -39,10 +39,12 @@
 #include  "ringbuffer.h"
 #include  "ui_rtl_tcp-widget.h"
 
+class	xml_fileWriter;
+
 class rtl_tcp_client :  public deviceHandler, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
-			rtl_tcp_client	(QSettings *);
+			rtl_tcp_client	(QSettings *, const QString &);
 			~rtl_tcp_client	();
 	int32_t		getRate		();
 	bool		restartReader	(int32_t, int skipped = 0);
@@ -54,6 +56,8 @@ public:
 	QString		deviceName	();
 	bool		isFileInput	();
 
+	QString		tunerText;
+	bool		dongleInfoIn;
 private:
 	RingBuffer<std::complex<float>>  _I_Buffer;
 	void		sendVFO		(int32_t);
@@ -75,6 +79,12 @@ private:
 
 	float		convTable [256];
 
+	QString		recorderVersion;
+	xml_fileWriter	*xmlWriter;
+ 	bool            setup_xmlDump           ();
+        void            close_xmlDump           ();
+        std::atomic<bool> xml_dumping;
+
 private slots:
 	void		sendGain	(int);
 	void		set_fCorrection	(double);
@@ -86,5 +96,7 @@ private slots:
 	void		setPort		(int);
 	void		setAddress	();
 	void		setAgcMode	(int);
+
+	void		set_xmlDump	();
 };
 

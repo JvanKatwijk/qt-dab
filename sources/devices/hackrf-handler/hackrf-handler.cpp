@@ -185,6 +185,9 @@
 	                 deviceList -> usb_board_ids [0];
 	   usb_board_id_display ->
 	                setText (this -> hackrf_usb_board_id_name (board_id));
+	   char version [255];
+	   hackrf_version_string_read (theDevice, version, 255);
+	   versionDisplay -> setText (version);
 	}
 	connect (this, &hackrfHandler::signal_antEnable,
 	         biasT_button, &QCheckBox::setChecked);
@@ -241,7 +244,7 @@ int	res;
 void	hackrfHandler::handle_VGAGain	(int newGain) {
 int	res;
 	if ((newGain <= 62) && (newGain >= 0)) {
-	   res	= this -> hackrf_set_vga_gain (theDevice, newGain);
+	   res	= this -> hackrf_set_vga_gain (theDevice, newGain & ~0x01);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	      fprintf (stderr, "Problem with hackrf_vga_gain :\n");
@@ -566,6 +569,13 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	   return false;
 	}
 
+	this	-> hackrf_version_string_read =
+	              (pfn_hackrf_version_string_read)
+	                     library_p -> resolve("hackrf_version_string_read");
+	if (hackrf_version_string_read == nullptr) {
+	   fprintf (stderr, "Could not find hackrf_version_string_read\n");
+	   return false;
+	}
 //	this	-> hackrf_board_rev_read =
 //	              (pfn_hackrf_board_rev_read)
 //	                      library_p ->resolve ("hackrf_board_rev_read");
@@ -624,7 +634,6 @@ void	hackrfHandler::close_xmlDump () {
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	dumping. store (true);
 	dumpButton	-> setText ("Dump");
 	delete xmlWriter;
 	xmlWriter	= nullptr;
