@@ -114,7 +114,8 @@ void	tcp_client_8::connect_conn	() {
 void	tcp_client_8::close_conn	() {
 	if (SendingSocket > 0) {
            close (SendingSocket);
-        } 
+        }
+	SendingSocket = 0; 
 }
 
 void	tcp_client_8::send_data (uint8_t *data, int length) {
@@ -161,6 +162,7 @@ fd_set m_readFds;
 	      inBuffer -> putDataIntoBuffer (tempBuffer_8, received);
 	   }
 	}
+	close_conn ();
 }
 
 

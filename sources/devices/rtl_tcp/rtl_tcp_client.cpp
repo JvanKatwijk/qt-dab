@@ -52,19 +52,20 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	uint32_t tunerGainCount;
 } dongleInfo_t;
 
-	rtl_tcp_client::rtl_tcp_client (QSettings *s, const QString &recorder):
+	rtl_tcp_client::rtl_tcp_client (QSettings *s,
+	                                const QString &recorder):
 	                                        _I_Buffer (32 * 32768) {
 
 	remoteSettings		= s;
-	this	-> recorderVersion	= recorder;
+	recorderVersion		= recorder;
 	setupUi (&myFrame);
-	QString groupName       = RTL_TCP_SETTINGS;
-        setPositionAndSize (s, &myFrame, groupName);
+        setPositionAndSize (s, &myFrame, RTL_TCP_SETTINGS);
         myFrame. show   ();
-	ipAddress	= "127.0.0.1";
 
 	for (int i = 0; i < 256; i ++)
 	   convTable [i] = ((float)i - 128.0) / 128.0;
+
+	ipAddress		= "127.0.0.1";	// the default
 
 	Gain		=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "Gain", 20);
@@ -113,35 +114,34 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         this, &rtl_tcp_client::setPort);
 	connect (addressSelector, &QLineEdit::returnPressed,
 	         this, &rtl_tcp_client::setAddress);
-	theState -> setText("waiting to start");
 
+	xml_dumping. store (false);
+	theState	-> setText("waiting to start");
 	xml_dumpButton	-> setText ("Dump to xml");
 	xmlWriter	= nullptr;
-	xml_dumping. store (false);
 }
 
 	rtl_tcp_client::~rtl_tcp_client () {
 	storeWidgetPosition (remoteSettings, &myFrame, RTL_TCP_SETTINGS);
 
-	if (!connected) 
-	   return;
-// close previous connection
 	stopReader ();
 	store (remoteSettings, RTL_TCP_SETTINGS, "remoteserver",
-	                                 toServer. peerAddress (). toString ());
+	                                toServer. peerAddress (). toString ());
 	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
-
 	store (remoteSettings, RTL_TCP_SETTINGS, "Gain", Gain);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Ppm", Ppm);
 	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
 	store (remoteSettings, RTL_TCP_SETTINGS, "biasT", biasT);
+	toServer. close ();
+	connected = false;
 	myFrame. hide ();
 	toServer. close ();
 }
 
 void	rtl_tcp_client::wantConnect () {
-	if (connected)
-	   return;
+	if (connected) {
+	   setDisconnect ();
+	}
 
 	QString s = ipAddress;
 	toServer. connectToHost (QHostAddress (s), basePort);
@@ -162,7 +162,6 @@ void	rtl_tcp_client::wantConnect () {
 }
 
 bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
-
 	if (!connected)
 	   return true;
 	vfoFrequency = freq;

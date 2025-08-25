@@ -163,5 +163,6 @@ fd_set m_readFds;
 	      inBuffer -> putDataIntoBuffer (tempBuffer_16, received);
 	   }
 	}
+	close_conn ();
 }
 

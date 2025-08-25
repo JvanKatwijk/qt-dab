@@ -111,7 +111,7 @@ lms_info_str_t limedevices [10];
 	   throw (device_exception ("could not enable channels"));
 	}
 
-	res	= LMS_SetSampleRate (theDevice, 2048000.0, 2);
+	res	= LMS_SetSampleRate (theDevice, 2048000.0, 1);
 	if (res < 0) {
 	   LMS_Close (theDevice);
 	   throw (device_exception ("could not set samplerate"));
@@ -160,12 +160,11 @@ lms_info_str_t limedevices [10];
 	}
 	fprintf (stderr, "range %f - %f\n",
 	                   (float)range. min, (float)range. max);
-	float BW	= 2000000;
+	float BW	= 1536000;
 	if (BW < range. min)
 	   BW = range. min + 100;
 	fprintf (stderr, "BW set to %f\n", BW);
-	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX,
-	                                               0, BW);
+	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX, 0, BW);
 	if (res < 0) {
 	   LMS_Close (theDevice);
 	   throw (device_exception ("could not set bandwidth"));
@@ -180,7 +179,6 @@ lms_info_str_t limedevices [10];
 //
 //	Calibrating
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
-	
 	
 	k	=  value_i (limeSettings, LIME_SETTINGS, "gain", 50);
 	gainSelector -> setValue (k);

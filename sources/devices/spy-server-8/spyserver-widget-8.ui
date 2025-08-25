@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>229</width>
-    <height>343</height>
+    <width>233</width>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,9 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="hostLineEdit"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -92,21 +95,21 @@
    <item>
     <widget class="QLabel" name="nameOfDevice">
      <property name="text">
-      <string>TextLabel</string>
+      <string>device name</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QLabel" name="deviceNumber">
      <property name="text">
-      <string>TextLabel</string>
+      <string>serial number</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QLabel" name="rateLabel">
      <property name="text">
-      <string>TextLabel</string>
+      <string>samplerate</string>
      </property>
     </widget>
    </item>

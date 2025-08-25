@@ -50,14 +50,12 @@
 	spyServer_client::spyServer_client	(QSettings *s,
 	                                         const QString &recorder):
 	                                        _I_Buffer (8 * 32 * 32768),
-	                                        tmpBuffer (32 * 32768),
-	                                        hostLineEdit (nullptr) {
+	                                        tmpBuffer (32 * 32768) {
 	spyServer_settings	= s;
 	recorderVersion		= recorder;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, SPY_SERVER_16_SETTINGS);
 	myFrame. show		();
-	hostLineEdit. hide ();
 
     //	setting the defaults and constants
 	settings. gain		= value_i (spyServer_settings,
@@ -82,6 +80,7 @@
 //
 	connect (spyServer_connect, &QPushButton::clicked,
 	         this, &spyServer_client::wantConnect);
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
         connect (autogain_selector, &QCheckBox::checkStateChanged,
 #else
@@ -104,7 +103,11 @@
 	spyServer_client::~spyServer_client () {
 	if (connected) {		// close previous connection
 	   stopReader();
-	   connected = false;
+           if (!theServer. isNull ()) {
+              theServer -> stop_running ();
+              theServer. reset ();
+           }
+           connected = false;
 	}
 	store (spyServer_settings, SPY_SERVER_16_SETTINGS,
 	                              "spyServer_client-gain", settings. gain);
@@ -116,13 +119,21 @@
 //
 void	spyServer_client::wantConnect () {
 QString ipAddress;
-int16_t	i;
 QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
-	if (connected)
-	   return;
+	if (connected) {
+	   stopReader ();
+	   if (!theServer. isNull ()) { // it better be
+              theServer -> stop_running ();
+              theServer. reset ();
+           }
+           spyServer_connect    -> setText ("connect");
+           theState     -> setText ("Enter IP address, \nthen press return");
+           return;
+        }
+
 	// use the first non-localhost IPv4 address
-	for (i = 0; i < ipAddressesList.size (); ++i) {
+	for (int16_t i = 0; i < ipAddressesList.size (); ++i) {
 	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
 	      ipAddressesList. at (i). toIPv4Address()) {
 	      ipAddress = ipAddressesList. at(i). toString();
@@ -134,12 +145,11 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
 	ipAddress =value_s (spyServer_settings, SPY_SERVER_16_SETTINGS,
 	                                       "remote-server", ipAddress);
-	hostLineEdit. setText (ipAddress);
-	hostLineEdit. setInputMask ("000.000.000.000");
+	hostLineEdit -> setText (ipAddress);
+	hostLineEdit -> setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit. show ();
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (&hostLineEdit, &QLineEdit::returnPressed,
+	connect (hostLineEdit, &QLineEdit::returnPressed,
 	         this, &spyServer_client::setConnection);
 }
 
@@ -148,7 +158,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
 void	spyServer_client::setConnection () {
-QString s	= hostLineEdit. text();
+QString s	= hostLineEdit -> text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
 	settings. basePort	= portNumber -> value ();
@@ -171,12 +181,25 @@ QString theAddress	= QHostAddress (s). toString ();
 	         this, &spyServer_client::handle_checkTimer);
 	checkTimer. start (2000);
 	timedOut	= false;
-	while (!onConnect. load () && !timedOut) 
+	int delay	= 2000;
+//
+//	If the server cannot find suitable devices,
+//	then the connection is made, but no data is transmitted
+	while (!onConnect. load () && !timedOut) {
+	   delay --;
+	   if (delay == 0) {
+	      checkTimer. stop ();
+	      timedOut = true;
+	      break;
+	   }
 	   usleep (1000);
+	}
+
 	if (timedOut) {
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("no answers, fatal"));
 	   theServer. reset ();
+	   theState	-> setText ("No connection or devices\n");
 	   connected = false;
 	   return;
 	}
@@ -185,6 +208,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	disconnect (&checkTimer, &QTimer::timeout,
 	            this, &spyServer_client::handle_checkTimer);
 	theServer	-> connection_set ();
+	spyServer_connect	-> setText ("disconnect");
 
 	struct DeviceInfo theDevice;
 	theServer	-> get_deviceInfo (theDevice);
@@ -216,32 +240,35 @@ QString theAddress	= QHostAddress (s). toString ();
 	   theServer. reset ();
 	   return;
 	}
+
+	targetRate	= 0;
 	for (uint16_t i = 0; i < decim_stages; ++i ) {
-	     int testRate = (uint32_t)(max_samp_rate / (1 << i));
-	   if (testRate == SAMPLERATE) {
+	   targetRate = (uint32_t)(max_samp_rate / (1 << i));
+	   if (targetRate == SAMPLERATE) {
 	      desired_decim_stage = i;
 	      resample_ratio = 1;
 	      break;
 	   } else
-	   if (testRate > SAMPLERATE) {
-//	remember the next-largest rate that is available
-	      desired_decim_stage = i;
-	      resample_ratio = SAMPLERATE / (double)testRate;
-	      settings. sample_rate = testRate;
-	   }
-	   else
-	   if (testRate < SAMPLERATE) {
-	      desired_decim_stage = i;
-	      resample_ratio = SAMPLERATE / (double)testRate;
-	      settings. sample_rate = testRate;
-	      break;
-	   }
+	   if (targetRate > SAMPLERATE) {
+	      if ((i < decim_stages - 1) &&
+                  ((uint32_t) max_samp_rate / (i << (i + 1)))) {
+                 desired_decim_stage = i;
+                 resample_ratio = SAMPLERATE / ((double)targetRate);
+                 settings. sample_rate = targetRate;
+                 break;
+              }
+           } else
+           if (targetRate < SAMPLERATE) {
+              desired_decim_stage = i;
+              resample_ratio = SAMPLERATE / (double)targetRate;
+              settings. sample_rate = targetRate;
+              break;
+           }
 
 	   if (desired_decim_stage < 0) {
 	      theServer. reset ();
 	      return;
 	   }
-	   rateLabel	-> setText (QString::number (testRate));
 /*
 	   std::cerr << "Desired decimation stage: " <<
 	                 desired_decim_stage <<
@@ -253,11 +280,18 @@ QString theAddress	= QHostAddress (s). toString ();
  */
 	}
 
+	rateLabel		-> setText (QString::number (targetRate));
+	if (targetRate < 1800000) {
+	   theState -> setText ("Rate Low");
+	   theServer. reset ();
+	   return;
+	}
 	int maxGain		= theDevice. MaximumGainIndex;
 	spyServer_gain		-> setMaximum (maxGain);
 	settings. resample_ratio	= resample_ratio;
 	settings. desired_decim_stage	= desired_decim_stage;
 	connected	= true;
+	theState	-> setText ("Connected");
 	fprintf (stderr, "going to set samplerate stage %d\n",
 	                                    desired_decim_stage);
 	if (!theServer -> set_sample_rate_by_decim_stage (
@@ -269,8 +303,8 @@ QString theAddress	= QHostAddress (s). toString ();
 
 	theServer	-> set_gain_mode (settings. auto_gain != 0, 0);
 
-	disconnect (spyServer_connect, &QPushButton::clicked,
-	            this, &spyServer_client::wantConnect);
+//	disconnect (spyServer_connect, &QPushButton::clicked,
+//	            this, &spyServer_client::wantConnect);
 	fprintf (stderr, "The samplerate = %f\n",
 	                      (float)(theServer -> get_sample_rate ()));
 	theState	-> setText ("connected");

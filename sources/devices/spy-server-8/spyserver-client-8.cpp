@@ -50,14 +50,12 @@
 	spyServer_client_8::spyServer_client_8	(QSettings *s,
 	                                         const QString &recorder):
 	                                            _I_Buffer (32 * 32768),
-	                                            tmpBuffer (32 * 32768),
-	                                            hostLineEdit (nullptr) {
+	                                            tmpBuffer (32 * 32768) {
 	spyServer_settings	= s;
 	recorderVersion		= recorder;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, SPY_SERVER_8_SETTINGS);
 	myFrame. show		();
-	hostLineEdit. hide ();
 
     //	setting the defaults and constants
 	settings. gain		= value_i (spyServer_settings,
@@ -106,6 +104,11 @@
 	spyServer_client_8::~spyServer_client_8 () {
 	if (connected) {		// close previous connection
 	   stopReader();
+	
+	   if (!theServer. isNull ()) {
+	      theServer -> stop_running ();
+	      theServer. reset ();
+	   }
 	   connected = false;
 	}
 	store (spyServer_settings, SPY_SERVER_8_SETTINGS,
@@ -120,8 +123,16 @@ void	spyServer_client_8::wantConnect () {
 QString ipAddress;
 QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
-	if (connected)
+	if (connected) {
+	   stopReader ();
+	   if (!theServer. isNull ()) {	// it better be
+	      theServer -> stop_running ();
+	      theServer. reset ();
+	   }
+	   spyServer_connect	-> setText ("connect");
+	   theState	-> setText ("Enter IP address, \nthen press return");
 	   return;
+	}
 	// use the first non-localhost IPv4 address
 	for (uint16_t i = 0; i < ipAddressesList.size (); i ++) {
 	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
@@ -136,13 +147,12 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	ipAddress	= value_s (spyServer_settings,
 	                           SPY_SERVER_8_SETTINGS,
 	                           "remote-server", ipAddress);
-	hostLineEdit. setText (ipAddress);
+	hostLineEdit ->  setText (ipAddress);
 
-	hostLineEdit. setInputMask ("000.000.000.000");
+	hostLineEdit -> setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit. show ();
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (&hostLineEdit, &QLineEdit::returnPressed,
+	connect (hostLineEdit, &QLineEdit::returnPressed,
 	         this, &spyServer_client_8::setConnection);
 }
 
@@ -151,7 +161,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
 void	spyServer_client_8::setConnection () {
-QString s	= hostLineEdit. text();
+QString s	= hostLineEdit -> text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
 	settings. basePort	= portNumber -> value ();
@@ -174,12 +184,23 @@ QString theAddress	= QHostAddress (s). toString ();
 	connect (&checkTimer, &QTimer::timeout,
 	         this, &spyServer_client_8::handle_checkTimer);
 	timedOut	= false;
-	checkTimer. start (2000);
-	while (!onConnect. load () && !timedOut) 
+	checkTimer. start (1000);
+//
+//	If the server connects but could not find a suitable
+//	device, connection stands but no data is transferred
+	int delay	= 2000;		// 2 seconds
+	while (!onConnect. load () && !timedOut) {
+	   delay --;
+	   if (delay == 0) {
+	      checkTimer. stop ();
+	      timedOut	= true;
+	      break;
+	   }
 	   usleep (1000);
+	}
+
 	if (timedOut) {
-	   QMessageBox::warning (nullptr, tr ("Warning"),
-                                          tr ("no answers, fatal"));
+	   theState	-> setText ("No connection or no device");
 	   theServer. reset ();
 	   connected = false;
 	   return;
@@ -188,8 +209,10 @@ QString theAddress	= QHostAddress (s). toString ();
 	checkTimer. stop ();	
 	disconnect (&checkTimer, &QTimer::timeout,
 	            this, &spyServer_client_8::handle_checkTimer);
+	fprintf (stderr, "WE HAVE A CONNECTION\n");
 	theServer	-> connection_set ();
 
+	spyServer_connect	-> setText ("disconnect");
 	struct DeviceInfo theDevice;
 	theServer	-> get_deviceInfo (theDevice);
 
@@ -228,10 +251,13 @@ QString theAddress	= QHostAddress (s). toString ();
 	      break;
 	   } else
 	   if (targetRate > SAMPLERATE) {
-//	remember the next-largest rate that is available
-	      desired_decim_stage = i;
-	      resample_ratio = SAMPLERATE / (double)targetRate;
-	      settings. sample_rate = targetRate;
+	      if ((i < decim_stages - 1) &&
+	          ((uint32_t) max_samp_rate / (i << (i + 1)))) {
+	         desired_decim_stage = i;
+	         resample_ratio = SAMPLERATE / ((double)targetRate);
+	         settings. sample_rate = targetRate;
+	         break;
+	      }	
 	   } else
            if (targetRate < SAMPLERATE) {
               desired_decim_stage = i;
@@ -256,7 +282,12 @@ QString theAddress	= QHostAddress (s). toString ();
  */
 	}
 
-	rateLabel	-> setText (QString::number (targetRate));
+	rateLabel		-> setText (QString::number (targetRate));
+	if (targetRate < 1800000) {
+	   theState -> setText ("Rate Low");
+	   theServer. reset ();
+	   return;	
+	}
 	int maxGain		= theDevice. MaximumGainIndex;
 	spyServer_gain		-> setMaximum (maxGain);
 	settings. resample_ratio	= resample_ratio;
@@ -272,8 +303,8 @@ QString theAddress	= QHostAddress (s). toString ();
 	   return;
 	}
 
-	disconnect (spyServer_connect, &QPushButton::clicked,
-	            this, &spyServer_client_8::wantConnect);
+//	disconnect (spyServer_connect, &QPushButton::clicked,
+//	            this, &spyServer_client_8::wantConnect);
 	fprintf (stderr, "The samplerate = %f\n",
 	                      (float)(theServer -> get_sample_rate ()));
 	theState	-> setText ("connected");
@@ -304,7 +335,7 @@ bool	spyServer_client_8::restartReader	(int32_t freq, int skipped) {
 	std::cerr << "spy-handler: setting center_freq to " <<
 	                                            freq << std::endl;
 	if (!theServer -> set_iq_center_freq (freq)) {
-	   std::cerr << "Failed to set freq\n";
+	   theState -> setText ("Setting freq to" + QString::number (freq) + "failed");
 	   return false;
 	}
 	if (!theServer -> set_gain (settings. gain)) {
@@ -321,11 +352,11 @@ void	spyServer_client_8::stopReader	() {
 	fprintf (stderr, "stopReader is called\n");
 	if (theServer. isNull ())
 	   return;
-	if (!connected || !running)	// seems double???
-	   return;
 	if (!theServer -> is_streaming ())
 	   return;
 	close_xmlDump ();
+	theState -> setText ("Trying to stop server");
+	fprintf (stderr, "Tell the server to stop running\n");
 	theServer	-> stop_running ();
 	running		= false;
 }

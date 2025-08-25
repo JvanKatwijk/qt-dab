@@ -86,7 +86,6 @@ private:
 	RingBuffer<uint8_t>	tmpBuffer;
 	QTimer		checkTimer;
 	QScopedPointer<spyHandler_8>	theServer;
-	QLineEdit	hostLineEdit;
 	bool		isvalidRate	(int32_t);
 	QSettings	*spyServer_settings;
 	int32_t		theRate;

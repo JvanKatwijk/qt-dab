@@ -84,7 +84,6 @@ private:
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	RingBuffer<int16_t>	tmpBuffer;
 	QTimer		checkTimer;
-	QLineEdit	hostLineEdit;
 	QScopedPointer<spyHandler> theServer;
 	bool		isvalidRate	(int32_t);
 	QSettings	*spyServer_settings;
@@ -97,6 +96,8 @@ private:
 	FILE		*dumpfilePointer;
 	std::atomic<bool>	onConnect;
 	bool		timedOut;
+
+	int		targetRate;
 	int16_t         convBufferSize;
         int16_t         convIndex;
         std::vector <std::complex<float> >      convBuffer;

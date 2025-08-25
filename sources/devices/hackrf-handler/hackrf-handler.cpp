@@ -50,6 +50,7 @@
 	                                  _I_Buffer (4 * 1024 * 1024),
 	                                  hackrfSettings (s),
 	                                  recorderVersion (recVersion) {
+hackrf_error errorCode;
 	(void)theLogger;
         setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, HACKRF_SETTINGS);
@@ -103,43 +104,51 @@
 	       value_i (hackrfSettings, HACKRF_SETTINGS,
 	                              "save_gainSettings", 1);
 //
-	if (hackrf_init () != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error)(hackrf_init ());
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete  library_p;
-	   throw (device_exception ("init failed"));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
-	if (hackrf_open (&theDevice) != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error)(hackrf_open (&theDevice));
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (device_exception ("open failure"));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
-	if (hackrf_set_sample_rate (theDevice, (float)SAMPLERATE) != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error) (hackrf_set_sample_rate (theDevice,
+	                                                   (float)SAMPLERATE));
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (device_exception ("error setting samplerate"));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
-	int test = hackrf_set_baseband_filter_bandwidth (theDevice, 1750000);
-	if (test != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error)
+	            (hackrf_set_baseband_filter_bandwidth (theDevice, 1750000));
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (device_exception ("failure setting bandwidth"));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
-	if (hackrf_set_freq (theDevice, 220000000) != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error)(hackrf_set_freq (theDevice, 220000000));
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (device_exception ("failure setting frequency"));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
 	uint16_t regValue;
-	test = hackrf_si5351c_read (theDevice, 162, &regValue);
-	if (test != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error)(hackrf_si5351c_read (theDevice,
+	                                                162, &regValue));
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (device_exception ("failure reading board name"));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
-	int res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
-	if (res != HACKRF_SUCCESS) {
+	errorCode = (hackrf_error)(hackrf_si5351c_write (theDevice,
+	                                                162, regValue));
+	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (device_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
 
 	handle_LNAGain	(lnaGainSlider		-> value());
@@ -334,7 +343,7 @@ int	bufferIndex	= 0;
 }
 
 bool	hackrfHandler::restartReader	(int32_t freq, int skipped) {
-int	res;
+hackrf_error errorCode;
 
 	if (running. load())
 	   return true;
@@ -343,29 +352,34 @@ int	res;
 	this	-> toSkip	= skipped;
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
-	this -> hackrf_set_lna_gain (theDevice, lnaGainSlider -> value ());
-	this -> hackrf_set_vga_gain (theDevice, vgaGainSlider -> value ());
-	this -> hackrf_set_amp_enable (theDevice, 
-	                               AmpEnableButton -> isChecked () ? 1 : 0);
-	this -> hackrf_set_antenna_enable (theDevice, 
-	                            biasT_button -> isChecked () ? 1 : 0);
+	errorCode =  (hackrf_error) (hackrf_set_lna_gain (theDevice,
+	                                        lnaGainSlider -> value ()));
+	if (errorCode != HACKRF_SUCCESS)
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	errorCode = (hackrf_error)(hackrf_set_vga_gain (theDevice,
+	                                        vgaGainSlider -> value ()));
+	if (errorCode != HACKRF_SUCCESS)
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	errorCode = (hackrf_error)(hackrf_set_amp_enable (theDevice, 
+	                             AmpEnableButton -> isChecked () ? 1 : 0));
+	if (errorCode != HACKRF_SUCCESS)
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	errorCode =  (hackrf_error)(hackrf_set_antenna_enable (theDevice, 
+	                             biasT_button -> isChecked () ? 1 : 0));
+	if (errorCode != HACKRF_SUCCESS)
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	errorCode =  (hackrf_error)(hackrf_set_freq (theDevice, freq));
+	if (errorCode != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (errorCode));
+	   return false;
+	}
+	errorCode =  (hackrf_error)(hackrf_start_rx (theDevice,
+	                                               callback, this));	
+	if (errorCode != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (errorCode));
+	   return false;
+	}
 
-	res	= this -> hackrf_set_freq (theDevice, freq);
-	if (res != HACKRF_SUCCESS) {
-	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	   fprintf (stderr, "Problem with hackrf_set_freq: \n");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   return false;
-	}
-	res	= this -> hackrf_start_rx (theDevice, callback, this);	
-	if (res != HACKRF_SUCCESS) {
-	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	   fprintf (stderr, "Problem with hackrf_start_rx :\n");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   return false;
-	}
 	running. store (this -> hackrf_is_streaming (theDevice));
 	showStatus (QString ("Restart at ") + QString::number (freq / 1000) +
 	                                   QString ("Khz"));
@@ -373,17 +387,14 @@ int	res;
 }
 
 void	hackrfHandler::stopReader () {
-int	res;
+hackrf_error errorCode;
 
 	if (!running. load())
 	   return;
 
-	res	= this -> hackrf_stop_rx (theDevice);
-	if (res != HACKRF_SUCCESS) {
-	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	   fprintf (stderr, "Problem with hackrf_stop_rx :\n");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
+	errorCode = (hackrf_error)(hackrf_stop_rx (theDevice));
+	if (errorCode != HACKRF_SUCCESS) {
+	   showStatus (this -> hackrf_error_name (errorCode));
 	   return;
 	}
 
@@ -396,7 +407,7 @@ int	res;
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
-auto *temp = dynVec (std::complex<int8_t>, size);
+std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++)
 	   V [i] = std::complex<float> (real (temp [i]) / 127.0f,

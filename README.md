@@ -248,9 +248,11 @@ For Linux users, Ubuntu provides the required libraries in a repository (i.e. li
 
 Qt-DAB also supports input using a network:
   * an rtl_tcp server connected to an RTLSDR device.
-  *  a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot deliver samples at the required samplerate. (Be aware that Qt-DAB processes the input with 2048000 Samples/second. Using the 16 bit version - 4 bytes per sample - requires a bandwidth of at least 8 M. I am using it with a wired connection between two laptops using the 8 bit version, using the WiFi is not likely to be successfull).
+  * a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot deliver samples at the required samplerate. (Be aware that Qt-DAB processes the input with 2048000 Samples/second. Using the 16 bit version - 4 bytes per sample - requires a bandwidth of at least 8 M. I am using it with a wired connection between two laptops using the 8 bit version, using the WiFi is not likely to be successfull).
 
 ![6.9](/res/read_me/spy-server16-control.png?raw=true)
+
+Note that - as the control suggests - it is possible to "dump" the unprocessed input to an xml type file (as can be seen on the control picture, the selected samplerate is 2500000).
 
 Qt-DAB furthermore supports
   * Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000).
@@ -258,8 +260,7 @@ Qt-DAB furthermore supports
 ![6.9](/res/read_me/soapy-control.png?raw=true)
 
 Qt-DAB obviously supports:
- * reading and writing ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with inputrate 2048000.
-NEW is the ability of Qt-DAB to generate "sdr" type files with a size  **larger than 4 Gb**, their type is BW64.  Obviously Qt-DAB has the ability to read such files back.
+ * reading and writing ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate 2048000. Qt-DAB generates such files.  NEW is the ability of Qt-DAB to generate this type of file with a size  **larger than 4 Gb**, their type is BW64. Obviously Qt-DAB has the ability to read such files back.
 
 ![6.8](/res/read_me/riff-reader-large.png?raw=true)
 ![6.8](/res/read_me/riff-reader-small.png?raw=true)

@@ -313,6 +313,7 @@ void	spyHandler_8::stop_running	() {
 std::vector<uint32_t> p;
 	if (streaming. load ()) {
 	   streaming. store (false);
+	   running = false;
 	   p. push_back (0);
 	   set_setting (SETTING_STREAMING_ENABLED, p);
 	}
