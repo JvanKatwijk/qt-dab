@@ -84,6 +84,9 @@ typedef	int	(*pfn_LMS_SetLPFBW)(lms_device_t *device, bool dir_tx,
 	                                   size_t chan, float_type bandwidth);
 typedef	int	(*pfn_LMS_GetLPFBW)(lms_device_t *device, bool dir_tx,
                                             size_t chan, float_type *bandwidth);
+typedef	int	(*pfn_LMS_SetGFIRLPF)(lms_device_t *device, bool dir_tx,
+                                            size_t chan, bool enabled,
+	                                          float_type bandwidth);
 typedef	int 	(*pfn_LMS_Calibrate)(lms_device_t *device, bool dir_tx,
 	                              size_t chan, double bw, unsigned flags);
 typedef	int	(*pfn_LMS_SetupStream)(lms_device_t *device,
@@ -98,6 +101,7 @@ typedef	int	(*pfn_LMS_RecvStream)(lms_stream_t *stream, void *samples,
 	                              unsigned timeout_ms);
 typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 	                               lms_stream_status_t* status);
+typedef	const char * (*pfn_LMS_GetLastErrorMessage)();
 //
 /////////////////////////////////////////////////////////////////////////
 
@@ -166,6 +170,7 @@ public:
 	pfn_LMS_GetLPFBWRange	LMS_GetLPFBWRange;
 	pfn_LMS_SetLPFBW	LMS_SetLPFBW;
 	pfn_LMS_GetLPFBW	LMS_GetLPFBW;
+	pfn_LMS_SetGFIRLPF	LMS_SetGFIRLPF;
 	pfn_LMS_Calibrate	LMS_Calibrate;
 
 	pfn_LMS_SetupStream	LMS_SetupStream;
@@ -174,6 +179,7 @@ public:
 	pfn_LMS_StopStream	LMS_StopStream;
 	pfn_LMS_RecvStream	LMS_RecvStream;
 	pfn_LMS_GetStreamStatus	LMS_GetStreamStatus;
+	pfn_LMS_GetLastErrorMessage LMS_GetLastErrorMessage;
 signals:
 	void		new_gainValue	(int);
 private slots:

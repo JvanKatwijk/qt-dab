@@ -1,3 +1,27 @@
+#
+/*
+ *    Copyright (C) 2014 .. 2023
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of Qt-DAB
+ *
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+
 #pragma once
 
 #include	<QLabel>
@@ -21,6 +45,8 @@ public:
 	QLabel		*underrunLabel;
 	QLCDNumber	*overrunDisplay;
 	QLabel		*overrunLabel;
+	QLCDNumber	*fifoDisplay;
+	QLabel		*fifoLabel;
 	QPushButton	*dumpButton;
 	QCheckBox	*filterSelector;
 	QSpinBox	*filterDepth;
@@ -42,6 +68,8 @@ void	setupUi		(QFrame *qw) {
 	underrunLabel	= new QLabel	("underruns");
 	overrunDisplay	= new QLCDNumber ();
 	overrunLabel	= new QLabel	("overruns");
+	fifoDisplay	= new QLCDNumber ();
+	fifoLabel	= new QLabel ("fifo");
 	dumpButton	= new QPushButton	();
 	filterSelector	= new QCheckBox	("filter");
 	filterDepth	= new QSpinBox	();
@@ -54,6 +82,8 @@ void	setupUi		(QFrame *qw) {
         underrunDisplay	->  setSegmentStyle (QLCDNumber::Flat);
 	overrunDisplay	->  setFrameShape (QFrame::NoFrame);
         overrunDisplay	->  setSegmentStyle (QLCDNumber::Flat);
+	fifoDisplay	->  setFrameShape (QFrame::NoFrame);
+        fifoDisplay	->  setSegmentStyle (QLCDNumber::Flat);
 
 	QHBoxLayout *line2	= new QHBoxLayout ();
 	line2		-> addWidget (gainSelector);
@@ -67,13 +97,15 @@ void	setupUi		(QFrame *qw) {
 	line3		-> addWidget (frequencyLabel);
 
 	QHBoxLayout *line4	= new QHBoxLayout ();
-	line4		-> addWidget (underrunDisplay);
 	line4		-> addWidget (underrunLabel);
-	line4		-> addWidget (filterSelector);
-
+	line4		-> addWidget (underrunDisplay);
+	line4		-> addWidget (overrunLabel);
+	line4		-> addWidget (overrunDisplay);
+	
 	QHBoxLayout *line5	= new QHBoxLayout ();
-	line5		-> addWidget (overrunDisplay);
-	line5		-> addWidget (overrunLabel);
+	line5		-> addWidget (fifoLabel);
+	line5		-> addWidget (fifoDisplay);
+	line5		-> addWidget (filterSelector);
 	line5		-> addWidget (filterDepth);
 
 	QHBoxLayout *line1	= new QHBoxLayout ();

@@ -78,8 +78,12 @@ lms_info_str_t limedevices [10];
 	libraryLoaded	= true;
 //      From here we have a library available
 	int ndevs	= LMS_GetDeviceList (limedevices);
-	if (ndevs == 0) {	// no devices found
+	if (ndevs == 0) 	// no devices found
 	   throw (device_exception ("No lime device found"));
+	else
+	if (ndevs < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   throw (device_exception (error));
 	}
 
 	for (int i = 0; i < ndevs; i ++)
@@ -87,42 +91,54 @@ lms_info_str_t limedevices [10];
 
 	int res		= LMS_Open (&theDevice, nullptr, nullptr);
 	if (res < 0) {	// some error
-	   throw (device_exception ("failed to open device"));
+	   const char * error = LMS_GetLastErrorMessage ();
+	   throw (device_exception (error));
 	}
 
 	nameOfDevice	-> setText (limedevices [0]);
 	res		= LMS_Init (theDevice);
 	if (res < 0) {	// some error
+	   const char * error = LMS_GetLastErrorMessage ();
 	   LMS_Close (&theDevice);
-	   throw (device_exception ("failed to initialize device"));
+	   throw (device_exception (error));
 	}
 
 	res		= LMS_GetNumChannels (theDevice, LMS_CH_RX);
-	if (res < 0) {	// some error
-	   LMS_Close (&theDevice);
+	if (res == 0) {	// no channels
 	   throw (device_exception ("could not set number of channels"));
+	   LMS_Close (&theDevice);
+	}
+	if (res < 0) {	// some error
+	   const char * error = LMS_GetLastErrorMessage ();
+	   LMS_Close (&theDevice);
+	   throw (device_exception (error));
 	}
 
 	fprintf (stderr, "device %s supports %d channels\n",
 	                            limedevices [0], res);
 	res		= LMS_EnableChannel (theDevice, LMS_CH_RX, 0, true);
-	if (res < 0) {	// some error
+	if (res != 0) {	// some error
+	   const char * error = LMS_GetLastErrorMessage ();
 	   LMS_Close (theDevice);
-	   throw (device_exception ("could not enable channels"));
+	   throw (device_exception (error));
 	}
 
 	res	= LMS_SetSampleRate (theDevice, 2048000.0, 1);
-	if (res < 0) {
+	if (res != 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
 	   LMS_Close (theDevice);
-	   throw (device_exception ("could not set samplerate"));
+	   throw (device_exception (error));
 	}
 
 	float_type host_Hz, rf_Hz;
 	res	= LMS_GetSampleRate (theDevice, LMS_CH_RX, 0,
 	                                            &host_Hz, &rf_Hz);
+	if (res != 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
+	   LMS_Close (theDevice);
+	   throw (device_exception (error));
+	}
 
-	fprintf (stderr, "samplerate = %f %f\n", (float)host_Hz, (float)rf_Hz);
-	
 	res		= LMS_GetAntennaList (theDevice, LMS_CH_RX, 0, antennas);
 	for (int i = 0; i < res; i ++) 	
 	   antennaList	-> addItem (QString (antennas [i]));
@@ -142,43 +158,63 @@ lms_info_str_t limedevices [10];
 
 //	default antenna setting
 	res		= LMS_SetAntenna (theDevice, LMS_CH_RX, 0, 
-	                           antennaList -> currentIndex());
+	                           antennaList -> currentIndex ());
+	if (res != 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
+	   LMS_Close (theDevice);
+	   throw (device_exception (error));
+	}
 
 //	default frequency
 	res		= LMS_SetLOFrequency (theDevice, LMS_CH_RX,
 	                                                 0, 220000000.0);
 	if (res < 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
 	   LMS_Close (theDevice);
-	   throw (device_exception ("could not set LO frequency"));
+	   throw (device_exception (error));
 	}
-
+//
 	lms_range_t	range;
 	res		= LMS_GetLPFBWRange (theDevice, LMS_CH_RX, &range);
 	if (res < 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
 	   LMS_Close (theDevice);
-	   throw (device_exception ("could not get BW range"));
+	   throw (device_exception (error));
 	}
+
+	double	bandWidth	= 1536000;
 	fprintf (stderr, "range %f - %f\n",
 	                   (float)range. min, (float)range. max);
-	float BW	= 1536000;
-	if (BW < range. min)
-	   BW = range. min + 100;
-	fprintf (stderr, "BW set to %f\n", BW);
-	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX, 0, BW);
+	if (bandWidth < range. min)
+	   bandWidth = range. min + 100;
+	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX,
+	                                0, bandWidth);
 	if (res < 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
 	   LMS_Close (theDevice);
-	   throw (device_exception ("could not set bandwidth"));
+	   throw (device_exception (error));
 	}
-//
-//	we use a value too high to get the maximum gain in dB
-	LMS_SetGaindB (theDevice, LMS_CH_RX, 0, 100);
-	uint32_t gaindB;
-	res	= LMS_GetGaindB (theDevice, LMS_CH_RX, 0,  &gaindB);
-	gainSelector -> setMaximum (gaindB);
 
-//
+	res		= LMS_SetGFIRLPF (theDevice, LMS_CH_RX,
+	                                  0, true,  bandWidth);
+	if (res < 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
+	   LMS_Close (theDevice);
+	   throw (device_exception (error));
+	}
+	res		= LMS_GetLPFBW (theDevice, LMS_CH_RX, 0, &bandWidth);
+	fprintf (stderr, "BW set to %f\n", (float)bandWidth);
+
+	int gaindB	= 73;
+	gainSelector -> setMaximum (gaindB);
+	bandWidth	= 2500000;;
 //	Calibrating
-	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
+	LMS_Calibrate (theDevice, LMS_CH_RX, 0, bandWidth, 0);
+	if (res < 0) {
+	   const char * error = LMS_GetLastErrorMessage ();
+	   LMS_Close (theDevice);
+	   throw (device_exception (error));
+	}
 	
 	k	=  value_i (limeSettings, LIME_SETTINGS, "gain", 50);
 	gainSelector -> setValue (k);
@@ -219,14 +255,28 @@ lms_info_str_t limedevices [10];
 
 void	limeHandler::setGain		(int gaindB) {
 float_type gg;
-	LMS_SetGaindB (theDevice, LMS_CH_RX, 0, gaindB);
-	LMS_GetNormalizedGain (theDevice, LMS_CH_RX, 0, &gg);
-	store (limeSettings, LIME_SETTINGS, "gain", gaindB);
-	actualGain	-> display (gg);
+	int errorCode = LMS_SetGaindB (theDevice, LMS_CH_RX, 0, gaindB);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	}
+	errorCode = LMS_GetNormalizedGain (theDevice, LMS_CH_RX, 0, &gg);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	}	
+	else {
+	   store (limeSettings, LIME_SETTINGS, "gain", gaindB);
+	   actualGain	-> display (gg);
+	}
 }
 
 void	limeHandler::setAntenna		(int ind) {
-	(void)LMS_SetAntenna (theDevice, LMS_CH_RX, 0, ind);
+	int errorCode = LMS_SetAntenna (theDevice, LMS_CH_RX, 0, ind);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	}	
 }
 
 void	limeHandler::set_filter		(int c) {
@@ -236,40 +286,57 @@ void	limeHandler::set_filter		(int c) {
 }
 
 bool	limeHandler::restartReader	(int32_t freq, int samplesSkipped) {
-int	res;
+int	errorCode;
 
-	fprintf (stderr, "Restart called, Running %d\n",
-	                                    isRunning () ? 1 : 0);
+	(void)samplesSkipped;
 	if (isRunning())
 	   return true;
 
-	frequencyLabel	-> setText (QString::number (freq / 1000) + " kHz");
-	lastFrequency	= freq;
+	errorCode = LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, freq);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	   return false;
+	}
+
+	double actualFreq;
+	errorCode = LMS_GetLOFrequency (theDevice, LMS_CH_RX, 0, &actualFreq);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	   return false;
+	}
+	frequencyLabel	-> setText (QString::number ((int)actualFreq / 1000) + " kHz");
+	lastFrequency	= actualFreq;
 	if (save_gainSettings) {
-	   update_gainSettings	(freq / MHz (1));
+	   update_gainSettings	(actualFreq / MHz (1));
 	   setGain (gainSelector -> value ());
 	}
-	LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, freq);
-	fprintf (stderr, "Freq set to %d\n", freq);
+
 	stream. isTx            = false;
         stream. channel         = 0;
         stream. fifoSize        = FIFO_SIZE;
         stream. throughputVsLatency     = 0.1;  // ???
         stream. dataFmt         = lms_stream_t::LMS_FMT_I12;    // 12 bit ints
 
-	res     = LMS_SetupStream (theDevice, &stream);
-        if (res < 0)
-           return false;
-        res     = LMS_StartStream (&stream);
-        if (res < 0)
-           return false;
-
-	fprintf (stderr, "starting a stream\n");
+	errorCode     = LMS_SetupStream (theDevice, &stream);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	   return false;
+	}
+        errorCode     = LMS_StartStream (&stream);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	   return false;
+	}
 	start ();
 	return true;
 }
 	
 void	limeHandler::stopReader	() {
+int errorCode;
 	close_xmlDump ();
 	if (!isRunning())
 	   return;
@@ -279,8 +346,18 @@ void	limeHandler::stopReader	() {
 	running. store (false);
 	while (isRunning())
 	   usleep (200);
-	(void)LMS_StopStream	(&stream);	
-	(void)LMS_DestroyStream	(theDevice, &stream);
+	errorCode = LMS_StopStream	(&stream);	
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	   return;
+	}
+	errorCode = LMS_DestroyStream	(theDevice, &stream);
+	if (errorCode < 0) {
+	   const char *error = LMS_GetLastErrorMessage ();
+	   fprintf (stderr, "%s\n", error);
+	   return;
+	}
 }
 
 int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
@@ -328,7 +405,7 @@ void	limeHandler::showErrors		(int underrun, int overrun) {
 }
 
 void	limeHandler::run() {
-int	res;
+int	samples;
 lms_stream_status_t streamStatus;
 int	underruns	= 0;
 int	overruns	= 0;
@@ -336,18 +413,29 @@ int	amountRead	= 0;
 
 	running. store (true);
 	while (running. load()) {
-	   res = LMS_RecvStream (&stream, localBuffer,
+	   samples = LMS_RecvStream (&stream, localBuffer,
 	                                     FIFO_SIZE,  &meta, 1000);
-	   if (res > 0) {
-	      _I_Buffer. putDataIntoBuffer (localBuffer, res);
-	      amountRead	+= res;
-	      res	= LMS_GetStreamStatus (&stream, &streamStatus);
-	      underruns	+= streamStatus. underrun;
-	      overruns	+= streamStatus. overrun;
+	   if (samples < 0) {
+	      const char *error = LMS_GetLastErrorMessage ();
+	      fprintf (stderr, "%s\n", error);
+	      continue;
 	   }
-	   if (amountRead > 4 * 2048000) {
+
+	   _I_Buffer. putDataIntoBuffer (localBuffer, samples);
+	   amountRead	+= samples;
+	   int errorCode = LMS_GetStreamStatus (&stream, &streamStatus);
+	   if (errorCode < 0) {
+	      const char *error = LMS_GetLastErrorMessage ();
+	      fprintf (stderr, "%s\n", error);
+	      continue;
+	   }
+	   underruns	+= streamStatus. underrun;
+	   overruns	+= streamStatus. overrun;
+	   if (amountRead > 2048000) {
 	      amountRead = 0;
-	      showErrors (underruns, overruns);
+	      underrunDisplay	-> display (underruns);
+	      overrunDisplay	-> display (overruns);
+	      fifoDisplay	-> display ((int)streamStatus. fifoFilledCount);
 	      underruns	= 0;
 	      overruns	= 0;
 	   }
@@ -482,6 +570,12 @@ bool	limeHandler::load_limeFunctions() {
 	   fprintf (stderr, "could not find LMS_GetLPFBW\n");
 	   return false;
 	}
+	this	-> LMS_SetGFIRLPF = (pfn_LMS_SetGFIRLPF)
+	                    library_p -> resolve ("LMS_SetGFIRLPF");
+	if (this -> LMS_SetGFIRLPF == nullptr) {
+	   fprintf (stderr, "could not find LMS_SetGFIRLPF\n");
+	   return false;
+	}
 	this	-> LMS_Calibrate = (pfn_LMS_Calibrate)
 	                    library_p -> resolve ("LMS_Calibrate");
 	if (this -> LMS_Calibrate == nullptr) {
@@ -522,6 +616,12 @@ bool	limeHandler::load_limeFunctions() {
 	                    library_p -> resolve ("LMS_GetStreamStatus");
 	if (this -> LMS_GetStreamStatus == nullptr) {
 	   fprintf (stderr, "could not find LMS_GetStreamStatus\n");
+	   return false;
+	}
+	this	-> LMS_GetLastErrorMessage = (pfn_LMS_GetLastErrorMessage)
+	                    library_p -> resolve ("LMS_GetLastErrorMessage");
+	if (this -> LMS_GetLastErrorMessage == nullptr) {
+	   fprintf (stderr, "could not find LMS_GetLastErrorMessage\n");
 	   return false;
 	}
 
