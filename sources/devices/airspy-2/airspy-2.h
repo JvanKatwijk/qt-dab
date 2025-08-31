@@ -36,7 +36,7 @@
 
 #include	<QScopedPointer>
 #include	"xml-filewriter.h"
-class	logger;
+class	errorLogger;
 
 extern "C"  {
  typedef int (*pfn_airspy_init)();
@@ -92,7 +92,8 @@ class airspy_2 final: // public QObject,
 Q_OBJECT
 public:
 			airspy_2		(QSettings *,
-	                                         const QString &, logger *);
+	                                         const QString &,
+	                                         errorLogger *);
 			~airspy_2		();
 	int32_t		defaultFrequency	();
 	bool		restartReader		(int32_t, int samplesSkipped = 0);
@@ -109,6 +110,7 @@ public:
 	int16_t		currentTab;
 private:
 	RingBuffer<std::complex<float>> _I_Buffer;
+	errorLogger	*theErrorLogger;
 	QString		recorderVersion;
 	void		check_error		(bool, const std::string);
         QScopedPointer<xml_fileWriter>	xmlWriter;

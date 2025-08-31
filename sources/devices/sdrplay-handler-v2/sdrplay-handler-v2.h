@@ -32,7 +32,7 @@
 #include	"device-handler.h"
 #include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
-class		logger;
+class		errorLogger;
 //
 //
 //	Note
@@ -123,7 +123,8 @@ class	sdrplayHandler_v2 final: // public QObject,
 Q_OBJECT
 public:
 			sdrplayHandler_v2	(QSettings *,
-	                                         const QString &, logger *);
+	                                         const QString &,
+	                                         errorLogger *);
 			~sdrplayHandler_v2	();
 
 	bool		restartReader		(int32_t, int skipped = 0);
@@ -186,6 +187,7 @@ private:
 	pfn_mir_sdr_rspDuo_BiasT
 	                        my_mir_sdr_rspDuo_BiasT;
 
+	errorLogger	*theErrorLogger;
 	QString		recorderVersion;
 	QString		deviceModel;
 	bool		fetchLibrary	();

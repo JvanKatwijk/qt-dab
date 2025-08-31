@@ -21,8 +21,10 @@
  */
 #include	"RspDuo-handler.h"
 #include	"sdrplay-handler-v3.h"
+#include	"errorlog.h"
 
 	RspDuo_handler::RspDuo_handler (sdrplayHandler_v3 *parent,
+	                                errorLogger	*theLogger,
 	                                sdrplay_api_DeviceT *chosenDevice,
 	                                int	freq,
 	                                bool	agcMode,
@@ -44,6 +46,7 @@
 	(void)antennaValue;
 	(void)tuner;
 	this	-> parent		= parent;
+	theErrorLogger			= theLogger;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
 	this    -> lnaUpperBound	=  lnaStates (freq);
@@ -100,7 +103,9 @@ sdrplay_api_ErrT        err;
                                             sdrplay_api_Update_Tuner_Frf,
                                             sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
 	   return false;
 	}
 
@@ -127,7 +132,9 @@ sdrplay_api_ErrT        err;
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
 	   return false;
 	}
 	this	-> lnaState	= lnaState;
@@ -151,7 +158,9 @@ sdrplay_api_ErrT        err;
 	                                     sdrplay_api_Update_RspDuo_AmPortSelect,
 	                                     sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
 	   return false;
 	}
 
@@ -169,8 +178,10 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	                          &chosenDevice -> tuner, 
 	                          sdrplay_api_RspDuo_AMPORT_2);
 	if (err != sdrplay_api_Success) {
-	   showState (QString  ("Tunerswitch ") + 
-	                       parent -> sdrplay_api_GetErrorString (err));
+	   QString errorString =  QString ("Tunerswitch ") + 
+	                       parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
 	}
 	else {
 	   showState (QString  ("Switched to tuner ") + QString::number (tuner));
@@ -189,8 +200,11 @@ sdrplay_api_ErrT        err;
                                   chosenDevice	-> tuner,
 	                          sdrplay_api_Update_RspDuo_BiasTControl,
 		                  sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success)
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	if (err != sdrplay_api_Success) {
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
+	}
 	return err == sdrplay_api_Success;
 }
 
@@ -206,8 +220,11 @@ sdrplay_api_RspDuoTunerParamsT * rspDuoTunerParams;
 	                                    chosenDevice -> tuner,
                                             (sdrplay_api_ReasonForUpdateT)(sdrplay_api_Update_RspDuo_RfNotchControl | sdrplay_api_Update_RspDuo_Tuner1AmNotchControl),
 	                                      sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success)
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	if (err != sdrplay_api_Success) {
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
+	}
 	return err == sdrplay_api_Success;
 }
 

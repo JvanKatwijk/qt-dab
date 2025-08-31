@@ -144,6 +144,8 @@
 	tiiFilter_active = value_i (settings_p, CONFIG_HANDLER,
 	                                      "tiiFilter", 1) != 0;
 	theOfdmDecoder. handle_decoderSelector (decoder);
+
+	this	-> snr		= 10;	// until we know better
 }
 
 	ofdmHandler::~ofdmHandler () {
@@ -214,11 +216,12 @@ int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
 int	cCount		= 0;
-float	snr		= 0;
 bool	inSync		= false;
 int	tryCounter	= 0;
 Complex tester	[T_u / 2];
 int	snrCount	= 0;
+
+	this	-> snr		= 10; 	// until really computed
 	softbits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
@@ -422,7 +425,7 @@ int	snrCount	= 0;
 //	If "eti_on" we process all data here
 	         if (etiOn) {
 	            theOfdmDecoder.
-	                   decode (ofdmBuffer, ofdmSymbolCount, softbits);
+	                   decode (ofdmBuffer, ofdmSymbolCount, softbits, snr);
 	            if (ofdmSymbolCount <= 3) 
 	               theFicHandler.
 	                    processFICBlock (softbits, ofdmSymbolCount);
@@ -440,7 +443,7 @@ int	snrCount	= 0;
 //	the payload at all
 	         if (ofdmSymbolCount <= 3) {
 	            theOfdmDecoder.
-                           decode (ofdmBuffer, ofdmSymbolCount, softbits);
+                           decode (ofdmBuffer, ofdmSymbolCount, softbits, snr);
 	            theFicHandler.   
                             processFICBlock (softbits, ofdmSymbolCount);
 	         }
@@ -451,7 +454,7 @@ int	snrCount	= 0;
 #else
 	         if (ofdmSymbolCount >= 4) {
 	            theOfdmDecoder.
-	                    decode (ofdmBuffer, ofdmSymbolCount, softbits);
+	                    decode (ofdmBuffer, ofdmSymbolCount, softbits, snr);
 	            theMscHandler.
 	                    processMscBlock (softbits, ofdmSymbolCount);
 	         }
@@ -467,7 +470,6 @@ int	snrCount	= 0;
 //
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
-
 	      if (frame_with_TII) {
 	         if (selectedTII == TII_NEW)
 	            theTIIDetector_NEW. addBuffer (ofdmBuffer);
@@ -496,7 +498,7 @@ int	snrCount	= 0;
 	         sum /= T_null;
 	         float snrV	=
 	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	         snr = 0.9 * snr + 0.1 * snrV;
+	         this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
 	         if (this -> snrBuffer_p != nullptr) 
 	            snrBuffer_p -> putDataIntoBuffer (&snr, 1);
 	         snrCount ++;
@@ -504,7 +506,7 @@ int	snrCount	= 0;
 	            snrCount = 0;
 	            showSnr (snr);
 	         }
-	         theOfdmDecoder. setPowerLevel (sum / T_u);
+	         theOfdmDecoder. setNullLevel (ofdmBuffer);
 	      }
 /**
   *	The first sample to be found for the next frame should be T_g

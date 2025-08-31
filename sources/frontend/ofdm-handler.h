@@ -129,7 +129,7 @@ private:
 	mscHandler		theMscHandler;
 
 	uint8_t			selectedTII;
-
+	DABFLOAT		snr;
 	int16_t			tiiThreshold;
 	bool			tiiCollisions_active;
 	bool			tiiFilter_active;

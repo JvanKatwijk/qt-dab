@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2025
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,7 +33,7 @@
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
 #include	"device-exceptions.h"
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settings-handler.h"
 
 #define	CORRF	0.005
@@ -47,7 +47,7 @@
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              const QString &recorderVersion,
-	                              logger	*theLogger):	// dummy for now
+	                              errorLogger	*theLogger):
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, SAMPLERATE) {
 int16_t	deviceCount;
@@ -60,6 +60,7 @@ char	manufac [256], product [256], serial [256];
 	(void)theLogger;
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
+	this	-> theErrorLogger	= theLogger;
 	setupUi (&myFrame);
 //	setPositionAndSize (s, &myFrame, "rtlsdrSettings");
 	myFrame. show ();

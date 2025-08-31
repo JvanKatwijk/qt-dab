@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2023
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,6 +24,9 @@
  *	should reconstruct the data blocks.
  *	Ofdm_decoder is called for Block_0 and the FIC blocks,
  *	its invocation results in 2 * Tu bits
+ *
+ *	The commented decoders were from Thomas Neder and used in an
+ *	experiment, the "shifting" from fftBinRaw to fftBin is from his work
  */
 #include	<vector>
 #include	"ofdm-decoder.h"
@@ -40,13 +43,25 @@
   *	will extract the Tu samples, do an FFT and extract the
   *	carriers and map them on (soft) bits
   */
-
-#define	Alpha	0.05f
+#define	ALPHA	0.01f
 static inline
 Complex	normalize (const Complex &V) {
 float Length	= jan_abs (V);
 	return Length == 0.0f ? Complex (0.0, 0.0) : V / (DABFLOAT)Length;
 }
+
+#define	GRANULARITY	5000
+#define	TABLE_SIZE	(int)(GRANULARITY + RAD_PER_DEGREE * 30.0)
+//Complex makeComplex (DABFLOAT phase) {
+//DABFLOAT p2	= phase * phase;
+//DABFLOAT p3	= p2 * phase;
+//DABFLOAT p4	= p3 * phase;
+//DABFLOAT p5	= p4 * phase;
+//DABFLOAT p6	= p5 * phase;
+//DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
+//DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
+//	return Complex (cosi, sine);
+//}
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
@@ -60,8 +75,15 @@ float Length	= jan_abs (V);
 	                                    fft (params. get_T_u (), false),
 	                                    devBuffer (devBuffer_i),
 	                                    iqBuffer (iqBuffer_i),
+	                                    phaseReference (params. get_T_u ()),
 	                                    conjVector (params. get_T_u ()),
-	                                    fft_buffer (params. get_T_u ()) {
+	                                    fft_buffer (params. get_T_u ()),
+		                            stdDevVector (params. get_T_u ()),
+	                                    IntegAbsPhaseVector (params. get_T_u ()),
+	                                    meanLevelVector (params. get_T_u ()),
+	                                    meanPowerVector (params. get_T_u ()),
+	                                    meanSigmaSqVector (params. get_T_u ())
+{
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
@@ -70,25 +92,24 @@ float Length	= jan_abs (V);
 	connect (this, &ofdmDecoder::show_stdDev,
 	         myRadioInterface, &RadioInterface::show_stdDev);
 //
-	this	-> T_s			= params. get_T_s	();
-	this	-> T_u			= params. get_T_u	();
-	this	-> nrBlocks		= params. get_L		();
-	this	-> carriers		= params. get_carriers	();
+	this	-> T_s		= params. get_T_s	();
+	this	-> T_u		= params. get_T_u	();
+	this	-> nrBlocks	= params. get_L		();
+	this	-> carriers	= params. get_carriers	();
+	this	-> T_g		= T_s - T_u;
 
 	repetitionCounter	= 10;
-	this	-> T_g		= T_s - T_u;
-	phaseReference		.resize (T_u);
-	offsetVector.		resize (T_u);
-	carrierCenters.		resize (T_u);
 
-	for (int32_t i = 0; i < T_u; i ++) {
-	   offsetVector		[i] = 0;
-	   carrierCenters	[i] = Complex (1, 1);
-	}
-
-	meanValue		= 1.0f;
+	reset ();
 	iqSelector		= SHOW_DECODED;
 	decoder			= DECODER_1;
+
+	nullPower		= 0.1f;
+	compTable. resize (TABLE_SIZE);
+	for (int i = 0; i < TABLE_SIZE; i ++)  {
+	   float argum = (float)(i - TABLE_SIZE / 2) / TABLE_SIZE;
+	   compTable [i] = Complex (cos (argum), sin (argum));
+	}
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -96,21 +117,26 @@ float Length	= jan_abs (V);
 //
 void	ofdmDecoder::stop ()	{
 }
-
+//
 void	ofdmDecoder::reset ()	{
-	for (int i = 0; i <  T_u; i ++) {
-	   offsetVector		[i] = 0;
-	   carrierCenters	[i] = Complex (1, 1);
-	}
+	memset (stdDevVector. data (),		0, T_u * sizeof (DABFLOAT));
+	memset (IntegAbsPhaseVector. data (),	0, T_u * sizeof (DABFLOAT));
+	memset (meanLevelVector. data (),	0, T_u * sizeof (DABFLOAT));
+	memset (meanPowerVector. data (),	0, T_u * sizeof (DABFLOAT));
+	memset (meanSigmaSqVector. data (),	0, T_u * sizeof (DABFLOAT));
+	meanValue	= 1.0f;
 }
 //
+void	ofdmDecoder::setPowerLevel	(DABFLOAT level) {
+	nullPower = level * level;
+}
+
 float	ofdmDecoder::processBlock_0 (
 	                std::vector <Complex> buffer, bool withTII) {
 	fft. fft (buffer);
-/**
-  *	we are now in the frequency domain, and we keep the carriers
-  *	as coming from the FFT as phase reference.
-  */
+//	we are now in the frequency domain, and we keep the carriers
+//	as coming from the FFT as phase reference.
+//
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
 
@@ -118,13 +144,8 @@ float	ofdmDecoder::processBlock_0 (
 	if (withTII) {
 	   return arg (temp);
 	}
-	
-	for (int i = 0; i < carriers; i ++) {
-	   int16_t	index	= myMapper.  mapIn (i);
-	   if (index < 0) 
-	      index += T_u;
-	}
-	return arg (temp);
+
+	return 0;
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -147,12 +168,11 @@ static float f_d = 1;
 	}
 	return 10 * log10 (f_n / f_d + 0.1);
 }
-/**
-  *	for the other blocks of data, the first step is to go from
-  *	time to frequency domain, to get the carriers.
-  *	we distinguish between FIC blocks and other blocks,
-  *	only to spare a test. The mapping code is the same
-  */
+
+//	for the other blocks of data, the first step is to go from
+//	time to frequency domain, to get the carriers.
+//	we distinguish between FIC blocks and other blocks,
+//	only to spare a test. The mapping code is the same
 
 static	int	cnt	= 0;
 
@@ -168,10 +188,24 @@ int	sign (DABFLOAT x) {
 	return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
+void	limit_symmetrically (DABFLOAT &v, float limit) {
+	if (v < -limit)
+	   v = -limit;
+	if (v > limit)
+	   v = limit;
+}
+//
+//	How to compute a sin or cos for (hopefully) small angles,
+//	Some tests showed the using the first few terms of the
+//	Taylor series for angles up to PI / 4 were up to  the fourth
+//	decimal correct.
+//	A more performance oriented solution could be a table,
+//	but then, the granularity of the table should be pretty high.
+
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
-	                     std::vector<int16_t> &ibits) {
-float sum = 0;
+	                     std::vector<int16_t> &softbits) {
+DABFLOAT sum = 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
@@ -187,58 +221,132 @@ float sum = 0;
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
 	      index += T_u;
-/**
-  *	decoding is computing the phase difference between
-  *	carriers with the same index in subsequent blocks.
-  *	The carrier of a block is the reference for the carrier
-  *	on the same position in the next block
-  */
-	   Complex	r1 = fft_buffer [index] *
-	                     normalize (conj (phaseReference [index]));
-	   conjVector	[index] = r1;
+//
+//     decoding is computing the phase difference between
+//     carriers with the same index in subsequent blocks.
+//     The carrier of a block is the reference for the carrier
+//     on the same position in the next block
 
-	   DABFLOAT ab1	= jan_abs (r1);
-	   Complex r1_fq	=
-	             Complex (abs (real (r1)), abs (imag (r1)));
-	   carrierCenters [index] =
-	            Complex (
-	                    compute_avg (real (carrierCenters [index]),
-	                                         real (r1_fq), Alpha),
-	                    compute_avg (imag (carrierCenters [index]),
-	                                         imag (r1_fq), Alpha));
-	   offsetVector [index] =
-	            compute_avg (offsetVector [index], 
-	                         arg (r1_fq * conj (carrierCenters [index])),
-	                         Alpha);
-	   switch (decoder) {
-	      case DECODER_2:
-//	DPSK decoding is just depending on the phase, so the "quality"
-//	is directly related to the error in the phase. 
-//	The offsetVector contains the phase errors, related to the
-//	average phase value
-//	Experiments show that this approach is almost as good as
-//	approach in DECODER_1
-	      {	 float quality =	// between 0 .. 1
-	              abs (M_PI_4 - abs (offsetVector [index])) / M_PI_4;
-	         DABFLOAT weight = quality;
-	         ibits [i]		= -sign (real (r1)) *
-	                            weight * abs (real (r1)) / ab1 * MAX_VITERBI; 
-	         ibits [carriers + i]	= -sign (imag (r1)) *
-	                            weight * abs (imag (r1)) / ab1 * MAX_VITERBI; 
-	         break;
-	      }
-//	Decoder 2 is the most simple one. It outperforms all others
-//	just compute the relative strength of
-//	x and y coordinate, related to a fictitious midddle
-	      case DECODER_1:
-	      default:		// should not happen
-	         ibits [i]	= -sign (real (r1)) *
-	                                abs (real (r1)) / ab1 * MAX_VITERBI; 
-	         ibits [carriers + i]	= -sign (imag (r1)) *
-	                                abs (imag (r1)) / ab1 * MAX_VITERBI;
-	   }
+	   Complex fftBinRaw = fft_buffer [index] *
+	                       normalize (conj (phaseReference [index]));
+	   conjVector   [index] = fftBinRaw;
+#define	__FAST_DECODING__
+#ifdef	__FAST_DECODING__
+	   float binAbsLevel	= jan_abs (fftBinRaw);
+	   softbits [i] = - real (fftBinRaw) / binAbsLevel * MAX_VITERBI;
+	   softbits [carriers + i]
+	                = - imag (fftBinRaw) / binAbsLevel * MAX_VITERBI; 
 	}
+#else
+//	In the original code, "borrowed" from Tomneda, the
+//	correction factor was dynamically computed, i.e
+//	Complex fftBin	= fftBinRaw *
+//	                     makeComplex (-IntegAbsPhaseVector [index]);
+//	It turned out that the makeComplex function took app 10 % of the
+//	overall processing time.
+//	Table lookup was the answer, accuracy of the table increases
+//	by making the table longer
+//	since we are dealing with non int values, choosing the length
+//	requires attention
+	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
+	                                                 TABLE_SIZE / 2);
+	   Complex fftBin	= fftBinRaw * compTable [dd];
+//	Get the phase (real and absolute) 
+	   DABFLOAT	re	= real (fftBin);
+	   DABFLOAT	im	= imag (fftBin);
+	   if (re < 0)
+	      re = -re;
+	   if (im < 0)
+	      im = -im;
+	   Complex	fftBin_at_1	= Complex (re, im);
+	   DABFLOAT	binAbsLevel	= jan_abs (fftBin_at_1);
+	   DABFLOAT	phaseError	= arg (fftBin_at_1) - M_PI_4;
+	   IntegAbsPhaseVector [index] = 
+	      (1 - ALPHA) * IntegAbsPhaseVector [index] + ALPHA * phaseError;
+	   limit_symmetrically (IntegAbsPhaseVector [index],
+	                                RAD_PER_DEGREE * (DABFLOAT)9.9);
 
+//
+//	When trying alternative decoder implementations
+//	as implemented in DABstar by Rolf Zerr (aka old-dab) and
+//	Thomas Neder (aka) Tomneda,  I wanted to do some investigation
+//	to get  actual figures.
+//	The different decoders were tested with an old file
+//	with a recording of a poor signal, that ran for (almost) exact
+//	two  minutes from the start, and the BER results were accumulated
+//	to get a more or less reliable answer.
+//	It turned out that the major effect on the decoding quality 
+//	was with the phase shifting as done above.
+//	With that setting there turned out to be a marginal difference
+//	between decoders 1 and decoder 4,
+//	the other two decoders 2 and 3 performed
+//	slightly less (roughly speaking app 740000 repairs by
+//	decoder 1 and 4, and 746000 by decoders 2 and 3).
+//	So, we have chosen decoders 1 (most simple one) and 4 (log likelihood)
+//	as decoders here.
+//	the contributions of Rolf Zerr (aka OldDab) and
+//	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
+//
+	   DABFLOAT	stdDev		= phaseError * phaseError;
+	   stdDevVector [index] =
+	        compute_avg (stdDevVector [index], stdDev, ALPHA);
+//
+	   meanLevelVector [index] =
+	         compute_avg (meanLevelVector[index],
+	                                 binAbsLevel, ALPHA);
+	   meanPowerVector [index] =
+	            compute_avg (meanPowerVector [index],
+	                                 binAbsLevel * binAbsLevel, ALPHA);
+	   DABFLOAT meanLevelPerBin	= meanLevelVector [index] / sqrt (2);
+
+//	x distance to reference point
+	   DABFLOAT x_distance		= 
+	                             abs (real (fftBin)) - meanLevelPerBin;
+//	y distance to reference point
+	   DABFLOAT y_distance		=
+	                             abs (imag (fftBin)) - meanLevelPerBin;
+
+	   DABFLOAT sigmaSq		= x_distance * x_distance +
+	                                  y_distance * y_distance;
+	   meanSigmaSqVector [index]	=
+	             compute_avg (meanSigmaSqVector [index], sigmaSq, ALPHA);
+
+	   DABFLOAT signalPower		= meanPowerVector [index] - nullPower;
+
+	   if (signalPower <= 0.0f)
+	      signalPower = 0.1f;
+
+	   DABFLOAT snr		= signalPower / nullPower;
+	   DABFLOAT ff 		=  meanLevelVector [index] /
+	                                         meanSigmaSqVector [index];
+	   ff /= 1 / snr + 2;
+	   
+	   DABFLOAT weight_r;
+	   DABFLOAT weight_i;
+	   Complex R1;
+	   switch (decoder) {
+	      default:
+	      case DECODER_1:
+	         R1		= fftBin;
+	         softbits [i]
+	                   = - real (R1) / binAbsLevel * MAX_VITERBI;
+	         softbits [carriers + i]
+	                   = - imag (R1) / binAbsLevel * MAX_VITERBI; 
+	         break;
+	      case DECODER_2:
+	         R1 =  normalize (fftBin) * ff *
+	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
+	         weight_r = weight_i	= -100 / meanValue;
+	         softbits [i]		= (int16_t)(real (R1) * weight_r);
+	         softbits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
+	         break;
+	   }
+
+	   sum += jan_abs (R1);
+	}	// end of decode loop
+
+	meanValue	= sum / carriers;
+#endif
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {
@@ -262,11 +370,13 @@ float sum = 0;
 	      }
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
+	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
+	                                              phaseReference. data ());
 	      if (devBuffer != nullptr) {
 	         float tempVector [carriers];
 	         for (int i = 0; i < carriers; i ++) {
 	            tempVector [i] =
-	                  offsetVector [(T_u - carriers / 2 + i) % T_u];
+	                  stdDevVector [(T_u - carriers / 2 + i) % T_u];
 	            tempVector [i] = tempVector [i] /  M_PI * 180.0;
 	         }
 
@@ -278,12 +388,13 @@ float sum = 0;
 	      float Quality	= computeQuality (conjVector. data ());
 	      float timeOffset	= compute_timeOffset (fft_buffer. data (),
 	                                              phaseReference. data ());
-	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
-	                                              phaseReference. data ());
+//	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
+//	                                              phaseReference. data ());
 	      show_quality (Quality, timeOffset, freqOffset);
 	      cnt = 0;
 	   }
 	}
+
 	memcpy (phaseReference. data(), fft_buffer. data (),
 	                            T_u * sizeof (Complex));
 }
@@ -316,25 +427,27 @@ Complex sum	= Complex (0, 0);
 
 	return arg (sum);
 }
-
-float	ofdmDecoder::compute_frequencyOffset (Complex *r,
-	                                      Complex *c) {
-
+//
+//	Ideally, the processed carrier should have a value
+//	equal to (2 * k + 1) * PI / 4
+//	The offset is a measure of the frequency "error"
+float	ofdmDecoder::compute_frequencyOffset (Complex *r, Complex *c) {
 Complex theta = Complex (0, 0);
+static float vv	=  0;
 
 	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
 	   int index = i < 0 ? i + T_u : i;
 	   Complex val = r [index] * conj (c [index]);
-	   val		= Complex (abs (real (val)),
-	                                       abs (imag (val)));
+	   val		= Complex (abs (real (val)), abs (imag (val)));
 	   theta	+= val * Complex (1, -1);
 	}
 
-	return arg (theta) / (2 * M_PI) * 2048000 / T_u;
+	float uu =  arg (theta) / (2 * M_PI) * SAMPLERATE / T_u;
+	vv	= 0.9 * vv + 0.1 * abs (uu);;
+	return vv;
 }
 
-float	ofdmDecoder::compute_clockOffset (Complex *r,
-	                                  Complex *v) {
+float	ofdmDecoder::compute_clockOffset (Complex *r, Complex *v) {
 float	offsa	= 0;
 int	offsb	= 0;
 
@@ -368,4 +481,4 @@ void	ofdmDecoder::handle_iqSelector	() {
 void	ofdmDecoder::handle_decoderSelector	(int decoder) {
 	this	-> decoder	= decoder;
 }
-
+	

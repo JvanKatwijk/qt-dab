@@ -24,7 +24,7 @@
 #include	"position-handler.h"
 #include	"airspyselect.h"
 #include	"device-exceptions.h"
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
@@ -39,16 +39,16 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
 	airspy_2::airspy_2 (QSettings *s,
 	                    const QString  &recorderVersion,
-	                    logger	*theLogger) :	// dummy for now
+	                    errorLogger	*theLogger) :
                                          _I_Buffer (4 * 1024 * 1024) {
 int	result;
 int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
 
-	(void)theLogger;
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
+	theErrorLogger			= theLogger;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, AIRSPY_SETTINGS);
 	myFrame. show		();
@@ -116,7 +116,7 @@ uint32_t samplerateCount;
 
 	(void) my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 	(void) my_airspy_get_samplerates (device, &samplerateCount, 0);
-	fprintf (stderr, "%d samplerates are supported\n", samplerateCount); 
+//	fprintf (stderr, "%d samplerates are supported\n", samplerateCount); 
 	sampleRates. resize (samplerateCount);
 	my_airspy_get_samplerates (device,
 	                            sampleRates. data(), samplerateCount);
@@ -255,14 +255,14 @@ int	result;
 
 	if (result != AIRSPY_SUCCESS) {
 	   showStatus (my_airspy_error_name ((airspy_error)result));
-	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
-	            my_airspy_error_name((airspy_error)result), result);
+	   theErrorLogger-> add ("Airspy",
+	                  my_airspy_error_name ((airspy_error)result));
 	}
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 	if (result != AIRSPY_SUCCESS) {
 	   showStatus (my_airspy_error_name ((airspy_error)result));
-	   printf ("my_airspy_set_sample_type() failed: %s (%d)\n",
-	            my_airspy_error_name ((airspy_error)result), result);
+	   theErrorLogger-> add  ("Airspy",
+	                  my_airspy_error_name ((airspy_error)result));
 	   return false;
 	}
 
@@ -270,11 +270,10 @@ int	result;
 	            (airspy_sample_block_cb_fn)callback, this);
 	if (result != AIRSPY_SUCCESS) {
 	   showStatus (my_airspy_error_name ((airspy_error)result));
-	   printf ("my_airspy_start_rx() failed: %s (%d)\n",
-	         my_airspy_error_name((airspy_error)result), result);
+	   theErrorLogger-> add  ("Airspy",
+	                  my_airspy_error_name((airspy_error)result));
 	   return false;
 	}
-
 //
 //	Hier moeten we de tab en gain weer zetten
 	restore_gainSliders (freq / MHz (1), tab);
@@ -303,8 +302,8 @@ int	result;
 
 	if (result != AIRSPY_SUCCESS ) {
 	   showStatus (my_airspy_error_name ((airspy_error)result));
-	   printf ("my_airspy_stop_rx() failed: %s (%d)\n",
-	          my_airspy_error_name ((airspy_error)result), result);
+	   theErrorLogger-> add ("Airspy",
+	                  my_airspy_error_name ((airspy_error)result));
 	}
 	running. store (false);
 	resetBuffer ();
@@ -374,8 +373,8 @@ airspy_read_partid_serialno_t read_partid_serialno;
 int result = my_airspy_board_partid_serialno_read (device,
 	                                          &read_partid_serialno);
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("failed: %s (%d)\n",
-	         my_airspy_error_name ((airspy_error)result), result);
+	   theErrorLogger-> add ("Airspy",
+	                  my_airspy_error_name ((airspy_error)result));
 	   return "UNKNOWN";
 	} else {
 	   snprintf (serial, sizeof(serial), "%08X%08X", 
@@ -387,15 +386,6 @@ int result = my_airspy_board_partid_serialno_read (device,
 //
 //	not used here
 int	airspy_2::open() {
-//int result = my_airspy_open (&device);
-//
-//	if (result != AIRSPY_SUCCESS) {
-//	   printf ("airspy_open() failed: %s (%d)\n",
-//	          my_airspy_error_name((airspy_error)result), result);
-//	   return -1;
-//	} else {
-//	   return 0;
-//	}
 	return 0;
 }
 
@@ -432,156 +422,167 @@ bool	airspy_2::load_airspyFunctions() {
 	my_airspy_init	= (pfn_airspy_init)
 	                       library_p -> resolve ("airspy_init");
 	if (my_airspy_init == nullptr) {
-	   fprintf (stderr, "Could not find airspy_init\n");
+	   theErrorLogger -> add ("Airspy", "Could not find airspy_init");
 	   return false;
 	}
 
 	my_airspy_exit	= (pfn_airspy_exit)
 	                       library_p -> resolve ("airspy_exit");
 	if (my_airspy_exit == nullptr) {
-	   fprintf (stderr, "Could not find airspy_exit\n");
+	   theErrorLogger -> add ("Airspy", "Could not find airspy_exit");
 	   return false;
 	}
 
 	my_airspy_list_devices	= (pfn_airspy_list_devices)
 	                       library_p -> resolve ("airspy_list_devices");
 	if (my_airspy_list_devices == nullptr) {
-	   fprintf (stderr, "Could not find airspy_list_devices\n");
+	   theErrorLogger -> add ("Airspy", "Could not find airspy_list_devices");
 	   return false;
 	}
 	
 	my_airspy_open	= (pfn_airspy_open)
 	                       library_p -> resolve ("airspy_open");
 	if (my_airspy_open == nullptr) {
-	   fprintf (stderr, "Could not find airspy_open\n");
+	   theErrorLogger -> add ("Airspy", "Could not find airspy_open");
 	   return false;
 	}
 
 	my_airspy_close	= (pfn_airspy_close)
 	                       library_p -> resolve ("airspy_close");
 	if (my_airspy_close == nullptr) {
-	   fprintf (stderr, "Could not find airspy_close\n");
+	   theErrorLogger -> add ("Airspy", "Could not find airspy_close");
 	   return false;
 	}
 
 	my_airspy_get_samplerates	= (pfn_airspy_get_samplerates)
 	                       library_p -> resolve ("airspy_get_samplerates");
 	if (my_airspy_get_samplerates == nullptr) {
-	   fprintf (stderr, "Could not find airspy_get_samplerates\n");
+	   theErrorLogger-> add ("Airspy",
+	                    "Could not find airspy_get_samplerates");
 	   return false;
 	}
 
 	my_airspy_set_samplerate	= (pfn_airspy_set_samplerate)
 	                       library_p -> resolve ("airspy_set_samplerate");
 	if (my_airspy_set_samplerate == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_samplerate\n");
+	   theErrorLogger-> add ("Airspy",
+	                    "Could not find airspy_set_samplerate");
 	   return false;
 	}
 
 	my_airspy_start_rx	= (pfn_airspy_start_rx)
 	                       library_p -> resolve ("airspy_start_rx");
 	if (my_airspy_start_rx == nullptr) {
-	   fprintf (stderr, "Could not find airspy_start_rx\n");
+	   theErrorLogger-> add ("Airspy",
+	                    "Could not find airspy_start_rx");
 	   return false;
 	}
 
 	my_airspy_stop_rx	= (pfn_airspy_stop_rx)
 	                       library_p -> resolve ("airspy_stop_rx");
 	if (my_airspy_stop_rx == nullptr) {
-	   fprintf (stderr, "Could not find airspy_stop_rx\n");
+	   theErrorLogger-> add ("Airspy",
+	                    "Could not find airspy_stop_rx");
 	   return false;
 	}
 
 	my_airspy_set_sample_type	= (pfn_airspy_set_sample_type)
 	                       library_p -> resolve ("airspy_set_sample_type");
 	if (my_airspy_set_sample_type == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_sample_type\n");
+	   theErrorLogger-> add ("Airspy",
+	                         "Could not find airspy_set_sample_type");
 	   return false;
 	}
 
 	my_airspy_set_freq	= (pfn_airspy_set_freq)
 	                       library_p -> resolve ("airspy_set_freq");
 	if (my_airspy_set_freq == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_freq\n");
+	   theErrorLogger -> add ("Airspy", "Could not find airspy_set_freq");
 	   return false;
 	}
 
 	my_airspy_set_lna_gain	= (pfn_airspy_set_lna_gain)
 	                       library_p -> resolve ("airspy_set_lna_gain");
 	if (my_airspy_set_lna_gain == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_lna_gain\n");
+	   theErrorLogger-> add ("Airspy",
+	                        "Could not find airspy_set_lna_gain");
 	   return false;
 	}
 
 	my_airspy_set_mixer_gain	= (pfn_airspy_set_mixer_gain)
 	                       library_p -> resolve ("airspy_set_mixer_gain");
 	if (my_airspy_set_mixer_gain == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_mixer_gain\n");
+	   theErrorLogger-> add ("Airspy", "Could not find airspy_set_mixer_gain");
 	   return false;
 	}
 
 	my_airspy_set_vga_gain	= (pfn_airspy_set_vga_gain)
 	                       library_p -> resolve ("airspy_set_vga_gain");
 	if (my_airspy_set_vga_gain == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_vga_gain\n");
+	   theErrorLogger ->  add ("Airspy",
+	                      "Could not find airspy_set_vga_gain");
 	   return false;
 	}
 	
 	my_airspy_set_linearity_gain = (pfn_airspy_set_linearity_gain)
 	                       library_p -> resolve ("airspy_set_linearity_gain");
 	if (my_airspy_set_linearity_gain == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_linearity_gain\n");
-	   fprintf (stderr, "You probably did install an old library\n");
+	   theErrorLogger-> add ("Airspy",
+	                   "Could not find airspy_set_linearity_gain"\
+	                   "You probably did install an old library\n");
 	   return false;
 	}
 
 	my_airspy_set_sensitivity_gain = (pfn_airspy_set_sensitivity_gain)
 	                       library_p -> resolve ("airspy_set_sensitivity_gain");
 	if (my_airspy_set_sensitivity_gain == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_sensitivity_gain\n");
-	   fprintf (stderr, "You probably did install an old library\n");
+	   theErrorLogger-> add ("Airspy",
+	                "Could not find airspy_set_sensitivity_gain"\
+	                "You probably did install an old library\n");
 	   return false;
 	}
 
 	my_airspy_set_lna_agc	= (pfn_airspy_set_lna_agc)
 	                       library_p -> resolve ("airspy_set_lna_agc");
 	if (my_airspy_set_lna_agc == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_lna_agc\n");
+	   theErrorLogger-> add ("Airspy", "Could not find airspy_set_lna_agc");
 	   return false;
 	}
 
 	my_airspy_set_mixer_agc	= (pfn_airspy_set_mixer_agc)
 	                       library_p -> resolve ("airspy_set_mixer_agc");
 	if (my_airspy_set_mixer_agc == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_mixer_agc\n");
+	   theErrorLogger-> add ("Airspy", "Could not find airspy_set_mixer_agc");
 	   return false;
 	}
 
 	my_airspy_set_rf_bias	= (pfn_airspy_set_rf_bias)
 	                       library_p -> resolve ("airspy_set_rf_bias");
 	if (my_airspy_set_rf_bias == nullptr) {
-	   fprintf (stderr, "Could not find airspy_set_rf_bias\n");
+	   theErrorLogger-> add ("Airspy", "Could not find airspy_set_rf_bias");
 	   return false;
 	}
 
 	my_airspy_error_name	= (pfn_airspy_error_name)
 	                       library_p -> resolve ("airspy_error_name");
 	if (my_airspy_error_name == nullptr) {
-	   fprintf (stderr, "Could not find airspy_error_name\n");
+	   theErrorLogger-> add ("Airspy", "Could not find airspy_error_name");
 	   return false;
 	}
 
 	my_airspy_board_id_read	= (pfn_airspy_board_id_read)
 	                       library_p -> resolve ("airspy_board_id_read");
 	if (my_airspy_board_id_read == nullptr) {
-	   fprintf (stderr, "Could not find airspy_board_id_read\n");
+	   theErrorLogger-> add ("Airspy",
+	                        "Could not find airspy_board_id_read");
 	   return false;
 	}
 
 	my_airspy_board_id_name	= (pfn_airspy_board_id_name)
 	                       library_p -> resolve ("airspy_board_id_name");
 	if (my_airspy_board_id_name == nullptr) {
-	   fprintf (stderr, "Could not find airspy_board_id_name\n");
+	   theErrorLogger-> add ("Airspy",
+	                         "Could not find airspy_board_id_name");
 	   return false;
 	}
 
@@ -589,7 +590,8 @@ bool	airspy_2::load_airspyFunctions() {
 	                (pfn_airspy_board_partid_serialno_read)
 	                       library_p -> resolve ("airspy_board_partid_serialno_read");
 	if (my_airspy_board_partid_serialno_read == nullptr) {
-	   fprintf (stderr, "Could not find airspy_board_partid_serialno_read\n");
+	   theErrorLogger-> add ("Airspy",
+	                   "Could not find airspy_board_partid_serialno_read");
 	   return false;
 	}
 

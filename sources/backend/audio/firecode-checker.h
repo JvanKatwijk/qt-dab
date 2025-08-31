@@ -26,17 +26,22 @@
 #pragma once
 #include	<cstdint>
 
-class firecode_checker {
+class firecodeChecker {
 public:
-		firecode_checker ();
-		~firecode_checker();
+		firecodeChecker ();
+		~firecodeChecker();
 // error detection. x[0-1] contains parity, x[2-10] contains data
 // return true if firecode check is passed
-	bool	check (const uint8_t *);
+	bool	check		(const uint8_t *);
+	bool	checkAndCorrect	(uint8_t *);
 
 private:
-        uint16_t tab [256];
-        uint16_t run8 (unsigned char regs[]);
-        static const uint8_t g[16];
+	void	fillSyndromeTable	();
+	uint16_t crc16			(const uint8_t *);
+
+//	g(x)=(x^11+1)(x^5+x^3+x^2+x+1)=x^16+x^14+x^13+x^12+x^11+x^5+x^3+x^2+x+1
+	const uint16_t	polynom = 0x782f;
+	uint16_t	 crcTable [256];
+	uint16_t	 syndromeTable[65536];
 };
 

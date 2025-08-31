@@ -70,6 +70,7 @@
 #include	"ensemble-handler.h"
 #include	"config-handler.h"
 #include	"logger.h"
+#include	"errorlog.h"
 
 #include	"ofdm-handler.h"
 
@@ -263,6 +264,7 @@ private:
 	converter_48000		theAudioConverter;
 
 	scanListHandler		theScanlistHandler;
+	errorLogger		theErrorLogger;
 	deviceChooser		theDeviceChoser;
 	dxDisplay		theDXDisplay;
 	logger			theLogger;

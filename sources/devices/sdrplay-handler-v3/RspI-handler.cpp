@@ -21,6 +21,7 @@
  */
 #include	"RspI-handler.h"
 #include	"sdrplay-handler-v3.h"
+#include	"errorlog.h"
 
 static
 int	RSP1_Table [3][5] = {
@@ -30,6 +31,7 @@ int	RSP1_Table [3][5] = {
 
 
 	Rsp1_handler::Rsp1_handler   (sdrplayHandler_v3 *parent,
+	                              errorLogger	*theLogger,
 	                              sdrplay_api_DeviceT *chosenDevice,
 	                              int	freq,
 	                              bool	agcMode,
@@ -44,7 +46,7 @@ int	RSP1_Table [3][5] = {
 	                                          lnaState,
 	                                          GRdB,
 	                                          biasT, ppmValue) {
-
+	theErrorLogger			= theLogger;
 	this	-> deviceModel		= "RSP-1";
 	this	-> nrBits		= 12;
 	this	-> lnaUpperBound =  lnaStates (freq);
@@ -86,7 +88,9 @@ sdrplay_api_ErrT        err;
                                             sdrplay_api_Update_Tuner_Frf,
                                             sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
 	   return false;
 	}
 
@@ -107,7 +111,9 @@ sdrplay_api_ErrT        err;
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   showState (parent -> sdrplay_api_GetErrorString (err));
+	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
 	   return false;
 	}
 	this	-> lnaState	= lnaState;

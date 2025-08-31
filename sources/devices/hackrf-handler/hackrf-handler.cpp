@@ -35,7 +35,7 @@
 #include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
@@ -46,12 +46,12 @@
 
 	hackrfHandler::hackrfHandler  (QSettings *s,
 	                               const QString &recVersion,
-	                               logger	*theLogger) : // dummy for now
+	                               errorLogger	*theLogger) : 
 	                                  _I_Buffer (4 * 1024 * 1024),
 	                                  hackrfSettings (s),
 	                                  recorderVersion (recVersion) {
 hackrf_error errorCode;
-	(void)theLogger;
+	theErrorLogger		= theLogger;
         setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, HACKRF_SETTINGS);
 
@@ -241,8 +241,7 @@ int	res;
 	   res	= this -> hackrf_set_lna_gain (theDevice, newGain);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	      fprintf (stderr, "Problem with hackrf_lna_gain :\n");
-	      fprintf (stderr, "%s \n",
+	      theErrorLogger -> add ("Hackrf",
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	      return;
 	   }
@@ -256,8 +255,7 @@ int	res;
 	   res	= this -> hackrf_set_vga_gain (theDevice, newGain & ~0x01);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	      fprintf (stderr, "Problem with hackrf_vga_gain :\n");
-	      fprintf (stderr, "%s \n",
+	      theErrorLogger -> add ("Hackrf",
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	      return;
 	   }
@@ -275,8 +273,7 @@ bool	b;
 //	fprintf(stderr,"Passed %d\n",(int)b);
 	if (res != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	   fprintf (stderr, "Problem with hackrf_set_antenna_enable :\n");
-	   fprintf (stderr, "%s \n",
+	   theErrorLogger -> add ("Hackrf",
 	                    this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
@@ -292,8 +289,7 @@ bool	b;
 	res = this -> hackrf_set_amp_enable (theDevice, b);
 	if (res != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	   fprintf (stderr, "Problem with hackrf_set_amp_enable :\n");
-	   fprintf (stderr, "%s \n",
+	   theErrorLogger -> add ("Hackrf",
 	                   this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
@@ -354,20 +350,32 @@ hackrf_error errorCode;
 	   update_gainSettings (freq / MHz (1));
 	errorCode =  (hackrf_error) (hackrf_set_lna_gain (theDevice,
 	                                        lnaGainSlider -> value ()));
-	if (errorCode != HACKRF_SUCCESS)
+	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	}
+
 	errorCode = (hackrf_error)(hackrf_set_vga_gain (theDevice,
 	                                        vgaGainSlider -> value ()));
-	if (errorCode != HACKRF_SUCCESS)
+	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	}
+
 	errorCode = (hackrf_error)(hackrf_set_amp_enable (theDevice, 
 	                             AmpEnableButton -> isChecked () ? 1 : 0));
-	if (errorCode != HACKRF_SUCCESS)
+	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	}
+
 	errorCode =  (hackrf_error)(hackrf_set_antenna_enable (theDevice, 
 	                             biasT_button -> isChecked () ? 1 : 0));
-	if (errorCode != HACKRF_SUCCESS)
+	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	}
+
 	errorCode =  (hackrf_error)(hackrf_set_freq (theDevice, freq));
 	if (errorCode != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (errorCode));
@@ -377,6 +385,7 @@ hackrf_error errorCode;
 	                                               callback, this));	
 	if (errorCode != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
 	   return false;
 	}
 
@@ -395,6 +404,7 @@ hackrf_error errorCode;
 	errorCode = (hackrf_error)(hackrf_stop_rx (theDevice));
 	if (errorCode != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
 	   return;
 	}
 
@@ -536,7 +546,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	               (pfn_hackrf_error_name)
 	                   library_p -> resolve ("hackrf_error_name");
 	if (this -> hackrf_error_name == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_error_name\n");
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_error_name\n");
 	   return false;
 	}
 
@@ -544,7 +555,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	               (pfn_hackrf_usb_board_id_name)
 	                   library_p -> resolve ("hackrf_usb_board_id_name");
 	if (this -> hackrf_usb_board_id_name == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_usb_board_id_name\n");
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_usb_board_id_name\n");
 	   return false;
 	}
 
@@ -552,7 +564,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	              (pfn_hackrf_set_antenna_enable)
 	                     library_p -> resolve ("hackrf_set_antenna_enable");
 	if (this -> hackrf_set_antenna_enable == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_set_antenna_enable\n");
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_set_antenna_enable\n");
 	   return false;
 	}
 
@@ -560,7 +573,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	              (pfn_hackrf_set_amp_enable)
 	                    library_p -> resolve ("hackrf_set_amp_enable");
 	if (this -> hackrf_set_amp_enable == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_set_amp_enable\n");
+	   theErrorLogger -> add ("Hackrf", 
+	                     "Could not find hackrf_set_amp_enable\n");
 	   return false;
 	}
 
@@ -568,7 +582,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	              (pfn_hackrf_si5351c_read)
 	                      library_p -> resolve ("hackrf_si5351c_read");
 	if (this -> hackrf_si5351c_read == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_si5351c_read\n");
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_si5351c_read\n");
 	   return false;
 	}
 
@@ -576,7 +591,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	              (pfn_hackrf_si5351c_write)
 	                      library_p -> resolve("hackrf_si5351c_write");
 	if (this -> hackrf_si5351c_write == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_si5351c_write\n");
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_si5351c_write\n");
 	   return false;
 	}
 
@@ -584,7 +600,8 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	              (pfn_hackrf_version_string_read)
 	                     library_p -> resolve("hackrf_version_string_read");
 	if (hackrf_version_string_read == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_version_string_read\n");
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_version_string_read\n");
 	   return false;
 	}
 //	this	-> hackrf_board_rev_read =

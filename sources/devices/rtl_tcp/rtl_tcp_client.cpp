@@ -36,7 +36,7 @@
 #include	"device-exceptions.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
-
+#include	"errorlog.h"
 #include	"xml-filewriter.h"
 
 #if (!defined (__MINGW32__))
@@ -53,11 +53,13 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 } dongleInfo_t;
 
 	rtl_tcp_client::rtl_tcp_client (QSettings *s,
-	                                const QString &recorder):
+	                                const QString &recorder,
+	                                errorLogger *theLogger):
 	                                        _I_Buffer (32 * 32768) {
 
 	remoteSettings		= s;
 	recorderVersion		= recorder;
+	theErrorLogger		= theLogger;
 	setupUi (&myFrame);
         setPositionAndSize (s, &myFrame, RTL_TCP_SETTINGS);
         myFrame. show   ();

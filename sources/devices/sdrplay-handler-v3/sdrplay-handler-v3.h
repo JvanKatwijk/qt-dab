@@ -32,17 +32,15 @@
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"device-handler.h"
-//#include	"sdrplayselect.h"
 #include	"ui_sdrplay-widget-v3.h"
 #include	<sdrplay_api.h>
 
 #include	<QScopedPointer>
 #include	"Rsp-device.h"
 
-//class	Rsp_device;
 class	generalCommand;
 class	xml_fileWriter;
-class	logger;
+class	errorLogger;
 
 #ifdef __MINGW32__
 //#include      "dlfcn.h"
@@ -56,7 +54,8 @@ class	sdrplayHandler_v3 final:
 Q_OBJECT
 public:
 			sdrplayHandler_v3	(QSettings *,
-	                                         const QString &, logger *);
+	                                         const QString &,
+	                                         errorLogger *);
 			~sdrplayHandler_v3	();
 
 	bool		restartReader		(int32_t, int skipped = 0);
@@ -99,6 +98,7 @@ public:
 	sdrplay_api_DeviceT             *chosenDevice;
 	QScopedPointer<RspDevice>	theRsp;
 
+	errorLogger		*theErrorLogger;
 	std::atomic<bool>	failFlag;
 	std::atomic<bool>	successFlag;
 	float			denominator;

@@ -21,8 +21,10 @@
  */
 #include	"RspII-handler.h"
 #include	"sdrplay-handler-v3.h"
+#include	"errorlog.h"
 
 	RspII_handler::RspII_handler (sdrplayHandler_v3 *parent,
+	                              errorLogger	*theLogger,
 	                              sdrplay_api_DeviceT *chosenDevice,
 	                              int	freq,
 	                              bool	agcMode,
@@ -41,6 +43,7 @@
 	                                          biasT,
 	                                          ppmValue) {
 	setAntenna (antennaValue);
+	theErrorLogger			= theLogger;
 	this	-> deviceModel		= "RSP-II";
 	this	-> nrBits		= 14;
 	if (freq < Mhz (420))
@@ -118,9 +121,9 @@ sdrplay_api_ErrT        err;
 	                                    sdrplay_api_Update_Tuner_Gr,
 	                                    sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
-	   showState (parent -> sdrplay_api_GetErrorString (err));
-	   fprintf (stderr, "grdb: error %s\n",
-	                         parent -> sdrplay_api_GetErrorString (err));
+	   QString errString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errString);
+	   theErrorLogger -> add (deviceModel, errString);
 	   return false;
 	}
 	this	-> lnaState	= lnaState;
@@ -142,8 +145,11 @@ sdrplay_api_ErrT        err;
 	                                     chosenDevice -> tuner,
 	                                     sdrplay_api_Update_Rsp2_AntennaControl,
 	                                     sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success) 
-	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
+	if (err != sdrplay_api_Success) {
+	   QString errString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errString);
+	   theErrorLogger -> add (deviceModel, errString);
+	}
 	return err == sdrplay_api_Success;
 }
 
@@ -157,8 +163,11 @@ sdrplay_api_ErrT        err;
                                        chosenDevice -> tuner,
                                        sdrplay_api_Update_Rsp2_BiasTControl,
                                        sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success)
-	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
+	if (err != sdrplay_api_Success) {
+	   QString errString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errString);
+	   theErrorLogger -> add (deviceModel, errString);
+	}
 	return err == sdrplay_api_Success;
 }
 
@@ -172,8 +181,11 @@ sdrplay_api_Rsp2TunerParamsT *rspIITunerParams;
                                             chosenDevice -> tuner,
                                             sdrplay_api_Update_Rsp2_RfNotchControl,
                                             sdrplay_api_Update_Ext1_None);
-	if (err != sdrplay_api_Success)
-	   showState (QString (parent -> sdrplay_api_GetErrorString (err)));
+	if (err != sdrplay_api_Success) {
+	   QString errString = parent -> sdrplay_api_GetErrorString (err);
+	   showState (errString);
+	   theErrorLogger -> add (deviceModel, errString);
+	}
 	return err == sdrplay_api_Success;
 }
 

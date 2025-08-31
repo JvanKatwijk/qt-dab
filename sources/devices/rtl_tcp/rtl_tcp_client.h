@@ -40,11 +40,14 @@
 #include  "ui_rtl_tcp-widget.h"
 
 class	xml_fileWriter;
+class	errorLogger;
 
 class rtl_tcp_client :  public deviceHandler, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
-			rtl_tcp_client	(QSettings *, const QString &);
+			rtl_tcp_client	(QSettings *,
+	                                 const QString &,
+	                                 errorLogger *);
 			~rtl_tcp_client	();
 	int32_t		getRate		();
 	bool		restartReader	(int32_t, int skipped = 0);
@@ -60,6 +63,7 @@ public:
 	bool		dongleInfoIn;
 private:
 	RingBuffer<std::complex<float>>  _I_Buffer;
+	errorLogger	*theErrorLogger;
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
 	void		sendCommand	(uint8_t, int32_t);

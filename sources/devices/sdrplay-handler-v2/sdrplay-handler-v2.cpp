@@ -34,7 +34,7 @@
 #include	"sdrplayselect.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
@@ -70,15 +70,15 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	sdrplayHandler_v2::
 	         sdrplayHandler_v2  (QSettings *s,
 	                             const QString &recorderVersion,
-	                             logger	*theLogger): // dummy right now
+	                             errorLogger *theErrorLogger):
 	                                    _I_Buffer (4 * 1024 * 1024) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
 
-	(void)theLogger;
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
+	this	-> theErrorLogger	= theErrorLogger;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, SDRPLAY_SETTINGS_V2);
 	myFrame.setWindowFlag(Qt::Tool, true);

@@ -25,20 +25,22 @@
 #include	"Rsp-device.h"
 
 class	sdrplayHandler_v3;
+class	errorLogger;
 
 class	RspDuo_handler: public RspDevice {
 public:
 		RspDuo_handler (sdrplayHandler_v3 *parent,
-	                       sdrplay_api_DeviceT *chosenDevice,
-	                       int	freq,
-	                       bool	agcMode,
-	                       int	lnaState,
-	                       int 	GRdB,
-	                       int	antennaValue,
-	                       int	tuner,
-	                       bool	biasT,
-	                       bool	notch,
-	                       double	ppmValue);
+	                        errorLogger	*,
+	                        sdrplay_api_DeviceT *chosenDevice,
+	                        int	freq,
+	                        bool	agcMode,
+	                        int	lnaState,
+	                        int 	GRdB,
+	                        int	antennaValue,
+	                        int	tuner,
+	                        bool	biasT,
+	                        bool	notch,
+	                        double	ppmValue);
 		~RspDuo_handler	();
 
 	int	lnaStates	(int frequency);
@@ -53,4 +55,5 @@ private:
 	int	getLnaGain	(int, int);
 	sdrplayHandler_v3	*parent;
 	int	currentTuner;
+	errorLogger	*theErrorLogger;
 };

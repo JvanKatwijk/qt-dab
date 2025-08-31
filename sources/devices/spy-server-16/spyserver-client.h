@@ -41,13 +41,15 @@
 #include	"spy-handler.h"
 
 class	xml_fileWriter;
+class	errorLogger;
 
 class	spyServer_client: //public QObject,
 	                  public deviceHandler, Ui_spyServer_widget {
 Q_OBJECT
 public:
 			spyServer_client	(QSettings *,
-	                                        const QString &);
+	                                         const QString &,
+                                                 errorLogger *);
 			~spyServer_client	();
 	int32_t		getRate		();
 	bool		restartReader	(int32_t, int skipped = 0);
@@ -82,6 +84,7 @@ public slots:
 	void		data_ready	();
 private:
 	RingBuffer<std::complex<float>>	_I_Buffer;
+	errorLogger		*theErrorLogger;
 	RingBuffer<int16_t>	tmpBuffer;
 	QTimer		checkTimer;
 	QScopedPointer<spyHandler> theServer;

@@ -24,10 +24,12 @@
 #include	"Rsp-device.h"
 
 class	sdrplayHandler_v3;
+class	errorLogger;
 
 class	Rsp1A_handler: public RspDevice {
 public:
 		Rsp1A_handler (sdrplayHandler_v3 *parent,
+	                       errorLogger	*,
 	                       sdrplay_api_DeviceT *chosenDevice,
 	                       int	freq,
 	                       bool	agcMode,
@@ -45,5 +47,6 @@ public:
 private:
 	int16_t	bankFor_rsp1A 	(int freq);
 	int	getLnaGain	(int, int);
+	errorLogger	*theErrorLogger;
 };
 

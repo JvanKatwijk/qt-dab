@@ -173,7 +173,8 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theAudioConverter (this),
 	                                        theScanlistHandler (this,
 	                                                        scanListFile),
-	                                        theDeviceChoser (Si),
+	                                        theErrorLogger (Si),
+	                                        theDeviceChoser (&theErrorLogger, Si),
 	                                        theDXDisplay (this, Si),
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si,
@@ -1388,7 +1389,7 @@ void	RadioInterface::updateTimeDisplay() {
 deviceHandler	*RadioInterface::createDevice (const QString &s,
 	                                        logger *theLogger) {
 deviceHandler	*inputDevice = theDeviceChoser.
-	                               createDevice  (s, version, theLogger);
+	                               createDevice  (s, version);
 
 	if (inputDevice	== nullptr)
 	   return nullptr;

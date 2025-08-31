@@ -237,6 +237,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/http-handler.h
 	     ./sources/support/ITU_Region_1.h
 	     ./sources/support/logger.h
+	     ./sources/support/errorlog.h
 	     ./sources/support/mapport.h
 	     ./sources/support/mot-content-types.h
 	     ./sources/support/position-handler.h
@@ -257,7 +258,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/time-converter.h
 	     ./sources/support/time-table.h
 	     ./sources/support/uploader.h
-	     ./sources/support/wavWriter.h
+	     ./sources/support/riffWriter.h
 	     ./sources/support/gui-elements/circular-button.h
 	     ./sources/support/gui-elements/clickable-label.h
 	     ./sources/support/gui-elements/color-selector.h
@@ -370,6 +371,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/http-handler.cpp
 	     ./sources/support/ITU_Region_1.cpp
 	     ./sources/support/logger.cpp
+	     ./sources/support/errorlog.cpp
 	     ./sources/support/mapport.cpp
 	     ./sources/support/position-handler.cpp
 	     ./sources/support/presetcombobox.cpp
@@ -386,7 +388,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/time-converter.cpp
 	     ./sources/support/time-table.cpp
 	     ./sources/support/uploader.cpp
-	     ./sources/support/wavWriter.cpp
+	     ./sources/support/riffWriter.cpp
 	     ./sources/support/gui-elements/circular-button.cpp
 	     ./sources/support/gui-elements/clickable-label.cpp
 	     ./sources/support/gui-elements/color-selector.cpp

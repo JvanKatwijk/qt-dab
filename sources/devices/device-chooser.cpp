@@ -24,6 +24,7 @@
 #include	<QFileDialog>
 #include	<QMessageBox>
 #include	"device-exceptions.h"
+#include	"errorlog.h"
 
 #ifdef	HAVE_RTLSDR_V3
 #include	"rtlsdr-handler-win.h"
@@ -114,8 +115,10 @@
 #define	WAV_FILE	0103
 #define	XML_FILE	0104
 
-	deviceChooser::deviceChooser (QSettings *dabSettings) {
-	this	-> dabSettings	= dabSettings;
+	deviceChooser::deviceChooser (errorLogger *theErrorLogger,
+	                              QSettings *dabSettings) {
+	this	-> theErrorLogger	= theErrorLogger;
+	this	-> dabSettings		= dabSettings;
 	deviceList. push_back (deviceItem ("select input", NO_ENTRY));
 	deviceList. push_back (deviceItem ("file input", FILE_INPUT));
 #ifdef	HAVE_SDRPLAY_V3
@@ -186,13 +189,13 @@ int	deviceChooser::getDeviceIndex	(const QString &name) {
 }
 
 deviceHandler	*deviceChooser::createDevice (const QString &deviceName,
-	                                      const QString &version,
-	                                      logger *theLogger) {
+	                                      const QString &version) {
 deviceHandler	*inputDevice;
 	try {
-	   inputDevice = _createDevice (deviceName, version, theLogger);
+	   inputDevice = _createDevice (deviceName, version);
 	} catch (std::exception &e) {
 	   QMessageBox:: warning (nullptr, "Warning", e. what ());
+	   theErrorLogger -> add (deviceName, QString (e. what ()));
 	   return nullptr;
 	}
 	catch (...) {
@@ -203,8 +206,7 @@ deviceHandler	*inputDevice;
 }
 
 deviceHandler	*deviceChooser::_createDevice (const QString &s,
-	                                       const QString &version,
-	                                       logger *theLogger) {
+	                                       const QString &version) {
 int	deviceNumber	= getDeviceIndex (s);
 
 	if (deviceNumber < 0)
@@ -213,50 +215,55 @@ int	deviceNumber	= getDeviceIndex (s);
 	switch (deviceNumber) {
 #ifdef	HAVE_SDRPLAY_V2
 	   case SDRPLAY_V2_DEVICE:
-	      return new sdrplayHandler_v2 (dabSettings, version, theLogger);
+	      return new sdrplayHandler_v2 (dabSettings, version,
+	                                                     theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_SDRPLAY_V3
 	   case SDRPLAY_V3_DEVICE:
-	      return new sdrplayHandler_v3 (dabSettings, version, theLogger);
+	      return new sdrplayHandler_v3 (dabSettings, version,
+	                                                     theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V3
 	   case RTLSDR_DEVICE_V3:
-	      return new rtlsdrHandler_win (dabSettings, version, theLogger);
+	      return new rtlsdrHandler_win (dabSettings, version, 
+	                                                     theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V4
 	   case RTLSDR_DEVICE_V4:
-	      return new rtlsdrHandler_win (dabSettings, version, theLogger);
+	      return new rtlsdrHandler_win (dabSettings, version,
+	                                                     theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR
 	   case RTLSDR_DEVICE:
-	      return new rtlsdrHandler (dabSettings, version, theLogger);
+	      return new rtlsdrHandler (dabSettings, version,
+	                                                     theErrorLogger);
 	      break;
 #endif
 #ifdef 	HAVE_AIRSPY_2
 	   case AIRSPY_DEVICE:
-	      return new airspy_2 (dabSettings, version, theLogger);
+	      return new airspy_2 (dabSettings, version, theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_HACKRF
 	   case HACKRF_DEVICE:
-	      return new hackrfHandler (dabSettings, version, theLogger);
+	      return new hackrfHandler (dabSettings, version, theErrorLogger);
 #endif
 #ifdef	HAVE_LIME
 	   case LIME_DEVICE:
-	      return new limeHandler (dabSettings, version, theLogger);
+	      return new limeHandler (dabSettings, version, theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_PLUTO
 	   case PLUTO_DEVICE:
-	      return new plutoHandler (dabSettings, version, theLogger);
+	      return new plutoHandler (dabSettings, version, theErrorLogger);
 #endif
 #ifdef HAVE_RTL_TCP
 	   case RTL_TCP_DEVICE:
-	      return new rtl_tcp_client (dabSettings, version);
+	      return new rtl_tcp_client (dabSettings, version, theErrorLogger);
 #endif
 #ifdef HAVE_EXTIO
 	   case EXTIO_DEVICE:
@@ -275,12 +282,14 @@ int	deviceNumber	= getDeviceIndex (s);
 #endif
 #ifdef HAVE_SPYSERVER_16
 	   case SPYSERVER_DEVICE_16:
-	      return new spyServer_client (dabSettings, version);
+	      return new spyServer_client (dabSettings, version,
+	                                                   theErrorLogger);
 	      break;
 #endif
 #ifdef HAVE_SPYSERVER_8
 	   case SPYSERVER_DEVICE_8:
-	      return new spyServer_client_8 (dabSettings, version);
+	      return new spyServer_client_8 (dabSettings, version,
+	                                                   theErrorLogger);
 	      break;
 #endif
 	   case FILE_INPUT:

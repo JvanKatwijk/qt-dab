@@ -52,11 +52,11 @@ public:
 	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
-	void	setPowerLevel		(DABFLOAT);
+	void	setNullLevel		(const std::vector<Complex> &);
 	float	processBlock_0		(std::vector<Complex>, bool);
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
-	                                 std::vector<int16_t> &);
+	                                 std::vector<int16_t> &, DABFLOAT);
 	void	stop			();
 	void	reset			();
 	void	handle_iqSelector	();
@@ -83,21 +83,26 @@ private:
 	int32_t		T_g;
 	int32_t		nrBlocks;
 	int32_t		carriers;
-	DABFLOAT	nullPower;
 	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>	ibits;
 	std::vector<Complex>	conjVector;
 	std::vector<Complex>	fft_buffer;
-	std::vector<DABFLOAT>	stdDevVector;
-	std::vector<DABFLOAT> 	IntegAbsPhaseVector;
+	std::vector<DABFLOAT>	sigma_XVector;
+	std::vector<DABFLOAT>	sigma_YVector;
 	std::vector<DABFLOAT>	meanLevelVector;
-	std::vector<DABFLOAT>	meanPowerVector;
-	std::vector<DABFLOAT>	meanSigmaSqVector;
-	
+	std::vector<DABFLOAT>	stdDevVector;
+	std::vector<DABFLOAT>	phaseCorrVector;
+	std::vector<DABFLOAT>	nullLevelVector;
+	std::vector<DABFLOAT>	powerLevelVector;
+
+	DABFLOAT	nullPower;
 	float		meanValue;
+	float		mean_2;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;
+
+	double		sqrt_2;
 signals:
 	void		showIQ		(int);
 	void		show_quality	(float, float, float);

@@ -318,7 +318,7 @@ DABFLOAT constrain (DABFLOAT V, DABFLOAT Low, DABFLOAT high) {
 }
 
 static inline
-float	square	(float a) {
+DABFLOAT square	(DABFLOAT a) {
 	return a * a;
 }
 

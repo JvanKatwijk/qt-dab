@@ -23,7 +23,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #pragma once
@@ -44,7 +43,7 @@
 
 #include	"dll-driver.h"
 
-class	logger;
+class	errorLogger;
 //
 //	create typedefs for the library functions
 typedef	struct rtlsdr_dev rtlsdr_dev_t;
@@ -85,7 +84,8 @@ class	rtlsdrHandler final:
 Q_OBJECT
 public:
 			rtlsdrHandler	(QSettings *,
-	                                 const QString &, logger *);
+	                                 const QString &,
+	                                 errorLogger *);
 			~rtlsdrHandler	();
 	bool		restartReader	(int32_t, int skipped = 0);
 	void		stopReader	();
@@ -108,6 +108,7 @@ public:
 private:
 	RingBuffer<std::complex<float>> _I_Buffer;
 	QSettings	*rtlsdrSettings;
+	errorLogger	*theErrorLogger;
 	int32_t		inputRate;
 	int32_t		deviceCount;
 	QLibrary*	phandle;

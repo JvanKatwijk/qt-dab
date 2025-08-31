@@ -24,9 +24,6 @@
  *	should reconstruct the data blocks.
  *	Ofdm_decoder is called for Block_0 and the FIC blocks,
  *	its invocation results in 2 * Tu bits
- *
- *	The commented decoders were from Thomas Neder and used in an
- *	experiment, the "shifting" from fftBinRaw to fftBin is from his work
  */
 #include	<vector>
 #include	"ofdm-decoder.h"
@@ -78,12 +75,13 @@ float Length	= jan_abs (V);
 	                                    phaseReference (params. get_T_u ()),
 	                                    conjVector (params. get_T_u ()),
 	                                    fft_buffer (params. get_T_u ()),
-		                            stdDevVector (params. get_T_u ()),
-	                                    IntegAbsPhaseVector (params. get_T_u ()),
+	                                    sigma_XVector (params. get_T_u ()),
+	                                    sigma_YVector (params. get_T_u ()),
 	                                    meanLevelVector (params. get_T_u ()),
-	                                    meanPowerVector (params. get_T_u ()),
-	                                    meanSigmaSqVector (params. get_T_u ())
-{
+	                                    stdDevVector (params. get_T_u ()),
+	                                    phaseCorrVector (params. get_T_u ()),
+	                                    nullLevelVector (params. get_T_u ()),
+	                                    powerLevelVector (params. get_T_u ()){
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
@@ -104,12 +102,14 @@ float Length	= jan_abs (V);
 	iqSelector		= SHOW_DECODED;
 	decoder			= DECODER_1;
 
-	nullPower		= 0.1f;
 	compTable. resize (TABLE_SIZE);
 	for (int i = 0; i < TABLE_SIZE; i ++)  {
 	   float argum = (float)(i - TABLE_SIZE / 2) / TABLE_SIZE;
 	   compTable [i] = Complex (cos (argum), sin (argum));
 	}
+
+
+	sqrt_2	= sqrt (2);
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -118,33 +118,33 @@ float Length	= jan_abs (V);
 void	ofdmDecoder::stop ()	{
 }
 //
+static float mValue;
 void	ofdmDecoder::reset ()	{
-	memset (stdDevVector. data (),		0, T_u * sizeof (DABFLOAT));
-	memset (IntegAbsPhaseVector. data (),	0, T_u * sizeof (DABFLOAT));
-	memset (meanLevelVector. data (),	0, T_u * sizeof (DABFLOAT));
-	memset (meanPowerVector. data (),	0, T_u * sizeof (DABFLOAT));
-	memset (meanSigmaSqVector. data (),	0, T_u * sizeof (DABFLOAT));
+	for (int i = 0; i < T_u; i ++) {
+	   sigma_XVector [i]	= 0;
+	   sigma_YVector [i]	= 0;
+	   meanLevelVector [i]	= 0;
+	   stdDevVector [i]	= 0;
+	   phaseCorrVector [i]	= 0;
+	   nullLevelVector [i]	= 1;
+	   powerLevelVector [i] = 0;
+	}
 	meanValue	= 1.0f;
+	mValue		=  MAX_VITERBI / (sqrt_2 / 2);
 }
 //
-void	ofdmDecoder::setPowerLevel	(DABFLOAT level) {
-	nullPower = level * level;
-}
-
 float	ofdmDecoder::processBlock_0 (
 	                std::vector <Complex> buffer, bool withTII) {
 	fft. fft (buffer);
 //	we are now in the frequency domain, and we keep the carriers
-//	as coming from the FFT as phase reference.
+//	for their phases.
 //
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
 
-	Complex temp	= Complex (0, 0);;
-	if (withTII) {
-	   return arg (temp);
+	Complex temp	= Complex (0, 0);
+	if (!withTII) {
 	}
-
 	return 0;
 }
 //
@@ -160,7 +160,7 @@ static float f_n = 1;
 static float f_d = 1;
 	for (int i = 0; i < carriers; i ++) {
 	   Complex ss	= v [T_u / 2 - carriers / 2 + i];
-	   float ab	= jan_abs (ss) / sqrt (2);
+	   float ab	= jan_abs (ss) / sqrt_2;
 	   f_n		=  0.99 * f_n + 0.01 * (jan_abs (ss) * jan_abs (ss));
 	   float R	= abs (abs (real (ss)) - ab);
 	   float I	= abs (abs (imag (ss)) - ab);
@@ -204,9 +204,11 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
-	                     std::vector<int16_t> &softbits) {
-DABFLOAT sum = 0;
+	                     std::vector<int16_t> &softbits,
+	                     DABFLOAT snr) {
 
+float	sum	= 0;
+float	sum_2	= 0;
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
@@ -215,142 +217,118 @@ DABFLOAT sum = 0;
 //	a little optimization: we do not interchange the
 //	positive/negative frequencies to their right positions.
 //	The de-interleaving understands this
-//	DABFLOAT max	= 0;
 
+	DABFLOAT ampliSum	= 0;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
 	      index += T_u;
-//
-//     decoding is computing the phase difference between
-//     carriers with the same index in subsequent blocks.
-//     The carrier of a block is the reference for the carrier
-//     on the same position in the next block
+	   Complex fftBin	= fft_buffer [index] *
+                                  normalize (conj (phaseReference [index]));
+	   ampliSum		+= jan_abs (fftBin);
 
-	   Complex fftBinRaw = fft_buffer [index] *
-	                       normalize (conj (phaseReference [index]));
-	   conjVector   [index] = fftBinRaw;
-#define	__FAST_DECODING__
-#ifdef	__FAST_DECODING__
-	   float binAbsLevel	= jan_abs (fftBinRaw);
-	   softbits [i] = - real (fftBinRaw) / binAbsLevel * MAX_VITERBI;
-	   softbits [carriers + i]
-	                = - imag (fftBinRaw) / binAbsLevel * MAX_VITERBI; 
-	}
-#else
-//	In the original code, "borrowed" from Tomneda, the
-//	correction factor was dynamically computed, i.e
-//	Complex fftBin	= fftBinRaw *
-//	                     makeComplex (-IntegAbsPhaseVector [index]);
-//	It turned out that the makeComplex function took app 10 % of the
-//	overall processing time.
-//	Table lookup was the answer, accuracy of the table increases
-//	by making the table longer
-//	since we are dealing with non int values, choosing the length
-//	requires attention
-	   int dd	= (int)(-IntegAbsPhaseVector [index] * GRANULARITY +
-	                                                 TABLE_SIZE / 2);
-	   Complex fftBin	= fftBinRaw * compTable [dd];
-//	Get the phase (real and absolute) 
-	   DABFLOAT	re	= real (fftBin);
-	   DABFLOAT	im	= imag (fftBin);
-	   if (re < 0)
-	      re = -re;
-	   if (im < 0)
-	      im = -im;
-	   Complex	fftBin_at_1	= Complex (re, im);
-	   DABFLOAT	binAbsLevel	= jan_abs (fftBin_at_1);
-	   DABFLOAT	phaseError	= arg (fftBin_at_1) - M_PI_4;
-	   IntegAbsPhaseVector [index] = 
-	      (1 - ALPHA) * IntegAbsPhaseVector [index] + ALPHA * phaseError;
-	   limit_symmetrically (IntegAbsPhaseVector [index],
-	                                RAD_PER_DEGREE * (DABFLOAT)9.9);
+//	to avoid issues with variations in the amplitude,
+//	we normalize the value
+	   conjVector [index]	= fftBin;
 
+	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
+	                                   abs (imag (fftBin)));
+	   DABFLOAT binAbsLevel	= jan_abs (fftBin_at_1);
+
+	   DABFLOAT angle	= arg (fftBin_at_1) - M_PI_4;
 //
-//	When trying alternative decoder implementations
-//	as implemented in DABstar by Rolf Zerr (aka old-dab) and
-//	Thomas Neder (aka) Tomneda,  I wanted to do some investigation
-//	to get  actual figures.
-//	The different decoders were tested with an old file
-//	with a recording of a poor signal, that ran for (almost) exact
-//	two  minutes from the start, and the BER results were accumulated
-//	to get a more or less reliable answer.
-//	It turned out that the major effect on the decoding quality 
-//	was with the phase shifting as done above.
-//	With that setting there turned out to be a marginal difference
-//	between decoders 1 and decoder 4,
-//	the other two decoders 2 and 3 performed
-//	slightly less (roughly speaking app 740000 repairs by
-//	decoder 1 and 4, and 746000 by decoders 2 and 3).
-//	So, we have chosen decoders 1 (most simple one) and 4 (log likelihood)
-//	as decoders here.
-//	the contributions of Rolf Zerr (aka OldDab) and
-//	Thomas Neder (aka tomneda) for their decoders is greatly acknowledged
-//
-	   DABFLOAT	stdDev		= phaseError * phaseError;
-	   stdDevVector [index] =
-	        compute_avg (stdDevVector [index], stdDev, ALPHA);
-//
+//	updates
+	   stdDevVector [index]	= 
+	                 compute_avg (stdDevVector [index],
+	                                         angle * angle, ALPHA);
+	   int dd		= (int)(-phaseCorrVector [index] * GRANULARITY +
+	                                                  TABLE_SIZE / 2);
+//	   fftBin		= fftBin * compTable [dd];
+
+	   phaseCorrVector [index]	=
+	           (1 - ALPHA) * phaseCorrVector [index] + ALPHA * angle;
+	   limit_symmetrically (phaseCorrVector [index],
+	                                           RAD_PER_DEGREE * 8.0);
+
 	   meanLevelVector [index] =
-	         compute_avg (meanLevelVector[index],
-	                                 binAbsLevel, ALPHA);
-	   meanPowerVector [index] =
-	            compute_avg (meanPowerVector [index],
-	                                 binAbsLevel * binAbsLevel, ALPHA);
-	   DABFLOAT meanLevelPerBin	= meanLevelVector [index] / sqrt (2);
+	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
+	   powerLevelVector [index] =
+	        compute_avg (powerLevelVector [index], binAbsLevel * binAbsLevel, ALPHA);
 
-//	x distance to reference point
-	   DABFLOAT x_distance		= 
-	                             abs (real (fftBin)) - meanLevelPerBin;
-//	y distance to reference point
-	   DABFLOAT y_distance		=
-	                             abs (imag (fftBin)) - meanLevelPerBin;
+	   DABFLOAT d_x		=  real (fftBin_at_1) -
+	                                     meanLevelVector [index] / sqrt_2;
+	   DABFLOAT d_y		=  imag (fftBin_at_1) -
+	                                     meanLevelVector [index] / sqrt_2;
+	   DABFLOAT sigma_X	=  d_x * d_x + d_y * d_y;
+	   sigma_XVector [index] =
+	                 compute_avg (sigma_XVector [index], sigma_X, ALPHA);
 
-	   DABFLOAT sigmaSq		= x_distance * x_distance +
-	                                  y_distance * y_distance;
-	   meanSigmaSqVector [index]	=
-	             compute_avg (meanSigmaSqVector [index], sigmaSq, ALPHA);
+	   sum_2			+= jan_abs (fftBin);
+//	for decoders 1 and 2 we implement "Soft optimal 2"
+//	with some different value settings
+//	The snr is inherited from the ofdmHandler who computed it
+//	using the averages of the NULL element's values and the 
+//	overall samples values
+//	The snr_1 tries to be more precise by computing the
+//	snr per carrier
+//	   DABFLOAT snr_1		= 
+//	      10 * log10 (powerLevelVector [index] / nullLevelVector [index]);
+	   if (this -> decoder == DECODER_1) {
+	      DABFLOAT corrector	=
+	          meanLevelVector [index] / sigma_XVector [index];
+	      corrector		/= (1 / snr + 2);
+	      Complex R1	= corrector * normalize (fftBin) * 
+	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
+	                                      sqrt (jan_abs (phaseReference [index]))));
+	      float scaler		=  100 / meanValue;
+	      DABFLOAT leftBit		= - real (R1) * scaler;
+	      limit_symmetrically (leftBit, MAX_VITERBI);
+	      softbits [i]		= (int16_t)leftBit;
 
-	   DABFLOAT signalPower		= meanPowerVector [index] - nullPower;
+	      DABFLOAT rightBit		= - imag (R1) * scaler;
+	      limit_symmetrically (rightBit, MAX_VITERBI);
+	      softbits [i + carriers]	= (int16_t)rightBit;
 
-	   if (signalPower <= 0.0f)
-	      signalPower = 0.1f;
-
-	   DABFLOAT snr		= signalPower / nullPower;
-	   DABFLOAT ff 		=  meanLevelVector [index] /
-	                                         meanSigmaSqVector [index];
-	   ff /= 1 / snr + 2;
-	   
-	   DABFLOAT weight_r;
-	   DABFLOAT weight_i;
-	   Complex R1;
-	   switch (decoder) {
-	      default:
-	      case DECODER_1:
-	         R1		= fftBin;
-	         softbits [i]
-	                   = - real (R1) / binAbsLevel * MAX_VITERBI;
-	         softbits [carriers + i]
-	                   = - imag (R1) / binAbsLevel * MAX_VITERBI; 
-	         break;
-	      case DECODER_2:
-	         R1 =  normalize (fftBin) * ff *
-	                   (DABFLOAT)(sqrt (jan_abs (fftBin) * jan_abs (phaseReference [index])));
-	         weight_r = weight_i	= -100 / meanValue;
-	         softbits [i]		= (int16_t)(real (R1) * weight_r);
-	         softbits [carriers + i]	= (int16_t)(imag (R1) * weight_i);
-	         break;
+	      sum			+= jan_abs (R1);
 	   }
+	   else 
+	   if (this -> decoder == DECODER_2) {	// decoder 2
+	      DABFLOAT corrector	=
+	          meanLevelVector [index] / sigma_XVector [index];
+	      corrector		/= (1 / snr + 3);
+	      Complex R1	= corrector * normalize (fftBin) * 
+	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
+	                                      sqrt (jan_abs (phaseReference [index]))));
+	      float scaler		=  140 / meanValue;
+	      DABFLOAT leftBit		= - real (R1) * scaler;
+	      limit_symmetrically (leftBit, MAX_VITERBI);
+	      softbits [i]		= (int16_t)leftBit;
 
-	   sum += jan_abs (R1);
-	}	// end of decode loop
+	      DABFLOAT rightBit		= - imag (R1) * scaler;
+	      limit_symmetrically (rightBit, MAX_VITERBI);
+	      softbits [i + carriers]	= (int16_t)rightBit;
 
-	meanValue	= sum / carriers;
-#endif
+	      sum			+= jan_abs (R1);
+	   }
+	   else {
+//	for decoder 3 we implement "Soft optimal 1"
+//	      softbits [i]  = - real (fftBin) / binAbsLevel * MAX_VITERBI;
+	      softbits [i]  = - real (fftBin) / binAbsLevel * mValue;
+	      softbits [carriers + i] 
+//	                    = - imag (fftBin) /binAbsLevel * MAX_VITERBI; 
+	                    = - imag (fftBin) /binAbsLevel * mValue; 
+	   }
+	}
+	meanValue	= sum /carriers;
+	mValue		= 0.9 * mValue + 0.1 * sum_2 / carriers;	
+	
+//		end of decoding	, now for displaying things	//
+//////////////////////////////////////////////////////////////////
+	                     
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {
-	      DABFLOAT maxAmp = 0;
+	      DABFLOAT maxAmp = 00;
 	      for (int j = -carriers / 2; j < carriers / 2; j ++)
 	         if (j != 0)
 	            if (jan_abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)
@@ -388,8 +366,6 @@ DABFLOAT sum = 0;
 	      float Quality	= computeQuality (conjVector. data ());
 	      float timeOffset	= compute_timeOffset (fft_buffer. data (),
 	                                              phaseReference. data ());
-//	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
-//	                                              phaseReference. data ());
 	      show_quality (Quality, timeOffset, freqOffset);
 	      cnt = 0;
 	   }
@@ -481,4 +457,19 @@ void	ofdmDecoder::handle_iqSelector	() {
 void	ofdmDecoder::handle_decoderSelector	(int decoder) {
 	this	-> decoder	= decoder;
 }
+//
+//	T_null = 2656, T_u = 2048, we take the samples in the
+//	middle of the NULL period
+void	ofdmDecoder::setNullLevel	(const std::vector<Complex> &x) {
+int	offset	= (2656 - T_u) / 2;
+	for (int i = 0; i < T_u; i ++)
+	   fft_buffer [i] = x [i + offset];
 	
+	fft. fft (fft_buffer. data ());
+	for (int i = 0; i < T_u; i ++)
+	   nullLevelVector [i] = compute_avg (nullLevelVector [i] ,
+	                                      jan_abs (fft_buffer [i]) *
+	                                      jan_abs (fft_buffer [i]),
+	                                      ALPHA);
+}
+

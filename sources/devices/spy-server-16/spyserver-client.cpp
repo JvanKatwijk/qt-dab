@@ -43,16 +43,19 @@
 #include	"settings-handler.h"
 
 #include	"xml-filewriter.h"
+#include	"errorlog.h"
 
 #define	DEFAULT_FREQUENCY	(Khz (227360))
 #define	SPY_SERVER_16_SETTINGS	"SPY_SERVER_16_SETTINGS"
 
 	spyServer_client::spyServer_client	(QSettings *s,
-	                                         const QString &recorder):
+	                                         const QString &recorder,
+	                                         errorLogger *theLogger):
 	                                        _I_Buffer (8 * 32 * 32768),
 	                                        tmpBuffer (32 * 32768) {
 	spyServer_settings	= s;
 	recorderVersion		= recorder;
+	theErrorLogger		= theLogger;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, SPY_SERVER_16_SETTINGS);
 	myFrame. show		();

@@ -16,12 +16,12 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 
 unix {
-#QMAKE_CFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_LFLAGS	+=  -O3 -ffast-math -g
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -O3 -ffast-math -g
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
+QMAKE_LFLAGS	+=  -O3 -ffast-math -g
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -185,6 +185,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/distances.h \
 	   ./sources/support/time-converter.h \
 	   ./sources/support/logger.h \
+	   ./sources/support/errorlog.h \
 	   ./sources/support/settings-handler.h \
 	   ./sources/support/position-handler.h \
 	   ./sources/support/db-element.h \
@@ -330,6 +331,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/time-converter.cpp \
 	   ./sources/support/logger.cpp \
+	   ./sources/support/errorlog.cpp \
 	   ./sources/support/settings-handler.cpp \
 	   ./sources/support/position-handler.cpp \
 	   ./sources/support/riffWriter.cpp \
@@ -471,8 +473,8 @@ CONFIG		+= local-audio
 
 #CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
-CONFIG		+= viterbi-avx2
-#CONFIG		+= spiral-sse
+#CONFIG		+= viterbi-avx2
+CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__

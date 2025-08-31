@@ -46,7 +46,7 @@
 //#define GETPROCADDRESS  dlsym
 //#endif
 
-class	logger;
+class	errorLogger;
 
 #ifndef	PLUTO_RATE
 #define	PLUTO_RATE	2112000
@@ -115,6 +115,10 @@ typedef ptrdiff_t (*pfn_iio_buffer_step) (const struct iio_buffer *buf);
 typedef void * (*pfn_iio_buffer_end)(const struct iio_buffer *buf);
 typedef void * (*pfn_iio_buffer_first)(const struct iio_buffer *buf,
                                    const struct iio_channel *chn);
+typedef void (*pfn_iio_strerror)(int err, char *, size_t len);
+typedef void (*pfn_iio_library_get_version)(unsigned int *major,
+	                                    unsigned int *minor,
+	                                    char git_tag [8]);
 
 struct stream_cfg {
         long long bw_hz;
@@ -128,7 +132,8 @@ class	plutoHandler:  //public QThread,
 Q_OBJECT
 public:
 			plutoHandler		(QSettings *,
-	                                         const QString &, logger *);
+	                                         const QString &,
+	                                         errorLogger *);
             		~plutoHandler		();
 	bool		restartReader		(int32_t, int skipped = 0);
 	void		stopReader		();
@@ -141,9 +146,10 @@ public:
 	void		startDump		();
 	void		stopDump		();
 private:
-	bool			loadFunctions	();
+	bool			load_iioFunctions	();
 	QLibrary		*pHandle;
 	RingBuffer<std::complex<float>>	_I_Buffer;
+	errorLogger		*theErrorLogger;
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
 	QScopedPointer<xml_fileWriter>	xmlWriter;
@@ -254,6 +260,10 @@ private:
 	                        iio_buffer_end;
 	pfn_iio_buffer_first
 		                iio_buffer_first;
+	pfn_iio_strerror	
+	   			iio_strerror;
+	pfn_iio_library_get_version
+				iio_library_get_version;
 
 signals:
 	void		new_gainValue		(int);

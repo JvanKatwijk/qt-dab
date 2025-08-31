@@ -42,12 +42,15 @@
 #include	"spy-handler-8.h"
 
 class	xml_fileWriter;
+class	errorLogger;
 
 class	spyServer_client_8: //public QObject,
 	                    public deviceHandler, Ui_spyServer_widget_8 {
 Q_OBJECT
 public:
-			spyServer_client_8	(QSettings *, const QString &);
+			spyServer_client_8	(QSettings *,
+	                                         const QString &,
+	                                         errorLogger *);
 			~spyServer_client_8	();
 	int32_t		getRate		();
 	bool		restartReader	(int32_t, int skipped = 0);
@@ -83,6 +86,7 @@ public slots:
 	void		data_ready	();
 private:
 	RingBuffer<std::complex<float>>	_I_Buffer;
+	errorLogger	*theErrorLogger;
 	RingBuffer<uint8_t>	tmpBuffer;
 	QTimer		checkTimer;
 	QScopedPointer<spyHandler_8>	theServer;

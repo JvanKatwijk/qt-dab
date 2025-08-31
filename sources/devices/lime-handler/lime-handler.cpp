@@ -26,7 +26,7 @@
 #include	"position-handler.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
@@ -39,11 +39,12 @@ lms_info_str_t limedevices [10];
 
 	limeHandler::limeHandler (QSettings *s,
 	                          const QString &recorderVersion,
-	                          logger	*theLogger): // dummy for now
-	                             _I_Buffer (4* 1024 * 1024),
+	                          errorLogger	*theLogger):
+	                             _I_Buffer (4 * 1024 * 1024),
 	                             theFilter (5, 1560000 / 2, 2048000) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
+	this	-> theErrorLogger	= theLogger;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, LIME_SETTINGS);
 	myFrame. show	();
@@ -258,12 +259,12 @@ float_type gg;
 	int errorCode = LMS_SetGaindB (theDevice, LMS_CH_RX, 0, gaindB);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	}
 	errorCode = LMS_GetNormalizedGain (theDevice, LMS_CH_RX, 0, &gg);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	}	
 	else {
 	   store (limeSettings, LIME_SETTINGS, "gain", gaindB);
@@ -275,7 +276,7 @@ void	limeHandler::setAntenna		(int ind) {
 	int errorCode = LMS_SetAntenna (theDevice, LMS_CH_RX, 0, ind);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	}	
 }
 
@@ -295,7 +296,7 @@ int	errorCode;
 	errorCode = LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, freq);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	   return false;
 	}
 
@@ -303,7 +304,7 @@ int	errorCode;
 	errorCode = LMS_GetLOFrequency (theDevice, LMS_CH_RX, 0, &actualFreq);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	   return false;
 	}
 	frequencyLabel	-> setText (QString::number ((int)actualFreq / 1000) + " kHz");
@@ -322,13 +323,13 @@ int	errorCode;
 	errorCode     = LMS_SetupStream (theDevice, &stream);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	   return false;
 	}
         errorCode     = LMS_StartStream (&stream);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	   return false;
 	}
 	start ();
@@ -349,13 +350,13 @@ int errorCode;
 	errorCode = LMS_StopStream	(&stream);	
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	   return;
 	}
 	errorCode = LMS_DestroyStream	(theDevice, &stream);
 	if (errorCode < 0) {
 	   const char *error = LMS_GetLastErrorMessage ();
-	   fprintf (stderr, "%s\n", error);
+	   theErrorLogger -> add ("Lime", QString (error));
 	   return;
 	}
 }
@@ -417,7 +418,7 @@ int	amountRead	= 0;
 	                                     FIFO_SIZE,  &meta, 1000);
 	   if (samples < 0) {
 	      const char *error = LMS_GetLastErrorMessage ();
-	      fprintf (stderr, "%s\n", error);
+	      theErrorLogger -> add ("Lime", QString (error));
 	      continue;
 	   }
 
@@ -426,7 +427,7 @@ int	amountRead	= 0;
 	   int errorCode = LMS_GetStreamStatus (&stream, &streamStatus);
 	   if (errorCode < 0) {
 	      const char *error = LMS_GetLastErrorMessage ();
-	      fprintf (stderr, "%s\n", error);
+	      theErrorLogger -> add ("Lime", QString (error));
 	      continue;
 	   }
 	   underruns	+= streamStatus. underrun;
@@ -447,181 +448,211 @@ bool	limeHandler::load_limeFunctions() {
 	this	-> LMS_GetDeviceList = (pfn_LMS_GetDeviceList)
 	                    library_p -> resolve ("LMS_GetDeviceList");
 	if (this -> LMS_GetDeviceList == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetdeviceList\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetdeviceList\n");
 	   return false;
 	}
 	this	-> LMS_Open = (pfn_LMS_Open)
 	                    library_p -> resolve ("LMS_Open");
 	if (this -> LMS_Open == nullptr) {
-	   fprintf (stderr, "could not find LMS_Open\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_Open\n");
 	   return false;
 	}
 	this	-> LMS_Close = (pfn_LMS_Close)
 	                    library_p -> resolve ("LMS_Close");
 	if (this -> LMS_Close == nullptr) {
-	   fprintf (stderr, "could not find LMS_Close\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_Close\n");
 	   return false;
 	}
 	this	-> LMS_Init = (pfn_LMS_Init)
 	                    library_p -> resolve ("LMS_Init");
 	if (this -> LMS_Init == nullptr) {
-	   fprintf (stderr, "could not find LMS_Init\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_Init\n");
 	   return false;
 	}
 	this	-> LMS_GetNumChannels = (pfn_LMS_GetNumChannels)
 	                    library_p -> resolve ("LMS_GetNumChannels");
 	if (this -> LMS_GetNumChannels == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetNumChannels\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetNumChannels\n");
 	   return false;
 	}
 	this	-> LMS_EnableChannel = (pfn_LMS_EnableChannel)
 	                    library_p -> resolve ("LMS_EnableChannel");
 	if (this -> LMS_EnableChannel == nullptr) {
-	   fprintf (stderr, "could not find LMS_EnableChannel\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_EnableChannel\n");
 	   return false;
 	}
 	this	-> LMS_SetSampleRate = (pfn_LMS_SetSampleRate)
 	                    library_p -> resolve ("LMS_SetSampleRate");
 	if (this -> LMS_SetSampleRate == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetSampleRate\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetSampleRate\n");
 	   return false;
 	}
 	this	-> LMS_GetSampleRate = (pfn_LMS_GetSampleRate)
 	                    library_p -> resolve ("LMS_GetSampleRate");
 	if (this -> LMS_GetSampleRate == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetSampleRate\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetSampleRate\n");
 	   return false;
 	}
 	this	-> LMS_SetLOFrequency = (pfn_LMS_SetLOFrequency)
 	                    library_p -> resolve ("LMS_SetLOFrequency");
 	if (this -> LMS_SetLOFrequency == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetLOFrequency\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetLOFrequency\n");
 	   return false;
 	}
 	this	-> LMS_GetLOFrequency = (pfn_LMS_GetLOFrequency)
 	                    library_p -> resolve ("LMS_GetLOFrequency");
 	if (this -> LMS_GetLOFrequency == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetLOFrequency\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetLOFrequency\n");
 	   return false;
 	}
 	this	-> LMS_GetAntennaList = (pfn_LMS_GetAntennaList)
 	                    library_p -> resolve ("LMS_GetAntennaList");
 	if (this -> LMS_GetAntennaList == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetAntennaList\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetAntennaList\n");
 	   return false;
 	}
 	this	-> LMS_SetAntenna = (pfn_LMS_SetAntenna)
 	                    library_p -> resolve ("LMS_SetAntenna");
 	if (this -> LMS_SetAntenna == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetAntenna\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetAntenna\n");
 	   return false;
 	}
 	this	-> LMS_GetAntenna = (pfn_LMS_GetAntenna)
 	                    library_p -> resolve ("LMS_GetAntenna");
 	if (this -> LMS_GetAntenna == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetAntenna\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetAntenna\n");
 	   return false;
 	}
 	this	-> LMS_GetAntennaBW = (pfn_LMS_GetAntennaBW)
 	                    library_p -> resolve ("LMS_GetAntennaBW");
 	if (this -> LMS_GetAntennaBW == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetAntennaBW\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetAntennaBW\n");
 	   return false;
 	}
 	this	-> LMS_SetNormalizedGain = (pfn_LMS_SetNormalizedGain)
 	                    library_p -> resolve ("LMS_SetNormalizedGain");
 	if (this -> LMS_SetNormalizedGain == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetNormalizedGain\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetNormalizedGain\n");
 	   return false;
 	}
 	this	-> LMS_GetNormalizedGain = (pfn_LMS_GetNormalizedGain)
 	                    library_p -> resolve ("LMS_GetNormalizedGain");
 	if (this -> LMS_GetNormalizedGain == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetNormalizedGain\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetNormalizedGain\n");
 	   return false;
 	}
 	this	-> LMS_SetGaindB = (pfn_LMS_SetGaindB)
 	                    library_p -> resolve ("LMS_SetGaindB");
 	if (this -> LMS_SetGaindB == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetGaindB\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetGaindB\n");
 	   return false;
 	}
 	this	-> LMS_GetGaindB = (pfn_LMS_GetGaindB)
 	                    library_p -> resolve ("LMS_GetGaindB");
 	if (this -> LMS_GetGaindB == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetGaindB\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetGaindB\n");
 	   return false;
 	}
 	this	-> LMS_GetLPFBWRange = (pfn_LMS_GetLPFBWRange)
 	                    library_p -> resolve ("LMS_GetLPFBWRange");
 	if (this -> LMS_GetLPFBWRange == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetLPFBWRange\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetLPFBWRange\n");
 	   return false;
 	}
 	this	-> LMS_SetLPFBW = (pfn_LMS_SetLPFBW)
 	                    library_p -> resolve ("LMS_SetLPFBW");
 	if (this -> LMS_SetLPFBW == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetLPFBW\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetLPFBW\n");
 	   return false;
 	}
 	this	-> LMS_GetLPFBW = (pfn_LMS_GetLPFBW)
 	                    library_p -> resolve ("LMS_GetLPFBW");
 	if (this -> LMS_GetLPFBW == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetLPFBW\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetLPFBW\n");
 	   return false;
 	}
 	this	-> LMS_SetGFIRLPF = (pfn_LMS_SetGFIRLPF)
 	                    library_p -> resolve ("LMS_SetGFIRLPF");
 	if (this -> LMS_SetGFIRLPF == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetGFIRLPF\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetGFIRLPF\n");
 	   return false;
 	}
 	this	-> LMS_Calibrate = (pfn_LMS_Calibrate)
 	                    library_p -> resolve ("LMS_Calibrate");
 	if (this -> LMS_Calibrate == nullptr) {
-	   fprintf (stderr, "could not find LMS_Calibrate\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_Calibrate\n");
 	   return false;
 	}
 	this	-> LMS_SetupStream = (pfn_LMS_SetupStream)
 	                    library_p -> resolve ("LMS_SetupStream");
 	if (this -> LMS_SetupStream == nullptr) {
-	   fprintf (stderr, "could not find LMS_SetupStream\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_SetupStream\n");
 	   return false;
 	}
 	this	-> LMS_DestroyStream = (pfn_LMS_DestroyStream)
 	                    library_p -> resolve ("LMS_DestroyStream");
 	if (this -> LMS_DestroyStream == nullptr) {
-	   fprintf (stderr, "could not find LMS_DestroyStream\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_DestroyStream\n");
 	   return false;
 	}
 	this	-> LMS_StartStream = (pfn_LMS_StartStream)
 	                    library_p -> resolve ("LMS_StartStream");
 	if (this -> LMS_StartStream == nullptr) {
-	   fprintf (stderr, "could not find LMS_StartStream\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_StartStream\n");
 	   return false;
 	}
 	this	-> LMS_StopStream = (pfn_LMS_StopStream)
 	                    library_p -> resolve ("LMS_StopStream");
 	if (this -> LMS_StopStream == nullptr) {
-	   fprintf (stderr, "could not find LMS_StopStream\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_StopStream\n");
 	   return false;
 	}
 	this	-> LMS_RecvStream = (pfn_LMS_RecvStream)
 	                    library_p -> resolve ("LMS_RecvStream");
 	if (this -> LMS_RecvStream == nullptr) {
-	   fprintf (stderr, "could not find LMS_RecvStream\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_RecvStream\n");
 	   return false;
 	}
 	this	-> LMS_GetStreamStatus = (pfn_LMS_GetStreamStatus)
 	                    library_p -> resolve ("LMS_GetStreamStatus");
 	if (this -> LMS_GetStreamStatus == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetStreamStatus\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetStreamStatus\n");
 	   return false;
 	}
 	this	-> LMS_GetLastErrorMessage = (pfn_LMS_GetLastErrorMessage)
 	                    library_p -> resolve ("LMS_GetLastErrorMessage");
 	if (this -> LMS_GetLastErrorMessage == nullptr) {
-	   fprintf (stderr, "could not find LMS_GetLastErrorMessage\n");
+	   theErrorLogger -> add ("Lime",
+	                     "could not find LMS_GetLastErrorMessage\n");
 	   return false;
 	}
 

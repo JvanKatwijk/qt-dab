@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2016 .. 2024
+ *    Copyright (C)  2015, 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,39 +20,25 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #pragma once
 
-#include	"device-handler.h"
-#include	<QSettings>
+#include	<stdio.h>
+#include	<stdint.h>
 #include	<QString>
-#include	<QStringList>
-#include	<vector>
-class		logger;
-class		errorLogger;
+#include	<QSettings>
+#include	<QMutex>
 
-class	deviceChooser final {
+class	errorLogger {
 public:
-			deviceChooser	(errorLogger *, QSettings *);
-			~deviceChooser	();
-	QStringList	getDeviceList	();
-	int		getDeviceIndex	(const QString &);	
-	deviceHandler	*createDevice	(const QString &, const QString &);
+		errorLogger	(QSettings *);
+		~errorLogger	();
+	void	add		(const QString deviceName, const QString error);
 private:
-
-	QString		getFileName	(uint8_t &);
-	deviceHandler	*_createDevice	(const QString &, const QString &);
-	class	deviceItem {
-	public:
-		QString	deviceName;
-		int deviceNumber;
-		deviceItem	(const QString &s, int n) {
-	   	   deviceName	= s;
-	   	   deviceNumber	= n;
-		};
-		~deviceItem	() {};
-	};
-	errorLogger	*theErrorLogger;
-	std::vector<deviceItem> deviceList;
-	QSettings	*dabSettings;
+	QSettings	*settings;
+	QString		logFileName;
+	FILE		*logFile;
+	QMutex		locker;
 };
 
+	

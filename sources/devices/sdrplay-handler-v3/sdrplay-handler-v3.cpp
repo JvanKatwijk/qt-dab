@@ -30,7 +30,7 @@
 #include	"sdrplay-commands.h"
 #include	"xml-filewriter.h"
 
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
@@ -92,11 +92,11 @@ std::string errorMessage (int errorCode) {
 	sdrplayHandler_v3::
 	           sdrplayHandler_v3  (QSettings *s,
 	                               const QString &recorderVersion,
-	                               logger	*theLogger): // dummy right now
+	                               errorLogger *theLogger):
 	                                          _I_Buffer (4 * 1024 * 1024) {
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	(void)theLogger;
+	theErrorLogger			= theLogger;
         setupUi (&myFrame);
 	QString	groupName	= SDRPLAY_SETTINGS;
 	setPositionAndSize (s, &myFrame, groupName);
@@ -445,7 +445,7 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      recorderVersion,
 	                                      direct);
 	} catch (...) {
-	   fprintf (stderr, "Setup_xml handler failed\n");
+	   theErrorLogger -> add (recorderVersion, "Setup_xml handler failed");
 	   return false;
 	}
 	dumping. store (true);
@@ -587,7 +587,7 @@ int	deviceIndex	= 0;
 //	try to open the API
 	err	= sdrplay_api_Open ();
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
+	   theErrorLogger -> add (recorderVersion,
 	                          sdrplay_api_GetErrorString (err));
 	   failFlag. store (true);
 	   releaseLibrary	();
@@ -600,7 +600,7 @@ int	deviceIndex	= 0;
 //	Check API versions match
         err = sdrplay_api_ApiVersion (&apiVersion);
         if (err  != sdrplay_api_Success) {
-           fprintf (stderr, "sdrplay_api_ApiVersion failed %s\n",
+	   theErrorLogger -> add (recorderVersion,
                                      sdrplay_api_GetErrorString (err));
 	   errorCode	= 4;
 	   goto closeAPI;
@@ -621,8 +621,8 @@ int	deviceIndex	= 0;
 	{  int s	= sizeof (devs) / sizeof (sdrplay_api_DeviceT);
 	   err	= sdrplay_api_GetDevices (devs, &ndev, s);
 	   if (err != sdrplay_api_Success) {
-	      fprintf (stderr, "sdrplay_api_GetDevices failed %s\n",
-	                      sdrplay_api_GetErrorString (err));
+	      theErrorLogger -> add (recorderVersion,
+	                           sdrplay_api_GetErrorString (err));
 	      errorCode		= 6;
 	      goto unlockDevice_closeAPI;
 	   }
@@ -630,7 +630,7 @@ int	deviceIndex	= 0;
 
 	fprintf (stderr, "we have devices\n");
 	if (ndev == 0) {
-	   fprintf (stderr, "no valid device found\n");
+	   theErrorLogger -> add (recorderVersion, "no valid device found\n");
 	   errorCode	= 7;
 	   goto unlockDevice_closeAPI;
 	}
@@ -641,7 +641,7 @@ int	deviceIndex	= 0;
 	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
 	err	= sdrplay_api_SelectDevice (chosenDevice);
 	if (err != sdrplay_api_Success) {
-	   fprintf (stderr, "sdrplay_api_SelectDevice failed %s\n",
+	   theErrorLogger -> add (recorderVersion,
 	                         sdrplay_api_GetErrorString (err));
 	   errorCode	= 8;
 	   goto unlockDevice_closeAPI;
@@ -672,14 +672,15 @@ int	deviceIndex	= 0;
 	         deviceModel	=  hwVersion == SDRPLAY_RSPdx_?
 	            	                     "RSPDx" : "RSPDxR2";
 	         theRsp. reset (new  RspDx_handler (this,
-	                                     chosenDevice,
-	                                     KHz (220000),
-	                                     agcMode,
-	                                     lnaState,
-	                                     GRdBValue,
-	                                     antennaValue,
-	                                     biasT,
-	                                     notch,  ppmValue));
+	                                            theErrorLogger,
+	                                            chosenDevice,
+	                                            KHz (220000),
+	                                            agcMode,
+	                                            lnaState,
+	                                            GRdBValue,
+	                                            antennaValue,
+	                                            biasT,
+	                                            notch,  ppmValue));
 	         break;
 
 	      case SDRPLAY_RSP1_ :
@@ -689,12 +690,13 @@ int	deviceIndex	= 0;
 	         biasT_selector -> setEnabled (false);
 	         notch_selector -> setEnabled (false);
 	         theRsp. reset (new Rsp1_handler  (this,
-	                                     chosenDevice,
-	                                     KHz (220000),
-	                                     agcMode,
-	                                     lnaState,
-	                                     GRdBValue,
-	                                     biasT, ppmValue));
+	                                           theErrorLogger,
+	                                           chosenDevice,
+	                                           KHz (220000),
+	                                           agcMode,
+	                                           lnaState,
+	                                           GRdBValue,
+	                                           biasT, ppmValue));
 	         break;
 
 	      case SDRPLAY_RSP1A_ :
@@ -704,14 +706,15 @@ int	deviceIndex	= 0;
 	         deviceModel	= hwVersion == SDRPLAY_RSP1A_ ? "RSP-1A" :
 	                                                        "RSP-1B";
 	         theRsp. reset (new Rsp1A_handler (this,
-	                                     chosenDevice,
-	                                     KHz (220000),
-	                                     agcMode,
-	                                     lnaState,
-	                                     GRdBValue,
-	                                     biasT,
-	                                     notch,
-	                                     ppmValue));
+	                                           theErrorLogger,
+	                                           chosenDevice,
+	                                           KHz (220000),
+	                                           agcMode,
+	                                           lnaState,
+	                                           GRdBValue,
+	                                           biasT,
+	                                           notch,
+	                                           ppmValue));
 	         break;
 
 	      case SDRPLAY_RSP2_ :
@@ -720,14 +723,15 @@ int	deviceIndex	= 0;
 	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-II";
 	         theRsp. reset (new RspII_handler (this,
-	                                     chosenDevice,
-	                                     KHz (220000),
-	                                     agcMode,
-	                                     lnaState,
-	                                     GRdBValue,
-	                                     antennaValue,
-	                                     biasT,
-	                                     notch,  ppmValue));
+		                                   theErrorLogger,
+	                                           chosenDevice,
+	                                           KHz (220000),
+	                                           agcMode,
+	                                           lnaState,
+	                                           GRdBValue,
+	                                           antennaValue,
+	                                           biasT,
+	                                           notch,  ppmValue));
 	         break;
 
 	      case SDRPLAY_RSPduo_ :
@@ -743,15 +747,16 @@ int	deviceIndex	= 0;
 #endif
 	         this, &sdrplayHandler_v3::setSelectTuner);
 	         theRsp. reset (new RspDuo_handler (this,
-	                                      chosenDevice,
-	                                      KHz (220000),
-	                                      agcMode,
-	                                      lnaState,
-	                                      GRdBValue,
-	                                      antennaValue,
-	                                      1,
-	                                      biasT,
-	                                      notch, ppmValue));
+	                                            theErrorLogger,
+	                                            chosenDevice,
+	                                            KHz (220000),
+	                                            agcMode,
+	                                            lnaState,
+	                                            GRdBValue,
+	                                            antennaValue,
+	                                            1,
+	                                            biasT,
+	                                            notch, ppmValue));
 	         break;
 
 	      default:
@@ -761,12 +766,12 @@ int	deviceIndex	= 0;
 	         lnaBounds	= 4;
 	         lnaGainSetting	-> setRange (0, lnaBounds - 1);
 	         theRsp. reset (new RspDevice (this,
-	                                  chosenDevice,
-	                                  KHz (220000),
-	                                  agcMode,
-	                                  lnaState,
-	                                  GRdBValue,
-	                                  biasT, ppmValue));
+	                                       chosenDevice,
+	                                       KHz (220000),
+	                                       agcMode,
+	                                       lnaState,
+	                                       GRdBValue,
+	                                       biasT, ppmValue));
 	         break;
 	   }
 	} catch (int e) {
@@ -883,18 +888,18 @@ int	deviceIndex	= 0;
 normal_exit:
 	err = sdrplay_api_Uninit	(chosenDevice -> dev);
 	if (err != sdrplay_api_Success) 
-	   fprintf (stderr, "sdrplay_api_Uninit failed %s\n",
+	   theErrorLogger -> add (recorderVersion,
 	                          sdrplay_api_GetErrorString (err));
 
 	err = sdrplay_api_ReleaseDevice	(chosenDevice);
 	if (err != sdrplay_api_Success) 
-	   fprintf (stderr, "sdrplay_api_ReleaseDevice failed %s\n",
+	   theErrorLogger -> add (recorderVersion,
 	                          sdrplay_api_GetErrorString (err));
 
 //	sdrplay_api_UnlockDeviceApi	(); ??
         sdrplay_api_Close               ();
 	if (err != sdrplay_api_Success) 
-	   fprintf (stderr, "sdrplay_api_Close failed %s\n",
+	   theErrorLogger -> add (recorderVersion,
 	                          sdrplay_api_GetErrorString (err));
 
 	releaseLibrary	();
@@ -935,6 +940,8 @@ ULONG APIkeyValue_length = 255;
               fprintf (stderr,
 	           "failed to locate API registry entry, error = %d\n",
 	           (int)GetLastError());
+	      theErrorLogger -> add (recorderVersion, 
+	                          errorMessage ((int)GetLastError ()));
 	   }
 	   else {
 	      RegQueryValueEx (APIkey,
@@ -953,8 +960,6 @@ ULONG APIkeyValue_length = 255;
 	      RegCloseKey (APIkey);
 
 	      Handle	= LoadLibrary (x);
-//	      fprintf (stderr, "Met de key is het gelukt? %d\n", 
-//	                                               Handle != nullptr);
 	   }
 	   if (Handle == nullptr) {
 	      fprintf (stderr, "Failed to open sdrplay_api.dll\n");
@@ -965,7 +970,7 @@ ULONG APIkeyValue_length = 255;
 	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
 	Handle		= dlopen ("libsdrplay_api.so", RTLD_NOW);
 	if (Handle == nullptr) {
-	   fprintf (stderr, "error report %s\n", dlerror());
+	   theErrorLogger -> add (recorderVersion, dlerror ());
 	   return nullptr;
 	}
 #endif
@@ -983,105 +988,120 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	sdrplay_api_Open	= (sdrplay_api_Open_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Open");
 	if ((void *)sdrplay_api_Open == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_Open\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_Open\n");
 	   return false;
 	}
 
 	sdrplay_api_Close	= (sdrplay_api_Close_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Close");
 	if (sdrplay_api_Close == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_Close\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_Close\n");
 	   return false;
 	}
 
 	sdrplay_api_ApiVersion	= (sdrplay_api_ApiVersion_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_ApiVersion");
 	if (sdrplay_api_ApiVersion == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_ApiVersion\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_ApiVersion\n");
 	   return false;
 	}
 
 	sdrplay_api_LockDeviceApi	= (sdrplay_api_LockDeviceApi_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_LockDeviceApi");
 	if (sdrplay_api_LockDeviceApi == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_LockdeviceApi\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_LockdeviceApi\n");
 	   return false;
 	}
 
 	sdrplay_api_UnlockDeviceApi	= (sdrplay_api_UnlockDeviceApi_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_UnlockDeviceApi");
 	if (sdrplay_api_UnlockDeviceApi == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_UnlockdeviceApi\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_UnlockdeviceApi\n");
 	   return false;
 	}
 
 	sdrplay_api_GetDevices		= (sdrplay_api_GetDevices_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_GetDevices");
 	if (sdrplay_api_GetDevices == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_GetDevices\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_GetDevices\n");
 	   return false;
 	}
 
 	sdrplay_api_SelectDevice	= (sdrplay_api_SelectDevice_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_SelectDevice");
 	if (sdrplay_api_SelectDevice == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_SelectDevice\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_SelectDevice\n");
 	   return false;
 	}
 
 	sdrplay_api_ReleaseDevice	= (sdrplay_api_ReleaseDevice_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_ReleaseDevice");
 	if (sdrplay_api_ReleaseDevice == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_ReleaseDevice\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_ReleaseDevice\n");
 	   return false;
 	}
 
 	sdrplay_api_GetErrorString	= (sdrplay_api_GetErrorString_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_GetErrorString");
 	if (sdrplay_api_GetErrorString == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_GetErrorString\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_GetErrorString\n");
 	   return false;
 	}
 
 	sdrplay_api_GetLastError	= (sdrplay_api_GetLastError_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_GetLastError");
 	if (sdrplay_api_GetLastError == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_GetLastError\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_GetLastError\n");
 	   return false;
 	}
 
 	sdrplay_api_DebugEnable		= (sdrplay_api_DebugEnable_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_DebugEnable");
 	if (sdrplay_api_DebugEnable == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_DebugEnable\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_DebugEnable\n");
 	   return false;
 	}
 
 	sdrplay_api_GetDeviceParams	= (sdrplay_api_GetDeviceParams_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_GetDeviceParams");
 	if (sdrplay_api_GetDeviceParams == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_GetDeviceParams\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_GetDeviceParams\n");
 	   return false;
 	}
 
 	sdrplay_api_Init		= (sdrplay_api_Init_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Init");
 	if (sdrplay_api_Init == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_Init\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_Init\n");
 	   return false;
 	}
 
 	sdrplay_api_Uninit		= (sdrplay_api_Uninit_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Uninit");
 	if (sdrplay_api_Uninit == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_Uninit\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_Uninit\n");
 	   return false;
 	}
 
 	sdrplay_api_Update		= (sdrplay_api_Update_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Update");
 	if (sdrplay_api_Update == nullptr) {
-	   fprintf (stderr, "Could not find sdrplay_api_Update\n");
+	   theErrorLogger -> add (recorderVersion,
+	                     "Could not find sdrplay_api_Update\n");
 	   return false;
 	}
 

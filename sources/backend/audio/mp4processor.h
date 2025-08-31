@@ -66,12 +66,12 @@ private:
 	faadDecoder	aacDecoder;
 #endif
 
-	void		handleRS (const std::vector<uint8_t> &frameBytes,
+	bool		handleRS (const uint8_t *frameBytes,
 	                          int16_t base,
                                   std::vector<uint8_t> &outVector,
 	                          int16_t &errorLines, int16_t &repairs);
 
-	bool		processSuperframe (std::vector<uint8_t> &);
+	bool		processSuperframe (uint8_t *, int16_t);
 	int		build_aacFile (int16_t aac_frame_len,
                                        stream_parms *sp,
                                        uint8_t	*data,
@@ -81,6 +81,7 @@ private:
 	FILE		*dump;
 	bool		backgroundFlag;
 	uint8_t		procMode;
+	int16_t		superFrameSyncer;
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;
 	int16_t		blocksInBuffer;
@@ -100,7 +101,7 @@ private:
 	std::vector<uint8_t> outVector;
 	int16_t		RSDims;
 	int16_t		au_start	[10];
-	firecode_checker	fc;
+	firecodeChecker	fc;
 signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);

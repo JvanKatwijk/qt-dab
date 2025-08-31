@@ -36,7 +36,7 @@
 #include	"ui_rtlsdr-widget.h"
 class	dll_driver_win;
 class	xml_fileWriter;
-class	logger;
+class	errorLogger;
 //
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
@@ -46,7 +46,8 @@ class	rtlsdrHandler_win final:
 Q_OBJECT
 public:
 			rtlsdrHandler_win	(QSettings *,
-	                                         const QString &, logger *);
+	                                         const QString &,
+	                                         errorLogger *);
 			~rtlsdrHandler_win	();
 	bool		restartReader		(int32_t, int skipped = 0);
 	void		stopReader		();
@@ -65,6 +66,7 @@ public:
 private:
 	RingBuffer<std::complex<float>> _I_Buffer;
 	QSettings	*rtlsdrSettings;
+	errorLogger	*theErrorLogger;
 	int32_t		inputRate;
 	int32_t		deviceCount;
 	dll_driver_win	*workerHandle;

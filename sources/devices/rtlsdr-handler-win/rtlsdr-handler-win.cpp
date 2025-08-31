@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 201 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -17,13 +17,8 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-SDR; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * 	This particular driver is a very simple wrapper around the
- * 	librtlsdr.  In order to keep things simple, we dynamically
- * 	load the dll (or .so). The librtlsdr is osmocom software and all rights
- * 	are greatly acknowledged
  */
 
 #include	<QThread>
@@ -94,7 +89,7 @@ void	run () {
 //	active during stop/restart sequences
 	rtlsdrHandler_win::rtlsdrHandler_win (QSettings *s,
 	                                      const QString &recorderVersion,
-	                                      logger *theLogger): // dummy now
+	                                      errorLogger *theLogger):
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
@@ -103,9 +98,9 @@ int16_t	deviceIndex;
 QString	temp;
 int	k;
 char	manufac [256], product [256], serial [256];
-	(void)theLogger;
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
+	this	-> theErrorLogger	= theLogger;
         setupUi (&myFrame);
 //	setPositionAndSize (s, &myFrame, "rtlsdrSettings");
 	myFrame. show();

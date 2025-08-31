@@ -38,6 +38,10 @@
 #include	"pad-handler.h"
 #include	"bitWriter.h"
 
+static int totalErrors_1	= 0;
+static int totalErrors_2	= 0;
+static int fixedLines		= 0;
+static int totalLines		= 0;
 //
 /**
   *	\class mp4Processor is the main handler for the aac frames
@@ -85,7 +89,11 @@
 	successFrames		= 0;
 	rsErrors		= 0;
 	totalCorrections	= 0;
-	goodFrames		= 0;
+	superFrameSyncer	= 0;
+	totalErrors_1		= 0;
+	totalErrors_2		= 0;
+	fixedLines		= 0;
+	totalLines		= 0;
 }
 
 	mp4Processor::~mp4Processor () {
@@ -102,106 +110,67 @@
   */
 void	mp4Processor::addtoFrame (const std::vector<uint8_t> &V) {
 int16_t	nbits	= 24 * bitRate;
+int16_t nbytes	= nbits / 8;
 uint8_t	temp	= 0;
 
 	for (int i = 0; i < nbits / 8; i ++) {	// in bytes
 	   temp = 0;
 	   for (int j = 0; j < 8; j ++)
 	      temp = (temp << 1) | (V [i * 8 + j] & 01);
-	   frameBytes [blockFillIndex * nbits / 8 + i] = temp;
+	   frameBytes [blockFillIndex * nbytes + i] = temp;
 	}
 //
 	blocksInBuffer ++;
 	blockFillIndex = (blockFillIndex + 1) % 5;
+	frameCount ++;
 //
 /**
   *	we take the last five blocks to look at
   */
 	if (blocksInBuffer >= 5) {
-///	first, we show the "successrate"
+///	first, we show the number of successful frames
 	   if (++frameCount >= 25) {
 	      frameCount = 0;
 	      show_frameErrors (frameErrors);
 	      frameErrors = 0;
 	   }
-/**
-  *	starting for real: check the fire code
-  *	if the firecode is OK, we handle the frame
-  *	and adjust the buffer here for the next round
-  *	if the firecode check fails, we shift one block
-  */
-	
-	   handleRS (frameBytes, blockFillIndex * nbits / 8,
-	             outVector, frameErrors, rsErrors);
-	   if (frameErrors > 0) {	// cannot fix the potential frame 
-	      blocksInBuffer = 4;
-	      return;
-	   }
-	   
-	   if (!fc. check (outVector. data ())) {
-	      blocksInBuffer = 4;
-	      return;
+//
+//	superFrameSyncer == 0 when NOT in sync,
+//	In that case we first try to locate a frame start
+//
+	   if (superFrameSyncer == 0) {
+	      if (fc. checkAndCorrect (&frameBytes [blockFillIndex * nbytes]))
+	         superFrameSyncer = 4;
+	      else 
+	         blocksInBuffer = 4;
 	   }
 
-	   if (!processSuperframe (outVector)) {
-	      frameErrors ++;
-	      blocksInBuffer = 0;
-	      return;
+	   if (superFrameSyncer != 0) {
+	      blocksInBuffer = 0;	// set for later
+	      if (handleRS (frameBytes. data (),
+	                    blockFillIndex * nbytes, outVector,
+	                    frameErrors, rsErrors)) {
+	          processSuperframe (frameBytes. data (), 
+	                             blockFillIndex * nbytes);
+	         superFrameSyncer = 4;
+	         if (++successFrames > 25) {
+	            show_rsErrors (rsErrors);
+	            successFrames	= 0;
+	            rsErrors	= 0;
+	         }
+	      }
+	      else {
+	         superFrameSyncer --;
+	         if (superFrameSyncer == 0) {
+	            blocksInBuffer = 4;
+	            frameErrors ++;
+	         }
+	      }
 	   }
-
-//	when here, both firecode and superframe are OK
-//	since we processed a full cycle of 5 blocks, we just start a
-//	new sequence, beginning with block blockFillIndex
-	   blocksInBuffer	= 0;
-	   totalCorrections += rsErrors;
-	   if (++ goodFrames >= 100) {
-	      show_rsCorrections (totalCorrections, crcErrors);
-	      totalCorrections = 0;
-	      goodFrames = 0;
-	   }
-	   if (++successFrames > 25) {
-	      show_rsErrors (rsErrors);
-	      successFrames	= 0;
-	      rsErrors	= 0;
-	   }
-	}
-}
-/**
-  *	\brief processSuperframe
-  *
-  *	First, we know the firecode checker gave green light
-  *	We correct the errors using RS
-  */
-
-void	mp4Processor::handleRS (const std::vector<uint8_t> &frameBytes, 
-	                        int16_t base, 
-	                        std::vector<uint8_t> &outVector,
-	                        int16_t &errorLines, int16_t &repairs) {
-uint8_t		rsIn	[120];
-uint8_t		rsOut	[110];
-int16_t		ler;
-	errorLines	= 0;
-	repairs		= 0;
-/**
-  *	apply reed-solomon error repar
-  *	OK, what we now have is a vector with RSDims * 120 uint8_t's
-  *	the superframe, containing parity bytes for error repair
-  *	take into account the interleaving that is applied.
-  */
-	for (int j = 0; j < RSDims; j ++) {
-	   for (int k = 0; k < 120; k ++) 
-	      rsIn [k] = frameBytes [(base + j + k * RSDims) % (RSDims * 120)];
-	   ler = my_rsDecoder. dec (rsIn, rsOut, 135);
-	   for (int k = 0; k < 110; k ++) 
-	      outVector [j + k * RSDims] = rsOut [k];
-	   if (ler < 0)
-	      errorLines ++;
-	   else
-	      repairs += ler;
-	}
+	}	// end of ... >= 5
 }
 
-bool	mp4Processor::processSuperframe (std::vector<uint8_t> &outVector){
+bool	mp4Processor::processSuperframe (uint8_t *frameBytes, int16_t  index) {
 uint8_t		num_aus;
 int		tmp;
 stream_parms    streamParameters;
@@ -349,6 +318,50 @@ stream_parms    streamParameters;
 //	rather than in the 110 payload bytes?
 	}
 	return true;
+}
+
+bool	mp4Processor::handleRS (const uint8_t *frameBytes,
+	                        int16_t base, 
+	                        std::vector<uint8_t> &outVector,
+	                        int16_t &errorLines, int16_t &repairs) {
+uint8_t		rsIn	[120];
+uint8_t		rsOut	[110];
+int16_t		ler;
+	errorLines	= 0;
+	repairs		= 0;
+/**
+  *	apply reed-solomon error repar
+  *	OK, what we now have is a vector with RSDims * 120 uint8_t's
+  *	the superframe, containing parity bytes for error repair
+  *	take into account the interleaving that is applied.
+  */
+	for (int j = 0; j < RSDims; j ++) {
+	   for (int k = 0; k < 120; k ++) 
+	      rsIn [k] = frameBytes [(base + j + k * RSDims) % (RSDims * 120)];
+	   ler = my_rsDecoder. dec (rsIn, rsOut, 135);
+	   for (int k = 0; k < 110; k ++) 
+	      outVector [j + k * RSDims] = rsOut [k];
+	   if (ler < 0) {
+	      errorLines ++;
+	      totalErrors_1 ++;
+	   }
+	   else {
+	      repairs += ler;
+	      fixedLines ++;
+	      totalErrors_2 += ler;
+	   }
+	   totalLines ++;
+	   if (totalLines > 4000) {
+	      fprintf (stderr, "total lines %d, broken lines %d, fixed %d\n",
+	                        totalLines, totalErrors_1, totalErrors_2);
+	      totalLines	= 0;
+	      totalErrors_1	= 0;
+	      totalErrors_2	= 0;
+	      fixedLines	= 0;
+	   }
+	}
+	bool res = fc. check (outVector. data ());
+	return res;
 }
 
 int	mp4Processor::build_aacFile (int16_t aac_frame_len,
