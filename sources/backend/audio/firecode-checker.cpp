@@ -159,8 +159,8 @@ uint16_t syndrome = crc16 (x);
 	uint8_t error = syndromeTable [syndrome] & 0xff;
 	if (error != 0) {
 	   int bit = syndromeTable [syndrome] >> 8;
-	   x [bit/8]   ^= error >> (bit % 8);
-	   x [bit/8+1] ^= error << (8 - (bit % 8));
+	   x [bit / 8]		^= error >> (bit % 8);
+	   x [bit / 8 + 1]	^= error << (8 - (bit % 8));
 	   return true;
 	}
 	return false;

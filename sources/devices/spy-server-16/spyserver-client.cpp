@@ -173,10 +173,12 @@ QString theAddress	= QHostAddress (s). toString ();
 	   theServer. reset ();		// ???
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("Connection failed"));
+	   QString t = "Connecting to " + theAddress + " failed";
+	   theErrorLogger -> add ("spyServer-16", t);
 	   return;
 	}
 	if (theServer. isNull ()) {
-	   fprintf (stderr, "Connecting failed\n");
+	   theErrorLogger	-> add ("spyServer-16", "onnecting failed");
 	   return;
 	}
 

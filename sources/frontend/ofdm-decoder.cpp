@@ -75,8 +75,7 @@ float Length	= jan_abs (V);
 	                                    phaseReference (params. get_T_u ()),
 	                                    conjVector (params. get_T_u ()),
 	                                    fft_buffer (params. get_T_u ()),
-	                                    sigma_XVector (params. get_T_u ()),
-	                                    sigma_YVector (params. get_T_u ()),
+	                                    sigmaSQVector (params. get_T_u ()),
 	                                    meanLevelVector (params. get_T_u ()),
 	                                    stdDevVector (params. get_T_u ()),
 	                                    phaseCorrVector (params. get_T_u ()),
@@ -121,8 +120,7 @@ void	ofdmDecoder::stop ()	{
 static float mValue;
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
-	   sigma_XVector [i]	= 0;
-	   sigma_YVector [i]	= 0;
+	   sigmaSQVector [i]	= 0;
 	   meanLevelVector [i]	= 0;
 	   stdDevVector [i]	= 0;
 	   phaseCorrVector [i]	= 0;
@@ -225,11 +223,8 @@ float	sum_2	= 0;
 	      index += T_u;
 	   Complex fftBin	= fft_buffer [index] *
                                   normalize (conj (phaseReference [index]));
-	   ampliSum		+= jan_abs (fftBin);
-
-//	to avoid issues with variations in the amplitude,
-//	we normalize the value
 	   conjVector [index]	= fftBin;
+	   ampliSum		+= jan_abs (fftBin);
 
 	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
 	                                   abs (imag (fftBin)));
@@ -259,9 +254,9 @@ float	sum_2	= 0;
 	                                     meanLevelVector [index] / sqrt_2;
 	   DABFLOAT d_y		=  imag (fftBin_at_1) -
 	                                     meanLevelVector [index] / sqrt_2;
-	   DABFLOAT sigma_X	=  d_x * d_x + d_y * d_y;
-	   sigma_XVector [index] =
-	                 compute_avg (sigma_XVector [index], sigma_X, ALPHA);
+	   DABFLOAT sigmaSQ	=  d_x * d_x + d_y * d_y;
+	   sigmaSQVector [index] =
+	                 compute_avg (sigmaSQVector [index], sigmaSQ, ALPHA);
 
 	   sum_2			+= jan_abs (fftBin);
 //	for decoders 1 and 2 we implement "Soft optimal 2"
@@ -271,11 +266,11 @@ float	sum_2	= 0;
 //	overall samples values
 //	The snr_1 tries to be more precise by computing the
 //	snr per carrier
-//	   DABFLOAT snr_1		= 
-//	      10 * log10 (powerLevelVector [index] / nullLevelVector [index]);
+//	   snr		= 
+//	      powerLevelVector [index] / nullLevelVector [index];
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
-	          meanLevelVector [index] / sigma_XVector [index];
+	          meanLevelVector [index] / sigmaSQVector [index];
 	      corrector		/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
@@ -294,7 +289,7 @@ float	sum_2	= 0;
 	   else 
 	   if (this -> decoder == DECODER_2) {	// decoder 2
 	      DABFLOAT corrector	=
-	          meanLevelVector [index] / sigma_XVector [index];
+	          meanLevelVector [index] / sigmaSQVector [index];
 	      corrector		/= (1 / snr + 3);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
@@ -319,8 +314,8 @@ float	sum_2	= 0;
 	                    = - imag (fftBin) /binAbsLevel * mValue; 
 	   }
 	}
-	meanValue	= sum /carriers;
-	mValue		= 0.9 * mValue + 0.1 * sum_2 / carriers;	
+	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
+	mValue		= compute_avg (mValue, sum_2 / carriers, 0.1);	
 	
 //		end of decoding	, now for displaying things	//
 //////////////////////////////////////////////////////////////////

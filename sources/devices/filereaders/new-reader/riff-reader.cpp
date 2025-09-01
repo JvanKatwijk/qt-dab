@@ -51,7 +51,7 @@ char header [5];
 	filePointer     = fopen (fileName. toLatin1 (). data (), "rb");
         if (filePointer == nullptr) {
 	   QString val =
-                   QString ("File '%1' is no valid SDR file").arg(fileName);
+                   QString ("File '%1' cannot be found").arg(fileName);
            throw device_exception (val. toStdString ());
         }
 

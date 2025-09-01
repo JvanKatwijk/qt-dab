@@ -61,6 +61,8 @@ private:
 	xml_fileReader	*parent;
 	uint64_t	nrElements;
 	uint64_t	samplesToRead;
+
+	float		mapTable	[256];
 	std::atomic<bool> running;
 	void		run ();
 	uint64_t	compute_nrSamples 	(FILE *f, int blockNumber);

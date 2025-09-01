@@ -33,7 +33,7 @@ findfileNames fileNameFinder (settings);
 	logFileName		= fileNameFinder. basicPath ();
 	if (!logFileName. endsWith ('/'))
 	   logFileName += '/';
-	logFileName	+= "errorlog";
+	logFileName	+= "errorlog.txt";
 	logFileName	= QDir::toNativeSeparators (logFileName);
 	logFile			= fopen (logFileName. toLatin1(). data (), "a");
 }

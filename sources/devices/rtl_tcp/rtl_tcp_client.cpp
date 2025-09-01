@@ -84,7 +84,7 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 
 	gainSelector	-> setValue (Gain);
 	PpmSelector	-> setValue (Ppm);
-	setAgcMode	(AgcMode);
+	agcSelector	-> setChecked (AgcMode);
 	portSelector	-> setValue (basePort);
 	addressSelector	-> setText (ipAddress);
 	vfoFrequency	= DEFAULT_FREQUENCY;
@@ -150,9 +150,12 @@ void	rtl_tcp_client::wantConnect () {
 	if (!toServer.waitForConnected(2000)) {
 	   QMessageBox::warning(&myFrame,
 	                      tr("sdr"), tr("connection failed\n"));
+	   QString t = "Connection to " + s + "failed";
+	   theErrorLogger -> add ("RTL_TCP", t);
 	   return;
 	}
-	connected = true;
+
+	connected	= true;
 	theState -> setText ("connected");
 	sendRate	(SAMPLERATE);
 	setAgcMode	(AgcMode);

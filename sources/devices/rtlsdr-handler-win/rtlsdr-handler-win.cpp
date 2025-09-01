@@ -194,7 +194,7 @@ char	manufac [256], product [256], serial [256];
 	set_ppmCorrection	(ppm_correction -> value());
 
 	for (int i = 0; i < 256; i ++)
-	   convTable [i] = ((float)i - 128.0) / 128.0;
+	   convTable [i] = ((float)i - 127.38) / 128.0;
 
 //	and attach the buttons/sliders to the actions
 	connect (gainControl,
@@ -301,23 +301,48 @@ void	rtlsdrHandler_win::stopReader () {
 //
 //	when selecting  the gain from a table, use the table value
 void	rtlsdrHandler_win::set_ExternalGain	(const QString &gain) {
-	rtlsdr_set_tuner_gain (theDevice, gain. toInt());
-}
+	int res = rtlsdr_set_tuner_gain (theDevice, gain. toInt());
+	if (res != 0) { 
+	   QString t = QString ("cannot set gain to ") + gain;
+	   theErrorLogger -> add ("RTLSDR", t);	
+	}
 //
 void	rtlsdrHandler_win::set_autogain	(int dummy) {
 	(void)dummy;
-	rtlsdr_set_agc_mode (theDevice, agcControl -> isChecked () ? 1 : 0);
-	rtlsdr_set_tuner_gain (theDevice, 
+	int res = rtlsdr_set_agc_mode (theDevice,
+	                               agcControl -> isChecked () ? 1 : 0);
+	if (res != 0) {
+	   QString t = "Problem with agcControl to " +
+	                 QString::number (agcControl -> isChecked () ? 1 : 0);
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
+	res = rtlsdr_set_tuner_gain (theDevice, 
 	                       gainControl -> currentText (). toInt ());
+	if (res != 0) {
+	   QString t = "Problem with gaincontrol to " +
+	                 QString::number (agcControl -> isChecked () ? 1 : 0);
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 }
 //
 void	rtlsdrHandler_win::set_biasControl	(int dummy) {
 	(void)dummy;
-	rtlsdr_set_bias_tee (theDevice, biasControl -> isChecked () ? 1 : 0);
+	int res = rtlsdr_set_bias_tee (theDevice,
+	                 biasControl -> isChecked () ? 1 : 0);
+	if (res != 0) {
+	   QString t = "Problem with biascontrol to " +
+	                 QString::number (biasControl -> isChecked () ? 1 : 0);
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 }
 //	correction is in Hz
 void	rtlsdrHandler_win::set_ppmCorrection	(int32_t ppm) {
-	rtlsdr_set_freq_correction (theDevice, ppm);
+	int res = rtlsdr_set_freq_correction (theDevice, ppm);
+	if (res != 0) {
+	   QString t = "Problem with ppm correction to " +
+	                 QString::number (ppm);
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 }
 
 int32_t	rtlsdrHandler_win::getSamples (std::complex<float> *V, int32_t size) { 

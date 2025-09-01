@@ -32,6 +32,7 @@ Table of Contents
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
 * [Journaline data](#journaline-data)
+* [Logging errors](#logging-errors]
 * [Documentation](#documentation)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
@@ -395,6 +396,31 @@ Since it is a secondary **data service**, Qt-DAB automatically activates it (and
 ![6.9](/res/read_me/journaline-2.png?raw=true)
 ![6.9](/res/read_me/journaline-3.png?raw=true)
 
+Logging errors
+=================================================================
+
+In the latest version, reporting of errors is now done in a systematic
+way. Especially errors with devices (I often get error messages when
+setting gain values in my SDRplay equipment), such as a device that
+does not start properly.
+
+While Linux is essentially command line based and error messages
+are - usually -printed on the command window, the command window in
+the precompiled Windows versions is always switched off and
+error messages are "lost".
+
+In the current sources, a class is added to save error messages.
+These messages are written into a file "errorlog.txt" in the
+directory (folder if you wish) "Qt-DAB-files", in the user's home
+directory.
+
+Error messages take the form 
+
+  * dabstick at 2025-09-01T13:35:00 -> No rtlsdr device found 
+
+i.e, an entity (usually a device name) in which the error occurred, the
+date and the error message itself.
+
 Documentation
 =================================================================
 
@@ -448,7 +474,10 @@ support library myself, see:
  * "https://wiki.myriadrf.org/Lime_Suite".
 
 For installing the support software for the Adalm Pluto I followed the instructions on
+
  * "https://wiki.analog.com/university/tools/pluto/users"
+
+Note that Ubuntu releases provide libraries for supporting the Pluto.
 
 Building an executable for Qt-DAB: a few notes
 
@@ -474,7 +503,7 @@ Step 1
 - :information_source:  In the repository, the sources for the current Qt-DAB version (6.9.3) are in the directory "qt-dab/ sources". All sources and include files are found in this directory". The ".pro" file is - as is the CMakeLists.txt file - in the "qt-dab" directory.
 The qt-dab repository contains a file "structure.md" in which the structure is explained.
 
-Running with the ".pro" file as in the repository , the resulting Qt-DAB executable is stored in a directory "/linux-bin" when compiled for Linux and in a directory "/usr/shared/w43-programs/windows-dab32-qt" when compiling
+Running with the ".pro" file as in the repository , the resulting Qt-DAB executable is stored in a directory "/linux-bin" when compiled for Linux and in a directory "/usr/shared/w32-programs/windows-dab32-qt" when compiling
 for windows (using mingw64). You probably want to modify it.
 
 For building the AppImage on Ubuntu 20, I load the required libraries as given below:

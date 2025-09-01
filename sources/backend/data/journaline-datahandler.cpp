@@ -61,6 +61,7 @@ void	my_callBack (const DAB_DATAGROUP_DECODER_msc_datagroup_header_t *header,
 }
 
 	journaline_dataHandler::~journaline_dataHandler() {
+	theScreen. hide ();
 	DAB_DATAGROUP_DECODER_deleteDec (theDecoder);
 	destroy_dataBase ();
 }

@@ -63,6 +63,10 @@
 	myFrame. hide ();
 }
 
+void	journalineScreen::hide			() {
+	myFrame. hide ();
+}
+
 void	journalineScreen::handle_resetButton	() {
 	pathVector. resize (0);
 	for (int i = 0; i < (int)((*table). size ()); i ++) {

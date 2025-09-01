@@ -113,7 +113,7 @@ int16_t	nbits	= 24 * bitRate;
 int16_t nbytes	= nbits / 8;
 uint8_t	temp	= 0;
 
-	for (int i = 0; i < nbits / 8; i ++) {	// in bytes
+	for (int i = 0; i < nbytes; i ++) {	// in bytes
 	   temp = 0;
 	   for (int j = 0; j < 8; j ++)
 	      temp = (temp << 1) | (V [i * 8 + j] & 01);
@@ -141,11 +141,11 @@ uint8_t	temp	= 0;
 	   if (superFrameSyncer == 0) {
 	      if (fc. checkAndCorrect (&frameBytes [blockFillIndex * nbytes]))
 	         superFrameSyncer = 4;
-	      else 
+	      else  	// we might go for a next try after a next block
 	         blocksInBuffer = 4;
 	   }
 
-	   if (superFrameSyncer != 0) {
+	   if (superFrameSyncer != 0) {			
 	      blocksInBuffer = 0;	// set for later
 	      if (handleRS (frameBytes. data (),
 	                    blockFillIndex * nbytes, outVector,
@@ -169,7 +169,8 @@ uint8_t	temp	= 0;
 	   }
 	}	// end of ... >= 5
 }
-
+//
+//	when handling a superframe we want to be sure that the fc is correct
 bool	mp4Processor::processSuperframe (uint8_t *frameBytes, int16_t  index) {
 uint8_t		num_aus;
 int		tmp;
@@ -351,7 +352,7 @@ int16_t		ler;
 	      totalErrors_2 += ler;
 	   }
 	   totalLines ++;
-	   if (totalLines > 4000) {
+	   if (totalLines > 3500) {
 	      fprintf (stderr, "total lines %d, broken lines %d, fixed %d\n",
 	                        totalLines, totalErrors_1, totalErrors_2);
 	      totalLines	= 0;
@@ -360,7 +361,7 @@ int16_t		ler;
 	      fixedLines	= 0;
 	   }
 	}
-	bool res = fc. check (outVector. data ());
+	bool res = fc. checkAndCorrect (outVector. data ());
 	return res;
 }
 

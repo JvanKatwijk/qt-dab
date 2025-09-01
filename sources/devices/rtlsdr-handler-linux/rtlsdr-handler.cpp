@@ -159,7 +159,12 @@ char	manufac [256], product [256], serial [256];
 	     value_i (rtlsdrSettings, "rtlsdrSettings",
 	                             "save_gainSettings", 1) != 0;
 
-	(void)this -> rtlsdr_set_center_freq (theDevice, 220000000);
+	int res = this -> rtlsdr_set_center_freq (theDevice, 220000000);
+	if (res != 0) {
+	   QString t = QString ("cannot set frequency to ") +
+	                                   QString::number (220000000);
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 
 	rtlsdr_get_usb_strings (theDevice, manufac, product, serial);
 	fprintf (stderr, "%s %s %s\n",
@@ -171,12 +176,18 @@ char	manufac [256], product [256], serial [256];
 	   rtlsdr_set_agc_mode (theDevice, 1);
 	else
 	   rtlsdr_set_agc_mode (theDevice, 0);
-	rtlsdr_set_tuner_gain	(theDevice, 
+	res = rtlsdr_set_tuner_gain	(theDevice, 
 	                         gainControl -> currentText (). toInt ());
+	if (res != 0) {
+	   QString t = QString ("cannot set tuner gain to ") +
+	                                         gainControl -> currentText ();
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 	set_ppmCorrection	(ppm_correction -> value());
 
 	for (int i = 0; i < 256; i ++)
-	   convTable [i] = (-128.0 + i) / 128.0;
+	   convTable [i] = (i - 127.38) / 128.0;
+
 //	and attach the buttons/sliders to the actions
 	connect (gainControl,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
@@ -255,7 +266,13 @@ void	rtlsdrHandler::set_filter	(int c) {
 }
 
 bool	rtlsdrHandler::restartReader	(int32_t freq, int skipped) {
-	(void)(this -> rtlsdr_set_center_freq (theDevice, freq));
+	int res = this -> rtlsdr_set_center_freq (theDevice, freq);
+	if (res != 0) {
+	   QString t = QString ("Cannot set frequency to ") +
+	                                    QString::number (freq);
+	   theErrorLogger -> add ("RTLSDR", t);
+	   return false;
+	}
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
@@ -294,24 +311,53 @@ void	rtlsdrHandler::stopReader () {
 //
 //	when selecting  the gain from a table, use the table value
 void	rtlsdrHandler::set_ExternalGain	(const QString &gain) {
-	rtlsdr_set_tuner_gain (theDevice, gain. toInt());
+	int res = rtlsdr_set_tuner_gain (theDevice, gain. toInt());
+	if (res != 0) {
+	   QString t = QString ("Cannot set gain to ") +
+	                                    QString::number (gain. toInt ());
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 }
 //
 void	rtlsdrHandler::set_autogain	(int dummy) {
 	(void)dummy;
-	rtlsdr_set_agc_mode (theDevice, agcControl -> isChecked () ? 1 : 0);
-	rtlsdr_set_tuner_gain (theDevice, 
+	int res = rtlsdr_set_agc_mode (theDevice,
+	                              agcControl -> isChecked () ? 1 : 0);
+	if (res != 0) {
+	   QString t = QString ("Cannot set agc mode to ") +
+	                            (agcControl -> isChecked () ? "1" : "0");
+	   theErrorLogger -> add ("RTLSDR", t);
+	   return;
+	}
+	res = rtlsdr_set_tuner_gain (theDevice, 
 	                       gainControl -> currentText (). toInt ());
+	if (res != 0) {
+	   QString t = QString ("Cannot set tuner gain to ") +
+	                           gainControl -> currentText ();
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 }
 //
 void	rtlsdrHandler::set_biasControl	(int dummy) {
 	(void)dummy;
-	if (rtlsdr_set_bias_tee != nullptr)
-	   rtlsdr_set_bias_tee (theDevice, biasControl -> isChecked () ? 1 : 0);
+	if (rtlsdr_set_bias_tee != nullptr) {
+	   int res =  rtlsdr_set_bias_tee (theDevice,
+	                             biasControl -> isChecked () ? 1 : 0);
+	   if (res != 0) {
+	      QString t = QString ("Cannot set bias tee to ") +
+	                             (biasControl -> isChecked () ? "1" : "0");
+	      theErrorLogger -> add ("RTLSDR", t);
+	   }
+	}
 }
 //	correction is in Hz
 void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
-	this -> rtlsdr_set_freq_correction (theDevice, ppm);
+	int res = this -> rtlsdr_set_freq_correction (theDevice, ppm);
+	if (res != 0) {
+	   QString t = QString ("Cannot set ppm to ") +
+	                                    QString::number (ppm);
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 }
 
 int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) { 

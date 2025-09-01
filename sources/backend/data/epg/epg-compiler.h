@@ -33,16 +33,20 @@
 #define		noType			0
 #define		scheduleType		1
 #define		serviceInformationType	2
+
+class	errorLogger;
+
 class	epgCompiler: public QObject {
 Q_OBJECT
 public:
-		epgCompiler	();
+		epgCompiler	(errorLogger *);
 		~epgCompiler	();
 
 int	process_epg	(QDomDocument &,
 	                 const std::vector<uint8_t> &v, int lto);
 private:
 	QString	stringTable [20];
+	errorLogger	*theErrorLogger;
 //
 //	element handlers
 	QDomElement	process_defaultLanguage	(QDomDocument &, const std::vector<uint8_t> &v, int &index);

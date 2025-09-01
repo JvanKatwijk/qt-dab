@@ -180,7 +180,8 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theSCANHandler (this, Si,
 	                                                        freqExtension),
 	                                        theTIIProcessor (tiiFile),
-	                                        myTimeTable (this, Si) {
+	                                        myTimeTable (this, Si),
+	                                        epgVertaler (&theErrorLogger) {
 int16_t k;
 QString h;
 
@@ -255,8 +256,8 @@ QString h;
 	   if (p. load (":res/radio-pictures/details24.png", "png"))
 	      serviceButton -> setPixmap (p. scaled (30, 30,
 	                                                Qt::KeepAspectRatio));
-	   else
-	      fprintf (stderr, "Loading details button failed\n");
+	   else 
+	      theErrorLogger. add ("main", "Loading details button failed");
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
@@ -1016,9 +1017,10 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 	QString textName = QDir::toNativeSeparators (path_for_files + name);
 
 	FILE *x = fopen (textName. toUtf8 (). data (), "w+b");
-	if (x == nullptr)
-	   fprintf (stderr, "cannot write file %s\n",
-	                            textName. toUtf8 (). data ());
+	if (x == nullptr) {
+	   QString t = QString ("problem to open file ") + textName;
+	   theErrorLogger. add ("main", t);
+	}
 	else {
 	   (void)fwrite (result. data (), 1, result.length(), x);
 	   fclose (x);
@@ -1083,9 +1085,11 @@ const char *type;
 	      QDir (). mkpath (temp);	
 	   pict	= QDir::toNativeSeparators (pict);
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
-	   if (x == nullptr)
-	      fprintf (stderr, "cannot write file %s\n",
-	                         pict. toUtf8 (). data ());
+	   if (x == nullptr) {
+	      QString t = QString ("Problem opening picture file (writing) ") +
+	                                    pict;
+	      theErrorLogger. add ("main", t);
+	   }
 	   else {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
 	      (void)fwrite (data. data(), 1, data.length(), x);

@@ -57,7 +57,10 @@ struct timeval  tv;
 	period          = (RAW_BUFFERSIZE * 1000) / (2 * SAMPLERATE / 1000);  // full IQś read
 	fprintf (stderr, "Period = %d\n", (int)period);
 	for (int i = 0; i < 256; i ++)
-	   mapTable [i] = ((float)i - 128.0) / 128.0;
+//	the offset 127.38f is due to the input data comes usually from 
+//	an  SDR stick which has its DC offset a bit shifted from ideal
+//	(from old-dab)
+	   mapTable [i] = ((float)i - 127.38) / 128.0;
 	running. store (false);
 	connect (this, &rawReader::setProgress,
 	         parent,   &rawFiles::setProgress);

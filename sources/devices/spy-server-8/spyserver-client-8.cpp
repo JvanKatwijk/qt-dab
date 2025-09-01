@@ -81,7 +81,7 @@
 	settings. sample_bits		= 16;
 //
 	for (int i = 0; i < 256; i ++)
-	   convTable [i] = ((float)i -128.0) / 128.0;
+	   convTable [i] = ((float)i - 127.38) / 128.0;
 
 	connect (spyServer_connect, &QPushButton::clicked,
                  this, &spyServer_client_8::wantConnect);
@@ -176,11 +176,13 @@ QString theAddress	= QHostAddress (s). toString ();
 	   theServer. reset ();		// ???
 	   QMessageBox::warning (nullptr, tr ("Warning"),
                                           tr ("Connection failed"));
+	   QString t = "Connecting to " + theAddress + " failed";
+	   theErrorLogger  -> add ("spyServer-8", t);
 	   return;
 	}
 
 	if (theServer. isNull ()) {
-	   fprintf (stderr, "Connecting failed\n");
+	   theErrorLogger -> add ("spyServer-8", "Connecting failed");
 	   return;
 	}
 

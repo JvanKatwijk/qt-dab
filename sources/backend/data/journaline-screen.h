@@ -46,7 +46,7 @@ public:
 	void	display_Menu		(NML::News_t &element);
 	void	display_Plain		(NML::News_t &element);
 	void	display_List		(NML::News_t &element);
-
+	void	hide			();
 private:
 	std::vector<tableElement> *table;
 	tableElement		currentElement;

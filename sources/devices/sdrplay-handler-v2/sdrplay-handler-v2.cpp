@@ -75,7 +75,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
-
+mir_sdr_ErrT res;
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	this	-> theErrorLogger	= theErrorLogger;
@@ -96,9 +96,10 @@ mir_sdr_DeviceT devDesc [4];
 	   throw (device_exception ("function in mir_sdr_api not found"));
 	};
 
-	if (my_mir_sdr_ApiVersion (&ver) != mir_sdr_Success) {
+	res = my_mir_sdr_ApiVersion (&ver);
+	if (res != mir_sdr_Success) {
 	   releaseLibrary ();
-	   throw (device_exception ("api problem"));
+	   throw (device_exception (errorCodes (res). toLatin1 (). data ()));
 	}
 
 	if (ver < 2.13) {
@@ -196,12 +197,17 @@ mir_sdr_DeviceT devDesc [4];
 	      nrBits		= 14;
 	      denominator	= 8192;
 	      antennaSelector -> show();
-	      my_mir_sdr_RSPII_RfNotchEnable (1);
-	      if (err != mir_sdr_Success) 
-	         fprintf (stderr, "error %d in setting rfNotch\n", err);
+	      err = my_mir_sdr_RSPII_RfNotchEnable (1);
+	      if (err != mir_sdr_Success) {
+	         QString t = QString ("NOTCH enable failed") + errorCodes (err);
+	         theErrorLogger -> add ("SDRPLAY_V2", t); 
+	      }
 	      err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
-	      if (err != mir_sdr_Success) 
-	         fprintf (stderr, "error %d in setting antenna\n", err);
+	      if (err != mir_sdr_Success) {
+	         QString t = QString ("Antenna control failed ") +
+	                                                    errorCodes (err);
+	         theErrorLogger -> add ("SDRPLAY_V2", t);
+	      }
 	      connect (antennaSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	                        &QComboBox::textActivated,
@@ -218,8 +224,11 @@ mir_sdr_DeviceT devDesc [4];
 	      denominator	= 8192;
 	      tunerSelector	-> show();
 	      err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_1);
-	      if (err != mir_sdr_Success) 
-	         fprintf (stderr, "error %d in setting of rspDuo\n", err);
+	      if (err != mir_sdr_Success) {
+	         QString t = QString ("Selecting tuner SDRDu ") +
+	                                               errorCodes (err);
+	         theErrorLogger -> add ("SDRPLAY_V2", t);
+	      }
 	      connect (tunerSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	               &QComboBox::textActivated,
@@ -423,23 +432,31 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	                                 (mir_sdr_GainChangeCallback_t)myGainChangeCallback,
 	                                 this);
 	if (err != mir_sdr_Success) {
-	   fprintf (stderr, "streamInit error = %s\n",
-	                errorCodes (err). toLatin1(). data());
+	   QString t = QString ("StreamInit error ") + errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
 	   return false;
 	}
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "setting gain failed (plaats 2)\n");
 	err	= my_mir_sdr_SetPpm (double (ppmControl -> value()));
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "error = %s\n",
-	                errorCodes (err). toLatin1(). data());
+	if (err != mir_sdr_Success)  {
+	   QString t = QString ("Error in setting ppm to ") +
+	                             QString::number (ppmControl -> value ()) +
+	                             errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 
 	if (agc == 1) {
-	   my_mir_sdr_AgcControl (mir_sdr_AGC_5HZ,
-	                          -30,
-	                          0, 0, 0, 0, lnaGainSetting -> value());
-	   GRdBSelector		-> hide ();
-	   gainsliderLabel	-> hide ();
+	   err = my_mir_sdr_AgcControl (mir_sdr_AGC_5HZ, -30,
+	                                0, 0, 0, 0, lnaGainSetting -> value());
+	   if (err != mir_sdr_Success) {
+	      QString t = "Cannot set agc control with lna " +
+	                                   lnaGainSetting -> value () +
+	                                   errorCodes (err);
+	      theErrorLogger -> add ("SDRPLAY_V2", t);
+	   }
+	   else {
+	      GRdBSelector		-> hide ();
+	      gainsliderLabel	-> hide ();
+	   }
 	}
 	else {
 	   GRdBSelector		-> show ();
@@ -448,17 +465,22 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	
 
 	err		= my_mir_sdr_SetDcMode (4, 1);
-	if (err != mir_sdr_Success)
-	   fprintf (stderr, "error = %s\n",
-	                        errorCodes (err). toLatin1(). data());
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with SetDcMode ") + errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 	err		= my_mir_sdr_SetDcTrackTime (63);
-	if (err != mir_sdr_Success)
-	   fprintf (stderr, "error = %s\n",
-	                errorCodes (err). toLatin1(). data());
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with SetDcTrackTime ") +
+	                                          errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 	err		= my_mir_sdr_DCoffsetIQimbalanceControl (1, 0);
-	if (err != mir_sdr_Success)
-           fprintf (stderr, "error = %s\n",
-                        errorCodes (err). toLatin1(). data());
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with offsetIQBalanceControl") +
+	                                              errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (agcControl, &QCheckBox::checkStateChanged,
 #else
@@ -498,10 +520,11 @@ mir_sdr_ErrT err;
 	   record_gainSettings	(lastFrequency / MHz (1));
 
 	close_xmlDump ();		// just to be sure
-	err	= my_mir_sdr_StreamUninit();
-	if (err != mir_sdr_Success)
-	   fprintf (stderr, "error = %s\n",
-	                errorCodes (err). toLatin1(). data());
+	err	= my_mir_sdr_StreamUninit ();
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with streamUnInit ") + errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 	_I_Buffer. FlushRingBuffer();
 	running. store (false);
 }
@@ -539,21 +562,27 @@ QString	sdrplayHandler_v2::deviceName	() {
 }
 
 void	sdrplayHandler_v2::handle_agcControl (int dummy) {
+mir_sdr_ErrT err;
 bool agcMode	= agcControl -> isChecked();
 	(void)dummy;
-	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_5HZ :
+	err = my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_5HZ :
 	                                 mir_sdr_AGC_DISABLE,
 	                       -30,
 	                       0, 0, 0, 0, lnaGainSetting -> value());
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("problem with Agc control ") + errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 	if (!agcMode) {
 	   GRdBSelector		-> show();
 	   gainsliderLabel	-> show();	// old name actually
 
-	   mir_sdr_ErrT err =  my_mir_sdr_RSP_SetGr (GRdBSelector -> value (),
-	                                             lnaGainSetting -> value (),
-	                                             1, 0);
-	   if (err != mir_sdr_Success) 
-	      fprintf (stderr, "fout by agcControl\n");
+	   err = my_mir_sdr_RSP_SetGr (GRdBSelector -> value (),
+	                                  lnaGainSetting -> value (), 1, 0);
+	   if (err != mir_sdr_Success) {
+	      QString t = QString ("Error with SetGr ") + errorCodes (err);
+	      theErrorLogger -> add ("SDRPLAY_V2", t);
+	   }
 	}
 	else {
 	   GRdBSelector		-> hide();
@@ -562,14 +591,29 @@ bool agcMode	= agcControl -> isChecked();
 }
 
 void	sdrplayHandler_v2::handle_debugControl (int debugMode) {
+mir_sdr_ErrT err;
 	(void)debugMode;
-	my_mir_sdr_DebugEnable (debugControl -> isChecked() ? 1 : 0);
+	err = my_mir_sdr_DebugEnable (debugControl -> isChecked() ? 1 : 0);
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with set debug enable" ) +
+	                                         errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 }
 
 void	sdrplayHandler_v2::handle_ppmControl (int ppm) {
+mir_sdr_ErrT err;
 	if (running. load()) {
-	   my_mir_sdr_SetPpm	((float)ppm);
-	   my_mir_sdr_SetRf	((float)lastFrequency, 1, 0);
+	   err = my_mir_sdr_SetPpm	((float)ppm);
+	   if (err != mir_sdr_Success) {
+	      QString t = QString ("Error with setPpm ") + errorCodes (err);
+	      theErrorLogger -> add ("SDRPLAY_V2", t);
+	   }
+	   err = my_mir_sdr_SetRf	((float)lastFrequency, 1, 0);
+	   if (err != mir_sdr_Success) {
+	      QString t = QString ("Error with SetRf ") + errorCodes (err);
+	      theErrorLogger -> add ("SDRPLAY_V2", t);
+	   }
 	}
 }
 
@@ -583,7 +627,11 @@ mir_sdr_ErrT err;
 	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
 	else
 	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_B);
-	(void)err;
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with antenna control ") +
+	                                              errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 }
 
 void	sdrplayHandler_v2::handle_tunerSelect (const QString &s) {
@@ -596,8 +644,11 @@ mir_sdr_ErrT err;
 	else
 	   err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_2);
 
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "error %d in selecting  rspDuo\n", err);
+	if (err != mir_sdr_Success) {
+	   QString t = QString ("Error with tuner select ") +
+	                                              errorCodes (err);
+	   theErrorLogger -> add ("SDRPLAY_V2", t);
+	}
 }
 
 bool	sdrplayHandler_v2::loadFunctions () {

@@ -25,7 +25,7 @@
 #include	<QTextStream>
 #include	<QDateTime>
 #include	"time-converter.h"
-
+#include	"errorlog.h"
 //	miniparser for epg
 //	input:	a vector delivered by the MOT handler
 //	output:	A QDOMDocument
@@ -73,7 +73,8 @@ int length	= v [index + 1];
 #define	EPG_TAG			0X02
 #define	SERVICE_TAG		0X03
 //
-	epgCompiler::epgCompiler	() {
+	epgCompiler::epgCompiler	(errorLogger *theLogger) {
+	this -> theErrorLogger = theLogger;
 }
 
 	epgCompiler::~epgCompiler	() {
@@ -1681,8 +1682,9 @@ void	epgCompiler::process_forgotten (const QString s,
 	                               int &index) {
 int key	= v [index];
 int endPoint	= setLength (v, index);
-	fprintf (stderr, "for %s the key %x was not recognized\n",
-	                              s. toLatin1 (). data (), key);
+	QString t = "Translating epg, unknown key " +
+	                                    QString::number (key);	
+	theErrorLogger -> add ("epgVertaler", t);
 	index = endPoint;
 }
 
