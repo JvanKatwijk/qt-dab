@@ -207,7 +207,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/tii-detector-1.h
 	     ./sources/frontend/tii-detector-2.h
 	     ./sources/frontend/timesyncer.h
-	     ./sources/frontend/estimator.h
 	     ./sources/protection/protTables.h
 	     ./sources/protection/protection.h
 	     ./sources/protection/uep-protection.h
@@ -347,7 +346,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/tii-detector-1.cpp
 	     ./sources/frontend/tii-detector-2.cpp
 	     ./sources/frontend/timesyncer.cpp
-	     ./sources/frontend/estimator.cpp
 	     ./sources/protection/protTables.cpp
 	     ./sources/protection/protection.cpp
 	     ./sources/protection/uep-protection.cpp

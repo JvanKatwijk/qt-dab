@@ -139,7 +139,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/fib-config.h  \
 	   ./sources/frontend/fib-decoder.h  \
 	   ./sources/frontend/fib-table.h \
-	   ./sources/frontend/estimator.h \
 	   ./sources/protection/protTables.h \
 	   ./sources/protection/protection.h \
 	   ./sources/protection/eep-protection.h \
@@ -291,7 +290,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/frontend/ensemble.cpp  \
 	   ./sources/frontend/fib-config.cpp  \
 	   ./sources/frontend/fib-decoder.cpp  \
-	   ./sources/frontend/estimator.cpp \
 	   ./sources/protection/protTables.cpp \
 	   ./sources/protection/protection.cpp \
 	   ./sources/protection/eep-protection.cpp \

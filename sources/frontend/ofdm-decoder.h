@@ -93,6 +93,7 @@ private:
 	std::vector<DABFLOAT>	phaseCorrVector;
 	std::vector<DABFLOAT>	nullLevelVector;
 	std::vector<DABFLOAT>	powerLevelVector;
+	std::vector<DABFLOAT>	angleVector;
 
 	DABFLOAT	nullPower;
 	float		meanValue;

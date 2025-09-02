@@ -30,7 +30,6 @@
 #include	"timesyncer.h"
 #include	"freqsyncer.h"
 #include	"ringbuffer.h"
-#include	"estimator.h"
 #include	"correlator.h"
 #include	"logger.h"
 #include	"settingNames.h"
@@ -106,7 +105,7 @@
 	                                          TII_OLD : TII_NEW;
 
 	this	-> etiOn		= false;
-	ofdmBuffer. resize (2 * T_s);
+	ofdmBuffer. resize (3 * T_s);
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
 	correctionNeeded		= true;
@@ -208,7 +207,6 @@ phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
 freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
-estimator	myEstimator  (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
 std::vector<int16_t> softbits;
@@ -220,6 +218,7 @@ bool	inSync		= false;
 int	tryCounter	= 0;
 Complex tester	[T_u / 2];
 int	snrCount	= 0;
+std::vector<Complex> CI_Vector (NR_TAPS);
 
 	this	-> snr		= 10; 	// until really computed
 	softbits. resize (2 * params. get_carriers());
@@ -271,7 +270,8 @@ int	snrCount	= 0;
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
-	                                               thresHold);
+	                                               thresHold,
+	                                               CI_Vector);
 
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
@@ -304,7 +304,9 @@ int	snrCount	= 0;
 	                               T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
-	                                               2.5 * thresHold);
+	                                               2.5 * thresHold,
+	                                               CI_Vector);
+//
 	         if (nullShower) {
 	            memcpy (&tester [T_u / 4], ofdmBuffer. data (),
 	                               T_u / 4 * sizeof (Complex));
@@ -323,14 +325,33 @@ int	snrCount	= 0;
 	         }
 	         sampleCount = startIndex;
 	      }
-
+	      
 	      goodFrames ++;
 	      double cLevel	= 0;
 	      cCount	= 0;
+//
+//	The size of the ofdm Buffer is large enough to 
+//	read All data of the first block in
+	      theReader. getSamples (ofdmBuffer,
+	                             T_u,
+	                             startIndex,
+	                             coarseOffset + fineOffset, true);
+//
+//	such that we can do a channel estimate
+	      static int abc = 0;
+	      if (radioInterface_p -> channelOn ()) {
+	         if (++abc > 10) { 
+	            channelBuffer_p -> putDataIntoBuffer (CI_Vector. data (),
+	                                                  CI_Vector. size ());
+	            emit showChannel (CI_Vector. size ());
+	            abc = 0;
+	         }
+	      }
+//
+//	Then we move the data of the first block to the start of the buffer:
 	      memmove (ofdmBuffer. data (),
 	               &((ofdmBuffer. data()) [startIndex]),
-	                  (T_u - startIndex) * sizeof (Complex));
-	      int ofdmBufferIndex	= T_u - startIndex;
+	                  T_u * sizeof (Complex));
 
 //Block_0:
 /**
@@ -340,23 +361,10 @@ int	snrCount	= 0;
   *	first datablock.
   *	We read the missing samples in the ofdm buffer
   */
-	      theReader. getSamples (ofdmBuffer,
-	                              ofdmBufferIndex,
-	                              T_u - ofdmBufferIndex,
-	                              coarseOffset + fineOffset, true);
-	      static int abc = 0;
-	      if (radioInterface_p -> channelOn ()) {
-	         if (++abc > 10) { 
-	            std::vector<Complex> result;
-	            myEstimator. estimate (ofdmBuffer, result);
-	            if (channelBuffer_p != nullptr) {
-	               channelBuffer_p -> putDataIntoBuffer (result. data (),
-	                                                   result. size ());
-	               emit showChannel (result. size ());
-	            }
-	            abc = 0;
-	         }
-	      }
+//	      theReader. getSamples (ofdmBuffer,
+//	                              ofdmBufferIndex,
+//	                              T_u - ofdmBufferIndex,
+//	                              coarseOffset + fineOffset, true);
 	      sampleCount	+= T_u;
 	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&

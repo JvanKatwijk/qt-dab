@@ -80,7 +80,8 @@ float Length	= jan_abs (V);
 	                                    stdDevVector (params. get_T_u ()),
 	                                    phaseCorrVector (params. get_T_u ()),
 	                                    nullLevelVector (params. get_T_u ()),
-	                                    powerLevelVector (params. get_T_u ()){
+	                                    powerLevelVector (params. get_T_u ()),
+	                                    angleVector (params. get_T_u ()) {
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
@@ -106,8 +107,6 @@ float Length	= jan_abs (V);
 	   float argum = (float)(i - TABLE_SIZE / 2) / TABLE_SIZE;
 	   compTable [i] = Complex (cos (argum), sin (argum));
 	}
-
-
 	sqrt_2	= sqrt (2);
 }
 
@@ -126,6 +125,7 @@ void	ofdmDecoder::reset ()	{
 	   phaseCorrVector [i]	= 0;
 	   nullLevelVector [i]	= 1;
 	   powerLevelVector [i] = 0;
+	   angleVector [i]	= M_PI_4;
 	}
 	meanValue	= 1.0f;
 	mValue		=  MAX_VITERBI / (sqrt_2 / 2);
@@ -197,8 +197,22 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 //	Some tests showed the using the first few terms of the
 //	Taylor series for angles up to PI / 4 were up to  the fourth
 //	decimal correct.
-//	A more performance oriented solution could be a table,
+//	A more performance oriented solution is a table,
 //	but then, the granularity of the table should be pretty high.
+//
+//	The decoders 1 and 3 are based on "Optimum 2" in
+//	"Soft decisions for DQPSK demodulation for the Viterbi
+//	decoding of the convolutional codes"
+//	Thushara C Hewavithana and Mike Brooks
+//
+//	the formula (in my own words)
+//	Corrector = sqrt (2) / (SigmaSQ * (1 /SNR + 2))
+//	where corrector is to be applied on real (symbol) and imag (symbol)
+//	The implied assumption here is that abs (symbol) == 1,
+//
+//	It shows that the resulting values for "Corrector" are
+//	small, so for mapping those on -127 .. 127 a "scaler" is needed
+//	(Thanks to Rolf Zerr, aka Old-dab).
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
@@ -224,21 +238,23 @@ float	sum_2	= 0;
 	   Complex fftBin	= fft_buffer [index] *
                                   normalize (conj (phaseReference [index]));
 	   conjVector [index]	= fftBin;
-	   ampliSum		+= jan_abs (fftBin);
-
-	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
-	                                   abs (imag (fftBin)));
-	   DABFLOAT binAbsLevel	= jan_abs (fftBin_at_1);
-
-	   DABFLOAT angle	= arg (fftBin_at_1) - M_PI_4;
+	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
+	   ampliSum		+= binAbsLevel;
 //
 //	updates
-	   stdDevVector [index]	= 
-	                 compute_avg (stdDevVector [index],
-	                                         angle * angle, ALPHA);
 	   int dd		= (int)(-phaseCorrVector [index] * GRANULARITY +
 	                                                  TABLE_SIZE / 2);
 //	   fftBin		= fftBin * compTable [dd];
+
+	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
+	                                   abs (imag (fftBin)));
+
+	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
+	   angleVector [index]	=
+	                 compute_avg (angleVector [index], angle, ALPHA);
+	   stdDevVector [index]	= 
+	                 compute_avg (stdDevVector [index],
+	                                         angle * angle, ALPHA);
 
 	   phaseCorrVector [index]	=
 	           (1 - ALPHA) * phaseCorrVector [index] + ALPHA * angle;
@@ -258,16 +274,10 @@ float	sum_2	= 0;
 	   sigmaSQVector [index] =
 	                 compute_avg (sigmaSQVector [index], sigmaSQ, ALPHA);
 
-	   sum_2			+= jan_abs (fftBin);
-//	for decoders 1 and 2 we implement "Soft optimal 2"
-//	with some different value settings
-//	The snr is inherited from the ofdmHandler who computed it
-//	using the averages of the NULL element's values and the 
-//	overall samples values
-//	The snr_1 tries to be more precise by computing the
-//	snr per carrier
-//	   snr		= 
-//	      powerLevelVector [index] / nullLevelVector [index];
+	   sum_2			+= binAbsLevel;
+
+	   snr		= 
+	      powerLevelVector [index] / nullLevelVector [index];
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
 	          meanLevelVector [index] / sigmaSQVector [index];

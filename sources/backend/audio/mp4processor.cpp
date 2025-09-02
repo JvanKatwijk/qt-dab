@@ -38,10 +38,6 @@
 #include	"pad-handler.h"
 #include	"bitWriter.h"
 
-static int totalErrors_1	= 0;
-static int totalErrors_2	= 0;
-static int fixedLines		= 0;
-static int totalLines		= 0;
 //
 /**
   *	\class mp4Processor is the main handler for the aac frames
@@ -89,11 +85,6 @@ static int totalLines		= 0;
 	successFrames		= 0;
 	rsErrors		= 0;
 	totalCorrections	= 0;
-	superFrameSyncer	= 0;
-	totalErrors_1		= 0;
-	totalErrors_2		= 0;
-	fixedLines		= 0;
-	totalLines		= 0;
 }
 
 	mp4Processor::~mp4Processor () {
@@ -127,46 +118,36 @@ uint8_t	temp	= 0;
 /**
   *	we take the last five blocks to look at
   */
-	if (blocksInBuffer >= 5) {
+	if (blocksInBuffer < 5) 
+	   return;
+//
+//	The buffer is filled enough, let's process
 ///	first, we show the number of successful frames
-	   if (++frameCount >= 25) {
-	      frameCount = 0;
-	      show_frameErrors (frameErrors);
-	      frameErrors = 0;
-	   }
+	if (++frameCount >= 25) {
+	   frameCount = 0;
+	   show_frameErrors (frameErrors);
+	   frameErrors = 0;
+	}
 //
-//	superFrameSyncer == 0 when NOT in sync,
-//	In that case we first try to locate a frame start
+//	Thanks to the "healing"  checkAndCorrect function, we
+//	do not need to apply a RS before testing
+	if (!fc. checkAndCorrect (&frameBytes [blockFillIndex * nbytes])) {
+	   blocksInBuffer = 4;	
+	   return;
+	}
 //
-	   if (superFrameSyncer == 0) {
-	      if (fc. checkAndCorrect (&frameBytes [blockFillIndex * nbytes]))
-	         superFrameSyncer = 4;
-	      else  	// we might go for a next try after a next block
-	         blocksInBuffer = 4;
-	   }
+	if (!handleRS (frameBytes. data (), blockFillIndex * nbytes,
+	              outVector, frameErrors, rsErrors)) {
+	   blocksInBuffer = 4;
+	   return;
+	}
 
-	   if (superFrameSyncer != 0) {			
-	      blocksInBuffer = 0;	// set for later
-	      if (handleRS (frameBytes. data (),
-	                    blockFillIndex * nbytes, outVector,
-	                    frameErrors, rsErrors)) {
-	          processSuperframe (frameBytes. data (), 
-	                             blockFillIndex * nbytes);
-	         superFrameSyncer = 4;
-	         if (++successFrames > 25) {
-	            show_rsErrors (rsErrors);
-	            successFrames	= 0;
-	            rsErrors	= 0;
-	         }
-	      }
-	      else {
-	         superFrameSyncer --;
-	         if (superFrameSyncer == 0) {
-	            blocksInBuffer = 4;
-	            frameErrors ++;
-	         }
-	      }
-	   }
+	blocksInBuffer = 0;
+	processSuperframe (frameBytes. data (), blockFillIndex * nbytes);
+	if (++successFrames > 25) {
+	   show_rsErrors (rsErrors);
+	      successFrames	= 0;
+	      rsErrors	= 0;
 	}	// end of ... >= 5
 }
 //
@@ -344,25 +325,12 @@ int16_t		ler;
 	      outVector [j + k * RSDims] = rsOut [k];
 	   if (ler < 0) {
 	      errorLines ++;
-	      totalErrors_1 ++;
 	   }
 	   else {
 	      repairs += ler;
-	      fixedLines ++;
-	      totalErrors_2 += ler;
-	   }
-	   totalLines ++;
-	   if (totalLines > 3500) {
-	      fprintf (stderr, "total lines %d, broken lines %d, fixed %d\n",
-	                        totalLines, totalErrors_1, totalErrors_2);
-	      totalLines	= 0;
-	      totalErrors_1	= 0;
-	      totalErrors_2	= 0;
-	      fixedLines	= 0;
 	   }
 	}
-	bool res = fc. checkAndCorrect (outVector. data ());
-	return res;
+	return errorLines == 0;
 }
 
 int	mp4Processor::build_aacFile (int16_t aac_frame_len,

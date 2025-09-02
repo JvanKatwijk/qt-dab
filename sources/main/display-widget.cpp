@@ -391,18 +391,18 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	   phaseValues     [i] = 0;
 	   X_axis	   [i] = i;
 	}
+
 	channelScope_p	-> display (X_axis,
 	                            amplitudeValues,
-	                            phaseValues, channelSlider -> value ());
+	                            phaseValues,
+	                            channelSlider -> value ());
 
 	for (int i = 0; i < NR_TAPS; i ++) {
-	   int f = 512 / NR_TAPS;
-	   for (int j = 0; j < f; j ++) {
-	      waterfall_X [f * i + j] = f * i + j;
-	      waterfall_Y [f * i + j] = arg (Values [i]);
-	   }
+//	   waterfall_X [i]	= i;
+	   waterfall_Y [i]	= 0.1 * abs (Values [i]);
 	}
-	waterfallScope_p	-> display (waterfall_X, waterfall_Y, 
+
+	waterfallScope_p	-> display (X_axis, waterfall_Y, 
 	                                    waterfallSlider -> value (),
 	                                    0);
 }

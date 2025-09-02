@@ -44,7 +44,8 @@ public:
 	                                         phaseTable *);
 			~correlator		();
 	int32_t		findIndex		(std::vector<Complex>,
-	                                         bool,  int);
+	                                         bool,  int,
+	                                         std::vector<Complex> &);
 //	This one is used in the ofdm decoder
 private:
 	phaseTable	*theTable;
