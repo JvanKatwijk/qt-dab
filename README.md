@@ -32,7 +32,7 @@ Table of Contents
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
 * [Journaline data](#journaline-data)
-* [Logging errors](#logging-errors]
+* [Logging errors](#logging-errors)
 * [Documentation](#documentation)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
@@ -199,7 +199,8 @@ identify the transmitter of the signal received.
 
 The *channel scope* shows the *channel response* on the transmitted data, i.e.
 the deformation of the transmitted signal on the way from transmitter to receiver.
-The picture shows the *cyan colored line*, i.e. the channel response on the amplitude, and the *red line*, i.e.  the channel effects on the phase of the samples. The picture clearly shows a second peak, app 35 samples behind the "main" peak.
+The picture shows the channel response on the amplitude, and the *red line*, i.e.  the channel effects on the phase of the samples. The picture clearly shows 
+two larger and two smaller peaks, telling transmitters that are received.
 
 ![6.8](/res/read_me/qt-dab-stddev.png)
 
