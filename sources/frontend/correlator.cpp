@@ -72,8 +72,7 @@
 //	Note that "v" is being modified by the fft function
 //	that is why it is a value parameter
 int32_t	correlator::findIndex (std::vector <Complex> v,
-	                       bool firstFound, int threshold,
-	                       std::vector<Complex> &CI_Vector) {
+	                       bool firstFound, int threshold) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
@@ -93,8 +92,6 @@ const	int SEARCH_OFFSET = T_g / 2;
 
 //	and, again, back into the time domain
 	fft_backwards. fft (v);
-	for (int i = 0; i < NR_TAPS; i ++)
-	   CI_Vector [i] = v [i];
 /**
   *	We compute the average and the max signal values
   */

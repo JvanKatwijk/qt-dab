@@ -127,6 +127,8 @@ private:
 	etiGenerator		theEtiGenerator;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
+	phaseTable		theTable;
+
 
 	uint8_t			selectedTII;
 	DABFLOAT		snr;
@@ -169,6 +171,9 @@ private:
 	bool			freqSpeedUp;
 	uint8_t			freqCorrelator;
 virtual	void			run		();
+	void			generate_CI	(const std::vector<Complex> &,
+	                                         int);
+
 signals:
 	void		setSynced		(bool);
 	void		noSignalFound		();

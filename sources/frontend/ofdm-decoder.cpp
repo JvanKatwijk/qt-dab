@@ -131,8 +131,7 @@ void	ofdmDecoder::reset ()	{
 	mValue		=  MAX_VITERBI / (sqrt_2 / 2);
 }
 //
-float	ofdmDecoder::processBlock_0 (
-	                std::vector <Complex> buffer, bool withTII) {
+void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
 	fft. fft (buffer);
 //	we are now in the frequency domain, and we keep the carriers
 //	for their phases.
@@ -141,9 +140,6 @@ float	ofdmDecoder::processBlock_0 (
 	                                      T_u * sizeof (Complex));
 
 	Complex temp	= Complex (0, 0);
-	if (!withTII) {
-	}
-	return 0;
 }
 //
 //	Just interested. In the ideal case the constellation of the

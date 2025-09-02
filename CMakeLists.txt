@@ -194,6 +194,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/ofdm-handler.h
              ./sources/frontend/sample-reader.h
 	     ./sources/frontend/correlator.h
+	     ./sources/frontend/estimator.h
 	     ./sources/frontend/freqsyncer.h
 	     ./sources/frontend/ofdm-decoder.h
 	     ./sources/frontend/phasetable.h
@@ -334,6 +335,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/ofdm-handler.cpp
              ./sources/frontend/sample-reader.cpp
 	     ./sources/frontend/correlator.cpp
+	     ./sources/frontend/estimator.cpp
 	     ./sources/frontend/freqsyncer.cpp
 	     ./sources/frontend/ofdm-decoder.cpp
 	     ./sources/frontend/phasetable.cpp

@@ -43,10 +43,11 @@
 	myFrame. setWindowTitle ("BW64/RIFF reader");
 	myFrame. show	();
 	this -> fileName	= fileName;
-
 	nameofFile		-> setText (fileName);
 	fileProgress		-> setValue (0);
 	currentTime		-> display (0);
+//
+//	The reader knows it all
 	int64_t fileLength	= theReader. elementCount ();
 	QString	fileType	= theReader. fileType ();
 	QString deviceName	= theReader. getDevice ();

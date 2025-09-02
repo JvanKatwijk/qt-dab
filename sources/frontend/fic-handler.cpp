@@ -192,12 +192,16 @@ int16_t	inputCount	= 0;
 
 	if (!running. load ())
 	   return false;
-	memset (viterbiInput, 0,
-	              (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
+//	memset (viterbiInput, 0,
+//	              (FIC_BLOCKSIZE + FIC_RESIDU) * sizeof (int16_t));
 
 	for (int i = 0; i < FIC_BLOCKSIZE + FIC_RESIDU; i ++)
-	   if (punctureTable [i])
-	      viterbiInput [i] = ficInput [inputCount ++];
+	   viterbiInput [i] = punctureTable [i] ?
+	                       ficInput [inputCount ++] : 0;
+//	   if (punctureTable [i])
+//	      viterbiInput [i] = ficInput [inputCount ++];
+//	   else
+//	      viterbiInput [i] = 0;
 /**
   *	Now we have the full word ready for deconvolution
   *	deconvolution is according to DAB standard section 11.2
@@ -232,11 +236,10 @@ int16_t	inputCount	= 0;
   *	first step: energy dispersal according to the DAB standard
   *	We use a predefined vector PRBS
   */
-	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
+	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++) {
 	   hardBits [i] ^= PRBS [i];
-
-	for (int i = 0; i < FIC_BLOCKSIZE / 4; i ++)
 	   fibBits [ficno * FIC_BLOCKSIZE / 4 + i] = hardBits [i];
+	}
 /**
   *	each of the 3 fib blocks is protected by a crc
   *	(we know that there are three fib blocks each time we are here)

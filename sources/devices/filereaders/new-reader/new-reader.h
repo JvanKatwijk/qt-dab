@@ -33,8 +33,7 @@ class	newFiles;
 class	newReader:public QThread {
 Q_OBJECT
 public:
-			newReader	(newFiles *,
-	                                 riffReader *,
+			newReader	(newFiles *, riffReader *,
 	                                 RingBuffer<std::complex<float>> *); 
 			~newReader	();
 	void		startReader	();

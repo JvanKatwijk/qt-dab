@@ -31,6 +31,7 @@
 #include	"freqsyncer.h"
 #include	"ringbuffer.h"
 #include	"correlator.h"
+#include	"estimator.h"
 #include	"logger.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
@@ -73,7 +74,8 @@
 	                                    theMscHandler (mr, p -> dabMode,
 	                                                p -> frameBuffer,
 	                                                theLogger,
-	                                                cpuSupport) {
+	                                                cpuSupport),
+	                                     theTable (p -> dabMode) {
 
 	this	-> p			= p;
 	this	-> theLogger		= theLogger;
@@ -98,7 +100,9 @@
 	         value_i (dabSettings, CONFIG_HANDLER,
 	                             S_CORRELATION_ORDER, 0) != 0;
 	this	-> dxMode		=
-	         value_i (dabSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
+	 		                  value_i (dabSettings,
+	                                           CONFIG_HANDLER,
+	                                           S_DX_MODE, 0) != 0;
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
 	                                           "decoders", DECODER_1); 
 	this	-> selectedTII		= value_i (dabSettings, CONFIG_HANDLER,		 	                                   "tii-detector", 1) == 0 ?
@@ -203,7 +207,6 @@ void	ofdmHandler::stop	() {
    */
 void	ofdmHandler::run	() {
 timeSyncer	myTimeSyncer (&theReader);
-phaseTable	theTable (p -> dabMode);
 TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
 TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
 freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
@@ -218,7 +221,6 @@ bool	inSync		= false;
 int	tryCounter	= 0;
 Complex tester	[T_u / 2];
 int	snrCount	= 0;
-std::vector<Complex> CI_Vector (NR_TAPS);
 
 	this	-> snr		= 10; 	// until really computed
 	softbits. resize (2 * params. get_carriers());
@@ -270,8 +272,7 @@ std::vector<Complex> CI_Vector (NR_TAPS);
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
-	                                               thresHold,
-	                                               CI_Vector);
+	                                               thresHold);
 
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
@@ -304,8 +305,7 @@ std::vector<Complex> CI_Vector (NR_TAPS);
 	                               T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
-	                                               2.5 * thresHold,
-	                                               CI_Vector);
+	                                               2.5 * thresHold);
 //
 	         if (nullShower) {
 	            memcpy (&tester [T_u / 4], ofdmBuffer. data (),
@@ -329,21 +329,18 @@ std::vector<Complex> CI_Vector (NR_TAPS);
 	      goodFrames ++;
 	      double cLevel	= 0;
 	      cCount	= 0;
-//
+
 //	The size of the ofdm Buffer is large enough to 
 //	read All data of the first block in
 	      theReader. getSamples (ofdmBuffer,
 	                             T_u,
 	                             startIndex,
 	                             coarseOffset + fineOffset, true);
-//
-//	such that we can do a channel estimate
+	      
 	      static int abc = 0;
 	      if (radioInterface_p -> channelOn ()) {
-	         if (++abc > 10) { 
-	            channelBuffer_p -> putDataIntoBuffer (CI_Vector. data (),
-	                                                  CI_Vector. size ());
-	            emit showChannel (CI_Vector. size ());
+	         if (++abc > 10) {
+	            generate_CI (ofdmBuffer, startIndex);
 	            abc = 0;
 	         }
 	      }
@@ -361,16 +358,11 @@ std::vector<Complex> CI_Vector (NR_TAPS);
   *	first datablock.
   *	We read the missing samples in the ofdm buffer
   */
-//	      theReader. getSamples (ofdmBuffer,
-//	                              ofdmBufferIndex,
-//	                              T_u - ofdmBufferIndex,
-//	                              coarseOffset + fineOffset, true);
 	      sampleCount	+= T_u;
 	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&
 	                     ((theFicHandler. getCIFcount () & 0x7) == 0);
-	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer,
-	                                             frame_with_TII);
+	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)
 	         theMscHandler.  processBlock_0 (ofdmBuffer. data());
@@ -408,7 +400,7 @@ std::vector<Complex> CI_Vector (NR_TAPS);
   *	The first ones are the FIC blocks these are handled within
   *	the thread executing this "task", the other blocks
   *	are passed on to be handled in the mscHandler, running
-  *	in a different thread.
+  *	possibly in a different thread.
   *	We immediately start with building up an average of
   *	the phase difference between the samples in the cyclic prefix
   *	and the	corresponding samples in the datapart.
@@ -514,6 +506,9 @@ std::vector<Complex> CI_Vector (NR_TAPS);
 	            snrCount = 0;
 	            showSnr (snr);
 	         }
+//
+//	allow the ofdm decoder to build up a "history"
+//	of signal strengths 
 	         theOfdmDecoder. setNullLevel (ofdmBuffer);
 	      }
 /**
@@ -727,4 +722,21 @@ bool	ofdmHandler::serviceRuns	(uint32_t SId, uint16_t subChId) {
 	return theMscHandler. serviceRuns (SId, subChId);
 }
 
+void	ofdmHandler::generate_CI (const std::vector<Complex> &rawBuffer,
+	                          int startIndex) {
+estimator	myEstimator  (radioInterface_p, p, &theTable);
+std::vector<Complex> inVector (T_u);
+std::vector<Complex> CI_Vector (T_u);
 
+	for (int i = 0; i < T_u; i ++)
+	   inVector [i] = Complex (0, 0);
+	int base = std::max (0, startIndex - 504);
+	for (int i = startIndex; i >= 0; i --)
+	   inVector [i] = rawBuffer [i];
+	for (int i = startIndex; i < T_u; i ++)
+	   inVector [i] = rawBuffer [i];
+	myEstimator. estimate (inVector, CI_Vector);
+	channelBuffer_p -> putDataIntoBuffer (CI_Vector. data (),
+	                                                  CI_Vector. size ());
+	emit showChannel (CI_Vector. size ());
+}

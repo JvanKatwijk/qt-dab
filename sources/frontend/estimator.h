@@ -32,38 +32,25 @@
 #include	"dab-constants.h"
 #include	"dab-params.h"
 #include	"process-params.h"
-#include	"ringbuffer.h"
 
 class	RadioInterface;
 
-class correlator : public QObject {
-Q_OBJECT
+class estimator {
 public:
-			correlator 		(RadioInterface *,
+			estimator 		(RadioInterface *,
 	                                         processParams *,
 	                                         phaseTable *);
-			~correlator		();
-	int32_t		findIndex		(std::vector<Complex>,
-	                                         bool,  int);
-//	This one is used in the ofdm decoder
+			~estimator		();
+	void		estimate		(std::vector<Complex>,
+	                                         std::vector<Complex> &);
 private:
 	phaseTable	*theTable;
 	dabParams	params;
 	fftHandler	fft_forward;
 	fftHandler	fft_backwards;
-	RingBuffer<float> *response;
-
 	std::vector<Complex> refTable;
-	int16_t		depth;
 	int32_t		T_u;
 	int32_t		T_g;
 	int16_t		carriers;
-
-	int32_t		fft_counter;
-	int32_t		framesperSecond;	
-	int32_t		displayCounter;
-
-signals:
-	void		showCorrelation	(int, int, QVector<int>);
 };
 

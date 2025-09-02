@@ -53,7 +53,9 @@ public:
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
 	void	setNullLevel		(const std::vector<Complex> &);
-	float	processBlock_0		(std::vector<Complex>, bool);
+//
+//	Note: the parameter should not be altered, it is used later on
+	void	processBlock_0		(std::vector<Complex>);
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
 	                                 std::vector<int16_t> &, DABFLOAT);
@@ -62,11 +64,11 @@ public:
 	void	handle_iqSelector	();
 	void	handle_decoderSelector	(int);
 private:
-	RadioInterface	*myRadioInterface;
-	dabParams	params;
-	phaseTable	theTable;
-	interLeaver     myMapper;
-	fftHandler	fft;
+	RadioInterface		*myRadioInterface;
+	dabParams		params;
+	phaseTable		theTable;
+	interLeaver		myMapper;
+	fftHandler		fft;
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
 

@@ -39,8 +39,7 @@
 class	newFiles: public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-			newFiles	(QSettings *,
-	                                 const QString &);
+			newFiles	(QSettings *, const QString &);
 	       		~newFiles	();
 	bool		restartReader	(int32_t, int skipped = 0);
 	void		stopReader	();

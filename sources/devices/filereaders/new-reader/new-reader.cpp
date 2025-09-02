@@ -70,7 +70,6 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	theReader -> reset ();
 
 	running. store (true);
-
 	nextStop	= getMyTime();
 	try {
 	   while (running. load()) {

@@ -28,6 +28,7 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
 * [Devices and device support](#devices-and-device-support)
+* [Tuning accurary](#tuning-accurarcy)
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
@@ -197,10 +198,8 @@ identify the transmitter of the signal received.
 
 ![6.8](/res/read_me/qt-dab-channel.png)
 
-The *channel scope* shows the *channel response* on the transmitted data, i.e.
-the deformation of the transmitted signal on the way from transmitter to receiver.
 The picture shows the channel response on the amplitude, and the *red line*, i.e.  the channel effects on the phase of the samples. The picture clearly shows 
-two larger and two smaller peaks, telling transmitters that are received.
+two larger and a few smaller peaks, telling transmitters that are received.
 
 ![6.8](/res/read_me/qt-dab-stddev.png)
 
@@ -276,6 +275,35 @@ both the name of the SDR device as well as the channel frequency of the receptio
  * reading and writing so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device widget a button to control dumping the unmodified input into an xml file.
 
 ![6.8](/res/read_me/xml-reader.png?raw=true)
+
+
+Tuning accurarcy
+=======================================================================
+
+Dab Frequencies are in the range of app 175 to 225 MHz. Different devices
+have a different **tuning accurary** in this range. While the different SDRPlay
+and AIRspy devices show a tuning offset of some 0 to 30 Hz, especially
+the popular DABsticks show - in general - a larger offset
+
+![6.8](/res/read_me/tuning-offset.png?raw=true)
+
+The picture shows that on selecting channel 12C (22730 KHz) the device
+used - a simple dabstick - shows a runing offset of 8446 Hz, i.e. well over 
+8 KHz.
+While Qt-DAB is - as the picture shows - capable of compensating for
+tuner offsets of up to app 35 Khz, the **quality of the signal**
+is better with a small tuning offset.
+
+The widgets for the various device handlers show a "ppm" correction setting,
+where "ppm" stands for "Parts per Million". Setting the corrector to 1,
+implies that the oscillator of the device tunes to a frequency
+that is (app) 227 Hz higher.
+
+In this particular care, an offset of app 8.5 KHz on a selected frequency
+of app 227 Mhz means an error of 8500 / 227, which is slight more than 37.
+So, setting the **ppm** corrector to 37 in this case causes the device
+to change the frequency such that the frequency the device tuned to
+corresponds almost to the frequency it should be.
 
 Scan control
 =======================================================================
