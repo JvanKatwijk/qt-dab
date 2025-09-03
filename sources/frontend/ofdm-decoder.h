@@ -92,14 +92,9 @@ private:
 	std::vector<DABFLOAT>	sigmaSQVector;
 	std::vector<DABFLOAT>	meanLevelVector;
 	std::vector<DABFLOAT>	stdDevVector;
-	std::vector<DABFLOAT>	phaseCorrVector;
-	std::vector<DABFLOAT>	nullLevelVector;
-	std::vector<DABFLOAT>	powerLevelVector;
 	std::vector<DABFLOAT>	angleVector;
 
-	DABFLOAT	nullPower;
 	float		meanValue;
-	float		mean_2;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;

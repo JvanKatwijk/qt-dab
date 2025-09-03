@@ -82,6 +82,10 @@ private:
 	      DABFLOAT		dcReal;
 	      DABFLOAT		dcImag;
 
+	      DABFLOAT		mean_ITrack;
+	      DABFLOAT		mean_QTrack;
+	      DABFLOAT		mean_IQTrack;
+
 signals:
 	      void		show_spectrum	(int);
 	      void		show_dcOffset	(float);

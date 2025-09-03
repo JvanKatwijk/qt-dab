@@ -38,6 +38,9 @@
 #include	"pad-handler.h"
 #include	"bitWriter.h"
 
+//static int	totalErrorLines = 0;
+//static int	totalRepairs	= 0;
+//static	int	teller = 0;
 //
 /**
   *	\class mp4Processor is the main handler for the aac frames
@@ -85,6 +88,10 @@
 	successFrames		= 0;
 	rsErrors		= 0;
 	totalCorrections	= 0;
+
+//	teller			= 0;
+//	totalErrorLines		= 0;
+//	totalRepairs		= 0;
 }
 
 	mp4Processor::~mp4Processor () {
@@ -309,6 +316,7 @@ bool	mp4Processor::handleRS (const uint8_t *frameBytes,
 uint8_t		rsIn	[120];
 uint8_t		rsOut	[110];
 int16_t		ler;
+
 	errorLines	= 0;
 	repairs		= 0;
 /**
@@ -325,11 +333,19 @@ int16_t		ler;
 	      outVector [j + k * RSDims] = rsOut [k];
 	   if (ler < 0) {
 	      errorLines ++;
+//	      totalErrorLines ++;
 	   }
 	   else {
 	      repairs += ler;
+//	      totalRepairs += ler;
 	   }
 	}
+
+//	if (++teller > 300) {
+//	   fprintf (stderr, "Errorlines = %d, repairs = %d\n",
+//	                         totalErrorLines, totalRepairs);
+//	   totalErrorLines = totalRepairs = teller = 0;
+//	}
 	return errorLines == 0;
 }
 

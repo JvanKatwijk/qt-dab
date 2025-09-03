@@ -142,6 +142,12 @@ private:
 	QLibrary*		library_p;
 	QString			serialNumber;
 
+	Complex			RfDC;
+        double			rfDcAlpha;
+
+	double			sumI;
+	double			sumQ;
+	int			teller;
         xml_fileWriter		*xmlWriter;
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;

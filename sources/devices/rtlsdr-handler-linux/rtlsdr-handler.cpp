@@ -718,7 +718,7 @@ int	nrSamples	= len / 2;
 auto	*tempBuf 	= dynVec (std::complex<float>, nrSamples);
 static uint8_t dumpBuffer [2 * IQ_BUFSIZE];
 static int iqTeller	= 0;
-
+static int teller	= 0;
 	if (!isActive. load ()) 
 	   return;
 
@@ -744,9 +744,9 @@ static int iqTeller	= 0;
 	   currentDepth = filterDepth -> value ();
 	   theFilter. resize (currentDepth);
 	}
-	float dcI	= m_dcI;
-	float dcQ	= m_dcQ;
+
 	for (uint32_t i = 0; i < nrSamples; i ++) {
+	   teller ++;
 	   float tempI	= convTable [buf [2 * i]];
 	   float tempQ	= convTable [buf [2 * i + 1]];
 	   sumI		+= tempI;
@@ -756,14 +756,17 @@ static int iqTeller	= 0;
 	      tempBuf [i] = theFilter. Pass (tempBuf [i]);
 	}
 // calculate correction values for next input buffer
-	m_dcI = sumI / (len / 2) * CORRF + (1 - CORRF) * dcI;
-	m_dcQ = sumQ / (len / 2) * CORRF + (1 - CORRF) * dcQ;
 	int ovf	= _I_Buffer. GetRingBufferWriteAvailable () - nrSamples;
 	if (ovf < 0)
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples + ovf);
 	else
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples);
 	reportOverflow (ovf < 0);
+	if (++teller > 4 * 2048000) {
+//	   fprintf (stderr, "%f %f (%f)\n", sumI / teller, sumQ / teller,
+//	                                    sumI / sumQ);
+	   teller = 0;
+	}
 }
 
 QString	rtlsdrHandler::get_tunerType	(int tunerType) {

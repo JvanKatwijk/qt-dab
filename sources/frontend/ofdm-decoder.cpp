@@ -78,9 +78,6 @@ float Length	= jan_abs (V);
 	                                    sigmaSQVector (params. get_T_u ()),
 	                                    meanLevelVector (params. get_T_u ()),
 	                                    stdDevVector (params. get_T_u ()),
-	                                    phaseCorrVector (params. get_T_u ()),
-	                                    nullLevelVector (params. get_T_u ()),
-	                                    powerLevelVector (params. get_T_u ()),
 	                                    angleVector (params. get_T_u ()) {
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
@@ -116,19 +113,14 @@ float Length	= jan_abs (V);
 void	ofdmDecoder::stop ()	{
 }
 //
-static float mValue;
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
 	   sigmaSQVector [i]	= 0;
 	   meanLevelVector [i]	= 0;
 	   stdDevVector [i]	= 0;
-	   phaseCorrVector [i]	= 0;
-	   nullLevelVector [i]	= 1;
-	   powerLevelVector [i] = 0;
 	   angleVector [i]	= M_PI_4;
 	}
 	meanValue	= 1.0f;
-	mValue		=  MAX_VITERBI / (sqrt_2 / 2);
 }
 //
 void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
@@ -206,6 +198,10 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 //	where corrector is to be applied on real (symbol) and imag (symbol)
 //	The implied assumption here is that abs (symbol) == 1,
 //
+//	The basic idea behind the formula is to enlarge the
+//	spread in sizes of the real (symb) and imag (symb),
+//	which is obviously inversely proportional with the sigmaSq
+//
 //	It shows that the resulting values for "Corrector" are
 //	small, so for mapping those on -127 .. 127 a "scaler" is needed
 //	(Thanks to Rolf Zerr, aka Old-dab).
@@ -216,7 +212,6 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     DABFLOAT snr) {
 
 float	sum	= 0;
-float	sum_2	= 0;
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
@@ -238,9 +233,6 @@ float	sum_2	= 0;
 	   ampliSum		+= binAbsLevel;
 //
 //	updates
-	   int dd		= (int)(-phaseCorrVector [index] * GRANULARITY +
-	                                                  TABLE_SIZE / 2);
-//	   fftBin		= fftBin * compTable [dd];
 
 	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
 	                                   abs (imag (fftBin)));
@@ -252,31 +244,20 @@ float	sum_2	= 0;
 	                 compute_avg (stdDevVector [index],
 	                                         angle * angle, ALPHA);
 
-	   phaseCorrVector [index]	=
-	           (1 - ALPHA) * phaseCorrVector [index] + ALPHA * angle;
-	   limit_symmetrically (phaseCorrVector [index],
-	                                           RAD_PER_DEGREE * 8.0);
-
 	   meanLevelVector [index] =
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
-	   powerLevelVector [index] =
-	        compute_avg (powerLevelVector [index], binAbsLevel * binAbsLevel, ALPHA);
 
 	   DABFLOAT d_x		=  real (fftBin_at_1) -
 	                                     meanLevelVector [index] / sqrt_2;
 	   DABFLOAT d_y		=  imag (fftBin_at_1) -
 	                                     meanLevelVector [index] / sqrt_2;
-	   DABFLOAT sigmaSQ	=  d_x * d_x + d_y * d_y;
+	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
 	   sigmaSQVector [index] =
 	                 compute_avg (sigmaSQVector [index], sigmaSQ, ALPHA);
 
-	   sum_2			+= binAbsLevel;
-
-	   snr		= 
-	      powerLevelVector [index] / nullLevelVector [index];
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
-	          meanLevelVector [index] / sigmaSQVector [index];
+	          meanLevelVector [index] / (sqrt_2 * sigmaSQVector [index]);
 	      corrector		/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
@@ -313,15 +294,12 @@ float	sum_2	= 0;
 	   }
 	   else {
 //	for decoder 3 we implement "Soft optimal 1"
-//	      softbits [i]  = - real (fftBin) / binAbsLevel * MAX_VITERBI;
-	      softbits [i]  = - real (fftBin) / binAbsLevel * mValue;
+	      softbits [i]  = - real (fftBin) / binAbsLevel * MAX_VITERBI;
 	      softbits [carriers + i] 
-//	                    = - imag (fftBin) /binAbsLevel * MAX_VITERBI; 
-	                    = - imag (fftBin) /binAbsLevel * mValue; 
+	                    = - imag (fftBin) /binAbsLevel * MAX_VITERBI; 
 	   }
 	}
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
-	mValue		= compute_avg (mValue, sum_2 / carriers, 0.1);	
 	
 //		end of decoding	, now for displaying things	//
 //////////////////////////////////////////////////////////////////
@@ -459,18 +437,4 @@ void	ofdmDecoder::handle_decoderSelector	(int decoder) {
 	this	-> decoder	= decoder;
 }
 //
-//	T_null = 2656, T_u = 2048, we take the samples in the
-//	middle of the NULL period
-void	ofdmDecoder::setNullLevel	(const std::vector<Complex> &x) {
-int	offset	= (2656 - T_u) / 2;
-	for (int i = 0; i < T_u; i ++)
-	   fft_buffer [i] = x [i + offset];
-	
-	fft. fft (fft_buffer. data ());
-	for (int i = 0; i < T_u; i ++)
-	   nullLevelVector [i] = compute_avg (nullLevelVector [i] ,
-	                                      jan_abs (fft_buffer [i]) *
-	                                      jan_abs (fft_buffer [i]),
-	                                      ALPHA);
-}
 

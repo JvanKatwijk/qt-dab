@@ -506,10 +506,6 @@ int	snrCount	= 0;
 	            snrCount = 0;
 	            showSnr (snr);
 	         }
-//
-//	allow the ofdm decoder to build up a "history"
-//	of signal strengths 
-	         theOfdmDecoder. setNullLevel (ofdmBuffer);
 	      }
 /**
   *	The first sample to be found for the next frame should be T_g

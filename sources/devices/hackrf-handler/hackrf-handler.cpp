@@ -135,7 +135,6 @@ hackrf_error errorCode;
 	   delete library_p;
 	   throw (device_exception (hackrf_error_name (errorCode)));
 	}
-
 	uint16_t regValue;
 	errorCode = (hackrf_error)(hackrf_si5351c_read (theDevice,
 	                                                162, &regValue));
@@ -213,6 +212,12 @@ hackrf_error errorCode;
 	dumping. store (false);
 	running. store (false);
 	xmlWriter	= nullptr;
+
+	sumI		= 0;
+	sumQ		= 0;
+	teller		= 0;
+	this	-> RfDC	= Complex (0, 0);
+	this	-> rfDcAlpha	= 1.0 / 2048000;
 }
 
 	hackrfHandler::~hackrfHandler() {
@@ -236,9 +241,8 @@ hackrf_error errorCode;
 //
 
 void	hackrfHandler::handle_LNAGain	(int newGain) {
-int	res;
 	if ((newGain <= 40) && (newGain >= 0)) {
-	   res	= this -> hackrf_set_lna_gain (theDevice, newGain);
+	   int res	= this -> hackrf_set_lna_gain (theDevice, newGain);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	      theErrorLogger -> add ("Hackrf",
@@ -250,9 +254,8 @@ int	res;
 }
 
 void	hackrfHandler::handle_VGAGain	(int newGain) {
-int	res;
 	if ((newGain <= 62) && (newGain >= 0)) {
-	   res	= this -> hackrf_set_vga_gain (theDevice, newGain & ~0x01);
+	   int res	= this -> hackrf_set_vga_gain (theDevice, newGain & ~0x01);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	      theErrorLogger -> add ("Hackrf",
@@ -270,7 +273,6 @@ bool	b;
 	(void)d;
 	b = biasT_button	-> checkState() == Qt::Checked;
 	res = this -> hackrf_set_antenna_enable (theDevice, b);
-//	fprintf(stderr,"Passed %d\n",(int)b);
 	if (res != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   theErrorLogger -> add ("Hackrf",
@@ -302,15 +304,18 @@ bool	b;
 // To be completed
 
 void	hackrfHandler::handle_ppmCorrection	(int32_t ppm) {
-int res;
 uint16_t value;
-
-	res = this -> hackrf_si5351c_write (theDevice,
+hackrf_error errorCode;
+	
+	errorCode = (hackrf_error) this -> hackrf_si5351c_write (theDevice,
 	                                    162,
 	                                    static_cast<uint16_t>(ppm));
-	res = this -> hackrf_si5351c_read (theDevice,
-	                                   162, &value);
-	(void) res;
+	if (errorCode != HACKRF_SUCCESS) 
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	errorCode  =  (hackrf_error)this -> hackrf_si5351c_read (theDevice,
+	                                         162, &value);
+	if (errorCode != HACKRF_SUCCESS)
+	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
 	qDebug() << "Read si5351c register 162 : " << value <<"\n";
 }
 
@@ -381,6 +386,7 @@ hackrf_error errorCode;
 	   showStatus (this -> hackrf_error_name (errorCode));
 	   return false;
 	}
+	lastFrequency	= freq;
 	errorCode =  (hackrf_error)(hackrf_start_rx (theDevice,
 	                                               callback, this));	
 	if (errorCode != HACKRF_SUCCESS) {
@@ -419,11 +425,20 @@ hackrf_error errorCode;
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-	for (int i = 0; i < amount; i ++)
-	   V [i] = std::complex<float> (real (temp [i]) / 127.0f,
-	                                      imag (temp [i]) / 127.0f);
+	for (int i = 0; i < amount; i ++) {
+	   Complex symbol = Complex (real (temp [i]) / 127.38,
+	                             imag (temp [i]) / 128.0);
+	   float Re	= real (symbol);
+	   float Im	= imag (symbol);
+//	   sumI		+= Re;
+//	   sumQ		+= Im;
+//	   teller++;
+	   V [i] = std::complex<float> (Re, Im);
+	}
+	
 	if (dumping. load ())
 	   xmlWriter -> add (temp, amount);
+	
 	return amount;
 }
 
