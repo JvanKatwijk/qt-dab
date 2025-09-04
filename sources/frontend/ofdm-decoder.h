@@ -89,7 +89,7 @@ private:
 	std::vector<int16_t>	ibits;
 	std::vector<Complex>	conjVector;
 	std::vector<Complex>	fft_buffer;
-	std::vector<DABFLOAT>	sigmaSQVector;
+	std::vector<DABFLOAT>	sigmaSQ_Vector;
 	std::vector<DABFLOAT>	meanLevelVector;
 	std::vector<DABFLOAT>	stdDevVector;
 	std::vector<DABFLOAT>	angleVector;

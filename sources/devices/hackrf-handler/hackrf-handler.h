@@ -142,12 +142,14 @@ private:
 	QLibrary*		library_p;
 	QString			serialNumber;
 
-	Complex			RfDC;
-        double			rfDcAlpha;
+	bool			IQbalance;
+	DABFLOAT		dcReal;
+	DABFLOAT		dcImag; 
 
-	double			sumI;
-	double			sumQ;
-	int			teller;
+	double			mean_ITrack;
+        double			mean_QTrack;
+        double			mean_IQTrack;
+
         xml_fileWriter		*xmlWriter;
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;
@@ -169,6 +171,7 @@ private slots:
 	void			handle_biasT		(int);
 	void			handle_Ampli		(int);
 	void			handle_ppmCorrection (int);
+	void			handle_equalizer	(int);
 // Fine aggiunta
 	void			handle_xmlDump	();
 };

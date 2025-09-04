@@ -64,7 +64,7 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	dcRemoval	= false;
+	dcRemoval	= true;
 	dcReal		= 0;
 	dcImag		= 0;
 	repetitionCounter	= 8;
@@ -148,43 +148,19 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 //	OK, we have samples!!
 	for (int i = 0; i < nrSamples; i ++) {
 	   std::complex<float> v = buffer [i];
-//
-//	Especially, the Hackrf had a serious problem with IQ imbalance
-//	The contirbution
-//	From https://dsp.stackexchange.com/questions/40734/what-does-correcting-iq-doa
-//	gave "an" answer that helps
-//	X_new		1		0	X_in
-//		=
-//	Q_new		Asin(phi)	Acos(phi) Q_in
-//	we leatn how to address I Q imbalance
 	   if (dcRemoval) {
-	      DABFLOAT real_V	= real (v);
-	      DABFLOAT imag_V	= imag  (v);
-	      DABFLOAT alpha	= 1.0 / 2048000;
+              DABFLOAT real_V = abs (real (v));
+              DABFLOAT imag_V = abs (imag  (v)); 
+              dcReal    = average (dcReal, real_V, ALPHA);
+              dcImag    = average (dcImag, imag_V, ALPHA);
+ 
+              static int teller = 0; 
+              if (++teller >= SAMPLERATE) {
+                 show_dcOffset (10 * (dcReal - dcImag) /(dcReal + dcImag));
+                 teller = 0;
+              }
+           }
 
-	      dcReal		= compute_avg (dcReal, real_V, ALPHA);
-	      dcImag		= compute_avg (dcImag, imag_V, ALPHA);
-	      DABFLOAT I_track	= real_V - dcReal;
-	      DABFLOAT Q_track	= imag_V - dcImag;
-	      mean_ITrack	= compute_avg (mean_ITrack, square(I_track), ALPHA);
-	      mean_IQTrack	= compute_avg (mean_IQTrack,
-	                                       I_track * Q_track, ALPHA);
-
-	      DABFLOAT Beta	= mean_IQTrack / mean_ITrack;
-	      DABFLOAT x_q_corr = Q_track - Beta * I_track;
-	      mean_QTrack	= compute_avg (mean_QTrack,
-	                             x_q_corr * x_q_corr, ALPHA);
-	      DABFLOAT	gainQ	= std::sqrt (mean_ITrack / mean_QTrack);
-	      v			= std::complex<float> (I_track,
-	                                               x_q_corr * gainQ);
-
-	      static int teller = 0;
-	      if (++teller >= SAMPLERATE) {
-	         show_dcOffset ((dcReal + dcImag) / 2);
-	         teller = 0;
-	      }
-	   }
-	   
 
 //	first: adjust frequency. We need Hz accuracy
 //	Note that "phase" itself might be negative

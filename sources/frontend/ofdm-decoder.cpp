@@ -75,7 +75,7 @@ float Length	= jan_abs (V);
 	                                    phaseReference (params. get_T_u ()),
 	                                    conjVector (params. get_T_u ()),
 	                                    fft_buffer (params. get_T_u ()),
-	                                    sigmaSQVector (params. get_T_u ()),
+	                                    sigmaSQ_Vector (params. get_T_u ()),
 	                                    meanLevelVector (params. get_T_u ()),
 	                                    stdDevVector (params. get_T_u ()),
 	                                    angleVector (params. get_T_u ()) {
@@ -115,7 +115,7 @@ void	ofdmDecoder::stop ()	{
 //
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
-	   sigmaSQVector [i]	= 0;
+	   sigmaSQ_Vector [i]	= 0;
 	   meanLevelVector [i]	= 0;
 	   stdDevVector [i]	= 0;
 	   angleVector [i]	= M_PI_4;
@@ -188,7 +188,7 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 //	A more performance oriented solution is a table,
 //	but then, the granularity of the table should be pretty high.
 //
-//	The decoders 1 and 3 are based on "Optimum 2" in
+//	The decoders 1 and 3 are based on "Sof t optimal 2" in
 //	"Soft decisions for DQPSK demodulation for the Viterbi
 //	decoding of the convolutional codes"
 //	Thushara C Hewavithana and Mike Brooks
@@ -221,7 +221,6 @@ float	sum	= 0;
 //	positive/negative frequencies to their right positions.
 //	The de-interleaving understands this
 
-	DABFLOAT ampliSum	= 0;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -230,7 +229,6 @@ float	sum	= 0;
                                   normalize (conj (phaseReference [index]));
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
-	   ampliSum		+= binAbsLevel;
 //
 //	updates
 
@@ -248,17 +246,19 @@ float	sum	= 0;
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
 
 	   DABFLOAT d_x		=  real (fftBin_at_1) -
-	                                     meanLevelVector [index] / sqrt_2;
+	                                  meanLevelVector [index] / sqrt_2;
 	   DABFLOAT d_y		=  imag (fftBin_at_1) -
-	                                     meanLevelVector [index] / sqrt_2;
+	                                  meanLevelVector [index] / sqrt_2;
 	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
-	   sigmaSQVector [index] =
-	                 compute_avg (sigmaSQVector [index], sigmaSQ, ALPHA);
-
+	   sigmaSQ_Vector [index] =
+	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
+//
+//	Ran over quite a number of examples, I found DECODER_1
+//	working best
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
-	          meanLevelVector [index] / (sqrt_2 * sigmaSQVector [index]);
-	      corrector		/= (1 / snr + 2);
+	         meanLevelVector [index] / sigmaSQ_Vector [index];
+	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
 	                                      sqrt (jan_abs (phaseReference [index]))));
@@ -276,7 +276,7 @@ float	sum	= 0;
 	   else 
 	   if (this -> decoder == DECODER_2) {	// decoder 2
 	      DABFLOAT corrector	=
-	          meanLevelVector [index] / sigmaSQVector [index];
+	          meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector		/= (1 / snr + 3);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *

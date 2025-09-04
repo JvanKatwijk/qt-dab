@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -97,6 +97,11 @@ hackrf_error errorCode;
 	                              "hack_AmpEnable", 0) != 0;
 	AmpEnableButton	-> setCheckState (isChecked ? Qt::Checked : 
 	                                              Qt::Unchecked);
+
+	IQbalance	= value_i (hackrfSettings, HACKRF_SETTINGS,
+	                                     "IQbalance", 0);
+	IQequalizer	-> setCheckState (IQbalance ? Qt::Checked :
+	                                              Qt::Unchecked);
 	ppm_correction      -> setValue (
 	       value_i (hackrfSettings, HACKRF_SETTINGS,
 	                              "hack_ppmCorrection", 0));
@@ -173,6 +178,12 @@ hackrf_error errorCode;
 	connect (AmpEnableButton, &QCheckBox::stateChanged,
 #endif
 	         this, &hackrfHandler::handle_Ampli);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+	connect (IQequalizer, &QCheckBox::checkStateChanged,
+#else
+	connect (IQequalizer, &QCheckBox::stateChanged,
+#endif
+	         this, &hackrfHandler::handle_equalizer);
 	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &hackrfHandler::handle_ppmCorrection);
 	connect (dumpButton, &QPushButton::clicked,
@@ -213,11 +224,12 @@ hackrf_error errorCode;
 	running. store (false);
 	xmlWriter	= nullptr;
 
-	sumI		= 0;
-	sumQ		= 0;
-	teller		= 0;
-	this	-> RfDC	= Complex (0, 0);
-	this	-> rfDcAlpha	= 1.0 / 2048000;
+        dcReal          = 0;
+        dcImag          = 0;
+
+	mean_ITrack     = 1.0f;
+	mean_QTrack     = 1.0f;
+        mean_IQTrack    = 0.0f;
 }
 
 	hackrfHandler::~hackrfHandler() {
@@ -296,6 +308,13 @@ bool	b;
 	   return;
 	}
 //	AmpEnableButton->setChecked (b);
+}
+
+void	hackrfHandler::handle_equalizer (int a) {
+int res;
+
+	(void)a;
+	IQbalance = IQequalizer	-> checkState() == Qt::Checked;
 }
 
 //      correction is in Hz
@@ -420,20 +439,49 @@ hackrf_error errorCode;
 }
 
 //
-//	The brave old getSamples. For the hackrf, we get
-//	size still in I/Q pairs
+//	Especially, the Hackrf had a serious problem with IQ imbalance
+//	The contribution
+//	From https://dsp.stackexchange.com/questions/40734/what-does-correcting-iq-doa
+//	gave "an" answer that helps, a simple derivation that leads to
+//	X_new		1		0	X_in
+//		=
+//	Q_new		Asin(phi)	Acos(phi) Q_in
+
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-	for (int i = 0; i < amount; i ++) {
-	   Complex symbol = Complex (real (temp [i]) / 127.38,
+	if (!IQbalance) {
+	   for (int i = 0; i < amount; i ++) {
+	      V [i] = Complex (real (temp [i]) / 128.0, 
+	                       imag (temp [i]) / 128.0);
+	   }
+	}
+	else {
+	   for (int i = 0; i < amount; i ++) {
+	      Complex v = Complex (real (temp [i]) / 127.38,
 	                             imag (temp [i]) / 128.0);
-	   float Re	= real (symbol);
-	   float Im	= imag (symbol);
-//	   sumI		+= Re;
-//	   sumQ		+= Im;
-//	   teller++;
-	   V [i] = std::complex<float> (Re, Im);
+	   
+	      DABFLOAT real_V   = real (v);
+              DABFLOAT imag_V   = imag  (v);
+              DABFLOAT Alpha    = 1.0 / 2048000;
+
+              dcReal            = compute_avg (dcReal, real_V, Alpha);
+              dcImag            = compute_avg (dcImag, imag_V, Alpha);
+              DABFLOAT I_track  = real_V - dcReal;
+              DABFLOAT Q_track  = imag_V - dcImag;
+              mean_ITrack       = compute_avg (mean_ITrack, square(I_track), Alpha);
+              mean_IQTrack      = compute_avg (mean_IQTrack,
+                                               I_track * Q_track, Alpha);
+
+              DABFLOAT Beta     = mean_IQTrack / mean_ITrack;
+              DABFLOAT x_q_corr = Q_track - Beta * I_track;
+              mean_QTrack       = compute_avg (mean_QTrack,
+                                     x_q_corr * x_q_corr, Alpha);
+              DABFLOAT  gainQ   = std::sqrt (mean_ITrack / mean_QTrack);
+
+	      V [i]		= std::complex<float> (I_track,
+	                                               x_q_corr * gainQ);
+	   }
 	}
 	
 	if (dumping. load ())
