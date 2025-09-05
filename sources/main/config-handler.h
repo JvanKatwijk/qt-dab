@@ -89,6 +89,7 @@ public:
 	bool	get_audioServices_only	();
 	bool	get_allTIISelector	();
 
+	bool	get_dcRemoval		();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -138,7 +139,8 @@ private slots:
 	void	handle_allTIISelector		(int);
 	void	handle_audioServices_only	(int);
 	void	handle_auto_http		(int);
-
+	
+	void	handle_dcRemoval		(int);
 	void	handle_tiiCollisions		(int);
 	void	handle_tiiFilter		(int);
 

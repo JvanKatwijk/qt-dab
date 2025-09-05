@@ -97,6 +97,7 @@ float Length	= jan_abs (V);
 
 	reset ();
 	iqSelector		= SHOW_DECODED;
+//	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
 
 	compTable. resize (TABLE_SIZE);
@@ -262,7 +263,7 @@ float	sum	= 0;
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
 	                                      sqrt (jan_abs (phaseReference [index]))));
-	      float scaler		=  100 / meanValue;
+	      float scaler		=  100.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
 	      softbits [i]		= (int16_t)leftBit;

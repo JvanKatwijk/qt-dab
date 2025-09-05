@@ -607,6 +607,7 @@ public slots:
 	void			handle_set_coordinatesButton	();
 //	void			handle_transmSelector		(int);
 	void			handle_eti_activeSelector	(int);
+	void			handle_dcRemoval		(bool);
 	void			handle_loadTable		();
 	void			handle_tiiCollisions		(int);
 	void			handle_tiiFilter		(bool);

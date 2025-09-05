@@ -115,6 +115,7 @@ public:
 	void		handleDecoderSelector	(int);
 	void		setCorrelationOrder	(bool);
 	void		setDXMode		(bool);
+	void		set_dcRemoval		(bool);
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;

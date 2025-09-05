@@ -57,6 +57,7 @@ public:
 	                                 int32_t n, int32_t phase, bool saving);
 	      void	startDumping	(const QString &, int, int, const QString);
 	      void	stopDumping	();
+	      void	set_dcRemoval	(bool);
 private:
 	      riffWriter	sourceDumper;
 	      RadioInterface	*myRadioInterface;
@@ -81,10 +82,8 @@ private:
 	      bool		dcRemoval;
 	      DABFLOAT		dcReal;
 	      DABFLOAT		dcImag;
-
-	      DABFLOAT		mean_ITrack;
-	      DABFLOAT		mean_QTrack;
-	      DABFLOAT		mean_IQTrack;
+	      DABFLOAT		IQ_Real;
+	      DABFLOAT		IQ_Imag;
 
 signals:
 	      void		show_spectrum	(int);

@@ -736,3 +736,8 @@ std::vector<Complex> CI_Vector (T_u);
 	                                                  CI_Vector. size ());
 	emit showChannel (CI_Vector. size ());
 }
+
+void	ofdmHandler::set_dcRemoval	(bool b) {
+	theReader. set_dcRemoval (b);
+}
+

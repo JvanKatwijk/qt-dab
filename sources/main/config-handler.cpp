@@ -168,6 +168,11 @@ int	index_for_key (int key) {
 
 	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 9) != 0;
 	this	-> auto_http -> setChecked (b);
+
+	b = value_i (dabSettings, CONFIG_HANDLER,
+	                          "dcRemoval", 1) == 1;
+	this -> dcRemoval -> setChecked (b);
+
 	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0);
 	this	-> tiiCollisions -> setValue (c);
 	b = value_i (dabSettings, CONFIG_HANDLER, TII_FILTER, 1) != 0;
@@ -239,6 +244,8 @@ int	index_for_key (int key) {
 	         myRadioInterface, &RadioInterface::process_tiiSelector);
 	connect (activeServices, &clickablelabel::clicked,
 	         myRadioInterface, &RadioInterface::handle_activeServices);
+	connect (this, &configHandler::set_dcRemoval,
+	         myRadioInterface, &RadioInterface::handle_dcRemoval);
 	set_Colors ();
 }
 
@@ -475,12 +482,13 @@ void	configHandler::set_connections () {
 #endif
 	         this, &configHandler::handle_showAll_Selector);
 
+//	sixth ine
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (saveSlides, &QCheckBox::checkStateChanged,
+	connect (dcRemoval, &QCheckBox::checkStateChanged,
 #else
-	connect (saveSlides, &QCheckBox::stateChanged,
+	connect (dcRemoval, &QCheckBox::stateChanged,
 #endif
-	         this, &configHandler::handle_saveSlides);
+	         this, &configHandler::handle_dcRemoval);
 //
 //	botton row
 	connect (decoderSelector,
@@ -1046,5 +1054,15 @@ QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
 
 void	configHandler::set_activeServices	(int activeS) {
 	activeServices	-> setText (QString::number (activeS));
+}
+
+void	configHandler::handle_dcRemoval		(int h) {
+	bool b = this ->  dcRemoval -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, "dcRemoval", b ? 1 : 0);
+	emit set_dcRemoval (b);
+}
+
+bool	configHandler::get_dcRemoval		() {
+	return dcRemoval -> isChecked ();
 }
 

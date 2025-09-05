@@ -224,12 +224,10 @@ hackrf_error errorCode;
 	running. store (false);
 	xmlWriter	= nullptr;
 
-        dcReal          = 0;
-        dcImag          = 0;
-
-	mean_ITrack     = 1.0f;
-	mean_QTrack     = 1.0f;
-        mean_IQTrack    = 0.0f;
+	I_avg		= 0;
+	IQ_avg		= 0;
+	Q_avg		= 0;
+	Q_out		= 0;
 }
 
 	hackrfHandler::~hackrfHandler() {
@@ -257,7 +255,7 @@ void	hackrfHandler::handle_LNAGain	(int newGain) {
 	   int res	= this -> hackrf_set_lna_gain (theDevice, newGain);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	      theErrorLogger -> add ("Hackrf",
+	      theErrorLogger -> add ("Hackrf lnaGain",
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	      return;
 	   }
@@ -270,7 +268,7 @@ void	hackrfHandler::handle_VGAGain	(int newGain) {
 	   int res	= this -> hackrf_set_vga_gain (theDevice, newGain & ~0x01);
 	   if (res != HACKRF_SUCCESS) {
 	      showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	      theErrorLogger -> add ("Hackrf",
+	      theErrorLogger -> add ("Hackrf vgaGain",
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	      return;
 	   }
@@ -303,7 +301,7 @@ bool	b;
 	res = this -> hackrf_set_amp_enable (theDevice, b);
 	if (res != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
-	   theErrorLogger -> add ("Hackrf",
+	   theErrorLogger -> add ("Hackrf Ampli",
 	                   this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
@@ -376,21 +374,21 @@ hackrf_error errorCode;
 	                                        lnaGainSlider -> value ()));
 	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
-	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf restart lna", hackrf_error_name (errorCode));
 	}
 
 	errorCode = (hackrf_error)(hackrf_set_vga_gain (theDevice,
 	                                        vgaGainSlider -> value ()));
 	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
-	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf restart vga", hackrf_error_name (errorCode));
 	}
 
 	errorCode = (hackrf_error)(hackrf_set_amp_enable (theDevice, 
 	                             AmpEnableButton -> isChecked () ? 1 : 0));
 	if (errorCode != HACKRF_SUCCESS) {
 	   statusLabel -> setText (hackrf_error_name (errorCode));
-	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf amp", hackrf_error_name (errorCode));
 	}
 
 	errorCode =  (hackrf_error)(hackrf_set_antenna_enable (theDevice, 
@@ -410,7 +408,7 @@ hackrf_error errorCode;
 	                                               callback, this));	
 	if (errorCode != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (errorCode));
-	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf rf_start", hackrf_error_name (errorCode));
 	   return false;
 	}
 
@@ -457,30 +455,20 @@ std::complex<int8_t> temp [size];
 	   }
 	}
 	else {
+	   DABFLOAT	Alpha	= 0.001f;
 	   for (int i = 0; i < amount; i ++) {
-	      Complex v = Complex (real (temp [i]) / 127.38,
+	      Complex v = Complex (real (temp [i]) / 128.0,
 	                             imag (temp [i]) / 128.0);
-	   
-	      DABFLOAT real_V   = real (v);
-              DABFLOAT imag_V   = imag  (v);
-              DABFLOAT Alpha    = 1.0 / 2048000;
-
-              dcReal            = compute_avg (dcReal, real_V, Alpha);
-              dcImag            = compute_avg (dcImag, imag_V, Alpha);
-              DABFLOAT I_track  = real_V - dcReal;
-              DABFLOAT Q_track  = imag_V - dcImag;
-              mean_ITrack       = compute_avg (mean_ITrack, square(I_track), Alpha);
-              mean_IQTrack      = compute_avg (mean_IQTrack,
-                                               I_track * Q_track, Alpha);
-
-              DABFLOAT Beta     = mean_IQTrack / mean_ITrack;
-              DABFLOAT x_q_corr = Q_track - Beta * I_track;
-              mean_QTrack       = compute_avg (mean_QTrack,
-                                     x_q_corr * x_q_corr, Alpha);
-              DABFLOAT  gainQ   = std::sqrt (mean_ITrack / mean_QTrack);
-
-	      V [i]		= std::complex<float> (I_track,
-	                                               x_q_corr * gainQ);
+	      DABFLOAT v_i	= real (v);
+	      DABFLOAT v_q	= imag (v);
+	      I_avg		= compute_avg (I_avg, square (v_i), Alpha);
+	      Q_avg		= compute_avg (Q_avg, square (v_q), Alpha);
+	      IQ_avg		= compute_avg (IQ_avg, v_i * v_q, Alpha);
+	      DABFLOAT Beta	= IQ_avg / (sqrt (I_avg) * sqrt (Q_avg));
+	      DABFLOAT K	= v_q - Beta * v_i;
+	      Q_out		= compute_avg (Q_out, square (K), Alpha);
+	      DABFLOAT Q_gain	= std::sqrt (I_avg / Q_avg);
+	      V [i] = Complex (v_i, K * Q_gain);
 	   }
 	}
 	

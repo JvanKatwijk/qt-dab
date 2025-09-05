@@ -143,14 +143,12 @@ private:
 	QString			serialNumber;
 
 	bool			IQbalance;
-	DABFLOAT		dcReal;
-	DABFLOAT		dcImag; 
+	DABFLOAT		I_avg;
+	DABFLOAT		IQ_avg;
+	DABFLOAT		Q_avg;
+	DABFLOAT		Q_out;
 
-	double			mean_ITrack;
-        double			mean_QTrack;
-        double			mean_IQTrack;
-
-        xml_fileWriter		*xmlWriter;
+	xml_fileWriter		*xmlWriter;
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;
 

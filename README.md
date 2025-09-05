@@ -280,10 +280,10 @@ both the name of the SDR device as well as the channel frequency of the receptio
 Tuning accurarcy
 =======================================================================
 
-Dab Frequencies are in the range of app 175 to 225 MHz. Different devices
+Dab frequencies are in the range of app 175 to 225 MHz. Different devices
 have a different **tuning accurary** in this range. While the different SDRPlay
 and AIRspy devices show a tuning offset of some 0 to 30 Hz, especially
-the popular DABsticks show - in general - a larger offset
+the popular DABsticks show - in general - a larger offset.
 
 ![6.8](/res/read_me/tuning-offset.png?raw=true)
 
@@ -292,7 +292,7 @@ used - a simple dabstick - shows a runing offset of 8446 Hz, i.e. well over
 8 KHz.
 While Qt-DAB is - as the picture shows - capable of compensating for
 tuner offsets of up to app 35 Khz, the **quality of the signal**
-is better with a small tuning offset.
+is better with no or a small tuning offset.
 
 The widgets for the various device handlers show a "ppm" correction setting,
 where "ppm" stands for "Parts per Million". Setting the corrector to 1,
