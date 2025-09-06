@@ -86,7 +86,7 @@ public:
 	void	showTransmitters	(std::vector<transmitter> &);
 
 	void	showDCOffset	(float);
-	void	setDCRemoval	(bool);
+	void	set_dcRemoval	(bool);
 	void	setSyncLabel	(bool);
 	void	show		();
 	void	hide		();

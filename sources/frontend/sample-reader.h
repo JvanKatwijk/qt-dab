@@ -34,7 +34,8 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"riffWriter.h"
-//
+
+#include	"equalizer.h"
 //      Note:
 //      It was found that enlarging the buffersize to e.g. 8192
 //      cannot be handled properly by the underlying system.
@@ -60,6 +61,7 @@ public:
 	      void	set_dcRemoval	(bool);
 private:
 	      riffWriter	sourceDumper;
+	      equalizer		theEqualizer;
 	      RadioInterface	*myRadioInterface;
 	      deviceHandler	*theRig;
 	      RingBuffer<Complex> *spectrumBuffer;

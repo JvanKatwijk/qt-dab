@@ -675,7 +675,8 @@ void	RadioInterface::startDirect	() {
 	   abort ();
 	}
 
-	theOFDMHandler -> set_dcRemoval (configHandler_p -> get_dcRemoval ());
+	theOFDMHandler	-> set_dcRemoval (configHandler_p -> get_dcRemoval ());
+	theNewDisplay. set_dcRemoval (configHandler_p -> get_dcRemoval ());
 	channel. cleanChannel ();
 //
 //	Note: this is NOT "theEnsembleHandler. reset ()" !!!!
@@ -4603,6 +4604,7 @@ void	RadioInterface::setFreqList	() {
 
 void	RadioInterface::handle_dcRemoval	(bool b) {
 	theOFDMHandler	-> set_dcRemoval (b);
+	theNewDisplay. set_dcRemoval (b);
 }
 
 void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,

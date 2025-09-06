@@ -527,7 +527,7 @@ void	displayWidget::showDCOffset	(float dcOffset) {
 	dcOffset_display	-> display (dcOffset);
 }
 
-void	displayWidget::setDCRemoval	(bool b) {
+void	displayWidget::set_dcRemoval	(bool b) {
 	if (b) {
 	   dcOffset_display	-> show ();
 	   dcOffset_label	-> show ();

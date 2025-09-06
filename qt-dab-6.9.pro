@@ -117,6 +117,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/config-handler.h \
 	   ./sources/main/techdata.h \
 	   ./sources/main/aboutdialog.h \
+	   ./sources/support/equalizer.h \
 	   ./sources/support/qwt-2.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \

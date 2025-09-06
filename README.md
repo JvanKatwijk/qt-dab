@@ -63,12 +63,13 @@ Features
   
   * Qt-DAB supports most common SDR devices directly. The device interface is quite simple and in a different document it is explained in detail how to use the interface  to implement control for other devices;
   * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
-  * Qt-DAB recognizes and interprets *TII* (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separate tool is available to download the required database.
+  * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separate tool is available to download the required database.
   * Qt-DAB starts EPG/SPI services automatically as background task and provides means to show resulting time tables;
   * Qt-DAB supports **journaline**, often transmitted as subservice, and auto starts a small journaline window;
   * Qt-DAB allows running an arbitrary amount of audio services from tne current ensemble as *background service*, with the output sent to a file,
   * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
-  * Qt-DAB offsers the possibility of generating an ETI file from the currently selected channel,
+  * Qt-DAB offers the possibility of generating an **ETI file** from the currently selected channel,
+  * Qt-DAB offers different views on the input data, see below,
   * Qt-DAB offers the possibility of scanning through all - or a selected subset - channels of the band,
   * and much more ...
 
@@ -280,22 +281,23 @@ both the name of the SDR device as well as the channel frequency of the receptio
 Tuning accurarcy
 =======================================================================
 
-Dab frequencies are in the range of app 175 to 225 MHz. Different devices
+DAB frequencies are in the range of app 175 to 225 MHz. Different devices
 have a different **tuning accurary** in this range. While the different SDRPlay
-and AIRspy devices show a tuning offset of some 0 to 30 Hz, especially
-the popular DABsticks show - in general - a larger offset.
+and AIRspy devices show a negligible tuning offset (usually 0 to 30 Hz),
+especially the popular DABsticks show - in general - a  offsets in the KHz range.
 
 ![6.8](/res/read_me/tuning-offset.png?raw=true)
 
 The picture shows that on selecting channel 12C (22730 KHz) the device
-used - a simple dabstick - shows a runing offset of 8446 Hz, i.e. well over 
+used - a simple dabstick - shows an offset of 8446 Hz, i.e. well over 
 8 KHz.
 While Qt-DAB is - as the picture shows - capable of compensating for
 tuner offsets of up to app 35 Khz, the **quality of the signal**
 is better with no or a small tuning offset.
 
-The widgets for the various device handlers show a "ppm" correction setting,
-where "ppm" stands for "Parts per Million". Setting the corrector to 1,
+The widgets for (most) of the various device handlers show
+a "ppm" correction setting, where "ppm" stands for "Parts per Million".
+Setting the corrector to 1 at a selected frequency of 22730 KHz,
 implies that the oscillator of the device tunes to a frequency
 that is (app) 227 Hz higher.
 

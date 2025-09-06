@@ -212,6 +212,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/protection/protection.h
 	     ./sources/protection/uep-protection.h
 	     ./sources/protection/eep-protection.h
+	     ./sources/support/equalizer.h
 	     ./sources/support/qwt-2.h
 	     ./sources/support/audiosystem-selector.h
 	     ./sources/support/bandpass-filter.h

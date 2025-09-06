@@ -36,12 +36,12 @@
 #include	"errorlog.h"
 #include	"settings-handler.h"
 
-#define	CORRF	0.005
-#ifdef	__MINGW32__
-#define	GETPROCADDRESS	GetProcAddress
-#else
-#define	GETPROCADDRESS	dlsym
-#endif
+//#define	CORRF	0.005
+//#ifdef	__MINGW32__
+//#define	GETPROCADDRESS	GetProcAddress
+//#else
+//#define	GETPROCADDRESS	dlsym
+//#endif
 
 //
 //	Our wrapper is a simple classs
@@ -138,9 +138,18 @@ char	manufac [256], product [256], serial [256];
 	   fprintf (stderr, "\n");
 	}
 
-	if (rtlsdr_set_tuner_bandwidth != nullptr)
-	   rtlsdr_set_tuner_bandwidth (theDevice, KHz (1575));
-	rtlsdr_set_tuner_gain_mode (theDevice, 1);
+	if (rtlsdr_set_tuner_bandwidth != nullptr) {
+	   r = rtlsdr_set_tuner_bandwidth (theDevice, KHz (1575));
+	   if (r != 0)
+	      QString t = QString ("cannot set frequency to  1575 KHz");
+	      theErrorLogger -> add ("RTLSDR", t);
+	   }
+	}
+	r = rtlsdr_set_tuner_gain_mode (theDevice, 1);
+	if (r != 0)
+	   QString t = QString ("cannot set gainmode to 1");
+	   theErrorLogger -> add ("RTLSDR", t);
+	}
 //
 //	See what the saved values are and restore the GUI settings
 	temp =  value_s (rtlsdrSettings, "rtlsdrSettings",
@@ -176,6 +185,7 @@ char	manufac [256], product [256], serial [256];
 	   rtlsdr_set_agc_mode (theDevice, 1);
 	else
 	   rtlsdr_set_agc_mode (theDevice, 0);
+
 	res = rtlsdr_set_tuner_gain	(theDevice, 
 	                         gainControl -> currentText (). toInt ());
 	if (res != 0) {

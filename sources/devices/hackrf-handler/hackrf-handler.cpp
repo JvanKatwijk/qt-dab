@@ -98,10 +98,6 @@ hackrf_error errorCode;
 	AmpEnableButton	-> setCheckState (isChecked ? Qt::Checked : 
 	                                              Qt::Unchecked);
 
-	IQbalance	= value_i (hackrfSettings, HACKRF_SETTINGS,
-	                                     "IQbalance", 0);
-	IQequalizer	-> setCheckState (IQbalance ? Qt::Checked :
-	                                              Qt::Unchecked);
 	ppm_correction      -> setValue (
 	       value_i (hackrfSettings, HACKRF_SETTINGS,
 	                              "hack_ppmCorrection", 0));
@@ -178,12 +174,7 @@ hackrf_error errorCode;
 	connect (AmpEnableButton, &QCheckBox::stateChanged,
 #endif
 	         this, &hackrfHandler::handle_Ampli);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
-	connect (IQequalizer, &QCheckBox::checkStateChanged,
-#else
-	connect (IQequalizer, &QCheckBox::stateChanged,
-#endif
-	         this, &hackrfHandler::handle_equalizer);
+
 	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &hackrfHandler::handle_ppmCorrection);
 	connect (dumpButton, &QPushButton::clicked,
@@ -223,11 +214,6 @@ hackrf_error errorCode;
 	dumping. store (false);
 	running. store (false);
 	xmlWriter	= nullptr;
-
-	I_avg		= 0;
-	IQ_avg		= 0;
-	Q_avg		= 0;
-	Q_out		= 0;
 }
 
 	hackrfHandler::~hackrfHandler() {
@@ -306,13 +292,6 @@ bool	b;
 	   return;
 	}
 //	AmpEnableButton->setChecked (b);
-}
-
-void	hackrfHandler::handle_equalizer (int a) {
-int res;
-
-	(void)a;
-	IQbalance = IQequalizer	-> checkState() == Qt::Checked;
 }
 
 //      correction is in Hz
@@ -448,28 +427,9 @@ hackrf_error errorCode;
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-	if (!IQbalance) {
-	   for (int i = 0; i < amount; i ++) {
-	      V [i] = Complex (real (temp [i]) / 128.0, 
+	for (int i = 0; i < amount; i ++) {
+	   V [i] = Complex (real (temp [i]) / 128.0, 
 	                       imag (temp [i]) / 128.0);
-	   }
-	}
-	else {
-	   DABFLOAT	Alpha	= 0.001f;
-	   for (int i = 0; i < amount; i ++) {
-	      Complex v = Complex (real (temp [i]) / 128.0,
-	                             imag (temp [i]) / 128.0);
-	      DABFLOAT v_i	= real (v);
-	      DABFLOAT v_q	= imag (v);
-	      I_avg		= compute_avg (I_avg, square (v_i), Alpha);
-	      Q_avg		= compute_avg (Q_avg, square (v_q), Alpha);
-	      IQ_avg		= compute_avg (IQ_avg, v_i * v_q, Alpha);
-	      DABFLOAT Beta	= IQ_avg / (sqrt (I_avg) * sqrt (Q_avg));
-	      DABFLOAT K	= v_q - Beta * v_i;
-	      Q_out		= compute_avg (Q_out, square (K), Alpha);
-	      DABFLOAT Q_gain	= std::sqrt (I_avg / Q_avg);
-	      V [i] = Complex (v_i, K * Q_gain);
-	   }
 	}
 	
 	if (dumping. load ())

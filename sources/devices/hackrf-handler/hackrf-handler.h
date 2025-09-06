@@ -37,6 +37,8 @@
 #include	<QLibrary>
 class		errorLogger;
 
+#include	"equalizer.h"
+
 typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer *transfer);
 
 #ifdef __MINGW32__
@@ -142,12 +144,6 @@ private:
 	QLibrary*		library_p;
 	QString			serialNumber;
 
-	bool			IQbalance;
-	DABFLOAT		I_avg;
-	DABFLOAT		IQ_avg;
-	DABFLOAT		Q_avg;
-	DABFLOAT		Q_out;
-
 	xml_fileWriter		*xmlWriter;
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;
@@ -168,8 +164,7 @@ private slots:
 // contributed by Fabio
 	void			handle_biasT		(int);
 	void			handle_Ampli		(int);
-	void			handle_ppmCorrection (int);
-	void			handle_equalizer	(int);
+	void			handle_ppmCorrection	(int);
 // Fine aggiunta
 	void			handle_xmlDump	();
 };

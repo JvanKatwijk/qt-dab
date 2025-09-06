@@ -36,16 +36,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="IQequalizer">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;It seems that the I and Q samples are a little unbalanced. Settings this&lt;/p&gt;&lt;p&gt;selector enables a software &amp;quot;equalizer&amp;quot; to address this issue&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>IQ eq</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="label">
          <property name="text">
           <string>ppm Correction</string>
