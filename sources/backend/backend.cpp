@@ -112,7 +112,7 @@ int32_t	Backend::process	(int16_t *softBits, int16_t cnt) {
 	(void)cnt;
 #ifdef	__THREADED_BACKEND__
 	while (!freeSlots. tryAcquire (1, 200))
-	   if (!running)
+	   if (!running. load ())
 	      return 0;
 	memcpy (theData [nextIn]. data (), softBits,
 	                           fragmentSize * sizeof (int16_t));
@@ -158,8 +158,9 @@ void	Backend::run() {
 
 	while (running. load()) {
 	   while (!usedSlots. tryAcquire (1, 200)) 
-	      if (!running)
+	      if (!running. load ()) {
 	         return;
+	      }
 	   processSegment (theData [nextOut]. data());
 	}
 }
@@ -168,7 +169,8 @@ void	Backend::run() {
 //	It might take a msec for the task to stop
 void	Backend::stopRunning() {
 #ifdef	__THREADED_BACKEND__
-	running = false;
+	driver. stop ();
+	running. store (false);
 	while (this -> isRunning())
 	   usleep (1);
 //	myAudioSink	-> stop();

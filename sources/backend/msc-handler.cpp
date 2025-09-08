@@ -212,12 +212,13 @@ void	mscHandler::resetChannel () {
 	nrServices ((int)(theBackends. size ()));
 }
 
-void	mscHandler::stopBackend	(int subchId, int flag) {
+void	mscHandler::stopBackend	(const QString &serviceName,
+	                         int subchId, int flag) {
 	locker. lock ();
 	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
-	   if ((b -> subChId == subchId) && (b -> borf == flag)) {
-//	      fprintf (stderr, "stopping subchannel %d\n", subchId);
+	   if ((b -> serviceName == serviceName) &&
+	                  (b -> subChId == subchId) && (b -> borf == flag)) {
 	      b -> stopRunning ();
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);

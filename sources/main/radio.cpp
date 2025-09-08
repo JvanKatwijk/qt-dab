@@ -565,6 +565,7 @@ QString h;
 	leftAudio	-> setAlarmEnabled (true);  
 	rightAudio	-> setAlarmEnabled(true);
 
+	journalineKey		= -1;
 //	do we show controls?
 	bool visible	=
 	            value_i (dabSettings_p, DAB_GENERAL, 
@@ -2097,36 +2098,38 @@ void	RadioInterface::stopService	(dabService &s) {
 	announcement_stop ();
 	if (s. isAudio) {
 	   soundOut_p -> suspend ();
-	stopAudioDumping ();
-	stopFrameDumping ();
-	myTimeTable. clear ();
+	   stopAudioDumping ();
+	   stopFrameDumping ();
+	   myTimeTable. clear ();
 
 //	and clean up the technical widget
-	techWindow_p	-> cleanUp ();
+	   techWindow_p	-> cleanUp ();
 //	and stop the service and erase it from the task list
-	theOFDMHandler -> stopService (s. subChId, FORE_GROUND);
-	for (int i = 0; i < (int)channel. runningTasks. size (); i ++) {
-	   if (channel. runningTasks [i]. serviceName == s. serviceName)
-	      if (channel. runningTasks [i]. runsBackground == false) {
-	      channel. runningTasks. erase
+	   theOFDMHandler -> stopService (s. serviceName,
+	                                  s. subChId, FORE_GROUND);
+	   for (int i = 0; i < (int)channel. runningTasks. size (); i ++) {
+	      if (channel. runningTasks [i]. serviceName == s. serviceName)
+	         if (channel. runningTasks [i]. runsBackground == false) {
+	            channel. runningTasks. erase
 	                        (channel. runningTasks. begin () + i);
+	         }
 	   }
-	}
 
 //	stop "secondary services" - if any - as well
 //	Note: they are not recorded on the tasklist
-        int nrComps  =
-             theOFDMHandler -> getNrComps (s. SId);
-	for (int i = 1; i < nrComps; i ++) {
-	   int index =
-             theOFDMHandler -> getServiceComp (s. SId, i);
-           if ((index < 0) ||
-               (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
+           int nrComps  =
+                theOFDMHandler -> getNrComps (s. SId);
+	   for (int i = 1; i < nrComps; i ++) {
+	      int index =
+                theOFDMHandler -> getServiceComp (s. SId, i);
+              if ((index < 0) ||
+                  (theOFDMHandler -> serviceType (index) != PACKET_SERVICE))
                  continue;
 	      packetdata pd;
 	      theOFDMHandler -> packetData (index, pd);
 	      if (pd. defined) {
-	         theOFDMHandler -> stopService (pd. subchId, BACK_GROUND);
+	         theOFDMHandler -> stopService (pd. serviceName,
+	                                        pd. subchId, BACK_GROUND);
 	      }
 	   }
 	}
@@ -2493,9 +2496,11 @@ void	RadioInterface::stopChannel	() {
 //
 	for (auto &serv : channel. runningTasks) {
 	   if (!serv. runsBackground) 
-	      theOFDMHandler -> stopService (serv. subChId, FORE_GROUND);
+	      theOFDMHandler -> stopService (serv. serviceName,
+	                                     serv. subChId, FORE_GROUND);
 	   else
-	      theOFDMHandler -> stopService (serv. subChId, BACK_GROUND);
+	      theOFDMHandler -> stopService (serv. serviceName,
+	                                     serv. subChId, BACK_GROUND);
 	
 	   if (serv. fd != nullptr)
 	      fclose (serv. fd);
@@ -4185,7 +4190,7 @@ audiodata ad;
 	int teller	= 0;
 	for (auto &task: channel. runningTasks) {
 	   if (task. serviceName == service) {
-	      theOFDMHandler -> stopService (ad. subchId, BACK_GROUND);
+	      theOFDMHandler -> stopService (service, ad. subchId, BACK_GROUND);
 	      if (task. fd != nullptr)
 	         fclose (task. fd);
 	      channel. runningTasks. erase
@@ -4642,4 +4647,36 @@ bool	serviceAvailable	= false;
 	(void)serviceAvailable;
 }
 
-////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//	handling journaline					//
+
+void	RadioInterface::startJournaline		(int currentKey) {
+	if (!journalineHandler. isNull ())
+	   return;
+	journalineHandler. reset (new journaline_dataHandler ());
+	journalineKey		= currentKey;
+}
+
+void	RadioInterface::stopJournaline		(int currentKey) {
+	if (journalineHandler. isNull ())
+	   return;	
+	if (journalineKey != currentKey)
+	   fprintf (stderr, "What is happenng here %d %d\n",
+	                                   journalineKey, currentKey);
+	journalineHandler. reset ();
+	journalineKey	= -1;
+}
+
+void	RadioInterface::journalineData		(QByteArray data,
+	                                                 int currentKey) {
+	if (journalineHandler. isNull ())
+	   return;
+	if (currentKey != journalineKey)
+	   return;
+	std::vector<uint8_t> theMscdata (data. size());
+	for (int i = 0; i < data. size (); i ++)
+	   theMscdata [i] = data [i];
+	journalineHandler	-> add_mscDatagroup (theMscdata);
+}
+
+

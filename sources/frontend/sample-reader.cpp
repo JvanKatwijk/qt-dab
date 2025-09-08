@@ -151,21 +151,20 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	   std::complex<float> v = buffer [i];
 	   if (dcRemoval) {
 	      dcReal		= compute_avg (dcReal, real (v), Alpha);
-	      dcImag		= compute_avg (dcReal, imag (v), Alpha);
+	      dcImag		= compute_avg (dcImag, imag (v), Alpha);
 	      v = std::complex<float> (real (v) - dcReal, imag (v) - dcImag);
 	      v = theEqualizer. equalize (v);
-              DABFLOAT real_V	= abs (real (v));
-              DABFLOAT imag_V	= abs (imag (v)); 
-              IQ_Real		= compute_avg (IQ_Real, real_V, Alpha);
-              IQ_Imag		= compute_avg (IQ_Imag, imag_V, Alpha);
-              static int teller = 0; 
-              if (++teller >= SAMPLERATE) {
-                 show_dcOffset (10 * (IQ_Real - IQ_Imag) /
-	                             ((IQ_Real + IQ_Imag) / 2));
-                 teller = 0;
+	      DABFLOAT real_V	= abs (real (v));
+	      DABFLOAT imag_V	= abs (imag (v)); 
+	      IQ_Real		= compute_avg (IQ_Real, real_V, Alpha);
+	      IQ_Imag		= compute_avg (IQ_Imag, imag_V, Alpha);
+	      static int teller = 0; 
+	      if (++teller >= SAMPLERATE) {
+	         show_dcOffset (10 * (IQ_Real - IQ_Imag) / 
+	                                     ((IQ_Real + IQ_Imag) / 2));
+	         teller = 0;
 	      }
-           }
-
+	   }
 
 //	first: adjust frequency. We need Hz accuracy
 //	Note that "phase" itself might be negative

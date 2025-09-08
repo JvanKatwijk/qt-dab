@@ -44,6 +44,7 @@ public:
 	                 FILE *);
 	~backendDriver	();
 void	addtoFrame	(const std::vector<uint8_t> &outData);
+void	stop		();
 private:
 	logger		*theLogger;
 	QScopedPointer<frameProcessor>	theProcessor;

@@ -165,6 +165,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/mot/mot-handler.h \
 	   ./sources/backend/data/mot/mot-object.h \
 	   ./sources/backend/data/mot/mot-dir.h \
+	   ./sources/backend/data/journaline-controller.h \
 	   ./sources/backend/data/journaline-datahandler.h \
 	   ./sources/backend/data/journaline-screen.h \
 	   ./sources/backend/data/journaline/dabdatagroupdecoder.h \
@@ -315,6 +316,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/mot/mot-handler.cpp \
 	   ./sources/backend/data/mot/mot-object.cpp \
 	   ./sources/backend/data/mot/mot-dir.cpp \
+	   ./sources/backend/data/journaline-controller.cpp \
 	   ./sources/backend/data/journaline-datahandler.cpp \
 	   ./sources/backend/data/journaline-screen.cpp \
 	   ./sources/backend/data/journaline/crc_8_16.c \

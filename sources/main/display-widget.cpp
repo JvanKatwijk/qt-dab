@@ -399,7 +399,7 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 
 	for (int i = 0; i < NR_TAPS; i ++) {
 //	   waterfall_X [i]	= i;
-	   waterfall_Y [i]	= 0.1 * abs (Values [i]);
+//	   waterfall_Y [i]	= 0.1 * abs (Values [i]);
 	}
 
 	waterfallScope_p	-> display (X_axis, waterfall_Y, 

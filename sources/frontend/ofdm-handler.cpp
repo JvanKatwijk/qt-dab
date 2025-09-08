@@ -618,9 +618,11 @@ int	ofdmHandler::freeSpace		() {
 }
 
 //
-void	ofdmHandler::stopService (int subChId, int flag) {
+void	ofdmHandler::stopService (const QString &serviceName,
+	                               int subChId, int flag) {
 	if (!scanMode)
-	   theMscHandler. stopBackend (subChId, flag);
+	   theMscHandler. stopBackend (serviceName,
+	                               subChId, flag);
 }
 
 bool    ofdmHandler::setAudioChannel (audiodata &d,

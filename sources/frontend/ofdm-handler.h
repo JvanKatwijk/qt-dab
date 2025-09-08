@@ -105,7 +105,8 @@ public:
 //	for the mscHandler
 //	void		resetServices		();
 //	void		stopService		(descriptorType *, int);
-	void		stopService		(int, int);
+	void		stopService		(const QString &,
+	                                         int, int);
 	bool		setAudioChannel		(audiodata &,
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         FILE *, int);

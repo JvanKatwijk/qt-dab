@@ -104,7 +104,7 @@ int	fibConfig::findIndex_subChannel_table (uint8_t subChId) {
 }
 
 //
-//	For the following few functions, it holds that thet all
+//	For the following few functions, it holds that they all
 //	fetch attributes from the subChannel, 
 //int	fibConfig::startAddressOf	(int index) {
 //int subChId = subChannelOf (index);

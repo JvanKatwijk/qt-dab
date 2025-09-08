@@ -54,11 +54,11 @@ DABFLOAT	Q_out;
 DABFLOAT	Alpha_;
 public:
 	equalizer	() {
-	I_avg		= 0.0f;
-	Q_avg		= 0.0f;
-	IQ_avg		= 0.0f;
-	Q_out		= 0.0f;
-	Alpha_		= 0.0001f;
+	I_avg		= 1.0f;		// meanII
+	Q_avg		= 1.0;
+	IQ_avg		= 0.0f;		// meanIQ
+	Q_out		= 0.1f;		// meanQQ
+	Alpha_		= 1.0 / 2048000.0;
 }
 	~equalizer	() {}
 
@@ -71,7 +71,7 @@ Complex	equalize	(Complex v) {
 	DABFLOAT Beta	= IQ_avg / (sqrt (I_avg) * sqrt (Q_avg));
 	DABFLOAT K	= v_q - Beta * v_i;
 	Q_out		= compute_avg (Q_out, square (K), Alpha_);
-	DABFLOAT Q_gain	= std::sqrt (I_avg / Q_avg);
+	DABFLOAT Q_gain	= std::sqrt (I_avg / Q_out);
 	return Complex (v_i, K * Q_gain);
 }
 

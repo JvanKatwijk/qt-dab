@@ -258,7 +258,7 @@ float	sum	= 0;
 //	working best
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
-	         meanLevelVector [index] / sigmaSQ_Vector [index];
+	       1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *

@@ -28,6 +28,7 @@
 #include	"newsobject.h"
 #include	"NML.h"
 
+static bool running = false;
 static
 void	my_callBack (const DAB_DATAGROUP_DECODER_msc_datagroup_header_t *header,
 	             const unsigned long len, const unsigned char *buf,
@@ -58,12 +59,16 @@ void	my_callBack (const DAB_DATAGROUP_DECODER_msc_datagroup_header_t *header,
 	init_dataBase ();
 	connect (this, &journaline_dataHandler::start,
 	         &theScreen, &journalineScreen::start);
+	running = true;
 }
 
 	journaline_dataHandler::~journaline_dataHandler() {
 	theScreen. hide ();
+	if (!running)
+	   return;
 	DAB_DATAGROUP_DECODER_deleteDec (theDecoder);
 	destroy_dataBase ();
+	running = false;
 }
 
 //void	journaline_dataHandler::add_mscDatagroup (QByteArray &msc) {
@@ -78,6 +83,15 @@ int32_t	res;
 	res = DAB_DATAGROUP_DECODER_putData (theDecoder, len / 8, buffer);
 	if (res < 0)
 	   return;
+}
+
+void	journaline_dataHandler::stop		() {
+	theScreen. hide ();
+	if (!running)
+	   return;
+	DAB_DATAGROUP_DECODER_deleteDec (theDecoder);
+	destroy_dataBase ();
+	running = false;
 }
 
 void	journaline_dataHandler::init_dataBase 	() {

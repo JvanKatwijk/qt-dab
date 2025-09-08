@@ -96,7 +96,8 @@ private:
 //	Experimental
 	DL2_base	the_DL2;
 	void		add_toDL2		(const QString &);
-	void		add_toDL2		(const uint8_t *);
+	void		add_toDL2		(const uint8_t *,
+	                                                uint8_t, uint8_t);
 signals:
 	void		showLabel		(const QString &, int);
 	void		show_mothandling	(bool);

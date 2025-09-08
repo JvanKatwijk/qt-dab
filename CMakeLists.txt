@@ -288,6 +288,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/adv-datahandler.h
 	     ./sources/backend/data/data-processor.h
 	     ./sources/backend/data/ip-datahandler.h
+	     ./sources/backend/data/journaline-controller.h
 	     ./sources/backend/data/journaline-datahandler.h
 	     ./sources/backend/data/journaline-screen.h
 	     ./sources/backend/data/pad-handler.h
@@ -417,6 +418,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/adv-datahandler.cpp
 	     ./sources/backend/data/data-processor.cpp
 	     ./sources/backend/data/ip-datahandler.cpp
+	     ./sources/backend/data/journaline-controller.cpp
 	     ./sources/backend/data/journaline-datahandler.cpp
 	     ./sources/backend/data/journaline-screen.cpp
 	     ./sources/backend/data/pad-handler.cpp

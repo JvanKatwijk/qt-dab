@@ -70,7 +70,7 @@ public:
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);
-	void		stopBackend		(int, int);
+	void		stopBackend		(const QString &, int, int);
 	void		resetChannel		();
 	void		resetBuffers		();
 	bool		serviceRuns		(uint32_t SId, uint16_t subChId);

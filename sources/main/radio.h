@@ -75,6 +75,8 @@
 #include	"ofdm-handler.h"
 
 #include	<QScopedPointer>
+#include	"journaline-datahandler.h"
+
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
@@ -273,7 +275,6 @@ private:
 	timeTableHandler	myTimeTable;
 	xmlExtractor		xmlHandler;
 	epgCompiler		epgVertaler;
-
 //	end of variables that are initalized
 
 	QScopedPointer<configHandler>	configHandler_p;
@@ -282,6 +283,8 @@ private:
 	QScopedPointer<deviceHandler>	inputDevice_p;
 	bool			autoStart_http		();
 	bool			dxMode;
+	QScopedPointer<journaline_dataHandler>	journalineHandler;
+	int			journalineKey;
 //
 //	Since the local position does not depend on the channel selected
 //	the local position is not stored in the channel data
@@ -618,4 +621,10 @@ public slots:
 	                                                         const QString &);
 	void			nrActiveServices		(int);
 	void			handle_activeServices		();
+
+
+	void			startJournaline			(int);
+	void			stopJournaline			(int);
+	void			journalineData			(QByteArray,
+	                                                         int);
 };

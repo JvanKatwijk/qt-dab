@@ -38,6 +38,7 @@ public:
 		~journaline_dataHandler	();
 	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 	void	add_to_dataBase		(NML *);
+	void	stop			();
 private:
 	std::vector<tableElement> table;
 	journalineScreen	theScreen;

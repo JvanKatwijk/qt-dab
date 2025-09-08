@@ -140,13 +140,13 @@ char	manufac [256], product [256], serial [256];
 
 	if (rtlsdr_set_tuner_bandwidth != nullptr) {
 	   r = rtlsdr_set_tuner_bandwidth (theDevice, KHz (1575));
-	   if (r != 0)
+	   if (r != 0) {
 	      QString t = QString ("cannot set frequency to  1575 KHz");
 	      theErrorLogger -> add ("RTLSDR", t);
 	   }
 	}
 	r = rtlsdr_set_tuner_gain_mode (theDevice, 1);
-	if (r != 0)
+	if (r != 0) {
 	   QString t = QString ("cannot set gainmode to 1");
 	   theErrorLogger -> add ("RTLSDR", t);
 	}

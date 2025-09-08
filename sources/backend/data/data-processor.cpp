@@ -28,7 +28,8 @@
 #include	"virtual-datahandler.h"
 #include	"ip-datahandler.h"
 #include	"mot-handler.h"
-#include	"journaline-datahandler.h"
+#include	"journaline-controller.h"
+//#include	"journaline-datahandler.h"
 #include	"tdc-datahandler.h"
 #include	"adv-datahandler.h"
 
@@ -67,7 +68,8 @@
 
 	   case 5:
 	      if (appType == 0x44a)
-	         my_dataHandler. reset (new journaline_dataHandler ());
+//	         my_dataHandler. reset (new journaline_dataHandler ());
+	         my_dataHandler. reset (new journalineController (mr));
 	      else
 	      if (appType == 1500)
 	         my_dataHandler. reset (new adv_dataHandler (mr, dataBuffer, appType));
@@ -82,7 +84,8 @@
 	      break;
 
 	   case 44:
-	      my_dataHandler. reset (new journaline_dataHandler ());
+	      my_dataHandler. reset (new journalineController (mr));
+//	      my_dataHandler. reset (new journaline_dataHandler ());
 	      break;
 
 	   case 59:
@@ -233,13 +236,17 @@ uint16_t address	= getBits (vec, 6, 10);
 //	with data, bext 9 * 22 bytes RS data
 	if ((pLength == 24) && (address == 1022)) {	// RS packet
 	   uint8_t counter = getBits (vec, 2, 4);
-	   registerFEC (vec, counter);
-	   if (FEC_complete ()) {
-	      processRS (AppVector, FECVector);
-	      handle_RSpackets (AppVector);
-	      clear_FECtable ();
-	      fillPointer = 0;
+	   if (counter < 9) {	// zo hoort het
+	      registerFEC (vec, counter);
+	      if (FEC_complete ()) {
+	         processRS (AppVector, FECVector);
+	         handle_RSpackets (AppVector);
+	         clear_FECtable ();
+	         fillPointer = 0;
+	      }
 	   }
+	   else
+	      fprintf (stderr, "Foute counter: %d\n", counter);
 	}
 	else {
 //	addPacket checks the size and sets fillPointer to 0 id erroneous

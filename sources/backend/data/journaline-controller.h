@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2010 .. 2017
+ *    Copyright (C) 2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,25 +20,26 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
+
+
 #pragma once
 
-#include	<vector>
-#include	<cstdint>
-#include	<cstdio>
+#include	<QObject>
+#include	<QByteArray>
+#include	"virtual-datahandler.h"
+class	RadioInterface;
 
-//
-//	virtual class, just for providing a common base
-//	for the real decoder classes
-
-class	frameProcessor {
+class journalineController: public virtual_dataHandler {
+Q_OBJECT
 public:
-		frameProcessor	()	{}
-virtual		~frameProcessor	()	{}
-virtual	void	addtoFrame	(const std::vector<uint8_t> &) {
-	fprintf (stderr, "in frameprocessor\n");
-}
-virtual	void	stop		() {
-}
-
+		journalineController	(RadioInterface*);
+		~journalineController	();
+	void	add_mscDatagroup	(const std::vector<uint8_t> &);
+private:
+	int	currentKey;
+signals:
+	void	startJournaline		(int);
+	void	stopJournaline		(int);
+	void	send_mscDatagroup	(QByteArray, int);
 };
+

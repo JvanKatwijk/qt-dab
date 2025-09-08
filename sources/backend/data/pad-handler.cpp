@@ -364,6 +364,8 @@ int16_t  dataLength                = 0;
 //	for the time being
  	  if (Cflag) {		// special dynamic label command
 	      uint16_t Command = (prefix >> 8) & 0x0f;
+	      uint8_t  field_2	= (prefix >> 4) & 0x0f;
+	      uint8_t  field_3	= prefix & 0x0f;
 	      switch (Command) {
 	         case 1:
 #ifdef	_PAD_TRACE_
@@ -378,7 +380,7 @@ int16_t  dataLength                = 0;
 #endif
 	            if (!backgroundFlag) {
 	               if (dataLength > 2)
-	                  add_toDL2 (&data [2]);
+	                  add_toDL2 (&data [2], field_2, field_3);
 	            }
 	            break;
 	         default:
@@ -631,28 +633,25 @@ void	padHandler::add_toDL2 (const QString &text) {
 	}
 }
 
-void	padHandler::add_toDL2 (const uint8_t *data) {
-int IT	= (data [0] & 0x08) >> 3;
-int IR	= (data [2] & 0x04) >> 2; 
-//int NT	= data [2] & 0x03;
+void	padHandler::add_toDL2 (const uint8_t *data,
+	                              uint8_t field_2, uint8_t field_3) {
+	return;
+	fprintf (stderr, "Field 2 %d %d\n", field_2 & 0x04, field_2 & 0x03);
+	fprintf (stderr, "Field 3 -> nr bytes (-1) = %d\n", field_3);
+	uint8_t CId	= (data [0] >> 4) & 0x0f;
+	uint8_t CB	= data [0] & 0x0f;
+	fprintf (stderr, "CId = %d, CB = %d\n",  CId, CB);
 
-	if ((the_DL2. IT == IT) && (the_DL2. IR == IR))
-	   return;
-
-	if (the_DL2. IT != IT) {	// toggle bit changed
-	   the_DL2. IT = IT;
-//	   if (IR != 0)
-//	      fprintf (stderr, "Show a message\n");
-//	   else
-//	      fprintf (stderr, "hide a message\n");
-	}
-	else
-	if (the_DL2. IR != IR) {
-//	   if (IR == 0)
-//	      fprintf (stderr, "Stop met de message\n");
-//	   else
-//	      fprintf (stderr, "Restart de message\n");
-	   the_DL2. IR = IR;
+	fprintf (stderr, "IT = %d, IR = %d, NT = %d\n",
+	                  (CB >> 3), (CB >> 2) & 0x01, CB & 0x03);
+	fprintf (stderr, "size command body %d\n", field_3);
+	fprintf (stderr, "The DL plus tags\n");
+	for (int i = 0; i < field_3; i += 3) {
+	   uint8_t contentType = data [1 + i + 0] & 0x7F;
+	   uint8_t startMarker = data [1 + i + 1] & 0x7F;
+	   uint8_t lengthMarker = data [1 + i + 2] & 0x7F;
+	   fprintf (stderr, "%d -> ct = %d, start %d, length %d\n",
+	                        i, contentType, startMarker, lengthMarker);
 	}
 }
 
