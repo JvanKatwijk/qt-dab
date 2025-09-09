@@ -489,6 +489,13 @@ void	configHandler::set_connections () {
 	connect (dcRemoval, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_dcRemoval);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (saveTitlesSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (saveTitlesSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_saveTitles);
 //
 //	botton row
 	connect (decoderSelector,
@@ -1064,5 +1071,13 @@ void	configHandler::handle_dcRemoval		(int h) {
 
 bool	configHandler::get_dcRemoval		() {
 	return dcRemoval -> isChecked ();
+}
+
+void	configHandler::handle_saveTitles	(int h) {
+	(void)h;
+}
+
+bool	configHandler::get_saveTitles		() {
+	return saveTitlesSelector -> isChecked ();
 }
 

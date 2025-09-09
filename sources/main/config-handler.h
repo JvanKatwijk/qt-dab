@@ -90,6 +90,7 @@ public:
 	bool	get_allTIISelector	();
 
 	bool	get_dcRemoval		();
+	bool	get_saveTitles		();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -141,6 +142,7 @@ private slots:
 	void	handle_auto_http		(int);
 	
 	void	handle_dcRemoval		(int);
+	void	handle_saveTitles		(int);
 	void	handle_tiiCollisions		(int);
 	void	handle_tiiFilter		(int);
 

@@ -548,6 +548,10 @@ public slots:
 	void			handleFramedumpButton	();
 	void			handleAudiodumpButton 	();
 
+	void			startJournaline			(int);
+	void			stopJournaline			(int);
+	void			journalineData			(QByteArray,
+	                                                         int);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_aboutLabel	();
@@ -616,15 +620,10 @@ public slots:
 	void			handle_tiiFilter		(bool);
 
 	void			deviceListChanged		();
-	void			show_title			(uint8_t,
+	void			show_dl2			(uint8_t,
 	                                                         uint8_t,
 	                                                         const QString &);
 	void			nrActiveServices		(int);
 	void			handle_activeServices		();
 
-
-	void			startJournaline			(int);
-	void			stopJournaline			(int);
-	void			journalineData			(QByteArray,
-	                                                         int);
 };

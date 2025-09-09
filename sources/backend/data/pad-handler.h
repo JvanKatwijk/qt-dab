@@ -94,14 +94,23 @@ private:
         std::vector<uint8_t> msc_dataGroupBuffer;
 
 //	Experimental
+	struct {
+	   QString theText;
+	   bool		valid;
+	   QString	title;
+	   QString	composer;
+	   QString	stationname;
+	   QString	currentProgram;
+	} DL2_record;
 	DL2_base	the_DL2;
+	QString		extractText		(uint16_t, uint16_t);
 	void		add_toDL2		(const QString &);
 	void		add_toDL2		(const uint8_t *,
 	                                                uint8_t, uint8_t);
 signals:
 	void		showLabel		(const QString &, int);
 	void		show_mothandling	(bool);
-	void		show_title		(uint8_t, uint8_t,
+	void		show_dl2		(uint8_t, uint8_t,
 	                                         const QString &);
 };
 

@@ -40,8 +40,8 @@
 	         mr, &RadioInterface::showLabel);
 	connect (this, &padHandler::show_mothandling,
 	         mr, &RadioInterface::show_mothandling);
-	connect (this, &padHandler::show_title,
-	         mr, &RadioInterface::show_title);
+	connect (this, &padHandler::show_dl2,
+	         mr, &RadioInterface::show_dl2);
 //
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.
@@ -69,6 +69,12 @@
 	the_DL2. IR		= 10;
 	for (int i = 0; i < 4; i ++)
 	   the_DL2. entity [i]. ct = 65;
+
+	DL2_record. theText	= "";
+	DL2_record. title	= "";
+	DL2_record. composer	= "";
+	DL2_record. stationname	= "";
+	DL2_record. currentProgram	= "";
 }
 
 	padHandler::~padHandler() {
@@ -624,87 +630,81 @@ uint16_t	index;
 //
 //	Experimental code
 void	padHandler::add_toDL2 (const QString &text) {
-	if (the_DL2. dlsText != text) {
-	   the_DL2. dlsText = text;
-//	   fprintf (stderr, "dl2 fragment %s\n", text. toLatin1 (). data ());
-	   the_DL2. valid = true;	// non existent key
-	   for (int i = 0; i < 4; i ++)
-	      the_DL2. entity [i]. ct = 65;
+	if (DL2_record. theText != text) {
+	   DL2_record. theText = text;
+	   DL2_record. valid	= true;
 	}
 }
 
-static uint8_t oldIT	= 0;
+QString padHandler::extractText (uint16_t start, uint16_t length) {
+QString res;
+	for (int i = start; i <= start + length; i ++)
+	   res = res + QChar (DL2_record. theText. at (i));
+	return res;
+}
 
 void	padHandler::add_toDL2 (const uint8_t *data,
 	                              uint8_t field_2, uint8_t field_3) {
-//	if (!the_DL2. valid)
+	if (DL2_record. theText. size () == 0)
 	   return;
 	uint8_t CId	= (data [0] >> 4) & 0x0f;
 	uint8_t CB	= data [0] & 0x0f;
-//	fprintf (stderr, "IT = %d, IR = %d, NT = %d\n",
-//	                  (CB >> 3), (CB >> 2) & 0x01, CB & 0x03);
-	if ((CB & 04) == 0)
+	if ((CB & 04) == 0)	// IR should be "running"
 	   return;
-	if (oldIT != (CB & 0x08)) {
-	   oldIT = (CB & 0x08);
-	   fprintf (stderr, "switch\n");
-	}
-	   
+	uint8_t IT	= CB & 0x08;
 	for (int i = 0; i < field_3; i += 3) {
 	   uint8_t contentType = data [1 + i + 0] & 0x3F;
 	   uint8_t startMarker = data [1 + i + 1] & 0x7F;
 	   uint8_t lengthMarker = data [1 + i + 2] & 0x7F;
 	   switch (contentType) {
 	      case 1 :	{ 	// the title
-	         QString ss;
-	         for (int i = startMarker;
-	                      i <= startMarker + lengthMarker; i ++)
-	            ss = ss + QChar (the_DL2. dlsText. at (i));
-	         if (ss. size () > 0)
-	            fprintf (stderr, "Title -> %s\n",
-	                        ss. toLatin1 (). data ());
+	         QString ss	= extractText (startMarker, lengthMarker);
+	         if (ss. size () > 0) {
+	            if (ss != DL2_record. title) {
+	               DL2_record. title = ss;
+	               show_dl2 (contentType, IT, ss);
+	            }
+	         }
 	         break;
 	      }
 	      case 4:	// the artist
-	      case 8: {	// the composer
-	         QString ss;
-	         for (int i = startMarker;
-	                      i <= startMarker + lengthMarker; i ++)
-	            ss = ss + QChar (the_DL2. dlsText. at (i));
-	         if (ss. size () > 0)
-	            fprintf (stderr, "Composer -> %s\n",
-	                        ss. toLatin1 (). data ());
+	      case 8:	// the composer
+	      case 9: {	// the band
+	         QString ss	= extractText (startMarker, lengthMarker);
+	         if (ss. size () > 0) {
+	            if (ss != DL2_record. composer) {
+	               DL2_record. composer = ss;
+	               show_dl2 (contentType, IT, ss);
+	            }
+	         }
 	         break;
 	      }
 	      case 32: 	// stationname long
 	      case 31: {	// stationname short
-	         QString ss;
-	         for (int i = startMarker;
-	                      i <= startMarker + lengthMarker; i ++)
-	            ss = ss + QChar (the_DL2. dlsText. at (i));
-	         if (ss. size () > 0)
-	            fprintf (stderr, "stationname -> %s\n", 
-	                                ss. toLatin1 (). data ());
+	         QString ss	= extractText (startMarker, lengthMarker);
+	         if (ss. size () > 0) {
+	            if (DL2_record. stationname != ss) {
+	               DL2_record. stationname = ss;
+	               show_dl2 (contentType, IT, ss);
+	            }
+	         }
 	         break;
 	      }
 	      case 33: {	// program now
-	         QString ss;
-	         for (int i = startMarker;
-	                      i <= startMarker + lengthMarker; i ++)
-	            ss = ss + QChar (the_DL2. dlsText. at (i));
-	         if (ss. size () > 0)
-	            fprintf (stderr, "current program  -> %s\n", 
-	                                ss. toLatin1 (). data ());
+	         QString ss	= extractText (startMarker, lengthMarker);
+	         if (ss. size () > 0) {
+	            if (DL2_record. currentProgram != ss) {
+	               DL2_record. currentProgram = ss;
+	               show_dl2 (contentType, IT, ss);
+	            }
+	         }
 	         break;
 	      }
 	      default: {
-	         QString ss;
-	         for (int i = startMarker;
-	                      i <= startMarker + lengthMarker; i ++)
-	            ss = ss + QChar (the_DL2. dlsText. at (i));
-	         if (ss. size () > 0)
-	            fprintf (stderr, "%d  -> %s\n", contentType, 
-	                                ss. toLatin1 (). data ());
+//	         QString ss	= extractText (startMarker, lengthMarker);
+//	         if (ss. size () > 0)
+//	            fprintf (stderr, "%d  -> %s\n", contentType, 
+//	                                ss. toLatin1 (). data ());
 	         break;
 	      }
 	   }

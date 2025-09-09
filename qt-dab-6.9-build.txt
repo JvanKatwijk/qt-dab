@@ -11,7 +11,7 @@ mkdir -p ./appdir/usr/share/applications
 mkdir -p ./appdir/usr/share/icons/hicolor/128x128/apps/
 mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
 
-cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6.9.3
+cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6.9.4
 cp app-files/qt-dab-6.9.desktop	appdir/usr/share/applications
 cp ../res/radio-pcitures/qt-dab-6.9-256x256.png	appdir/qt-dab-RC.png
 cp ../res/radio-pictures/qt-dab-6.9-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/

@@ -301,11 +301,11 @@ QString h;
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 
 #ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("9.3") + " with RTLSDR-V3";
+	SystemVersion	= QString ("9.4") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("9.3") + " with RTLSDR-V4";
+	SystemVersion	= QString ("9.4") + " with RTLSDR-V4";
 #else
-	SystemVersion	= QString ("9.3");
+	SystemVersion	= QString ("9.4");
 #endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion ;
@@ -4612,18 +4612,90 @@ void	RadioInterface::handle_dcRemoval	(bool b) {
 	theNewDisplay. set_dcRemoval (b);
 }
 
-void	RadioInterface::show_title	(uint8_t IR, uint8_t ct,
+static QString previousComposer;
+static uint8_t old_IT	= 0;
+void	RadioInterface::show_dl2	(uint8_t ct, uint8_t IT,
 	                                  const QString &s) {
-	(void)IR;
-	return;
-	if (s == "")
-	   fprintf (stderr, "einde fragment\n");
-	else
-	if (ct == 1)
-	   fprintf (stderr, "Ttitle: %s\n", s. toUtf8 (). data ());
-	else
-	if (ct == 4)
-	   fprintf (stderr, "Artist: %s\n", s. toUtf8 (). data ());
+static QString	title		= "";
+static QString	composer	= "";
+static QString	stationName	= "";
+static	QString	programNow	= "";
+
+	if (!configHandler_p -> get_saveTitles ())
+	   return;
+
+	QString	fileName = theFilenameFinder. basicPath ();
+	if (!fileName. endsWith ("/"))
+	   fileName += "/";
+	fileName	+= "DL2_titles.csv";
+	QDateTime theTime	= QDateTime::currentDateTime ();
+	QString currentService	= channel. currentService. serviceName;
+	QString res		= "";
+	if (IT != old_IT) 
+	   fprintf (stderr, "Switch\n");
+	old_IT = IT;
+	switch (ct) {
+	   case 1:	// the title
+	      title = s;
+	      if (composer != "") {
+	         res = theTime. toString () + ";" +
+	                       currentService + ";" +
+	                       title + ";" + composer + ";";
+	         title		= "";
+	         composer	= "";
+	      }
+	      break;
+	   case 4:	// the artist
+	   case 8:	// the composer
+	   case 9:	// the band
+	      if (previousComposer == "")
+	         previousComposer = s;
+	      else
+	      if (previousComposer. startsWith (s) ||
+	          s. startsWith (previousComposer) ||
+	          s == previousComposer)
+	      break;
+	      previousComposer = s;
+	      composer = s;
+	      if (title != "") {
+	         res = theTime. toString () + ";" +
+	                       currentService  + ";" +
+	                        title + ";" + composer + ";";
+	         title		= "";
+	         composer	= "";
+	      }
+	      break;
+	   case 31:	// stationname short
+	   case 32:	// stationname long
+	      stationName	= s;
+	      if  (programNow != "") {	
+	         res = theTime. toString () + ";" +
+	                       currentService + ";" + stationName + ";" +
+	                                  programNow + ";";
+	         stationName	= "";
+	         programNow	= "";
+	      }
+	      break;
+	   case 33:	// program now
+	      programNow	= s;
+	      if  (stationName != "") {	
+	         res = theTime. toString () + ";" +
+	                       currentService + ";" + stationName + ";" +
+	                                  programNow + ";";
+	         stationName	= "";
+	         programNow	= "";
+	      }
+	      break;
+	   default:	
+	      break;
+	}
+	if (res != "") {
+	   FILE *dlTextFile	= fopen (fileName. toUtf8 (). data (), "a+");
+	   if (dlTextFile != nullptr) {
+	      fprintf (dlTextFile, "%s\n", res. toLatin1 (). data ());
+	      fclose (dlTextFile);
+	   }
+	}
 }
 
 void	RadioInterface::nrActiveServices	(int n) {
