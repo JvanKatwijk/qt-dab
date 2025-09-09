@@ -633,25 +633,82 @@ void	padHandler::add_toDL2 (const QString &text) {
 	}
 }
 
+static uint8_t oldIT	= 0;
+
 void	padHandler::add_toDL2 (const uint8_t *data,
 	                              uint8_t field_2, uint8_t field_3) {
-	return;
-	fprintf (stderr, "Field 2 %d %d\n", field_2 & 0x04, field_2 & 0x03);
-	fprintf (stderr, "Field 3 -> nr bytes (-1) = %d\n", field_3);
+//	if (!the_DL2. valid)
+	   return;
 	uint8_t CId	= (data [0] >> 4) & 0x0f;
 	uint8_t CB	= data [0] & 0x0f;
-	fprintf (stderr, "CId = %d, CB = %d\n",  CId, CB);
-
-	fprintf (stderr, "IT = %d, IR = %d, NT = %d\n",
-	                  (CB >> 3), (CB >> 2) & 0x01, CB & 0x03);
-	fprintf (stderr, "size command body %d\n", field_3);
-	fprintf (stderr, "The DL plus tags\n");
+//	fprintf (stderr, "IT = %d, IR = %d, NT = %d\n",
+//	                  (CB >> 3), (CB >> 2) & 0x01, CB & 0x03);
+	if ((CB & 04) == 0)
+	   return;
+	if (oldIT != (CB & 0x08)) {
+	   oldIT = (CB & 0x08);
+	   fprintf (stderr, "switch\n");
+	}
+	   
 	for (int i = 0; i < field_3; i += 3) {
-	   uint8_t contentType = data [1 + i + 0] & 0x7F;
+	   uint8_t contentType = data [1 + i + 0] & 0x3F;
 	   uint8_t startMarker = data [1 + i + 1] & 0x7F;
 	   uint8_t lengthMarker = data [1 + i + 2] & 0x7F;
-	   fprintf (stderr, "%d -> ct = %d, start %d, length %d\n",
-	                        i, contentType, startMarker, lengthMarker);
+	   switch (contentType) {
+	      case 1 :	{ 	// the title
+	         QString ss;
+	         for (int i = startMarker;
+	                      i <= startMarker + lengthMarker; i ++)
+	            ss = ss + QChar (the_DL2. dlsText. at (i));
+	         if (ss. size () > 0)
+	            fprintf (stderr, "Title -> %s\n",
+	                        ss. toLatin1 (). data ());
+	         break;
+	      }
+	      case 4:	// the artist
+	      case 8: {	// the composer
+	         QString ss;
+	         for (int i = startMarker;
+	                      i <= startMarker + lengthMarker; i ++)
+	            ss = ss + QChar (the_DL2. dlsText. at (i));
+	         if (ss. size () > 0)
+	            fprintf (stderr, "Composer -> %s\n",
+	                        ss. toLatin1 (). data ());
+	         break;
+	      }
+	      case 32: 	// stationname long
+	      case 31: {	// stationname short
+	         QString ss;
+	         for (int i = startMarker;
+	                      i <= startMarker + lengthMarker; i ++)
+	            ss = ss + QChar (the_DL2. dlsText. at (i));
+	         if (ss. size () > 0)
+	            fprintf (stderr, "stationname -> %s\n", 
+	                                ss. toLatin1 (). data ());
+	         break;
+	      }
+	      case 33: {	// program now
+	         QString ss;
+	         for (int i = startMarker;
+	                      i <= startMarker + lengthMarker; i ++)
+	            ss = ss + QChar (the_DL2. dlsText. at (i));
+	         if (ss. size () > 0)
+	            fprintf (stderr, "current program  -> %s\n", 
+	                                ss. toLatin1 (). data ());
+	         break;
+	      }
+	      default: {
+	         QString ss;
+	         for (int i = startMarker;
+	                      i <= startMarker + lengthMarker; i ++)
+	            ss = ss + QChar (the_DL2. dlsText. at (i));
+	         if (ss. size () > 0)
+	            fprintf (stderr, "%d  -> %s\n", contentType, 
+	                                ss. toLatin1 (). data ());
+	         break;
+	      }
+	   }
 	}
+	the_DL2. valid = false;
 }
 
