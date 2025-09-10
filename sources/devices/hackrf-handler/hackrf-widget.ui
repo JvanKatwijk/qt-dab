@@ -45,13 +45,20 @@
        <item>
         <widget class="QSpinBox" name="ppm_correction">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unfortunately, the hackrf API does not support ppm handling&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unfortunately, the hackrf API does not support ppm handling so ppm handling is done by - in software - adapting the channel frequencies&lt;/p&gt;&lt;p&gt;Since it takes time for the software to react on a change, make changes one step at the time and wait a while&lt;/p&gt;&lt;p&gt;(Note 1 ppm on 227360 KHz is 227 Hz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="minimum">
           <number>-100</number>
          </property>
          <property name="maximum">
           <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="samplerate_correction">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Experimental. My hackrf device shows a pretty large samplerate offset (clock offset on the spectrum display), app -36 for channel 12C, i.e. 227360 Khz. With this spinbox the samplerate can be altered. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

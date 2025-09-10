@@ -366,8 +366,7 @@ int16_t  dataLength                = 0;
 #endif
 	   }
 //
-//	etsi TS 102 980 specifies the DL plus objects, I just let it go
-//	for the time being
+//	etsi TS 102 980 specifies the DL plus objects, 
  	  if (Cflag) {		// special dynamic label command
 	      uint16_t Command = (prefix >> 8) & 0x0f;
 	      uint8_t  field_2	= (prefix >> 4) & 0x0f;
@@ -628,7 +627,9 @@ uint16_t	index;
 }
 
 //
-//	Experimental code
+//
+//	Experimental code to extract titles and composers from
+//	the DL2 data
 void	padHandler::add_toDL2 (const QString &text) {
 	if (DL2_record. theText != text) {
 	   DL2_record. theText = text;
@@ -638,6 +639,8 @@ void	padHandler::add_toDL2 (const QString &text) {
 
 QString padHandler::extractText (uint16_t start, uint16_t length) {
 QString res;
+	if (start  + length >= DL2_record. theText. size ())
+	   return "";
 	for (int i = start; i <= start + length; i ++)
 	   res = res + QChar (DL2_record. theText. at (i));
 	return res;
@@ -651,11 +654,12 @@ void	padHandler::add_toDL2 (const uint8_t *data,
 	uint8_t CB	= data [0] & 0x0f;
 	if ((CB & 04) == 0)	// IR should be "running"
 	   return;
+	uint8_t NT	= data [0] & 0x03;
 	uint8_t IT	= CB & 0x08;
-	for (int i = 0; i < field_3; i += 3) {
-	   uint8_t contentType = data [1 + i + 0] & 0x3F;
-	   uint8_t startMarker = data [1 + i + 1] & 0x7F;
-	   uint8_t lengthMarker = data [1 + i + 2] & 0x7F;
+	for (int i = 0; i <= NT; i ++) {
+	   uint8_t contentType	= data [1 + 3 * i + 0] & 0x3F;
+	   uint8_t startMarker	= data [1 + 3 * i + 1] & 0x7F;
+	   uint8_t lengthMarker = data [1 + 3 * i + 2] & 0x7F;
 	   switch (contentType) {
 	      case 1 :	{ 	// the title
 	         QString ss	= extractText (startMarker, lengthMarker);
@@ -679,7 +683,7 @@ void	padHandler::add_toDL2 (const uint8_t *data,
 	         }
 	         break;
 	      }
-	      case 32: 	// stationname long
+	      case 32:		// stationname long
 	      case 31: {	// stationname short
 	         QString ss	= extractText (startMarker, lengthMarker);
 	         if (ss. size () > 0) {
@@ -701,6 +705,9 @@ void	padHandler::add_toDL2 (const uint8_t *data,
 	         break;
 	      }
 	      default: {
+//	         fprintf (stderr,
+//	                  "i = %d, NT = %d, field_3 = %d start %d len %d\n",
+//	                              i, NT, field_3, startMarker, lengthMarker);
 //	         QString ss	= extractText (startMarker, lengthMarker);
 //	         if (ss. size () > 0)
 //	            fprintf (stderr, "%d  -> %s\n", contentType, 

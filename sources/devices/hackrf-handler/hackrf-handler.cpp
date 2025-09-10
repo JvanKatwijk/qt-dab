@@ -101,6 +101,7 @@ hackrf_error errorCode;
 	ppm_correction      -> setValue (
 	       value_i (hackrfSettings, HACKRF_SETTINGS,
 	                              "hack_ppmCorrection", 0));
+	ppmValue	= ppm_correction -> value ();
 	save_gainSettings	=
 	       value_i (hackrfSettings, HACKRF_SETTINGS,
 	                              "save_gainSettings", 1);
@@ -125,7 +126,7 @@ hackrf_error errorCode;
 	}
 
 	errorCode = (hackrf_error)
-	            (hackrf_set_baseband_filter_bandwidth (theDevice, 1750000));
+	            (hackrf_baseband_filter (theDevice, 1750000));
 	if (errorCode != HACKRF_SUCCESS) {
 	   delete library_p;
 	   throw (device_exception (hackrf_error_name (errorCode)));
@@ -177,6 +178,8 @@ hackrf_error errorCode;
 
 	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &hackrfHandler::handle_ppmCorrection);
+	connect (samplerate_correction, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &hackrfHandler::handle_samplerateCorrection);
 	connect (dumpButton, &QPushButton::clicked,
 	         this, &hackrfHandler::handle_xmlDump);
 
@@ -295,26 +298,53 @@ bool	b;
 }
 
 //      correction is in Hz
-// This function has to be modified to implement ppm correction
-// writing in the si5351 register does not seem to work yet
-// To be completed
+//	This function has to be modified to implement ppm correction
+//	writing in the si5351 register does not seem to work yet
+//	Asking on the various fora made clear that writing in that
+//	particular register has no effect at all.
+//	So, it should be addressed differently
+//	An Option  is to maintain a ppm value and correct the
+//	frequency each time it is set (works more or less but
+//	a little clumsy)
 
 void	hackrfHandler::handle_ppmCorrection	(int32_t ppm) {
-uint16_t value;
 hackrf_error errorCode;
-	
-	errorCode = (hackrf_error) this -> hackrf_si5351c_write (theDevice,
-	                                    162,
-	                                    static_cast<uint16_t>(ppm));
-	if (errorCode != HACKRF_SUCCESS) 
-	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
-	errorCode  =  (hackrf_error)this -> hackrf_si5351c_read (theDevice,
-	                                         162, &value);
-	if (errorCode != HACKRF_SUCCESS)
-	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
-	qDebug() << "Read si5351c register 162 : " << value <<"\n";
+
+	ppmValue	= ppm;
+	if (!running. load ())	// while initing ....
+	   return;
+	int adjustedFreq	= lastFrequency * (1 + ppm / 1000000.0);
+	errorCode = (hackrf_error)(hackrf_set_freq (theDevice, adjustedFreq));
+	if (errorCode != HACKRF_SUCCESS) {
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf restart",
+	                          hackrf_error_name (errorCode));
+	}
 }
 
+void	hackrfHandler::handle_samplerateCorrection (int32_t correction) {
+hackrf_error errorCode;
+float correctedRate = SAMPLERATE + correction;
+
+	errorCode = (hackrf_error)hackrf_set_sample_rate (theDevice,
+	                                                  correctedRate);
+	if (errorCode != HACKRF_SUCCESS) {
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf samplerate correction",
+	                          hackrf_error_name (errorCode));
+	}
+// the filter must be set after the sample rate to be not overwritten
+	hackrf_baseband_filter (theDevice, 1750000);
+	if (errorCode != HACKRF_SUCCESS) {
+	   statusLabel -> setText (hackrf_error_name (errorCode));
+	   theErrorLogger -> add ("Hackrf set bandwidth",
+	                          hackrf_error_name (errorCode));
+	}
+	if (!running. load ())
+	   return;
+	stopReader();
+	restartReader(getVFOFrequency());
+}
 //
 //	we use a static large buffer, rather than trying to allocate
 //	a buffer on the stack
@@ -347,6 +377,7 @@ hackrf_error errorCode;
 
 	lastFrequency	= freq;
 	this	-> toSkip	= skipped;
+	int adjustedFreq	= freq + ppmValue * (freq / 1000000);
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 	errorCode =  (hackrf_error) (hackrf_set_lna_gain (theDevice,
@@ -377,7 +408,7 @@ hackrf_error errorCode;
 	   theErrorLogger -> add ("Hackrf", hackrf_error_name (errorCode));
 	}
 
-	errorCode =  (hackrf_error)(hackrf_set_freq (theDevice, freq));
+	errorCode =  (hackrf_error)(hackrf_set_freq (theDevice, adjustedFreq));
 	if (errorCode != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (errorCode));
 	   return false;
@@ -506,10 +537,10 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	   return false;
 	}
 
-	this -> hackrf_set_baseband_filter_bandwidth	=
+	this -> hackrf_baseband_filter	=
 	               (pfn_hackrf_set_baseband_filter_bandwidth)
 	                  library_p -> resolve ("hackrf_set_baseband_filter_bandwidth");
-	if (this -> hackrf_set_baseband_filter_bandwidth == nullptr) {
+	if (this -> hackrf_baseband_filter == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_baseband_filter_bandwidth\n");
 	   return false;
 	}

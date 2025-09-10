@@ -4611,7 +4611,8 @@ void	RadioInterface::handle_dcRemoval	(bool b) {
 	theOFDMHandler	-> set_dcRemoval (b);
 	theNewDisplay. set_dcRemoval (b);
 }
-
+//
+//	Experimental code for handling DL2 data
 static QString previousComposer;
 static uint8_t old_IT	= 0;
 void	RadioInterface::show_dl2	(uint8_t ct, uint8_t IT,
@@ -4620,6 +4621,14 @@ static QString	title		= "";
 static QString	composer	= "";
 static QString	stationName	= "";
 static	QString	programNow	= "";
+
+	if (IT != old_IT) {
+	   title	= "";
+	   composer	= "";
+	   stationName	= "";
+	   programNow	= "";
+	}
+	old_IT = IT;
 
 	if (!configHandler_p -> get_saveTitles ())
 	   return;
@@ -4630,17 +4639,17 @@ static	QString	programNow	= "";
 	fileName	+= "DL2_titles.csv";
 	QDateTime theTime	= QDateTime::currentDateTime ();
 	QString currentService	= channel. currentService. serviceName;
-	QString res		= "";
-	if (IT != old_IT) 
-	   fprintf (stderr, "Switch\n");
-	old_IT = IT;
+	QString ensemble	= channel. ensembleName;
+	QString	channelName	= channel. channelName;
+	QString front		= theTime. toString () + ";" +
+	                          channelName + ";" +
+	                          ensemble + ";" + currentService + ";";;
+	QString res;
 	switch (ct) {
 	   case 1:	// the title
 	      title = s;
 	      if (composer != "") {
-	         res = theTime. toString () + ";" +
-	                       currentService + ";" +
-	                       title + ";" + composer + ";";
+	         res = front + title + ";" + composer + ";";
 	         title		= "";
 	         composer	= "";
 	      }
@@ -4658,9 +4667,7 @@ static	QString	programNow	= "";
 	      previousComposer = s;
 	      composer = s;
 	      if (title != "") {
-	         res = theTime. toString () + ";" +
-	                       currentService  + ";" +
-	                        title + ";" + composer + ";";
+	         res = front + title + ";" + composer + ";";
 	         title		= "";
 	         composer	= "";
 	      }
@@ -4669,9 +4676,7 @@ static	QString	programNow	= "";
 	   case 32:	// stationname long
 	      stationName	= s;
 	      if  (programNow != "") {	
-	         res = theTime. toString () + ";" +
-	                       currentService + ";" + stationName + ";" +
-	                                  programNow + ";";
+	         res =  front + stationName + ";" + programNow + ";";
 	         stationName	= "";
 	         programNow	= "";
 	      }
@@ -4679,9 +4684,7 @@ static	QString	programNow	= "";
 	   case 33:	// program now
 	      programNow	= s;
 	      if  (stationName != "") {	
-	         res = theTime. toString () + ";" +
-	                       currentService + ";" + stationName + ";" +
-	                                  programNow + ";";
+	         res =  front + stationName + ";" + programNow + ";";
 	         stationName	= "";
 	         programNow	= "";
 	      }

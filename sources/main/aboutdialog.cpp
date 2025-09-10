@@ -103,7 +103,7 @@ QString aacComment;
 	                 "<li> Andreas Mikula, for continuous support </li>" +
 	                 "<li> Jarod Middelman, for continuous feedback</li>" +
 	                 "<li> Stefan Poeschel, for providing code for saving AAC </li>" +
-	                 "<li> Rolf Zerr, for an improved TII decoder </li>" +
+	                 "<li> Rolf Zerr, for an improved TII decoder and some other improvements </li>" +
 	                 "</ul>");
 //	ui -> configuration -> setTextInteractionFlags (Qt::TextBrowserInteraction);
 	ui -> configuration -> setOpenExternalLinks(true);
@@ -127,14 +127,17 @@ QString aacComment;
 #ifdef	HAVE_PLUTO 
                            "<li>Adalm Pluto device<a href=\"https://www.analog.com/\">Adalm Pluto One</a></li>"
 #endif
+#ifdef	HAVE_RTL_TCP
+			   "<li>Client for RTL_TCP</li>"
+#endif
 #ifdef HAVE_SOAPY
                            "<li>Soapy interface<a href=\"https://github.com/pothosware/SoapySDR/wiki\">SoapySDR</a></li>"
 #endif
 #ifdef HAVE_SPYSERVER_16
                            "<li>SpyServer interface<a href=\"https://airspy.com/download/\">spyserver</a></li>"
 #endif
-                           "<li>  and has support for reading (and writing) files in different formats.</li>");
-
+                           "<li>  and has support for reading (and writing) files in different formats, including files (in xml and in RIFF/Raw64 format) with sizes larger than 4 Gb.</li>"
+	"</ul>");
 ui->disclaimer->setText("<p>Copyright © 2016-2024 Jan van Katwijk</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "

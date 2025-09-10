@@ -116,7 +116,7 @@ private:
 	pfn_hackrf_stop_rx	hackrf_stop_rx;
 	pfn_hackrf_device_list	hackrf_device_list;
 	pfn_hackrf_set_baseband_filter_bandwidth
-	                        hackrf_set_baseband_filter_bandwidth;
+	                        hackrf_baseband_filter;
 	pfn_hackrf_set_lna_gain	hackrf_set_lna_gain;
 	pfn_hackrf_set_vga_gain	hackrf_set_vga_gain;
 	pfn_hackrf_set_freq	hackrf_set_freq;
@@ -135,6 +135,7 @@ private:
 	pfn_hackrf_si5351c_write hackrf_si5351c_write;
 	pfn_hackrf_board_rev_read	hackrf_board_rev_read;
 
+	int			ppmValue;
 //	Fine aggiunta
 
 	QSettings		*hackrfSettings;
@@ -165,6 +166,7 @@ private slots:
 	void			handle_biasT		(int);
 	void			handle_Ampli		(int);
 	void			handle_ppmCorrection	(int);
+	void			handle_samplerateCorrection	(int);
 // Fine aggiunta
 	void			handle_xmlDump	();
 };
