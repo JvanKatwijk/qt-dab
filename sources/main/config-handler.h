@@ -46,7 +46,8 @@ public:
 	void	hide			();
 	bool	isHidden		();
 	void	set_connections		();
-
+	void	setFocus		();
+	bool	hasFocus		();
 	void	set_activeServices	(int);
 //
 //	the value extractors

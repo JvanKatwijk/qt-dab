@@ -39,6 +39,7 @@ virtual	void	addtoFrame	(const std::vector<uint8_t> &) {
 	fprintf (stderr, "in frameprocessor\n");
 }
 virtual	void	stop		() {
+	fprintf (stderr, "Should be overridden\n");
 }
 
 };

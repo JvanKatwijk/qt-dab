@@ -52,6 +52,8 @@ public:
 	void	hideMissedLabel	();
 	void	showTimetableButton	(bool);
 	void	updateFM		(std::vector<int> &);
+	void	setFocus		();
+	bool	hasFocus		();
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;

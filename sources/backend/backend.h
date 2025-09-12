@@ -34,6 +34,8 @@
 #include        "backend-driver.h"
 #include        "backend-deconvolver.h"
 
+#include	<mutex>
+
 #define	NUMBER_SLOTS	25
 class	RadioInterface;
 class	logger;
@@ -65,6 +67,8 @@ public:
 	QString		serviceName;
 	int		borf;
 	FILE		*dump;
+
+	std::mutex	locker;
 private:
 	backendDeconvolver	deconvolver;
 	std::vector<uint8_t>	hardBits;

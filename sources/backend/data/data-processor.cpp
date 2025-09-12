@@ -382,3 +382,5 @@ uint8_t rsOut	[FRAMESIZE];
 	   appData [i] = table [i % RSDIMS][i / RSDIMS];
 }
 
+void	dataProcessor::stop	() {}
+

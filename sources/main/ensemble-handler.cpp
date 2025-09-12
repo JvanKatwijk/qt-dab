@@ -154,6 +154,16 @@ void	ensembleHandler::unSelect	() {
 	   }
 }
 
+void	ensembleHandler::selectCurrentItem () {
+int row		= currentRow ();
+int column	= currentColumn	();
+	if ((row < 0) || (row > rowCount ()))
+	   return;
+	if ((column < 0) || (column > 1))
+	   return;
+	clickOnService (row, column);
+}
+
 void	ensembleHandler::clickOnService	(int row, int column) {
 	QTableWidgetItem *theItem_0 = this -> item (row, 0);
 	QString theService	= theItem_0 -> text ();
@@ -161,7 +171,7 @@ void	ensembleHandler::clickOnService	(int row, int column) {
 //
 	if (ensembleMode == SHOW_ENSEMBLE) {
 	   QString theMark		= theItem_1 -> text ();
-	   int index = inEnsembleList (theService);
+	   int index			= inEnsembleList (theService);
 	   if (index < 0)	// should not happen
 	      return;
 //
@@ -192,14 +202,17 @@ void	ensembleHandler::clickOnService	(int row, int column) {
 	      unSelect ();
 	      int index = inEnsembleList (theService);
 	      this -> clearSelection ();
+//
 	      selectService (ensembleList [index]. name,
 	                     ensembleList [index]. channel);
-	      if (index >= 0) {		// should not happen
+	      if (index >= 0) {	
 	         ensembleList [index]. selected = true;
 	      }
 	   }
 	   return;
-	}	// apparently ensembleMode == SHOW_PRESETS
+	}	
+
+//	if w fall through,  apparently ensembleMode == SHOW_PRESETS
 
 	if (!handlePresets)	// should not occur
 	   return;
@@ -336,6 +349,7 @@ int currentRow	= 0;
 //bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
 //	                                        AUDIOSERVICES_ONLY, 1);
 	clearTable ();
+//	setCurrentCell (0, 0);
 	if (ensembleMode == SHOW_ENSEMBLE) {
 	   this -> setHorizontalHeaderLabels (
 	                           QStringList () << tr ("service") <<
@@ -351,6 +365,9 @@ int currentRow	= 0;
 	                 ensembleList [i]. channel, toMark, currentRow);
 
 	      if (ensembleList [i]. selected) {
+	         QTableWidgetItem *theItem = this -> item (currentRow, 0);
+	         setCurrentItem (theItem, QItemSelectionModel::SelectCurrent);
+	         this -> setFocus ();
 	         setFont (MARKED, currentRow);
 	      }
 	      else
@@ -366,6 +383,7 @@ int currentRow	= 0;
 	      addRow (favorites [i]. name,
 	                  favorites [i]. channel, true, currentRow);
 	      if (favorites [i]. selected) {
+	         setCurrentCell (currentRow, 0);
 	         setFont (MARKED, currentRow);
 	      }
 	      else

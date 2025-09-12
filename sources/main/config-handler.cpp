@@ -1081,3 +1081,12 @@ bool	configHandler::get_saveTitles		() {
 	return saveTitlesSelector -> isChecked ();
 }
 
+void	configHandler::setFocus			() {
+	myFrame. activateWindow ();
+	myFrame. setFocus ();
+}
+
+bool	configHandler::hasFocus			() {
+	return myFrame. hasFocus ();
+}
+

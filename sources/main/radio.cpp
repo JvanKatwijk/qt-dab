@@ -31,6 +31,7 @@
 #include	<QDir>
 #include	<QColorDialog>
 #include	<QToolTip>
+#include	<QKeyEvent>
 #include	<fstream>
 #include	"dab-constants.h"
 #include	"mot-content-types.h"
@@ -448,7 +449,9 @@ QString h;
 	pauzeTimer. setSingleShot (true);
 	connect (&pauzeTimer, &QTimer::timeout,
 	         this, &RadioInterface::show_pauzeSlide);
-
+	stressTimer. setSingleShot (true);
+	connect (&stressTimer, &QTimer::timeout,
+	         this, &RadioInterface::handle_nextServiceButton);
 	myTimeTable. hide ();
 
 	connect (&theScanlistHandler, &scanListHandler::handleScanListSelect,
@@ -1894,17 +1897,58 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (!running. load ())
 	   return QWidget::eventFilter (obj, event);
 
-	if ((obj == this -> theEnsembleHandler -> viewport ()) &&
-	    (event -> type () == QEvent::MouseButtonPress)) {
-	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
-	   if (ev -> buttons () & Qt::RightButton) {
-	      QTableWidgetItem *x =
+	if (obj == this -> theEnsembleHandler -> viewport ()) {
+	    if (event -> type () == QEvent::MouseButtonPress) {
+	      QMouseEvent *ev = static_cast<QMouseEvent *>(event);
+	      if (ev -> buttons () & Qt::RightButton) {
+	         QTableWidgetItem *x =
 	              theEnsembleHandler -> itemAt (ev -> pos ());
-	      if (x != nullptr)
-	         theEnsembleHandler -> handleRightMouseClick (x -> text ());
+	         if (x != nullptr)
+	            theEnsembleHandler -> handleRightMouseClick (x -> text ());
+	         return true;
+	      }
+	      else {
+	         return QWidget::eventFilter (obj, event);
+	      }
+	   }
+	}
+	else 	
+	if (event -> type () == QEvent::KeyPress) {
+	   QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+	   if (keyEvent -> key () == Qt::Key_Return) {
+	      theEnsembleHandler -> selectCurrentItem ();
+	      return true;
 	   }
 	   else {
-	      return QWidget::eventFilter (obj, event);
+//	      if (theEnsembleHandler -> hasFocus ()) 
+//	         fprintf (stderr, "EnsembleHandler\n");
+//	      else
+//	      if (configHandler_p -> hasFocus ())
+//	         fprintf (stderr, "Config handler\n");
+//	      else
+//	      if (techWindow_p	-> hasFocus ())
+//	         fprintf (stderr, "techWindow\n");
+//	      else
+//	         fprintf (stderr, "focus elsewhere\n");
+	      if (keyEvent -> key () == Qt::Key_F1) {
+	         theEnsembleHandler	-> activateWindow ();
+	         theEnsembleHandler	-> setFocus ();
+	         return true;
+	      }
+	      else
+	      if (keyEvent -> key () == Qt::Key_F2) {
+	// setFocus takes care of activating
+	         configHandler_p -> setFocus ();
+	         return true;
+	      }
+	      else
+	      if (keyEvent -> key () == Qt::Key_F3) {
+	// setFocus takes care of activating
+	         techWindow_p	-> setFocus ();
+	         return true;
+	      }
+	      else
+	         return false;
 	   }
 	}
 	else
@@ -1920,20 +1964,20 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	     theEnsembleHandler -> addFavoriteFromScanList (service);
 	   }
 	}
-	else
-	if (event -> type () == QEvent::MouseButtonPress) {
-	   QPixmap originalPixmap;
-	   QScreen *screen = QGuiApplication::primaryScreen();
-	   originalPixmap = screen -> grabWindow(this -> winId());
-	   QString format = "png";
-	   QString fileName = path_for_files + "main-widget";
-#ifdef	__MINGW32__
-	   fileName = fileName + ".png";
-	   originalPixmap. save (fileName);
-#else
-	   originalPixmap. save (fileName, format.toLatin1 (). data ());
-#endif
-	}
+//	else
+//	if (event -> type () == QEvent::MouseButtonPress) {
+//	   QPixmap originalPixmap;
+//	   QScreen *screen = QGuiApplication::primaryScreen();
+//	   originalPixmap = screen -> grabWindow(this -> winId());
+//	   QString format = "png";
+//	   QString fileName = path_for_files + "main-widget";
+//#ifdef	__MINGW32__
+//	   fileName = fileName + ".png";
+//	   originalPixmap. save (fileName);
+//#else
+//	   originalPixmap. save (fileName, format.toLatin1 (). data ());
+//#endif
+//	}
 	return QWidget::eventFilter (obj, event);
 }
 
@@ -2344,6 +2388,8 @@ void	RadioInterface::handle_prevServiceButton        () {
 
 void	RadioInterface::handle_nextServiceButton        () {
 	theEnsembleHandler -> selectNextService ();
+//	stressTimer. setSingleShot (true);
+//	stressTimer. start (1000);
 }
 //
 //	The user(s)

@@ -408,3 +408,6 @@ uint8_t buffer [count];
         my_padhandler. processPAD (buffer, count - 3, L1, L0);
 }
 
+void	mp4Processor::stop	() {
+}
+

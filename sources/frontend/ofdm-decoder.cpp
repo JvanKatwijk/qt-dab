@@ -294,10 +294,9 @@ float	sum	= 0;
 	      sum			+= jan_abs (R1);
 	   }
 	   else {
-//	for decoder 3 we implement "Soft optimal 1"
 	      softbits [i]  = - real (fftBin) / binAbsLevel * MAX_VITERBI;
 	      softbits [carriers + i] 
-	                    = - imag (fftBin) /binAbsLevel * MAX_VITERBI; 
+	                    = - imag (fftBin) / binAbsLevel * MAX_VITERBI; 
 	   }
 	}
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);

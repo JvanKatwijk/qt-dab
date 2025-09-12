@@ -220,6 +220,7 @@ void	mscHandler::stopBackend	(const QString &serviceName,
 	   if ((b -> serviceName == serviceName) &&
 	                  (b -> subChId == subchId) && (b -> borf == flag)) {
 	      b -> stopRunning ();
+	      usleep (1000);
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);
 	      break;

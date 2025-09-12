@@ -102,7 +102,11 @@
 
 	Backend::~Backend () {
 #ifdef	__THREADED_BACKEND__
+	if (!running. load () &&
+	    !this -> isRunning ())
+	   return;
 	running. store (false);
+	driver. stop ();
 	while (this -> isRunning())
 	   usleep (1000);
 #endif
@@ -150,7 +154,9 @@ void	Backend::processSegment (int16_t *softBits_in) {
 	for (uint16_t i = 0; i < bitRate * 24; i ++)
 	   hardBits [i] ^= disperseVector [i];
 
+	locker. lock ();
 	driver. addtoFrame (hardBits);
+	locker. unlock ();
 }
 
 #ifdef	__THREADED_BACKEND__
@@ -169,11 +175,12 @@ void	Backend::run() {
 //	It might take a msec for the task to stop
 void	Backend::stopRunning() {
 #ifdef	__THREADED_BACKEND__
+	locker. lock ();
 	driver. stop ();
+	locker. unlock ();
 	running. store (false);
 	while (this -> isRunning())
-	   usleep (1);
-//	myAudioSink	-> stop();
+	   usleep (1000);
 #endif
 }
 

@@ -47,6 +47,7 @@ public:
 	                 bool backendFlag);
 	~dataProcessor	();
 void	addtoFrame	(const std::vector<uint8_t> &);
+void	stop		();
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;

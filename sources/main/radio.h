@@ -321,6 +321,7 @@ private:
 #endif
 	QTimer			epgTimer;
 	QTimer			pauzeTimer;
+	QTimer			stressTimer;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;

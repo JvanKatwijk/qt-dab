@@ -391,3 +391,12 @@ void	techData::hideMissedLabel	() {
 	missedSamples	-> hide ();
 }
 
+void	techData::setFocus		() {
+	myFrame. activateWindow	();
+	myFrame. setFocus	();
+}
+
+bool	techData::hasFocus		() {
+	return myFrame. hasFocus ();
+}
+

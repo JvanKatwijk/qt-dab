@@ -675,5 +675,5 @@ uint8_t temp [vLength];
         my_padhandler. processPAD (temp, vLength - 2 - down - 1, L1, L0);
 }
 
-
+void	mp2Processor::stop	() {}
 

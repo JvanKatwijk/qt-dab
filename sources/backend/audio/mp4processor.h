@@ -35,6 +35,7 @@
 #include	"firecode-checker.h"
 #include	"reed-solomon.h"
 #include	<QObject>
+#include	<mutex>
 #include	"pad-handler.h"
 
 #ifdef	__WITH_FDK_AAC__
@@ -56,6 +57,7 @@ public:
 	                                 bool);
 			~mp4Processor	();
 	void		addtoFrame	(const std::vector<uint8_t> &);
+	void		stop		();
 private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;

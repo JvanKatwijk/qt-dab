@@ -188,13 +188,13 @@ lms_info_str_t limedevices [10];
 	                   (float)range. min, (float)range. max);
 	if (bandWidth < range. min)
 	   bandWidth = range. min + 100;
-	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX,
-	                                0, bandWidth);
-	if (res < 0) {
-	   const char * error = LMS_GetLastErrorMessage ();
-	   LMS_Close (theDevice);
-	   throw (device_exception (error));
-	}
+//	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX,
+//	                                0, bandWidth);
+//	if (res < 0) {
+//	   const char * error = LMS_GetLastErrorMessage ();
+//	   LMS_Close (theDevice);
+//	   throw (device_exception (error));
+//	}
 
 	res		= LMS_SetGFIRLPF (theDevice, LMS_CH_RX,
 	                                  0, true,  bandWidth);

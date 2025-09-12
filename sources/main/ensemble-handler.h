@@ -49,6 +49,7 @@ public:
 	bool	alreadyIn		(serviceId &);
 	void	remove			(const QString &);
 	void	addFavoriteFromScanList	(const QString &);
+	void	reportStart		(const QString &);
 
 	void	handleScheduledSelect	(const QString &, const QString &);
 	QStringList	getSelectables	();
@@ -56,8 +57,7 @@ public:
 	int	getServiceCount		();
 	void	selectPrevService	();
 	void	selectNextService	();
-
-	void	reportStart		(const QString &);
+	void	selectCurrentItem	();
 	void	setMode			(bool);
 	int	getShowMode		();
 	void	setShowMode		(int);
