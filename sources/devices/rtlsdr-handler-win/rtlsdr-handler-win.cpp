@@ -28,7 +28,7 @@
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
-#include	"logger.h"
+#include	"errorlog.h"
 #include	"settings-handler.h"
 
 #define	CORRF		0.005
@@ -306,6 +306,7 @@ void	rtlsdrHandler_win::set_ExternalGain	(const QString &gain) {
 	   QString t = QString ("cannot set gain to ") + gain;
 	   theErrorLogger -> add ("RTLSDR", t);	
 	}
+}
 //
 void	rtlsdrHandler_win::set_autogain	(int dummy) {
 	(void)dummy;

@@ -56,8 +56,8 @@ public:
 	equalizer	() {
 	I_avg		= 1.0f;		// meanII
 	Q_avg		= 1.0;
-	IQ_avg		= 0.0f;		// meanIQ
-	Q_out		= 0.1f;		// meanQQ
+	IQ_avg		= 1.0f;		// meanIQ
+	Q_out		= 1.0f;		// meanQQ
 	Alpha_		= 1.0 / 2048000.0;
 }
 	~equalizer	() {}

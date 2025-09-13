@@ -105,10 +105,7 @@
 	if (!running. load () &&
 	    !this -> isRunning ())
 	   return;
-	running. store (false);
-	driver. stop ();
-	while (this -> isRunning())
-	   usleep (1000);
+	stopRunning ();
 #endif
 }
 
@@ -116,7 +113,7 @@ int32_t	Backend::process	(int16_t *softBits, int16_t cnt) {
 	(void)cnt;
 #ifdef	__THREADED_BACKEND__
 	while (!freeSlots. tryAcquire (1, 200))
-	   if (!running. load ())
+	   if (!running. load ()) 
 	      return 0;
 	memcpy (theData [nextIn]. data (), softBits,
 	                           fragmentSize * sizeof (int16_t));
@@ -153,33 +150,37 @@ void	Backend::processSegment (int16_t *softBits_in) {
 //	and the energy dispersal
 	for (uint16_t i = 0; i < bitRate * 24; i ++)
 	   hardBits [i] ^= disperseVector [i];
-
-	locker. lock ();
-	driver. addtoFrame (hardBits);
-	locker. unlock ();
+#ifdef	__THREADED_BACKEND__
+	if (running. load ())
+#endif
+	   driver. addtoFrame (hardBits);
 }
 
 #ifdef	__THREADED_BACKEND__
-void	Backend::run() {
-
-	while (running. load()) {
-	   while (!usedSlots. tryAcquire (1, 200)) 
+void	Backend::run () {
+	while (running. load ()) {
+	   while (!usedSlots. tryAcquire (1, 200)) {
 	      if (!running. load ()) {
 	         return;
 	      }
-	   processSegment (theData [nextOut]. data());
+	   }
+	   locker. lock ();
+	   if (running. load ())
+	      processSegment (theData [nextOut]. data());
+	   locker. unlock ();
 	}
 }
 #endif
 
 //	It might take a msec for the task to stop
-void	Backend::stopRunning() {
+void	Backend::stopRunning () {
 #ifdef	__THREADED_BACKEND__
+//	we want to be certain that after calling the "stop" the
+//	backend interpreter does not start with processing new data
 	locker. lock ();
-	driver. stop ();
-	locker. unlock ();
 	running. store (false);
-	while (this -> isRunning())
+	locker. unlock ();
+	while (!this -> isFinished ())
 	   usleep (1000);
 #endif
 }

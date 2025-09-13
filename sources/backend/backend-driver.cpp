@@ -29,7 +29,6 @@
 //	Driver program for the selected backend. Embodying that in a
 //	separate class makes the "Backend" class simpler.
 
-static bool running	= false;
 
 	backendDriver::backendDriver (RadioInterface *mr,
 	                              logger		*theLogger,
@@ -73,25 +72,26 @@ static bool running	= false;
 	}
 	else
 	   theProcessor. reset (new frameProcessor ());	// should not happen
-	running = true;
+	running. store (true);;
 }
 
 
     backendDriver::~backendDriver() {
-	running = false;
+	running. store (false);
 	theProcessor. reset ();
 }
 
 //
 void	backendDriver::addtoFrame (const std::vector<uint8_t> &theData) {
-	if (running)
+	if (running. load ())
 	   theProcessor	-> addtoFrame (theData);
 }
-
+//
+//	Note that asking the processor to stop is - if configured -
+//	in a different thread.
 void	backendDriver::stop	() {
-	running = false;
+	running. store (false);
 	theProcessor -> stop ();
 	theProcessor. reset ();
 }
-
 

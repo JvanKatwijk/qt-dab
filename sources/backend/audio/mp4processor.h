@@ -67,7 +67,10 @@ private:
 #else
 	faadDecoder	aacDecoder;
 #endif
+	firecodeChecker	fc;
 
+	std::atomic<bool>	stopWorking;
+	std::mutex		locker;
 	bool		handleRS (const uint8_t *frameBytes,
 	                          int16_t base,
                                   std::vector<uint8_t> &outVector,
@@ -103,7 +106,6 @@ private:
 	std::vector<uint8_t> outVector;
 	int16_t		RSDims;
 	int16_t		au_start	[10];
-	firecodeChecker	fc;
 signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);

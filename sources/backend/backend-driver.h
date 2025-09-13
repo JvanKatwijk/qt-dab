@@ -46,6 +46,7 @@ public:
 void	addtoFrame	(const std::vector<uint8_t> &outData);
 void	stop		();
 private:
+	std::atomic<bool> running;
 	logger		*theLogger;
 	QScopedPointer<frameProcessor>	theProcessor;
 };

@@ -941,7 +941,7 @@ ULONG APIkeyValue_length = 255;
 	           "failed to locate API registry entry, error = %d\n",
 	           (int)GetLastError());
 	      theErrorLogger -> add (recorderVersion, 
-	                          errorMessage ((int)GetLastError ()));
+	                         errorMessage ((int)GetLastError ()). c_str ());
 	   }
 	   else {
 	      RegQueryValueEx (APIkey,

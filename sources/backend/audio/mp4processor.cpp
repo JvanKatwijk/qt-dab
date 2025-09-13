@@ -92,9 +92,11 @@
 //	teller			= 0;
 //	totalErrorLines		= 0;
 //	totalRepairs		= 0;
+	stopWorking. store (false);
 }
 
 	mp4Processor::~mp4Processor () {
+	stop ();
 }
 /**
   *	\brief addtoFrame
@@ -111,6 +113,9 @@ int16_t	nbits	= 24 * bitRate;
 int16_t nbytes	= nbits / 8;
 uint8_t	temp	= 0;
 
+	if (stopWorking)
+	   return;
+	locker. lock ();
 	for (int i = 0; i < nbytes; i ++) {	// in bytes
 	   temp = 0;
 	   for (int j = 0; j < 8; j ++)
@@ -125,8 +130,10 @@ uint8_t	temp	= 0;
 /**
   *	we take the last five blocks to look at
   */
-	if (blocksInBuffer < 5) 
+	if (blocksInBuffer < 5) {
+	   locker. unlock ();
 	   return;
+	}
 //
 //	The buffer is filled enough, let's process
 ///	first, we show the number of successful frames
@@ -140,12 +147,14 @@ uint8_t	temp	= 0;
 //	do not need to apply a RS before testing
 	if (!fc. checkAndCorrect (&frameBytes [blockFillIndex * nbytes])) {
 	   blocksInBuffer = 4;	
+	   locker. unlock ();
 	   return;
 	}
 //
 	if (!handleRS (frameBytes. data (), blockFillIndex * nbytes,
 	              outVector, frameErrors, rsErrors)) {
 	   blocksInBuffer = 4;
+	   locker. unlock ();
 	   return;
 	}
 
@@ -156,6 +165,7 @@ uint8_t	temp	= 0;
 	      successFrames	= 0;
 	      rsErrors	= 0;
 	}	// end of ... >= 5
+	locker. unlock ();
 }
 //
 //	when handling a superframe we want to be sure that the fc is correct
@@ -409,5 +419,8 @@ uint8_t buffer [count];
 }
 
 void	mp4Processor::stop	() {
+	stopWorking. store (true);
+	locker. lock ();
+	locker. unlock ();
 }
 

@@ -33,6 +33,7 @@
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
 #include	"dab-constants.h"
+#include	<math.h>
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is
@@ -40,6 +41,7 @@
   *	will extract the Tu samples, do an FFT and extract the
   *	carriers and map them on (soft) bits
   */
+
 #define	ALPHA	0.01f
 static inline
 Complex	normalize (const Complex &V) {
@@ -230,6 +232,7 @@ float	sum	= 0;
                                   normalize (conj (phaseReference [index]));
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
+	   Complex prevBin	= phaseReference [index];
 //
 //	updates
 
@@ -259,7 +262,8 @@ float	sum	= 0;
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
 	       1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
-	      corrector			/= (1 / snr + 2);
+	      corrector			/= (1 / snr + 1);
+//	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
 	                                      sqrt (jan_abs (phaseReference [index]))));
@@ -294,9 +298,11 @@ float	sum	= 0;
 	      sum			+= jan_abs (R1);
 	   }
 	   else {
-	      softbits [i]  = - real (fftBin) / binAbsLevel * MAX_VITERBI;
+	      softbits [i]  = - real (fftBin) / binAbsLevel *
+	                                          1.5 * MAX_VITERBI;
 	      softbits [carriers + i] 
-	                    = - imag (fftBin) / binAbsLevel * MAX_VITERBI; 
+	                    = - imag (fftBin) / binAbsLevel *
+	                                          1.5 * MAX_VITERBI; 
 	   }
 	}
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
