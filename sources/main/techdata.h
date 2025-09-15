@@ -36,7 +36,7 @@ class	RadioInterface;
 class	QSettings;
 
 
-class	techData: public QObject, public Ui_technical_data {
+class	techData: public superFrame, public Ui_technical_data {
 Q_OBJECT
 public:
 		techData	(RadioInterface *,
@@ -45,20 +45,14 @@ public:
 		~techData	();
 	void	showServiceData	(audiodata *);
 	void	cleanUp			();
-	void	show			();
-	void	hide			();
-	bool	isHidden		();
 	void	isDABPlus		(bool);
-	void	hideMissedLabel	();
+	void	hideMissedLabel		();
 	void	showTimetableButton	(bool);
 	void	updateFM		(std::vector<int> &);
-	void	setFocus		();
-	bool	hasFocus		();
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
 	RingBuffer<std::complex<int16_t>>	*audioData;
-	superFrame		myFrame;
 	audioDisplay		*theAudioDisplay;
 
 	void			setButtonColors	(QPushButton *,
@@ -98,7 +92,6 @@ signals:
 	void		handleTimeTable		();
 	void		handleAudioDumping	();
 	void		handleFrameDumping	();
-	void		frameClosed		();
 };
 
 

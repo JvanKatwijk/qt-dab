@@ -22,15 +22,20 @@
  */
 
 #include "super-frame.h"
+#include	<stdio.h>
 
 void	superFrame::closeEvent (QCloseEvent * event) {
 	frameClosed ();
 	QFrame::closeEvent (event);
 }
 
-void	superFrame::mousePressEvent (QMouseEvent *event) {
-	if (event -> button () == Qt::LeftButton) {
-//	   emit makePicture ();
-	}
-}
+//void	superFrame::mousePressEvent (QMouseEvent *event) {
+//	if (event -> button () == Qt::LeftButton) {
+////	   emit makePicture ();
+//	}
+//}
+//
+//void	superFrame::focusInEvent (QFocusEvent *event) {
+//	fprintf (stderr, "Focus In event\n");
+//}
 

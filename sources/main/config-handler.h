@@ -35,19 +35,14 @@ class		QSettings;
 //	In this version, a separate config handler is introduced
 //	that - as the name suggests - controls the configWidget
 
-class	configHandler: public QObject, public Ui_configWidget {
+class	configHandler: public superFrame, public Ui_configWidget {
 Q_OBJECT
 public:
 		configHandler		(RadioInterface *parent,
 	                                 QSettings *settings);
 		~configHandler		();
 
-	void	show			();
-	void	hide			();
-	bool	isHidden		();
 	void	set_connections		();
-	void	setFocus		();
-	bool	hasFocus		();
 	void	set_activeServices	(int);
 //
 //	the value extractors
@@ -95,7 +90,6 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	superFrame	myFrame;
 	int		serviceOrder;
 	void		set_Colors		();
 	void		set_buttonColors	(QPushButton *b,
@@ -162,7 +156,6 @@ signals:
 
 	void	set_serviceOrder	(int);
 	void	set_dcRemoval		(bool);
-	void	frameClosed		();
 
 	void	process_tiiCollisions	(int);
 	void	process_tiiFilter	(bool);

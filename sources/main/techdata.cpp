@@ -43,19 +43,21 @@
 		techData::techData	(RadioInterface *mr,
 	                                 QSettings	*s,
 	                                 RingBuffer<std::complex<int16_t>> *audioData):
-	                                         myFrame (nullptr) {
+	                                         superFrame (nullptr) {
 	myRadioInterface	= mr;
 	dabSettings		= s;
 	this	-> audioData	= audioData;
 
-        setupUi (&myFrame);
+        setupUi (this);
 	QString settingsHeader	= TECHDATA_SETTING;
 
-	setPositionAndSize (dabSettings, &myFrame, TECHDATA_SETTING);
+	setPositionAndSize (dabSettings, this, TECHDATA_SETTING);
 
 //	formLayout -> setLabelAlignment (Qt::AlignLeft);
-//	myFrame. setWindowFlag (Qt::Tool, true);
-	myFrame. hide ();
+//
+//	we start being hidden, the radio decides whether we are visible
+//	or not
+	this	-> hide ();
 	timeTable_button	-> setEnabled (false);
 	theAudioDisplay	= new audioDisplay (mr, audio, dabSettings);
 
@@ -82,8 +84,6 @@
                       setStyleSheet (temp. arg (audiodumpButton_color,
                                                 audiodumpButton_font));
 
-	connect (&myFrame, &superFrame::frameClosed,
-	         this,  &techData::frameClosed);
 	connect (framedumpButton, &smallPushButton::rightClicked,
                  this, &techData::colorFramedumpButton);
         connect (audiodumpButton, &smallPushButton::rightClicked,
@@ -99,8 +99,9 @@
 }
 
 		techData::~techData	() {
-	if (!myFrame. isHidden ())
-	   storeWidgetPosition (dabSettings, &myFrame, TECHDATA_SETTING);
+	if (!isHidden ())
+	   storeWidgetPosition (dabSettings, this, TECHDATA_SETTING);
+	hide ();
 	delete theAudioDisplay;
 }
 
@@ -133,18 +134,6 @@ void	techData::showServiceData	(audiodata *ad) {
 	showLanguage		(ad -> language);
 	showFm			(ad -> fmFrequencies);
 	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
-}
-
-void	techData::show		() {
-	myFrame. show ();
-}
-
-void	techData::hide		() {
-	myFrame. hide ();
-}
-
-bool	techData::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 void	techData::showFrameErrors	(int e) {
@@ -278,7 +267,7 @@ void	techData::audioDataAvailable	(int amount, int rate) {
 std::complex<int16_t> buffer [amount];
 
 	audioData -> getDataFromBuffer (buffer, amount);
-	if (myFrame. isHidden ())
+	if (isHidden ())
 	   return;
 	theAudioDisplay -> createSpectrum (buffer, amount, rate);
 	
@@ -390,13 +379,3 @@ void	techData::hideMissedLabel	() {
 	missedLabel	-> hide ();
 	missedSamples	-> hide ();
 }
-
-void	techData::setFocus		() {
-	myFrame. activateWindow	();
-	myFrame. setFocus	();
-}
-
-bool	techData::hasFocus		() {
-	return myFrame. hasFocus ();
-}
-

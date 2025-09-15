@@ -134,7 +134,6 @@ void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
 
-	Complex temp	= Complex (0, 0);
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -232,7 +231,6 @@ float	sum	= 0;
                                   normalize (conj (phaseReference [index]));
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
-	   Complex prevBin	= phaseReference [index];
 //
 //	updates
 
@@ -258,15 +256,15 @@ float	sum	= 0;
 	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
 //
 //	Ran over quite a number of examples, I found DECODER_1
-//	working best
+//	working best, not sure about the +1 or +2 or +3 addition
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
 	       1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector			/= (1 / snr + 1);
 //	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
-	                                      sqrt (jan_abs (phaseReference [index]))));
+	                           (DABFLOAT)(sqrt (binAbsLevel) *
+	                                      sqrt (jan_abs (phaseReference [index])));
 	      float scaler		=  100.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
@@ -284,8 +282,8 @@ float	sum	= 0;
 	          1.5 * meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector		/= (1 / snr + 3);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
-	                                      sqrt (jan_abs (phaseReference [index]))));
+	                           (DABFLOAT)(sqrt (binAbsLevel) *
+	                                      sqrt (jan_abs (phaseReference [index])));
 	      float scaler		=  140 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);

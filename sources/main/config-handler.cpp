@@ -81,16 +81,14 @@ int	index_for_key (int key) {
 
 	configHandler::configHandler (RadioInterface *parent,
 	                              QSettings *settings):
-	                                     myFrame (nullptr) {
+	                                     superFrame (nullptr) {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
-	this -> setupUi (&myFrame);
-	setPositionAndSize (settings, &myFrame, CONFIG_HANDLER);
+	this -> setupUi (this);
+	setPositionAndSize (settings, this, CONFIG_HANDLER);
 	hide ();
-	connect (&myFrame, &superFrame::frameClosed,
-	         this, &configHandler::frameClosed);
-	connect (&myFrame, &superFrame::makePicture,
-	         this, &configHandler::handle_mouseClicked);
+//	connect (&myFrame, &superFrame::makePicture,
+//	         this, &configHandler::handle_mouseClicked);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
 	
@@ -250,20 +248,10 @@ int	index_for_key (int key) {
 }
 
 	configHandler::~configHandler	() {
-	if (!myFrame. isHidden ())
-	   storeWidgetPosition (dabSettings, &myFrame, CONFIG_HANDLER);
-}
-
-void	configHandler::show		() {
-	myFrame. show ();
-}
-
-void	configHandler::hide		() {
-	myFrame. hide ();
-}
-
-bool	configHandler::isHidden		() {
-	return myFrame. isHidden ();
+	fprintf (stderr, "Stopping the confighandler\n");
+	if (!this -> isHidden ())
+	   storeWidgetPosition (dabSettings, this, CONFIG_HANDLER);
+	hide ();
 }
 
 void	configHandler::setDeviceList	(const QStringList &sl) {
@@ -1048,15 +1036,15 @@ bool	x 	= tiiSelector	-> isChecked ();
 }
 
 void	configHandler::handle_mouseClicked () {
-QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
-        tempPath                =
-               value_s (dabSettings, "CONFIG_HANDLER", S_FILE_PATH, tempPath);
-        if (!tempPath. endsWith ('/'))
-           tempPath             += '/';
-	QDir::fromNativeSeparators (tempPath);
-	QString fileName	= tempPath + "config-handler.png";
-	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
-	myFrame. grab (). save (fileName);
+//QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
+//        tempPath                =
+//               value_s (dabSettings, "CONFIG_HANDLER", S_FILE_PATH, tempPath);
+//        if (!tempPath. endsWith ('/'))
+//           tempPath             += '/';
+//	QDir::fromNativeSeparators (tempPath);
+//	QString fileName	= tempPath + "config-handler.png";
+//	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
+//	myFrame. grab (). save (fileName);
 }
 
 void	configHandler::set_activeServices	(int activeS) {
@@ -1079,14 +1067,5 @@ void	configHandler::handle_saveTitles	(int h) {
 
 bool	configHandler::get_saveTitles		() {
 	return saveTitlesSelector -> isChecked ();
-}
-
-void	configHandler::setFocus			() {
-	myFrame. activateWindow ();
-	myFrame. setFocus ();
-}
-
-bool	configHandler::hasFocus			() {
-	return myFrame. hasFocus ();
 }
 

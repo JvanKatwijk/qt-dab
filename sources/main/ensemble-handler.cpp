@@ -525,6 +525,7 @@ void	ensembleHandler::addRow	(const QString &service,
 	   this -> insertRow (row);
 	   QTableWidgetItem *item_0 = new QTableWidgetItem;
 	   item_0	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	   item_0	-> setFlags (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
 	   this -> setItem (row, 0, item_0);
 	   QTableWidgetItem *item_1 = new QTableWidgetItem;
 	   this -> item (row, 0) -> setText (service);
@@ -532,12 +533,14 @@ void	ensembleHandler::addRow	(const QString &service,
 	   this -> item (row, 0) -> setForeground (QColor(fontColor));
 	   if (ensembleMode == SHOW_PRESETS) {
 	      item_1	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	      item_1	-> setFlags (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
 	      this -> setItem (row, 1, item_1);
 	      this -> item (row, 1) -> setText (channel);
 	      this -> item (row, 1) -> setFont (channelFont);
 	   }
 	   else {
 	      item_1	-> setTextAlignment (Qt::AlignHCenter |Qt::AlignVCenter);
+	      item_1	-> setFlags (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
 	      this -> setItem (row, 1, item_1);
 	      this -> item (row, 1) -> setText (Mark ? "*": " ");
 	   }

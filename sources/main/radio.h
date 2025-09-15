@@ -242,6 +242,7 @@ public:
 	bool	devScopeOn		();
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
+	void			focusInEvent (QFocusEvent *);
 private:
 	FILE			*dlTextFile;
 	RingBuffer<Complex>	theSpectrumBuffer;

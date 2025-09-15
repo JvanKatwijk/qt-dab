@@ -1308,8 +1308,6 @@ void	RadioInterface::TerminateProcess () {
 	theNewDisplay.		hide ();
 	theDXDisplay.		hide ();
 	theEnsembleHandler	-> hide ();
-	configHandler_p		-> hide ();
-	techWindow_p		-> hide ();
 	if (the_aboutLabel != nullptr) {
 	   the_aboutLabel -> hide ();
 	   delete the_aboutLabel;
@@ -1319,6 +1317,8 @@ void	RadioInterface::TerminateProcess () {
 	   contentTable_p -> hide ();
 	   delete contentTable_p;
 	}
+	configHandler_p. reset ();
+	techWindow_p. reset ();
 	theSNRViewer.	hide ();
 	theScheduler.	hide	();
 	theScanlistHandler. hide ();
@@ -1938,12 +1938,14 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      else
 	      if (keyEvent -> key () == Qt::Key_F2) {
 	// setFocus takes care of activating
+	         configHandler_p -> activateWindow ();
 	         configHandler_p -> setFocus ();
 	         return true;
 	      }
 	      else
 	      if (keyEvent -> key () == Qt::Key_F3) {
 	// setFocus takes care of activating
+	         techWindow_p	-> activateWindow ();
 	         techWindow_p	-> setFocus ();
 	         return true;
 	      }
@@ -4800,4 +4802,8 @@ void	RadioInterface::journalineData		(QByteArray data,
 	journalineHandler	-> add_mscDatagroup (theMscdata);
 }
 
+
+void	RadioInterface::focusInEvent (QFocusEvent *evt) {
+	fprintf (stderr, "In focus now\n");
+}
 

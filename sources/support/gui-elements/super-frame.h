@@ -35,7 +35,8 @@ Q_OBJECT
 	using QFrame::QFrame;
 protected:
 	void closeEvent (QCloseEvent * event);
-	void	mousePressEvent	(QMouseEvent *);
+//	void	mousePressEvent	(QMouseEvent *);
+//	void	focusInEvent	(QFocusEvent *);
 signals:
 	void	frameClosed	();
 	void	makePicture	();
