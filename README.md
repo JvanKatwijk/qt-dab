@@ -16,10 +16,8 @@ Qt-DAB  has a single *main* widget that contains essentially all that is needed 
 ![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-6.9.3*, predefined executables and installers are available.
+*Qt-DAB-6.9.4*, predefined executables and installers are available.
 For Windows  **two** 32 bit installers are available, and for Linux there is an x64 AppImage.
-
-![6.9](/res/read_me/Qt_DAB-6.9.2.png?raw=true)
 
 Table of Contents
 =================================================================
@@ -78,11 +76,13 @@ Widgets and scopes
 
 ![6.9](/res/read_me/Qt_DAB-6.9.1.png)
 
-The *main widget* (see picture) of Qt-DAB (always visible), contains settings for controlling the visibility of other widgets.
-It shows - left half - a list of services (either from the currently selected channel or from the favourites). Selecting a service is just by clicking on the name.
+The *main widget* (see picture) of Qt-DAB (always visible), contains  the settings for controlling the visibility of other widgets.
+The window shows - left half - a list of services (either from the currently selected channel or from the favourites). Selecting a service is just by clicking on the name.
 The right half of the widget shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
   * touching the *ensemble name* (NPO (8001) in the picture) makes the *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible, touching the name agian will hide it;
+
+![6.9](/res/read_me/content-table.png)
 
  * touching the small icon left on the top of the right half will show (or hide) the *technical widget*, a widget showing all technical details as well as strength indicators and 
 a spectrum of the audio of the selected service;
@@ -91,7 +91,8 @@ a spectrum of the audio of the selected service;
 whether or not a signal should be audible.
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with acknowledgements for using external libraries;
 
- * touching with the *right hand mouse button* the text on the dynamic label (Grover Washington, Jr - Mister magic) a small menu shows to put the text on the clipboard;
+ * touching with the *right hand mouse button* the text on the dynamic label 
+Toto - Rosanna) a small menu shows to put the text on the clipboard (see also below the configuration widget).
 
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map (with the transmitters) will be shown;
@@ -217,6 +218,16 @@ buttons with which the configuration of the decoding process can be
 influenced.
 
 At starting up Qt-DAB for the (very) first time, no device is selected yet, and the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
+
+![8.8](/res/read_me/service-and-titles.png)
+
+NEW is - slightly experimental - is the possibility to save titles (parts
+of the dynamic labels) of (mostly) songs that are transmitted.
+This is by interpreting the so-called DL2 data, **Note that not all 
+transmitters send DL2 data**.
+The selector labeled **save titles** controls this.
+
+Furthermore, the indicator, left of the CPU load text, here with value 1, tells how many backends are active simultaneously.
 
 For a detailed description of all selectors, see the manual (or read the tooltips).
 
