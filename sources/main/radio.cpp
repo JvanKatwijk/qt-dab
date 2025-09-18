@@ -1858,6 +1858,8 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_httpButton);
 	connect (scanButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_scanButton);
+	connect (this, &RadioInterface::call_scanButton,
+	         this, &RadioInterface::handle_scanButton);
 //
 ////	and for the techWindow
 //	connect (techWindow_p. data (), &techData::handleAudioDumping,
@@ -1920,8 +1922,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      return true;
 	   }
 	   else {
-//	      if (theEnsembleHandler -> hasFocus ()) 
-//	         fprintf (stderr, "EnsembleHandler\n");
+//	      if (theEnsembleHandler	-> hasFocus ())
+//	         fprintf (stderr, "ensembleHandler\n");
 //	      else
 //	      if (configHandler_p -> hasFocus ())
 //	         fprintf (stderr, "Config handler\n");
@@ -1937,16 +1939,23 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      }
 	      else
 	      if (keyEvent -> key () == Qt::Key_F2) {
-	// setFocus takes care of activating
 	         configHandler_p -> activateWindow ();
 	         configHandler_p -> setFocus ();
 	         return true;
 	      }
 	      else
 	      if (keyEvent -> key () == Qt::Key_F3) {
-	// setFocus takes care of activating
 	         techWindow_p	-> activateWindow ();
 	         techWindow_p	-> setFocus ();
+	         return true;
+	      }
+	      else
+	      if (keyEvent -> key () == Qt::Key_F4) {
+//	         theSCANHandler. show ();
+//	         theSCANHandler. activateWindow ();
+//	         theSCANHandler. setFocus ();
+	         this	-> activateWindow	();
+	         this	-> setFocus		();
 	         return true;
 	      }
 	      else

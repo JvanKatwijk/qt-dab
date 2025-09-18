@@ -39,16 +39,16 @@
 #include	"findfilenames.h"
 #include	"scantable-handler.h"
 
+#include	"super-frame.h"
+
 class	RadioInterface;
 class	QSettings;
 
-class	scanHandler: public QObject {
+class	scanHandler: public superFrame {
 Q_OBJECT
 public:
 		scanHandler	(RadioInterface *, QSettings *, const QString &);
 		~scanHandler	();
-	void	show		();
-	void	hide		();
 	bool	isVisible	();
 	void	clearTable	();
 	void	addEnsemble	(const QString &channel, const QString &name);
@@ -74,12 +74,12 @@ public:
 	QString		getChannel	(int frequency);
 
 private:
-	QScrollArea	myWidget;
 	scantableHandler	scanTable;
 	QString		channel;
 	findfileNames	filenameFinder;
 	RadioInterface	*theRadio;
 	QSettings	*dabSettings;
+	QScrollArea	*myWidget;
 	QTableWidget	*contentWidget;
 	QPushButton	*startKnop;
 	QPushButton	*stopKnop;

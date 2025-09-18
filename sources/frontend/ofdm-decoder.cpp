@@ -33,7 +33,6 @@
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
 #include	"dab-constants.h"
-#include	<math.h>
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is
@@ -41,9 +40,7 @@
   *	will extract the Tu samples, do an FFT and extract the
   *	carriers and map them on (soft) bits
   */
-
-static float avgBit	= 0;
-#define	ALPHA	0.01f
+#define	ALPHA	0.005f
 static inline
 Complex	normalize (const Complex &V) {
 float Length	= jan_abs (V);
@@ -119,7 +116,7 @@ void	ofdmDecoder::stop ()	{
 //
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
-	   sigmaSQ_Vector [i]	= 1;
+	   sigmaSQ_Vector [i]	= 0;
 	   meanLevelVector [i]	= 0;
 	   stdDevVector [i]	= 0;
 	   angleVector [i]	= M_PI_4;
@@ -136,6 +133,7 @@ void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
 
+	Complex temp	= Complex (0, 0);
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -181,18 +179,11 @@ int	sign (DABFLOAT x) {
 void	limit_symmetrically (DABFLOAT &v, float limit) {
 	if (v < -limit)
 	   v = -limit;
-	if (v >= limit)
+	if (v > limit)
 	   v = limit;
 }
 //
-//	How to compute a sin or cos for (hopefully) small angles,
-//	Some tests showed the using the first few terms of the
-//	Taylor series for angles up to PI / 4 were up to  the fourth
-//	decimal correct.
-//	A more performance oriented solution is a table,
-//	but then, the granularity of the table should be pretty high.
-//
-//	The decoders 1  and 2  are based on "Sof t optimal 2" in
+//	The decoders 1  and 2  are based on "Soft optimal 2" in
 //	"Soft decisions for DQPSK demodulation for the Viterbi
 //	decoding of the convolutional codes"
 //	Thushara C Hewavithana and Mike Brooks
@@ -238,6 +229,7 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 
 float	sum	= 0;
 float	bitSum	= 0;
+
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
@@ -281,15 +273,14 @@ float	bitSum	= 0;
 	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
 //
 //	Ran over quite a number of examples, I found DECODER_1
-//	working best, not sure about the +1 or +2 or +3 addition
+//	working best
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
 	       1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
-	      corrector			/= (1 / snr + 1);
-//	      corrector			/= (1 / snr + 2);
+	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (binAbsLevel) *
-	                                      sqrt (jan_abs (phaseReference [index])));
+	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
+	                                      sqrt (jan_abs (phaseReference [index]))));
 	      float scaler		=  100.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
@@ -304,11 +295,11 @@ float	bitSum	= 0;
 	   else 
 	   if (this -> decoder == DECODER_2) {	// decoder 2
 	      DABFLOAT corrector	=
-	          1.5 * meanLevelVector [index] / sigmaSQ_Vector [index];
+	          meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector		/= (1 / snr + 3);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (binAbsLevel) *
-	                                      sqrt (jan_abs (phaseReference [index])));
+	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
+	                                      sqrt (jan_abs (phaseReference [index]))));
 	      float scaler		=  140 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
@@ -320,12 +311,13 @@ float	bitSum	= 0;
 
 	      sum			+= jan_abs (R1);
 	   }
+	   else 
 	   if (this -> decoder == DECODER_3) {	// decoder 3
 	      softbits [i]  = - real (fftBin) / binAbsLevel *
-	                                          1.5 * MAX_VITERBI;
+	                                          1.0 * MAX_VITERBI;
 	      softbits [carriers + i] 
 	                    = - imag (fftBin) / binAbsLevel *
-	                                          1.5 * MAX_VITERBI; 
+	                                          1.0 * MAX_VITERBI; 
 	   }
 	   else {	// experimental decoder 4
 	      float P1     =  makeA (1, fftBin, prevS) /
@@ -357,7 +349,7 @@ float	bitSum	= 0;
 	      softbits [carriers + i] = (int16_t)xx2;
 	   }
 	}
-	avgBit		= compute_avg (avgBit, bitSum / carriers, 0.1);
+        avgBit          = compute_avg (avgBit, bitSum / carriers, 0.1);
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
 	
 //		end of decoding	, now for displaying things	//

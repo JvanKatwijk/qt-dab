@@ -93,8 +93,11 @@ private:
 	std::vector<DABFLOAT>	meanLevelVector;
 	std::vector<DABFLOAT>	stdDevVector;
 	std::vector<DABFLOAT>	angleVector;
+	std::vector<DABFLOAT>	powerLevelVector;
+	std::vector<DABFLOAT>	nullLevelVector;
 
 	float		meanValue;
+	float		avgBit;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;

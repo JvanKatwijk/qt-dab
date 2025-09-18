@@ -51,10 +51,10 @@ Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
 *main widget* - one with sufficient controls to select channels and service(s)  which is always visible. This main widget contains selectors
 for controlling the visibility of (the) other widgets.
 
-There is - on the surface - not much difference between the 6.9.3 and
-6.9.2 version. An error that sometimes caused problems with a data service
-(insufficent data) to run was corrected and there was an error with reading ".sdr" files. Furthermore, the sourcetree
-was changed completely, but that does not affect the executables.
+There is - on the surface - not much difference between the 6.9. and
+previous versions.
+Most changes  are internal, a visible one is the addition of  a "save titles"
+selector on the configuration widget.
 
 Features
 =================================================================
@@ -221,11 +221,12 @@ At starting up Qt-DAB for the (very) first time, no device is selected yet, and 
 
 ![8.8](/res/read_me/service-and-titles.png)
 
-NEW is - slightly experimental - is the possibility to save titles (parts
+NEW - slightly experimental - is the possibility to save **titles** (parts
 of the dynamic labels) of (mostly) songs that are transmitted.
-This is by interpreting the so-called DL2 data, **Note that not all 
-transmitters send DL2 data**.
-The selector labeled **save titles** controls this.
+**This is by interpreting the so-called DL2 data, note that not all 
+ensembles send DL2 data**.
+The selector labeled **save titles** controls this, the titles - see picture
+above - are stored in a file **DL2_titles.csv** in the Qt-DAB-files directory.
 
 Furthermore, the indicator, left of the CPU load text, here with value 1, tells how many backends are active simultaneously.
 

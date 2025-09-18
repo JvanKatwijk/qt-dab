@@ -458,6 +458,7 @@ signals:
 	void			select_ensemble_fontSize	();
 	void			select_ensemble_fontColor	();
 
+	void			call_scanButton		();
 public slots:
 	void			lto_ecc			(int, int);
 	void			setFreqList		();

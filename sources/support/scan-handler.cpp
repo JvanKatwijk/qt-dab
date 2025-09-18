@@ -108,7 +108,7 @@ QString scanmodeText (int e) {
 	scanHandler::scanHandler (RadioInterface *theRadio,
 	                                         QSettings *s,
 	                                         const QString &extFile):
-	                                             myWidget (nullptr),
+	                                             superFrame (nullptr),
 	                                             scanTable (s),
 	                                             filenameFinder (s) {
 	this	-> theRadio		= theRadio;
@@ -172,9 +172,9 @@ QString scanmodeText (int e) {
 	LV		-> addLayout (LH_2);
 	LV		-> addWidget (scanModeSelector);
 	LV		-> addWidget (contentWidget);
-        myWidget. setLayout (LV);
-	myWidget. setWindowTitle ("scan monitor");
-	setPositionAndSize (dabSettings, &myWidget, SCAN_HANDLER);
+        this ->  setLayout (LV);
+	this ->  setWindowTitle ("scan monitor");
+	setPositionAndSize (dabSettings, this, SCAN_HANDLER);
 
 	if (!no_scanTables)
 	   scanTable. setup_scanTable (selectedBand);
@@ -225,8 +225,8 @@ QString scanmodeText (int e) {
 }
 
 	scanHandler::~scanHandler () {
-	if (!myWidget. isHidden ())
-	   storeWidgetPosition (dabSettings, &myWidget, SCAN_HANDLER);
+	if (!this ->  isHidden ())
+	   storeWidgetPosition (dabSettings, this, SCAN_HANDLER);
 	clearTable	();
 	scanTable. hide_scanTable ();
         delete  contentWidget;
@@ -254,17 +254,17 @@ int	rows	= contentWidget -> rowCount ();
 	addRow ();	// for the ensemble name
 }
 
-void	scanHandler::show	() {
-	myWidget. show ();
-}
-
-void	scanHandler::hide	() {
-	myWidget. hide ();
-	scanTable. hide_scanTable ();
-}
+//void	scanHandler::show	() {
+//	myWidget. show ();
+//}
+//
+//void	scanHandler::hide	() {
+//	myWidget. hide ();
+//	scanTable. hide_scanTable ();
+//}
 
 bool	scanHandler::isVisible	() {
-	return !myWidget. isHidden ();
+	return !this ->  isHidden ();
 }
 
 int16_t	scanHandler::addRow () {

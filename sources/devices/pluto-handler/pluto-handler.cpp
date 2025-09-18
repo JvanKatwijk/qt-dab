@@ -473,11 +473,11 @@ bool 	plutoHandler::get_ad9361_stream_dev (struct iio_context *ctx,
 	switch (d) {
 	case TX:
 	   *dev = iio_context_find_device (ctx, "cf-ad9361-dds-core-lpc");
-	   return *dev != NULL;
+	   return *dev != nullptr;
 
 	case RX:
 	   *dev = iio_context_find_device (ctx, "cf-ad9361-lpc");
-	   return *dev != NULL;
+	   return *dev != nullptr;
 
 	default: 
 	   return false;
@@ -497,7 +497,7 @@ bool	plutoHandler::get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	   *chn = iio_device_find_channel (dev,
 	                                   get_ch_name ("altvoltage", chid),
 	                                   d == TX);
-	return *chn != NULL;
+	return *chn != nullptr;
 }
 
 /* finds AD9361 phy IIO configuration channel with id chid */
@@ -508,13 +508,13 @@ bool	plutoHandler::get_phy_chan (struct iio_context *ctx,
 	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
 	                                      get_ch_name ("voltage", chid),
 	                                      false);
-	      return *chn != NULL;
+	      return *chn != nullptr;
 
 	   case TX:
 	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
 	                                      get_ch_name ("voltage", chid),
 	                                      true);
-	      return *chn != NULL;
+	      return *chn != nullptr;
 
 	   default: 
 	      return false;
@@ -530,13 +530,13 @@ bool	plutoHandler::get_lo_chan (struct iio_context *ctx,
 	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
 	                                      get_ch_name ("altvoltage", 0),
 	                                      true);
-	      return *chn != NULL;
+	      return *chn != nullptr;
 
 	   case TX:
 	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
 	                                      get_ch_name ("altvoltage", 1),
 	                                      true);
-	      return *chn != NULL;
+	      return *chn != nullptr;
 
 	   default: 
 	      return false;
@@ -547,7 +547,7 @@ bool	plutoHandler::get_lo_chan (struct iio_context *ctx,
 bool	plutoHandler::cfg_ad9361_streaming_ch (struct iio_context *ctx,
 	                                       struct stream_cfg *cfg,
 	                                       enum iodev type, int chid) {
-struct iio_channel *chn = NULL;
+struct iio_channel *chn = nullptr;
 int	ret;
 
 // Configure phy and lo channels
