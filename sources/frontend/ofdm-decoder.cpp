@@ -264,9 +264,9 @@ float	bitSum	= 0;
 	   meanLevelVector [index] =
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
 
-	   DABFLOAT d_x		=  real (fftBin_at_1) -
+	   DABFLOAT d_x		=  abs (real (fftBin_at_1)) -
 	                                  meanLevelVector [index] / sqrt_2;
-	   DABFLOAT d_y		=  imag (fftBin_at_1) -
+	   DABFLOAT d_y		=  abs (imag (fftBin_at_1)) -
 	                                  meanLevelVector [index] / sqrt_2;
 	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
 	   sigmaSQ_Vector [index] =
@@ -276,12 +276,12 @@ float	bitSum	= 0;
 //	working best
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
-	       1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
+	          1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
-	                                      sqrt (jan_abs (phaseReference [index]))));
-	      float scaler		=  100.0 / meanValue;
+	                           (DABFLOAT)(sqrt (binAbsLevel *
+	                                       jan_abs (phaseReference [index])));
+	      float scaler		=  140.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
 	      softbits [i]		= (int16_t)leftBit;
@@ -298,9 +298,9 @@ float	bitSum	= 0;
 	          meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector		/= (1 / snr + 3);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (jan_abs (fftBin) *
-	                                      sqrt (jan_abs (phaseReference [index]))));
-	      float scaler		=  140 / meanValue;
+	                           (DABFLOAT)(sqrt (binAbsLevel *
+	                                      jan_abs (phaseReference [index])));
+	      float scaler		=  100 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
 	      softbits [i]		= (int16_t)leftBit;

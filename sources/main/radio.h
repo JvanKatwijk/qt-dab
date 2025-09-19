@@ -452,6 +452,8 @@ private:
 
 	void			announcement_start	(uint16_t, uint16_t);	
 	void			announcement_stop	();
+
+	bool			handle_keyEvent		(int);
 //
 signals:
 	void			select_ensemble_font	();

@@ -1921,48 +1921,10 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      theEnsembleHandler -> selectCurrentItem ();
 	      return true;
 	   }
-	   else {
-//	      if (theEnsembleHandler	-> hasFocus ())
-//	         fprintf (stderr, "ensembleHandler\n");
-//	      else
-//	      if (configHandler_p -> hasFocus ())
-//	         fprintf (stderr, "Config handler\n");
-//	      else
-//	      if (techWindow_p	-> hasFocus ())
-//	         fprintf (stderr, "techWindow\n");
-//	      else
-//	         fprintf (stderr, "focus elsewhere\n");
-	      if (keyEvent -> key () == Qt::Key_F1) {
-	         theEnsembleHandler	-> activateWindow ();
-	         theEnsembleHandler	-> setFocus ();
-	         return true;
-	      }
-	      else
-	      if (keyEvent -> key () == Qt::Key_F2) {
-	         configHandler_p -> activateWindow ();
-	         configHandler_p -> setFocus ();
-	         return true;
-	      }
-	      else
-	      if (keyEvent -> key () == Qt::Key_F3) {
-	         techWindow_p	-> activateWindow ();
-	         techWindow_p	-> setFocus ();
-	         return true;
-	      }
-	      else
-	      if (keyEvent -> key () == Qt::Key_F4) {
-//	         theSCANHandler. show ();
-//	         theSCANHandler. activateWindow ();
-//	         theSCANHandler. setFocus ();
-	         this	-> activateWindow	();
-	         this	-> setFocus		();
-	         return true;
-	      }
-	      else
-	         return false;
-	   }
+	   else		// handling function keys 
+	   if (handle_keyEvent (keyEvent -> key ()))
+	      return true;
 	}
-	else
 //	An option is to click - right hand mouse button - on a
 //	service in the scanlist in order to add it to the
 //	list of favorites
@@ -4813,6 +4775,59 @@ void	RadioInterface::journalineData		(QByteArray data,
 
 
 void	RadioInterface::focusInEvent (QFocusEvent *evt) {
-	fprintf (stderr, "In focus now\n");
 }
+//
+//	This function is called whenever a key is touched
+//	that is not the return key
+bool	RadioInterface::handle_keyEvent (int theKey) {
+	switch (theKey) {
+	   case Qt::Key_F1:
+	      theEnsembleHandler	-> activateWindow ();
+	      theEnsembleHandler	-> setFocus ();
+	      return true;
 
+	   case  Qt::Key_F2:
+	      configHandler_p -> activateWindow ();
+	      configHandler_p -> setFocus ();
+	      return true;
+	
+	   case  Qt::Key_F3:
+	      techWindow_p -> activateWindow ();
+	      techWindow_p -> setFocus ();
+	      return true;
+
+	   case  Qt::Key_F4:
+	      this	-> activateWindow	();
+	      this	-> setFocus		();
+	      return true;
+
+	   case Qt::Key_F6:
+	      if (theEnsembleHandler	-> hasFocus ()) {
+	         this -> activateWindow ();
+	         this -> setFocus ();
+	         return true;
+	      }
+	      else
+	      if (this -> hasFocus ()) {
+	         configHandler_p -> activateWindow ();
+                 configHandler_p -> setFocus ();
+                 return true;
+	      }
+	      else 
+	      if (configHandler_p -> hasFocus ()) {
+	         techWindow_p -> activateWindow ();
+	         techWindow_p -> setFocus ();
+	         return true;
+	      }
+	      else
+	      if (techWindow_p -> hasFocus ()) {
+	         theEnsembleHandler	-> activateWindow ();
+	         theEnsembleHandler	-> setFocus ();
+	         return true;
+	      }
+	      else
+	         return false;
+	   default:
+	      return false;
+	}
+}
