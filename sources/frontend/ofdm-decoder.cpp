@@ -43,22 +43,9 @@
 #define	ALPHA	0.005f
 static inline
 Complex	normalize (const Complex &V) {
-float Length	= jan_abs (V);
+DABFLOAT Length	= jan_abs (V);
 	return Length == 0.0f ? Complex (0.0, 0.0) : V / (DABFLOAT)Length;
 }
-
-#define	GRANULARITY	5000
-#define	TABLE_SIZE	(int)(GRANULARITY + RAD_PER_DEGREE * 30.0)
-//Complex makeComplex (DABFLOAT phase) {
-//DABFLOAT p2	= phase * phase;
-//DABFLOAT p3	= p2 * phase;
-//DABFLOAT p4	= p3 * phase;
-//DABFLOAT p5	= p4 * phase;
-//DABFLOAT p6	= p5 * phase;
-//DABFLOAT sine	= phase - p3 / 6 + p5 / 120;
-//DABFLOAT cosi	= 1 - p2 / 2 + p4 / 24 - p6 / 720;
-//	return Complex (cosi, sine);
-//}
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
@@ -99,13 +86,7 @@ float Length	= jan_abs (V);
 	iqSelector		= SHOW_DECODED;
 //	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
-
-	compTable. resize (TABLE_SIZE);
-	for (int i = 0; i < TABLE_SIZE; i ++)  {
-	   float argum = (float)(i - TABLE_SIZE / 2) / TABLE_SIZE;
-	   compTable [i] = Complex (cos (argum), sin (argum));
-	}
-	sqrt_2	= sqrt (2);
+	sqrt_2			= sqrt (2);
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -176,7 +157,7 @@ int	sign (DABFLOAT x) {
 	return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-void	limit_symmetrically (DABFLOAT &v, float limit) {
+void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 	if (v < -limit)
 	   v = -limit;
 	if (v > limit)
@@ -206,19 +187,19 @@ void	limit_symmetrically (DABFLOAT &v, float limit) {
 //	It is still experimental!!!
 
 static inline
-std::complex<float> w (float kn) {
-	float re	= cos (kn * M_PI / 4);
-	float im	= sin (kn * M_PI / 4);
-	return std::complex<float> (re, im);
+Complex w (DABFLOAT kn) {
+	DABFLOAT re	= cos (kn * M_PI / 4);
+	DABFLOAT im	= sin (kn * M_PI / 4);
+	return Complex (re, im);
 }
 
 static inline
-float	makeA (int i, std::complex<float> S, std::complex<float> prevS) {
+DABFLOAT makeA (int i, Complex S, Complex prevS) {
 	return abs  (prevS + w (-i) * S);
 }
 
 static inline
-float IO	(float x) {
+DABFLOAT IO	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
 }
 
@@ -227,8 +208,8 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     std::vector<int16_t> &softbits,
 	                     DABFLOAT snr) {
 
-float	sum	= 0;
-float	bitSum	= 0;
+DABFLOAT sum	= 0;
+DABFLOAT bitSum	= 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
@@ -281,7 +262,7 @@ float	bitSum	= 0;
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (binAbsLevel *
 	                                       jan_abs (phaseReference [index])));
-	      float scaler		=  140.0 / meanValue;
+	      DABFLOAT scaler		=  140.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
 	      softbits [i]		= (int16_t)leftBit;
@@ -300,7 +281,7 @@ float	bitSum	= 0;
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (binAbsLevel *
 	                                      jan_abs (phaseReference [index])));
-	      float scaler		=  100 / meanValue;
+	      DABFLOAT scaler		=  100.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
 	      softbits [i]		= (int16_t)leftBit;
@@ -320,25 +301,25 @@ float	bitSum	= 0;
 	                                          1.0 * MAX_VITERBI; 
 	   }
 	   else {	// experimental decoder 4
-	      float P1     =  makeA (1, fftBin, prevS) /
+	      DABFLOAT P1     =  makeA (1, fftBin, prevS) /
 	                                       sigmaSQ_Vector [index];
-	      float P7     =  makeA (7, fftBin, prevS) /
+	      DABFLOAT P7     =  makeA (7, fftBin, prevS) /
 	                                       sigmaSQ_Vector [index];
-	      float P3     =  makeA (3, fftBin, prevS) /
+	      DABFLOAT P3     =  makeA (3, fftBin, prevS) /
 	                                       sigmaSQ_Vector [index];
-	      float P5     =  makeA (5, fftBin, prevS) /
+	      DABFLOAT P5     =  makeA (5, fftBin, prevS) /
 	                                       sigmaSQ_Vector [index];
 
-	      float IO_P1	= IO (P1);
-	      float IO_P7	= IO (P7);
-	      float IO_P3	= IO (P3);
-	      float IO_P5	= IO (P5);
+	      DABFLOAT IO_P1	= IO (P1);
+	      DABFLOAT IO_P7	= IO (P7);
+	      DABFLOAT IO_P3	= IO (P3);
+	      DABFLOAT IO_P5	= IO (P5);
 
-	      float b1		= log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5));
-	      float b2		= log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7));
+	      DABFLOAT b1	= log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5));
+	      DABFLOAT b2	= log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7));
 	
 	      bitSum		+= (abs (b1) + abs (b2)) / 2;
-	      float scaler	= 40 / avgBit;
+	      DABFLOAT scaler	= 40 / avgBit;
 	      int s1		= -real (fftBin) < 0 ? -1 : 1;
 	      int s2		= -imag (fftBin) < 0 ? -1 : 1;
 	      DABFLOAT xx1	= s1 * abs (b1) * scaler;

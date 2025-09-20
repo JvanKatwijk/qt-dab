@@ -442,8 +442,8 @@ equals (QT_MAJOR_VERSION, 6) {
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-#CONFIG		+= double
-CONFIG		+= single
+CONFIG		+= double
+#CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)

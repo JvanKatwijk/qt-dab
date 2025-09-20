@@ -109,10 +109,10 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (biasTSelector, &QCheckBox::checkStateChanged,
 #else
-	connect (biasTSelector, &QCkeckBox::stateChanged,
+	connect (biasTSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &rtl_tcp_client::setBiasT);
-	connect (portSelector, &QSpinBox::valueChanged,
+	connect (portSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &rtl_tcp_client::setPort);
 	connect (addressSelector, &QLineEdit::returnPressed,
 	         this, &rtl_tcp_client::setAddress);
