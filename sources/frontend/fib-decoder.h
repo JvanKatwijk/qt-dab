@@ -44,25 +44,28 @@ public:
 	void		connectChannel		();
 	void		disconnectChannel	();
 	bool		syncReached		();
-
-	uint16_t	getAnnouncing		(uint16_t);
+//
+//	The real interface 
 	uint32_t	getSId			(int);
 	uint8_t		serviceType		(int);
+	int		getNrComps		(const uint32_t);
+//
+//	not well chosen name, "subChannels" are meant
+	int		nrChannels		();
 	int		getServiceComp		(const QString &);
 	int		getServiceComp		(const uint32_t, const int);
 	int		getServiceComp_SCIds	(const uint32_t, const int);
 	bool		isPrimary		(const QString &);
 	void		audioData		(const int, audiodata &);
 	void		packetData		(const int, packetdata &);
-	int		getNrComps		(const uint32_t);
-	int		nrChannels		();
+	uint16_t	getAnnouncing		(uint16_t);
 	std::vector<int>	getFrequency	(const QString &);
 	void		getChannelInfo		(channel_data *, const int);
 	int32_t		getCIFcount		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
-	QList<contentType> contentPrint		();
 	int		freeSpace		();
+	QList<contentType> contentPrint		();
 
 protected:
 	void		processFIB		(uint8_t *, uint16_t);

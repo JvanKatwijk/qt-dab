@@ -1922,8 +1922,10 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      return true;
 	   }
 	   else		// handling function keys 
-	   if (handle_keyEvent (keyEvent -> key ()))
-	      return true;
+	   if (QApplication::keyboardModifiers ().
+                               testFlag (Qt::ControlModifier)) {
+              return handle_keyEvent (keyEvent -> key ());
+	   }
 	}
 //	An option is to click - right hand mouse button - on a
 //	service in the scanlist in order to add it to the
@@ -4779,55 +4781,35 @@ void	RadioInterface::focusInEvent (QFocusEvent *evt) {
 //
 //	This function is called whenever a key is touched
 //	that is not the return key
+//	as it turns out, our "beloved" windows does not let
+//	the Qt user catch the functon keys, we settle for Ctrl Ii
 bool	RadioInterface::handle_keyEvent (int theKey) {
-	switch (theKey) {
-	   case Qt::Key_F1:
-	      theEnsembleHandler	-> activateWindow ();
-	      theEnsembleHandler	-> setFocus ();
-	      return true;
+	if (theKey != Qt::Key_I)
+	   return false;
 
-	   case  Qt::Key_F2:
-	      configHandler_p -> activateWindow ();
-	      configHandler_p -> setFocus ();
-	      return true;
-	
-	   case  Qt::Key_F3:
-	      techWindow_p -> activateWindow ();
-	      techWindow_p -> setFocus ();
-	      return true;
-
-	   case  Qt::Key_F4:
-	      this	-> activateWindow	();
-	      this	-> setFocus		();
-	      return true;
-
-	   case Qt::Key_F6:
-	      if (theEnsembleHandler	-> hasFocus ()) {
-	         this -> activateWindow ();
-	         this -> setFocus ();
-	         return true;
-	      }
-	      else
-	      if (this -> hasFocus ()) {
-	         configHandler_p -> activateWindow ();
-                 configHandler_p -> setFocus ();
-                 return true;
-	      }
-	      else 
-	      if (configHandler_p -> hasFocus ()) {
-	         techWindow_p -> activateWindow ();
-	         techWindow_p -> setFocus ();
-	         return true;
-	      }
-	      else
-	      if (techWindow_p -> hasFocus ()) {
-	         theEnsembleHandler	-> activateWindow ();
-	         theEnsembleHandler	-> setFocus ();
-	         return true;
-	      }
-	      else
-	         return false;
-	   default:
-	      return false;
+	if (theEnsembleHandler	-> hasFocus ()) {
+	   this -> activateWindow ();
+	   this -> setFocus ();
+	   return true;
 	}
+	else
+	if (this -> hasFocus ()) {
+	   configHandler_p -> activateWindow ();
+           configHandler_p -> setFocus ();
+           return true;
+	}
+	else 
+	if (configHandler_p -> hasFocus ()) {
+	   techWindow_p -> activateWindow ();
+	   techWindow_p -> setFocus ();
+	   return true;
+	}
+	else
+	if (techWindow_p -> hasFocus ()) {
+	   theEnsembleHandler	-> activateWindow ();
+	   theEnsembleHandler	-> setFocus ();
+	   return true;
+	}
+	return false;
 }
+

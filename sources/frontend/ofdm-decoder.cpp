@@ -43,8 +43,10 @@
 #define	ALPHA	0.005f
 static inline
 Complex	normalize (const Complex &V) {
-DABFLOAT Length	= jan_abs (V);
-	return Length == 0.0f ? Complex (0.0, 0.0) : V / (DABFLOAT)Length;
+DABFLOAT length	= jan_abs (V);
+	if (length < 0.001)
+	   return Complex (0, 0);
+	return Complex (V) / length;
 }
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
@@ -103,7 +105,7 @@ void	ofdmDecoder::reset ()	{
 	   angleVector [i]	= M_PI_4;
 	}
 	meanValue	= 1.0f;
-	avgBit		= 1.0f;
+	avgBit		= 10.0f;
 }
 //
 void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
@@ -113,8 +115,6 @@ void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
 //
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
-
-	Complex temp	= Complex (0, 0);
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -184,7 +184,7 @@ void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 //
 //	Decoder 4 is an interpretation of the so-called "Optimal 3" 
 //	version in the aforementioned paper.
-//	It is still experimental!!!
+//	It does not work well
 
 static inline
 Complex w (DABFLOAT kn) {
@@ -203,14 +203,34 @@ DABFLOAT IO	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
 }
 
+Complex	optimum3 (Complex  S, Complex prevS, DABFLOAT sigmaSQ) {
+	Complex rr	= Complex (0, 1) * conj (S);
+	S		= S * conj (rr);
+	prevS		= prevS * conj (rr);
+	DABFLOAT P1     =   makeA (1, S, prevS) / sigmaSQ;
+	DABFLOAT P7     =   makeA (7, S, prevS) / sigmaSQ;
+        DABFLOAT P3     =   makeA (3, S, prevS) / sigmaSQ;
+        DABFLOAT P5     =   makeA (5, S, prevS) / sigmaSQ;
+
+        DABFLOAT IO_P1	= IO (P1);
+        DABFLOAT IO_P7	= IO (P7);
+        DABFLOAT IO_P3	= IO (P3);
+        DABFLOAT IO_P5	= IO (P5);
+
+        DABFLOAT b1	= log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5));
+        DABFLOAT b2	= log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7));
+	return Complex (b1, b2);
+}
+
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &softbits,
 	                     DABFLOAT snr) {
 
 DABFLOAT sum	= 0;
-DABFLOAT bitSum	= 0;
-
+static DABFLOAT bitSum	= 10;
+float	oldSum	= bitSum;
+	bitSum = 0;
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
@@ -224,14 +244,14 @@ DABFLOAT bitSum	= 0;
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
 	      index += T_u;
-	   Complex fftBin	= fft_buffer [index] *
-                                  normalize (conj (phaseReference [index]));
+	   Complex current	= fft_buffer [index];
+	   Complex prevS	= phaseReference [index];
+	   Complex fftBin	= current * normalize (conj (prevS));
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
-	   Complex prevS	= phaseReference [index];
 //
 //	updates
-
+	   
 	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
 	                                   abs (imag (fftBin)));
 
@@ -292,45 +312,31 @@ DABFLOAT bitSum	= 0;
 
 	      sum			+= jan_abs (R1);
 	   }
-	   else 
-	   if (this -> decoder == DECODER_3) {	// decoder 3
+	   else { 
+	
 	      softbits [i]  = - real (fftBin) / binAbsLevel *
 	                                          1.0 * MAX_VITERBI;
 	      softbits [carriers + i] 
 	                    = - imag (fftBin) / binAbsLevel *
 	                                          1.0 * MAX_VITERBI; 
 	   }
-	   else {	// experimental decoder 4
-	      DABFLOAT P1     =  makeA (1, fftBin, prevS) /
-	                                       sigmaSQ_Vector [index];
-	      DABFLOAT P7     =  makeA (7, fftBin, prevS) /
-	                                       sigmaSQ_Vector [index];
-	      DABFLOAT P3     =  makeA (3, fftBin, prevS) /
-	                                       sigmaSQ_Vector [index];
-	      DABFLOAT P5     =  makeA (5, fftBin, prevS) /
-	                                       sigmaSQ_Vector [index];
-
-	      DABFLOAT IO_P1	= IO (P1);
-	      DABFLOAT IO_P7	= IO (P7);
-	      DABFLOAT IO_P3	= IO (P3);
-	      DABFLOAT IO_P5	= IO (P5);
-
-	      DABFLOAT b1	= log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5));
-	      DABFLOAT b2	= log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7));
-	
-	      bitSum		+= (abs (b1) + abs (b2)) / 2;
-	      DABFLOAT scaler	= 40 / avgBit;
-	      int s1		= -real (fftBin) < 0 ? -1 : 1;
-	      int s2		= -imag (fftBin) < 0 ? -1 : 1;
-	      DABFLOAT xx1	= s1 * abs (b1) * scaler;
-	      DABFLOAT xx2	= s2 * abs (b2) * scaler;
-	      limit_symmetrically (xx1, MAX_VITERBI);
-	      limit_symmetrically (xx2, MAX_VITERBI);
-	      softbits [i]	= (int16_t)xx1;
-	      softbits [carriers + i] = (int16_t)xx2;
-	   }
+//	   else 	// experimental decoder 3
+//	Interesting experiment, but does not work properly
+//	   if (this -> decoder == DECODER_3) {	// decoder 3
+//	      Complex res	= optimum3 (current, prevS,
+//	                                         sigmaSQ_Vector [index]);
+//	      bitSum		+= abs (res);
+//	      DABFLOAT scaler	= 64.0 / (oldSum / carriers) ;
+//	      DABFLOAT xx1	=  - real (res) / scaler;
+//	      DABFLOAT xx2	=  - imag (res) / scaler;
+//	      limit_symmetrically (xx1, MAX_VITERBI);
+//	      limit_symmetrically (xx2, MAX_VITERBI);
+//	      softbits [i]	= (int16_t)xx1;
+//	      softbits [carriers + i] = (int16_t)xx2;
+//	   }
 	}
-        avgBit          = compute_avg (avgBit, bitSum / carriers, 0.1);
+
+	avgBit          = compute_avg (avgBit, bitSum / carriers, 0.1);
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
 	
 //		end of decoding	, now for displaying things	//

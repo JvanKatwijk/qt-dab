@@ -1283,6 +1283,78 @@ uint8_t	fibDecoder::serviceType (const int index) {
 	return currentConfig -> SC_C_table [index]. TMid;
 }
 
+int	fibDecoder::getNrComps			(const uint32_t SId) {
+	for (auto &SId_element : currentConfig -> SId_table)
+	   if (SId_element. SId == SId)
+	      return SId_element. comps. size ();
+	return 0;
+}
+
+//	required for ETI generation
+int	fibDecoder::nrChannels	() {
+	return currentConfig -> subChannel_table. size ();
+}
+
+//
+//	for primary services we return the index of the first
+//	component, the secondary services, the index of the
+//	component with the matching SCIds
+//	
+int	fibDecoder::getServiceComp		(const QString &service) {
+//	first we check to see if the service is a primary one
+	for (auto &serv : theEnsemble. primaries) {
+	   if (serv. name != service)
+	      continue;
+	   for (auto & SId_element: currentConfig -> SId_table) {
+	      if (SId_element. SId == serv. SId)
+	         return SId_element. comps [0];
+	   }
+	}
+	
+	for (auto &serv : theEnsemble. secondaries) {
+	   if (serv. name != service)
+	      continue;
+	   return getServiceComp_SCIds (serv. SId, serv. SCIds);
+	}
+	return -1;
+}
+//
+//	Find the component with the indicated number
+int	fibDecoder::getServiceComp		(const uint32_t SId,
+	                                                const int compnr) {
+	for (auto &SId_element : currentConfig -> SId_table) {
+	   if (SId_element. SId == SId) {
+	      return SId_element. comps [compnr];
+	   }
+	}
+	return -1;
+}
+
+//	Find the component with the indicated SCIds
+int	fibDecoder::getServiceComp_SCIds	(const uint32_t SId,
+	                                         const int SCIds) {
+//	fprintf (stderr, "Looking for serviceComp %X %d\n", SId, SCIds);
+	for (auto &SId_element : currentConfig -> SId_table) {
+	   if (SId_element. SId != SId)
+	      continue;
+	   for (int i = 0; i < (int) SId_element. comps. size (); i ++) {
+	      int index = SId_element. comps [i];
+	      if (currentConfig -> SCIdsOf   (index) == SCIds)
+	         return index;
+	   }
+	}
+	return -1;
+}
+//
+//		
+bool	fibDecoder::isPrimary	(const QString &s) {
+	for (auto &serv : theEnsemble. primaries) {
+	   if (s == serv. name)
+	      return true;
+	}
+	return false;
+}
+	
 void	fibDecoder::audioData	(const int index, audiodata &ad) {
 fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
 	for (auto &serv : theEnsemble. primaries) {
@@ -1344,69 +1416,13 @@ fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
 	pd. defined = true;
 }
 
-int	fibDecoder::getNrComps			(const uint32_t SId) {
-	for (auto &SId_element : currentConfig -> SId_table)
-	   if (SId_element. SId == SId)
-	      return SId_element. comps. size ();
+uint16_t fibDecoder::getAnnouncing	(uint16_t SId) {
+	for (auto &serv : currentConfig -> SId_table)
+	   if (serv. SId == SId)
+	      return serv. announcing;
 	return 0;
 }
-//
-//	for primary services we return the index of the first
-//	component, the secondary services, the index of the
-//	component with the matching SCIds
-//	
-int	fibDecoder::getServiceComp		(const QString &service) {
-//	first we check to see if the service is a primary one
-	for (auto &serv : theEnsemble. primaries) {
-	   if (serv. name != service)
-	      continue;
-	   for (auto & SId_element: currentConfig -> SId_table) {
-	      if (SId_element. SId == serv. SId)
-	         return SId_element. comps [0];
-	   }
-	}
-	
-	for (auto &serv : theEnsemble. secondaries) {
-	   if (serv. name != service)
-	      continue;
-	   return getServiceComp_SCIds (serv. SId, serv. SCIds);
-	}
-	return -1;
-}
 
-int	fibDecoder::getServiceComp		(const uint32_t SId,
-	                                         const int compnr) {
-	for (auto &SId_element : currentConfig -> SId_table) {
-	   if (SId_element. SId == SId) {
-	      return SId_element. comps [compnr];
-	   }
-	}
-	return -1;
-}
-
-int	fibDecoder::getServiceComp_SCIds	(const uint32_t SId,
-	                                         const int SCIds) {
-//	fprintf (stderr, "Looking for serviceComp %X %d\n", SId, SCIds);
-	for (auto &SId_element : currentConfig -> SId_table) {
-	   if (SId_element. SId != SId)
-	      continue;
-	   for (int i = 0; i < (int) SId_element. comps. size (); i ++) {
-	      int index = SId_element. comps [i];
-	      if (currentConfig -> SCIdsOf   (index) == SCIds)
-	         return index;
-	   }
-	}
-	return -1;
-}
-
-bool	fibDecoder::isPrimary	(const QString &s) {
-	for (auto &serv : theEnsemble. primaries) {
-	   if (s == serv. name)
-	      return true;
-	}
-	return false;
-}
-	
 std::vector<int> fibDecoder::getFrequency	(const QString &s) {
 std::vector<int> res;
 	for (auto &serv : theEnsemble. primaries) {
@@ -1416,20 +1432,17 @@ std::vector<int> res;
 	return  res;
 }
 	   
-//	required for ETI generation
-int	fibDecoder::nrChannels	() {
-	return currentConfig -> subChannel_table. size ();
-}
 //
 //	needed for generating eti files
 void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
+fibConfig::subChannel *selected = &(currentConfig -> subChannel_table [n]);
 	d       -> in_use	= true;
-	d       -> id		= currentConfig -> subChannel_table [n]. subChId;
-	d       -> start_cu	= currentConfig -> subChannel_table [n]. startAddr;
-	d       -> protlev	= currentConfig -> subChannel_table [n]. protLevel; 
-	d       -> size		= currentConfig -> subChannel_table [n]. Length;
-	d       -> bitrate	= currentConfig -> subChannel_table [n]. bitRate;
-	d       -> uepFlag	= currentConfig -> subChannel_table [n]. shortForm;
+	d       -> id		= selected ->  subChId;
+	d       -> start_cu	= selected ->  startAddr;
+	d       -> protlev	= selected ->  protLevel; 
+	d       -> size		= selected ->  Length;
+	d       -> bitrate	= selected ->  bitRate;
+	d       -> uepFlag	= selected ->  shortForm;
 }
 
 int32_t	fibDecoder::getCIFcount		() {
@@ -1454,13 +1467,6 @@ void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
 	         emit announcement (SId, flags);
 	      serv. announcing = flags;
 	   }
-}
-
-uint16_t fibDecoder::getAnnouncing	(uint16_t SId) {
-	for (auto &serv : currentConfig -> SId_table)
-	   if (serv. SId == SId)
-	      return serv. announcing;
-	return 0;
 }
 
 int	fibDecoder::freeSpace		() {

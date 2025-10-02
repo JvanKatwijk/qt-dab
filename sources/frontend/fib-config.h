@@ -121,15 +121,15 @@ public:
 	} FIG18_cluster;
 //
 //	for each type a table
-	std::vector<SId_struct>	SId_table;
-	std::vector<subChannel> subChannel_table;	// FIG0/1
-	std::vector<serviceComp_C> SC_C_table;		// FIG0/2
-	std::vector<serviceComp_P> SC_P_table;		// FIG0/3
-	std::vector<serviceComp_G> SC_G_table;		// FIG0/8
-	std::vector<SC_language> language_table;		// FIG0/5
-	std::vector<AppType>	AppType_table;		// FIG0/13
-	std::vector<programType> programType_table;	// FIG017
-	std::vector<FIG18_cluster> announcement_table; // FIG0/18
+	std::vector<SId_struct>		SId_table;
+	std::vector<subChannel>		subChannel_table;	// FIG0/1
+	std::vector<serviceComp_C>	SC_C_table;		// FIG0/2
+	std::vector<serviceComp_P>	SC_P_table;		// FIG0/3
+	std::vector<serviceComp_G>	SC_G_table;		// FIG0/8
+	std::vector<SC_language>	language_table;		// FIG0/5
+	std::vector<AppType>		AppType_table;		// FIG0/13
+	std::vector<programType> 	programType_table;	// FIG017
+	std::vector<FIG18_cluster>	announcement_table;	// FIG0/18
 
 	int32_t dateTime [8];
 	void	reset			();

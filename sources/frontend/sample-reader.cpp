@@ -153,7 +153,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	      dcReal		= compute_avg (dcReal, real (v), Alpha);
 	      dcImag		= compute_avg (dcImag, imag (v), Alpha);
 	      v = std::complex<float> (real (v) - dcReal, imag (v) - dcImag);
-	      v = theEqualizer. equalize (v);
+//	      v = theEqualizer. equalize (v);
 	      DABFLOAT real_V	= abs (real (v));
 	      DABFLOAT imag_V	= abs (imag (v)); 
 	      IQ_Real		= compute_avg (IQ_Real, real_V, Alpha);
@@ -164,6 +164,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	                                     ((IQ_Real + IQ_Imag) / 2));
 	         teller = 0;
 	      }
+//	      v		= std::complex<float> (IQ_Real, IQ_Imag);
 	   }
 
 //	first: adjust frequency. We need Hz accuracy

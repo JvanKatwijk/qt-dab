@@ -531,7 +531,7 @@ the *qt-dab-6.9.pro* file contains (much) more configuration options
 than the *CMakeLists.txt* file that is used when using cmake.
 
 Note that the scheme presented below is applied when building the AppImage
-on Ubuntu 20, and was tested on the "bullseye" system on the RPI. 
+on Ubuntu 22, and was tested on the "bullseye" system on the RPI. 
 For other distributions (or later Ubuntu versions), names of library
 packages may be different. Note that in all cases, the development versions (i.e. the versions with the include (".h") files) are required.
 
