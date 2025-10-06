@@ -52,8 +52,6 @@ public:
 	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
-	void	setNullLevel		(const std::vector<Complex> &);
-//
 //	Note: the parameter should not be altered, it is used later on
 	void	processBlock_0		(std::vector<Complex>);
 	void	decode			(std::vector<Complex> &,

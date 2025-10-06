@@ -24,12 +24,16 @@
 #pragma once
 //
 //	Implementation of the FIG database
+
 #include	<stdint.h>
 #include	<vector>
+#include	<QString>
+#include	"dab-constants.h"
+class	ensemble;
 
 class	fibConfig {
 public:
-			fibConfig	();
+			fibConfig	(ensemble *);
 			~fibConfig	();
 //	The tables cannot made private (unless set functions for
 //	all structs and components are made)
@@ -37,6 +41,24 @@ public:
 //	FIG 
 //	SId is a small optimization, not really needed
 //	of service components
+	ensemble	*theEnsemble;
+	uint32_t	getSId			(const int);
+	uint8_t		serviceType		(const int);
+	int		getNrComps		(const uint32_t);
+	int		getServiceComp		(const QString &);
+	int		getServiceComp		(const uint32_t, const int);
+	int		getServiceComp_SCIds	(const uint32_t, const int);
+
+	void		audioData		(const int, audiodata &);
+	void		packetData		(const int, packetdata &);
+
+	uint16_t	getAnnouncing		(uint16_t);
+
+	int		nrChannels		();
+	void		getChannelInfo		(channel_data *, const int);
+	QList<contentType>
+	                contentPrint		();
+
 	typedef struct {
 	   uint32_t 	SId;
 	   std::vector<int> comps;
@@ -128,7 +150,7 @@ public:
 	std::vector<serviceComp_G>	SC_G_table;		// FIG0/8
 	std::vector<SC_language>	language_table;		// FIG0/5
 	std::vector<AppType>		AppType_table;		// FIG0/13
-	std::vector<programType> 	programType_table;	// FIG017
+	std::vector<programType> 	programType_table;	// FIG0/17
 	std::vector<FIG18_cluster>	announcement_table;	// FIG0/18
 
 	int32_t dateTime [8];

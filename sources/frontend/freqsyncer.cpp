@@ -61,9 +61,6 @@ int16_t	freqSyncer::
 
 	fft_forward. fft (v);
 //
-//	Willem S suggested to apply a more "scientific" approach to
-//	compute the correlation between the phases, required for
-//	computing the coarse frequency offset.
 //	Inspired by https://phys.uri.edu/nigh/NumRec/bookfpdf/f13-2.pdf
 //	(and of course using the approach in the time syncing),
 //

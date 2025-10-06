@@ -24,20 +24,22 @@
 #include	"fib-config.h"
 #include	<stdio.h>
 #include	<string.h>
+#include	"ensemble.h"
+#include	"dab-tables.h"
 //
 //	Implementation of the FIG database
-//
-//	While in previous versions I tried to "optimize" by
-//	adding properties to SIds and serviceNames, the code became
-//	messy and a few errors could not be handled properly.
 //
 //	Here I took the easy approach: for (almost) each FIG, I added
 //	a table, and the interpretation is "as and when needed"
 //	Of course, on querying the FIG database, it needs more
 //	cycles, but at least the code now is (in my opinion)
 //	reasonable clear.
-
-	fibConfig::fibConfig	() {
+//
+//	Note that while the config may switch, the ensemble info
+//	is (almost) stable while the channel it is running in 
+//	does not change
+	fibConfig::fibConfig	(ensemble *theEnsemble) {
+	this	-> theEnsemble	= theEnsemble;
 	reset ();
 }
 	fibConfig::~fibConfig	() {}
@@ -261,4 +263,211 @@ int amount = 0;
 	   amount += ss. Length;
 	return 864 - amount;
 }
+//
+////////////////////////////////////////////////////////////////////
 
+uint32_t fibConfig::getSId	(const int index) {
+	return SC_C_table [index]. SId;
+}
+
+uint8_t	fibConfig::serviceType (const int index) {
+	return SC_C_table [index]. TMid;
+}
+
+int	fibConfig::getNrComps			(const uint32_t SId) {
+	for (auto &SId_element : SId_table)
+	   if (SId_element. SId == SId)
+	      return SId_element. comps. size ();
+	return 0;
+}
+
+int	fibConfig::getServiceComp	(const QString &service) {
+//	first we check to see if the service is a primary one
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. name != service)
+	      continue;
+	   for (auto & SId_element: SId_table) {
+	      if (SId_element. SId == serv. SId)
+	         return SId_element. comps [0];
+	   }
+	}
+	
+	for (auto &serv : theEnsemble -> secondaries) {
+	   if (serv. name != service)
+	      continue;
+	   return getServiceComp_SCIds (serv. SId, serv. SCIds);
+	}
+	return -1;
+}
+
+int	fibConfig::getServiceComp	(const uint32_t SId,
+	                                          const int compnr) {
+	for (auto &SId_element : SId_table) {
+           if (SId_element. SId == SId) {
+              return SId_element. comps [compnr];
+           }
+        }
+        return -1;
+}
+
+int	fibConfig::getServiceComp_SCIds	(const uint32_t SId,
+	                                             const int SCIds) {
+//	fprintf (stderr, "Looking for serviceComp %X %d\n", SId, SCIds);
+	for (auto &SId_element : SId_table) {
+	   if (SId_element. SId != SId)
+	      continue;
+	   for (int i = 0; i < (int) SId_element. comps. size (); i ++) {
+	      int index = SId_element. comps [i];
+	      if (SCIdsOf   (index) == SCIds)
+	         return index;
+	   }
+	}
+	return -1;
+}
+
+void	fibConfig::audioData	(const int index, audiodata &ad) {
+serviceComp_C &comp = SC_C_table [index];
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. SId == comp. SId) {
+	      ad. serviceName	= serv. name;
+	      ad. shortName	= serv. shortName;
+	      ad. SId		= serv. SId;
+	      ad. programType	= serv. programType;
+	      ad. fmFrequencies	= serv. fmFrequencies;
+	      break;
+	   }
+	}
+	int subChId	= subChannelOf (index);
+	ad. subchId	= subChId;
+	int subChannel_index = findIndex_subChannel_table (subChId);
+	if (subChannel_index < 0)
+	   return;
+	subChannel &channel = subChannel_table [subChannel_index];
+	ad. startAddr	= channel. startAddr;	
+	ad. shortForm	= channel. shortForm;
+	ad. protLevel	= channel. protLevel;
+	ad. length	= channel. Length;
+	ad. bitRate	= channel. bitRate;
+	ad. ASCTy	= dabTypeOf (index);
+	ad. language	= languageOf (index);
+	ad. defined	= true;
+}
+
+void	fibConfig::packetData		(const int index, packetdata &pd) {
+serviceComp_C &comp = SC_C_table [index];
+	for (auto &serv : theEnsemble -> primaries) {
+	   if (serv. SId == comp. SId) {
+	      pd. serviceName	= serv. name;
+	      pd. shortName	= serv. shortName;
+	      pd. SId		= serv. SId;
+	      break;
+	   }
+	}
+	int subChId	= subChannelOf (index);
+	pd. subchId	= subChId;
+	int subChannel_index = findIndex_subChannel_table (subChId);
+	if (subChannel_index < 0)
+	   return;
+	subChannel &channel = subChannel_table [subChannel_index];
+	pd. startAddr	= channel. startAddr;	
+	pd. shortForm	= channel. shortForm;
+	pd. protLevel	= channel. protLevel;
+	pd. length	= channel. Length;
+	pd. bitRate	= channel. bitRate;
+	pd. FEC_scheme	= FEC_schemeOf (index);
+	pd. appType	= appTypeOf (index);
+	pd. DGflag	= DG_flag (index);
+	pd. DSCTy	= DSCTy (index);
+	pd. packetAddress = packetAddressOf (index);
+	pd. defined 	= true;
+}
+
+uint16_t fibConfig::getAnnouncing	(uint16_t SId) {
+	for (auto &serv : SId_table)
+	   if (serv. SId == SId)
+	      return serv. announcing;
+	return 0;
+}
+
+//	needed for generating eti files
+int	fibConfig::nrChannels		() {
+	return subChannel_table. size ();
+}
+
+void	fibConfig::getChannelInfo (channel_data *d, const int n) {
+subChannel *selected = &subChannel_table [n];
+	d       -> in_use	= true;
+	d       -> id		= selected ->  subChId;
+	d       -> start_cu	= selected ->  startAddr;
+	d       -> protlev	= selected ->  protLevel; 
+	d       -> size		= selected ->  Length;
+	d       -> bitrate	= selected ->  bitRate;
+	d       -> uepFlag	= selected ->  shortForm;
+}
+
+//
+//	Some GUI functions, such as content printer and
+//	printer with the scan function, need to get a description
+//	of the attributes of the service.
+//	Here we collect all attributes as specified by "contentType"
+//	
+QList<contentType> fibConfig::contentPrint () {
+QList<contentType> res;
+	for (int i = 0; i < (int)(SC_C_table. size ()); i ++) {
+	   serviceComp_C &comp = SC_C_table [i];
+	   contentType theData;
+	   theData. TMid	= comp. TMid;
+	   theData. SId		= comp. SId;
+	   theData. isActive	= false;
+	   if (comp. TMid == 0) {	// audio data
+	      audiodata ad;
+	      audioData (i, ad);
+	      if (!ad. defined)		// should not happen
+	         continue;
+	      theData. serviceName	= ad. serviceName;
+	      theData. subChId		= ad. subchId;
+	      theData. SCIds		= ad. SCIds;
+	      theData. startAddress	= ad. startAddr;
+	      theData. length		= ad. length;
+	      theData. codeRate		= getCodeRate (ad. shortForm,
+	                                               ad. protLevel);
+	      theData. protLevel	= getProtectionLevel (ad. shortForm,
+	                                                      ad. protLevel);
+	      theData. bitRate		= ad. bitRate;
+	      theData. language		= ad. language;
+	      theData. FEC_scheme	= 0;
+	      theData. packetAddress	= 0;
+	      theData. ASCTy_DSCTy	= ad. ASCTy;
+	      theData. programType	=
+	                          theEnsemble -> programType (ad. SId);
+	      theData. fmFrequencies	=
+	                          theEnsemble -> fmFrequencies (ad. SId);
+	      res. push_back (theData);
+	   }
+	   else
+	   if (comp. TMid == 3) {	// packet 
+	      packetdata pd;
+	      packetData (i, pd);
+	      if (!pd. defined)		// should not happen
+	         continue;
+	      theData. serviceName	= pd. serviceName;
+	      theData. subChId		= pd. subchId;
+	      theData. SCIds		= pd. SCIds;
+	      theData. startAddress	= pd. startAddr;
+	      theData. length		= pd. length;
+	      theData. codeRate		= getCodeRate (pd. shortForm,
+	                                               pd. protLevel);
+	      theData. protLevel	= getProtectionLevel (pd. shortForm,
+	                                                      pd. protLevel);
+	      theData. bitRate		= pd. bitRate;
+	      theData. FEC_scheme	= pd. FEC_scheme;
+	      theData. packetAddress	= pd. packetAddress;
+	      theData. ASCTy_DSCTy	= pd. DSCTy;
+	      theData. appType		= pd. appType;
+	      theData. language		= 0;
+	      theData. programType	= 0;
+	      res. push_back (theData);
+	   }
+	}
+	return res;
+}

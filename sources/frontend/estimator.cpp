@@ -49,18 +49,25 @@
 //
 void	estimator::estimate (std::vector <Complex> v,
 	                       std::vector<Complex> &CI_Vector) {
-
+//
+//	The "original" message is encoded as block 0, given
+//	in the frequency domains, say "old"
+//	we "fft" the input, say "new", we compute new / old
+//	and apply a backwards fft
+//	new / old === (new * conj (old)) / (old * conj (old)),
+//	but we assume that abs (old (i)) == 1
 	fft_forward. fft (v);
 //
 //	into the frequency domain, now correlate
-	for (int i = 0; i < T_u; i ++) 
-//	   v [i] = v [i] * conj (theTable -> refTable [i]);
-	   v [i] = v [i] * Complex (real (theTable -> refTable [i]),
-	                           -imag (theTable -> refTable [i]));
+	for (int i = 0; i < T_u; i ++) {
+	   Complex help = Complex (real (theTable -> refTable [i]),
+	                           imag (theTable -> refTable [i])); 
+	   v [i] = v [i] * conj (help);
+	}
 
 //	and, again, back into the time domain
 	fft_backwards. fft (v);
-	for (int i = 0; i < NR_TAPS; i ++)
+	for (int i = 0; i < NR_TAPS; i ++) 
 	   CI_Vector [i] = v [i];
 }
 

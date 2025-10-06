@@ -44,6 +44,11 @@
 //	The current one is a straight forward implementation,
 //	where the FIG's are stored in a (kind of) database
 //	maintained in a class fibConfig
+//
+//	Since the requests may come indirectly) from GUI interactions
+//	and the database is filled (and updated) in a continuous
+//	fashion, driven by another thread, we apply locking
+//	most actions on the database
 
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
@@ -64,8 +69,8 @@
 	         myRadioInterface, &RadioInterface::setFreqList);
 //
 //	Note that they may change "roles", 
-	currentConfig	= new fibConfig();
-	nextConfig	= new fibConfig();
+	currentConfig	= new fibConfig	(&theEnsemble);
+	nextConfig	= new fibConfig (&theEnsemble);
 	CIFcount	= 0;
 	mjd		= 0;
 }
@@ -143,6 +148,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 4:		// service component with CA (6.3.3)
+				// not implemented
 	      break;
 
 	   case 5:		// service component language (8.1.2)
@@ -150,6 +156,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 6:		// service linking information (8.1.15)
+	                        // not implemented
 	      break;
 
 	   case 7:		// configuration information (6.4.2)
@@ -183,7 +190,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 15:		// Emergency warning (ETSI TS 104 089
-	                       	// Not implemented yet
+	      FIG0Extension15 (d);
 	      break;
 
 	   case 16:		// Reserved
@@ -793,9 +800,8 @@ fibConfig::AppType element;
 	   element. Apptype	= appType;
 	   bitOffset 		+= (11 + 5 + 8 * length);
 	}
-	for (auto &comp : localBase -> AppType_table)
-	   if ((comp. SId == SId) && (comp. SCIds == SCIds))
-	      return bitOffset / 8;
+	if (localBase -> findIndexApptype_table (SId, SCIds) != -1)
+	   return bitOffset / 8;
 	localBase -> AppType_table. push_back (element);
 	return bitOffset / 8;
 }
@@ -819,6 +825,38 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	      if (subC. subChId == subChId)
 	         subC. FEC_scheme = FEC_scheme;
 	}
+}
+
+//
+//	
+void	fibDecoder::FIG0Extension15 (uint8_t *d) {
+//int16_t Length          = getBits_5 (d, 3);     // in Bytes
+const uint8_t   CN_bit  = getBits_1 (d, 8 + 0);
+const uint8_t   OE_bit  = getBits_1 (d, 8 + 1);
+const uint8_t   PD_bit  = getBits_1 (d, 8 + 2);
+int16_t used    = 2;                    // in Bytes
+int16_t bitOffset               = used * 8;
+uint8_t secondsCount		= 0;
+
+	if (CN_bit == 1)	// Next config, not implemented yet
+	   return;
+	if (PD_bit == 1)	// discard
+	   return;
+	if (OE_bit == 1)	// other ensemble, not implemented
+	   return;
+//
+//	Handling the Id field
+	uint8_t phase		= getBits_2 (d, bitOffset);
+	uint8_t subChId		= getBits_6 (d, bitOffset + 2);
+	bitOffset		+= 8;
+	if (phase == 00) {
+	   secondsCount		= getBits_6 (d, bitOffset + 2);
+	   bitOffset		+= 8;
+	}
+//	Handling the Statusfield
+	bitOffset += 8;
+//	Handling the location codes
+//	to be researched
 }
 //
 //	program type 8.1.5
@@ -1276,23 +1314,23 @@ bool	fibDecoder::syncReached() {
 }
 
 uint32_t fibDecoder::getSId	(const int index) {
-	return currentConfig -> SC_C_table [index]. SId;
+uint32_t	res;
+	fibLocker. lock ();
+	 res = currentConfig -> getSId (index);
+	fibLocker. unlock ();
+	return res;
 }
 
 uint8_t	fibDecoder::serviceType (const int index) {
-	return currentConfig -> SC_C_table [index]. TMid;
+uint8_t res;
+	fibLocker. lock ();
+	res = currentConfig -> serviceType (index);
+	fibLocker. unlock ();
+	return res;
 }
 
 int	fibDecoder::getNrComps			(const uint32_t SId) {
-	for (auto &SId_element : currentConfig -> SId_table)
-	   if (SId_element. SId == SId)
-	      return SId_element. comps. size ();
-	return 0;
-}
-
-//	required for ETI generation
-int	fibDecoder::nrChannels	() {
-	return currentConfig -> subChannel_table. size ();
+	return currentConfig -> getNrComps (SId);
 }
 
 //
@@ -1301,49 +1339,31 @@ int	fibDecoder::nrChannels	() {
 //	component with the matching SCIds
 //	
 int	fibDecoder::getServiceComp		(const QString &service) {
-//	first we check to see if the service is a primary one
-	for (auto &serv : theEnsemble. primaries) {
-	   if (serv. name != service)
-	      continue;
-	   for (auto & SId_element: currentConfig -> SId_table) {
-	      if (SId_element. SId == serv. SId)
-	         return SId_element. comps [0];
-	   }
-	}
-	
-	for (auto &serv : theEnsemble. secondaries) {
-	   if (serv. name != service)
-	      continue;
-	   return getServiceComp_SCIds (serv. SId, serv. SCIds);
-	}
-	return -1;
+int res;
+	fibLocker. lock ();
+	res = currentConfig -> getServiceComp (service);
+	fibLocker. unlock ();
+	return res;
 }
 //
 //	Find the component with the indicated number
 int	fibDecoder::getServiceComp		(const uint32_t SId,
 	                                                const int compnr) {
-	for (auto &SId_element : currentConfig -> SId_table) {
-	   if (SId_element. SId == SId) {
-	      return SId_element. comps [compnr];
-	   }
-	}
-	return -1;
+int res;
+	fibLocker. lock ();
+	res = currentConfig -> getServiceComp (SId, compnr);
+	fibLocker. unlock ();
+	return res;
 }
 
 //	Find the component with the indicated SCIds
 int	fibDecoder::getServiceComp_SCIds	(const uint32_t SId,
 	                                         const int SCIds) {
-//	fprintf (stderr, "Looking for serviceComp %X %d\n", SId, SCIds);
-	for (auto &SId_element : currentConfig -> SId_table) {
-	   if (SId_element. SId != SId)
-	      continue;
-	   for (int i = 0; i < (int) SId_element. comps. size (); i ++) {
-	      int index = SId_element. comps [i];
-	      if (currentConfig -> SCIdsOf   (index) == SCIds)
-	         return index;
-	   }
-	}
-	return -1;
+int res;
+	fibLocker. lock ();
+	res = getServiceComp_SCIds (SId, SCIds);
+	fibLocker. unlock ();
+	return res;
 }
 //
 //		
@@ -1356,71 +1376,23 @@ bool	fibDecoder::isPrimary	(const QString &s) {
 }
 	
 void	fibDecoder::audioData	(const int index, audiodata &ad) {
-fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
-	for (auto &serv : theEnsemble. primaries) {
-	   if (serv. SId == comp. SId) {
-	      ad. serviceName	= serv. name;
-	      ad. shortName	= serv. shortName;
-	      ad. SId		= serv. SId;
-	      ad. programType	= serv. programType;
-	      ad. fmFrequencies	= serv. fmFrequencies;
-	      break;
-	   }
-	}
-	int subChId	= currentConfig -> subChannelOf (index);
-	ad. subchId	= subChId;
-	int subChannel_index =
-	               currentConfig -> findIndex_subChannel_table (subChId);
-	if (subChannel_index < 0)
-	   return;
-	fibConfig::subChannel &channel =
-	               currentConfig -> subChannel_table [subChannel_index];
-	ad. startAddr	= channel. startAddr;	
-	ad. shortForm	= channel. shortForm;
-	ad. protLevel	= channel. protLevel;
-	ad. length	= channel. Length;
-	ad. bitRate	= channel. bitRate;
-	ad. ASCTy	= currentConfig -> dabTypeOf (index);
-	ad. language	= currentConfig -> languageOf (index);
-	ad. defined	= true;
+	fibLocker. lock ();
+	currentConfig -> audioData (index, ad);
+	fibLocker. unlock ();
 }
 
 void	fibDecoder::packetData		(const int index, packetdata &pd) {
-fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [index];
-	for (auto &serv : theEnsemble. primaries) {
-	   if (serv. SId == comp. SId) {
-	      pd. serviceName	= serv. name;
-	      pd. shortName	= serv. shortName;
-	      pd. SId		= serv. SId;
-	      break;
-	   }
-	}
-	int subChId	= currentConfig -> subChannelOf (index);
-	pd. subchId	= subChId;
-	int subChannel_index =
-	               currentConfig -> findIndex_subChannel_table (subChId);
-	if (subChannel_index < 0)
-	   return;
-	fibConfig::subChannel &channel =
-	               currentConfig -> subChannel_table [subChannel_index];
-	pd. startAddr	= channel. startAddr;	
-	pd. shortForm	= channel. shortForm;
-	pd. protLevel	= channel. protLevel;
-	pd. length	= channel. Length;
-	pd. bitRate	= channel. bitRate;
-	pd. FEC_scheme	= currentConfig -> FEC_schemeOf (index);
-	pd. appType	= currentConfig -> appTypeOf (index);
-	pd. DGflag	= currentConfig -> DG_flag (index);
-	pd. DSCTy	= currentConfig -> DSCTy (index);
-	pd. packetAddress = currentConfig -> packetAddressOf (index);
-	pd. defined = true;
+	fibLocker. lock ();
+	currentConfig -> packetData (index, pd);
+	fibLocker. unlock ();
 }
 
 uint16_t fibDecoder::getAnnouncing	(uint16_t SId) {
-	for (auto &serv : currentConfig -> SId_table)
-	   if (serv. SId == SId)
-	      return serv. announcing;
-	return 0;
+uint8_t res;
+	fibLocker. lock ();
+	res = currentConfig -> getAnnouncing (SId);
+	fibLocker. unlock ();
+	return res;
 }
 
 std::vector<int> fibDecoder::getFrequency	(const QString &s) {
@@ -1434,15 +1406,18 @@ std::vector<int> res;
 	   
 //
 //	needed for generating eti files
+//	required for ETI generation
+int	fibDecoder::nrChannels	() {
+int res;
+	fibLocker. lock ();
+	res = currentConfig -> nrChannels ();
+	fibLocker. unlock ();
+	return res;
+}
 void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
-fibConfig::subChannel *selected = &(currentConfig -> subChannel_table [n]);
-	d       -> in_use	= true;
-	d       -> id		= selected ->  subChId;
-	d       -> start_cu	= selected ->  startAddr;
-	d       -> protlev	= selected ->  protLevel; 
-	d       -> size		= selected ->  Length;
-	d       -> bitrate	= selected ->  bitRate;
-	d       -> uepFlag	= selected ->  shortForm;
+	fibLocker. lock ();
+	currentConfig -> getChannelInfo (d, n);
+	fibLocker. unlock ();
 }
 
 int32_t	fibDecoder::getCIFcount		() {
@@ -1457,7 +1432,9 @@ void	fibDecoder::getCIFcount		(int16_t &high, int16_t &low) {
 uint32_t fibDecoder::julianDate		() {
 	return mjd;
 }
-
+//
+//	handleAnnouncement stays here, since in a way it is
+//	part of the FIG handling
 void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
 	                                                uint8_t subChId) {
 	(void)subChId;
@@ -1477,62 +1454,13 @@ int	fibDecoder::freeSpace		() {
 //	printer with the scan function, need to get a description
 //	of the attributes of the service.
 //	Here we collect all attributes as specified by "contentType"
+//	from the local configuration
 //	
 QList<contentType> fibDecoder::contentPrint () {
 QList<contentType> res;
-	for (int i = 0; i < (int)(currentConfig -> SC_C_table. size ()); i ++) {
-	   fibConfig::serviceComp_C &comp = currentConfig -> SC_C_table [i];
-	   contentType theData;
-	   theData. TMid	= comp. TMid;
-	   theData. SId		= comp. SId;
-	   theData. isActive	= false;
-	   if (comp. TMid == 0) {	// audio data
-	      audiodata ad;
-	      audioData (i, ad);
-	      if (!ad. defined)		// should not happen
-	         continue;
-	      theData. serviceName	= ad. serviceName;
-	      theData. subChId		= ad. subchId;
-	      theData. SCIds		= ad. SCIds;
-	      theData. startAddress	= ad. startAddr;
-	      theData. length		= ad. length;
-	      theData. codeRate		= getCodeRate (ad. shortForm,
-	                                               ad. protLevel);
-	      theData. protLevel	= getProtectionLevel (ad. shortForm,
-	                                                      ad. protLevel);
-	      theData. bitRate		= ad. bitRate;
-	      theData. language		= ad. language;
-	      theData. FEC_scheme	= 0;
-	      theData. packetAddress	= 0;
-	      theData. ASCTy_DSCTy	= ad. ASCTy;
-	      theData. programType	= theEnsemble. programType (ad. SId);
-	      theData. fmFrequencies	= theEnsemble. fmFrequencies (ad. SId);
-	      res. push_back (theData);
-	   }
-	   else
-	   if (comp. TMid == 3) {	// packet 
-	      packetdata pd;
-	      packetData (i, pd);
-	      if (!pd. defined)		// should not happen
-	         continue;
-	      theData. serviceName	= pd. serviceName;
-	      theData. subChId		= pd. subchId;
-	      theData. SCIds		= pd. SCIds;
-	      theData. startAddress	= pd. startAddr;
-	      theData. length		= pd. length;
-	      theData. codeRate		= getCodeRate (pd. shortForm,
-	                                               pd. protLevel);
-	      theData. protLevel	= getProtectionLevel (pd. shortForm,
-	                                                      pd. protLevel);
-	      theData. bitRate		= pd. bitRate;
-	      theData. FEC_scheme	= pd. FEC_scheme;
-	      theData. packetAddress	= pd. packetAddress;
-	      theData. ASCTy_DSCTy	= pd. DSCTy;
-	      theData. appType		= pd. appType;
-	      theData. language		= 0;
-	      theData. programType	= 0;
-	      res. push_back (theData);
-	   }
-	}
+	fibLocker. lock ();
+	res = currentConfig -> contentPrint ();
+	fibLocker. unlock ();
 	return res;
 }
+
