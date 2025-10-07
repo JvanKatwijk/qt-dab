@@ -43,6 +43,13 @@ public:
 //	of service components
 	ensemble	*theEnsemble;
 	uint32_t	getSId			(const int);
+	bool		SId_exists		(const int);
+	bool		SCId_exists		(const int);
+	bool		subChId_exists		(const int);
+	bool		SC_G_element_exists	(const int SId,
+	                                             const int SCIds);
+	bool		announcement_exists	(const int, const int);
+
 	uint8_t		serviceType		(const int);
 	int		getNrComps		(const uint32_t);
 	int		getServiceComp		(const QString &);
@@ -143,7 +150,7 @@ public:
 	} FIG18_cluster;
 //
 //	for each type a table
-	std::vector<SId_struct>		SId_table;
+	std::vector<SId_struct>		SId_table;		// FIG0/2
 	std::vector<subChannel>		subChannel_table;	// FIG0/1
 	std::vector<serviceComp_C>	SC_C_table;		// FIG0/2
 	std::vector<serviceComp_P>	SC_P_table;		// FIG0/3
@@ -155,9 +162,14 @@ public:
 
 	int32_t dateTime [8];
 	void	reset			();
+	int	subChannelOf		(int index);
+	int	findIndex_subChannel_table (uint8_t subChId);
+	int	findIndexApptype_table	(uint32_t SId, uint8_t SCIds);
+	bool	compIsKnown		(serviceComp_C &newComp);
+	int	freeSpace		();
+private:
 	int	serviceIdOf		(int index);
 	int	SCIdsOf			(int index);
-	int	subChannelOf		(int index);
 	int	dabTypeOf		(int index);
 	int	languageOf 		(int index);
 	int	appTypeOf		(int index);
@@ -166,11 +178,7 @@ public:
 	int	DSCTy			(int index);
 	int	DG_flag			(int index);
 	int	findIndex_SC_P_Table	(uint16_t SCId);
-	int	findIndex_subChannel_table (uint8_t subChId);
-	int	findIndex_languageTable	(uint8_t key_1, uint16_t key_2);
-	int	findIndexApptype_table	(uint32_t SId, uint8_t SCIds);
-	bool	compIsKnown		(serviceComp_C &newComp);
+//	int	findIndex_languageTable	(uint8_t key_1, uint16_t key_2);
 
-	int	freeSpace		();
 };
 

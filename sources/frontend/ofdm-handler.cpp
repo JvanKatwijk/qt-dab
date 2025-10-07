@@ -361,7 +361,7 @@ int	snrCount	= 0;
 	      sampleCount	+= T_u;
 	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&
-	                     ((theFicHandler. getCIFcount () & 0x7) == 0);
+	                     theFicHandler. evenFrame ();
 	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)

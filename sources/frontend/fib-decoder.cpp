@@ -71,7 +71,6 @@
 //	Note that they may change "roles", 
 	currentConfig	= new fibConfig	(&theEnsemble);
 	nextConfig	= new fibConfig (&theEnsemble);
-	CIFcount	= 0;
 	mjd		= 0;
 }
 	
@@ -189,7 +188,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension14 (d);
 	      break;
 
-	   case 15:		// Emergency warning (ETSI TS 104 089
+	   case 15:		// Emergency warning (ETSI TS 104 089)
 	      FIG0Extension15 (d);
 	      break;
 
@@ -265,9 +264,8 @@ static	uint8_t prevChangeFlag	= 0;
 	(void)alarmFlag;
 	occurrenceChange        = getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
-	CIFcount_hi		= highpart;
-	CIFcount_lo		= lowpart;
-	CIFcount 		= highpart * 250 + lowpart;
+	CIFcount_hi. store (highpart);
+	CIFcount_lo. store (lowpart);
 
 
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
@@ -400,14 +398,12 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	numberofComponents	= getBits_4 (d, bitOffset + 4);
 
 	fibConfig::SId_struct SId_element;
+	if (localBase -> SId_exists (SId)) {
+	   bitOffset += numberofComponents * 16 + 8;
+	   return bitOffset / 8;
+	}
 	SId_element. announcing = 0;
 	SId_element. SId = SId;
-	for (auto &ss: localBase -> SId_table) {
-	   if (ss. SId == SId) {
-	      bitOffset += numberofComponents * 16 + 8;
-	      return bitOffset / 8;
-	   }
-	}
 	bitOffset	+= 8;
 	for (uint16_t i = 0; i < numberofComponents; i ++) {
 	   fibConfig::serviceComp_C comp;
@@ -476,9 +472,8 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	(void)CAOrg;
 	used += 40 / 8;
 
-	for (auto &comp : localBase ->  SC_P_table)
-	   if (comp. SCId == SCId)
-	      return used;
+	if (localBase -> SCId_exists (SCId))
+	   return used;
 	fibConfig::serviceComp_P element;
 	element. SCId  		= SCId;
 	element. subChId  	= SubChId;
@@ -519,12 +514,8 @@ fibConfig::SC_language comp;
 	   comp. subChId = getBits (d, bitOffset + 2, 6);
 	   comp. SCId	= 255;
 	   uint8_t language = getBits (d, bitOffset + 8, 8);
-	   for (auto &scId : localBase -> subChannel_table) {
-	      if (scId. subChId == comp. subChId) {
-	         comp. language = language;
-	         break;
-	      }
-	   }
+	   if (localBase -> subChId_exists (comp. subChId)) 
+	      comp. language = language;
 	   bitOffset += 16;
 	}
 	else {
@@ -605,7 +596,6 @@ fibConfig::serviceComp_G comp;
 	extensionFlag   = getBits_1 (d, bitOffset);
 	uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
 
-//	int serviceIndex = find_service (SId);
 	bitOffset	+= 8;
 	LS_flag		= getBits_1 (d, bitOffset);
 
@@ -623,9 +613,8 @@ fibConfig::serviceComp_G comp;
 	}
 	if (extensionFlag)
 	   bitOffset += 8;	// skip Rfa
-	for (auto &el : localBase -> SC_G_table)
-	   if ((el. SId == SId) && (el. SCIds == SCIds))
-	      return bitOffset / 8;
+	if (localBase -> SC_G_element_exists (comp.SId, comp. SCIds))
+	   return bitOffset / 8;
 	localBase -> SC_G_table. push_back (comp);
 	return bitOffset / 8;
 }
@@ -666,13 +655,13 @@ void	fibDecoder::adjustTime (int32_t *dateTime) {
 	currentConfig -> dateTime [4] += 
 	            (currentConfig -> dateTime [7] == 1) ? 30 : 0;
 	if (currentConfig -> dateTime [4] >= 60) {
-	   currentConfig -> dateTime [4] -= 60;
-	   currentConfig -> dateTime [3] ++;
+	    currentConfig -> dateTime [4] -= 60;
+	    currentConfig -> dateTime [3] ++;
 	}
 
 	if (currentConfig -> dateTime [4] < 0) {
-	   currentConfig -> dateTime [4] += 60;
-	   currentConfig -> dateTime [3] --;
+	    currentConfig -> dateTime [4] += 60;
+	    currentConfig -> dateTime [3] --;
 	}
 
 	currentConfig -> dateTime [3] += currentConfig -> dateTime [6];
@@ -826,7 +815,6 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	         subC. FEC_scheme = FEC_scheme;
 	}
 }
-
 //
 //	
 void	fibDecoder::FIG0Extension15 (uint8_t *d) {
@@ -899,18 +887,11 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset		+= 8;
 
 	   for (int i = 0; i < nrClusters; i ++) {
-	      fibConfig::FIG18_cluster aC;
 	      uint8_t clusterId = getBits (d, bitOffset + 8 * i, 8);
 	      if (clusterId == 0)
 	         continue;
-	      bool inTable = false;
-	      for (auto &ACe : localBase -> announcement_table) {
-	         if ((ACe. SId == SId) && (clusterId == ACe. clusterId)) {
-	            inTable = true;
-	            break;
-	         }
-	      }
-	      if (!inTable) {
+	      if (!localBase -> announcement_exists (SId, clusterId)) {
+	         fibConfig::FIG18_cluster aC;
 	         aC. SId = SId;
 	         aC. asuFlags = asuFlags;
 	         aC. clusterId = clusterId;
@@ -945,12 +926,17 @@ fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   uint8_t subChId	= getBits (d, bitOffset, 6);
 	   bitOffset		+= 6;
 	   for (auto &ac : localBase -> announcement_table) {
-	      if ((ac. clusterId == clusterId) && newFlag)
-	         handleAnnouncement (ac. SId,
-	                               ac. asuFlags & AswFlags, subChId);
+	      if ((ac. clusterId == clusterId) && newFlag) {
+	         uint16_t flags = (ac. asuFlags & AswFlags);
+	         for (auto &serv : currentConfig -> SId_table) {
+	            if ((serv. SId == ac. SId) &&
+	                    (serv. announcing != flags))
+	               emit announcement (ac. SId, flags);
+	            serv. announcing = flags;
+	         }
+	      }
 	   }
 	}
-	return;
 }
 //
 //	Service Component Information
@@ -1286,6 +1272,19 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	addToEnsemble (dataName, SId, -1);
 }
 //
+////	handleAnnouncement stays here, since in a way it is
+////	part of the FIG handling
+//void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
+//	                                                uint8_t subChId) {
+//	(void)subChId;
+//	for (auto &serv : currentConfig -> SId_table)
+//	   if (serv. SId == SId) {
+//	      if (serv. announcing != flags)
+//	         emit announcement (SId, flags);
+//	      serv. announcing = flags;
+//	   }
+//}
+
 //////////////////////////////////////////////////////////////////////
 
 void	fibDecoder::connectChannel () {
@@ -1308,31 +1307,16 @@ void	fibDecoder::disconnectChannel () {
 	fibLocker. unlock();
 }
 //
-//	ofdmHandler ask for syncReached
+//	ofdmHandler asks for syncReached
 bool	fibDecoder::syncReached() {
 	return  theEnsemble. isSynced;
 }
-
-uint32_t fibDecoder::getSId	(const int index) {
-uint32_t	res;
-	fibLocker. lock ();
-	 res = currentConfig -> getSId (index);
-	fibLocker. unlock ();
-	return res;
-}
-
-uint8_t	fibDecoder::serviceType (const int index) {
-uint8_t res;
-	fibLocker. lock ();
-	res = currentConfig -> serviceType (index);
-	fibLocker. unlock ();
-	return res;
-}
-
-int	fibDecoder::getNrComps			(const uint32_t SId) {
-	return currentConfig -> getNrComps (SId);
-}
-
+//
+//	The GUI (and others) ask for data based
+//	on the servicename
+//	We focus on the components, so (almost)
+//	all enquiries take an component (or index to the
+//	component table) as parameter
 //
 //	for primary services we return the index of the first
 //	component, the secondary services, the index of the
@@ -1365,6 +1349,27 @@ int res;
 	fibLocker. unlock ();
 	return res;
 }
+
+uint32_t fibDecoder::getSId	(const int index) {
+uint32_t	res;
+	fibLocker. lock ();
+	res = currentConfig -> getSId (index);
+	fibLocker. unlock ();
+	return res;
+}
+
+uint8_t	fibDecoder::serviceType (const int index) {
+uint8_t res;
+	fibLocker. lock ();
+	res = currentConfig -> serviceType (index);
+	fibLocker. unlock ();
+	return res;
+}
+
+int	fibDecoder::getNrComps			(const uint32_t SId) {
+	return currentConfig -> getNrComps (SId);
+}
+
 //
 //		
 bool	fibDecoder::isPrimary	(const QString &s) {
@@ -1407,6 +1412,11 @@ std::vector<int> res;
 //
 //	needed for generating eti files
 //	required for ETI generation
+void	fibDecoder::getCIFcount		(int16_t &high, int16_t &low) {
+	high	= CIFcount_hi. load ();
+	low	= CIFcount_lo. load ();
+}
+
 int	fibDecoder::nrChannels	() {
 int res;
 	fibLocker. lock ();
@@ -1420,42 +1430,20 @@ void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
 	fibLocker. unlock ();
 }
 
-int32_t	fibDecoder::getCIFcount		() {
-	return CIFcount;
+bool	fibDecoder::evenFrame		() {
+	return (CIFcount_lo. load () & 0x07) == 0;
 }
-	
-void	fibDecoder::getCIFcount		(int16_t &high, int16_t &low) {
-	high	= CIFcount_hi;
-	low	= CIFcount_lo;
-}
+//
+
 
 uint32_t fibDecoder::julianDate		() {
 	return mjd;
 }
 //
-//	handleAnnouncement stays here, since in a way it is
-//	part of the FIG handling
-void	fibDecoder::handleAnnouncement (uint16_t SId, uint16_t flags,
-	                                                uint8_t subChId) {
-	(void)subChId;
-	for (auto &serv : currentConfig -> SId_table)
-	   if (serv. SId == SId) {
-	      if (serv. announcing != flags)
-	         emit announcement (SId, flags);
-	      serv. announcing = flags;
-	   }
-}
-
 int	fibDecoder::freeSpace		() {
 	return currentConfig -> freeSpace ();
 }
 //
-//	Some GUI functions, such as content printer and
-//	printer with the scan function, need to get a description
-//	of the attributes of the service.
-//	Here we collect all attributes as specified by "contentType"
-//	from the local configuration
-//	
 QList<contentType> fibDecoder::contentPrint () {
 QList<contentType> res;
 	fibLocker. lock ();

@@ -46,21 +46,22 @@
 
 void	fibConfig::reset	() {
 	SId_table. 		resize (0);
-	subChannel_table.	resize (0);
-	SC_C_table.		resize (0);
-	SC_P_table.		resize (0);
-	SC_G_table. 		resize (0);
-	language_table.		resize (0);
-	programType_table.	resize (0);
-	AppType_table.		resize (0);
-	announcement_table. 	resize (0);
+	subChannel_table.	resize (0);	// 6.2.1
+	SC_C_table.		resize (0);	// 6.1.1
+	SC_P_table.		resize (0);	// 6.3.3
+	SC_G_table. 		resize (0);	// 6.3.5
+	language_table.		resize (0);	// 8.1.2
+	programType_table.	resize (0);	// 8.1.5
+	AppType_table.		resize (0);	// 6.3.6
+	announcement_table. 	resize (0);	// 8.1.6.1
 	memset (dateTime, 0, sizeof (dateTime));
 }
 
 int	fibConfig::serviceIdOf		(int index) {
 	return SC_C_table [index]. SId;
 }
-
+//
+//	private
 int	fibConfig::SCIdsOf		(int index) {
 serviceComp_C &comp = SC_C_table [index];
 	if (comp. TMid == 0) {
@@ -87,7 +88,8 @@ serviceComp_C &comp = SC_C_table [index];
 	}
 	return -1;
 }
-
+//
+//	public
 int	fibConfig::subChannelOf		(int index) {
 serviceComp_C &comp = SC_C_table [index];
 	if (comp. TMid == 0)	// audio
@@ -98,62 +100,49 @@ serviceComp_C &comp = SC_C_table [index];
 	return SC_P_table [SCId_index]. subChId;
 }
 
+bool	fibConfig::SCId_exists		(const int SCId) {
+	for (auto &comp : SC_P_table)
+           if (comp. SCId == SCId)
+              return true;
+	return false;
+}
+
+bool	fibConfig::subChId_exists	(const int subChId) {
+	for (auto &scId: subChannel_table)
+	   if (scId. subChId == subChId)
+	      return true;
+	return false;
+}
+//
+bool	fibConfig::SC_G_element_exists (int SId, int SCIds) {
+	for (auto &el : SC_G_table) 
+	   if ((el. SId == SId) && (el. SCIds == SCIds))
+	      return true;
+	return false;
+}
+
+bool	fibConfig::announcement_exists	(int SId, int clusterId) {
+	for (auto &ACe : announcement_table) 
+	   if ((ACe. SId == SId) && (clusterId == ACe. clusterId)) 
+	      return true;
+	return false;
+}
+
+//	public
 int	fibConfig::findIndex_subChannel_table (uint8_t subChId) {
 	for (int i = 0; i < (int)subChannel_table. size (); i ++)
 	   if (subChannel_table [i]. subChId == subChId)
 	      return i;
 	return -1;
 }
-
 //
-//	For the following few functions, it holds that they all
-//	fetch attributes from the subChannel, 
-//int	fibConfig::startAddressOf	(int index) {
-//int subChId = subChannelOf (index);
-//int subCh_index = findIndex_subChannel_table (subChId);
-//	if (subCh_index < 0)
-//	   return -1;
-//	return subChannel_table [subCh_index]. startAddr;
-//}
-//
-//int	fibConfig::lengthOf 		(int index) {
-//int subChId = subChannelOf (index);
-//int subCh_index = findIndex_subChannel_table (subChId);	
-//	if (subCh_index < 0)
-//	   return -1;
-//	return subChannel_table [subCh_index]. Length;
-//}
-//
-//bool	fibConfig::shortFormOf		(int index) {
-//int subChId = subChannelOf (index);
-//int subCh_index = findIndex_subChannel_table (subChId);	
-//	if (subCh_index < 0)
-//	   return -1;
-//	return subChannel_table [subCh_index]. shortForm;
-//}
-//
-//int16_t	fibConfig::protLevelOf		(int index) {
-//int subChId = subChannelOf (index);
-//int subCh_index = findIndex_subChannel_table (subChId);	
-//	if (subCh_index < 0)
-//	   return -1;
-//	return subChannel_table [subCh_index]. protLevel;
-//}
-//
-//int	fibConfig::bitRateOf 		(int index) {
-//int16_t subChId = subChannelOf (index);
-//int subCh_index = findIndex_subChannel_table (subChId);
-//	if (subCh_index < 0)
-//	   return -1;
-//	return subChannel_table [subCh_index]. bitRate;
-//}
-//
+//	private
 int	fibConfig::dabTypeOf		(int index) {
 	if (SC_C_table [index]. TMid != 0)
 	   return -1;
 	return SC_C_table [index]. ASCTy;
 }
-
+//	private
 int	fibConfig::languageOf 		(int index) {
 	if (SC_C_table [index]. TMid == 0) {
 	   int subChId = SC_C_table [index]. subChId;
@@ -169,7 +158,7 @@ int	fibConfig::languageOf 		(int index) {
 	}
 	return -1;
 }
-	
+//	private
 int	fibConfig::appTypeOf		(int index) {
 uint32_t SId	= SC_C_table [index]. SId;
 	int SCIds = SCIdsOf (index);
@@ -180,7 +169,7 @@ uint32_t SId	= SC_C_table [index]. SId;
 	   return -1;
 	return AppType_table [appIndex]. Apptype;
 }
-
+//	private
 int	fibConfig::FEC_schemeOf		(int index) {
 int16_t subChId	= subChannelOf (index);
 int subCh_index = findIndex_subChannel_table (subChId);
@@ -188,7 +177,7 @@ int subCh_index = findIndex_subChannel_table (subChId);
 	   return -1;
 	return subChannel_table [subCh_index]. FEC_scheme;
 }
-
+//	private
 int	fibConfig::packetAddressOf	(int index) {
 serviceComp_C &comp = SC_C_table [index];
 	if (comp. TMid != 3)
@@ -198,7 +187,7 @@ serviceComp_C &comp = SC_C_table [index];
 	   return -1;
 	return SC_P_table [SCId_index]. packetAddress;
 }
-
+//	private
 int	fibConfig::DSCTy		(int index) {
 serviceComp_C &comp = SC_C_table [index];
 	if (comp. TMid != 3)
@@ -208,7 +197,7 @@ serviceComp_C &comp = SC_C_table [index];
 	   return -1;
 	return SC_P_table [SCId_index]. DSCTy;
 }
-
+//	private
 int	fibConfig::DG_flag		(int index) {
 serviceComp_C &comp = SC_C_table [index];
 	if (comp. TMid != 3)
@@ -218,7 +207,7 @@ serviceComp_C &comp = SC_C_table [index];
 	   return -1;
 	return SC_P_table [SCId_index]. DG_flag;
 }
-
+//	private
 int	fibConfig::findIndex_SC_P_Table (uint16_t SCId) {
 	for (int i = 0; i < (int)SC_P_table. size (); i ++)
 	   if (SC_P_table [i]. SCId == SCId)
@@ -226,18 +215,7 @@ int	fibConfig::findIndex_SC_P_Table (uint16_t SCId) {
 	return -1;
 }
 
-int	fibConfig::findIndex_languageTable (uint8_t key_1, uint16_t key_2) {
-	for (int i = 0; i < (int) language_table. size (); i ++) {
-	   if (language_table [i]. LS_flag != key_1)
-	      continue;
-	   if ((key_1 == 0) && (language_table [i]. subChId == key_2))
-	      return i;
-	   if ((key_1 == 1) && (language_table [i]. SCId == key_2))
-	      return i;
-	}
-	return -1;
-}
-
+//	private
 int	fibConfig::findIndexApptype_table (uint32_t SId, uint8_t SCIds) {
 	for (int i = 0; i < (int)AppType_table. size (); i ++)
 	   if ((AppType_table [i]. SId == SId) &&
@@ -245,7 +223,7 @@ int	fibConfig::findIndexApptype_table (uint32_t SId, uint8_t SCIds) {
 	   return i;
 	return -1;
 }
-
+//public
 bool	fibConfig::compIsKnown	(serviceComp_C &newComp) {
 	for (auto &comp : SC_C_table) {
 	   if (comp. SId != newComp. SId)
@@ -256,7 +234,7 @@ bool	fibConfig::compIsKnown	(serviceComp_C &newComp) {
 	}
 	return false;
 }
-
+//	public
 int	fibConfig::freeSpace	() {
 int amount = 0;
 	for (auto &ss: subChannel_table) 
@@ -265,9 +243,17 @@ int amount = 0;
 }
 //
 ////////////////////////////////////////////////////////////////////
+//////////	The public interface  functions ////////////////////
 
 uint32_t fibConfig::getSId	(const int index) {
 	return SC_C_table [index]. SId;
+}
+
+bool	fibConfig::SId_exists	(const int SId) {
+	for (auto &ss: SId_table)
+	   if (ss. SId == SId)
+	      return true;
+	return false;
 }
 
 uint8_t	fibConfig::serviceType (const int index) {

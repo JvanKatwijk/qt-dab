@@ -61,7 +61,7 @@ public:
 	uint16_t	getAnnouncing		(uint16_t);
 	std::vector<int>	getFrequency	(const QString &);
 	void		getChannelInfo		(channel_data *, const int);
-	int32_t		getCIFcount		();	
+	bool		evenFrame		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	int		freeSpace		();
@@ -158,9 +158,9 @@ private:
 	void		FIG1Extension6		(uint8_t *);
 
 	QMutex		fibLocker;
-	int		CIFcount;
-	int16_t		CIFcount_hi;
-	int16_t		CIFcount_lo;
+	std::atomic<int>	CIFcount;
+	std::atomic<int16_t>	CIFcount_hi;
+	std::atomic<int16_t>	CIFcount_lo;
 	uint32_t	mjd;			// julianDate
 
 	void		handleAnnouncement	(uint16_t SId,
