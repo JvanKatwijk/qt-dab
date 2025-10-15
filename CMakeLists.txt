@@ -201,6 +201,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/freq-interleaver.h
 	     ./sources/frontend/fic-handler.h
 	     ./sources/frontend/ensemble.h
+	     ./sources/frontend/fib-dbtypes.h
 	     ./sources/frontend/fib-config.h
 	     ./sources/frontend/fib-decoder.h
 	     ./sources/frontend/fib-table.h

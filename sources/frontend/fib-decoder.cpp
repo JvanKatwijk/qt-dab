@@ -69,8 +69,8 @@
 	         myRadioInterface, &RadioInterface::setFreqList);
 //
 //	Note that they may change "roles", 
-	currentConfig	= new fibConfig	(&theEnsemble);
-	nextConfig	= new fibConfig (&theEnsemble);
+	currentConfig	= new fibConfig	(&theEnsemble, myRadioInterface);
+	nextConfig	= new fibConfig (&theEnsemble, myRadioInterface);
 	mjd		= 0;
 }
 	
@@ -348,10 +348,11 @@ static	int table_2 [] = {27, 21, 18, 15};
 //
 //	in case the subchannel data was already computed
 //	we merely compute the offset
-	if (localBase -> findIndex_subChannel_table (subChId) >= 0)
+	if (localBase -> subChId_exists (subChId))
 	   return bitOffset / 8;
 //
-	localBase -> subChannel_table. push_back (channel);
+	localBase -> add_to_subChannel_table (channel);
+//	localBase -> subChannel_table. push_back (channel);
 	return bitOffset / 8;	// we return bytes
 }
 //
@@ -427,11 +428,13 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	      {;}
 	   bitOffset += 16;
 	   if (!localBase -> compIsKnown (comp)) {	
-	      SId_element. comps. push_back (localBase -> SC_C_table. size ());
-	      localBase -> SC_C_table. push_back (comp);
+	      int index =  localBase -> add_to_SC_C_table (comp);
+	      SId_element. comps. push_back (index);
+//	      localBase -> SC_C_table. push_back (comp);
 	   }
 	}
-	localBase -> SId_table. push_back (SId_element);
+	localBase -> add_to_SId_table (SId_element);
+//	localBase -> SId_table. push_back (SId_element);
 	return bitOffset / 8;		// in Bytes
 }
 
@@ -480,7 +483,8 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	element. DSCTy		= DSCTy;
 	element. DG_flag	= DGflag;
 	element.  packetAddress	= packetAddress;
-	localBase -> SC_P_table. push_back (element);
+	localBase -> add_to_SC_P_table (element);
+//	localBase -> SC_P_table. push_back (element);
 	return used;
 }
 
@@ -517,33 +521,39 @@ fibConfig::SC_language comp;
 	   if (localBase -> subChId_exists (comp. subChId)) 
 	      comp. language = language;
 	   bitOffset += 16;
+	   if (localBase -> language_comp_exists (comp. subChId))
+	      return bitOffset / 8;
+
+	   localBase -> add_to_language_table (comp);
+//	   localBase -> language_table. push_back (comp);
+	   return bitOffset / 8;
 	}
 	else {
 	   comp. SCId = getBits (d, bitOffset + 4, 12);
 	   comp. subChId = 255;
 	   uint8_t language = getBits (d, bitOffset + 16, 8);
-	   for (auto & scId : localBase -> SC_P_table) {
-	      if (scId. SCId == comp. SCId) {
-	         for (auto &subch : localBase -> subChannel_table) {
-	            if (subch. subChId == scId. subChId) {
-	               comp. language = language;
-	               break;
-	            }
-	         }
-	      }
-	   }
+
+	   int res = localBase -> subChId_in_SCId (comp. SCId);
+	   if (res >= 0)
+	      comp. language = language;
+//	   for (auto & scId : localBase -> SC_P_table) {
+//	      if (scId. SCId == comp. SCId) {
+//	         for (auto &subch : localBase -> subChannel_table) {
+//	            if (subch. subChId == scId. subChId) {
+//	               comp. language = language;
+//	               break;
+//	            }
+//	         }
+//	      }
+//	   }
 	   bitOffset += 24;
-	}
-	for (auto &lanComp : localBase -> language_table) {
-	   if ((lanComp. LS_flag == 0) &&
-	       (lanComp. subChId == comp. subChId))	
+	   if (localBase -> language_comp_exists (comp. SCId))
 	      return bitOffset / 8;
-	   if ((lanComp. LS_flag != 0) &&
-	       (lanComp. SCId == comp. SCId))
-	      return bitOffset / 8;
+
+	   localBase -> add_to_language_table (comp);
+//	   localBase -> language_table. push_back (comp);
+	   return bitOffset / 8;
 	}
-	localBase -> language_table. push_back (comp);
-	return bitOffset / 8;
 }
 //
 // FIG0/7: Configuration linking information 6.4.2,
@@ -615,7 +625,8 @@ fibConfig::serviceComp_G comp;
 	   bitOffset += 8;	// skip Rfa
 	if (localBase -> SC_G_element_exists (comp.SId, comp. SCIds))
 	   return bitOffset / 8;
-	localBase -> SC_G_table. push_back (comp);
+	localBase -> add_to_SC_G_table (comp);
+//	localBase -> SC_G_table. push_back (comp);
 	return bitOffset / 8;
 }
 
@@ -791,7 +802,8 @@ fibConfig::AppType element;
 	}
 	if (localBase -> findIndexApptype_table (SId, SCIds) != -1)
 	   return bitOffset / 8;
-	localBase -> AppType_table. push_back (element);
+	localBase -> add_to_apptype_table (element);
+//	localBase -> AppType_table. push_back (element);
 	return bitOffset / 8;
 }
 
@@ -810,9 +822,10 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   int16_t subChId	= getBits_6 (d, used * 8);
 	   uint8_t FEC_scheme	= getBits_2 (d, used * 8 + 6);
 	   used = used + 1;
-	   for (auto &subC: localBase -> subChannel_table)
-	      if (subC. subChId == subChId)
-	         subC. FEC_scheme = FEC_scheme;
+	   localBase	-> set_FECscheme (subChId, FEC_scheme);
+//	   for (auto &subC: localBase -> subChannel_table)
+//	      if (subC. subChId == subChId)
+//	         subC. FEC_scheme = FEC_scheme;
 	}
 }
 //
@@ -895,7 +908,8 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	         aC. SId = SId;
 	         aC. asuFlags = asuFlags;
 	         aC. clusterId = clusterId;
-	         localBase -> announcement_table. push_back (aC);
+	         localBase -> add_to_announcement_table (aC);
+//	         localBase -> announcement_table. push_back (aC);
 	      }
 	   }
 	   bitOffset	+= nrClusters * 8;
@@ -925,17 +939,18 @@ fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset		+= 1;
 	   uint8_t subChId	= getBits (d, bitOffset, 6);
 	   bitOffset		+= 6;
-	   for (auto &ac : localBase -> announcement_table) {
-	      if ((ac. clusterId == clusterId) && newFlag) {
-	         uint16_t flags = (ac. asuFlags & AswFlags);
-	         for (auto &serv : currentConfig -> SId_table) {
-	            if ((serv. SId == ac. SId) &&
-	                    (serv. announcing != flags))
-	               emit announcement (ac. SId, flags);
-	            serv. announcing = flags;
-	         }
-	      }
-	   }
+	   currentConfig -> check_announcements (clusterId, AswFlags, newFlag);
+//	   for (auto &ac : localBase -> announcement_table) {
+//	      if ((ac. clusterId == clusterId) && newFlag) {
+//	         uint16_t flags = (ac. asuFlags & AswFlags);
+//	         for (auto &serv : currentConfig -> SId_table) {
+//	            if ((serv. SId == ac. SId) &&
+//	                    (serv. announcing != flags))
+//	               emit announcement (ac. SId, flags);
+//	            serv. announcing = flags;
+//	         }
+//	      }
+//	   }
 	}
 }
 //
@@ -1160,15 +1175,18 @@ char		label [17];
 	prim. SId		= SId;
 	prim. fmFrequencies. resize (0);
 	theEnsemble. primaries. push_back (prim);
-	int subChId = -1;
-	for (int i = 0; i < (int)(currentConfig -> SC_C_table. size ()); i ++) {
-	   fibConfig::serviceComp_C  comp  = currentConfig -> SC_C_table [i];
-	   if ((comp. compNr == 0) && (comp. SId == SId))
-	      subChId	= currentConfig -> subChannelOf (i);
+	int subChId	= currentConfig -> subChId_for_SId (0, SId);
+//	int subChId = -1;
+//	for (int i = 0; i < (int)(currentConfig -> SC_C_table. size ()); i ++) {
+//	   fibConfig::serviceComp_C  comp  = currentConfig -> SC_C_table [i];
+//	   if ((comp. compNr == 0) && (comp. SId == SId))
+//	      subChId	= currentConfig -> subChannelOf (i);
+//	}
+	if (subChId != -1) {
+	   addToEnsemble (dataName, SId, subChId);
+	   if (theEnsemble. primaries. size () >= 2)
+	      theEnsemble. isSynced = true;
 	}
-	addToEnsemble (dataName, SId, subChId);
-	if (theEnsemble. primaries. size () >= 2)
-	   theEnsemble. isSynced = true;
 }
 
 //	service component label - 32 bits 8.1.14.3
@@ -1321,6 +1339,8 @@ bool	fibDecoder::syncReached() {
 //	for primary services we return the index of the first
 //	component, the secondary services, the index of the
 //	component with the matching SCIds
+//	Note that components here aree identified by an integer number,
+//	a key to the database;
 //	
 int	fibDecoder::getServiceComp		(const QString &service) {
 int res;

@@ -25,37 +25,46 @@
 //
 //	Implementation of the FIG database
 
+#include	<QObject>
 #include	<stdint.h>
 #include	<vector>
 #include	<QString>
 #include	"dab-constants.h"
-class	ensemble;
 
-class	fibConfig {
+class	ensemble;
+class	RadioInterface;
+
+class	fibConfig: public QObject {
+Q_OBJECT
 public:
-			fibConfig	(ensemble *);
+			fibConfig	(ensemble *, RadioInterface *);
 			~fibConfig	();
-//	The tables cannot made private (unless set functions for
-//	all structs and components are made)
+//
+//	The db types are included
+#include	"fib-dbtypes.h"
 //	Most components are a direct translation of the
 //	FIG 
 //	SId is a small optimization, not really needed
 //	of service components
-	ensemble	*theEnsemble;
+	void		reset			();
+	int		freeSpace		();
 	uint32_t	getSId			(const int);
 	bool		SId_exists		(const int);
 	bool		SCId_exists		(const int);
 	bool		subChId_exists		(const int);
+
 	bool		SC_G_element_exists	(const int SId,
 	                                             const int SCIds);
 	bool		announcement_exists	(const int, const int);
-
+	bool		language_comp_exists	(int);
 	uint8_t		serviceType		(const int);
 	int		getNrComps		(const uint32_t);
 	int		getServiceComp		(const QString &);
 	int		getServiceComp		(const uint32_t, const int);
 	int		getServiceComp_SCIds	(const uint32_t, const int);
 
+	int		subChId_for_SId		(const int, const uint32_t);
+	int		subChId_in_SCId		(const int);
 	void		audioData		(const int, audiodata &);
 	void		packetData		(const int, packetdata &);
 
@@ -66,89 +75,32 @@ public:
 	QList<contentType>
 	                contentPrint		();
 
-	typedef struct {
-	   uint32_t 	SId;
-	   std::vector<int> comps;
-	   uint16_t	announcing;
-	} SId_struct;
-//
-//	Subchannel is filled by FIG0/1
-	typedef struct  {
-	   bool		inUse;		// will be removed after handling eti
-	   uint16_t	subChId;
-	   int32_t	Length;
-	   int32_t	startAddr;
-	   bool		shortForm;
-	   int32_t	protLevel;
-	   int32_t	bitRate;
-	   int16_t	FEC_scheme;
-	   uint8_t	compLanguage;
-	} subChannel;
+	void		set_FECscheme		(const int, int);
 
-//	service components	filled by FIG0/2
-//	The "C" stands for Common
-	typedef struct {
-	   uint32_t	SId;
-	   uint16_t	SCId;
-	   uint8_t	subChId;
-	   uint8_t	TMid;
-	   int		compNr;
-	   uint8_t	ASCTy;
-	   uint8_t	PS_flag;
-	} serviceComp_C;
-//
-//	additional component information for packet data,
-//	the "P" stands for Packet, FIG0/3
-	typedef struct {
-	   uint16_t	SCId;
-	   uint8_t	CAOrg_flag;
-	   uint8_t	DG_flag;
-	   uint8_t	DSCTy;
-	   uint8_t	subChId;
-	   uint16_t	packetAddress;
-	} serviceComp_P;
-//
-//	some more general component information 
-//	the "G" stands for General, FIG0/8
-	typedef	struct {
-	   uint32_t	SId;
-	   uint8_t	LS_flag;
-	   uint8_t	SCIds;
-	   uint8_t	subChId;
-	   uint16_t	SCId;
-	} serviceComp_G;
-//
-//	Data for the service components Language
-//	FIG0/5
-	typedef struct {
-	   uint8_t	LS_flag;
-	   uint8_t	subChId;
-	   uint16_t	SCId;
-	   uint8_t	language;
-	} SC_language;
+	void		check_announcements	(uint8_t, uint8_t, uint8_t);
 
+	ensemble	*theEnsemble;
+	
+	void		add_to_SId_table	(const SId_struct &comp);
+	void		add_to_subChannel_table (const subChannel &comp);
 //
-//	Data for the apptype of packet components FIG0/13
-	typedef	struct {
-	   uint32_t	SId;
-	   uint8_t	SCIds;
-	   uint16_t	Apptype;
-	} AppType;
-//
-//	Data for the program type  FIG0/17
-	typedef struct {
-	   uint32_t	SId;
-	   uint8_t	typeCode;
-	} programType;
+//	This one returns the index
+//	many operations are based on finding the component,
+//	that is why the index is passed as result
+	int		add_to_SC_C_table	(const serviceComp_C &comp);
+	void		add_to_SC_P_table	(const serviceComp_P &comp);
+	void		add_to_SC_G_table 	(const serviceComp_G &comp);
+	void		add_to_language_table 	(const SC_language &comp);
+	void		add_to_apptype_table 	(const AppType &comp);
+	void		add_to_announcement_table (const FIG18_cluster &comp);
 
+	int32_t dateTime [8];
+	int		subChannelOf		(int index);
+	int		findIndex_subChannel_table (uint8_t subChId);
+	int		findIndexApptype_table	(uint32_t SId, uint8_t SCIds);
+	bool		compIsKnown		(serviceComp_C &newComp);
 //
-//	data for the announcement support FIG0/18
-	typedef struct {
-	   uint16_t	SId;
-	   uint16_t	asuFlags;
-	   uint8_t	clusterId;
-	} FIG18_cluster;
-//
+private:
 //	for each type a table
 	std::vector<SId_struct>		SId_table;		// FIG0/2
 	std::vector<subChannel>		subChannel_table;	// FIG0/1
@@ -160,15 +112,6 @@ public:
 	std::vector<programType> 	programType_table;	// FIG0/17
 	std::vector<FIG18_cluster>	announcement_table;	// FIG0/18
 
-	int32_t dateTime [8];
-	void	reset			();
-	int	subChannelOf		(int index);
-	int	findIndex_subChannel_table (uint8_t subChId);
-	int	findIndexApptype_table	(uint32_t SId, uint8_t SCIds);
-	bool	compIsKnown		(serviceComp_C &newComp);
-	int	freeSpace		();
-private:
-	int	serviceIdOf		(int index);
 	int	SCIdsOf			(int index);
 	int	dabTypeOf		(int index);
 	int	languageOf 		(int index);
@@ -178,7 +121,7 @@ private:
 	int	DSCTy			(int index);
 	int	DG_flag			(int index);
 	int	findIndex_SC_P_Table	(uint16_t SCId);
-//	int	findIndex_languageTable	(uint8_t key_1, uint16_t key_2);
-
+signals:
+	void	announcement		(int, int);
 };
 

@@ -138,6 +138,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/tii-detector-2.h \
 	   ./sources/frontend/fic-handler.h \
 	   ./sources/frontend/ensemble.h  \
+	   ./sources/frontend/fib-dbtypes.h  \
 	   ./sources/frontend/fib-config.h  \
 	   ./sources/frontend/fib-decoder.h  \
 	   ./sources/frontend/fib-table.h \
