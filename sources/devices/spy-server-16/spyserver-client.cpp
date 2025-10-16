@@ -219,7 +219,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	theServer	-> get_deviceInfo (theDevice);
 
 	uint32_t serial	= theServer -> get_deviceInfo (theDevice);
-
+	(void)serial;
 	if (theDevice. DeviceType == DEVICE_AIRSPY_ONE) {
 	   nameOfDevice	-> setText ("Airspy One");
 	}

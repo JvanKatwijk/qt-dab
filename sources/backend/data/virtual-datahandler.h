@@ -32,7 +32,9 @@ public:
 		virtual_dataHandler	() {}
 virtual		~virtual_dataHandler	() {}
 virtual
-	void	add_mscDatagroup	(const std::vector<uint8_t> &) {}
+	void	add_mscDatagroup	(const std::vector<uint8_t> &x) {
+	   (void)x;
+	}
 };
 
 

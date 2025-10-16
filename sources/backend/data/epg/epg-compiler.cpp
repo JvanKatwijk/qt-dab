@@ -1682,6 +1682,7 @@ void	epgCompiler::process_forgotten (const QString s,
 	                               int &index) {
 int key	= v [index];
 int endPoint	= setLength (v, index);
+	(void)s;
 	QString t = "Translating epg, unknown key " +
 	                                    QString::number (key);	
 	theErrorLogger -> add ("epgVertaler", t);

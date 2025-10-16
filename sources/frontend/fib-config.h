@@ -41,9 +41,9 @@ public:
 			~fibConfig	();
 //
 //	The db types are included
-#include	"fib-dbtypes.h"
 //	Most components are a direct translation of the
 //	FIG 
+#include	"fib-dbtypes.h"
 //	SId is a small optimization, not really needed
 //	of service components
 	void		reset			();
@@ -106,8 +106,8 @@ private:
 	std::vector<subChannel>		subChannel_table;	// FIG0/1
 	std::vector<serviceComp_C>	SC_C_table;		// FIG0/2
 	std::vector<serviceComp_P>	SC_P_table;		// FIG0/3
-	std::vector<serviceComp_G>	SC_G_table;		// FIG0/8
 	std::vector<SC_language>	language_table;		// FIG0/5
+	std::vector<serviceComp_G>	SC_G_table;		// FIG0/8
 	std::vector<AppType>		AppType_table;		// FIG0/13
 	std::vector<programType> 	programType_table;	// FIG0/17
 	std::vector<FIG18_cluster>	announcement_table;	// FIG0/18

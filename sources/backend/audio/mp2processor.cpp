@@ -660,7 +660,7 @@ uint8_t	newbyte = (01 << bitnr);
 void    mp2Processor::handle_PAD (const std::vector<uint8_t> &v) {
 int16_t vLength = 24 * bitRate / 8;
 uint8_t temp [vLength];
-        if (v. size () < 24 * bitRate)  // should not happen
+        if ((int)(v. size ()) < 24 * bitRate)  // should not happen
            return;
         for (int i = 0; i < vLength; i ++) {
            temp [i] = 0;

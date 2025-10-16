@@ -34,6 +34,7 @@
 	                             params (p -> dabMode),
 	                             fft_forward (params. get_T_u (), false),
 	                             fft_backwards (params. get_T_u (), true) {
+	(void)mr;
 
 	this	-> theTable	= theTable;
 	this	-> T_u		= params. get_T_u();

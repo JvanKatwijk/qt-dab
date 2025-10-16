@@ -648,9 +648,10 @@ QString res;
 
 void	padHandler::add_toDL2 (const uint8_t *data,
 	                              uint8_t field_2, uint8_t field_3) {
+	(void)field_2; (void)field_3;
 	if (DL2_record. theText. size () == 0)
 	   return;
-	uint8_t CId	= (data [0] >> 4) & 0x0f;
+//	uint8_t CId	= (data [0] >> 4) & 0x0f;
 	uint8_t CB	= data [0] & 0x0f;
 	if ((CB & 04) == 0)	// IR should be "running"
 	   return;

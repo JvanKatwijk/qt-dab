@@ -1053,6 +1053,7 @@ void	configHandler::set_activeServices	(int activeS) {
 }
 
 void	configHandler::handle_dcRemoval		(int h) {
+	(void)h;
 	bool b = this ->  dcRemoval -> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, "dcRemoval", b ? 1 : 0);
 	emit set_dcRemoval (b);

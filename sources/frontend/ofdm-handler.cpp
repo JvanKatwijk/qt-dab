@@ -728,7 +728,7 @@ std::vector<Complex> CI_Vector (T_u);
 
 	for (int i = 0; i < T_u; i ++)
 	   inVector [i] = Complex (0, 0);
-	int base = std::max (0, startIndex - 504);
+//	int base = std::max (0, startIndex - 504);
 	for (int i = startIndex; i >= 0; i --)
 	   inVector [i] = rawBuffer [i];
 	for (int i = startIndex; i < T_u; i ++)

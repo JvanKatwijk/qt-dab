@@ -229,7 +229,6 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 
 DABFLOAT sum	= 0;
 static DABFLOAT bitSum	= 10;
-float	oldSum	= bitSum;
 	bitSum = 0;
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));

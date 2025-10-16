@@ -1400,7 +1400,8 @@ deviceHandler	*RadioInterface::createDevice (const QString &s,
 	                                        logger *theLogger) {
 deviceHandler	*inputDevice = theDeviceChoser.
 	                               createDevice  (s, version);
-
+	
+	(void)theLogger;		// for now
 	if (inputDevice	== nullptr)
 	   return nullptr;
 
@@ -4777,6 +4778,7 @@ void	RadioInterface::journalineData		(QByteArray data,
 
 
 void	RadioInterface::focusInEvent (QFocusEvent *evt) {
+	(void)evt;
 }
 //
 //	This function is called whenever a key is touched

@@ -114,7 +114,7 @@ std::vector<dbElement> res;
 	      ed. valid = false;
 	   if (count >= (int) res. size ())
 	      res. resize (res. size () + 100);
-	   ed. key_1	= (ed. Eid << 16) | (ed. mainId << 8) +  ed. subId; 
+	   ed. key_1	= ((ed. Eid << 16) | (ed. mainId << 8)) +  ed. subId; 
 	   bool ok;
 	   uint16_t cc	= ed. channel. toInt (&ok, 16);
 	   ed. key_2	= ok ? cc : 0;

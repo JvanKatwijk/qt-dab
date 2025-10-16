@@ -169,11 +169,12 @@ uint8_t	temp	= 0;
 }
 //
 //	when handling a superframe we want to be sure that the fc is correct
-bool	mp4Processor::processSuperframe (uint8_t *frameBytes, int16_t  index) {
+bool	mp4Processor::processSuperframe (uint8_t *frameBytes,
+	                                           int16_t  index) {
 uint8_t		num_aus;
 int		tmp;
 stream_parms    streamParameters;
-
+	(void)frameBytes; (void)index;
 //	bits 0 .. 15 is firecode
 //	bit 16 is unused
 	streamParameters. dacRate = (outVector [2] >> 6) & 01;	// bit 17

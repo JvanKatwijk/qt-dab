@@ -51,7 +51,7 @@ static int key	= 0;
 void	journalineController::
 	                add_mscDatagroup (const std::vector<uint8_t> &msc) {
 QByteArray v;
-	for (int i = 0; i < msc. size (); i ++)
+	for (int i = 0; i < (int)(msc. size ()); i ++)
 	   v. push_back (msc [i]);
 	emit send_mscDatagroup (v, currentKey);
 }

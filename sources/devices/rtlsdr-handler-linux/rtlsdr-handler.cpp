@@ -740,7 +740,7 @@ static int teller	= 0;
 	   xmlWriter -> add ((std::complex<uint8_t> *)buf, nrSamples);
 
 	if (iq_dumping. load ()) {
-	   for (uint32_t i = 0; i < nrSamples; i ++) {
+	   for (int32_t i = 0; i < nrSamples; i ++) {
 	      dumpBuffer [2 * iqTeller]	= buf [2 * i];
 	      dumpBuffer [2 * iqTeller + 1] = buf [2 * i + 1];
 	      iqTeller ++;
@@ -755,7 +755,7 @@ static int teller	= 0;
 	   theFilter. resize (currentDepth);
 	}
 
-	for (uint32_t i = 0; i < nrSamples; i ++) {
+	for (int32_t i = 0; i < nrSamples; i ++) {
 	   teller ++;
 	   float tempI	= convTable [buf [2 * i]];
 	   float tempQ	= convTable [buf [2 * i + 1]];

@@ -33,7 +33,7 @@
 //	In this reimplementation I took an easy approach:
 //	The fib decoder just (more or less) copies the data
 //	of the FIGs into db elements
-//	The db then contains for each one a table,
+//	The db then contains for each of the relevant FIGs a table,
 //	and the interpretation is "as and when needed"
 //	Of course, on querying the FIG database, it needs more
 //	cycles, but at least the code now is (in my opinion)
@@ -60,7 +60,6 @@ void	fibConfig::reset	() {
 	memset (dateTime, 0, sizeof (dateTime));
 }
 
-//	public
 int	fibConfig::freeSpace	() {
 int amount = 0;
 	for (auto &ss: subChannel_table) 
@@ -74,7 +73,7 @@ uint32_t fibConfig::getSId	(const int index) {
 
 bool	fibConfig::SId_exists	(const int SId) {
 	for (auto &ss: SId_table)
-	   if (ss. SId == SId)
+	   if ((int)(ss. SId) ==  SId)
 	      return true;
 	return false;
 }
@@ -458,13 +457,13 @@ serviceComp_C &comp = SC_C_table [index];
 	return -1;
 }
 //
-//
 //	private
 int	fibConfig::dabTypeOf		(int index) {
 	if (SC_C_table [index]. TMid != 0)
 	   return -1;
 	return SC_C_table [index]. ASCTy;
 }
+//
 //	private
 int	fibConfig::languageOf 		(int index) {
 	if (SC_C_table [index]. TMid == 0) {
@@ -481,6 +480,7 @@ int	fibConfig::languageOf 		(int index) {
 	}
 	return -1;
 }
+//
 //	private
 int	fibConfig::appTypeOf		(int index) {
 uint32_t SId	= SC_C_table [index]. SId;
@@ -492,6 +492,7 @@ uint32_t SId	= SC_C_table [index]. SId;
 	   return -1;
 	return AppType_table [appIndex]. Apptype;
 }
+//
 //	private
 int	fibConfig::FEC_schemeOf		(int index) {
 int16_t subChId	= subChannelOf (index);
@@ -500,6 +501,7 @@ int subCh_index = findIndex_subChannel_table (subChId);
 	   return -1;
 	return subChannel_table [subCh_index]. FEC_scheme;
 }
+//
 //	private
 int	fibConfig::packetAddressOf	(int index) {
 serviceComp_C &comp = SC_C_table [index];
@@ -510,6 +512,7 @@ serviceComp_C &comp = SC_C_table [index];
 	   return -1;
 	return SC_P_table [SCId_index]. packetAddress;
 }
+//
 //	private
 int	fibConfig::DSCTy		(int index) {
 serviceComp_C &comp = SC_C_table [index];
@@ -520,6 +523,7 @@ serviceComp_C &comp = SC_C_table [index];
 	   return -1;
 	return SC_P_table [SCId_index]. DSCTy;
 }
+//
 //	private
 int	fibConfig::DG_flag		(int index) {
 serviceComp_C &comp = SC_C_table [index];
@@ -530,6 +534,7 @@ serviceComp_C &comp = SC_C_table [index];
 	   return -1;
 	return SC_P_table [SCId_index]. DG_flag;
 }
+//
 //	private
 int	fibConfig::findIndex_SC_P_Table (uint16_t SCId) {
 	for (int i = 0; i < (int)SC_P_table. size (); i ++)
@@ -544,4 +549,3 @@ int	fibConfig::findIndex_SC_P_Table (uint16_t SCId) {
 
 //	needed for generating eti files
 
-//
