@@ -356,6 +356,11 @@ QString h;
 	             value_f (dabSettings_p, MAP_HANDLING, HOME_LATITUDE, 0.0);
 	localPos. longitude 		=
 	             value_f (dabSettings_p, MAP_HANDLING, HOME_LONGITUDE, 0.0);
+	if (localPos. latitude == 0)
+	   localPos. latitude = 52.22;
+	if (localPos. longitude == 0)
+	   localPos. longitude = 4.54;
+
 	techWindow_p 		-> hide ();	// until shown otherwise
 	stillMuting		-> hide ();
 

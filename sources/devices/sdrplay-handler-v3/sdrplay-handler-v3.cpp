@@ -1104,9 +1104,18 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	                     "Could not find sdrplay_api_Update\n");
 	   return false;
 	}
-
+	sdrplay_api_SwapRspDuoActiveTuner =
+	                          (sdrplay_api_SwapRspDuoActiveTuner_t)
+	                 GETPROCADDRESS (Handle, 
+	                       "sdrplay_api_SwapRspDuoActiveTuner");
+	if (sdrplay_api_SwapRspDuoActiveTuner == nullptr) {
+	   theErrorLogger -> add (recorderVersion,
+	                    "Could not load sdrplay_api_SwapRspDuoActiveTuner");
+	   return false;
+	}
 	return true;
 }
+
 void	sdrplayHandler_v3::reportOverloadState (bool b) {
 	if (b)
 	   overloadLabel -> setStyleSheet ("QLabel {background-color : red}");

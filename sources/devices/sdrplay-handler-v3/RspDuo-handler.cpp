@@ -171,12 +171,14 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	if (tuner == currentTuner)
 	   return true;;
 
-//	fprintf (stderr, "setTuner to %d (from %d)\n", tuner, currentTuner);
+	fprintf (stderr, "setTuner to %d (from %d)\n", tuner, currentTuner);
 	sdrplay_api_ErrT err =
 	           parent -> sdrplay_api_SwapRspDuoActiveTuner (
 	                          chosenDevice ->  dev,
 	                          &chosenDevice -> tuner, 
-	                          sdrplay_api_RspDuo_AMPORT_2);
+	                          sdrplay_api_RspDuo_AMPORT_1);
+	fprintf (stderr, "result %s\n",
+	                       parent -> sdrplay_api_GetErrorString (err));
 	if (err != sdrplay_api_Success) {
 	   QString errorString =  QString ("Tunerswitch ") + 
 	                       parent -> sdrplay_api_GetErrorString (err);
