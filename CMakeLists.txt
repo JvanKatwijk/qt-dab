@@ -261,6 +261,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/time-table.h
 	     ./sources/support/uploader.h
 	     ./sources/support/riffWriter.h
+	     ./sources/support/dl2-handler.h
 	     ./sources/support/gui-elements/circular-button.h
 	     ./sources/support/gui-elements/clickable-label.h
 	     ./sources/support/gui-elements/color-selector.h
@@ -392,6 +393,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/time-table.cpp
 	     ./sources/support/uploader.cpp
 	     ./sources/support/riffWriter.cpp
+	     ./sources/support/dl2-handler.cpp
 	     ./sources/support/gui-elements/circular-button.cpp
 	     ./sources/support/gui-elements/clickable-label.cpp
 	     ./sources/support/gui-elements/color-selector.cpp

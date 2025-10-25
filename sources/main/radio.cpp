@@ -69,6 +69,7 @@
 #include	<QScreen>
 #include	<QDomElement>
 
+#include	"dl2-handler.h"
 #include	"basic-print.h"
 
 #if defined (__MINGW32__) || defined (_WIN32)
@@ -4640,101 +4641,26 @@ void	RadioInterface::handle_dcRemoval	(bool b) {
 }
 //
 //	Experimental code for handling DL2 data
-static QString previousComposer;
-static uint8_t old_IT	= 0;
+
 void	RadioInterface::show_dl2	(uint8_t ct, uint8_t IT,
-	                                  const QString &s) {
-static QString	title		= "";
-static QString	composer	= "";
-static QString	stationName	= "";
-static	QString	programNow	= "";
-
-	if (IT != old_IT) {
-	   title	= "";
-	   composer	= "";
-	   stationName	= "";
-	   programNow	= "";
-	}
-	old_IT = IT;
-
+	                                              const QString &s) {
 	if (!configHandler_p -> get_saveTitles ())
 	   return;
-
-	QString	fileName = theFilenameFinder. basicPath ();
-	if (!fileName. endsWith ("/"))
-	   fileName += "/";
-	fileName	+= "DL2_titles.csv";
-	QDateTime theTime	= QDateTime::currentDateTime ();
-	QString currentService	= channel. currentService. serviceName;
-	QString ensemble	= channel. ensembleName;
-	QString	channelName	= channel. channelName;
-	QString front		= theTime. toString () + ";" +
-	                          channelName + ";" +
-	                          ensemble + ";" + currentService + ";";;
-	QString res;
-	switch (ct) {
-	   case 1:	// the title
-	      title = s;
-	      if (composer != "") {
-	         res = front + title + ";" + composer + ";";
-	         title		= "";
-	         composer	= "";
-	      }
-	      break;
-	   case 4:	// the artist
-	   case 8:	// the composer
-	   case 9:	// the band
-	      if (previousComposer == "")
-	         previousComposer = s;
-	      else
-	      if (previousComposer. startsWith (s) ||
-	          s. startsWith (previousComposer) ||
-	          s == previousComposer)
-	      break;
-	      previousComposer = s;
-	      composer = s;
-	      if (title != "") {
-	         res = front + title + ";" + composer + ";";
-	         title		= "";
-	         composer	= "";
-	      }
-	      break;
-	   case 31:	// stationname short
-	   case 32:	// stationname long
-	      stationName	= s;
-	      if  (programNow != "") {	
-	         res =  front + stationName + ";" + programNow + ";";
-	         stationName	= "";
-	         programNow	= "";
-	      }
-	      break;
-	   case 33:	// program now
-	      programNow	= s;
-	      if  (stationName != "") {	
-	         res =  front + stationName + ";" + programNow + ";";
-	         stationName	= "";
-	         programNow	= "";
-	      }
-	      break;
-	   default:	
-	      break;
-	}
-	if (res != "") {
-	   FILE *dlTextFile	= fopen (fileName. toUtf8 (). data (), "a+");
-	   if (dlTextFile != nullptr) {
-	      fprintf (dlTextFile, "%s\n", res. toLatin1 (). data ());
-	      fclose (dlTextFile);
-	   }
-	}
+	dl2_handler theHandler (channel. channelName,
+	                        channel. ensembleName,
+	                        channel. currentService. serviceName,
+	                        dabSettings_p);
+	theHandler. show_dl2 (ct, IT, s);
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+//	work in progress
+//
 void	RadioInterface::nrActiveServices	(int n) {
 	configHandler_p -> set_activeServices (n);
 }
-//
-/////////////////////////////////////////////////////////////////////////////
-//
-//	work in progress
+
 void	RadioInterface::handle_activeServices () {
 QList<contentType> serviceData = theOFDMHandler -> contentPrint ();
 bool	serviceAvailable	= false;

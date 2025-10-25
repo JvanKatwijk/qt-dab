@@ -123,6 +123,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/scantable-handler.h \
 	   ./sources/support/dxDisplay.h \
 	   ./sources/support/audiosystem-selector.h \
+	   ./sources/support/dl2-handler.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
 	   ./sources/frontend/timesyncer.h \
@@ -278,6 +279,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/scantable-handler.cpp \
 	   ./sources/support/audiosystem-selector.cpp \
 	   ./sources/support/dxDisplay.cpp \
+	   ./sources/support/dl2-handler.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
 	   ./sources/frontend/timesyncer.cpp \

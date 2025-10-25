@@ -1146,9 +1146,9 @@ char		label [17];
 	prim. shortName		= shortName;
 	prim. SId		= SId;
 	prim. fmFrequencies. resize (0);
-	theEnsemble. primaries. push_back (prim);
 	int subChId	= currentConfig -> subChId_for_SId (0, SId);
 	if (subChId != -1) {
+	   theEnsemble. primaries. push_back (prim);
 	   addToEnsemble (dataName, SId, subChId);
 	   if (theEnsemble. primaries. size () >= 2)
 	      theEnsemble. isSynced = true;
@@ -1202,6 +1202,10 @@ uint32_t	SId;
 	seco. shortName	= shortName;
 	seco. SId	= SId;
 	seco. SCIds	= SCIds;
+	
+	int subChId	= currentConfig -> subChId_for_SId (SCIds, SId);
+	if (subChId < 0)
+	   return;
 	theEnsemble. secondaries. push_back (seco);
 //
 //	if a secondary service has the name of an existing primary one,
@@ -1248,6 +1252,9 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	prim. name 	= dataName;
 	prim. shortName = shortName;
 	prim. SId	= SId;
+	int subChId	= currentConfig -> subChId_for_SId (0, SId);
+	if (subChId < 0)
+	   return;
 	theEnsemble. primaries. push_back (prim);
 	addToEnsemble (dataName, SId, -1);
 }
