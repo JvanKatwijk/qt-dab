@@ -154,6 +154,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/support
 	           ./sources/support/gui-elements
 	           ./sources/frontend
+	           ./sources/frontend/fic-handling
 	           ./sources/backend
 	           ./sources/backend/audio
 	           ./sources/backend/data
@@ -193,22 +194,22 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/eti-handler/eti-generator.h
 	     ./sources/frontend/ofdm-handler.h
              ./sources/frontend/sample-reader.h
+	     ./sources/frontend/timesyncer.h
 	     ./sources/frontend/correlator.h
 	     ./sources/frontend/estimator.h
 	     ./sources/frontend/freqsyncer.h
 	     ./sources/frontend/ofdm-decoder.h
 	     ./sources/frontend/phasetable.h
 	     ./sources/frontend/freq-interleaver.h
-	     ./sources/frontend/fic-handler.h
-	     ./sources/frontend/ensemble.h
-	     ./sources/frontend/fib-dbtypes.h
-	     ./sources/frontend/fib-config.h
-	     ./sources/frontend/fib-decoder.h
-	     ./sources/frontend/fib-table.h
 	     ./sources/frontend/tii-detector.h
 	     ./sources/frontend/tii-detector-1.h
 	     ./sources/frontend/tii-detector-2.h
-	     ./sources/frontend/timesyncer.h
+	     ./sources/frontend/fic-handling/fic-handler.h
+	     ./sources/frontend/fic-handling/ensemble.h
+	     ./sources/frontend/fic-handling/fib-dbtypes.h
+	     ./sources/frontend/fic-handing/fib-config.h
+	     ./sources/frontend/fic-handling/fib-decoder.h
+	     ./sources/frontend/fic-handling/fib-table.h
 	     ./sources/protection/protTables.h
 	     ./sources/protection/protection.h
 	     ./sources/protection/uep-protection.h
@@ -243,8 +244,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/mapport.h
 	     ./sources/support/mot-content-types.h
 	     ./sources/support/position-handler.h
-	     ./sources/support/presetcombobox.h
-	     ./sources/support/preset-handler.h
 	     ./sources/support/process-params.h
 	     ./sources/support/ringbuffer.h
 	     ./sources/support/scan-handler.h
@@ -262,6 +261,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/uploader.h
 	     ./sources/support/riffWriter.h
 	     ./sources/support/dl2-handler.h
+	     ./sources/support/gui-elements/presetcombobox.h
 	     ./sources/support/gui-elements/circular-button.h
 	     ./sources/support/gui-elements/clickable-label.h
 	     ./sources/support/gui-elements/color-selector.h
@@ -344,14 +344,14 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/ofdm-decoder.cpp
 	     ./sources/frontend/phasetable.cpp
 	     ./sources/frontend/freq-interleaver.cpp
-	     ./sources/frontend/fic-handler.cpp
-	     ./sources/frontend/ensemble.cpp
-	     ./sources/frontend/fib-config.cpp
-	     ./sources/frontend/fib-decoder.cpp
 	     ./sources/frontend/tii-detector.cpp
 	     ./sources/frontend/tii-detector-1.cpp
 	     ./sources/frontend/tii-detector-2.cpp
 	     ./sources/frontend/timesyncer.cpp
+	     ./sources/frontend/fic-handling/fic-handler.cpp
+	     ./sources/frontend/fic-handling/ensemble.cpp
+	     ./sources/frontend/fic-handling/fib-config.cpp
+	     ./sources/frontend/fic-handling/fib-decoder.cpp
 	     ./sources/protection/protTables.cpp
 	     ./sources/protection/protection.cpp
 	     ./sources/protection/uep-protection.cpp
@@ -378,8 +378,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/errorlog.cpp
 	     ./sources/support/mapport.cpp
 	     ./sources/support/position-handler.cpp
-	     ./sources/support/presetcombobox.cpp
-	     ./sources/support/preset-handler.cpp
 	     ./sources/support/scan-handler.cpp
 	     ./sources/support/scanlist-handler.cpp
 	     ./sources/support/scantable-handler.cpp
@@ -394,6 +392,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/uploader.cpp
 	     ./sources/support/riffWriter.cpp
 	     ./sources/support/dl2-handler.cpp
+	     ./sources/support/gui-elements/presetcombobox.cpp
 	     ./sources/support/gui-elements/circular-button.cpp
 	     ./sources/support/gui-elements/clickable-label.cpp
 	     ./sources/support/gui-elements/color-selector.cpp
@@ -464,10 +463,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/ofdm-decoder.h
 	     ./sources/frontend/correlator.h
 	     ./sources/frontend/freqsyncer.h
-	     ./sources/frontend/fic-handler.h
-	     ./sources/frontend/fib-decoder.h
 	     ./sources/frontend/tii-detector.h
+	     ./sources/frontend/fic-handling/fic-handler.h
+	     ./sources/frontend/fic-handling/fib-decoder.h
+	     ./sources/frontend/fic-handling/fib-config.h
 	     ./sources/frontend/estimator.h
+	     ./sources/support/gui-elements/presetcombobox.h
 	     ./sources/support/gui-elements/clickable-label.h 
 	     ./sources/support/gui-elements/color-selector.h 
 	     ./sources/support/gui-elements/font-chooser.h
@@ -485,8 +486,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/audiosystem-selector.h
 	     ./sources/support/dxDisplay.h
 	     ./sources/support/converter_48000.h
-	     ./sources/support/preset-handler.h
-	     ./sources/support/presetcombobox.h
 	     ./sources/support/scanlist-handler.h
 	     ./sources/support/scheduler.h
 	     ./sources/support/schedule-selector.h
@@ -510,6 +509,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/ip-datahandler.h
 	     ./sources/backend/data/adv-datahandler.h
 	     ./sources/backend/data/tdc-datahandler.h
+	     ./sources/backend/data/journaline-controller.h
 	     ./sources/backend/data/journaline-datahandler.h
 	     ./sources/backend/data/journaline-screen.h
 	     ./sources/backend/data/epg/epg-compiler.h

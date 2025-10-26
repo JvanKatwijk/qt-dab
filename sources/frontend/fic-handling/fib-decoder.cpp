@@ -1102,8 +1102,6 @@ char		label [17];
 	                                     (const char *) label,
 	                                     (CharacterSet) charSet);
 	QString realName = name;
-//	for (int i = name. length (); i < 16; i ++)
-//	   realName. append (' ');
 	if (!theEnsemble. namePresent) {
 	   theEnsemble. ensembleName	= realName;
 	   theEnsemble. EId		= EId;
@@ -1129,7 +1127,11 @@ char		label [17];
 	   if (SId == serv. SId) 
 	      return;
 	}
-
+//
+//	if no subchannel is found for the service, we do not recrod it yet
+	int subChId	= currentConfig -> subChId_for_SId (0, SId);
+	if (subChId < 0)
+	   return;
 	for (int i = 0; i < 16; i ++) 
 	   label [i] = getBits_8 (d, offset + 8 * i);
 	QString dataName = toQStringUsingCharset (
@@ -1146,13 +1148,10 @@ char		label [17];
 	prim. shortName		= shortName;
 	prim. SId		= SId;
 	prim. fmFrequencies. resize (0);
-	int subChId	= currentConfig -> subChId_for_SId (0, SId);
-	if (subChId != -1) {
-	   theEnsemble. primaries. push_back (prim);
-	   addToEnsemble (dataName, SId, subChId);
-	   if (theEnsemble. primaries. size () >= 2)
-	      theEnsemble. isSynced = true;
-	}
+	theEnsemble. primaries. push_back (prim);
+	addToEnsemble (dataName, SId, subChId);
+	if (theEnsemble. primaries. size () >= 2)
+	   theEnsemble. isSynced = true;
 }
 
 //	service component label - 32 bits 8.1.14.3
@@ -1183,7 +1182,11 @@ uint32_t	SId;
 	for (auto &serv :theEnsemble. primaries)
 	   if (serv. SId == SId)
 	     return;
-	
+//
+//	If no subch is know (yet), we do not record the service component
+	int subChId	= currentConfig -> subChId_for_SId (SCIds, SId);
+	if (subChId < 0)
+	   return;
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
@@ -1203,9 +1206,6 @@ uint32_t	SId;
 	seco. SId	= SId;
 	seco. SCIds	= SCIds;
 	
-	int subChId	= currentConfig -> subChId_for_SId (SCIds, SId);
-	if (subChId < 0)
-	   return;
 	theEnsemble. secondaries. push_back (seco);
 //
 //	if a secondary service has the name of an existing primary one,
@@ -1234,6 +1234,11 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	   if (SId == serv. SId) 
 	      return;
 	}
+//
+//	if no subch is known (yet) we do not record the service yet
+	int subChId	= currentConfig -> subChId_for_SId (0, SId);
+	if (subChId < 0)
+	   return;
 	for (int i = 0; i < 16; i ++) {
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);
 	}
@@ -1252,9 +1257,6 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	prim. name 	= dataName;
 	prim. shortName = shortName;
 	prim. SId	= SId;
-	int subChId	= currentConfig -> subChId_for_SId (0, SId);
-	if (subChId < 0)
-	   return;
 	theEnsemble. primaries. push_back (prim);
 	addToEnsemble (dataName, SId, -1);
 }

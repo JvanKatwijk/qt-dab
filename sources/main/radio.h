@@ -77,6 +77,11 @@
 #include	<QScopedPointer>
 #include	"journaline-datahandler.h"
 
+typedef struct {
+	uint32_t serviceId;
+	std::vector<multimediaElement> elements;
+} mmDescriptor;
+
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
@@ -151,10 +156,10 @@ struct	theTime {
 	int	second;
 };
 
-typedef struct {
-	uint32_t serviceId;
-	std::vector<multimediaElement> elements;
-} mmDescriptor;
+//typedef struct {
+//	uint32_t serviceId;
+//	std::vector<multimediaElement> elements;
+//} mmDescriptor;
 //
 //	Pretty important, the channel descriptor is supposed to
 //	contain all data related to the currently selected class
@@ -256,7 +261,6 @@ private:
 	RingBuffer<uint8_t>	theDataBuffer;
 	RingBuffer<std::complex<int16_t>>	theAudioBuffer;
 	RingBuffer<float>	stdDevBuffer;
-
 	uint8_t			cpuSupport;
 	displayWidget		theNewDisplay;
 	snrViewer		theSNRViewer;
@@ -339,10 +343,7 @@ private:
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
-	bool			get_serviceLogo		(QPixmap &,
-	                                                 uint32_t);
 	void			write_servicePictures	(uint32_t);
-	void			read_pictureMappings	(uint32_t);
 	QTimer			muteTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
@@ -440,7 +441,7 @@ private:
 	void			addtoLogFile	(const transmitter &);
 	void			removeFromList	(uint8_t, uint8_t);
 	transmitter		*inList		(uint8_t, uint8_t);
-//
+
 //	EPG extraction
 	void			extractServiceInformation (const QDomDocument &,
 	                                                      uint32_t, bool);
@@ -448,11 +449,17 @@ private:
 	                                                      uint32_t);
 	bool			process_ensemble (const QDomElement &, uint32_t);
 	int			processService	(const QDomElement &);
+
+	void			read_pictureMappings	(uint32_t);
+	bool			get_serviceLogo		(QPixmap &, uint32_t);
 	QString			extractName	(const QString &);
 
+//
+//	announcements
 	void			announcement_start	(uint16_t, uint16_t);	
 	void			announcement_stop	();
-
+//
+//	key events for setting focus to windows
 	bool			handle_keyEvent		(int);
 //
 signals:

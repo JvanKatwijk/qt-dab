@@ -58,6 +58,7 @@ DEPENDPATH += . \
 	      ./sources/main/forms-v7 \
 	      ./sources/main/snr-viewer \
 	      ./sources/frontend \
+	      ./sources/frontend/fic-handling \
 	      ./sources/output \
 	      ./sources/output/portaudio \
 	      ./sources/protection \
@@ -86,6 +87,7 @@ INCLUDEPATH += . \
 	      ./sources/main/scopes \
 	      ./sources/main/snr-viewer \
 	      ./sources/frontend \
+	      ./sources/frontend/fic-handling \
 	      ./sources/output \
 	      ./sources/output/portaudio \
 	      ./sources/protection \
@@ -137,12 +139,12 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/tii-detector.h \
 	   ./sources/frontend/tii-detector-1.h \
 	   ./sources/frontend/tii-detector-2.h \
-	   ./sources/frontend/fic-handler.h \
-	   ./sources/frontend/ensemble.h  \
-	   ./sources/frontend/fib-dbtypes.h  \
-	   ./sources/frontend/fib-config.h  \
-	   ./sources/frontend/fib-decoder.h  \
-	   ./sources/frontend/fib-table.h \
+	   ./sources/frontend/fic-handling/fic-handler.h \
+	   ./sources/frontend/fic-handling/ensemble.h  \
+	   ./sources/frontend/fic-handling/fib-dbtypes.h  \
+	   ./sources/frontend/fic-handling/fib-config.h  \
+	   ./sources/frontend/fic-handling/fib-decoder.h  \
+	   ./sources/frontend/fic-handling/fib-table.h \
 	   ./sources/protection/protTables.h \
 	   ./sources/protection/protection.h \
 	   ./sources/protection/eep-protection.h \
@@ -201,7 +203,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/ringbuffer.h \
 	   ./sources/support/dab-params.h \
 	   ./sources/support/dab-tables.h \
-	   ./sources/support/presetcombobox.h \
 	   ./sources/support/scanlist-handler.h \
 	   ./sources/support/scheduler.h \
 	   ./sources/support/schedule-selector.h \
@@ -220,6 +221,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/tii-reader.h \
 	   ./sources/support/uploader.h \
 	   ./sources/support/basic-print.h \
+	   ./sources/support/gui-elements/presetcombobox.h \
 	   ./sources/support/gui-elements/circular-button.h \
 	   ./sources/support/gui-elements/clickable-label.h \
 	   ./sources/support/gui-elements/color-selector.h \
@@ -293,10 +295,10 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/frontend/tii-detector.cpp \
 	   ./sources/frontend/tii-detector-1.cpp \
 	   ./sources/frontend/tii-detector-2.cpp \
-	   ./sources/frontend/fic-handler.cpp \
-	   ./sources/frontend/ensemble.cpp  \
-	   ./sources/frontend/fib-config.cpp  \
-	   ./sources/frontend/fib-decoder.cpp  \
+	   ./sources/frontend/fic-handling/fic-handler.cpp \
+	   ./sources/frontend/fic-handling/ensemble.cpp  \
+	   ./sources/frontend/fic-handling/fib-config.cpp  \
+	   ./sources/frontend/fic-handling/fib-decoder.cpp  \
 	   ./sources/protection/protTables.cpp \
 	   ./sources/protection/protection.cpp \
 	   ./sources/protection/eep-protection.cpp \
@@ -345,8 +347,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/fft-handler.cpp \
 	   ./sources/support/dab-params.cpp \
 	   ./sources/support/dab-tables.cpp \
-#	   ./sources/support/preset-handler.cpp \
-	   ./sources/support/presetcombobox.cpp \
 	   ./sources/support/scanlist-handler.cpp \
 	   ./sources/support/scheduler.cpp \
 	   ./sources/support/schedule-selector.cpp \
@@ -364,6 +364,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/tii-reader.cpp \
 	   ./sources/support/uploader.cpp \
 	   ./sources/support/basic-print.cpp \
+	   ./sources/support/gui-elements/presetcombobox.cpp \
 	   ./sources/support/gui-elements/circular-button.cpp \
 	   ./sources/support/gui-elements/clickable-label.cpp \
 	   ./sources/support/gui-elements/color-selector.cpp \

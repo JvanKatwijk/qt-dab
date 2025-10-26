@@ -254,15 +254,6 @@ int	rows	= contentWidget -> rowCount ();
 	addRow ();	// for the ensemble name
 }
 
-//void	scanHandler::show	() {
-//	myWidget. show ();
-//}
-//
-//void	scanHandler::hide	() {
-//	myWidget. hide ();
-//	scanTable. hide_scanTable ();
-//}
-
 bool	scanHandler::isVisible	() {
 	return !this ->  isHidden ();
 }
