@@ -54,7 +54,7 @@ void	my_callBack (const DAB_DATAGROUP_DECODER_msc_datagroup_header_t *header,
 }
 
 	journaline_dataHandler::journaline_dataHandler ():
-	                                  theScreen (table){
+	                                  theScreen (table, &locker){
 	theDecoder	= DAB_DATAGROUP_DECODER_createDec (my_callBack, this);
 	init_dataBase ();
 	connect (this, &journaline_dataHandler::start,
@@ -121,17 +121,20 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	      x -> item		= NMLelement	-> GetItems ();
 	      int index_oldElement = findIndex (x -> object_id);
 	      if (index_oldElement >= 0) {
+	         locker. lock ();
 	         NML::News_t *p = table [index_oldElement]. element;
 	         delete p;
 	         table [index_oldElement]. element = x;
+	         locker. unlock ();
 	         break;
 	      }
 	      tableElement temp;
 	      temp. key	= x -> object_id;
 	      temp. element	 = x;
+	      locker. lock ();
 	      table. push_back (temp);
+	      locker. unlock ();
 	      if (x -> object_id == 0) {
-//	         theScreen. displayElement (*x);
 	         start (table. size () - 1);
 	      }
 	   }
@@ -144,9 +147,14 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 }
 
 int	journaline_dataHandler::findIndex (int key) {
+int res	= -1;
+	locker. lock ();
 	for (uint16_t i = 0; i < table. size (); i ++)
-	   if (table [i]. key == key)
-	      return i;
-	return -1;
+	   if (table [i]. key == key) {
+	      res = i;
+	      break;
+	   }
+	locker. unlock ();
+	return res;
 }
 

@@ -32,6 +32,7 @@
 #include	<QModelIndex>
 #include	<QStandardItemModel>
 
+#include	<mutex>
 typedef struct {
 	int key;
 	NML::News_t *element;
@@ -40,7 +41,8 @@ typedef struct {
 class	journalineScreen: public QObject {
 Q_OBJECT
 public:
-		journalineScreen	(std::vector<tableElement> &table);
+		journalineScreen	(std::vector<tableElement> &table,
+	                                             std::mutex *locker);
 		~journalineScreen	();
 	void	displayElement		(NML::News_t &element);
 	void	display_Menu		(NML::News_t &element);
@@ -49,6 +51,7 @@ public:
 	void	hide			();
 private:
 	std::vector<tableElement> *table;
+	std::mutex		*locker;
 	tableElement		currentElement;
 	std::vector<int>	pathVector;
 

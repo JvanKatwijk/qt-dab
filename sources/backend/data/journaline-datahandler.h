@@ -31,6 +31,8 @@
 #include	"NML.h"
 #include	<QObject>
 
+#include	<mutex>
+
 class	journaline_dataHandler: public virtual_dataHandler {
 Q_OBJECT
 public:
@@ -40,6 +42,7 @@ public:
 	void	add_to_dataBase		(NML *);
 	void	stop			();
 private:
+	std::mutex	locker;
 	std::vector<tableElement> table;
 	journalineScreen	theScreen;
 	DAB_DATAGROUP_DECODER_t theDecoder;

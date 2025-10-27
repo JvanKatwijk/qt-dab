@@ -49,6 +49,21 @@ DABFLOAT length	= jan_abs (V);
 	return Complex (V) / length;
 }
 
+static inline
+DABFLOAT IO_Bessel	(DABFLOAT x) {
+	return std::cyl_bessel_i (0.0f, x);
+}
+
+static inline
+DABFLOAT IO (DABFLOAT x) {
+	if (x < 0)
+	   x += 2 * M_PI;
+	return ((int)(x / (2 * M_PI) * 720)) % 720;
+}
+
+static
+DABFLOAT besselTable [720];
+
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
@@ -89,6 +104,11 @@ DABFLOAT length	= jan_abs (V);
 //	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
 	sqrt_2			= sqrt (2);
+
+	for (int i = 0; i < 720; i ++) {
+	   DABFLOAT  aa = (DABFLOAT)i / 720.0 * 2 * M_PI;
+	   besselTable [i] = IO_Bessel (aa);
+	}
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -198,11 +218,6 @@ DABFLOAT makeA (int i, Complex S, Complex prevS) {
 	return abs  (prevS + w (-i) * S);
 }
 
-static inline
-DABFLOAT IO_Bessel	(DABFLOAT x) {
-	return std::cyl_bessel_i (0.0f, x);
-}
-
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &softbits,
@@ -293,12 +308,18 @@ DABFLOAT bitSum	= 0;
 	      sum			+= jan_abs (R1);
 	   }
 	   else
-	   if (this -> decoder == DECODER_3) {	// decoder 3
-	      softbits [i]  = - real (fftBin) / binAbsLevel *
-	                                          1.0 * MAX_VITERBI;
-	      softbits [carriers + i] 
-	                    = - imag (fftBin) / binAbsLevel *
-	                                          1.0 * MAX_VITERBI; 
+	   if (this -> decoder == DECODER_3) {  // Optimal 1
+	      Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
+	      DABFLOAT scaler   =  140.0 / meanValue;
+
+	      DABFLOAT leftBit  = - real (R1) * scaler;
+	      limit_symmetrically (leftBit, MAX_VITERBI);
+	      softbits [i]      = (int16_t)leftBit;
+
+	      DABFLOAT rightBit = - imag (R1) * scaler;
+	      limit_symmetrically (rightBit, MAX_VITERBI);
+	      softbits [i + carriers]   = (int16_t)rightBit;
+	      sum += jan_abs (R1);
 	   }
 	   else 	// experimental decoder 4
 	   if (this -> decoder == DECODER_4) {	// decoder 4
@@ -307,10 +328,14 @@ DABFLOAT bitSum	= 0;
 	      DABFLOAT P3 =  makeA (3, current, prevS) / sigmaSQ_Vector [index];
 	      DABFLOAT P5 =  makeA (5, current, prevS) / sigmaSQ_Vector [index];
 
-	      DABFLOAT IO_P1 = IO_Bessel (P1);
-	      DABFLOAT IO_P7 = IO_Bessel (P7);
-	      DABFLOAT IO_P3 = IO_Bessel (P3);
-	      DABFLOAT IO_P5 = IO_Bessel (P5);
+//	      DABFLOAT IO_P1 = IO_Bessel (P1);
+//	      DABFLOAT IO_P7 = IO_Bessel (P7);
+//	      DABFLOAT IO_P3 = IO_Bessel (P3);
+//	      DABFLOAT IO_P5 = IO_Bessel (P5);
+	      DABFLOAT IO_P1 = IO (P1);
+	      DABFLOAT IO_P7 = IO (P7);
+	      DABFLOAT IO_P3 = IO (P3);
+	      DABFLOAT IO_P5 = IO (P5);
 
 	      float b1 = abs (log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5)));
 	      float b2 = abs (log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7)));
@@ -319,13 +344,21 @@ DABFLOAT bitSum	= 0;
 	         b1 = 0;
 	      if (std::isnan (b2))
 	         b2 = 0;
-	      float scaler	= 100 / meanValue * MAX_VITERBI;
+	      Complex R1	=  fftBin;
+//	      Complex R1	=  fftBin * (DABFLOAT)(jan_abs (prevS));
+	      DABFLOAT scaler   =  140.0 / meanValue;
 	      DABFLOAT xx1	=  - sign (real (fftBin)) * b1 * scaler;
 	      DABFLOAT xx2	=  - sign (imag (fftBin)) * b2 * scaler;
 	      limit_symmetrically (xx1, MAX_VITERBI);
 	      limit_symmetrically (xx2, MAX_VITERBI);
 	      softbits [i]	= (int16_t)xx1;
 	      softbits [carriers + i] = (int16_t)xx2;
+	      sum		+= abs (R1);
+//	      static int teller = 0;
+//	      if (++teller > 2000000) {
+//	         teller = 0;
+//	         fprintf (stderr,"%f %f %f\n", (float)xx1, (float)xx2, (float) meanValue);
+//	      }
 	   }
 	}
 

@@ -196,6 +196,7 @@ bool	RspDuo_handler::setBiasT	(bool biasT_value) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
 
+	fprintf (stderr, "setting biasT with tuner %d\n", currentTuner);
 	rspDuoTunerParams	= &(chParams -> rspDuoTunerParams);
 	rspDuoTunerParams	-> biasTEnable = biasT_value;
 	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
@@ -206,6 +207,8 @@ sdrplay_api_ErrT        err;
 	                         err == sdrplay_api_Success ? "" : " not ");
 	                                                  
 	if (err != sdrplay_api_Success) {
+	   fprintf (stderr, "Error -> %s\n",
+	                              parent -> sdrplay_api_GetErrorString (err));
 	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
 	   showState (errorString);
 	   theErrorLogger -> add (deviceModel, errorString);

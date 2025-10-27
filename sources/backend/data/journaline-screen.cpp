@@ -26,10 +26,12 @@
 #include	<QHBoxLayout>
 #include	<QVBoxLayout>
 
-	journalineScreen::journalineScreen (std::vector<tableElement> &table):
+	journalineScreen::journalineScreen (std::vector<tableElement> &table,
+	                                                     std::mutex *locker):
 	                                        myFrame (nullptr) {
 
 	this	-> table = &table;
+	this	-> locker	= locker;
 	pathVector. resize (0);
 	resetButton	= new QPushButton ("reset");
 	upButton	= new QPushButton ("up");
@@ -54,9 +56,7 @@
 	         this, &journalineScreen::handle_upButton);
 	connect (subContent, &QListView::clicked,
 	         this, &journalineScreen::select_sub);
-//#ifdef	__USE_JOURNALINE__
 	myFrame. show ();
-//#endif
 }
 
 	journalineScreen::~journalineScreen () {
@@ -69,52 +69,58 @@ void	journalineScreen::hide			() {
 
 void	journalineScreen::handle_resetButton	() {
 	pathVector. resize (0);
+	locker -> lock ();
 	for (int i = 0; i < (int)((*table). size ()); i ++) {
 	   if ((*table) [i]. key == 0) {
 	      displayElement (*((*table) [i].element));
 	      pathVector. push_back (0);
-	      return;
+	      break ;
 	   }
 	}
+	locker -> unlock ();
 }
 
 void	journalineScreen::handle_upButton	() {
 	if (pathVector. size () < 2) 
 	   return;
 	pathVector. pop_back ();
+	locker -> lock ();
 	int index	= findIndex (pathVector. back ());
-	if (index < 0)
-	   return;
-	displayElement (*((*table) [index].element));
+	if (index >= 0) 
+	   displayElement (*((*table) [index].element));
+	locker -> unlock ();
 }
 
 void	journalineScreen::select_sub (QModelIndex ind) {
 //
 //	first, identify the current element
 	int t = pathVector. back ();
+	locker -> lock ();
 	int currentIndex	= findIndex (t);
 	if (currentIndex < 0) {
+	   locker -> unlock ();
 	   return;
 	}
 	NML::News_t *currentElement	= (*table) [currentIndex]. element;
+	locker -> unlock ();
 //
 //	for sure, the PLAIN element does not have siblings
 	if (currentElement -> object_type == NML::PLAIN)
 	   return;
+	locker -> lock ();
 	NML::Item_t item	= currentElement -> item [ind. row ()];
+	locker -> unlock ();
 	if (true) {
 //	if (item. link_id_available) {
+	   locker -> lock ();
 	   int ind = findIndex (item. link_id);
-	   if (ind < 0) {
-//	      fprintf (stderr, "Link %d not found\n", item. link_id);
-	      return;
+	   if (ind >= 0) {
+	      NML::News_t *target = (*table) [ind]. element;
+	      displayElement (*target);
+	      pathVector. push_back (item. link_id);
 	   }
-	   NML::News_t *target = (*table) [ind]. element;
-	   displayElement (*target);
-	   pathVector. push_back (item. link_id);
+	   locker -> unlock ();
 	}
-//	else
-//	   fprintf (stderr, "No element for this link\n");
 }
 
 void	journalineScreen::displayElement (NML::News_t &element) {
@@ -165,14 +171,19 @@ void	journalineScreen::display_List (NML::News_t &element) {
 }
 
 int	journalineScreen::findIndex	(int key) {
+int res	= -1;
 	for (uint16_t i = 0; i < table -> size (); i ++)
-	   if ((*table) [i]. key == key)
-	      return i;
-	return -1;
+	   if ((*table) [i]. key == key) {
+	      res = i;
+	      break;
+	   }
+	return res;
 }
 
 void	journalineScreen::start		(int index) {
 	pathVector. push_back (0);
+	locker -> lock ();
 	displayElement (*(*table) [index]. element);
+	locker -> unlock ();
 }
 
