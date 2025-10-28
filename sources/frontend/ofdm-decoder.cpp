@@ -48,12 +48,14 @@ DABFLOAT length	= jan_abs (V);
 	   return Complex (0, 0);
 	return Complex (V) / length;
 }
-
+//
+//	The bessel function is under windows too slow too work with
+//	that is why we created a table that is filled on startup
 static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
 }
-
+// and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
 	if (x < 0)
@@ -173,6 +175,7 @@ static	int	cnt	= 0;
 //	their length, relative to each other,
 //	Ideally, the X and Y are of equal size, in practice they are not.
 
+static inline
 int	sign (DABFLOAT x) {
 	return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
@@ -204,7 +207,6 @@ void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 //
 //	Decoder 4 is an interpretation of the so-called "Optimal 3" 
 //	version in the aforementioned paper.
-//	It does not work well
 
 static inline
 Complex w (DABFLOAT kn) {
@@ -321,7 +323,7 @@ DABFLOAT bitSum	= 0;
 	      softbits [i + carriers]   = (int16_t)rightBit;
 	      sum += jan_abs (R1);
 	   }
-	   else 	// experimental decoder 4
+	   else 	// experimental optimum 3
 	   if (this -> decoder == DECODER_4) {	// decoder 4
 	      DABFLOAT P1 =  makeA (1, current, prevS) / sigmaSQ_Vector [index];
 	      DABFLOAT P7 =  makeA (7, current, prevS) / sigmaSQ_Vector [index];

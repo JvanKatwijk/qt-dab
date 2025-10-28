@@ -56,8 +56,9 @@
         setLna (this -> lnaState);
 	showLnaGain (getLnaGain (lnaState, freq));
 
-	if (biasT)
-	   setBiasT (true);
+	connect (this, &RspDuo_handler::enableBiasT,
+	         parent, &sdrplayHandler_v3::enableBiasT);
+
 	if (notch)
 	   setNotch (true);
 
@@ -169,7 +170,7 @@ sdrplay_api_ErrT        err;
 
 bool	RspDuo_handler::setTuner	(int tuner) {
 	if (tuner == currentTuner)
-	   return true;;
+	   return true;
 
 //	fprintf (stderr, "setTuner to %d (from %d)\n", tuner, currentTuner);
 	sdrplay_api_ErrT err =
@@ -189,6 +190,8 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	   showState (QString  ("Switched to tuner ") + QString::number (tuner));
 	   currentTuner = tuner;
 	}
+	enableBiasT (currentTuner == 2);
+
 	return true;
 }
 
@@ -197,6 +200,8 @@ sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
 
 	fprintf (stderr, "setting biasT with tuner %d\n", currentTuner);
+	if (currentTuner != 2)
+	   return false;
 	rspDuoTunerParams	= &(chParams -> rspDuoTunerParams);
 	rspDuoTunerParams	-> biasTEnable = biasT_value;
 	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,

@@ -28,6 +28,7 @@ class	sdrplayHandler_v3;
 class	errorLogger;
 
 class	RspDuo_handler: public RspDevice {
+Q_OBJECT
 public:
 		RspDuo_handler (sdrplayHandler_v3 *parent,
 	                        errorLogger	*,
@@ -56,4 +57,6 @@ private:
 	sdrplayHandler_v3	*parent;
 	int	currentTuner;
 	errorLogger	*theErrorLogger;
+signals:
+	void	enableBiasT	(bool);
 };

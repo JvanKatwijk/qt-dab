@@ -318,6 +318,7 @@ void	sdrplayHandler_v3::setSelectAntenna	(const QString &s) {
 void	sdrplayHandler_v3::setSelectTuner	(const QString &s) {
 	int tuner = s == "Tuner 1" ? 1 : 2; 
 	messageHandler (new tunerRequest (tuner));
+	
 	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_TUNER, tuner);
 }
 
@@ -739,6 +740,7 @@ int	deviceIndex	= 0;
 	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-Duo";
 	         tunerSelector	-> show	();
+	         biasT_selector	-> hide ();
 	         connect (tunerSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	         &QComboBox::textActivated,
@@ -872,7 +874,6 @@ int	deviceIndex	= 0;
 	         tunerRequest *p =
 	               (tunerRequest *)(serverQueue. front ());
 	         serverQueue. pop();
-//	         fprintf (stderr, "Going to call set_tuner\n");
 	         p -> result = theRsp -> setTuner (p -> tuner);
 	         p -> waiter. release (1);
 	         break;
@@ -1133,3 +1134,9 @@ void	sdrplayHandler_v3::showState	(const QString &s) {
 	stateLabel	-> setText (s);
 }
 
+void	sdrplayHandler_v3::enableBiasT (bool b) {
+	if (b)
+	  biasT_selector -> show ();
+	else
+	  biasT_selector -> hide ();
+}

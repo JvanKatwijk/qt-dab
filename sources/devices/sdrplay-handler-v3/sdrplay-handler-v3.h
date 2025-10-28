@@ -156,6 +156,9 @@ public slots:
 	void			setXmlDump		();
 	void			showLnaGain		(int);
 	void			showState		(const QString &);
+//
+//	just for the Duo
+	void			enableBiasT		(bool);
 signals:
 	void			setLnaBoundsSignal	(int, int);
 	void			setDeviceNameSignal	(const QString &);
