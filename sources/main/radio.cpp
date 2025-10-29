@@ -3568,7 +3568,11 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-	theOFDMHandler	-> handleDecoderSelector (decoder);
+	if (decoder == DECODER_4)
+	   QMessageBox::information (this, tr ("Warning"),
+	                         tr ("Decoder is experimental"));
+	if (!theOFDMHandler. isNull ())
+	   theOFDMHandler	-> handleDecoderSelector (decoder);
 }
 
 void	RadioInterface:: set_streamSelector (int k) {

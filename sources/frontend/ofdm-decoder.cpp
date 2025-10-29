@@ -51,20 +51,60 @@ DABFLOAT length	= jan_abs (V);
 //
 //	The bessel function is under windows too slow too work with
 //	that is why we created a table that is filled on startup
+DABFLOAT besselTable [720];
 static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
 }
+
 // and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
 	if (x < 0)
 	   x += 2 * M_PI;
-	return ((int)(x / (2 * M_PI) * 720)) % 720;
+	if (x >= 2 * M_PI)
+	   x -= 2 * M_PI;
+	return besselTable [((int)(x / (2 * M_PI) * 720)) % 720];
 }
 
-static
-DABFLOAT besselTable [720];
+static inline
+Complex w (DABFLOAT kn) {
+	DABFLOAT re	= cos (kn * M_PI / 4);
+	DABFLOAT im	= sin (kn * M_PI / 4);
+	return Complex (re, im);
+}
+
+static Complex W_table [8];
+static inline
+DABFLOAT makeA (int i, Complex S, Complex prevS) {
+	return abs  (prevS + W_table [i] * S);
+//	return abs  (prevS + w (-i) * S);
+}
+
+#include	<bit>	//C++20
+//fast_log abs(rel) : avgError = 2.85911e-06(3.32628e-08), MSE = 4.67298e-06(5.31012e-08), maxError = 1.52588e-05(1.7611e-07)
+const float s_log_C0 = -19.645704f;
+const float s_log_C1 = 0.767002f;
+const float s_log_C2 = 0.3717479f;
+const float s_log_C3 = 5.2653985f;
+const float s_log_C4 = -(1.0f + s_log_C0) * (1.0f + s_log_C1) / ((1.0f + s_log_C2) * (1.0f + s_log_C3)); //ensures that log(1) == 0
+const float s_log_2 = 0.6931472f;
+
+// assumes x > 0 and that it's not a subnormal.
+// Results for 0 or negative x won't be -Infinity or NaN
+static inline
+float fast_log (float x) {
+	unsigned int ux = std::bit_cast<unsigned int>(x);
+	int e = static_cast<int>(ux - 0x3f800000) >> 23; //e = exponent part can be negative
+	ux |= 0x3f800000;
+	ux &= 0x3fffffff; // 1 <= x < 2  after replacing the exponent field
+	x = std::bit_cast<float>(ux);
+	float a = (x + s_log_C0) * (x + s_log_C1);
+	float b = (x + s_log_C2) * (x + s_log_C3);
+	float c = (float (e) + s_log_C4);
+	float d = a / b;
+	return (c + d) * s_log_2;
+}
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
@@ -72,15 +112,15 @@ DABFLOAT besselTable [720];
 	                                 RingBuffer<float>   *devBuffer_i,
 	                                 RingBuffer<Complex> *iqBuffer_i) :
 	                                    myRadioInterface (mr),
-	                                    params (dabMode),
-	                                    theTable (dabMode),
-	                                    myMapper (dabMode),
+	                                    params	(dabMode),
+	                                    theTable	(dabMode),
+	                                    myMapper	(dabMode),
 	                                    fft (params. get_T_u (), false),
-	                                    devBuffer (devBuffer_i),
-	                                    iqBuffer (iqBuffer_i),
+	                                    devBuffer	(devBuffer_i),
+	                                    iqBuffer	(iqBuffer_i),
 	                                    phaseReference (params. get_T_u ()),
-	                                    conjVector (params. get_T_u ()),
-	                                    fft_buffer (params. get_T_u ()),
+	                                    conjVector	(params. get_T_u ()),
+	                                    fft_buffer	(params. get_T_u ()),
 	                                    sigmaSQ_Vector (params. get_T_u ()),
 	                                    meanLevelVector (params. get_T_u ()),
 	                                    stdDevVector (params. get_T_u ()),
@@ -106,11 +146,15 @@ DABFLOAT besselTable [720];
 //	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
 	sqrt_2			= sqrt (2);
-
+//
+//	Prefil some tables for faster access
 	for (int i = 0; i < 720; i ++) {
 	   DABFLOAT  aa = (DABFLOAT)i / 720.0 * 2 * M_PI;
 	   besselTable [i] = IO_Bessel (aa);
 	}
+
+	for (int i = 0; i < 8; i ++)
+	   W_table [i] = w (-i);
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -134,7 +178,6 @@ void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
 	fft. fft (buffer);
 //	we are now in the frequency domain, and we keep the carriers
 //	for their phases.
-//
 	memcpy (phaseReference. data (), buffer. data (),
 	                                      T_u * sizeof (Complex));
 }
@@ -180,6 +223,7 @@ int	sign (DABFLOAT x) {
 	return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
+
 void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 	if (v < -limit)
 	   v = -limit;
@@ -208,17 +252,6 @@ void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 //	Decoder 4 is an interpretation of the so-called "Optimal 3" 
 //	version in the aforementioned paper.
 
-static inline
-Complex w (DABFLOAT kn) {
-	DABFLOAT re	= cos (kn * M_PI / 4);
-	DABFLOAT im	= sin (kn * M_PI / 4);
-	return Complex (re, im);
-}
-
-static inline
-DABFLOAT makeA (int i, Complex S, Complex prevS) {
-	return abs  (prevS + w (-i) * S);
-}
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
@@ -330,40 +363,44 @@ DABFLOAT bitSum	= 0;
 	      DABFLOAT P3 =  makeA (3, current, prevS) / sigmaSQ_Vector [index];
 	      DABFLOAT P5 =  makeA (5, current, prevS) / sigmaSQ_Vector [index];
 
-//	      DABFLOAT IO_P1 = IO_Bessel (P1);
-//	      DABFLOAT IO_P7 = IO_Bessel (P7);
-//	      DABFLOAT IO_P3 = IO_Bessel (P3);
-//	      DABFLOAT IO_P5 = IO_Bessel (P5);
 	      DABFLOAT IO_P1 = IO (P1);
 	      DABFLOAT IO_P7 = IO (P7);
 	      DABFLOAT IO_P3 = IO (P3);
 	      DABFLOAT IO_P5 = IO (P5);
 
-	      float b1 = abs (log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5)));
-	      float b2 = abs (log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7)));
+	      DABFLOAT F1	= (IO_P1 + IO_P7) / (IO_P3 + IO_P5);
+	      DABFLOAT F2	= (IO_P1 + IO_P3) / (IO_P5 + IO_P7);
+	      if (std::isinf (F1))
+	         F1 = 10.0;
+	      if (std::isinf (F2))
+	         F2 = 10.0;
+	      if (F1 < 0.01)
+	         F1 = 0.01;
+	      if (F2 < 0.01)
+	         F2 = 0.01;
+	      float b1 = abs (fast_log (F1));
+//	      float b1 = abs (log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5)));
+	      float b2 = abs (fast_log (F2));
+//	      float b2 = abs (log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7)));
 
 	      if (std::isnan (b1))
 	         b1 = 0;
 	      if (std::isnan (b2))
 	         b2 = 0;
-	      Complex R1	=  fftBin;
-//	      Complex R1	=  fftBin * (DABFLOAT)(jan_abs (prevS));
-	      DABFLOAT scaler   =  140.0 / meanValue;
+	      DABFLOAT scaler   =  140.0 / avgBit;
+	      bitSum		+= (b1 + b2) / 2;
 	      DABFLOAT xx1	=  - sign (real (fftBin)) * b1 * scaler;
 	      DABFLOAT xx2	=  - sign (imag (fftBin)) * b2 * scaler;
 	      limit_symmetrically (xx1, MAX_VITERBI);
 	      limit_symmetrically (xx2, MAX_VITERBI);
 	      softbits [i]	= (int16_t)xx1;
 	      softbits [carriers + i] = (int16_t)xx2;
+	      Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	      sum		+= abs (R1);
-//	      static int teller = 0;
-//	      if (++teller > 2000000) {
-//	         teller = 0;
-//	         fprintf (stderr,"%f %f %f\n", (float)xx1, (float)xx2, (float) meanValue);
-//	      }
 	   }
 	}
 
+	avgBit		= compute_avg (avgBit, bitSum / carriers, 0.1);
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
 	
 //		end of decoding	, now for displaying things	//
@@ -501,5 +538,4 @@ void	ofdmDecoder::handle_iqSelector	() {
 void	ofdmDecoder::handle_decoderSelector	(int decoder) {
 	this	-> decoder	= decoder;
 }
-//
 
