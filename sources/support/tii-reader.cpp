@@ -60,12 +60,13 @@ std::vector<dbElement> res;
 	}
 
 	res. resize (0);
-	Rflag =  s. endsWith (".txdata.tii");
-	FILE	*f	= fopen (s. toUtf8 (). data (), "r+b");
-#ifdef	__TRACE__
+//	Rflag =  s. endsWith (".txdata.tii");
+	Rflag	= true;
+	FILE	*f	= fopen (s. toLatin1 (). data (),  "r+b");
+//#ifdef	__TRACE__
 	if (f == nullptr)
 	   fprintf (stderr, "Cannot open %s\n", s. toUtf8 (). data ());
-#endif
+//#endif
 	if (f == nullptr) 
 	   return res;
 	if (!Rflag)

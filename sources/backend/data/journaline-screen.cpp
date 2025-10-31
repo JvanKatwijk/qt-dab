@@ -72,7 +72,7 @@ void	journalineScreen::handle_resetButton	() {
 	locker -> lock ();
 	for (int i = 0; i < (int)((*table). size ()); i ++) {
 	   if ((*table) [i]. key == 0) {
-	      displayElement (*((*table) [i].element));
+	      displayElement (*((*table) [i].element), false);
 	      pathVector. push_back (0);
 	      break ;
 	   }
@@ -87,7 +87,7 @@ void	journalineScreen::handle_upButton	() {
 	locker -> lock ();
 	int index	= findIndex (pathVector. back ());
 	if (index >= 0) 
-	   displayElement (*((*table) [index].element));
+	   displayElement (*((*table) [index].element), false);
 	locker -> unlock ();
 }
 
@@ -116,56 +116,60 @@ void	journalineScreen::select_sub (QModelIndex ind) {
 	   int ind = findIndex (item. link_id);
 	   if (ind >= 0) {
 	      NML::News_t *target = (*table) [ind]. element;
-	      displayElement (*target);
+	      displayElement (*target, (*table)[ind]. updated);
+	      (*table)[ind]. updated = false;
 	      pathVector. push_back (item. link_id);
 	   }
 	   locker -> unlock ();
 	}
 }
 
-void	journalineScreen::displayElement (NML::News_t &element) {
+void	journalineScreen::displayElement (NML::News_t &element, bool updated) {
 	switch (element. object_type) {
 	   case NML::MENU:
-	      display_Menu (element);
+	      display_Menu (element, updated);
 	      break;
 	   case NML::PLAIN:
-	      display_Plain (element);
+	      display_Plain (element, updated);
 	      break;
 	   case NML::LIST:
-	      display_List (element);
+	      display_List (element, updated);
 	      break;
 	   default:
 	      break;
 	}
 }
 
-void	journalineScreen::display_Menu (NML::News_t &element) {
+void	journalineScreen::display_Menu (NML::News_t &element, bool updated) {
+	QString addendum = updated ? " *" : "";
 	std::string t = element. title;
 	mainText	-> setText (QString::fromStdString (t));
 	model. clear ();
 	for (int i = 0; i < (int)(element. item. size ()); i ++)  {
 	   NML::Item_t *item = &(element. item [i]);
-	   model. appendRow (new QStandardItem (QString::fromStdString (item -> text)));
+	   model. appendRow (new QStandardItem (QString::fromStdString (item -> text) + addendum));
 	}
 	subContent	-> setModel (&model);
 
 }
 
-void	journalineScreen::display_Plain (NML::News_t &element) {
+void	journalineScreen::display_Plain (NML::News_t &element, bool updated) {
 	std::string t = element. title;
 	mainText	-> setText (QString::fromStdString (t));
 	model. clear ();
 	NML::Item_t *item = &(element. item [0]);
-	model. appendRow (new QStandardItem (QString::fromStdString (item -> text)));
+	QString addendum = updated ? " *" : "";
+	model. appendRow (new QStandardItem (QString::fromStdString (item -> text) + addendum));
 }
 
-void	journalineScreen::display_List (NML::News_t &element) {
+void	journalineScreen::display_List (NML::News_t &element, bool updated) {
+	QString addendum = updated ? " *": "";
 	std::string t = element. title;
 	mainText	-> setText (QString::fromStdString (t));
 	model. clear ();
 	for (int i = 0; i < (int)(element. item. size ()); i ++)  {
 	   NML::Item_t *item = &(element. item [i]);
-	   model. appendRow (new QStandardItem (QString::fromStdString (item -> text)));
+	   model. appendRow (new QStandardItem (QString::fromStdString (item -> text) + addendum));
 	}
 	subContent	-> setModel (&model);
 }
@@ -183,7 +187,7 @@ int res	= -1;
 void	journalineScreen::start		(int index) {
 	pathVector. push_back (0);
 	locker -> lock ();
-	displayElement (*(*table) [index]. element);
+	displayElement (*(*table) [index]. element, false);
 	locker -> unlock ();
 }
 

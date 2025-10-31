@@ -207,6 +207,7 @@ serviceComp_C &comp = SC_C_table [index];
 	int subChannel_index = findIndex_subChannel_table (subChId);
 	if (subChannel_index < 0)
 	   return;
+	ad. SCIds	= SCIds_of (ad. SId, subChId);
 	subChannel &channel = subChannel_table [subChannel_index];
 	ad. startAddr	= channel. startAddr;	
 	ad. shortForm	= channel. shortForm;
@@ -234,6 +235,8 @@ serviceComp_C &comp = SC_C_table [index];
 	if (subChannel_index < 0)
 	   return;
 	subChannel &channel = subChannel_table [subChannel_index];
+	pd. SCIds	= SCIds_of (pd. SId, subChId);
+	
 	pd. startAddr	= channel. startAddr;	
 	pd. shortForm	= channel. shortForm;
 	pd. protLevel	= channel. protLevel;
@@ -288,6 +291,7 @@ QList<contentType> res;
 	      if (!ad. defined)		// should not happen
 	         continue;
 	      theData. serviceName	= ad. serviceName;
+	      theData. shortName	= ad. shortName;
 	      theData. subChId		= ad. subchId;
 	      theData. SCIds		= ad. SCIds;
 	      theData. startAddress	= ad. startAddr;
@@ -314,8 +318,9 @@ QList<contentType> res;
 	      if (!pd. defined)		// should not happen
 	         continue;
 	      theData. serviceName	= pd. serviceName;
+	      theData. shortName	= pd. shortName;
 	      theData. subChId		= pd. subchId;
-	      theData. SCIds		= pd. SCIds;
+	      theData. SCIds		= SCIds_of (pd. SId, pd. subchId);
 	      theData. startAddress	= pd. startAddr;
 	      theData. length		= pd. length;
 	      theData. codeRate		= getCodeRate (pd. shortForm,
@@ -543,9 +548,22 @@ int	fibConfig::findIndex_SC_P_Table (uint16_t SCId) {
 	return -1;
 }
 
-//
-////////////////////////////////////////////////////////////////////
-//////////	The public interface  functions ////////////////////
+//	private
+int	fibConfig::SCIds_of (uint32_t SId, uint16_t subCh) {
+	for (auto &t : SC_G_table) {
+	   if (t. LS_flag == 0) {	// short form
+	      if ((t. SId == SId) && (t. subChId == subCh)) {
+	         return t. SCIds;
+	      }
+	   }
+	   else	{	// long form
+	      for (auto &s: SC_P_table) {
+	         if ((t. SCId == s. SCId) && (s. subChId == subCh))
+	            return t. SCIds;
+	      }
+	   }
+	}
+	return 0;
+}
 
-//	needed for generating eti files
 

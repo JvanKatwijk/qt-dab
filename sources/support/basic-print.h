@@ -38,5 +38,6 @@ int		scanWidth	();
 private:
 QString		audioData	(contentType &);
 QString		packetData	(contentType &);
+QString		secondaryData	(contentType &);
 };
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>594</width>
+    <width>621</width>
     <height>328</height>
    </rect>
   </property>
@@ -53,8 +53,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>224</width>
-          <height>178</height>
+          <width>239</width>
+          <height>174</height>
          </rect>
         </property>
        </widget>
@@ -163,6 +163,16 @@
         </widget>
        </item>
        <item>
+        <widget class="clickablelabel" name="aboutLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click on this copyright symbol to see some details about the implementation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>©</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLCDNumber" name="stillMuting"/>
        </item>
        <item>
@@ -182,16 +192,6 @@
          </property>
          <property name="text">
           <string>runtime</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="clickablelabel" name="aboutLabel">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click on this copyright symbol to see some details about the implementation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>©</string>
          </property>
         </widget>
        </item>

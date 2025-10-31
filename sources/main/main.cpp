@@ -34,7 +34,6 @@
 #include        "radio.h"
 #define DEFAULT_INI     ".qt-dab-6.8.ini"
 #define	SCHEDULE	".qt-dab-schedule.sch"
-#define	TII_FILENAME	".txdata.tii"
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
@@ -72,12 +71,12 @@ void    setTranslator (QTranslator *, QString Language);
 int     main (int argc, char **argv) {
 QString initFileName	= fullPathfor (QString (DEFAULT_INI), QString (".ini"));
 QString	scheduleFile	= fullPathfor (QString (SCHEDULE), QString (".sch"));
-QString	tiiFileName	= fullPathfor (QString (TII_FILENAME), 
-	                                                 QString (".tii"));
 QString presetFile	= fullPathfor (QString (".qt-dab-presets.xml"),
 	                                                 QString (".xml"));
 QString scanListFile	= fullPathfor (QString (".qt-scanList.xml"),
 	                                                 QString (".xml"));
+QString tiiFileName	= fullPathfor (QString (".txdata.tii"), 
+	                                                 QString (".tii"));
 RadioInterface	* myRadioInterface;
 
 // Default values
@@ -87,7 +86,6 @@ int		opt;
 QString		freqExtension	= "";
 bool		error_report	= false;
 int		fmFrequency	= 110000;
-
 
 QTranslator	theTranslator;
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
@@ -147,12 +145,12 @@ QTranslator	theTranslator;
 	QString skin    = dabSettings. value ("skin", "globstyle"). toString ();
 	dabSettings. endGroup ();
 
-	skin    = skin == "Combinear" ? ":res/Combinear.qss" :
-	          skin == "globstyle" ? ":res/globstyle.qss":
-	          skin == "Adaptic"   ? ":res/Adaptic.qss" :
-	          skin == "Darkeum"   ? ":res/Darkeum.qss" :
-	          skin == "EasyCode"  ? ":res/EasyCode.qss":
-	          skin == "Diffnes"   ? ":res/Diffnes.qss" : "";
+	skin    = skin == "Combinear" ? ":res/skins/Combinear.qss" :
+	          skin == "globstyle" ? ":res/skins/globstyle.qss":
+	          skin == "Adaptic"   ? ":res/skins/Adaptic.qss" :
+	          skin == "Darkeum"   ? ":res/skins/Darkeum.qss" :
+	          skin == "EasyCode"  ? ":res/skins/EasyCode.qss":
+	          skin == "Diffnes"   ? ":res/skins/Diffnes.qss" : "";
 
 	QApplication a (argc, argv);
 	if (skin != "") {

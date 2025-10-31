@@ -40,7 +40,7 @@ public:
 		tiiMapper	(const QString &);
 		~tiiMapper	();
 	bool	has_tiiFile 	();
-	void	reload		();
+	void	reload		(const QString &);
 	
 	dbElement *
                 getTransmitter (const QString &,

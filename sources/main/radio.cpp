@@ -72,6 +72,7 @@
 #include	"dl2-handler.h"
 #include	"basic-print.h"
 
+#include	<filesystem>
 #if defined (__MINGW32__) || defined (_WIN32)
 #include <windows.h>
 __int64 FileTimeToInt64 (FILETIME & ft) {
@@ -263,6 +264,8 @@ QString h;
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
+	aboutLabel -> setText (" © V6.9.4");
+	runtimeDisplay	-> hide ();
 //
 	connect (folder_shower, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_folderButton);
@@ -513,14 +516,14 @@ QString h;
 	connect (snrLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_snrLabel);
 
-	if (theTIIProcessor. has_tiiFile ()) 
+	if (std::filesystem::exists (tiiFile. toLatin1 (). data ())) 
 	   configHandler_p -> enable_loadLib ();
 	else
 	   httpButton	-> setEnabled (false);
 
 	channel. etiActive	= false;
 	QPixmap epgP;
-	epgP. load (":res/epgLabel.png", "png");
+	epgP. load (":res/radio-pictures/epgLabel.png", "png");
 	epgLabel	-> setPixmap (epgP. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
 	epgLabel	-> setToolTip ("this icon is visible when the EPG processor is active,  it will always run in the background");
@@ -1493,7 +1496,14 @@ void	RadioInterface::clockTime (int year, int month, int day,
 	                                     hours, minutes);
 	QDate theDate (year, month, day);
 	channel. theDate = theDate;
-	localTimeDisplay -> setText (result);
+
+	QFont font	= serviceLabel -> font ();
+	font. setPointSize (16);
+	font. setBold (true);
+	localTimeDisplay	-> setStyleSheet (labelStyle);
+        font. setPointSize (14);
+	localTimeDisplay	-> setFont (font);
+	localTimeDisplay	-> setText (result);
 }
 
 QString	RadioInterface::convertTime (int year, int month,
@@ -3495,18 +3505,12 @@ coordinates theCoordinator (dabSettings_p);
 //
 //	called from the configHandler
 void	RadioInterface::handle_loadTable	 () {
-	   theTIIProcessor. reload ();
-//dbLoader theLoader (dabSettings_p);
-//	
-//	if (theLoader. load_db ()) {
-//	   QMessageBox::information (this, tr ("success"),
-//	                            tr ("Loading and installing database complete\n"));
-//	   theTIIProcessor. reload ();
-//	}
-//	else {
-//	   QMessageBox::information (this, tr ("fail"),
-//	                            tr ("Loading database failed\n"));
-//	}
+QString home	= QDir::homePath ();
+	if (!home. endsWith ("/"))
+	   home += "/";
+	home += ".txdata.tii";
+	home	= QDir::fromNativeSeparators (home);
+	theTIIProcessor. reload (home);
 }
 
 void	RadioInterface::stopSourceDumping	() {
@@ -3879,7 +3883,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	if ((localPos. latitude == 0) || (localPos. longitude == 0)) 
 	   return;
 
-	if (!theTIIProcessor. has_tiiFile ())
+	if (!theTIIProcessor. has_tiiFile ())	// should not happen
 	   return;
 
 	if (channel. Eid == 0)

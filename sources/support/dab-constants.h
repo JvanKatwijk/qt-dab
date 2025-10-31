@@ -245,6 +245,7 @@ public:
 	uint8_t		TMid;		// TMId value
 	uint8_t		isActive;
 	QString		serviceName;
+	QString		shortName;
 	uint32_t	SId;
 	uint16_t	SCIds;
 //	the following values are subChannel values

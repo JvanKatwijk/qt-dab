@@ -36,6 +36,7 @@
 typedef struct {
 	int key;
 	NML::News_t *element;
+	bool updated;
 } tableElement;
 
 class	journalineScreen: public QObject {
@@ -44,10 +45,10 @@ public:
 		journalineScreen	(std::vector<tableElement> &table,
 	                                             std::mutex *locker);
 		~journalineScreen	();
-	void	displayElement		(NML::News_t &element);
-	void	display_Menu		(NML::News_t &element);
-	void	display_Plain		(NML::News_t &element);
-	void	display_List		(NML::News_t &element);
+	void	displayElement		(NML::News_t &element, bool);
+	void	display_Menu		(NML::News_t &element, bool);
+	void	display_Plain		(NML::News_t &element, bool);
+	void	display_List		(NML::News_t &element, bool);
 	void	hide			();
 private:
 	std::vector<tableElement> *table;

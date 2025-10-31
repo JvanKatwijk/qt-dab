@@ -33,13 +33,15 @@
 		tiiMapper::tiiMapper	(const QString &tiiFile) {
 tiiReader theReader;
 	this	-> tiiFile	= tiiFile;
+	fprintf (stderr, tiiFile. toLatin1 (). data ());
 	if (tiiFile != "")
 	   theDataBase	= theReader. readFile (tiiFile);
 }
+
 		tiiMapper::~tiiMapper	() {
 }
 
-void	tiiMapper::reload	() {
+void	tiiMapper::reload	(const QString &tiiFile) {
 tiiReader theReader;
 	if (tiiFile == "")
 	   return;

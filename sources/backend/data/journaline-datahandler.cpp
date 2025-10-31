@@ -125,12 +125,14 @@ void	journaline_dataHandler::add_to_dataBase (NML * NMLelement) {
 	         NML::News_t *p = table [index_oldElement]. element;
 	         delete p;
 	         table [index_oldElement]. element = x;
+	         table [index_oldElement]. updated = true;
 	         locker. unlock ();
 	         break;
 	      }
 	      tableElement temp;
 	      temp. key	= x -> object_id;
-	      temp. element	 = x;
+	      temp. element	= x;
+	      temp. updated	= false;
 	      locker. lock ();
 	      table. push_back (temp);
 	      locker. unlock ();

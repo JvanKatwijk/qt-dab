@@ -29,15 +29,37 @@
 //
 static
 const char *audioHeader =
-	" ; serviceName; serviceId; subChannel; start address (CU's); "\
+	"; serviceName; short name;  serviceId; subChannel; start address (CU's); "\
 	" length (CU's); protection; code rate; bitrate; dab type;" \
 	" language; program type; fm freq;";
 static
 const char *packetHeader =
-	" ; serviceName; serviceId; subChannel; start address (CU's); "\
+	"; serviceName; short name; serviceId; subChannel; start address (CU's); "\
+	" length (CU's); protection; code rate; appType; FEC_scheme;" \
+	 "packetAddress; DSCTy;";
+static
+const char *secondariesHeader =
+	" ; serviceName; serviceId; SCIds; subChannel; start address (CU's); "\
 	" length (CU's); protection; code rate; appType; FEC_scheme;" \
 	 "packetAddress; DSCTy;";
 
+static
+QString segmentLine (const QString s) {
+	return s + ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";" +
+	           ";";
+}
 	basicPrint::basicPrint	()	{}
 
 	basicPrint::~basicPrint	()	{}
@@ -48,26 +70,47 @@ QStringList out;
 	for (auto &ct : serviceData) {
 	   if (ct. TMid != 0)	// no audio
 	      continue;
-	   if (!hasContents)
+	   if (!hasContents) {
+	      out << segmentLine ("audio services");
 	      out <<  QString (audioHeader);
+	   }
 	   hasContents = true;
 	   out << audioData (ct);
+	}
+	hasContents	= false;
+	for (auto &ct : serviceData) {
+	   if (ct. TMid != 3)
+	      continue;
+	   if (ct. SCIds == 0)
+	      continue;
+	   if (!hasContents) {
+	      out << segmentLine ("secondary services");
+	      out << QString (secondariesHeader);
+	   }
+	   hasContents = true;
+	   out << secondaryData (ct);
 	}
 	hasContents = false;
 	for (auto &ct : serviceData) {
 	   if (ct. TMid != 3)	// no packet
 	      continue;
-	   if (!hasContents)
+	   if (ct. SCIds != 0)
+	      continue;
+	   if (!hasContents) {
+	      out << segmentLine ("packet services");
 	      out << QString (packetHeader);
+	   }
 	   hasContents = true;
 	   out << packetData (ct);
 	}
 	return out;
 }
 
+
 QString	basicPrint::audioData	(contentType &ct) {
 	return QString (ct. isRunning ? "+" : "") + ";" +
 	       QString (ct. serviceName)+ ";" +
+	       QString (ct. shortName)+ ";" +
 	       QString::number (ct. SId, 16) + ";" +
 	       QString::number (ct. subChId) + ";" +
 	       QString::number (ct. startAddress)+ ";" +
@@ -131,7 +174,25 @@ QString dtype;
 QString	basicPrint::packetData	(contentType &ct) {
 QString res	= QString (ct. isRunning ? "+" : "") + ";" +
 	          QString (ct. serviceName)+ ";" +
+	          QString (ct. shortName)+ ";" +
 	          QString::number (ct. SId, 16) + ";" +
+	          QString::number (ct. subChId) + ";" +
+	          QString::number (ct. startAddress)+ ";" +
+	          QString::number (ct. length) + ";" +
+	          ct. protLevel + ";" +
+	          ct. codeRate + ";" +
+	          QString::number (ct. appType) + ";" +
+	          QString::number (ct. FEC_scheme) + ";" +
+	          QString::number (ct. packetAddress) + ";" +
+	          kindOfService (ct. ASCTy_DSCTy, ct. appType) + ";";
+	         return res;
+}
+
+QString	basicPrint::secondaryData	(contentType &ct) {
+QString res	= QString (ct. isRunning ? "+" : "") + ";" +
+	          QString (ct. serviceName)+ ";" +
+	          QString::number (ct. SId, 16) + ";" +
+	          QString::number (ct. SCIds) + ";" +
 	          QString::number (ct. subChId) + ";" +
 	          QString::number (ct. startAddress)+ ";" +
 	          QString::number (ct. length) + ";" +
