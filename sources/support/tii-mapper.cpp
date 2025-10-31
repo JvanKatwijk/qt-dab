@@ -30,12 +30,7 @@
 #include	"ITU_Region_1.h"
 #include	"tii-reader.h"
 
-		tiiMapper::tiiMapper	(const QString &tiiFile) {
-tiiReader theReader;
-	this	-> tiiFile	= tiiFile;
-	fprintf (stderr, tiiFile. toLatin1 (). data ());
-	if (tiiFile != "")
-	   theDataBase	= theReader. readFile (tiiFile);
+		tiiMapper::tiiMapper	() {
 }
 
 		tiiMapper::~tiiMapper	() {

@@ -396,10 +396,10 @@ SOURCES += ./sources/main/main.cpp \
 unix {
 DESTDIR		= ./linux-bin
 	equals (QT_MAJOR_VERSION, 5) {
-	TARGET		= qt-dab-qt5-6.9.4
+	TARGET		= qt-dab-qt5-6.9.5
 	}
 	else {
-	TARGET		= qt-dab-qt6-6.9.4
+	TARGET		= qt-dab-qt6-6.9.5
 	}
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
@@ -502,7 +502,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-9
+#	TARGET		= qt-dab64-9.5
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -525,17 +525,17 @@ isEmpty(GITHASHSTRING) {
 #
 #for win32, comment out the lines above
 	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3.4
+	   TARGET		= qt-dab32-qt5-6.9V3.5
 	}
 	else {
-	   TARGET		= qt-dab32-qt6-6.9V3.4
+	   TARGET		= qt-dab32-qt6-6.9V3.5
 	}
 	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9.4
+#	   TARGET		= qt-dab32-qt5-6.9.5
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9.4
+#	   TARGET		= qt-dab32-qt6-6.9.5
 #	}
 #	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy-2

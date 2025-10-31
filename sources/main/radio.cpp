@@ -182,7 +182,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si,
 	                                                        freqExtension),
-	                                        theTIIProcessor (tiiFile),
+	                                        theTIIProcessor (),
 	                                        myTimeTable (this, Si),
 	                                        epgVertaler (&theErrorLogger) {
 int16_t k;
@@ -264,7 +264,8 @@ QString h;
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
-	aboutLabel -> setText (" © V6.9.4");
+
+
 	runtimeDisplay	-> hide ();
 //
 	connect (folder_shower, &clickablelabel::clicked,
@@ -304,13 +305,25 @@ QString h;
 	                               &ensembleHandler::setServiceOrder);
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
+//
+//	Seen at DABstar, having a preloaded database seems nice
+//	although it may not be up to date
+	if (value_i (dabSettings_p, CONFIG_HANDLER, "localDB", 1) != 0) {
+	   theTIIProcessor. reload (":res/txdata.tii");
+	}
+	else
+	   theTIIProcessor. reload (tiiFile);
+	if (std::filesystem::exists (tiiFile. toLatin1 (). data ())) 
+	   configHandler_p -> enable_loadLib ();
+	else
+	   httpButton	-> setEnabled (false);
 
 #ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("9.4") + " with RTLSDR-V3";
+	SystemVersion	= QString ("9.5") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("9.4") + " with RTLSDR-V4";
+	SystemVersion	= QString ("9.5") + " with RTLSDR-V4";
 #else
-	SystemVersion	= QString ("9.4");
+	SystemVersion	= QString ("9.5");
 #endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion ;
@@ -508,6 +521,7 @@ QString h;
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
 
+	aboutLabel -> setText (" © V6.9.5");
 	connect (aboutLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_aboutLabel);
 
@@ -516,17 +530,12 @@ QString h;
 	connect (snrLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_snrLabel);
 
-	if (std::filesystem::exists (tiiFile. toLatin1 (). data ())) 
-	   configHandler_p -> enable_loadLib ();
-	else
-	   httpButton	-> setEnabled (false);
-
 	channel. etiActive	= false;
 	QPixmap epgP;
 	epgP. load (":res/radio-pictures/epgLabel.png", "png");
 	epgLabel	-> setPixmap (epgP. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
-	epgLabel	-> setToolTip ("this icon is visible when the EPG processor is active,  it will always run in the background");
+	epgLabel	-> setToolTip ("this icon is visible when the EPG processor is active,  the service will always run in the background");
 	epgLabel	-> hide ();
 	show_pauzeSlide ();
 
@@ -4034,6 +4043,10 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	         continue;
 	      if (theTr. isStrongest) {
 	         QString labelText = createTIILabel (theTr);
+	         
+	         QFont font	= distanceLabel -> font ();
+	         font. setPointSize (9);
+	         distanceLabel	-> setFont (font);
 	         distanceLabel	-> setText (labelText);
 	         break;
 	      }

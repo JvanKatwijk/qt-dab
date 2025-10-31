@@ -92,6 +92,7 @@ int	index_for_key (int key) {
 //	         this, &configHandler::handle_mouseClicked);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
+
 	
 	int x =  value_i (dabSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10);
 	this	-> muteTimeSetting -> setValue (x);
@@ -103,6 +104,9 @@ int	index_for_key (int key) {
 	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING,
 	                               DEFAULT_SWITCHVALUE);
 	this -> switchDelaySetting -> setValue (x);
+
+	x = value_i (dabSettings, CONFIG_HANDLER, "localDB", 1);
+	this	-> localDB_selector	-> setChecked (x);
 
 	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING,
 	                                           10);
@@ -137,10 +141,6 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                          CLOSE_DIRECT_SETTING, 0) != 0;
 	this -> closeDirect_selector -> setChecked (b);
-
-	b =  value_i (dabSettings, CONFIG_HANDLER,
-	                           EPG_FLAG_SETTING, 0) != 0;
-	this -> epg_selector -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           LOCAL_BROWSER_SETTING, 1) != 0;
@@ -441,13 +441,13 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_onTop);
 //
 //	fourthline
-//	here we expect the close without asking
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (epg_selector, &QCheckBox::checkStateChanged,
+	connect (localDB_selector, &QCheckBox::checkStateChanged,
 #else
-	connect (epg_selector, &QCheckBox::stateChanged,
+	connect (localDB_selector, &QCheckBox::stateChanged,
 #endif
-	         this, &configHandler::handle_epgSelector);
+	         this, &configHandler::handle_localDB_Selector);
 	connect (localBrowserSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	             &QCheckBox::checkStateChanged,
@@ -791,10 +791,9 @@ bool onTop = false;
 	store (dabSettings, CONFIG_HANDLER, ON_TOP_SETTING, onTop ? 1 : 0);
 }
 
-void	configHandler::handle_epgSelector	(int x) {
-	(void)x;
-	store (dabSettings, CONFIG_HANDLER, EPG_FLAG_SETTING,
-	                         this ->  epg_selector -> isChecked () ? 1 : 0);
+void	configHandler::handle_localDB_Selector	(int x) {
+	store (dabSettings, CONFIG_HANDLER, "localDB", 
+	                         localDB_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_localBrowser	(int d) {
@@ -860,10 +859,6 @@ bool	configHandler::logger_active	() {
 
 bool	configHandler::utcSelector_active	() {
 	return utc_selector -> isChecked ();
-}
-
-bool	configHandler::epg_automatic_active	() {
-	return epg_selector	-> isChecked ();
 }
 
 bool	configHandler::eti_active	() {

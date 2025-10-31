@@ -42,8 +42,7 @@ public:
 	std::vector<dbElement>
 	        readFile	(const QString &s);
 	int	readColumns	(std::vector<QString> &v, char *b, int N);
-	char	*eread		(char *buffer, int amount,
-	                                        FILE *f, uint8_t shift);
+	void    processBuffer	(std::vector<dbElement> &res, char *, int);
 //	bool	loadTable	(const QString &tf);
 private:
 	float	convert		(const QString &);

@@ -37,7 +37,7 @@ typedef struct {
 
 class	tiiMapper {
 public:
-		tiiMapper	(const QString &);
+		tiiMapper	();
 		~tiiMapper	();
 	bool	has_tiiFile 	();
 	void	reload		(const QString &);

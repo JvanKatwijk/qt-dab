@@ -55,7 +55,6 @@ public:
 	
 	bool	closeDirect_active	();
 	bool	utcSelector_active	();
-	bool	epg_automatic_active	();
 	bool	eti_active		();
 	bool	saveSliders_active	();
 	bool	epg2_active		();
@@ -124,7 +123,7 @@ private slots:
 	void	handle_portSelector		();
 	void	handle_skinSelector		();
 	void	handle_onTop			(int);
-	void	handle_epgSelector		(int);
+	void	handle_localDB_Selector		(int);
 	void	handle_utc_selector		(int);
 	void	handle_localBrowser		(int);
 	void	handle_showAll_Selector		(int);

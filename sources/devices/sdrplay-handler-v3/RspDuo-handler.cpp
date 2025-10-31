@@ -100,9 +100,9 @@ sdrplay_api_ErrT        err;
 	
 	chParams -> tunerParams. rfFreq. rfHz = (float)freq;
 	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
-	                                    chosenDevice -> tuner,
-                                            sdrplay_api_Update_Tuner_Frf,
-                                            sdrplay_api_Update_Ext1_None);
+	                                     chosenDevice -> tuner,
+                                             sdrplay_api_Update_Tuner_Frf,
+                                             sdrplay_api_Update_Ext1_None);
 	if (err != sdrplay_api_Success) {
 	   QString errorString = parent -> sdrplay_api_GetErrorString (err);
 	   showState (errorString);

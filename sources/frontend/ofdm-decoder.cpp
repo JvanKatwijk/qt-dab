@@ -378,10 +378,8 @@ DABFLOAT bitSum	= 0;
 	         F1 = 0.01;
 	      if (F2 < 0.01)
 	         F2 = 0.01;
-	      float b1 = abs (fast_log (F1));
-//	      float b1 = abs (log ((IO_P1 + IO_P7) / (IO_P3 + IO_P5)));
-	      float b2 = abs (fast_log (F2));
-//	      float b2 = abs (log ((IO_P1 + IO_P3) / (IO_P5 + IO_P7)));
+	      float b1 = abs (log (F1));
+	      float b2 = abs (log (F2));
 
 	      if (std::isnan (b1))
 	         b1 = 0;

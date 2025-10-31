@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>507</width>
-    <height>445</height>
+    <width>521</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -501,12 +501,12 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QCheckBox" name="epg_selector">
+      <widget class="QCheckBox" name="localDB_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG processor when an EPG service is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>epg automatic</string>
+        <string>local DB</string>
        </property>
       </widget>
      </item>
