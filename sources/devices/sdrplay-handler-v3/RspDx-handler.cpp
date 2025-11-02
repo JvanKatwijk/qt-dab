@@ -40,10 +40,11 @@
 	                                          agcMode,
 	                                          lnaState,
 	                                          GRdB,
+	                                          1,
 	                                          biasT,
 	                                          ppmValue) {
 	theErrorLogger			= theLogger;
-	setAntenna (antennaValue);
+//	setAntenna (antennaValue);
 	this	-> deviceModel		= "RSP-Dx";
 	this	-> nrBits		= 14;
 	this	-> lnaUpperBound	= lnaStates (freq);

@@ -85,14 +85,13 @@ int	index_for_key (int key) {
 	                                     superFrame (nullptr) {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
-	this -> setupUi (this);
+	this	-> setupUi (this);
 	setPositionAndSize (settings, this, CONFIG_HANDLER);
 	hide ();
 //	connect (&myFrame, &superFrame::makePicture,
 //	         this, &configHandler::handle_mouseClicked);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
-
 	
 	int x =  value_i (dabSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10);
 	this	-> muteTimeSetting -> setValue (x);
@@ -146,7 +145,6 @@ int	index_for_key (int key) {
 	                           LOCAL_BROWSER_SETTING, 1) != 0;
 	this -> localBrowserSelector -> setChecked (b);
 //
-
 //	fifth row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           SHOWALL_SETTING, 1) == 1;
@@ -249,61 +247,11 @@ int	index_for_key (int key) {
 }
 
 	configHandler::~configHandler	() {
-	fprintf (stderr, "Stopping the confighandler\n");
 	if (!this -> isHidden ())
 	   storeWidgetPosition (dabSettings, this, CONFIG_HANDLER);
 	hide ();
 }
 
-void	configHandler::setDeviceList	(const QStringList &sl) {
-	for (auto &sle : sl)
-	   deviceSelector -> addItem (sle);
-}
-
-bool	configHandler::findDevice (const QString &dev) {
-	int k = deviceSelector -> findText (dev);
-	if (k != -1)
-	   deviceSelector -> setCurrentIndex (k);
-	return k >= 0;
-}
-
-void	configHandler::connectDevices	() {
-	connect (deviceSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	         &QComboBox::textActivated,
-#else
-	         qOverload<const QString &>(&QComboBox::activated),
-#endif
-	         myRadioInterface, &RadioInterface::doStart);
-}
-
-void	configHandler::disconnectDevices () {
-	disconnect (deviceSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	            qOverload<const QString &>(&QComboBox::textActivated),
-#else
-	            qOverload<const QString &>(&QComboBox::activated),
-#endif
-	            myRadioInterface, &RadioInterface::doStart);
-	disconnect (deviceSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	            qOverload<const QString &>(&QComboBox::textActivated),
-#else
-	            qOverload<const QString &>(&QComboBox::activated),
-#endif
-	            myRadioInterface, &RadioInterface::newDevice);
-}
-
-void	configHandler::reconnectDevices () {
-	connect (deviceSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	         qOverload<const QString &>(&QComboBox::textActivated),
-#else
-	         qOverload<const QString &>(&QComboBox::activated),
-#endif
-	         myRadioInterface, &RadioInterface::newDevice);
-}
-	
 void	configHandler::set_connections () {
 	connect (audioSelectButton, &smallPushButton::clicked,
 	         this, &configHandler::handle_audioSelectButton);
@@ -1065,4 +1013,9 @@ void	configHandler::handle_saveTitles	(int h) {
 bool	configHandler::get_saveTitles		() {
 	return saveTitlesSelector -> isChecked ();
 }
+
+bool	configHandler::get_clearScanList       () {
+	return clearScanList_selector	-> isChecked ();
+}
+
 

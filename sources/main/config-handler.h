@@ -65,11 +65,6 @@ public:
 //
 //	a few others
 	void	showLoad		(float);
-	void	setDeviceList		(const QStringList &);
-	bool	findDevice		(const QString &);
-	void	connectDevices		();
-	void	disconnectDevices	();
-	void	reconnectDevices	();
 	void	mark_dumpButton		(bool);
 	void	mark_dlTextButton	(bool);
 	void	set_closeDirect		(bool);
@@ -86,6 +81,8 @@ public:
 
 	bool	get_dcRemoval		();
 	bool	get_saveTitles		();
+
+	bool	get_clearScanList	();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -143,6 +140,7 @@ private slots:
 	void	handle_tiiSelector		(int);
 
 	void	handle_mouseClicked		();
+
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);

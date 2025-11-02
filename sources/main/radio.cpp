@@ -285,8 +285,7 @@ QString h;
 //	connect some signals directly
 	configHandler_p		-> set_activeServices (0);
 	configHandler_p		-> set_connections ();
-	configHandler_p		-> setDeviceList (theDeviceChoser.
-	                                            getDeviceList ());
+
 	connect (configHandler_p. data (), &configHandler::frameClosed,
 	         this, &RadioInterface::handle_configFrame_closed);
 	connect (configHandler_p. data (), &configHandler::handle_fontSelect,
@@ -521,7 +520,16 @@ QString h;
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
 
+	QPixmap devSL;
+	devSL. load (":res/radio-pictures/deviceSelection.png", "png");
+	deviceSelectorLabel	-> setPixmap (devSL. scaled (30, 30,
+	                                         Qt::KeepAspectRatio));
+	deviceSelectorLabel	-> setToolTip ("this icon controls the visbility of the device selection list");
+	connect (deviceSelectorLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::devSL_visibility);
+
 	aboutLabel -> setText (" © V6.9.5");
+	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_aboutLabel);
 
@@ -567,10 +575,9 @@ QString h;
 	h               =
 	           value_s (dabSettings_p, DAB_GENERAL, 
 	                                      SELECTED_DEVICE, "no device");
-	bool b = configHandler_p -> findDevice (h);
-	if (b) {
+
+	if (theDeviceChoser. getDeviceIndex (h) >= 0)
 	   inputDevice_p. reset (createDevice (h, &theLogger));
-	}
 //
 	peakLeftDamped          = -100;
 	peakRightDamped         = -100;
@@ -634,16 +641,20 @@ QString h;
 	}
 
 	if (!inputDevice_p .isNull ()) {
+	   connect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	            this, &RadioInterface::newDevice);
+	   if (inputDevice_p -> isFileInput ())
+	      scanListButton -> setEnabled (false);
+	   theDeviceChoser. hide ();
 	   startDirect ();
 	   qApp	-> installEventFilter (this);
 	   return;
 	}
-	if (!visible) { 	// make it visible
-	   store (dabSettings_p, DAB_GENERAL, CONFIG_WIDGET_VISIBLE, 1);
-	   store (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 1);
-	}
-	configHandler_p		-> show ();
-	configHandler_p		-> connectDevices ();
+//	What we want here is that we start up after a device
+//	is selected
+	connect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	         this, &RadioInterface::doStart);
+	theDeviceChoser. show ();
 	qApp	-> installEventFilter (this);
 }
 //
@@ -656,6 +667,15 @@ void	RadioInterface::doStart (const QString &dev) {
 	if (inputDevice_p. isNull ()) {
 	   return;
 	}
+	disconnect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	            this, &RadioInterface::doStart);
+	connect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	         this, &RadioInterface::newDevice);
+	if (inputDevice_p -> isFileInput ())
+	   scanListButton -> setEnabled (false);
+	else
+	   scanListButton -> setEnabled (true);
+	theDeviceChoser. hide ();
 	startDirect ();
 }
 //
@@ -709,8 +729,6 @@ void	RadioInterface::startDirect	() {
 //	It would have been helpful to have a function
 //	testing whether or not a connection exists, we need a kind
 //	of "reset"
-	configHandler_p -> disconnectDevices ();
-	configHandler_p	-> reconnectDevices ();
 	
 	connect (channelSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
@@ -773,6 +791,10 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 
 	if (theEnsembleHandler -> alreadyIn (ed))
 	   return;
+
+	if (((SId & 0xFFFF0000) == 0) && !inputDevice_p -> isFileInput ())
+	   theScanlistHandler. addElement (channel. channelName, serviceName);
+
 	if (((SId & 0xFFFF0000) != 0) &&
 	     (configHandler_p -> get_audioServices_only ())) {
 	      if (!seems_epg (serviceName))
@@ -783,11 +805,11 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	   channel. nrServices ++;
 	   if (theSCANHandler. active ())
 	      theSCANHandler. addService (channel. channelName);
-	   if (theSCANHandler. active () && !theSCANHandler. scan_to_data ()) {
-	      if ((SId & 0XF0000) == 0)	// only audio
-	         theScanlistHandler. addElement (channel. channelName,
-	                                              serviceName);
-	   }
+//	   if (theSCANHandler. active () && !theSCANHandler. scan_to_data ()) {
+//	      if ((SId & 0XF0000) == 0)	// only audio
+//	         theScanlistHandler. addElement (channel. channelName,
+//	                                              serviceName);
+//	   }
 	}
 
 	if ((channel. serviceCount == channel. nrServices)&& 
@@ -1305,6 +1327,10 @@ void	RadioInterface::TerminateProcess () {
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
+	if (configHandler_p -> get_clearScanList ())
+	   theScanlistHandler. clearScanList ();
+	theScanlistHandler. dump ();
+	theScanlistHandler. hide ();
 	theSCANHandler. hide ();
 	myTimeTable. hide ();
 	if (scanTable_p != nullptr) {
@@ -1325,6 +1351,7 @@ void	RadioInterface::TerminateProcess () {
 //	hide the windows
 	theNewDisplay.		hide ();
 	theDXDisplay.		hide ();
+	theDeviceChoser.	hide ();
 	theEnsembleHandler	-> hide ();
 	if (the_aboutLabel != nullptr) {
 	   the_aboutLabel -> hide ();
@@ -1372,7 +1399,7 @@ void	RadioInterface::TerminateProcess () {
 	dabSettings_p	-> sync ();
 	theOFDMHandler. reset ();
 	inputDevice_p. reset ();
-//	close();
+	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
 //
@@ -1456,7 +1483,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice_p. reset (new deviceHandler ());
 	   return;		// nothing will happen
 	}
-
+	theDeviceChoser. hide ();
 	startDirect ();		// will set running
 }
 
@@ -1470,6 +1497,8 @@ const char *monthTable [] = {
 void	RadioInterface::clockTime (int year, int month, int day,
 	                           int hours, int minutes,
 	                               int d2, int h2, int m2, int seconds){
+	if (!running. load ())
+	   return;
 	this	-> localTime. year	= year;
 	this	-> localTime. month	= month;
 	this	-> localTime. day	= day;
@@ -1965,20 +1994,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	     theEnsembleHandler -> addFavoriteFromScanList (service);
 	   }
 	}
-//	else
-//	if (event -> type () == QEvent::MouseButtonPress) {
-//	   QPixmap originalPixmap;
-//	   QScreen *screen = QGuiApplication::primaryScreen();
-//	   originalPixmap = screen -> grabWindow(this -> winId());
-//	   QString format = "png";
-//	   QString fileName = path_for_files + "main-widget";
-//#ifdef	__MINGW32__
-//	   fileName = fileName + ".png";
-//	   originalPixmap. save (fileName);
-//#else
-//	   originalPixmap. save (fileName, format.toLatin1 (). data ());
-//#endif
-//	}
 	return QWidget::eventFilter (obj, event);
 }
 
@@ -2676,7 +2691,7 @@ void	RadioInterface::startScan_to_data () {
 
 void	RadioInterface::startScan_single () {
 basicPrint thePrinter;
-	theScanlistHandler. clearScanList ();
+//	theScanlistHandler. clearScanList ();
 	
 	if (scanTable_p == nullptr) 
 	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
@@ -4763,5 +4778,12 @@ bool	RadioInterface::handle_keyEvent (int theKey) {
 	   return true;
 	}
 	return false;
+}
+
+void	RadioInterface::devSL_visibility	() {
+	if (theDeviceChoser. isVisible ())
+	   theDeviceChoser. hide ();
+	else
+	   theDeviceChoser. show ();
 }
 

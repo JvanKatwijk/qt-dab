@@ -616,6 +616,8 @@ private slots:
 	void			color_httpButton	();
 	void			color_tiiButton		();
 
+	void			devSL_visibility	();
+
 //
 //	config handlers
 public slots:

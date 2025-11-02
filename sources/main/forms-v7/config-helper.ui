@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>441</height>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -636,9 +636,9 @@
       </widget>
      </item>
      <item>
-      <widget class="smallComboBox" name="deviceSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device.  Devices appearing in the list here are configured in the Qt-DAB software. Note that the DAB software tries to load the required device interface functions dynamically, so a device appearing in this list is not automatically supported, you need to have installed a device driver&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <widget class="QCheckBox" name="clearScanList_selector">
+       <property name="text">
+        <string>clear on exit</string>
        </property>
       </widget>
      </item>

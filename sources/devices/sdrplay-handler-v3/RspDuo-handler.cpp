@@ -19,6 +19,7 @@
  *    along with Qt-Dab if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include	<QMessageBox>
 #include	"RspDuo-handler.h"
 #include	"sdrplay-handler-v3.h"
 #include	"errorlog.h"
@@ -41,10 +42,10 @@
 	                                           agcMode,
 	                                           lnaState,
 	                                           GRdB,
+	                                           tuner,
 	                                           biasT,
 	                                           ppmValue) {
 	(void)antennaValue;
-	(void)tuner;
 	this	-> parent		= parent;
 	theErrorLogger			= theLogger;
 	this	-> deviceModel		= "RSP-Duo";
@@ -62,7 +63,16 @@
 	if (notch)
 	   setNotch (true);
 
-	currentTuner	= 1;
+	if (tuner != 1) {
+	   sdrplay_api_ErrT err =
+	           parent -> sdrplay_api_SwapRspDuoActiveTuner (
+	                          chosenDevice ->  dev,
+	                          &chosenDevice -> tuner, 
+	                          sdrplay_api_RspDuo_AMPORT_2);
+	   chParams	= deviceParams -> rxChannelB;
+	   restart (freq);
+	}
+	currentTuner	= tuner;
 }
 
 	RspDuo_handler::~RspDuo_handler	() {}
@@ -97,7 +107,7 @@ int	band	= bankFor_rspDuo (freq);
 
 bool	RspDuo_handler::restart (int freq) {
 sdrplay_api_ErrT        err;
-	
+
 	chParams -> tunerParams. rfFreq. rfHz = (float)freq;
 	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
 	                                     chosenDevice -> tuner,
@@ -146,11 +156,13 @@ sdrplay_api_ErrT        err;
 bool	RspDuo_handler::setAntenna (int antenna) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
+	if (chosenDevice -> tuner != 1)
+	   return false;
 
         rspDuoTunerParams   = &(chParams -> rspDuoTunerParams);
         rspDuoTunerParams -> tuner1AmPortSel =
                                    antenna == 'A' ?
-                                             sdrplay_api_RspDuo_AMPORT_1 :
+                                             sdrplay_api_RspDuo_AMPORT_2 :
                                              sdrplay_api_RspDuo_AMPORT_2;
 
 	    
@@ -172,14 +184,11 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	if (tuner == currentTuner)
 	   return true;
 
-//	fprintf (stderr, "setTuner to %d (from %d)\n", tuner, currentTuner);
 	sdrplay_api_ErrT err =
 	           parent -> sdrplay_api_SwapRspDuoActiveTuner (
 	                          chosenDevice ->  dev,
 	                          &chosenDevice -> tuner, 
 	                          sdrplay_api_RspDuo_AMPORT_2);
-//	fprintf (stderr, "result %s\n",
-//	                       parent -> sdrplay_api_GetErrorString (err));
 	if (err != sdrplay_api_Success) {
 	   QString errorString =  QString ("Tunerswitch ") + 
 	                       parent -> sdrplay_api_GetErrorString (err);
@@ -187,11 +196,15 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	   theErrorLogger -> add (deviceModel, errorString);
 	}
 	else {
-	   showState (QString  ("Switched to tuner ") + QString::number (tuner));
+	   showState (QString  ("Switched to tuner ") +
+	                                 QString::number (tuner));
 	   currentTuner = tuner;
 	}
-	enableBiasT (currentTuner == 2);
-
+	if (tuner == 1) 
+	   chParams	= deviceParams -> rxChannelA;
+	else
+	   chParams	= deviceParams -> rxChannelB;
+	restart (freq);
 	return true;
 }
 
@@ -199,17 +212,17 @@ bool	RspDuo_handler::setBiasT	(bool biasT_value) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
 
-	fprintf (stderr, "setting biasT with tuner %d\n", currentTuner);
-	if (currentTuner != 2)
+	if (currentTuner != 2) {
+	   QMessageBox::warning (nullptr, tr ("Warning"),
+                                       tr ("BiasT only at port B with tuner 2"));
 	   return false;
+	}
 	rspDuoTunerParams	= &(chParams -> rspDuoTunerParams);
 	rspDuoTunerParams	-> biasTEnable = biasT_value;
 	err = parent ->  sdrplay_api_Update (chosenDevice -> dev,
                                   chosenDevice	-> tuner,
 	                          sdrplay_api_Update_RspDuo_BiasTControl,
 		                  sdrplay_api_Update_Ext1_None);
-	fprintf (stderr, "setting BiasT was %s successfull\n", 
-	                         err == sdrplay_api_Success ? "" : " not ");
 	                                                  
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "Error -> %s\n",

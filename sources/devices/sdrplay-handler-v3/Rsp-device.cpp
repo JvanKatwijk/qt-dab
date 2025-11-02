@@ -28,11 +28,12 @@
 
 	RspDevice::RspDevice 	(sdrplayHandler_v3 *parent,
 	                         sdrplay_api_DeviceT *chosenDevice,
-	                         int startFreq,
-	                         bool agcMode,
-	                         int lnaState,
-	                         int GRdB,
-	                         bool biasT,
+	                         int	startFreq,
+	                         bool	agcMode,
+	                         int	lnaState,
+	                         int	GRdB,
+	                         int	tuner,
+	                         bool	biasT,
 	                         double ppmValue) {
 sdrplay_api_ErrT        err;
 	this	-> parent	= parent;
@@ -64,7 +65,7 @@ sdrplay_api_ErrT        err;
 	   throw (22);
 	}
 
-	this	-> chParams	= deviceParams -> rxChannelA;
+	this	-> chParams		=  deviceParams -> rxChannelA;
 	deviceParams	-> devParams	-> ppm		= ppmValue;
 	deviceParams    -> devParams	-> fsFreq. fsHz    = SAMPLERATE;
         chParams        -> tunerParams. bwType = sdrplay_api_BW_1_536;

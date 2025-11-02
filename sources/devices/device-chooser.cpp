@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -25,6 +25,8 @@
 #include	<QMessageBox>
 #include	"device-exceptions.h"
 #include	"errorlog.h"
+
+#include	<QModelIndex>
 
 #ifdef	HAVE_RTLSDR_V3
 #include	"rtlsdr-handler-win.h"
@@ -116,45 +118,71 @@
 #define	XML_FILE	0104
 
 	deviceChooser::deviceChooser (errorLogger *theErrorLogger,
-	                              QSettings *dabSettings) {
+	                              QSettings *dabSettings):
+	                                          QWidget (nullptr) {
 	this	-> theErrorLogger	= theErrorLogger;
 	this	-> dabSettings		= dabSettings;
+	selectorDisplay	= new QListView (this);
+	QVBoxLayout *layOut	= new QVBoxLayout;
+	layOut		-> addWidget (selectorDisplay);
+	setWindowTitle	(tr("device select"));
+	setLayout (layOut);
+
+	Devices = QStringList();
+        theDevices. setStringList (Devices);
+        selectorDisplay -> setModel (&theDevices);
+        connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
+                 this, SLOT (select_device (QModelIndex)));
+	
+	
 	deviceList. push_back (deviceItem ("select input", NO_ENTRY));
 	deviceList. push_back (deviceItem ("file input", FILE_INPUT));
+	addtoList ("file input");
 #ifdef	HAVE_SDRPLAY_V3
 	deviceList. push_back (deviceItem ("sdrplay", SDRPLAY_V3_DEVICE));
+	addtoList ("sdrplay");
 #endif
 #ifdef	HAVE_SDRPLAY_V2
 	deviceList. push_back (deviceItem ("sdrplay-v2", SDRPLAY_V2_DEVICE));
+	addtoList ("sdrplay-v2");
 #endif
 //
 //	RTLSDR  handlers for windows differ from the one for Linux
 #ifdef	HAVE_RTLSDR_V3
 	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
+	addtoList ("dabstick-v3");
 #elif	HAVE_RTLSDR_V4
 	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
+	addtoList ("dabstick-v4");
 #endif
 //	This is the one for linux
 #ifdef	HAVE_RTLSDR
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
+	addtoList ("dabstick");
 #endif
 #ifdef	HAVE_AIRSPY_2
 	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
+	addtoList ("airspy-2");
 #endif
 #ifdef	HAVE_HACKRF
 	deviceList. push_back (deviceItem ("hackrf", HACKRF_DEVICE));
+	addtoList ("hackrf");
 #endif
 #ifdef	HAVE_LIME
 	deviceList. push_back (deviceItem ("limeSDR", LIME_DEVICE));
+	addtoList ("limeSDR");
 #endif
 #ifdef	HAVE_PLUTO
 	deviceList. push_back (deviceItem ("pluto", PLUTO_DEVICE));
+	addtoList ("pluto");
 #endif
 #ifdef	HAVE_RTL_TCP
 	deviceList. push_back (deviceItem ("rtl_tcp", RTL_TCP_DEVICE));
+	addtoList ("rtl_tcp");
 #endif
 #ifdef	HAVE_SOAPY
 	deviceList. push_back (deviceItem ("soapy", SOAPY_DEVICE));
+	addtoList ("soapy");
 #endif
 #ifdef  HAVE_EXTIO
 	deviceList. push_back (deviceItem ("extio", EXTIO_DEVICE));
@@ -165,21 +193,19 @@
 #ifdef	HAVE_SPYSERVER_16
 	deviceList. push_back (deviceItem ("spyServer-16",
 	                                           SPYSERVER_DEVICE_16));
+	addtoList ("spyServer-16");
 #endif
 #ifdef	HAVE_SPYSERVER_8
 	deviceList. push_back (deviceItem ("spyServer-8", SPYSERVER_DEVICE_8));
+	addtoList ("spyServer-8");
 #endif
 }
 
-		deviceChooser::~deviceChooser	() {}
-
-QStringList	deviceChooser::getDeviceList () {
-QStringList res;
-	for (auto &s: deviceList)
-	   res << s. deviceName;
-	return res;
+		deviceChooser::~deviceChooser	() {
+	hide ();
 }
 
+//
 int	deviceChooser::getDeviceIndex	(const QString &name) {
 	for (auto &s: deviceList) {
 	   if (s. deviceName == name)
@@ -369,5 +395,17 @@ QString fileName =
 	   fileType	= 0;
 
 	return fileName;
+}
+
+void	deviceChooser::addtoList (const QString &dev) {
+	Devices << dev;
+	theDevices. setStringList (Devices);
+	selectorDisplay -> setModel (&theDevices);
+	selectorDisplay -> adjustSize ();
+	adjustSize ();
+}
+
+void	deviceChooser::select_device (QModelIndex ind) {
+	deviceSelected (Devices [ind. row ()]);
 }
 

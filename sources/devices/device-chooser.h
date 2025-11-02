@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2024
+ *    Copyright (C) 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -23,6 +23,9 @@
 #pragma once
 
 #include	"device-handler.h"
+#include	<QLabel>
+#include	<QListView>
+#include	<QStringListModel>
 #include	<QSettings>
 #include	<QString>
 #include	<QStringList>
@@ -30,15 +33,15 @@
 class		logger;
 class		errorLogger;
 
-class	deviceChooser final {
+class	deviceChooser: public QWidget {
+Q_OBJECT
 public:
 			deviceChooser	(errorLogger *, QSettings *);
 			~deviceChooser	();
-	QStringList	getDeviceList	();
 	int		getDeviceIndex	(const QString &);	
 	deviceHandler	*createDevice	(const QString &, const QString &);
 private:
-
+	void		addtoList	(const QString &);
 	QString		getFileName	(uint8_t &);
 	deviceHandler	*_createDevice	(const QString &, const QString &);
 	class	deviceItem {
@@ -54,5 +57,14 @@ private:
 	errorLogger	*theErrorLogger;
 	std::vector<deviceItem> deviceList;
 	QSettings	*dabSettings;
+
+	QListView       *selectorDisplay;
+        QStringListModel theDevices;
+        QStringList     Devices; 
+
+private slots:
+	void		select_device	(QModelIndex);
+signals:
+	void		deviceSelected	(const QString &);
 };
 

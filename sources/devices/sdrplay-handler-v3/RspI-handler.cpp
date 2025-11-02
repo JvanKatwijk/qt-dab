@@ -45,6 +45,7 @@ int	RSP1_Table [3][5] = {
 	                                          agcMode,
 	                                          lnaState,
 	                                          GRdB,
+	                                          1,
 	                                          biasT, ppmValue) {
 	theErrorLogger			= theLogger;
 	this	-> deviceModel		= "RSP-1";

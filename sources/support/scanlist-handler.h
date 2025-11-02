@@ -39,6 +39,7 @@ public:
 		~scanListHandler	();
 	void	addElement	(const QString &, const QString &);
 	void	clearScanList	();
+	void	dump		();
 public slots:
 	void	selectElement	(QModelIndex);
 signals:

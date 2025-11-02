@@ -51,7 +51,7 @@ DABFLOAT length	= jan_abs (V);
 //
 //	The bessel function is under windows too slow too work with
 //	that is why we created a table that is filled on startup
-DABFLOAT besselTable [720];
+DABFLOAT besselTable [1024];
 static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
@@ -60,11 +60,7 @@ DABFLOAT IO_Bessel	(DABFLOAT x) {
 // and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
-	if (x < 0)
-	   x += 2 * M_PI;
-	if (x >= 2 * M_PI)
-	   x -= 2 * M_PI;
-	return besselTable [((int)(x / (2 * M_PI) * 720)) % 720];
+	return besselTable [((int)(x * 32)) % 1024];
 }
 
 static inline
@@ -148,9 +144,8 @@ float fast_log (float x) {
 	sqrt_2			= sqrt (2);
 //
 //	Prefil some tables for faster access
-	for (int i = 0; i < 720; i ++) {
-	   DABFLOAT  aa = (DABFLOAT)i / 720.0 * 2 * M_PI;
-	   besselTable [i] = IO_Bessel (aa);
+	for (int i = 0; i < 1024; i ++) {
+	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
 	}
 
 	for (int i = 0; i < 8; i ++)

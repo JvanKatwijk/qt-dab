@@ -143,7 +143,9 @@ private slots:
 	void			setLnaGainReduction	(int);
 	void			setAgcControl		(int);
 	void			setPpmControl		(int);
-	void			setSelectAntenna	(const QString &);
+	void			setSelectAntenna_RSPdx	(const QString &);
+	void			setSelectAntenna_RSP2	(const QString &);
+	void			setSelectAntenna_duo	(const QString &);
 	void			setSelectTuner		(const QString &);
 	void			setBiasT		(int);
 	void			setNotch		(int);

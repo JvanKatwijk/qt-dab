@@ -47,11 +47,12 @@ protected:
 public:
 		RspDevice 	(sdrplayHandler_v3 *parent,
 	                         sdrplay_api_DeviceT *chosenDevice,
-	                         int startFrequency,
-	                         bool agcMode,
-	                         int lnaState,
-	                         int GRdB,
-	                         bool biasT, double ppmValue);
+	                         int	startFrequency,
+	                         bool	agcMode,
+	                         int	lnaState,
+	                         int	GRdB,
+	                         int	tuner,
+	                         bool	biasT, double ppmValue);
 	virtual	~RspDevice	();
 virtual int	lnaStates	(int frequency);
 

@@ -163,6 +163,13 @@
         </widget>
        </item>
        <item>
+        <widget class="clickablelabel" name="deviceSelectorLabel">
+         <property name="text">
+          <string>dev</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="clickablelabel" name="aboutLabel">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click on this copyright symbol to see some details about the implementation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

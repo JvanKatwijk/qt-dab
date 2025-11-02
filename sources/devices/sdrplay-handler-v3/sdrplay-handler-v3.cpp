@@ -58,7 +58,9 @@
 #define	SDRPLAY_AGCMODE		"sdrplay_agcMode"
 #define	SDRPLAY_BIAS_T		"biasT_selector"
 #define	SDRPLAY_NOTCH		"notch_selector"
-#define	SDRPLAY_ANTENNA		"Antenna"
+#define	SDRPLAY_ANTENNA_DX	"Antenna_dx"
+#define	SDRPLAY_ANTENNA_RSP2	"Antenna_rsp2"
+#define	SDRPLAY_ANTENNA_duo	"Antenna_duo"
 #define	SDRPLAY_TUNER		"tuner"
 
 std::string errorMessage (int errorCode) {
@@ -305,20 +307,42 @@ notch_Request r (notch_selector -> isChecked () ? 1 : 0);
 	                              notch_selector -> isChecked () ? 1 : 0);
 }
 	
-void	sdrplayHandler_v3::setSelectAntenna	(const QString &s) {
-	antennaRequest request (s == "Antenna A" ? 'A' :
-	                        s == "Antenna B" ? 'B' : 'C');
+void	sdrplayHandler_v3::setSelectAntenna_RSPdx	(const QString &s) {
+	uint8_t ant	= s == "Antenna A" ? 'A' :
+	                     s == "Antenna B" ? 'B' : 'C';
+	antennaRequest request (ant);
 	messageHandler (&request);
-//	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' :
-//	                                    s == "Antenna B" ? 'B' : 'C'));
-	QString ss = s;
-	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_ANTENNA, ss);
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                         SDRPLAY_ANTENNA_DX, QString (QChar (ant)));
 }
 
+void	sdrplayHandler_v3::setSelectAntenna_RSP2	(const QString &s) {
+	uint8_t ant	= s == "Antenna A" ? 'A' :
+	                     s == "Antenna B" ? 'B' : 'C';
+	antennaRequest request (ant);
+	messageHandler (&request);
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                         SDRPLAY_ANTENNA_RSP2, QString (QChar (ant)));
+}
+
+void	sdrplayHandler_v3::setSelectAntenna_duo	(const QString &s) {
+	uint8_t ant	= s == "Antenna A" ? 'A' : 'B';
+	antennaRequest request (ant);
+	messageHandler (&request);
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                          SDRPLAY_ANTENNA_duo, QString (QChar (ant)));
+}
+//
+//	select tuner is solely for the duo
 void	sdrplayHandler_v3::setSelectTuner	(const QString &s) {
 	int tuner = s == "Tuner 1" ? 1 : 2; 
+	if (tuner == 1)
+	   biasT_selector -> hide ();
+	else
+	   biasT_selector -> show ();
+
 	messageHandler (new tunerRequest (tuner));
-	
+
 	store (sdrplaySettings, SDRPLAY_SETTINGS, SDRPLAY_TUNER, tuner);
 }
 
@@ -402,31 +426,47 @@ void	sdrplayHandler_v3::stopDump	() {
 //	showing data
 ////////////////////////////////////////////////////////////////////////
 int	sdrplayHandler_v3::setAntennaSelect (int sdrDevice) {
-	if ((sdrDevice == SDRPLAY_RSPdx_) || (sdrDevice == SDRPLAY_RSPdxR2_)) {
-	   antennaSelector      -> addItem ("Antenna B");
-	   antennaSelector      -> addItem ("Antenna C");
-           antennaSelector	-> show ();
-        }
-	else
-	if (sdrDevice == SDRPLAY_RSP2_) {
-	   antennaSelector	-> addItem ("Antenna B");
-	   antennaSelector	-> show ();
-	}
+QString preset;
+int	ind	= -1;
+	switch (sdrDevice) {
+	   case SDRPLAY_RSPdx_:
+	   case SDRPLAY_RSPdxR2_:
+	       preset = value_s (sdrplaySettings,
+	                         SDRPLAY_SETTINGS,
+	                         SDRPLAY_ANTENNA_DX, "Antenna A");
+	      antennaSelector      -> addItem ("Antenna B");
+	      antennaSelector      -> addItem ("Antenna C");
+	      ind	= antennaSelector -> findText (preset);
+	      if (ind != -1)
+	         antennaSelector -> setCurrentIndex (ind);
+              antennaSelector	-> show ();
+	      return ind;
 
-	QString setting	=
-	      value_s (sdrplaySettings, SDRPLAY_SETTINGS, 
-	                                SDRPLAY_ANTENNA, "Antenna A");
-	int k	= antennaSelector -> findText (setting);
-	if (k >= 0) 
-	   antennaSelector -> setCurrentIndex (k);
-	connect (antennaSelector,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	         &QComboBox::textActivated,
-#else
-	         qOverload<const QString &>(&QComboBox::activated),
-#endif
-	         this, &sdrplayHandler_v3::setSelectAntenna);
-	return k == 2 ? 'C' : k == 1 ? 'B' : 'A';
+	   case SDRPLAY_RSP2_:
+	       preset = value_s (sdrplaySettings,
+	                         SDRPLAY_SETTINGS,
+	                         SDRPLAY_ANTENNA_RSP2, "Antenna A");
+	      antennaSelector	-> addItem ("Antenna B");
+	      ind	= antennaSelector -> findText (preset);
+	      if (ind != -1)
+	         antennaSelector -> setCurrentIndex (ind);
+	      antennaSelector	-> show ();
+	      return ind;
+
+	   case SDRPLAY_RSPduo_:
+	       preset = value_s (sdrplaySettings,
+	                         SDRPLAY_SETTINGS,
+	                         SDRPLAY_ANTENNA_duo, "Antenna A");
+	      antennaSelector	-> addItem ("Antenna B");
+	      ind	= antennaSelector -> findText (preset);
+	      if (ind != -1)
+	         antennaSelector -> setCurrentIndex (ind);
+	      return ind;
+
+	   default:
+	      return -1;
+	}
+	return ind;
 }
 
 bool	sdrplayHandler_v3::setupXmlDump (bool direct) {
@@ -668,6 +708,13 @@ int	deviceIndex	= 0;
 	      case SDRPLAY_RSPdx_ :
 	      case SDRPLAY_RSPdxR2_ :
 	         antennaValue = setAntennaSelect (hwVersion);
+	         connect (antennaSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	                   &QComboBox::textActivated,
+#else
+	                  qOverload<const QString &>(&QComboBox::activated),
+#endif
+	         this, &sdrplayHandler_v3::setSelectAntenna_RSPdx);
 	         nrBits		= 14;
 	         denominator	= 8192.0f;
 	         deviceModel	=  hwVersion == SDRPLAY_RSPdx_?
@@ -720,6 +767,13 @@ int	deviceIndex	= 0;
 
 	      case SDRPLAY_RSP2_ :
 	         antennaValue = setAntennaSelect (SDRPLAY_RSP2_);
+	         connect (antennaSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	                   &QComboBox::textActivated,
+#else
+	                  qOverload<const QString &>(&QComboBox::activated),
+#endif
+	         this, &sdrplayHandler_v3::setSelectAntenna_RSP2);
 	         nrBits		= 14;
 	         denominator	= 4096.0f;
 	         deviceModel	= "RSP-II";
@@ -736,29 +790,42 @@ int	deviceIndex	= 0;
 	         break;
 
 	      case SDRPLAY_RSPduo_ :
-	         nrBits		= 14;
-	         denominator	= 4096.0f;
-	         deviceModel	= "RSP-Duo";
-	         tunerSelector	-> show	();
-	         biasT_selector	-> hide ();
-	         connect (tunerSelector,
+	         {  nrBits		= 14;
+	            denominator	= 4096.0f;
+	            deviceModel	= "RSP-Duo";
+	            int tuner		= 
+	                 value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                           SDRPLAY_TUNER, 1);
+	            tunerSelector	-> setCurrentIndex (tuner - 1);
+	            biasT_selector	-> hide ();
+	            tunerSelector	-> show	();
+//	            antennaSelector -> show ();
+	            connect (antennaSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	         &QComboBox::textActivated,
+	                   &QComboBox::textActivated,
 #else
-	         qOverload<const QString &>(&QComboBox::activated),
+	                  qOverload<const QString &>(&QComboBox::activated),
 #endif
-	         this, &sdrplayHandler_v3::setSelectTuner);
-	         theRsp. reset (new RspDuo_handler (this,
-	                                            theErrorLogger,
-	                                            chosenDevice,
-	                                            KHz (220000),
-	                                            agcMode,
-	                                            lnaState,
-	                                            GRdBValue,
-	                                            antennaValue,
-	                                            1,
-	                                            biasT,
-	                                            notch, ppmValue));
+	            this, &sdrplayHandler_v3::setSelectAntenna_duo);
+	            connect (tunerSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	                      &QComboBox::textActivated,
+#else
+	                      qOverload<const QString &>(&QComboBox::activated),
+#endif
+	            this, &sdrplayHandler_v3::setSelectTuner);
+	            theRsp. reset (new RspDuo_handler (this,
+	                                               theErrorLogger,
+	                                               chosenDevice,
+	                                               KHz (220000),
+	                                               agcMode,
+	                                               lnaState,
+	                                               GRdBValue,
+	                                               antennaValue,
+	                                               tuner,
+	                                               biasT,
+	                                               notch, ppmValue));
+	         }
 	         break;
 
 	      default:
@@ -773,6 +840,7 @@ int	deviceIndex	= 0;
 	                                       agcMode,
 	                                       lnaState,
 	                                       GRdBValue,
+	                                       1,
 	                                       biasT, ppmValue));
 	         break;
 	   }
