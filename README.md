@@ -16,8 +16,23 @@ Qt-DAB  has a single *main* widget that contains essentially all that is needed 
 ![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-6.9.4*, predefined executables and installers are available.
+*Qt-DAB-6.9.5*, predefined executables and installers are available.
 For Windows  **two** 32 bit installers are available, and for Linux there is an x64 AppImage.
+
+-------------------------------------------------------------------
+What is new/different in Qt-DAB-6.9.5
+-------------------------------------------------------------------
+
+While Qt-DAB-6.9.5 resembles Qt-DAB-6.9.4, there are a few noticeable
+differences.
+
+ * the combobox on the configuration widget with which an input device was selected is gone. Now the main widget shows on the top line a small icon with which a device selection table can be made visible. After selecting a device, the device selection table disappears automatically.
+
+ * improved support for the SDRplay RspDuo: tuner selection is possible
+
+ * the scanList has a more prominent role. It shows the (channel, service) pairsof all channels visited. Using file input, the scanList will not be visible (seems logical), and the configuration window as a selector indicating that on program termination the list is cleared (obviously normally it is maintained between program invocations)
+
+ * preloaded database. The precompiled versions contain a preloaded database. The configuration widget has a selector to choose between loading - on program startup - this preloaded database or one you loaded into the home directory.
 
 Table of Contents
 =================================================================
@@ -45,21 +60,17 @@ Introduction
 *Qt-DAB* is designed to be used with a variety of SDR devices.
 Precompiled versions for Windows and Linux (x64) are available
 that support most of these devices for which Qt-DAB provides support (see below).
-Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well.
+Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well, though it is most likely not a trivial exercise.
 
 *Qt-DAB* is GUI driven, the full GUI shows 4+ widgets, one of them is the
 *main widget* - one with sufficient controls to select channels and service(s)  which is always visible. This main widget contains selectors
 for controlling the visibility of (the) other widgets.
 
-There is - on the surface - not much difference between the 6.9. and
-previous versions.
-Most changes  are internal, a visible one is the addition of  a "save titles"
-selector on the configuration widget.
-
 Features
 =================================================================
   
   * Qt-DAB supports most common SDR devices directly. The device interface is quite simple and in a different document it is explained in detail how to use the interface  to implement control for other devices;
+  * Qt-DAB supports a **scanList**, i.e. a list with channel/service pairs encountered. Obviously, selecting a service from this list is possible;
   * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaeously, and displays the transmitters on a map. A separate tool is available to download the required database.
   * Qt-DAB starts EPG/SPI services automatically as background task and provides means to show resulting time tables;
@@ -74,7 +85,7 @@ Features
 Widgets and scopes
 =======================================================================
 
-![6.9](/res/read_me/Qt_DAB-6.9.1.png)
+![6.9](/res/read_me/Qt_DAB-6.9.5.png)
 
 The *main widget* (see picture) of Qt-DAB (always visible), contains  the settings for controlling the visibility of other widgets.
 The window shows - left half - a list of services (either from the currently selected channel or from the favourites). Selecting a service is just by clicking on the name.
@@ -84,25 +95,39 @@ The right half of the widget shows the dynamic label, and the slides - if transm
 
 ![6.9](/res/read_me/content-table.png)
 
+![6.9](/res/readme/topline.png)
+
+The picture above shows the topline op the right half of the main window.
+
  * touching the small icon left on the top of the right half will show (or hide) the *technical widget*, a widget showing all technical details as well as strength indicators and 
 a spectrum of the audio of the selected service;
  * touching the small icon to the right next, the folder/directory in which the slides, the tii log and the log file are written is shown;
+ * touching the small **blue** icon causes the device list to be displayed.
+
+![6.9](/res/readme/devicelist.png)
+.png)
  * touching the icon showing a *speaker* controls **muting** the signal and shows
 whether or not a signal should be audible.
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with acknowledgements for using external libraries;
 
- * touching with the *right hand mouse button* the text on the dynamic label 
-Toto - Rosanna) a small menu shows to put the text on the clipboard (see also below the configuration widget).
+![6.9](/res/readme/mainwindow-buttons.png)
 
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map (with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
+ * the bottom line shows the transmitter name from which the data is received, and - in this case - that the avx2 instruction extension is used for some computations.
+
+![6.9](/res/readme/services.png)
+
+ * the button labeled "+" and "-" can be used to scan through the list of services;
+ * the up- and down arrow can be used to scan through the channels, a channel can be selected by touching an element of the combobox;
  * the button labeled *favourites* controls  whether the list of services
 from the currently selected channel or the list of favourites is shown,
  * the button labeled *scanlist* controls the visibility
-of the scan list, i.e the list of services seen at the most recent scan.;
- * the bottom line shows the transmitter name from which the data is received.
+of the scan list, i.e the list of all services seen, showwn below.
+
+![6.9](/res/readme/scanList.png)
 
 (Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
 
@@ -217,11 +242,15 @@ The *configuration and control* widget contains checkboxes, spinboxes and
 buttons with which the configuration of the decoding process can be
 influenced.
 
-At starting up Qt-DAB for the (very) first time, no device is selected yet, and the widget is made visible to allow selection of an input device (the combobox at the bottom line right).
+NEW is the selector **clear on exit**. If enabled, the scanlist is
+cleared on program exit.
+
+Als new is the selector *local DB*. If enabled on program startup Qt-DAB will
+load the embedded TII database, rather than trying to load a TII database from the user's home directory.
 
 ![8.8](/res/read_me/service-and-titles.png)
 
-NEW - slightly experimental - is the possibility to save **titles** (parts
+Slightly experimental is the possibility to save **titles** (parts
 of the dynamic labels) of (mostly) songs that are transmitted.
 **This is by interpreting the so-called DL2 data, note that not all 
 ensembles send DL2 data**.
@@ -238,7 +267,7 @@ Devices and device support
 In the current set up, Qt-DAB supports 6 types of (physical) input devices:
 
   * SDR DABsticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick in the precompiled Windows versions, 
-  *  All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library,
+  *  All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library, New is extended support for the SDRPlay RspDuo. Tuner selection (and tuner 2 is connected to a port with biasT support) is now operational;
   * HACKRF One, 
   * Airspy, including Airspy mini (be aware that AirspyHF is **not** able to provide the samplerate required for DAB),
   * LimeSDR, 
@@ -246,6 +275,7 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
   * **untested** UHD (anyone wants to help testing?)
 
 ![6.9](/res/read_me/rtlsdr-control.png?raw=true)
+![6.9](/res/read_me/sdrplay-control.png?raw=true)
 
 Apart from the untested UHD device, support for these 6 devices is commonly
 included in the precompiled versions.

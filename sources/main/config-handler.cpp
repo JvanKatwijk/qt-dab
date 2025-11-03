@@ -740,6 +740,7 @@ bool onTop = false;
 }
 
 void	configHandler::handle_localDB_Selector	(int x) {
+	(void)x;
 	store (dabSettings, CONFIG_HANDLER, "localDB", 
 	                         localDB_selector -> isChecked () ? 1 : 0);
 }
