@@ -95,7 +95,7 @@ The right half of the widget shows the dynamic label, and the slides - if transm
 
 ![6.9](/res/read_me/content-table.png)
 
-![6.9](/res/readme/topline.png)
+![6.9](/res/read_me/topline.png)
 
 The picture above shows the topline op the right half of the main window.
 
@@ -104,13 +104,13 @@ a spectrum of the audio of the selected service;
  * touching the small icon to the right next, the folder/directory in which the slides, the tii log and the log file are written is shown;
  * touching the small **blue** icon causes the device list to be displayed.
 
-![6.9](/res/readme/devicelist.png)
+![6.9](/res/read_me/devicelist.png)
 .png)
  * touching the icon showing a *speaker* controls **muting** the signal and shows
 whether or not a signal should be audible.
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with acknowledgements for using external libraries;
 
-![6.9](/res/readme/mainwindow-buttons.png)
+![6.9](/res/read_me/mainwindow-buttons.png)
 
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map (with the transmitters) will be shown;
@@ -118,7 +118,7 @@ whether or not a signal should be audible.
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
  * the bottom line shows the transmitter name from which the data is received, and - in this case - that the avx2 instruction extension is used for some computations.
 
-![6.9](/res/readme/services.png)
+![6.9](/res/read_me/services.png)
 
  * the button labeled "+" and "-" can be used to scan through the list of services;
  * the up- and down arrow can be used to scan through the channels, a channel can be selected by touching an element of the combobox;
@@ -127,7 +127,7 @@ from the currently selected channel or the list of favourites is shown,
  * the button labeled *scanlist* controls the visibility
 of the scan list, i.e the list of all services seen, showwn below.
 
-![6.9](/res/readme/scanList.png)
+![6.9](/res/read_me/scanList.png)
 
 (Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
 
