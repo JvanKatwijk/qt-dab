@@ -86,6 +86,7 @@ public:
 //	int		getServiceComp_SCIds	(uint32_t SId, int SCIds);
 	bool		isPrimary		(const QString &);
 
+	bool		is_SPI			(const uint32_t);
 	uint16_t	getAnnouncing		(uint16_t);
 	uint32_t	getSId			(int);
 	uint8_t		serviceType		(int);

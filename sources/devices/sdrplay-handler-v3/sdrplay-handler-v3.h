@@ -95,6 +95,9 @@ public:
 	sdrplay_api_Uninit_t            sdrplay_api_Uninit;
 	sdrplay_api_Update_t            sdrplay_api_Update;
 	sdrplay_api_SwapRspDuoActiveTuner_t sdrplay_api_SwapRspDuoActiveTuner;
+	sdrplay_api_SwapRspDuoDualTunerModeSampleRate_t
+		               sdrplay_api_SwapRspDuoDualTunerModeSampleRate;
+	sdrplay_api_SwapRspDuoMode_t	sdrplay_api_SwapRspDuoMode;
 	sdrplay_api_DeviceT             *chosenDevice;
 	QScopedPointer<RspDevice>	theRsp;
 

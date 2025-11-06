@@ -69,7 +69,7 @@ QDomElement root = theScanList. createElement ("history_db");
 
 	theScanList. appendChild (root);
 
-	for (int i = 1; i < scanList. size (); i ++) {
+	for (int i = 0; i < scanList. size (); i ++) {
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	   QStringList list = scanList. at (i).
 	                           split (":", Qt::SkipEmptyParts);
@@ -101,31 +101,22 @@ void	scanListHandler::addElement (const QString &channel,
 	                            const QString &serviceName) {
 const QString scanListElement = channel + ":" + serviceName;
 
-QStringList res;
-
-	for (int i = 0; i < scanList. size (); i ++)
+bool	inserted	= false;
+	for (int i = 0; i < scanList. size (); i ++) {
 	   if (scanList. at (i) == scanListElement)
 	      return;
-	bool inserted = false;
-	for (int i = 0; i < scanList. size (); i ++) {
-	   if (inserted) {
-	      res << scanList [i];
-	      continue;
-	   }
+
 	   QStringList ss = scanList [i]. split (":", Qt::SkipEmptyParts);
-	   QString ch = ss [0];
+	   QString ch = ss [0];	
 	   bool ok;
-	   if (ch. toUInt (&ok, 16) < channel. toUInt (&ok, 16))
-	      res << scanList [i];
-	   else {
-	      res << scanListElement;
-	      res << scanList [i];
+	   if (ch. toUInt (&ok, 16) >= channel. toUInt (&ok, 16)) {
+	      scanList. insert (i, scanListElement);
 	      inserted = true;
+	      break;
 	   }
 	}
 	if (!inserted)
-	   res. append (scanListElement);
-	scanList = res;
+	   scanList. append (scanListElement);
 	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
 }

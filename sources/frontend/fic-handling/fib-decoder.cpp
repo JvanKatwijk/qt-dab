@@ -1438,3 +1438,11 @@ QList<contentType> res;
 	return res;
 }
 
+bool	fibDecoder::is_SPI	(const uint32_t SId) {
+bool res;
+	fibLocker. lock ();
+	res = currentConfig -> is_SPI (SId);
+	fibLocker. unlock ();
+return res;
+}
+

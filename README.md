@@ -105,7 +105,7 @@ a spectrum of the audio of the selected service;
  * touching the small **blue** icon causes the device list to be displayed.
 
 ![6.9](/res/read_me/devicelist.png)
-.png)
+
  * touching the icon showing a *speaker* controls **muting** the signal and shows
 whether or not a signal should be audible.
  * touching the *copyright symbol* shows (or, if visible, hides) a small widget with acknowledgements for using external libraries;
@@ -120,7 +120,7 @@ whether or not a signal should be audible.
 
 ![6.9](/res/read_me/services.png)
 
- * the button labeled "+" and "-" can be used to scan through the list of services;
+ * the buttons labeled "+" and "-" can be used to scan through the list of services;
  * the up- and down arrow can be used to scan through the channels, a channel can be selected by touching an element of the combobox;
  * the button labeled *favourites* controls  whether the list of services
 from the currently selected channel or the list of favourites is shown,
@@ -245,7 +245,7 @@ influenced.
 NEW is the selector **clear on exit**. If enabled, the scanlist is
 cleared on program exit.
 
-Als new is the selector *local DB*. If enabled on program startup Qt-DAB will
+Also new is the selector **local DB**. If enabled on program startup Qt-DAB will
 load the embedded TII database, rather than trying to load a TII database from the user's home directory.
 
 ![8.8](/res/read_me/service-and-titles.png)

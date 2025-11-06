@@ -27,14 +27,15 @@
 #include	<QVBoxLayout>
 
 	journalineScreen::journalineScreen (std::vector<tableElement> &table,
-	                                                     std::mutex *locker):
+	                                                   std::mutex *locker):
 	                                        myFrame (nullptr) {
 
 	this	-> table = &table;
 	this	-> locker	= locker;
 	pathVector. resize (0);
-	resetButton	= new QPushButton ("reset");
+	resetButton	= new QPushButton ("home");
 	upButton	= new QPushButton ("up");
+	ackLabel	= new QLabel ("Features NewsService Journaline(R) decoder technology by\n * Fraunhofer IIS, Erlangen, Germany.\n * For more information visit http://www.iis.fhg.de/dab");
 	mainText	= new QLabel ("");
 	subContent	= new QListView ();
 	subContent	-> setToolTip ("Features NewsService Journaline(R) decoder technology by\n * Fraunhofer IIS, Erlangen, Germany.\n * For more information visit http://www.iis.fhg.de/dab"
@@ -45,6 +46,7 @@
 	LH		-> addWidget (resetButton);
 	LH		-> addWidget (upButton);
 	LV		-> addLayout (LH);
+	LV		-> addWidget (ackLabel);
 	LV		-> addWidget (mainText);
 	LV		-> addWidget (subContent);
 	myFrame. setWindowTitle ("Journaline");

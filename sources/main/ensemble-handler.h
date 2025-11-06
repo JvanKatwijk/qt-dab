@@ -53,7 +53,7 @@ public:
 
 	void	handleScheduledSelect	(const QString &, const QString &);
 	QStringList	getSelectables	();
-	QStringList	getEpgServices	();
+//	QStringList	getEpgServices	();
 	int	getServiceCount		();
 	void	selectPrevService	();
 	void	selectNextService	();

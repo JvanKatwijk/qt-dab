@@ -73,6 +73,9 @@
 #include	"basic-print.h"
 
 #include	<filesystem>
+
+namespace	fs= std::filesystem;
+
 #if defined (__MINGW32__) || defined (_WIN32)
 #include <windows.h>
 __int64 FileTimeToInt64 (FILETIME & ft) {
@@ -763,19 +766,19 @@ void	RadioInterface::no_signal_found () {
 
 ///////////////////////////////////////////////////////////////////////////
 //
-static
-bool	seems_epg (const QString &name) {
-	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
-                name. contains (" EPG   ", Qt::CaseInsensitive) ||
-                name. contains ("Spored", Qt::CaseInsensitive) ||
-                name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
-                name. contains ("SPI", Qt::CaseSensitive) ||
-                name. contains ("BBC Guide", Qt::CaseInsensitive) ||
-                name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
-                name. contains ("EPG_", Qt::CaseInsensitive) ||
-                name. contains ("EPG-", Qt::CaseInsensitive) ||
-                name. startsWith ("EPG ", Qt::CaseInsensitive);
-}
+//static
+//bool	seems_epg (const QString &name) {
+//	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
+//                name. contains (" EPG   ", Qt::CaseInsensitive) ||
+//                name. contains ("Spored", Qt::CaseInsensitive) ||
+//                name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
+//                name. contains ("SPI", Qt::CaseSensitive) ||
+//                name. contains ("BBC Guide", Qt::CaseInsensitive) ||
+//                name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
+//                name. contains ("EPG_", Qt::CaseInsensitive) ||
+//                name. contains ("EPG-", Qt::CaseInsensitive) ||
+//                name. startsWith ("EPG ", Qt::CaseInsensitive);
+//}
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addToEnsemble (const QString &serviceName,
@@ -797,19 +800,23 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 
 	if (((SId & 0xFFFF0000) != 0) &&
 	     (configHandler_p -> get_audioServices_only ())) {
-	      if (!seems_epg (serviceName))
+	      if (!theOFDMHandler -> is_SPI (SId))
 	         return;
+	      else {
+	         SPI_service ss;
+	         ss. serviceName = serviceName;
+	         ss. SId = SId;
+	         channel. SPI_services. push_back (ss);
+	      }
+//	      if (!seems_epg (serviceName))
+//	         return;
 	}
+
 	bool added	= theEnsembleHandler -> addToEnsemble (ed);
 	if (added) {
 	   channel. nrServices ++;
 	   if (theSCANHandler. active ())
 	      theSCANHandler. addService (channel. channelName);
-//	   if (theSCANHandler. active () && !theSCANHandler. scan_to_data ()) {
-//	      if ((SId & 0XF0000) == 0)	// only audio
-//	         theScanlistHandler. addElement (channel. channelName,
-//	                                              serviceName);
-//	   }
 	}
 
 	if ((channel. serviceCount == channel. nrServices)&& 
@@ -2246,8 +2253,10 @@ QString serviceName	= s. serviceName;
 	      bool hasIcon = false;
 	      if (get_serviceLogo (p, channel. currentService. SId)) {
 	         hasIcon = true;
+	         int height = 60;
+	         int width = (int)((float)p. width () / p. height () * height);
 	         iconLabel ->
-	            setPixmap (p. scaled (55, 55, Qt::KeepAspectRatio));
+	            setPixmap (p. scaled (width, height));
 	      }
 	      else
 	         iconLabel -> setText (ad. shortName);
@@ -3400,13 +3409,8 @@ void	RadioInterface::epgTimer_timeOut	() {
 	   return;
 	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
 	   return;
-	QStringList epgList = theEnsembleHandler -> getEpgServices ();
-	for (auto &serv : epgList) {
-	   int index = theOFDMHandler -> getServiceComp (serv);
-	   if (index < 0)
-	      continue;
-	   if (theOFDMHandler -> serviceType (index) != PACKET_SERVICE)
-	      continue;
+	for (auto &serv : channel. SPI_services) {
+	   int index	= theOFDMHandler -> getServiceComp (serv. SId, 0);
 	   packetdata pd;
 	   theOFDMHandler -> packetData (index, pd);
 	   if ((!pd. defined) ||
@@ -3596,9 +3600,9 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-	if (decoder == DECODER_4)
-	   QMessageBox::information (this, tr ("Warning"),
-	                         tr ("Decoder is experimental"));
+//	if (decoder == DECODER_4)
+//	   QMessageBox::information (this, tr ("Warning"),
+//	                         tr ("Decoder is experimental"));
 	if (!theOFDMHandler. isNull ())
 	   theOFDMHandler	-> handleDecoderSelector (decoder);
 }
@@ -4520,6 +4524,7 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	      uint32_t ensemble = Ident. toInt (&ok, 16);
 	      if (Eid != ensemble)
 	         continue;
+//	      if (process_ensemble (theElement, Eid) && true)
 	      if (process_ensemble (theElement, Eid) && fresh)
 	         saveServiceInfo (doc, Eid);
 	   }
@@ -4614,30 +4619,45 @@ multimediaElement *bb = (multimediaElement *)b;
 	return 0;
 }
 //
-//	we want the largest pictures, so we sort the list 
+//	We prefer square pictures, if no one found,
+//	then the largest
+//	All pictures are stored in groups  (SId is key) in
+//	the channel description
 bool	RadioInterface::get_serviceLogo (QPixmap &p, uint32_t SId) {
-bool res = false;
+bool pictureFound	= false;
 	for (auto &ss : channel. servicePictures) {
-//	   fprintf (stderr, "comparing %X with %X\n",
-//	                          ss. serviceId, SId);
 	   if (ss. serviceId != SId)
 	      continue;
-	   QVector<multimediaElement> options;
-	   for (auto &ff: ss. elements)
-	      options. push_back (ff);
-	   qsort (options. data (), options. size (),
-	                 sizeof (multimediaElement), &mcmp);
-	   for (auto &ff: options) {
+	   int max		= 0;
+	   int sq_max		= 0;
+	   for (auto &ff: ss. elements) {
+	      QPixmap candidate;
 	      QString pict  = path_for_files + QString::number (channel. Eid, 16). toUpper ()+ "/" + ff. url;
-	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
-	      if (tt == nullptr) 
+//	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
+//	      if (tt == nullptr) 
+//	         continue;
+//	      fclose (tt);
+	      if (!fs::exists (pict. toUtf8 (). data ()))
 	         continue;
-	      fclose (tt);
-	      bool res = p. load (pict, "png");
-	      return res;
+	      bool res = candidate. load (pict, "png");
+	      if (!res)
+	         continue;
+	      if ((candidate. height () == candidate. width ()) &&
+	                                     (candidate. height () > sq_max)) {
+	         p = candidate;
+	         pictureFound = true;
+	         sq_max = candidate. height ();
+	         max	= sq_max;
+	      }
+	      else
+	      if (!pictureFound && (candidate. height () > max)) {
+	         max = candidate. height ();
+	         p = candidate;
+	         pictureFound = true;
+	      }
 	   }
 	}
-	return res;
+	return pictureFound;
 }
 //
 void	RadioInterface::read_pictureMappings (uint32_t Eid) {
@@ -4645,6 +4665,7 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 	if (!fileName. endsWith ("/"))
 	   fileName += "/";
 	fileName += QString::number (Eid, 16). toUpper () + "/list.xml";
+	fprintf (stderr, "Looking for %s\n", fileName. toLatin1 (). data ());
 	QDomDocument pictureMappings;
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly))

@@ -33,8 +33,9 @@
 #include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
+#include	"device-exceptions.h"
 
-//	The Rsp's
+//	The Rsp handlers
 #include	"Rsp-device.h"
 #include	"RspI-handler.h"
 #include	"Rsp1A-handler.h"
@@ -42,7 +43,6 @@
 #include	"RspDuo-handler.h"
 #include	"RspDx-handler.h"
 
-#include	"device-exceptions.h"
 #define SDRPLAY_RSP1_   1
 #define SDRPLAY_RSP1A_  255
 #define SDRPLAY_RSP2_   2
@@ -100,8 +100,7 @@ std::string errorMessage (int errorCode) {
 	this	-> recorderVersion	= recorderVersion;
 	theErrorLogger			= theLogger;
         setupUi (&myFrame);
-	QString	groupName	= SDRPLAY_SETTINGS;
-	setPositionAndSize (s, &myFrame, groupName);
+	setPositionAndSize (s, &myFrame, SDRPLAY_SETTINGS);
 	myFrame. show	();
 
 	xmlWriter		= nullptr;
@@ -212,7 +211,6 @@ std::string errorMessage (int errorCode) {
 	theRsp. reset ();
 //	thread should be stopped by now
 	myFrame. hide ();
-	QString groupName	= SDRPLAY_SETTINGS;
 	storeWidgetPosition (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS);
 
 	store (sdrplaySettings, SDRPLAY_SETTINGS,
@@ -229,7 +227,6 @@ std::string errorMessage (int errorCode) {
 /////////////////////////////////////////////////////////////////////////
 //	Implementing the interface
 /////////////////////////////////////////////////////////////////////////
-
 
 bool	sdrplayHandler_v3::restartReader (int32_t newFreq, int skipped) {
 restartRequest r (newFreq);
@@ -250,6 +247,7 @@ stopRequest r;
         messageHandler (&r);	// synchronous call
 	_I_Buffer. FlushRingBuffer();
 }
+
 void	sdrplayHandler_v3::setIfGainReduction	(int GRdB) {
 GRdBRequest r (GRdB);
 	
@@ -324,7 +322,8 @@ void	sdrplayHandler_v3::setSelectAntenna_RSP2	(const QString &s) {
 	store (sdrplaySettings, SDRPLAY_SETTINGS,
 	                         SDRPLAY_ANTENNA_RSP2, QString (QChar (ant)));
 }
-
+//
+//	Not used:
 void	sdrplayHandler_v3::setSelectAntenna_duo	(const QString &s) {
 	uint8_t ant	= s == "Antenna A" ? 'A' : 'B';
 	antennaRequest request (ant);
@@ -648,7 +647,6 @@ int	deviceIndex	= 0;
         }
 
 	if (apiVersion < 3.07) {
-//	if (apiVersion < (SDRPLAY_API_VERSION - 0.01)) {
            fprintf (stderr, "API versions don't match (local=%.2f dll=%.2f)\n",
                                               SDRPLAY_API_VERSION, apiVersion);
 	   errorCode	= 5;
@@ -669,7 +667,6 @@ int	deviceIndex	= 0;
 	   }
 	}
 
-	fprintf (stderr, "we have devices\n");
 	if (ndev == 0) {
 	   theErrorLogger -> add (recorderVersion, "no valid device found\n");
 	   errorCode	= 7;
@@ -999,8 +996,6 @@ ULONG APIkeyValue_length = 255;
 
 	wchar_t *libname = (wchar_t *)L"sdrplay_api.dll";
 	Handle	= LoadLibrary (libname);
-//	fprintf (stderr, "loadLib is gewoon gelukt ? %d\n",
-//	                                 Handle != nullptr);
 	if (Handle == nullptr) {
 	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
 //	                   TEXT ("Software\\MiricsSDR\\API"),
@@ -1053,6 +1048,7 @@ void	sdrplayHandler_v3::releaseLibrary () {
 	dlclose (Handle);
 #endif
 }
+
 bool	sdrplayHandler_v3::loadFunctions () {
 	sdrplay_api_Open	= (sdrplay_api_Open_t)
 	                 GETPROCADDRESS (Handle, "sdrplay_api_Open");
@@ -1173,6 +1169,7 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	                     "Could not find sdrplay_api_Update\n");
 	   return false;
 	}
+
 	sdrplay_api_SwapRspDuoActiveTuner =
 	                          (sdrplay_api_SwapRspDuoActiveTuner_t)
 	                 GETPROCADDRESS (Handle, 
@@ -1182,6 +1179,27 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	                    "Could not load sdrplay_api_SwapRspDuoActiveTuner");
 	   return false;
 	}
+
+	sdrplay_api_SwapRspDuoDualTunerModeSampleRate =
+	                 (sdrplay_api_SwapRspDuoDualTunerModeSampleRate_t)
+	                 GETPROCADDRESS (Handle, 
+	                 "sdrplay_api_SwapRspDuoDualTunerModeSampleRate");
+	if (sdrplay_api_SwapRspDuoDualTunerModeSampleRate == nullptr) {
+	   theErrorLogger -> add (recorderVersion,
+	                 "could not load sdrplay_api_SwapRspDuoDualTunerModeSampleRate");
+	   return false;
+	}
+
+	sdrplay_api_SwapRspDuoMode =
+	                (sdrplay_api_SwapRspDuoMode_t)
+	                 GETPROCADDRESS (Handle, 
+	                              "sdrplay_api_SwapRspDuoMode");
+	if (sdrplay_api_SwapRspDuoMode == nullptr) {
+	   theErrorLogger -> add (recorderVersion,
+	                         "could not load sdrplay_api_SwapRspDuoMode");
+	   return false;
+	}
+	
 	return true;
 }
 

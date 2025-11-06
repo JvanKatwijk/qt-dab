@@ -66,7 +66,7 @@ public:
 	uint32_t	julianDate		();
 	int		freeSpace		();
 	QList<contentType> contentPrint		();
-
+	bool		is_SPI			(const uint32_t);
 protected:
 	void		processFIB		(uint8_t *, uint16_t);
 private:

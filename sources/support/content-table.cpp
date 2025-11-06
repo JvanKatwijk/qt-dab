@@ -82,7 +82,7 @@ bool	contentTable::isVisible	() {
 }
 
 void	contentTable::selectService (int row, int column) {
-QTableWidgetItem* theItem = contentWidget  -> item (row, 0);
+QTableWidgetItem* theItem = contentWidget  -> item (row, 1);
 
 	if (row < 2)
 	   return;

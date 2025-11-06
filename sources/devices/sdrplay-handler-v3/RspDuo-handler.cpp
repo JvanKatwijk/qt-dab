@@ -62,7 +62,8 @@
 
 	if (notch)
 	   setNotch (true);
-
+//
+//	The Rspdevice will always set tuner to 1
 	if (tuner != 1) {
 	   sdrplay_api_ErrT err =
 	           parent -> sdrplay_api_SwapRspDuoActiveTuner (
@@ -152,7 +153,8 @@ sdrplay_api_ErrT        err;
 	showLnaGain (getLnaGain (lnaState, freq));
 	return true;
 }
-
+//
+//	Not used
 bool	RspDuo_handler::setAntenna (int antenna) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;
@@ -207,7 +209,8 @@ bool	RspDuo_handler::setTuner	(int tuner) {
 	restart (freq);
 	return true;
 }
-
+//
+//	If tuner != 2 the selector should not be visible
 bool	RspDuo_handler::setBiasT	(bool biasT_value) {
 sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
 sdrplay_api_ErrT        err;

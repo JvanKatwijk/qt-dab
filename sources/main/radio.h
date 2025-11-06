@@ -147,6 +147,11 @@ public:
 	~dabService	() {}
 };
 
+typedef  struct {
+	QString serviceName;
+	uint32_t SId;
+} SPI_service;
+
 struct	theTime {
 	int	year;
 	int	month;
@@ -181,6 +186,7 @@ public:
 	int		nrServices;	// measured
 	int		serviceCount;	// from FIC or nothing
 	dabService	currentService;
+	std::vector<SPI_service> SPI_services;
 	std::vector<dabService> runningTasks;
 	bool		hasEcc;
 	uint8_t		eccByte;
@@ -203,6 +209,7 @@ public:
 	void	cleanChannel () {
 	   transmitters. resize (0);
 	   servicePictures. resize (0);
+	   SPI_services. resize (0);
 	   runningTasks. resize (0);
 	   realChannel		= true;
 	   serviceCount		= -1;

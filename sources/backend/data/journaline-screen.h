@@ -60,6 +60,7 @@ private:
 	QPushButton	*resetButton;
 	QPushButton	*upButton;
 	QLabel		*mainText;
+	QLabel		*ackLabel;
 	QListView	*subContent;
 	QStandardItemModel      model;
 

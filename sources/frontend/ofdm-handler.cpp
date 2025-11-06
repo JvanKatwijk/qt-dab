@@ -578,6 +578,10 @@ bool	ofdmHandler::isPrimary (const QString &s) {
 	return theFicHandler. isPrimary (s);
 }
 
+bool	ofdmHandler::is_SPI	(const uint32_t SId) {
+	return theFicHandler. is_SPI (SId);
+}
+
 uint16_t ofdmHandler::getAnnouncing	(uint16_t SId) {
 	return theFicHandler. getAnnouncing (SId);
 }

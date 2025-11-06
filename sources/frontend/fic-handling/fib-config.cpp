@@ -118,6 +118,18 @@ bool	fibConfig::language_comp_exists	(int SCId_or_subCh) {
 	return false;
 }
 
+bool	fibConfig::is_SPI (const uint32_t SId) {
+int index	= getServiceComp (SId, 0);
+	if (index < 0)		// should not happen
+	   return false;
+	if (SC_C_table [index]. TMid != 3)
+	   return false;
+	if (DSCTy (index) != 60)
+	   return false;
+	index = findIndexApptype_table (SId, 0);
+	return AppType_table [index]. Apptype;
+}
+
 uint8_t	fibConfig::serviceType (const int index) {
 	return SC_C_table [index]. TMid;
 }

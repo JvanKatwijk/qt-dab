@@ -51,7 +51,7 @@ DABFLOAT length	= jan_abs (V);
 //
 //	The bessel function is under windows too slow too work with
 //	that is why we created a table that is filled on startup
-DABFLOAT besselTable [1024];
+DABFLOAT besselTable [2048];
 static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
@@ -60,7 +60,7 @@ DABFLOAT IO_Bessel	(DABFLOAT x) {
 // and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
-	return besselTable [((int)(x * 32)) % 1024];
+	return besselTable [((int)(x * 32)) % 2048];
 }
 
 static inline
@@ -75,31 +75,6 @@ static inline
 DABFLOAT makeA (int i, Complex S, Complex prevS) {
 	return abs  (prevS + W_table [i] * S);
 //	return abs  (prevS + w (-i) * S);
-}
-
-#include	<bit>	//C++20
-//fast_log abs(rel) : avgError = 2.85911e-06(3.32628e-08), MSE = 4.67298e-06(5.31012e-08), maxError = 1.52588e-05(1.7611e-07)
-const float s_log_C0 = -19.645704f;
-const float s_log_C1 = 0.767002f;
-const float s_log_C2 = 0.3717479f;
-const float s_log_C3 = 5.2653985f;
-const float s_log_C4 = -(1.0f + s_log_C0) * (1.0f + s_log_C1) / ((1.0f + s_log_C2) * (1.0f + s_log_C3)); //ensures that log(1) == 0
-const float s_log_2 = 0.6931472f;
-
-// assumes x > 0 and that it's not a subnormal.
-// Results for 0 or negative x won't be -Infinity or NaN
-static inline
-float fast_log (float x) {
-	unsigned int ux = std::bit_cast<unsigned int>(x);
-	int e = static_cast<int>(ux - 0x3f800000) >> 23; //e = exponent part can be negative
-	ux |= 0x3f800000;
-	ux &= 0x3fffffff; // 1 <= x < 2  after replacing the exponent field
-	x = std::bit_cast<float>(ux);
-	float a = (x + s_log_C0) * (x + s_log_C1);
-	float b = (x + s_log_C2) * (x + s_log_C3);
-	float c = (float (e) + s_log_C4);
-	float d = a / b;
-	return (c + d) * s_log_2;
 }
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
@@ -144,7 +119,7 @@ float fast_log (float x) {
 	sqrt_2			= sqrt (2);
 //
 //	Prefil some tables for faster access
-	for (int i = 0; i < 1024; i ++) {
+	for (int i = 0; i < 2048; i ++) {
 	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
 	}
 
@@ -281,7 +256,7 @@ DABFLOAT bitSum	= 0;
 	                                   abs (imag (fftBin)));
 
 	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
-	   angleVector [index]	=
+	angleVector [index]	=
 	                 compute_avg (angleVector [index], angle, ALPHA);
 	   stdDevVector [index]	= 
 	                 compute_avg (stdDevVector [index],
@@ -373,27 +348,28 @@ DABFLOAT bitSum	= 0;
 	         F1 = 0.01;
 	      if (F2 < 0.01)
 	         F2 = 0.01;
-	      float b1 = abs (log (F1));
-	      float b2 = abs (log (F2));
+	      DABFLOAT b1 = log (F1);
+	      DABFLOAT b2 = log (F2);
 
 	      if (std::isnan (b1))
 	         b1 = 0;
 	      if (std::isnan (b2))
 	         b2 = 0;
-	      DABFLOAT scaler   =  140.0 / avgBit;
-	      bitSum		+= (b1 + b2) / 2;
-	      DABFLOAT xx1	=  - sign (real (fftBin)) * b1 * scaler;
-	      DABFLOAT xx2	=  - sign (imag (fftBin)) * b2 * scaler;
-	      limit_symmetrically (xx1, MAX_VITERBI);
-	      limit_symmetrically (xx2, MAX_VITERBI);
-	      softbits [i]	= (int16_t)xx1;
-	      softbits [carriers + i] = (int16_t)xx2;
-	      Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
-	      sum		+= abs (R1);
+	      DABFLOAT scaler   =  140.0 / meanValue;
+
+	      DABFLOAT leftBit	=  - b1 * scaler;
+	      limit_symmetrically (leftBit, MAX_VITERBI);
+	      softbits [i]	= (int16_t)leftBit;
+
+	      DABFLOAT rightBit	=  - b2 * scaler;
+	      limit_symmetrically (rightBit, MAX_VITERBI);
+	      softbits [carriers + i] = (int16_t)rightBit;
+
+	      sum		+= abs (Complex (b1, b2));
 	   }
 	}
 
-	avgBit		= compute_avg (avgBit, bitSum / carriers, 0.1);
+//	avgBit		= compute_avg (avgBit, bitSum / carriers, 0.1);
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
 	
 //		end of decoding	, now for displaying things	//
