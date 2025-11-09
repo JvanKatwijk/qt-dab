@@ -292,7 +292,7 @@ private:
 	QScopedPointer<configHandler>	configHandler_p;
 	QScopedPointer<ensembleHandler> theEnsembleHandler;
 	QScopedPointer<ofdmHandler>	theOFDMHandler;
-	QScopedPointer<deviceHandler>	inputDevice_p;
+	deviceHandler		*inputDevice_p;
 	bool			autoStart_http		();
 	bool			dxMode;
 	QScopedPointer<journaline_dataHandler>	journalineHandler;

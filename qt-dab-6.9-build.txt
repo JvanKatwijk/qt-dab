@@ -17,7 +17,7 @@ cp ../res/radio-pcitures/qt-dab-6.9-256x256.png	appdir/qt-dab-RC.png
 cp ../res/radio-pictures/qt-dab-6.9-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/
 cp ../res/radio-pictures/qt-dab-6.9-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/
 
-touch appdir/qt-dab-6.9.png
+touch appdir/qt-dab-6.9.5.png
   
 wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
 chmod a+x linuxdeployqt*.AppImage

@@ -31,7 +31,7 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-RC_ICONS	=  qt-dab-6.9.ico
+RC_ICONS	=  qt-dab-6.9.5.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
@@ -524,20 +524,20 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	equals (QT_MAJOR_VERSION, 5) {
-	   TARGET		= qt-dab32-qt5-6.9V3.5
-	}
-	else {
-	   TARGET		= qt-dab32-qt6-6.9V3.5
-	}
-	CONFIG		+= dabstick-win-v3
 #	equals (QT_MAJOR_VERSION, 5) {
-#	   TARGET		= qt-dab32-qt5-6.9.5
+#	   TARGET		= qt-dab32-qt5-6.9V3.5
 #	}
 #	else {
-#	   TARGET		= qt-dab32-qt6-6.9.5
+#	   TARGET		= qt-dab32-qt6-6.9V3.5
 #	}
-#	CONFIG		+= dabstick-win-v4
+#	CONFIG		+= dabstick-win-v3
+	equals (QT_MAJOR_VERSION, 5) {
+	   TARGET		= qt-dab32-qt5-6.9.5
+	}
+	else {
+	   TARGET		= qt-dab32-qt6-6.9.5
+	}
+	CONFIG		+= dabstick-win
 	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
@@ -616,32 +616,18 @@ dabstick-linux {
 	FORMS		+= ./sources/devices/rtlsdr-handler-linux/rtlsdr-widget.ui
 }
 
-dabstick-win-v4 {
-	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-win 
-	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-win 
-	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4
-	INCLUDEPATH	+= ../usr/shared/drivers/rtlsdrWindowsV4/x86
-	HEADERS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ./sources/devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ./sources/devices/rtlsdr-handler-common/rtl-dongleselect.cpp
-	FORMS		+= ./sources/devices/rtlsdr-handler-common/rtlsdr-widget.ui
-	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x86/rtlsdr.dll
-}
-
-dabstick-win-v3 {
+dabstick-win {
 	DEFINES		+= HAVE_RTLSDR_V3
-	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-win 
+	DEFINES		+= HAVE_RTLSDR_V4
+	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-win
 	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-win 
 	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
 	HEADERS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ./sources/devices/rtlsdr-handler-common/rtl-dongleselect.h
+	                   ./sources/devices/rtlsdr-handler-win/rtl-dongleselect.h \
+	                   ./sources/devices/rtlsdr-handler-win/rtl-sdr.h
 	SOURCES		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ./sources/devices/rtlsdr-handler-common/rtl-dongleselect.cpp
-	FORMS		+= ./sources/devices/rtlsdr-handler-common/rtlsdr-widget.ui
-#	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
-	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
+	                   ./sources/devices/rtlsdr-handler-win/rtl-dongleselect.cpp 
+	FORMS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-widget.ui
 }
 
 #
@@ -653,9 +639,9 @@ sdrplay-v2 {
 	INCLUDEPATH	+= ./sources/devices/sdrplay-handler-v2
 	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
 	HEADERS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
-	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect.h 
+	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect-v2.h 
 	SOURCES		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 
-	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect.cpp 
+	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect-v2.cpp 
 	FORMS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }
 #
@@ -668,6 +654,7 @@ sdrplay-v3 {
 	                   ./sources/devices/sdrplay-handler-v3/include
         HEADERS         += ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
                            ./sources/devices/sdrplay-handler-v3/sdrplay-commands.h \
+	                   ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.h \ 
 	                   ./sources/devices/sdrplay-handler-v3/Rsp-device.h \
 	                   ./sources/devices/sdrplay-handler-v3/RspI-handler.h \
 	                   ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.h \
@@ -676,6 +663,7 @@ sdrplay-v3 {
 	                   ./sources/devices/sdrplay-handler-v3/RspDx-handler.h
         SOURCES         += ./sources/devices/sdrplay-handler-v3/Rsp-device.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.cpp \ 
 	                   ./sources/devices/sdrplay-handler-v3/RspI-handler.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/RspII-handler.cpp \

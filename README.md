@@ -28,9 +28,11 @@ differences.
 
  * the combobox on the configuration widget with which an input device was selected is gone. Now the main widget shows on the top line a small icon with which a device selection table can be made visible. After selecting a device, the device selection table disappears automatically.
 
- * improved support for the SDRplay RspDuo: tuner selection is possible
+ * improved support for the SDRplay RspDuo: tuner selection is possible,
 
- * the scanList has a more prominent role. It shows the (channel, service) pairsof all channels visited. Using file input, the scanList will not be visible (seems logical), and the configuration window as a selector indicating that on program termination the list is cleared (obviously normally it is maintained between program invocations)
+ * Windows support for both RTLSDR V3 and V4,
+
+ * the scanList has a more prominent role. It shows the (channel, service) pairsof all channels visited. Using file input, the scanList will not be visible (seems logical), and the configuration window as a selector indicating that on program termination the list is cleared (obviously normally it is maintained between program invocations),
 
  * preloaded database. The precompiled versions contain a preloaded database. The configuration widget has a selector to choose between loading - on program startup - this preloaded database or one you loaded into the home directory.
 
@@ -497,11 +499,10 @@ date and the error message itself.
 Documentation
 =================================================================
 
-simplified "using-xx" text, an introductory text, covering the regular use.
-As a supplement a  separate guide is added with some notes on how to
-build an executable.
+Most selectors on the different windows have a **tool-tip**.
 
-![Qt-DAB documentation](/res/read_me/qt-dab-6-manual.png?raw=true)
+An introductory text, covering the regular use
+is available and includes in the latest **release**.
 
 Installation on Windows
 =================================================================
@@ -511,8 +512,6 @@ For Windows  *installer*s can be found in the releases section of this repositor
 The installer will install the executable as well as required libraries,
 although for both SDRplay devices (when used) or for the Adaml Pluto (whens
 used), one has to install libraries from the provoder of the device.
-
-:information_source: The releases section contains 2 Windows installers. The 2 versions  - for 32 bit - differ in their support for RTLSDR type devices (as mentioned above).
 
 :information_source: Note that the device libraries for the SDRplay devices and the Adalm Pluto device library are **NOT** included in the installer, they require - if used - a separate installation. See below for details.
 

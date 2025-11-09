@@ -22,12 +22,12 @@
  */
 #include	<cstdio>
 #include	<QVBoxLayout>
-#include	"sdrplayselect.h"
+#include	"sdrplayselect-v3.h"
 //
 //	Whenever there are two or more sdrplay devices connected
 //	to the computer, the user is asked to make a choice.
 
-	sdrplaySelect::sdrplaySelect	() {
+	sdrplaySelect_v3::sdrplaySelect_v3	() {
 	toptext		= new QLabel (this);
 	toptext		-> setText ("Select an rsp device");
 	selectorDisplay	= new QListView (this);
@@ -41,14 +41,14 @@
 	deviceList. setStringList (Devices);
 	selectorDisplay	-> setModel (&deviceList);
 	connect (selectorDisplay, &QListView::clicked,
-	         this, &sdrplaySelect::select_rsp);
+	         this, &sdrplaySelect_v3::select_rsp);
 	selectedItem	= -1;
 }
 
-	sdrplaySelect::~sdrplaySelect() {
+	sdrplaySelect_v3::~sdrplaySelect_v3 () {
 }
 
-void	sdrplaySelect::addtoList (const char *v) {
+void	sdrplaySelect_v3::addtoList (const char *v) {
 QString s (v);
 
 	Devices << s;
@@ -59,7 +59,7 @@ QString s (v);
 	fprintf (stderr, "adding %s\n", v);
 }
 
-void	sdrplaySelect::select_rsp (QModelIndex s) {
+void	sdrplaySelect_v3::select_rsp (QModelIndex s) {
 	QDialog::done (s. row());
 }
 

@@ -30,6 +30,7 @@
 #include	"sdrplay-commands.h"
 #include	"xml-filewriter.h"
 
+#include	"sdrplayselect-v3.h"
 #include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
@@ -672,8 +673,14 @@ int	deviceIndex	= 0;
 	   errorCode	= 7;
 	   goto unlockDevice_closeAPI;
 	}
-
 	deviceIndex	= 0;
+	if (ndev > 1) {
+	   sdrplaySelect_v3 sdrplaySelector;
+	   for (deviceIndex = 0; deviceIndex < (int)ndev; deviceIndex ++) {
+	      sdrplaySelector. addtoList (devs [deviceIndex]. SerNo);
+	   }
+	   deviceIndex = sdrplaySelector. QDialog::exec ();
+	}
 	chosenDevice	= &devs [deviceIndex];
 	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
 	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
