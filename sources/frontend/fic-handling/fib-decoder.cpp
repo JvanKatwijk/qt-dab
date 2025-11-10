@@ -1128,15 +1128,17 @@ char		label [17];
 	      return;
 	}
 //
-//	if no subchannel is found for the service, we do not recrod it yet
+//	if no subchannel is found for the service, we do not record it yet
 	int subChId	= currentConfig -> subChId_for_SId (0, SId);
 	if (subChId < 0)
 	   return;
+
 	for (int i = 0; i < 16; i ++) 
 	   label [i] = getBits_8 (d, offset + 8 * i);
 	QString dataName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
+
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
@@ -1187,6 +1189,10 @@ uint32_t	SId;
 	int subChId	= currentConfig -> subChId_for_SId (SCIds, SId);
 	if (subChId < 0)
 	   return;
+
+	if (currentConfig -> findIndexApptype_table (SId, 0) < 0)
+	   return;	// we want the apptype to be available
+
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
@@ -1239,6 +1245,10 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	int subChId	= currentConfig -> subChId_for_SId (0, SId);
 	if (subChId < 0)
 	   return;
+	if (currentConfig -> findIndexApptype_table (SId, 0) < 0)
+	   return;	// we want the apptype to be available
+//
+//	It seems the service is (more or less) complete
 	for (int i = 0; i < 16; i ++) {
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);
 	}

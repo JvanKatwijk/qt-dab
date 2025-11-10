@@ -45,7 +45,7 @@ uint16_t	secondDigit (v % 10);
 	myWidget	-> resize (220, 400);
 	myWidget	-> setWidgetResizable (true);
 
-	tableWidget 	= new QTableWidget (0, 12);
+	tableWidget 	= new QTableWidget (0, 13);
 	tableWidget	-> setColumnWidth (0, 30);	// mark
 	tableWidget	-> setColumnWidth (1, 45);	// pattern
 	tableWidget	-> setColumnWidth (2, 50);	// tii value
@@ -57,7 +57,8 @@ uint16_t	secondDigit (v % 10);
 	tableWidget	-> setColumnWidth (8, 60);	// height
 	tableWidget	-> setColumnWidth (9, 60);	// direction
 	tableWidget	-> setColumnWidth (10, 80);	// distamce
-	tableWidget	-> setColumnWidth (11, 250);	// transmitter
+	tableWidget	-> setColumnWidth (11, 80);	// delay
+	tableWidget	-> setColumnWidth (12, 250);	// transmitter
 
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
 	headerView	-> setSectionResizeMode (1, QHeaderView::Stretch);
@@ -67,7 +68,7 @@ uint16_t	secondDigit (v % 10);
 	                tr ("tii") << tr ("phase") << tr ("strength") <<
 	                tr ("azimuth")  << tr ("power") <<
 	                tr ("alt") << tr ("height") << tr ("dir") <<
-	                tr ("dist") << tr ("transmitter")); 
+	                tr ("dist") << tr ("delay") << tr ("transmitter")); 
 
 	theDial		= new QwtCompass ();
 	theDial		-> setLineWidth (8);
@@ -140,6 +141,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	float	phase		= theTransmitter. phase;
 	float	strength	= 10 * log10 (theTransmitter. strength + 0.01);
 	float distance		= theTransmitter. distance;
+	float delay		= (distance * 1000) / 299792458.0 * 2048000;
 	float azimuth		= theTransmitter. azimuth;
 	float power		= theTransmitter. power;
 	int   altitude		= theTransmitter. altitude;
@@ -192,10 +194,13 @@ int16_t	row	= tableWidget -> rowCount ();
 	item10		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 10, item10);
 
-	QTableWidgetItem *item11 = new QTableWidgetItem;	// transmitter
-	item11		-> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	QTableWidgetItem *item11 = new QTableWidgetItem;	// delayr
+	item11		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 11, item11);
 
+	QTableWidgetItem *item12 = new QTableWidgetItem;	// transmitter
+	item12		-> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 12, item12);
 
 	tableWidget	-> setCurrentItem (item0);
 	QString aa	= QString ("0x") + QString::number (pattern, 16);
@@ -215,7 +220,8 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 8) -> setText (QString::number (height) +  " m");
 	tableWidget	-> item (row, 9) -> setText (dir);
 	tableWidget	-> item (row, 10) -> setText (QString::number (distance, 'f', 1) + " km");
-	tableWidget	-> item (row, 11) -> setText (transmitterName);
+	tableWidget	-> item (row, 11) -> setText (QString::number (delay, 'f', 1) + " samples");
+	tableWidget	-> item (row, 12) -> setText (transmitterName);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
 	if (b)
 	   theDial -> setValue (azimuth);

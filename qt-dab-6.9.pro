@@ -19,12 +19,12 @@ unix {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_LFLAGS	+=  -O3 -ffast-math -g
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -621,7 +621,7 @@ dabstick-win {
 	DEFINES		+= HAVE_RTLSDR_V4
 	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-win
 	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-win 
-	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
+#	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
 	HEADERS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
 	                   ./sources/devices/rtlsdr-handler-win/rtl-dongleselect.h \
 	                   ./sources/devices/rtlsdr-handler-win/rtl-sdr.h

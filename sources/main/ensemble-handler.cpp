@@ -330,20 +330,6 @@ bool	isAudio (uint32_t v) {
 	return (v & 0xFF0000) == 0;
 }
 
-//static
-//bool	seems_epg (const QString &name) {
-//	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
-//               name. contains (" EPG   ", Qt::CaseInsensitive) ||
-//               name. contains ("Spored", Qt::CaseInsensitive) ||
-//               name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
-//               name. contains ("SPI", Qt::CaseSensitive) ||
-//               name. contains ("BBC Guide", Qt::CaseInsensitive) ||
-//               name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
-//               name. contains ("EPG_", Qt::CaseInsensitive) ||
-//               name. contains ("EPG-", Qt::CaseInsensitive) ||
-//               name. startsWith ("EPG ", Qt::CaseInsensitive);
-//}
-
 void	ensembleHandler::updateList	() {
 int currentRow	= 0;
 //bool	audioOnly	= value_i (ensembleSettings, CONFIG_HANDLER,
