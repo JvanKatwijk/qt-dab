@@ -31,9 +31,6 @@
 #ifdef	HAVE_RTLSDR_V3
 #include	"rtlsdr-handler-win.h"
 #define	RTLSDR_DEVICE_V3	0200
-#endif
-#ifdef	HAVE_RTLSDR_V4
-#include	"rtlsdr-handler-win.h"
 #define	RTLSDR_DEVICE_V4	0201
 #endif
 #ifdef	HAVE_RTLSDR
@@ -151,7 +148,6 @@
 #ifdef	HAVE_RTLSDR_V3
 	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
 	addtoList ("dabstick-v3");
-#elif	HAVE_RTLSDR_V4
 	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
 	addtoList ("dabstick-v4");
 #endif
@@ -253,14 +249,14 @@ int	deviceNumber	= getDeviceIndex (s);
 #endif
 #ifdef	HAVE_RTLSDR_V3
 	   case RTLSDR_DEVICE_V3:
-	      return new rtlsdrHandler_win (dabSettings, version, 
-	                                                     theErrorLogger);
+	      return new rtlsdrHandler_win (dabSettings,
+	                                   "librtlsdr-V3.dll",
+	                                    version, theErrorLogger);
 	      break;
-#endif
-#ifdef	HAVE_RTLSDR_V4
 	   case RTLSDR_DEVICE_V4:
-	      return new rtlsdrHandler_win (dabSettings, version,
-	                                                     theErrorLogger);
+	      return new rtlsdrHandler_win (dabSettings,	
+	                                   "librtlsdr-V4.dll",
+	                                    version, theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR

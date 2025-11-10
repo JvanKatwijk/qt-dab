@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>./i18n/de_DE.qm</file>
-        <file>./app-files/qt-dab-6.9.ico</file>
+        <file>./app-files/qt-dab-6.9.5.ico</file>
         <file>./AUTHORS</file>
         <file>./COPYING</file>
 	<file>./res/radio-pictures/pauze-slide-0.png</file>

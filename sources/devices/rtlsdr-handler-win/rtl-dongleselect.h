@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2025
+ *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,7 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#pragma once
+#ifndef	__DONGLE_SELECT__
+#define	__DONGLE_SELECT__
 #
 #include	<QDialog>
 #include	<QLabel>
@@ -30,19 +31,21 @@
 #include	<QStringList>
 #include	<cstdint>
 
-class	sdrplaySelect: public QDialog {
+class	rtl_dongleSelect: public QDialog {
 Q_OBJECT
 public:
-			sdrplaySelect	();
-			~sdrplaySelect	();
-	void		addtoList	(const char *);
+			rtl_dongleSelect();
+			~rtl_dongleSelect();
+	void		addtoDongleList		(const char *);
 private:
 	QLabel		*toptext;
 	QListView	*selectorDisplay;
-	QStringListModel deviceList;
-	QStringList	Devices;
+	QStringListModel	dongleList;
+	QStringList	Dongles;
 	int16_t		selectedItem;
 private slots:
-void	select_rsp	(QModelIndex);
+	void		selectDongle	(QModelIndex);
 };
+
+#endif
 

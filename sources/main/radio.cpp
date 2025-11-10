@@ -320,13 +320,13 @@ QString h;
 	else
 	   httpButton	-> setEnabled (false);
 
-#ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("9.5") + " with RTLSDR-V3";
-#elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("9.5") + " with RTLSDR-V4";
-#else
+//#ifdef HAVE_RTLSDR_V3
+//	SystemVersion	= QString ("9.5") + " with RTLSDR-V3";
+//#elif HAVE_RTLSDR_V4
+//	SystemVersion	= QString ("9.5") + " with RTLSDR-V4";
+//#else
 	SystemVersion	= QString ("9.5");
-#endif
+//#endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion ;
 #else
@@ -426,7 +426,8 @@ QString h;
 	      soundOut_p = nullptr;
 	   }
 	}
-//
+
+	inputDevice_p	= nullptr;
 //	we end up here if selection was PORT_AUDIO or using Qt_Audio failed
 //	as it does on U20
 	if (soundOut_p == nullptr) {
@@ -580,7 +581,7 @@ QString h;
 	                                      SELECTED_DEVICE, "no device");
 
 	if (theDeviceChoser. getDeviceIndex (h) >= 0)
-	   inputDevice_p. reset (createDevice (h, &theLogger));
+	   inputDevice_p	= createDevice (h, &theLogger);
 //
 	peakLeftDamped          = -100;
 	peakRightDamped         = -100;
@@ -643,7 +644,7 @@ QString h;
 	                               tr ("The ini file is new and no home location is known yet"));
 	}
 
-	if (!inputDevice_p .isNull ()) {
+	if (inputDevice_p != nullptr) {
 	   connect (&theDeviceChoser, &deviceChooser::deviceSelected,
 	            this, &RadioInterface::newDevice);
 	   if (inputDevice_p -> isFileInput ())
@@ -665,9 +666,12 @@ QString h;
 //	was registered to be used, and the user presses the
 //	selectDevice comboBox
 void	RadioInterface::doStart (const QString &dev) {
-	inputDevice_p. reset (createDevice	(dev, &theLogger));
+	if (inputDevice_p != nullptr)
+	   delete inputDevice_p;
+//	inputDevice_p	= nullptr;
+	inputDevice_p	= createDevice	(dev, &theLogger);
 //	Some buttons should not be touched before we have a device
-	if (inputDevice_p. isNull ()) {
+	if (inputDevice_p == nullptr) {
 	   return;
 	}
 	disconnect (&theDeviceChoser, &deviceChooser::deviceSelected,
@@ -711,7 +715,7 @@ void	RadioInterface::startDirect	() {
 	theLogger. log (logger::LOG_RADIO_STARTS, inputDevice_p -> deviceName (),
 	                                 channelSelector -> currentText ());
 	theOFDMHandler. reset (new ofdmHandler  (this,
-	                                    inputDevice_p. data (),
+	                                    inputDevice_p,
 	                                    &globals, dabSettings_p,
 	                                    &theLogger, this -> cpuSupport));
 	if (theOFDMHandler. isNull ()) {
@@ -1405,7 +1409,9 @@ void	RadioInterface::TerminateProcess () {
 //	everything should be halted by now
 	dabSettings_p	-> sync ();
 	theOFDMHandler. reset ();
-	inputDevice_p. reset ();
+	if (inputDevice_p != nullptr)
+	   delete inputDevice_p;
+	inputDevice_p = nullptr;
 	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -1468,8 +1474,6 @@ deviceHandler	*inputDevice = theDeviceChoser.
 	QString ss = s;
 	store (dabSettings_p, DAB_GENERAL, SELECTED_DEVICE, ss);
 	inputDevice -> setVisibility (true);
-//	if (value_i (dabSettings_p, DAB_GENERAL, DEVICE_WIDGET_VISIBLE, 1) == 0)
-//	   inputDevice -> setVisibility (false);
 	theNewDisplay. setBitDepth (inputDevice -> bitDepth ());
 	return inputDevice;
 }
@@ -1482,12 +1486,18 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	stopScanning	();
 	stopChannel	();
 	fprintf (stderr, "disconnecting\n");
+	if (inputDevice_p != nullptr) {
+	   inputDevice_p	-> stopReader	();
+	   inputDevice_p	-> stopDump	();
+	   delete inputDevice_p;
+	   inputDevice_p = nullptr;
+	}
 
 	theLogger. log (logger::LOG_NEWDEVICE, deviceName, 
 	                                channelSelector -> currentText ());
-	inputDevice_p. reset (createDevice (deviceName, &theLogger));
-	if (inputDevice_p. isNull ()) {
-	   inputDevice_p. reset (new deviceHandler ());
+	inputDevice_p =  createDevice (deviceName, &theLogger);
+	if (inputDevice_p == nullptr) {
+	   inputDevice_p = new deviceHandler ();
 	   return;		// nothing will happen
 	}
 	theDeviceChoser. hide ();
@@ -3474,7 +3484,7 @@ void	RadioInterface::handle_configButton	() {
 }
 
 void	RadioInterface::handle_devicewidgetButton	() {
-	if (inputDevice_p. isNull ())
+	if (inputDevice_p == nullptr)
 	   return;
 	int currentVisibility = inputDevice_p -> getVisibility ();
 	inputDevice_p	-> setVisibility (!currentVisibility);
@@ -3611,7 +3621,9 @@ void	RadioInterface:: set_streamSelector (int k) {
 	if (!running. load ())
 	   return;
 	QString str = configHandler_p -> currentStream ();
+	((audioSink *)(soundOut_p)) -> suspend ();
 	((audioSink *)(soundOut_p)) -> selectDevice (k, str);
+	((audioSink *)(soundOut_p)) -> resume ();
 	store (dabSettings_p, SOUND_HANDLING, AUDIO_STREAM_NAME, str);
 }
 //

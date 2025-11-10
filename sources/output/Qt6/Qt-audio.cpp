@@ -87,7 +87,9 @@ QStringList nameList;
 void	Qt_Audio::restart	() {
 	if (newDeviceIndex < 0)
 	   return;
+
 	theIODevice. stop ();
+	tempBuffer. FlushRingBuffer ();
 	currentDevice = outputDevices. at (newDeviceIndex);
 	m_audioSink. reset (new QAudioSink (currentDevice, m_settings));
 	connect (m_audioSink. get (), &QAudioSink::stateChanged,
@@ -102,13 +104,14 @@ void	Qt_Audio::restart	() {
 	theIODevice. start ();
 	m_audioSink	-> setVolume	(linearVolume);
 	m_audioSink	-> start (&theIODevice);
-//	QtAudio::Error err = m_audioSink -> error ();
-//	fprintf (stderr, "Errorcode %d\n", (int)(err));
+	QtAudio::Error err = m_audioSink -> error ();
+	fprintf (stderr, "Errorcode %d\n", (int)(err));
 }
 
 void	Qt_Audio::stop	() {
 	m_audioSink	-> stop ();
 	theIODevice. stop ();
+	tempBuffer. FlushRingBuffer ();
 }
 
 void	Qt_Audio::suspend	() {

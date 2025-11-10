@@ -51,10 +51,13 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 }
 
 Qt_AudioDevice::~Qt_AudioDevice () {
+	fprintf (stderr, "Closing QIODevice\n");
 	close ();
 }
 
 void	Qt_AudioDevice::start () {
+	fprintf (stderr, "restarting QIODevice with buffer %d\n",
+	                               Buffer -> GetRingBufferReadAvailable ());
 	(void)open (QIODevice::ReadOnly);
 }
 
@@ -64,13 +67,14 @@ qint64	amount = 0;
 //	"maxSize" is the requested size in bytes
 //	"amount" is in uint8_t's
 	amount = Buffer -> getDataFromBuffer (buffer, maxSize);
-	if (amount < maxSize) {
-	   for (int i = amount; i < maxSize; i ++)
-	      buffer [i] = (char)(0); 
-	}
+//	if (amount < maxSize) {
+//	   for (int i = amount; i < maxSize; i ++)
+//	      buffer [i] = (char)(0); 
+//	}
 
 	totalBytes_l	+= maxSize;
 	missedBytes_l	+= maxSize - amount;
+	return amount;
 	return maxSize;
 }
 
@@ -109,7 +113,7 @@ void	Qt_AudioDevice::print_aboutToClose () {
 }
 
 qint64  Qt_AudioDevice::bytesAvailable  () const {
-        return  32768;
+        return  32768 / 4;
 }
 
 qint64  Qt_AudioDevice::size            () const {

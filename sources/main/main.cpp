@@ -190,6 +190,7 @@ QTranslator	theTranslator;
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
+	delete myRadioInterface;
 	return 1;
 }
 
