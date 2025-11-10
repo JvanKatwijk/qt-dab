@@ -57,7 +57,7 @@ uint16_t	secondDigit (v % 10);
 	tableWidget	-> setColumnWidth (8, 60);	// height
 	tableWidget	-> setColumnWidth (9, 60);	// direction
 	tableWidget	-> setColumnWidth (10, 80);	// distamce
-	tableWidget	-> setColumnWidth (11, 80);	// delayr
+	tableWidget	-> setColumnWidth (11, 80);	// delay
 	tableWidget	-> setColumnWidth (12, 250);	// transmitter
 
 	QHeaderView *headerView = tableWidget -> horizontalHeader ();
@@ -141,7 +141,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	float	phase		= theTransmitter. phase;
 	float	strength	= 10 * log10 (theTransmitter. strength + 0.01);
 	float distance		= theTransmitter. distance;
-	float delay		= (distance * 1000) / 299792458.0 * 1000000;
+	float delay		= (distance * 1000) / 299792458.0 * 2048000;
 	float azimuth		= theTransmitter. azimuth;
 	float power		= theTransmitter. power;
 	int   altitude		= theTransmitter. altitude;
@@ -220,7 +220,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 8) -> setText (QString::number (height) +  " m");
 	tableWidget	-> item (row, 9) -> setText (dir);
 	tableWidget	-> item (row, 10) -> setText (QString::number (distance, 'f', 1) + " km");
-	tableWidget	-> item (row, 11) -> setText (QString::number (delay, 'f', 1) + " nsec");
+	tableWidget	-> item (row, 11) -> setText (QString::number (delay, 'f', 1) + " samples");
 	tableWidget	-> item (row, 12) -> setText (transmitterName);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
 	if (b)
