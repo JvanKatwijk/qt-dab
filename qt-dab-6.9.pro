@@ -621,7 +621,7 @@ dabstick-win {
 	DEFINES		+= HAVE_RTLSDR_V4
 	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-win
 	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-win 
-	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
+#	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
 	HEADERS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
 	                   ./sources/devices/rtlsdr-handler-win/rtl-dongleselect.h \
 	                   ./sources/devices/rtlsdr-handler-win/rtl-sdr.h
