@@ -139,36 +139,6 @@ const	int SEARCH_OFFSET = T_g / 2;
 	for (uint16_t i = 0; i < workList. size (); i ++)
 	   indices. push_back (workList [i]. index);
 
-//	while (workList. size () > 0) {
-//	   float Max = 0;
-//	   int bestIndex = -1;
-//	   for (int i = 0; i < workList. size (); i ++) {
-//	      if (workList [i]. Value > Max) {
-//	         bestIndex = i;
-//	         Max = workList [i]. Value;
-//	      }
-//	   }
-//	   if (bestIndex >= 0) {
-//	      indices. push_back (workList [bestIndex]. index);
-//	      workList. erase (workList. begin () + bestIndex);
-//	   }
-//	}
-
-//	for (int i = 0; i < indices. size (); i ++) {
-//	   if (T_g - 15 <= indices. at (i) &&
-//	                    indices. at (i) <= T_g + 15) {
-//	      std::vector<int> temp;
-//	      temp. push_back (indices. at (i));
-//	      for (int j = 0; j < i; j ++)
-//	         temp. push_back (indices. at (j));
-//	      for (int j = i + 1; j < indices. size (); j ++)
-//	         temp. push_back (indices. at (j));
-//	      indices. resize (0);
-//	      for (int i = 0; i < (int)(temp. size ()); i ++)
-//	         indices. push_back (temp. at (i));
-//	      break;
-//	   }
-//	}
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (lbuf, T_u / 2);
@@ -176,6 +146,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 	      displayCounter	= 0;
 	   }
 	}
+
 	if (firstFound)
 	   return indices [0];
 	return maxIndex;

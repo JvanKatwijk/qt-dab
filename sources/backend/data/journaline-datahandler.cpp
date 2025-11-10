@@ -78,6 +78,8 @@ int16_t	len	= msc. size ();
 uint8_t	*data	= (uint8_t *)(msc. data());
 uint8_t	*buffer	= (uint8_t *) alloca (len / 8 * sizeof (uint8_t));
 int32_t	res;
+	if (!theScreen. isVisible ())
+	   return;
 	for (uint16_t i = 0; i < len / 8; i ++)
 	   buffer [i] = getBits (data, 8 * i, 8);
 	res = DAB_DATAGROUP_DECODER_putData (theDecoder, len / 8, buffer);

@@ -69,6 +69,10 @@ void	journalineScreen::hide			() {
 	myFrame. hide ();
 }
 
+bool	journalineScreen::isVisible		() {
+	return myFrame. isVisible ();
+}
+
 void	journalineScreen::handle_resetButton	() {
 	pathVector. resize (0);
 	locker -> lock ();

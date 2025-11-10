@@ -50,6 +50,7 @@ public:
 	void	display_Plain		(NML::News_t &element, bool);
 	void	display_List		(NML::News_t &element, bool);
 	void	hide			();
+	bool	isVisible		();
 private:
 	std::vector<tableElement> *table;
 	std::mutex		*locker;

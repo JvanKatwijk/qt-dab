@@ -172,7 +172,6 @@ int	fibConfig::getServiceComp	(const uint32_t SId,
 
 int	fibConfig::getServiceComp_SCIds	(const uint32_t SId,
 	                                             const int SCIds) {
-//	fprintf (stderr, "Looking for serviceComp %X %d\n", SId, SCIds);
 	for (auto &SId_element : SId_table) {
 	   if (SId_element. SId != SId)
 	      continue;

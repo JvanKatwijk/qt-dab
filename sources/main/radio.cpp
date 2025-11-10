@@ -768,21 +768,6 @@ void	RadioInterface::no_signal_found () {
 	channel_timeOut ();
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-//static
-//bool	seems_epg (const QString &name) {
-//	return  name. contains ("-EPG ", Qt::CaseInsensitive) ||
-//                name. contains (" EPG   ", Qt::CaseInsensitive) ||
-//                name. contains ("Spored", Qt::CaseInsensitive) ||
-//                name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
-//                name. contains ("SPI", Qt::CaseSensitive) ||
-//                name. contains ("BBC Guide", Qt::CaseInsensitive) ||
-//                name. contains ("BBC  Guide", Qt::CaseInsensitive) ||
-//                name. contains ("EPG_", Qt::CaseInsensitive) ||
-//                name. contains ("EPG-", Qt::CaseInsensitive) ||
-//                name. startsWith ("EPG ", Qt::CaseInsensitive);
-//}
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addToEnsemble (const QString &serviceName,
@@ -812,8 +797,6 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	         ss. SId = SId;
 	         channel. SPI_services. push_back (ss);
 	      }
-//	      if (!seems_epg (serviceName))
-//	         return;
 	}
 
 	bool added	= theEnsembleHandler -> addToEnsemble (ed);
