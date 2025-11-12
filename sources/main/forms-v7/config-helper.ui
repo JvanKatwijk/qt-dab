@@ -188,7 +188,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The CPU load is an indication of the load when executing the program. The load tells the total load on the CPU, i.e. inclusing the load of other programs that might be running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The CPU load is an indication of the load when executing the program. The load tells the total load on the CPU, i.e. including the load of other programs that might be running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>CPU load</string>

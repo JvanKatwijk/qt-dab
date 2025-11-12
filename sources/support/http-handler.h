@@ -41,8 +41,6 @@ class	httpHandler: public QObject {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
-	                         const QString	&mapPort,
-	                         const QString	&browserAddress,
 	                         position	address,
 	                         const QString	&saveName,
 	                         bool		autoBrowse,

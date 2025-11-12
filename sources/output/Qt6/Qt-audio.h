@@ -64,8 +64,7 @@ public:
 	bool		hasMissed	();
 	void		samplesMissed	(int &, int &);
 private:
-	RingBuffer<char> tempBuffer;
-	Qt_AudioDevice	theIODevice;
+	Qt_AudioDevice	*theIODevice;
 	QSettings	*audioSettings;
 	std::atomic<bool> working;
         int             newDeviceIndex;

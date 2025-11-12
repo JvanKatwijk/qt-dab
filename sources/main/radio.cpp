@@ -467,10 +467,6 @@ QString h;
 	if (path_for_files != "")
 	   path_for_files		= checkDir (path_for_files);
 
-//	timer for autostart epg service
-	epgTimer. setSingleShot (true);
-	connect (&epgTimer, &QTimer::timeout,
-	         this, &RadioInterface::epgTimer_timeOut);
 	pauzeTimer. setSingleShot (true);
 	connect (&pauzeTimer, &QTimer::timeout,
 	         this, &RadioInterface::show_pauzeSlide);
@@ -787,26 +783,30 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	if (((SId & 0xFFFF0000) == 0) && !inputDevice_p -> isFileInput ())
 	   theScanlistHandler. addElement (channel. channelName, serviceName);
 
-	if (((SId & 0xFFFF0000) != 0) &&
-	     (configHandler_p -> get_audioServices_only ())) {
-	      if (!theOFDMHandler -> is_SPI (SId))
-	         return;
-	      else {
-	         SPI_service ss;
-	         ss. serviceName = serviceName;
-	         ss. SId = SId;
-	         channel. SPI_services. push_back (ss);
-	      }
+	if (!theSCANHandler. active () && theOFDMHandler -> is_SPI (SId)) {
+	   packetdata pd;
+	   int index = theOFDMHandler -> getServiceComp (serviceName);
+	   if (index < 0)	// cannot happen
+	      return;
+	   theOFDMHandler -> packetData (index, pd);
+	   if (!pd. defined)	// cannot happen
+	      return;
+	   start_epgService (pd);
+//	   channel. SPI_services. push_back (ss);
+	}
+//
+//	adding the service to the list (or not)
+	if (((SId & 0xFFFF0000) == 0) ||
+	    (!configHandler_p -> get_audioServices_only ()) ||
+	      ((SId & 0xFFFF0000) && theOFDMHandler -> is_SPI (SId))) {
+	   if (theEnsembleHandler -> addToEnsemble (ed)) {
+	      if (theSCANHandler. active ())
+	         theSCANHandler. addService (channel. channelName);
+	   }
 	}
 
-	bool added	= theEnsembleHandler -> addToEnsemble (ed);
-	if (added) {
-	   channel. nrServices ++;
-	   if (theSCANHandler. active ())
-	      theSCANHandler. addService (channel. channelName);
-	}
-
-	if ((channel. serviceCount == channel. nrServices)&& 
+	channel. nrServices ++;
+	if ((channel. serviceCount == channel. nrServices) && 
 	                     !theSCANHandler. active ()) {
 	   setPresetService ();
 	}
@@ -1338,7 +1338,6 @@ void	RadioInterface::TerminateProcess () {
 	displayTimer.	stop	();
 	channelTimer.	stop	();
 	presetTimer.	stop	();
-	epgTimer.	stop	();
 	pauzeTimer.	stop	();
 	muteTimer.	stop	();
 //
@@ -1468,6 +1467,8 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	running. store (false);
 	stopScanning	();
 	stopChannel	();
+	soundOut_p	-> stop ();
+//	soundOut_p	-> suspend ();
 	fprintf (stderr, "disconnecting\n");
 	if (inputDevice_p != nullptr) {
 	   inputDevice_p	-> stopReader	();
@@ -1484,6 +1485,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   return;		// nothing will happen
 	}
 	theDeviceChoser. hide ();
+	soundOut_p	-> restart ();
 	startDirect ();		// will set running
 }
 
@@ -2421,6 +2423,9 @@ void	RadioInterface::setPresetService () {
 	   return;
 	presetTimer. stop ();
 
+	if (inputDevice_p -> isFileInput ())
+	   return;
+
 	if (nextService. channel != channel. channelName)
 	   return;
 	
@@ -2428,6 +2433,7 @@ void	RadioInterface::setPresetService () {
 	   dynamicLabel -> setText ("ensemblename not yet found\n");
 	   return;
 	}
+
 	QString presetName	= nextService. serviceName;
 	for (int i = presetName. length (); i < 16; i ++)
 	   presetName. push_back (' ');
@@ -2526,10 +2532,6 @@ int	tunedFrequency	=
 	      presetTimer. start	(switchDelay);
 	   }
 	}
-
-	if (!theSCANHandler. active ())
-	   epgTimer. start (switchDelay);
-//
 //	all set, go for it
 	theOFDMHandler		-> start ();
 }
@@ -2537,7 +2539,6 @@ int	tunedFrequency	=
 //	apart from stopping the reader, a lot of administration
 //	is to be done.
 void	RadioInterface::stopChannel	() {
-	epgTimer. stop		();		// if running
 	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
@@ -2576,6 +2577,7 @@ void	RadioInterface::stopChannel	() {
 	   delete contentTable_p;
 	   contentTable_p = nullptr;
 	}
+
 //	note framedumping - if any - was already stopped
 //	ficDumping - if on - is stopped here
 	theOFDMHandler -> stopFicDump ();	// just in case ...
@@ -2662,7 +2664,6 @@ void	RadioInterface::startScanning	() {
         store (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, false);
 	presetTimer. stop ();
 	channelTimer. stop ();
-	epgTimer. stop ();
 	connect (theOFDMHandler. data (), &ofdmHandler::noSignalFound,
 	         this, &RadioInterface::no_signal_found);
 
@@ -2757,8 +2758,6 @@ basicPrint thePrinter;
 	             configHandler_p -> switchDelayValue ();
 	channelTimer. start (2 * switchDelay);
 	startChannel    (channelSelector -> currentText ());
-//	fprintf (stderr, "de scan start met  %s\n",
-//	              channelSelector -> currentText (). toLatin1 (). data ());
 }
 //
 //	stopScanning is called
@@ -2851,7 +2850,6 @@ void	RadioInterface::stopScan_continuous () {
 //	Also called as a result of time out on channelTimer
 
 void	RadioInterface::channel_timeOut () {
-// fprintf (stderr, "Channel timeout\n");
 	channelTimer. stop ();
 	if (!theSCANHandler. active ())
 	   return;
@@ -2921,7 +2919,6 @@ void	RadioInterface::nextFor_scan_continuous () {
 	stopChannel ();
 
 	QString cs	= theSCANHandler. getNextChannel ();
-//	fprintf (stderr, "Going for channel %s\n", cs. toLatin1 (). data ());
 	int cc	= channelSelector -> findText (cs);
 	newChannelIndex (cc);
 	int switchDelay	= 
@@ -3390,34 +3387,6 @@ void	RadioInterface::scheduledFICDumping () {
 	theOFDMHandler -> startFicDump (ficDumpFileName);
 }
 
-//------------------------------------------------------------------------
-//
-//	if configured, the interpreation of the EPG data starts automatically,
-//	the servicenames of an SPI/EPG service may differ from one country
-//	to another
-void	RadioInterface::epgTimer_timeOut	() {
-	epgTimer. stop ();
-	
-	if (theSCANHandler. active ())
-	   return;
-	if (value_i (dabSettings_p, CONFIG_HANDLER, "epgFlag", 0) != 1)
-	   return;
-	for (auto &serv : channel. SPI_services) {
-	   int index	= theOFDMHandler -> getServiceComp (serv. SId, 0);
-	   packetdata pd;
-	   theOFDMHandler -> packetData (index, pd);
-	   if ((!pd. defined) ||
-	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
-	      continue;
-	   if (pd. DSCTy == 60) {
-//	LOG hidden service starts
-//	      fprintf (stderr, "Starting hidden service %s\n",
-//	                                serv. toUtf8 (). data ());
-	      start_epgService (pd);
-	   }
-	}
-}
-
 void	RadioInterface::handle_timeTable	() {
 	if (myTimeTable. isVisible ()) {
 	   myTimeTable. clear ();
@@ -3593,9 +3562,6 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-//	if (decoder == DECODER_4)
-//	   QMessageBox::information (this, tr ("Warning"),
-//	                         tr ("Decoder is experimental"));
 	if (!theOFDMHandler. isNull ())
 	   theOFDMHandler	-> handleDecoderSelector (decoder);
 }
@@ -3604,9 +3570,7 @@ void	RadioInterface:: set_streamSelector (int k) {
 	if (!running. load ())
 	   return;
 	QString str = configHandler_p -> currentStream ();
-	((audioSink *)(soundOut_p)) -> suspend ();
 	((audioSink *)(soundOut_p)) -> selectDevice (k, str);
-	((audioSink *)(soundOut_p)) -> resume ();
 	store (dabSettings_p, SOUND_HANDLING, AUDIO_STREAM_NAME, str);
 }
 //
@@ -3623,18 +3587,11 @@ bool	RadioInterface::autoStart_http () {
 	   return false;
 	if (mapHandler != nullptr)  
 	   return false;
-	QString browserAddress	=
-	            value_s (dabSettings_p, MAP_HANDLING, BROWSER_ADDRESS,
-	                                    "http://localhost");
-	QString mapPort		=
-	            value_s (dabSettings_p, MAP_HANDLING, MAP_PORT_SETTING,
-	                                             "8080");
+
 	mapHandler = new httpHandler (this,
-	                              mapPort,
-	                              browserAddress,
 	                              localPos,
 	                              "",
-	                              configHandler_p -> localBrowserSelector_active (), dabSettings_p);
+	                              configHandler_p -> localBrowserSelector_active (),	                      dabSettings_p);
 	return mapHandler != nullptr;
 }
 
@@ -3647,19 +3604,11 @@ void	RadioInterface::handle_httpButton	() {
 	}
 
 	if (mapHandler == nullptr)  {
-	   QString browserAddress	=
-	            value_s (dabSettings_p, MAP_HANDLING, BROWSER_ADDRESS,
-	                                    "http://localhost");
-	   QString mapPort		=
-	            value_s (dabSettings_p, MAP_HANDLING, MAP_PORT_SETTING,
-	                                             "8080");
-
 	   mapHandler = new httpHandler (this,
-	                                 mapPort,
-	                                 browserAddress,
 	                                 localPos,
 	                                 QString (""),
-	                                 configHandler_p -> localBrowserSelector_active (), dabSettings_p);
+	                                 configHandler_p -> localBrowserSelector_active (),
+	                                 dabSettings_p);
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}
@@ -4601,17 +4550,6 @@ mmDescriptor pictures;
 	}
 	channel. servicePictures. push_back (pictures);
 	return pictures. elements. size ();
-}
-//
-static
-int	mcmp (const void *a, const void *b) {
-multimediaElement *aa = (multimediaElement *)a;
-multimediaElement *bb = (multimediaElement *)b;
-	if (aa -> width < bb -> width)
-	   return 1;
-	if (aa -> width > bb -> width)
-	   return -1;
-	return 0;
 }
 //
 //	We prefer square pictures, if no one found,

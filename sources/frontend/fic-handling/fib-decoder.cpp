@@ -398,6 +398,7 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset += numberofComponents * 16 + 8;
 	   return bitOffset / 8;
 	}
+
 	SId_element. announcing = 0;
 	SId_element. SId = SId;
 	bitOffset	+= 8;
@@ -516,7 +517,6 @@ fibConfig::SC_language comp;
 	      return bitOffset / 8;
 
 	   localBase -> add_to_language_table (comp);
-//	   localBase -> language_table. push_back (comp);
 	   return bitOffset / 8;
 	}
 	else {
@@ -607,6 +607,7 @@ fibConfig::serviceComp_G comp;
 
 	if (localBase -> SC_G_element_exists (comp.SId, comp. SCIds))
 	   return bitOffset / 8;
+
 	localBase -> add_to_SC_G_table (comp);
 	return bitOffset / 8;
 }

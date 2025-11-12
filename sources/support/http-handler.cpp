@@ -44,19 +44,25 @@
 //#include	<err.h>
 #include	<cstring>
 
+#include	"settings-handler.h"
+#include	"settingNames.h"
 #include	"http-handler.h"
 #include	"radio.h"
 
 	httpHandler::httpHandler (RadioInterface *parent,
-	                          const QString & mapPort,
-	                          const QString &browserAddress,
 	                          position	 homeAddress,
 	                          const QString &saveName,
 	                          bool autoBrowser_off,
 	                          QSettings	*settings) {
 	this	-> parent	= parent;
-	this	-> mapPort	= mapPort;
-	QString temp		= browserAddress + ":" + mapPort;
+	this	-> mapPort			=
+	            value_s (settings, MAP_HANDLING, MAP_PORT_SETTING,
+                                                                  "8080");
+	QString address		= 
+	            value_s (settings, MAP_HANDLING, BROWSER_ADDRESS,
+	                                                "http://localhost");
+
+	QString temp		= address + ":" + mapPort;
 	this	-> homeAddress	= homeAddress;
 	this	-> autoBrowser_off	= autoBrowser_off;
 #ifdef	__MINGW32__

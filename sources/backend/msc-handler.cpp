@@ -235,8 +235,6 @@ bool	mscHandler::startBackend (descriptorType &d,
 	                          RingBuffer<std::complex<int16_t>> *audioBuffer,
 	                          RingBuffer<uint8_t> *dataBuffer,
 	                          FILE *dump, int flag) {
-//	fprintf (stderr, "going to open %s\n",
-//	                d. serviceName. toLatin1 (). data ());
 
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     theLogger,

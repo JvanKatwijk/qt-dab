@@ -36,7 +36,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The tabwidget here contains the tabs for the different scopes, supported by this Qt-DAB implementation&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="spectr">
           <attribute name="title">
@@ -106,7 +106,7 @@
              <item>
               <widget class="QLabel" name="correlationsVector">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around&lt;/p&gt;&lt;p&gt;sample number 504. The other matches - if any - are shown as two numbers, the offset in the input and the additional distance - compared to the distance of the best match - in km.&lt;/p&gt;&lt;p&gt;Note that it is NOT the distance between transmitter and rfeceiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around sample number 504. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>TextLabel</string>
@@ -262,7 +262,7 @@
             </size>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The waterfall display djows the progress of the data of the selected scope in time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The waterfall display shows the progress of the data of the selected scope in time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -503,7 +503,7 @@
      <item>
       <widget class="QLabel" name="syncLabel">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for the time synchronization, if green, it looks like time syncing is OK, i.e. the software is able to identigy the start of the DAB frames in the incoming sample stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for the time synchronization, if green, it looks like time syncing is OK, i.e. the software is able to identify the start of the DAB frames in the incoming sample stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>synced</string>

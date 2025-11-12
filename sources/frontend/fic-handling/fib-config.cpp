@@ -124,12 +124,10 @@ int index	= getServiceComp (SId, 0);
 	   return false;
 	if (SC_C_table [index]. TMid != 3)
 	   return false;
-	if (DSCTy (index) != 60)
-	   return false;
 	index = findIndexApptype_table (SId, 0);
-	if (index < 0)
+	if (index < 0)		// should not happen!!!
 	   return false;
-	return AppType_table [index]. Apptype;
+	return AppType_table [index]. Apptype == 7;
 }
 
 uint8_t	fibConfig::serviceType (const int index) {

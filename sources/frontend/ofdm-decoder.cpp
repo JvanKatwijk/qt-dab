@@ -256,7 +256,7 @@ DABFLOAT bitSum	= 0;
 	                                   abs (imag (fftBin)));
 
 	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
-	angleVector [index]	=
+	   angleVector [index]	=
 	                 compute_avg (angleVector [index], angle, ALPHA);
 	   stdDevVector [index]	= 
 	                 compute_avg (stdDevVector [index],
@@ -273,15 +273,13 @@ DABFLOAT bitSum	= 0;
 	   sigmaSQ_Vector [index] =
 	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
 //
-//	Ran over quite a number of examples, I found DECODER_1
-//	working best
 	   if (this -> decoder == DECODER_1) {
 	      DABFLOAT corrector	=
 	          1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
 	      corrector			/= (1 / snr + 2);
 	      Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (binAbsLevel *
-	                                       jan_abs (phaseReference [index])));
+	                           (DABFLOAT)(sqrt (binAbsLevel * 
+	                                              jan_abs (prevS)));
 	      DABFLOAT scaler		=  140.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
@@ -300,7 +298,7 @@ DABFLOAT bitSum	= 0;
 	      corrector		/= (1 / snr + 3);
 	      Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (binAbsLevel *
-	                                      jan_abs (phaseReference [index])));
+	                                      jan_abs (prevS)));
 	      DABFLOAT scaler		=  100.0 / meanValue;
 	      DABFLOAT leftBit		= - real (R1) * scaler;
 	      limit_symmetrically (leftBit, MAX_VITERBI);
@@ -324,14 +322,17 @@ DABFLOAT bitSum	= 0;
 	      DABFLOAT rightBit = - imag (R1) * scaler;
 	      limit_symmetrically (rightBit, MAX_VITERBI);
 	      softbits [i + carriers]   = (int16_t)rightBit;
+
 	      sum += jan_abs (R1);
 	   }
 	   else 	// experimental optimum 3
 	   if (this -> decoder == DECODER_4) {	// decoder 4
-	      DABFLOAT P1 =  makeA (1, current, prevS) / sigmaSQ_Vector [index];
-	      DABFLOAT P7 =  makeA (7, current, prevS) / sigmaSQ_Vector [index];
-	      DABFLOAT P3 =  makeA (3, current, prevS) / sigmaSQ_Vector [index];
-	      DABFLOAT P5 =  makeA (5, current, prevS) / sigmaSQ_Vector [index];
+//	      DABFLOAT A = meanLevelVector [index] /
+	      DABFLOAT A =       1.0 / sigmaSQ_Vector [index];
+	      DABFLOAT P1 =  makeA (1, current, prevS) * A;
+	      DABFLOAT P7 =  makeA (7, current, prevS) * A;
+	      DABFLOAT P3 =  makeA (3, current, prevS) * A;
+	      DABFLOAT P5 =  makeA (5, current, prevS) * A;
 
 	      DABFLOAT IO_P1 = IO (P1);
 	      DABFLOAT IO_P7 = IO (P7);

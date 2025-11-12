@@ -11,20 +11,24 @@ CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++20
 
 win32 {
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 unix {
 #QMAKE_CFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 #QMAKE_LFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
+@QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -559,9 +563,9 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= hackrf
 	CONFIG		+= lime
 	CONFIG		+= pluto
-	CONFIG		+= viterbi-scalar
+#	CONFIG		+= viterbi-scalar
 #	CONFIG		+= viterbi-sse
-#	CONFIG		+= viterbi-avx2
+	CONFIG		+= viterbi-avx2
 #	CONFIG		+= spiral-sse
 #	CONFIG		+= spiral-no-sse
 #

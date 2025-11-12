@@ -35,14 +35,13 @@ class	RadioInterface;
 //
 //	The format is known, everything mapped onto 2 channel 48000
 	Qt_Audio::Qt_Audio (RadioInterface *mr,
-	                    QSettings *settings) :
-//	                                  audioPlayer (mr),
-	                                  tempBuffer (16 * 32768),
-	                                  theIODevice (mr, &tempBuffer) {
+	                    QSettings *settings) {
 	this	-> mr		= mr;
 	this	-> audioSettings	= settings;
 	newDeviceIndex		= 0;
-	
+
+	m_audioSink. reset ();
+	theIODevice		= nullptr;
         m_settings. setSampleRate (48000);
         m_settings. setSampleFormat (QAudioFormat::Float);
         m_settings. setChannelCount (2);
@@ -65,10 +64,12 @@ class	RadioInterface;
 }
 
 	Qt_Audio::~Qt_Audio	() {
-	if (m_audioSink != nullptr) {
+	if (!m_audioSink. isNull ()) {
 	   m_audioSink -> stop ();
 	}
-	theIODevice. stop ();
+	if (theIODevice != nullptr) {
+	   delete theIODevice;
+	}
 	if (deviceList != nullptr)
 	   delete deviceList;
 }
@@ -83,15 +84,30 @@ QStringList nameList;
            nameList << listEl. description ();
         return nameList; 
 }
+//
+void	Qt_Audio::stop	() {
+	if (m_audioSink. isNull () || (theIODevice == nullptr)) 
+	   return;
+	m_audioSink	-> stop ();
+	if (theIODevice != nullptr)
+	   delete theIODevice;
+	theIODevice	= nullptr;
+	m_audioSink. reset ();
+	disconnect (m_audioSink. get (), &QAudioSink::stateChanged,
+                    this, &Qt_Audio::state_changed);
+}
 
+//	restart
 void	Qt_Audio::restart	() {
 	if (newDeviceIndex < 0)
 	   return;
 
-	theIODevice. stop ();
-	tempBuffer. FlushRingBuffer ();
+	stop ();	// just to be sure
+//	select the device
 	currentDevice = outputDevices. at (newDeviceIndex);
 	m_audioSink. reset (new QAudioSink (currentDevice, m_settings));
+	QtAudio::Error err = m_audioSink -> error ();
+//	fprintf (stderr, "Errorcode for new audiosink %d\n", (int)(err));
 	connect (m_audioSink. get (), &QAudioSink::stateChanged,
                  this, &Qt_Audio::state_changed);
 	int currentVolume = value_i (audioSettings, SOUND_HANDLING, 
@@ -101,42 +117,38 @@ void	Qt_Audio::restart	() {
                                               QAudio::LogarithmicVolumeScale,
                                               QAudio::LinearVolumeScale);
 //	and run off
-	theIODevice. start ();
 	m_audioSink	-> setVolume	(linearVolume);
-	m_audioSink	-> start (&theIODevice);
-	QtAudio::Error err = m_audioSink -> error ();
-	fprintf (stderr, "Errorcode %d\n", (int)(err));
-}
-
-void	Qt_Audio::stop	() {
-	m_audioSink	-> stop ();
-	theIODevice. stop ();
-	tempBuffer. FlushRingBuffer ();
+	theIODevice	= new Qt_AudioDevice (mr); // will start as well
+	m_audioSink	-> start (theIODevice);
+	err = m_audioSink -> error ();
+//	fprintf (stderr, "Errorcode for new audiosink start %d\n", (int)(err));
 }
 
 void	Qt_Audio::suspend	() {
 	if (m_audioSink == nullptr)
 	   return;
-	if (m_audioSink -> state () == QAudio::ActiveState) 
+	if (m_audioSink -> state () == QAudio::ActiveState) {
            m_audioSink -> suspend ();
-	tempBuffer. FlushRingBuffer ();
+	   theIODevice	-> suspend ();
+	}
 }
 
 void	Qt_Audio::resume	() {
 	if (m_audioSink == nullptr)
 	   return;
-	tempBuffer. FlushRingBuffer ();
 	if ((m_audioSink -> state () == QAudio::SuspendedState) ||
-            (m_audioSink -> state () == QAudio::StoppedState)) 
+            (m_audioSink -> state () == QAudio::StoppedState))  {
            m_audioSink -> resume ();
+	   theIODevice -> resume ();
+	}
 }
 //      Note that - by convention - all audio samples here
 //      are in a rate 48000
 void    Qt_Audio::audioOutput (float *fragment, int32_t size) {
-//	if (m_audioSink == 0)
-//	   return;
-	tempBuffer. putDataIntoBuffer ((char *)fragment,
-	                                       sizeof (float) * size);
+	if (m_audioSink. isNull ())
+	   return;
+	if (theIODevice != nullptr)
+	   theIODevice -> putData (fragment, size);
 }
 
 void	Qt_Audio::state_changed (const QAudio::State newState) {
@@ -146,8 +158,8 @@ void	Qt_Audio::state_changed (const QAudio::State newState) {
 	      break;
 	   case QAudio::IdleState:
 //	      fprintf (stderr, "State: Idle\n");
-//	      if (m_audioSink -> error () != QAudio::NoError)
-//	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
+	      if (m_audioSink -> error () != QAudio::NoError)
+	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
 	      break;
 	   case QAudio::StoppedState:
 //	      fprintf (stderr, "State: Stopped\n");
@@ -160,11 +172,8 @@ void	Qt_Audio::state_changed (const QAudio::State newState) {
 
 bool	Qt_Audio::selectDevice (int16_t index, const QString &deviceName) {
 	(void)deviceName;
-	if (m_audioSink != nullptr) {
-	   theIODevice. stop ();
-           m_audioSink -> stop ();
-           m_audioSink -> disconnect (this);
-	}
+	if (!m_audioSink. isNull ())
+	   stop ();
 	newDeviceIndex = index;
 	for (int i = 0; i < outputDevices. size (); i ++) {
 	   if (outputDevices. at (i). description () == deviceName) {
@@ -210,7 +219,8 @@ bool	Qt_Audio::hasMissed	() {
 }
 
 void	Qt_Audio::samplesMissed	(int &total, int & missed) {
-	theIODevice. samplesMissed (total, missed);
+	if (theIODevice != nullptr)
+	   theIODevice -> samplesMissed (total, missed);
 }
 
 void	Qt_Audio::updateDeviceList () {

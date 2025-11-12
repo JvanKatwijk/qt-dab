@@ -253,6 +253,7 @@ int	deviceNumber	= getDeviceIndex (s);
 	                                   "librtlsdr-V3.dll",
 	                                    version, theErrorLogger);
 	      break;
+
 	   case RTLSDR_DEVICE_V4:
 	      return new rtlsdrHandler_win (dabSettings,	
 	                                   "librtlsdr-V4.dll",

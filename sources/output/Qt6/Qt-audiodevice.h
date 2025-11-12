@@ -37,20 +37,23 @@ class	RadioInterface;
 class Qt_AudioDevice : public QIODevice {
 Q_OBJECT
 public:
-		Qt_AudioDevice	(RadioInterface *,
-	                         RingBuffer<char> *, QObject *parent = nullptr);
+		Qt_AudioDevice	(RadioInterface *, QObject *parent = nullptr);
 		~Qt_AudioDevice	();
 
-	void	start		();
-	void	stop		();
+	void	suspend		();
+	void	resume		();
+	void	putData		(float *, int32_t);
 	void	samplesMissed	(int &, int &);
 	qint64	readData	(char *data, qint64 maxlen) override;
 	qint64	writeData	(const char *data, qint64 len) override;
 	qint64	bytesAvailable	() const;
 	qint64	size		() const;
+	bool	isRunning	();
 
 private:
-	RingBuffer<char> *Buffer;
+	RingBuffer<char> Buffer;
+	void	start		();
+	void	stop		();
 	int	totalBytes_l;
 	int	missedBytes_l;
 	std::atomic<bool> running;
