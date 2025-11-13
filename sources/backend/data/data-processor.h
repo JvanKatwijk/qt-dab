@@ -57,7 +57,7 @@ private:
 	uint8_t		DGflag;
 	int16_t		FEC_scheme;
 	RingBuffer<uint8_t>* dataBuffer;
-	int16_t		expectedIndex;
+	int16_t		last_cntIdx;
 	std::vector<uint8_t>	series;
 	int16_t		fillPointer;
 	bool		assembling;

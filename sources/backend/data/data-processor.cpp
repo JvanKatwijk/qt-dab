@@ -98,6 +98,7 @@
 	   
 	}
 	assembling	= false;
+	last_cntIdx	= 0;
 }
 
 	dataProcessor::~dataProcessor() {
@@ -136,7 +137,6 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 }
 
 void	dataProcessor::handlePacket (const uint8_t *vec) {
-static int last_cntIdx = 3;
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
 //	   fprintf (stderr, "crc fails %d\n", Length);
@@ -160,8 +160,8 @@ static int last_cntIdx = 3;
 	   return;
 
 	if (cntIdx != (last_cntIdx + 1) % 4) {
-	   fprintf (stderr, "packet cntIdx %d expected %d address %d\n",
-	                                cntIdx, last_cntIdx, paddr);
+//	   fprintf (stderr, "packet cntIdx %d expected %d address %d\n",
+//	                                cntIdx, last_cntIdx, paddr);
 	   if (cntIdx == last_cntIdx)
 	      return;
 	   last_cntIdx = 0;
