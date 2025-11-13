@@ -136,7 +136,7 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 }
 
 void	dataProcessor::handlePacket (const uint8_t *vec) {
-static int expected_cntidx = 0;
+static int last_cntIdx = 3;
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
 //	   fprintf (stderr, "crc fails %d\n", Length);
@@ -158,13 +158,23 @@ static int expected_cntidx = 0;
 
 	if (paddr != packetAddress)
 	   return;
-	if (cntIdx != expected_cntidx) {
-//	   fprintf (stderr, "packet cntIdx %d expected %d address %d\n",
-//	                                cntIdx, expected_cntidx, paddr);
-	   expected_cntidx = 0;
+
+	if (cntIdx != (last_cntIdx + 1) % 4) {
+	   fprintf (stderr, "packet cntIdx %d expected %d address %d\n",
+	                                cntIdx, last_cntIdx, paddr);
+	   if (cntIdx == last_cntIdx)
+	      return;
+	   last_cntIdx = 0;
+	   assembling = false;
 	   return;
 	}
-	expected_cntidx = (cntIdx + 1) % 4;
+	last_cntIdx = cntIdx;
+
+	if (udlen > Length - 5) {
+	   fprintf (stderr, "packet udlen %d is larger than max payload %d\n",
+	               udlen, Length - 5);
+	   assembling - false;
+	}
 
 	switch (flflg) {
 	   case 2:  // First data group packet
@@ -217,6 +227,7 @@ static int expected_cntidx = 0;
 	         }
 	         series. resize (0);
               }
+	      assembling = true;
 	      return;
 
 	      default:	// cannot happen

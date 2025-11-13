@@ -66,6 +66,7 @@ private:
 	bool		FEC_table [9];
 	reedSolomon my_rsDecoder;
 
+	int		expected_cntIdx;
 	int32_t		streamAddress;		// int since we init with -1
 //
 //	result handlers
