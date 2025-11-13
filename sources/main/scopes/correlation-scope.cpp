@@ -104,6 +104,7 @@ void	correlationScope::display	(const std::vector<float> &v,
 auto *X_axis	= dynVec (floatQwt, amount);
 auto *Y_value	= dynVec (floatQwt, amount);
 floatQwt Max	= -200;
+floatQwt Min	= 1000;
 int	teller	= 0;
 int	input	= v. size ();
 
@@ -116,6 +117,8 @@ int	input	= v. size ();
 	   Y_value [teller] = get_db (v [i]);
 	   if (Y_value [teller] > Max)
 	      Max = Y_value [teller];
+	   if (Y_value [teller] < Min)
+	      Min = Y_value [teller];
 	   teller ++;
 	}
 
@@ -156,13 +159,15 @@ int	input	= v. size ();
 				         (floatQwt)X_axis [0],
 				         X_axis [amount - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0) + 30,
-	                                 get_db (0) + 30 + sliderValue);
 
-	spectrumCurve. setBaseline (get_db (0) + 30);
-	Y_value [0]		= get_db (0) + 30;
-	Y_value [amount - 1]	= get_db (0) + 30;
+	float baseLine		= Min - 10;
+	plotgrid	-> setAxisScale (QwtPlot::yLeft,
+				         baseLine,
+	                                 baseLine + 30 + sliderValue);
+
+	spectrumCurve. setBaseline (baseLine);
+	Y_value [0]		= baseLine;
+	Y_value [amount - 1]	= baseLine;
 
 	spectrumCurve. setSamples (X_axis, Y_value, amount);
 	plotgrid	-> replot (); 
