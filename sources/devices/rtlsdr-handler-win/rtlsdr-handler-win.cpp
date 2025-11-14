@@ -393,6 +393,8 @@ void	rtlsdrHandler_win::set_biasControl	(int dummy) {
 }
 //	correction is in Hz
 void	rtlsdrHandler_win::set_ppmCorrection	(int32_t ppm) {
+	if (this -> rtlsdr_set_freq_correction == nullptr)
+	   return;
 	int res = this -> rtlsdr_set_freq_correction (theDevice, ppm);
 	if (res != 0) {
 	   QString t = QString ("Cannot set ppm to ") +
@@ -560,10 +562,10 @@ bool	rtlsdrHandler_win::load_rtlFunctions() {
 	rtlsdr_set_freq_correction =
 	           (pfnrtlsdr_set_freq_correction)
 	               phandle -> resolve ("rtlsdr_set_freq_correction");
-	if (rtlsdr_set_freq_correction == nullptr) {
-	   fprintf (stderr, "Could not find rtlsdr_set_freq_correction\n");
-	   return false;
-	}
+//	if (rtlsdr_set_freq_correction == nullptr) {
+//	   fprintf (stderr, "Could not find rtlsdr_set_freq_correction\n");
+//	   return false;
+//	}
 	
 	rtlsdr_get_device_name =
 	           (pfnrtlsdr_get_device_name)

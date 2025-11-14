@@ -459,7 +459,7 @@ private:
 //
 //	announcements
 	void			announcement_start	(uint16_t, uint16_t);	
-	void			announcement_stop	();
+	void			announcement_stop	(uint16_t);
 //
 //	key events for setting focus to windows
 	bool			handle_keyEvent		(int);

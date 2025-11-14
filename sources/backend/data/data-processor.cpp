@@ -173,7 +173,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	if (udlen > Length - 5) {
 	   fprintf (stderr, "packet udlen %d is larger than max payload %d\n",
 	               udlen, Length - 5);
-	   assembling - false;
+	   assembling = false;
 	}
 
 	switch (flflg) {

@@ -2046,7 +2046,7 @@ void	RadioInterface::announcement	(int SId, int flags) {
 	   if (flags != 0)
 	      announcement_start (SId, flags);
 	   else
-	      announcement_stop ();
+	      announcement_stop (SId);
 	}
 }
 
@@ -2063,7 +2063,8 @@ uint32_t startBit = 01;
 
 //	do not mess with the order
 void	RadioInterface::announcement_start (uint16_t SId,  uint16_t flags) {
-	(void)SId;
+	if (channel. currentService. SId != SId)
+	   return;
 	serviceLabel	-> setStyleSheet ("QLabel {color : red}");
 	int pictureId	= bits (flags);
 	QPixmap p = fetchAnnouncement (pictureId);
@@ -2071,7 +2072,10 @@ void	RadioInterface::announcement_start (uint16_t SId,  uint16_t flags) {
 	channel. announcing = true;
 }
 
-void	RadioInterface::announcement_stop () {
+void	RadioInterface::announcement_stop (uint16_t SId) {
+	if (channel. currentService. SId != SId)
+	   return;
+	
 	serviceLabel	-> setStyleSheet (labelStyle);
 	channel. announcing = false;
 	show_pauzeSlide ();
@@ -2187,7 +2191,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	setSoundLabel (false);
 	channel. audioActive	= false;
 
-	announcement_stop ();
+	announcement_stop (s. SId);
 	if (s. isAudio) {
 	   soundOut_p -> suspend ();
 	   stopAudioDumping ();
@@ -2326,7 +2330,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	if (flags != 0)
 	   announcement_start (ad. SId, flags);
 	else	
-	   announcement_stop ();
+	   announcement_stop (ad. SId);
 	dabService s;
 	s. channel	= ad. channel;
 	s. serviceName	= ad. serviceName;

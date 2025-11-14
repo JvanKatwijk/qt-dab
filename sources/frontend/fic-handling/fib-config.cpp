@@ -367,9 +367,10 @@ void	fibConfig::check_announcements (uint8_t clusterId,
 	      uint16_t flags = (ac. asuFlags & AswFlags);
 	      for (auto &serv : SId_table) {
 	         if ((serv. SId == ac. SId) &&
-	                      (serv. announcing != flags))
+	                      (serv. announcing != flags)) {
 	            emit announcement (ac. SId, flags);
-	         serv. announcing = flags;
+	            serv. announcing = flags;
+	         }
 	      }
 	   }
 	}
