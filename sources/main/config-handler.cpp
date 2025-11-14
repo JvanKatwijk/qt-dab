@@ -247,9 +247,12 @@ int	index_for_key (int key) {
 }
 
 	configHandler::~configHandler	() {
-	if (!this -> isHidden ())
-	   storeWidgetPosition (dabSettings, this, CONFIG_HANDLER);
 	hide ();
+}
+
+void	configHandler::storePosition () {
+	if (!isHidden ())
+	   storeWidgetPosition (dabSettings, this, CONFIG_HANDLER);
 }
 
 void	configHandler::set_connections () {

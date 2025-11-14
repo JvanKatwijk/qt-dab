@@ -95,13 +95,17 @@ uint16_t	secondDigit (v % 10);
 }
 
 	dxDisplay::~dxDisplay () {
-	if (!myWidget -> isHidden ())
-	   storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
 	int16_t	rows	= tableWidget -> rowCount ();
 	for (int row = rows; row > 0; row --)
 	   tableWidget -> removeRow (row);
 	delete	tableWidget;
 	delete	myWidget;
+}
+
+void	dxDisplay::storePosition () {
+	if (!myWidget -> isHidden ())
+	   storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
+	myWidget	-> hide ();
 }
 
 void	dxDisplay::setChannel (const QString &channel,

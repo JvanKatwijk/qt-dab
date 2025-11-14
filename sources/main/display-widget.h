@@ -57,6 +57,7 @@ public:
 		displayWidget	(RadioInterface *,
 	                         QSettings *);
 		~displayWidget	();
+	void	storePosition	();
 	int	getTab		();
 	void	setBitDepth	(int);
 

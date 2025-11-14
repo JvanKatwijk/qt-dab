@@ -99,10 +99,13 @@
 }
 
 		techData::~techData	() {
-	if (!isHidden ())
-	   storeWidgetPosition (dabSettings, this, TECHDATA_SETTING);
 	hide ();
 	delete theAudioDisplay;
+}
+
+void	techData::storePosition	() {
+	if (!isHidden ())
+	   storeWidgetPosition (dabSettings, this, TECHDATA_SETTING);
 }
 
 void	techData::cleanUp	() {

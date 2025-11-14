@@ -146,7 +146,18 @@
 }
 
 	displayWidget::~displayWidget () {
-	if (!myFrame. isHidden ()) {
+	delete		spectrumScope_p;
+	delete		waterfallScope_p;
+	delete		nullScope_p;
+	delete		correlationScope_p;
+	delete		TII_Scope_p;
+	delete		channelScope_p;
+	delete		devScope_p;
+	delete		IQDisplay_p;
+}
+
+ void	displayWidget::storePosition () {
+	if (!myFrame.isHidden ()) {
 	   storeWidgetPosition (dabSettings_p, &myFrame,
 	                                 DISPLAY_WIDGET_SETTINGS);
 	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
@@ -163,14 +174,6 @@
 	                     "channelSlider", channelSlider -> value ());
 	   myFrame. hide	();
 	}
-	delete		spectrumScope_p;
-	delete		waterfallScope_p;
-	delete		nullScope_p;
-	delete		correlationScope_p;
-	delete		TII_Scope_p;
-	delete		channelScope_p;
-	delete		devScope_p;
-	delete		IQDisplay_p;
 }
 
 void	displayWidget::switch_tab	(int t) {

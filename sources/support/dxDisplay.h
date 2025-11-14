@@ -37,6 +37,7 @@ Q_OBJECT
 public:
 		dxDisplay	(RadioInterface *, QSettings *);
 		~dxDisplay	();
+	void	storePosition	();
 	void	setChannel	(const QString &, const QString &);
 	void	addRow		(transmitter &theTransmitter, bool);
 	void	addRow		(uint8_t, uint8_t, const QString &);

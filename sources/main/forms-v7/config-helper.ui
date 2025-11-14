@@ -624,10 +624,10 @@
      </item>
      <item>
       <widget class="smallComboBox" name="streamoutSelector">
-       <property name="maximumSize">
+       <property name="minimumSize">
         <size>
-         <width>162</width>
-         <height>16777215</height>
+         <width>191</width>
+         <height>0</height>
         </size>
        </property>
        <property name="toolTip">
@@ -658,14 +658,14 @@
    <header>smallcombobox.h</header>
   </customwidget>
   <customwidget>
+   <class>clickablelabel</class>
+   <extends>QLabel</extends>
+   <header>clickable-label.h</header>
+  </customwidget>
+  <customwidget>
    <class>smallSpinBox</class>
    <extends>QSpinBox</extends>
    <header location="global">smallspinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>clickablelabel</class>
-   <extends>QLabel</extends>
-   <header location="global">clickable-label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

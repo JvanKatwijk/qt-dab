@@ -282,14 +282,18 @@ private:
 	epgCompiler		epgVertaler;
 //	end of variables that are initalized
 
-	QScopedPointer<configHandler>	configHandler_p;
 	QScopedPointer<ensembleHandler> theEnsembleHandler;
-	QScopedPointer<ofdmHandler>	theOFDMHandler;
-	deviceHandler		*inputDevice_p;
-	bool			autoStart_http		();
-	bool			dxMode;
-	QScopedPointer<journaline_dataHandler>	journalineHandler;
-	int			journalineKey;
+//	QScopedPointer<configHandler>	configHandler_p;
+//	QScopedPointer<ofdmHandler>	theOFDMHandler;
+//	QScopedPointer<techData>	techWindow_p;
+	configHandler			*configHandler_p;
+	techData			*techWindow_p;
+	ofdmHandler			*theOFDMHandler;
+	deviceHandler			*inputDevice_p;
+	bool				autoStart_http		();
+	bool				dxMode;
+	journaline_dataHandler		*journalineHandler;
+	int				journalineKey;
 //
 //	Since the local position does not depend on the channel selected
 //	the local position is not stored in the channel data
@@ -306,7 +310,6 @@ private:
 	channelDescriptor	channel;
 	QDialog			*the_aboutLabel;
 	bool			error_report;
-	QScopedPointer<techData> techWindow_p;
 	QSettings		*dabSettings_p;
 	int16_t			tii_delay;
 	int32_t			dataPort;

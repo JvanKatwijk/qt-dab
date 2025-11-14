@@ -43,7 +43,8 @@ public:
 	                         QSettings *,
 	                         RingBuffer<std::complex<int16_t>> *audioData);
 		~techData	();
-	void	showServiceData	(audiodata *);
+	void	storePosition		();
+	void	showServiceData		(audiodata *);
 	void	cleanUp			();
 	void	isDABPlus		(bool);
 	void	hideMissedLabel		();

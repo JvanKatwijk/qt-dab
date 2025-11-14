@@ -42,6 +42,7 @@ public:
 	                                 QSettings *settings);
 		~configHandler		();
 
+	void	storePosition		();
 	void	set_connections		();
 	void	set_activeServices	(int);
 //

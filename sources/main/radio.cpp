@@ -281,7 +281,7 @@ QString h;
 //	put the widgets in the right place and create the workers
 	setPositionAndSize	(dabSettings_p, this, S_MAIN_WIDGET);
 
-	configHandler_p. reset (new configHandler (this, dabSettings_p));
+	configHandler_p		= new configHandler (this, dabSettings_p);
 	theEnsembleHandler. reset (new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile));
 //	we have the configuration handler and the ensemble handler,
@@ -289,20 +289,20 @@ QString h;
 	configHandler_p		-> set_activeServices (0);
 	configHandler_p		-> set_connections ();
 
-	connect (configHandler_p. data (), &configHandler::frameClosed,
+	connect (configHandler_p, &configHandler::frameClosed,
 	         this, &RadioInterface::handle_configFrame_closed);
-	connect (configHandler_p. data (), &configHandler::handle_fontSelect,
+	connect (configHandler_p, &configHandler::handle_fontSelect,
 	         theEnsembleHandler. data (),
 	                               &ensembleHandler::handleFontSelect);
-	connect (configHandler_p. data (),
+	connect (configHandler_p,
 	                         &configHandler::handle_fontSizeSelect,
 	         theEnsembleHandler. data (),
 	                         &ensembleHandler::handleFontSizeSelect);
-	connect (configHandler_p. data (),
+	connect (configHandler_p,
 	                        &configHandler::handle_fontColorSelect,
 	         theEnsembleHandler. data (),
 	                        &ensembleHandler::handleFontColorSelect);
-	connect (configHandler_p. data (), &configHandler::set_serviceOrder,
+	connect (configHandler_p, &configHandler::set_serviceOrder,
 	         theEnsembleHandler. data (),
 	                               &ensembleHandler::setServiceOrder);
 	connect (&theNewDisplay, &displayWidget::frameClosed,
@@ -341,9 +341,9 @@ QString h;
 	               &ensembleHandler::start_background_task,
 	         this, &RadioInterface::handle_backgroundTask);
 	   
-	techWindow_p. reset (new techData (this, dabSettings_p, &theTechData));
+	techWindow_p	= new techData (this, dabSettings_p, &theTechData);
 	
-	connect (techWindow_p. data (), &techData::frameClosed,
+	connect (techWindow_p, &techData::frameClosed,
 	         this, &RadioInterface::handle_techFrame_closed);
 
 	if (value_i (dabSettings_p, DAB_GENERAL, NEW_DISPLAY_VISIBLE, 0) != 0)
@@ -351,6 +351,7 @@ QString h;
 	else
 	   theNewDisplay. hide ();
 
+	journalineHandler = nullptr;
 	peakLeftDamped	= 0;
 	peakRightDamped = 0;
 	audioTeller	= 0;	// counting audio frames
@@ -515,7 +516,7 @@ QString h;
 	         this, &RadioInterface::color_spectrumButton);
 //
 //	
-	connect (techWindow_p. data (), &techData::handleTimeTable,
+	connect (techWindow_p, &techData::handleTimeTable,
 	         this, &RadioInterface::handle_timeTable);
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
@@ -708,13 +709,14 @@ void	RadioInterface::startDirect	() {
 #else
 	cpuLabel -> setText ("");
 #endif
-	theLogger. log (logger::LOG_RADIO_STARTS, inputDevice_p -> deviceName (),
+	theLogger. log (logger::LOG_RADIO_STARTS,
+	                                 inputDevice_p -> deviceName (),
 	                                 channelSelector -> currentText ());
-	theOFDMHandler. reset (new ofdmHandler  (this,
+	theOFDMHandler	= new ofdmHandler  (this,
 	                                    inputDevice_p,
 	                                    &globals, dabSettings_p,
-	                                    &theLogger, this -> cpuSupport));
-	if (theOFDMHandler. isNull ()) {
+	                                    &theLogger, this -> cpuSupport);
+	if (theOFDMHandler == nullptr) {
 	   QMessageBox::warning (this, tr ("Warning"),
                                        tr ("Fatal error, call expert 11"));
 	   abort ();
@@ -1314,52 +1316,81 @@ float	absPeakRight	= 0;
   *	\brief TerminateProcess
   *	Pretty critical, since there are many threads involved
   *	A clean termination is what is needed, regardless of the GUI
+  *	the attempt is first to stop various activities and then
+  *	delete the different objects
   */
 void	RadioInterface::TerminateProcess () {
 	running. store	(false);
-	storeWidgetPosition (dabSettings_p, this, S_MAIN_WIDGET);
+	stopChannel	();
+
+//	stop timers apart from scanner
+	displayTimer.	stop	();
+	presetTimer.	stop	();
+	pauzeTimer.	stop	();
+	muteTimer.	stop	();
+//	stop activity using a timer
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
-	if (configHandler_p -> get_clearScanList ())
-	   theScanlistHandler. clearScanList ();
-	theScanlistHandler. dump ();
-	theScanlistHandler. hide ();
+	if (mapHandler != nullptr)
+	   mapHandler ->  stop ();
 	theSCANHandler. hide ();
-	myTimeTable. hide ();
+	channelTimer.	stop	();
+//
+//	finish all dumping activities
+	stopFrameDumping	();
+	stopSourceDumping	();
+	stopAudioDumping	();
+	if (channel. etiActive)
+	   stop_etiHandler      ();     // probably done by stopChannel
+//
+//	after a scan is topped, the scanTable is of no further use
 	if (scanTable_p != nullptr) {
 	   scanTable_p	-> clearTable ();
 	   scanTable_p	-> hide ();
 	   delete scanTable_p;
 	}
-	hideButtons	();
-
-//	stop the timers
-	displayTimer.	stop	();
-	channelTimer.	stop	();
-	presetTimer.	stop	();
-	pauzeTimer.	stop	();
-	muteTimer.	stop	();
 //
-//	hide the windows
-	theNewDisplay.		hide ();
-	theDXDisplay.		hide ();
-	theDeviceChoser.	hide ();
-	theEnsembleHandler	-> hide ();
+//	handling the aboutLabel
 	if (the_aboutLabel != nullptr) {
 	   the_aboutLabel -> hide ();
 	   delete the_aboutLabel;
 	}
-	if (contentTable_p != nullptr) {
-	   contentTable_p -> clearTable ();
-	   contentTable_p -> hide ();
-	   delete contentTable_p;
-	}
-	configHandler_p. reset ();
-	techWindow_p. reset ();
-	theSNRViewer.	hide ();
-	theScheduler.	hide	();
+//
+//	handling the scanlist
+	if (configHandler_p -> get_clearScanList ())
+	   theScanlistHandler. clearScanList ();
+	theScanlistHandler. dump ();
 	theScanlistHandler. hide ();
+//
+//
+//	hiding the ensemblehandler is needed since it is
+//	using a protected pointer
+	theEnsembleHandler	-> hide ();
+
+//	stopChannel will handle the contentTable and timetable
+//	if (contentTable_p != nullptr) {
+//	   contentTable_p -> clearTable ();
+//	   contentTable_p -> hide ();
+//	   delete contentTable_p;
+//	}
+//	myTimeTable.	hide ();
+
+//	should be hidden  to ensure the parent can be killed
+	theSNRViewer.	hide ();	
+	theScheduler.	hide ();
+//
+//	store positions of the relevant windows
+	storeWidgetPosition	(dabSettings_p, this, S_MAIN_WIDGET);
+	theNewDisplay.		storePosition ();
+	theNewDisplay. hide ();
+	theDXDisplay.		storePosition ();
+	theDXDisplay. hide ();
+	configHandler_p ->	storePosition ();
+	configHandler_p	->	hide ();
+	techWindow_p	->	storePosition ();	
+	techWindow_p 	->	 hide ();
+	hideButtons	();
 //
 #ifdef	DATA_STREAMER
 	fprintf (stderr, "going to close the dataStreamer\n");
@@ -1375,26 +1406,25 @@ void	RadioInterface::TerminateProcess () {
 	if (streamerOut_p != nullptr)
 	   streamerOut_p	-> stop ();
 #endif
-	if (mapHandler != nullptr)
-	   mapHandler ->  stop ();
-//	just save a few checkbox settings that are not
-
-	stopFrameDumping	();
-	stopSourceDumping	();
-	stopAudioDumping	();
-	if (!theOFDMHandler. isNull ())
+	if (theOFDMHandler != nullptr)	// dhould not happen
 	   theOFDMHandler		-> stop ();
-	if (soundOut_p != nullptr)
-	   delete soundOut_p;
-	theLogger. log (logger::LOG_RADIO_STOPS);
-	usleep (1000);		// pending signals
-//	everything should be halted by now
-	dabSettings_p	-> sync ();
-	theOFDMHandler. reset ();
 	if (inputDevice_p != nullptr)
 	   delete inputDevice_p;
-	inputDevice_p = nullptr;
-	close();
+	if (soundOut_p != nullptr)
+	   delete soundOut_p;
+//	journaline could have been stopped by stopChannel,
+	if (journalineHandler != nullptr) {
+	   delete journalineHandler;
+	   journalineHandler = nullptr;
+	}
+	theLogger. log (logger::LOG_RADIO_STOPS);
+	dabSettings_p	-> sync ();
+	usleep (1000);		// pending signals
+//	everything should be halted by now, start deleting
+	delete		techWindow_p;
+	delete		configHandler_p;
+	delete		theOFDMHandler;
+	close ();
 	fprintf (stderr, ".. end the radio silences\n");
 }
 //
@@ -2664,7 +2694,7 @@ void	RadioInterface::startScanning	() {
         store (dabSettings_p, DAB_GENERAL, TECHDATA_VISIBLE, false);
 	presetTimer. stop ();
 	channelTimer. stop ();
-	connect (theOFDMHandler. data (), &ofdmHandler::noSignalFound,
+	connect (theOFDMHandler, &ofdmHandler::noSignalFound,
 	         this, &RadioInterface::no_signal_found);
 
 	if (theSCANHandler. scan_to_data ())
@@ -2769,7 +2799,7 @@ void	RadioInterface::stopScanning	() {
 	if (!theSCANHandler. active ())
 	   return;
 //	fprintf (stderr, "De scan wordt gestopt\n");
-	disconnect (theOFDMHandler. data (), &ofdmHandler::noSignalFound,
+	disconnect (theOFDMHandler, &ofdmHandler::noSignalFound,
 	            this, &RadioInterface::no_signal_found);
 	presetButton	-> setText ("favorites");
 	presetButton	-> setEnabled (true);
@@ -3562,7 +3592,7 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
-	if (!theOFDMHandler. isNull ())
+	if (theOFDMHandler != nullptr)
 	   theOFDMHandler	-> handleDecoderSelector (decoder);
 }
 
@@ -4667,25 +4697,26 @@ bool	serviceAvailable	= false;
 //	handling journaline					//
 
 void	RadioInterface::startJournaline		(int currentKey) {
-	if (!journalineHandler. isNull ())
+	if (journalineHandler != nullptr)
 	   return;
-	journalineHandler. reset (new journaline_dataHandler ());
+	journalineHandler	= new journaline_dataHandler ();
 	journalineKey		= currentKey;
 }
 
 void	RadioInterface::stopJournaline		(int currentKey) {
-	if (journalineHandler. isNull ())
+	if (journalineHandler == nullptr)
 	   return;	
 	if (journalineKey != currentKey)
 	   fprintf (stderr, "What is happenng here %d %d\n",
 	                                   journalineKey, currentKey);
-	journalineHandler. reset ();
+	delete 	journalineHandler;
+	journalineHandler	= nullptr;
 	journalineKey	= -1;
 }
 
 void	RadioInterface::journalineData		(QByteArray data,
 	                                                 int currentKey) {
-	if (journalineHandler. isNull ())
+	if (journalineHandler == nullptr)
 	   return;
 	if (currentKey != journalineKey)
 	   return;
@@ -4694,7 +4725,6 @@ void	RadioInterface::journalineData		(QByteArray data,
 	   theMscdata [i] = data [i];
 	journalineHandler	-> add_mscDatagroup (theMscdata);
 }
-
 
 void	RadioInterface::focusInEvent (QFocusEvent *evt) {
 	(void)evt;
