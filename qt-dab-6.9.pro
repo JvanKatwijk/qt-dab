@@ -399,13 +399,7 @@ SOURCES += ./sources/main/main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-	equals (QT_MAJOR_VERSION, 5) {
-	TARGET		= qt-dab-qt5-6.9.5
-	}
-	else {
-	TARGET		= qt-dab-qt6-6.9.5
-	}
-exists ("../.git") {
+exists ("./.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")
@@ -414,6 +408,13 @@ exists ("../.git") {
 }
 isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
+}
+
+equals (QT_MAJOR_VERSION, 5) {
+   TARGET		= qt-dab-qt5-6.9.5
+}
+else {
+   TARGET		= qt-dab-qt6-6.9.5
 }
 
 mac {
@@ -494,7 +495,7 @@ DEFINES		+= __DUMP_SNR__		# for experiments only
 
 # an attempt to have it run under W32 through cross compilation
 win32 {
-exists ("../.git") {
+exists ("./.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")

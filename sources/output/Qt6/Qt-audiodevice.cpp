@@ -57,8 +57,8 @@ Qt_AudioDevice::~Qt_AudioDevice () {
 }
 
 void	Qt_AudioDevice::start () {
-	fprintf (stderr, "restarting QIODevice with buffer %d\n",
-	                               Buffer. GetRingBufferReadAvailable ());
+//	fprintf (stderr, "restarting QIODevice with buffer %d\n",
+//	                               Buffer. GetRingBufferReadAvailable ());
 	(void)open (QIODevice::ReadOnly);
 	running	= true;
 }

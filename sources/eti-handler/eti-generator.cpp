@@ -86,7 +86,7 @@ uint8_t	theVector [6144];
 	CIFCount_hi		= -1;
 	CIFCount_lo		= -1;
 	etiFile			= nullptr;
-	Minor			= 0;
+	Minor			= -1;
 }
 
 		etiGenerator::~etiGenerator	() {
@@ -113,7 +113,7 @@ void	etiGenerator::reset	() {
 	amount			= 0;
 	CIFCount_hi		= -1;
 	CIFCount_lo		= -1;
-	Minor			= 0;
+	Minor			= -1;
 	running			= false;
 }
 
@@ -170,14 +170,18 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	      index_Out	= (index_Out + 1) & 017;
 //	Minor is introduced to inform the init_eti function
 //	anout the CIF number in the dab frame, it runs from 0 .. 3
-	      Minor		= 0;
+	      Minor = -1;
 	      return;		// wait until next time
 	   }
 //
 //	Otherwise, it becomes serious
-	   if ((CIFCount_hi < 0) || (CIFCount_lo < 0))
+	   if ((CIFCount_hi < 0) || (CIFCount_lo < 0)) {
+	      Minor = -1;
 	      return;
-//
+	   }
+
+	   if (Minor < 0)
+	      return;
 //	3 steps, init the vector, add the fib and add the CIF content
 	   int offset	= init_eti (theVector, CIFCount_hi,
 	                                               CIFCount_lo, Minor);
@@ -238,6 +242,8 @@ channel_data data;
 //	else
 //	   eti [fillPointer ++] = 0x0F;		// error level 2, fib errors
 //	FSYNC
+
+
 	if (CIFCount_lo & 1) {
 	   eti [fillPointer ++] = 0xf8;
 	   eti [fillPointer ++] = 0xc5;

@@ -636,8 +636,6 @@ int	deviceIndex	= 0;
 	   return;
 	}
 
-	fprintf (stderr, "api opened\n");
-
 //	Check API versions match
         err = sdrplay_api_ApiVersion (&apiVersion);
         if (err  != sdrplay_api_Success) {
@@ -673,6 +671,7 @@ int	deviceIndex	= 0;
 	   errorCode	= 7;
 	   goto unlockDevice_closeAPI;
 	}
+
 	deviceIndex	= 0;
 	if (ndev > 1) {
 	   sdrplaySelect_v3 sdrplaySelector;
@@ -681,9 +680,13 @@ int	deviceIndex	= 0;
 	   }
 	   deviceIndex = sdrplaySelector. QDialog::exec ();
 	}
+
 	chosenDevice	= &devs [deviceIndex];
-	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
+	fprintf (stderr, "We get from the API: tuner %d, Mode %d\n",
+	                       (int)(chosenDevice -> tuner),
+	                       (int)(chosenDevice -> rspDuoMode));
 	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
+	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
 	err	= sdrplay_api_SelectDevice (chosenDevice);
 	if (err != sdrplay_api_Success) {
 	   theErrorLogger -> add (recorderVersion,

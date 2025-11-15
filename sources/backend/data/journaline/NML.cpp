@@ -429,10 +429,23 @@ NML* NMLFactory::CreateNML( const NML::RawNewsObject_t& rno, const NMLEscapeCode
         memcpy( uncompressed.nml, rno.nml, rno.nml_len );
     }
 
-    // check for title section
-    if( *p != 0x01 )
-    {
-        sprintf( error, "Error: expected NML Code 0x01, got 0x%02x", *p );
+	// we take the length of the datasection and add it
+	// to the current position in order to ignore it
+	while ((*p == 0x1a) || (*p == 0x1b)) {
+	   int dslen = p [1] + 1;
+	   len = len - dslen - 2;
+	   p += dslen + 2;
+	   if (len < 2) {
+	      sprintf (error, "Error: Datasection too long" );
+	      n -> SetErrorDump (n -> _news.object_id, uncompressed, error);
+	      return n;
+	   }
+	}
+
+
+//	check for title section
+	if (*p != 0x01 ) {
+	   sprintf( error, "Error: expected NML Code 0x01, got 0x%02x", *p );
         n->SetErrorDump( n->_news.object_id, uncompressed, error );
         return n;
     }
