@@ -48,14 +48,14 @@
 int16_t cif_In    [55296];
 int16_t	cifVector [16][55296];
 uint8_t	fibVector [16][96];
-bool	fibValid  [16];
+bool	fibValid  [16 * 2];
 
 #define	CUSize	(4 * 16)
 //
 //	For each subchannel we create a
 //	deconvoluter and a descramble table up front
-protection *protTable [64]	= {nullptr};
-uint8_t	*descrambler [64]	= {nullptr};
+std::vector<protection *>protTable;
+std::vector<uint8_t *>descrambler;
 
 int16_t	temp [55296];
 const int16_t interleaveMap[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
@@ -98,18 +98,14 @@ uint8_t	theVector [6144];
 //	we probably need "reset" when handling a change in configuration
 //
 void	etiGenerator::reset	() {
-	for (int i = 0; i < 64; i ++) {
-           if (descrambler [i] != nullptr)
-              delete descrambler [i];
-           if (protTable [i] != nullptr)
-              delete protTable [i];
+	for (int i = 0; i < descrambler. size (); i ++)
+           delete [] descrambler [i];
+        descrambler. resize (0);
+        for (int i = 0; i < protTable. size (); i ++)
+           delete [] protTable [i];
+        protTable. resize (0);
 
-           protTable [i]        = nullptr;
-           descrambler [i]      = nullptr;
-        }
 	index_Out		= 0;
-	BitsperBlock		= 2 * params. get_carriers ();
-	numberofblocksperCIF	= 18;	// mode I
 	amount			= 0;
 	CIFCount_hi		= -1;
 	CIFCount_lo		= -1;
@@ -125,7 +121,7 @@ void	etiGenerator::newFrame	() {
 //	block 1
 void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	                                                      int blkno) {
-
+	
 	if (!running && (etiFile != nullptr) && (blkno == 1))
 	   running = true;
 
@@ -135,6 +131,7 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	if (blkno < 4)
 	   return;
 
+	etiLocker. lock ();
 	if (blkno == 4) {	// import fibBits
 	   bool ficValid [4];
 	   my_ficHandler -> getFIBBits (fibBits, ficValid);
@@ -171,17 +168,21 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 //	Minor is introduced to inform the init_eti function
 //	anout the CIF number in the dab frame, it runs from 0 .. 3
 	      Minor = -1;
+	      etiLocker. unlock ();
 	      return;		// wait until next time
 	   }
 //
 //	Otherwise, it becomes serious
 	   if ((CIFCount_hi < 0) || (CIFCount_lo < 0)) {
 	      Minor = -1;
+	      etiLocker. unlock ();
 	      return;
 	   }
 
-	   if (Minor < 0)
+	   if (Minor < 0) {
+	      etiLocker. unlock ();
 	      return;
+	   }
 //	3 steps, init the vector, add the fib and add the CIF content
 	   int offset	= init_eti (theVector, CIFCount_hi,
 	                                               CIFCount_lo, Minor);
@@ -217,6 +218,7 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	   index_Out	= (index_Out + 1) & 017;
 	   Minor ++;
 	}
+	etiLocker. unlock ();
 }
 
 //	Copied  from dabtools:
@@ -261,10 +263,8 @@ channel_data data;
 	int FL		= 0;			// Frame Length
 	for (int j = 0; j < my_ficHandler -> nrChannels ();  j++) {
 	   my_ficHandler -> getChannelInfo (&data, j);
-	   if (data. in_use) {
-	      NST++;
-	      FL += (data. bitrate * 3) / 4;		// words remember
-	   }
+	   NST++;
+	   FL += (data. bitrate * 3) / 4;		// words remember
  	}
 //
 	FL	+= NST + 1 + 24; // STC + EOH + MST (FIC data, Mode 1!)
@@ -321,6 +321,7 @@ class parameter {
 public:
 	int16_t	*input;
 	bool	uepFlag;
+	uint8_t	subChId;
 	int	bitRate;
 	int	protLevel;
 	int	start_cu;
@@ -332,46 +333,65 @@ int32_t	etiGenerator::process_CIF (int16_t *input,
 	                           uint8_t *output, int32_t offset) {
 uint8_t	shiftRegister [9];
 std::vector<parameter *> theParameters;
+int	index	= -1;
 
 	for (int i = 0; i < my_ficHandler -> nrChannels (); i ++) {
 	   channel_data data;
 	   my_ficHandler -> getChannelInfo (&data, i);
-	   if (data. in_use) {
-	      parameter *t	= new parameter;
-	      t -> input	= input;
-	      t -> uepFlag	= data. uepFlag;
-	      t -> bitRate	= data. bitrate;
-	      t -> protLevel	= data. protlev;
-	      t -> start_cu	= data. start_cu;
-	      t -> size		= data. size;
-	      t -> output	= &output [offset];
-	      offset 		+= data. bitrate * 24 / 8;
+	   parameter *t	= new parameter;
+	   t -> input	= input;
+	   t -> subChId	= data. id;
+	   t -> uepFlag	= data. uepFlag;
+	   t -> bitRate	= data. bitrate;
+	   t -> protLevel	= data. protlev;
+	   t -> start_cu	= data. start_cu;
+	   t -> size		= data. size;
+	   t -> output	= &output [offset];
+	   offset 		+= data. bitrate * 24 / 8;
+//
+//	We try to "reuse" the deconvolvers, i.e. if one
+//	already exists, we use it, otherwise we add a new one
+//	For the NPO with 8 services, we need 3 deconvolvers
+	   index	= -1;
+	   int key	= 0;
+	   for (; key < protTable. size (); key ++) {
+	      int16_t bitRate, protLevel; bool uepFlag;
+	      protTable [key] -> getParameters (bitRate, protLevel, uepFlag);
+	      if ((bitRate == t -> bitRate) &&
+	          (protLevel == t -> protLevel) &&
+	          (uepFlag == t -> uepFlag)) {
+	         index = key;
+	         break;
+	      }
+	   }
+//	if Index < 0, we have to create an additional deconvolver
+//	and descrambler for the given parameters
+	   if (index < 0) {
+	      index = key;
+	      protection *p;
+	      if (t -> uepFlag)
+	         p = new uep_protection (t -> bitRate,
+	                                      t -> protLevel,
+	                                      cpuSupport);
+	      else
+	         p = new eep_protection (t -> bitRate,
+	                                      t -> protLevel,
+	                                      cpuSupport);
+	      protTable. push_back (p);
+	      memset (shiftRegister, 1, 9);
+	      descrambler. push_back (new uint8_t [24 * t -> bitRate]);
 
-	      if (protTable [i] == nullptr) {
-	         if (t -> uepFlag)
-	            protTable [i] = new uep_protection (t -> bitRate,
-	                                                t -> protLevel,
-	                                                cpuSupport);
-	         else
-	            protTable [i] = new eep_protection (t -> bitRate,
-	                                                t -> protLevel,
-	                                                cpuSupport);
-	         
-	         memset (shiftRegister, 1, 9);
-	         descrambler [i] = new uint8_t [24 * t -> bitRate];
-
-	         for (int j = 0; j < 24 * t -> bitRate; j ++) {
-	            uint8_t b = shiftRegister [8] ^ shiftRegister [4];
-	            for (int k = 8; k > 0; k--)
-	               shiftRegister [k] = shiftRegister [k - 1];
-	            shiftRegister [0] = b;
-	            descrambler [i] [j] = b;
-	         }
-              }
+	      for (int j = 0; j < 24 * t -> bitRate; j ++) {
+	         uint8_t b = shiftRegister [8] ^ shiftRegister [4];
+	         for (int k = 8; k > 0; k--)
+	            shiftRegister [k] = shiftRegister [k - 1];
+	         shiftRegister [0] = b;
+	         descrambler [index] [j] = b;
+	      }
+           }
 //	we need to save a reference to the parameters
 //	since we have to delete the instance later on
-	      process_subCh (i, t, protTable [i], descrambler [i]);
-	   }
+	   process_subCh (i, t, protTable [index], descrambler [index]);
 	}
 	return offset;
 }
@@ -418,10 +438,18 @@ bool	etiGenerator::start_etiGenerator	(const QString &f) {
 }
 
 void	etiGenerator::stop_etiGenerator		() {
+	etiLocker. lock ();
 	if (etiFile != nullptr) {
 	   fclose (etiFile);
 	}
+	for (int i = 0; i < descrambler. size (); i ++)
+           delete [] descrambler [i];
+        descrambler. resize (0);
+        for (int i = 0; i < protTable. size (); i ++)
+           delete protTable [i];
+        protTable. resize (0);
 	etiFile	= nullptr;
 	running	= false;
+	etiLocker. unlock ();
 }
 

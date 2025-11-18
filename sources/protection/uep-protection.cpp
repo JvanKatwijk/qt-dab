@@ -227,3 +227,11 @@ int8_t          *PI_X;
 	uep_protection::~uep_protection () {
 }
 
+void	uep_protection::getParameters	(int16_t &bitRate,
+	                                 int16_t &protLevel, bool &uepFlag) {
+	bitRate		= this -> bitRate;
+	protLevel	= this -> protLevel;
+	uepFlag		= true;
+}
+ 
+

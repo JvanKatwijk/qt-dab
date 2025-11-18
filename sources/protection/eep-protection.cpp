@@ -147,3 +147,10 @@ int8_t	*PI1, *PI2, *PI_X;
 	eep_protection::~eep_protection	() {
 }
 
+void    eep_protection::getParameters   (int16_t &bitRate,
+                                         int16_t &protLevel, bool &uepFlag) {
+	bitRate		= this -> bitRate;
+	protLevel	= this -> protLevel;
+	uepFlag		= false;
+}
+

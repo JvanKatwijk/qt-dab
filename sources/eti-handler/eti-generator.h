@@ -43,6 +43,7 @@
 #include	<stdio.h>
 #include	<vector>
 #include	<atomic>
+#include	<mutex>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"fic-handler.h"
@@ -81,6 +82,7 @@ private:
 	FILE		*etiFile;
 	dabParams	params;
 	bool		running;
+	std::mutex	etiLocker;
 	int16_t		index_Out;
 	int		Minor;
 	int16_t		CIFCount_hi;

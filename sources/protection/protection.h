@@ -36,9 +36,12 @@ class   protection: public viterbi {
 public:
                 protection      (int16_t, int16_t, uint8_t);
 virtual         ~protection	();
+virtual	void	getParameters	(int16_t &bitRate,
+	                              int16_t &protLevel, bool &uepFlag);
 virtual bool    deconvolve      (int16_t *, int32_t, uint8_t *);
 protected:
         int16_t         bitRate;
+        int16_t		protLevel;
         int32_t         outSize;
 	std::vector<uint8_t> indexTable;
         std::vector<int16_t> viterbiBlock;

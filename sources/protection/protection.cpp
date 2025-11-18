@@ -58,3 +58,12 @@ int16_t	inputCounter	= 0;
 //	viterbiSpiral::deconvolve (viterbiBlock. data(), outBuffer);
 	return true;
 }
+
+void	protection::getParameters (int16_t &bitRate,
+	                                int16_t &protLevel, bool &uepFlag) {
+	bitRate		= this -> bitRate;
+	protLevel	= this -> protLevel;
+        uepFlag		= false;
+	fprintf (stderr, "We should not be here at all\n");
+}
+

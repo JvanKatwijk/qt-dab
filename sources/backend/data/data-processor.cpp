@@ -153,21 +153,20 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 //	Useful data length
 	const uint8_t udlen	= getBits (vec, 17,7); 
 //	fprintf (stderr, "udlen = %d\n", udlen);
-	if (udlen == 0)
+
+	if (paddr != packetAddress) 	// wrong address
 	   return;
 
-	if (paddr != packetAddress)
+	if (cntIdx == last_cntIdx)	// just wait for the next one
 	   return;
 
 	if (cntIdx != (last_cntIdx + 1) % 4) {
 //	   fprintf (stderr, "packet cntIdx %d expected %d address %d\n",
 //	                                cntIdx, last_cntIdx, paddr);
-	   if (cntIdx == last_cntIdx)
-	      return;
-	   last_cntIdx = 0;
 	   assembling = false;
 	   return;
 	}
+
 	last_cntIdx = cntIdx;
 
 	if (udlen > Length - 5) {
@@ -187,7 +186,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   case 0:    // Intermediate data group packet
 	      if (assembling) {
 	         int currentLength = series. size ();
-	         if (currentLength + udlen * 8 > 4 * 8192) {
+	         if (currentLength + udlen * 8 > 8 * 8192) {
 	            assembling = false;
 //	            fprintf (stderr, "too large???\n");
 	            return;
@@ -201,7 +200,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   case 1:  // Last data group packet
 	      if (assembling) {
 	         int currentLength = series. size ();
-	         if (currentLength + udlen * 8 > 4 * 8192) {
+	         if (currentLength + udlen * 8 > 8 * 8192) {
 	            assembling = false;
 //	            fprintf (stderr, "too large???\n");
 	            return;
@@ -209,12 +208,13 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	         series. resize (currentLength + udlen * 8);
 	         for (int i = 0; i < udlen * 8; i ++)
 	            series [currentLength + i] = vec [3 * 8 + i];
-	         assembling = false;
 //
 //	Note, we are sending the UNPROCESSED mscdatagroup to the
 //	appropriate handler
-	         my_dataHandler	-> add_mscDatagroup (series);
+	         if (series. size () > 0)
+	            my_dataHandler	-> add_mscDatagroup (series);
 	         series. resize (0);
+	         assembling = false;
 	      }
 	      return;
 
@@ -223,11 +223,12 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	            series. resize (udlen * 8);
 	            for (uint8_t i = 0; i < udlen * 8; i ++)
 	               series [i] = vec [3 * 8 + i];
-	            my_dataHandler -> add_mscDatagroup (series);
+	            if (series. size () > 0)
+	               my_dataHandler -> add_mscDatagroup (series);
 	         }
 	         series. resize (0);
               }
-	      assembling = true;
+	      assembling = false;
 	      return;
 
 	      default:	// cannot happen

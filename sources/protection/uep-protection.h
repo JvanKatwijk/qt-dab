@@ -32,6 +32,8 @@
 public:
 		uep_protection (int16_t, int16_t, uint8_t);
 		~uep_protection	();
+	void	getParameters	(int16_t &bitRate,
+	                         int16_t &protLevel, bool &uepFlag);
 };
 
 

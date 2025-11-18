@@ -680,8 +680,8 @@ bool	ofdmHandler::startEtiGenerator	(const QString &s) {
 }
 
 void	ofdmHandler::stopEtiGenerator		() {
-	theEtiGenerator. stop_etiGenerator ();
 	etiOn		= false;
+	theEtiGenerator. stop_etiGenerator ();
 }
 
 void	ofdmHandler::resetEtiGenerator	() {
