@@ -22,6 +22,7 @@
  */
 #include	<stdio.h>
 #include	<QFile>
+#include	<QDataStream>
 #include	<QTextStream>
 #include	<QSettings>
 #include	<QDir>

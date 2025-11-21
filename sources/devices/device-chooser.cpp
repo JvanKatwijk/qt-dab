@@ -90,13 +90,17 @@
 #include	"spyserver-client-8.h"
 #define	SPYSERVER_DEVICE_8	0215
 #endif
+#ifdef		HAVE_DUO
+#include	"sdrplay-handler-duo.h"
+#define	DUO_DEVICE		0216
+#endif
 //#ifdef	HAVE_COLIBRI
 //#include	"colibri-handler.h"
-//#define	COLIBRI_DEVICE		0216
+//#define	COLIBRI_DEVICE		0217
 //#endif
 //#ifdef	HAVE_ELAD
 //#include	"elad-handler.h"
-//#define	ELAD_S1_DEVICE		0217
+//#define	ELAD_S1_DEVICE		0220
 //#endif
 
 #include	"xml-filereader.h"
@@ -195,6 +199,10 @@
 	deviceList. push_back (deviceItem ("spyServer-8", SPYSERVER_DEVICE_8));
 	addtoList ("spyServer-8");
 #endif
+#ifdef	HAVE_DUO
+	deviceList. push_back (deviceItem ("duo", DUO_DEVICE));
+	addtoList ("duo");
+#endif
 }
 
 		deviceChooser::~deviceChooser	() {
@@ -244,6 +252,12 @@ int	deviceNumber	= getDeviceIndex (s);
 #ifdef	HAVE_SDRPLAY_V3
 	   case SDRPLAY_V3_DEVICE:
 	      return new sdrplayHandler_v3 (dabSettings, version,
+	                                                     theErrorLogger);
+	      break;
+#endif
+#ifdef	HAVE_DUO
+	   case DUO_DEVICE:
+	      return new sdrplayHandler_duo (dabSettings, version,
 	                                                     theErrorLogger);
 	      break;
 #endif
