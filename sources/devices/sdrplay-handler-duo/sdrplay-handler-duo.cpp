@@ -139,17 +139,6 @@ std::string errorMessage (int errorCode) {
 	if (notch)
 	   notch_selector -> setChecked (true);
 //
-//	we process segments of 1 msec
-	convBufferSize          = 2000000 / 1000;
-        float samplesPerMsec    = SAMPLERATE / 1000.0;
-        for (int i = 0; i < SAMPLERATE / 1000; i ++) {
-           float inVal  = float (2000000 / 1000);
-           mapTable_int [i]     = int (floor (i * (inVal / samplesPerMsec)));
-           mapTable_float [i]   = i * (inVal / samplesPerMsec) - mapTable_int [i]; 
-        }
-        convIndex       = 0;
-        convBuffer. resize (convBufferSize + 1);
-
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_duo::setIfGainReduction);
@@ -189,6 +178,25 @@ std::string errorMessage (int errorCode) {
 	successFlag. store (false);
 	errorCode	= 0;
 
+	Handle                  = fetchLibrary ();
+        if (Handle == nullptr) {
+           failFlag. store (true);
+           errorCode    = 1;
+           return;
+        }
+
+//      load the functions
+        bool success    = loadFunctions ();
+        if (!success) {
+           failFlag. store (true);
+           releaseLibrary ();
+           errorCode    = 2;
+           return;
+        }
+        fprintf (stderr, "functions loaded\n");
+
+	masterInitialized	= false;
+	slaveUninitialized	= false;
 //	run the "handler" task
 	start ();
 	while (!failFlag. load () && !successFlag. load () && isRunning ())
@@ -422,7 +430,6 @@ void	StreamBCallback (short *xi, short *xq,
 sdrplayHandler_duo *p	= static_cast<sdrplayHandler_duo *> (cbContext);
 std::complex<float> localBuf [numSamples];
 
-	fprintf (stderr, "x");
 	return;
 	(void)params;
 	if (reset)
@@ -484,11 +491,14 @@ sdrplayHandler_duo *p	= static_cast<sdrplayHandler_duo *> (cbContext);
 	                                                   "unknown type");
 
 	if (params -> rspDuoModeParams.modeChangeType ==
-	                           sdrplay_api_MasterInitialised)
+	                           sdrplay_api_MasterInitialised) {
 	   fprintf (stderr, "Master initialized\n");
+	   p -> masterInitialized = true;
+	}
 	if (params -> rspDuoModeParams.modeChangeType ==
 	                           sdrplay_api_SlaveUninitialised)
 	   fprintf (stderr, "Slave uninitialized\n");
+	   p -> slaveUninitialized;
 	break;
 
 	   default:
@@ -518,22 +528,6 @@ int	deviceIndex	= 0;
 	denominator		= 2048.0f;		// default
 	nrBits			= 12;		// default
 
-	Handle                  = fetchLibrary ();
-        if (Handle == nullptr) {
-           failFlag. store (true);
-           errorCode    = 1;
-           return;
-        }
-
-//      load the functions
-        bool success    = loadFunctions ();
-        if (!success) {
-           failFlag. store (true);
-           releaseLibrary ();
-           errorCode    = 2;
-           return;
-        }
-        fprintf (stderr, "functions loaded\n");
 
 //	try to open the API
 	err	= sdrplay_api_Open ();
@@ -566,6 +560,7 @@ int	deviceIndex	= 0;
 //
 //	lock API while device selection is performed
 	sdrplay_api_LockDeviceApi ();
+
 	{  int s	= sizeof (devs) / sizeof (sdrplay_api_DeviceT);
 	   err	= sdrplay_api_GetDevices (devs, &ndev, s);
 	   if (err != sdrplay_api_Success) {
@@ -577,28 +572,44 @@ int	deviceIndex	= 0;
 	   }
 	}
 
+	fprintf (stderr, "MaxDevs=%d NumDevs=%d\n",
+                   sizeof(devs) / sizeof(sdrplay_api_DeviceT), ndev);
+
 	if (ndev == 0) {
 	   theErrorLogger -> add (recorderVersion, "no valid device found\n");
 	   errorCode	= 7;
 	   goto unlockDevice_closeAPI;
 	}
 
-	
+	for (int i = 0; i < (int)ndev; i++) 
+           if (devs [i]. hwVer == SDRPLAY_RSPduo_ID)
+              fprintf (stderr,
+	               "Dev%d: SerNo=%s hwVer=%d tuner=0x%.2x rspDuoMode=0x%.2x\n",
+                          i,
+                          devs [i]. SerNo,
+                          devs [i]. hwVer,
+                          devs [i]. tuner, devs[i].rspDuoMode);
+
 	deviceIndex	= 0;
 	hwVersion	= devs [deviceIndex]. hwVer;
 	if (hwVersion != SDRPLAY_RSPduo_)
 	   throw device_exception ("This handler is solely for the RspDuo\m");
 
-	fprintf (stderr, "we have %d devices\n", ndev);
 	chosenDevice	= &devs [deviceIndex];
 
-	// we keep Tuner_A as master
-	currentTuner	= 1;
-	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
-//	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
-	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Master;
-	chosenDevice	-> rspDuoSampleFreq = 2048000.0;
-
+	serial		= devs [deviceIndex]. SerNo;
+	if (chosenDevice -> rspDuoMode &
+                               sdrplay_api_RspDuoMode_Master) {
+	   fprintf (stderr, "We have a master\n");
+// we keep Tuner_A as master
+	   chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
+	   chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Master;
+	   chosenDevice	-> rspDuoSampleFreq = 8192000;
+	}
+	else
+	   fprintf (stderr, "We have a slave\n");
+//
+//	select chosen device
 	err	= sdrplay_api_SelectDevice (chosenDevice);
 	if (err != sdrplay_api_Success) {
 	   theErrorLogger -> add (recorderVersion,
@@ -607,10 +618,10 @@ int	deviceIndex	= 0;
 	   fprintf (stderr, "fout 8\n");
 	   goto unlockDevice_closeAPI;
 	}
-//	we have a device, unlock
+
+//	Unlock API now that device is selected
 	sdrplay_api_UnlockDeviceApi ();
 
-	serial		= devs [deviceIndex]. SerNo;
 	err		= sdrplay_api_GetDeviceParams (chosenDevice -> dev,
 	                                                &deviceParams);
 	fprintf (stderr, "device parameters\n");
@@ -624,18 +635,39 @@ int	deviceIndex	= 0;
 	   fprintf (stderr, "sdrplay_api_GetDeviceParams return null as par\n");
 	   throw (22);
 	}
-	
-	this	-> chParams		=  deviceParams -> rxChannelA;
-//	deviceParams	-> devParams	-> ppm		= ppmValue;
-//	deviceParams    -> devParams	-> fsFreq. fsHz    = SAMPLERATE;
+
+//      Configure dev parameters
+        if (deviceParams -> devParams != NULL) {
+//      This will be NULL for slave devices, only the master can change
+        }
+
+//	Configure tuner parameters (depends on selected Tuner
+//	which parameters to use)
+	chParams = (chosenDevice -> tuner == sdrplay_api_Tuner_B)?
+	                                       deviceParams -> rxChannelB:
+	                                       deviceParams -> rxChannelA;
+	if (chParams == NULL) {
+	   fprintf (stderr, "ChannelParams = NULL\n");
+	   throw (25);
+	}
+
+	chParams        -> tunerParams. rfFreq. rfHz    = (float)220000000;
 	chParams        -> tunerParams. bwType = sdrplay_api_BW_1_536;
+
 //	chParams        -> tunerParams. ifType = sdrplay_api_IF_Zero;
 //	chParams        -> tunerParams. ifType = sdrplay_api_IF_0_450;
 
-	fprintf (stderr, "ifType %d\n",
-	                      (int)(chParams -> tunerParams. ifType));
-//      these will change:
-        chParams        -> tunerParams. rfFreq. rfHz    = (float)220000000;
+	chParams	-> tunerParams.gain.gRdB = 40;
+	chParams	-> tunerParams.gain.LNAstate = 3;
+
+        chParams	-> ctrlParams. agc. setPoint_dBfs = -30;
+        chParams	-> ctrlParams. agc. attack_ms = 500;
+        chParams	-> ctrlParams. agc. decay_ms = 500;
+        chParams	-> ctrlParams. agc. decay_delay_ms = 200;
+        chParams	-> ctrlParams. agc. decay_threshold_dB = 3;
+	chParams	-> ctrlParams.agc.enable = sdrplay_api_AGC_CTRL_EN;
+
+
 //	assign callback functions
 	cbFns. StreamACbFn	= StreamACallback;
 	cbFns. StreamBCbFn	= StreamBCallback;
@@ -643,27 +675,45 @@ int	deviceIndex	= 0;
 
 	err	= sdrplay_api_Init (chosenDevice -> dev, &cbFns, this);
 	fprintf (stderr, "%s\n", sdrplay_api_GetErrorString (err));
-//
-	if (GRdBValue > 59)
-	   this -> GRdBValue = 59;
-	if (GRdBValue < 20)
-	   this -> GRdBValue = 20;
 
-        chParams        -> tunerParams. gain.gRdB       = this -> GRdBValue;
-	chParams        -> tunerParams. gain.LNAstate   = 3;
+	if (err == sdrplay_api_StartPending) {
+	   while (1) {
+	      usleep (1000);
+//      Keep polling flag set in event callback until the master is initialised
+	      if (masterInitialized)  {
+//      Redo call - should succeed this time
+	         err = sdrplay_api_Init (chosenDevice -> dev, &cbFns, NULL);
+	         if (err != sdrplay_api_Success) {
+	            printf ("sdrplay_api_Init failed %s\n",
+                                         sdrplay_api_GetErrorString (err));
+	         } 
+	         throw (25);
+	      }
+	      fprintf(stderr, "Waiting for master to initialise\n");
+	   }
+	}
+	else
+	   masterInitialized = true;
 
-	chParams	-> ctrlParams. agc. setPoint_dBfs = -30;
-	chParams	-> ctrlParams. agc. attack_ms = 500;
-	chParams	-> ctrlParams. agc. decay_ms = 500;
-	chParams	-> ctrlParams. agc. decay_delay_ms = 200;
-	chParams	-> ctrlParams. agc. decay_threshold_dB = 3;
+        if (GRdBValue > 59)
+           this -> GRdBValue = 59;
+        if (GRdBValue < 20)
+           this -> GRdBValue = 20;
 
-	if (this -> agcMode) 
-	   chParams	-> ctrlParams. agc. enable = sdrplay_api_AGC_CTRL_EN;
-        else
-           chParams	-> ctrlParams. agc. enable =
-                                             sdrplay_api_AGC_DISABLE;
-
+	chParams        -> tunerParams. gain.gRdB       = this -> GRdBValue;
+        chParams        -> tunerParams. gain.LNAstate   = 3;
+     
+        chParams	-> ctrlParams. agc. setPoint_dBfs = -30;
+        chParams	-> ctrlParams. agc. attack_ms = 500;
+        chParams	-> ctrlParams. agc. decay_ms = 500;
+        chParams	-> ctrlParams. agc. decay_delay_ms = 200;
+        chParams	-> ctrlParams. agc. decay_threshold_dB = 3;
+     
+        if (this -> agcMode) 
+           chParams	-> ctrlParams. agc. enable = sdrplay_api_AGC_CTRL_EN;
+             else
+                chParams   -> ctrlParams. agc. enable =
+                                                  sdrplay_api_AGC_DISABLE;
 	fprintf (stderr, "fase 2 gehad\n");
 	deviceLabel		-> setText (deviceModel);
 	setSerialSignal       (serial);
@@ -777,12 +827,26 @@ normal_exit:
 	   theErrorLogger -> add (recorderVersion,
 	                          sdrplay_api_GetErrorString (err));
 
+	if (err == sdrplay_api_StopPending) {
+	   while (1) {
+	      usleep (1000);
+	      if (slaveUninitialized) {
+	         err = sdrplay_api_Uninit (chosenDevice -> dev);
+	         if (err != sdrplay_api_Success)
+	           fprintf (stderr, "sdrplay_api_Uninit failed %s\n",
+	                                 sdrplay_api_GetErrorString (err));
+	         goto closeApi;
+	      }
+	   }
+	}
+	      
 	err = sdrplay_api_ReleaseDevice	(chosenDevice);
 	if (err != sdrplay_api_Success) 
 	   theErrorLogger -> add (recorderVersion,
 	                          sdrplay_api_GetErrorString (err));
 
 //	sdrplay_api_UnlockDeviceApi	(); ??
+closeApi:
         sdrplay_api_Close               ();
 	if (err != sdrplay_api_Success) 
 	   theErrorLogger -> add (recorderVersion,
@@ -1206,21 +1270,8 @@ void	sdrplayHandler_duo::enableBiasT (bool b) {
 }
 
 void	sdrplayHandler_duo::processInput (std::complex<float> *b, int amount) {
-	for (int i = 0; i < amount; i ++) {
-	   convBuffer [convIndex ++] = b [i];
-           if (convIndex > convBufferSize) {
-	      std::complex<float> temp [SAMPLERATE / 1000];
-              for (int j = 0; j < SAMPLERATE / 1000; j ++) {
-                 int16_t  inpBase    = mapTable_int [j];
-                 float    inpRatio   = mapTable_float [j];
-                 temp [j]    = convBuffer [inpBase + 1] * inpRatio +
-                               convBuffer [inpBase] * (1 - inpRatio);
-	      }
-	      _I_Buffer. putDataIntoBuffer (temp, SAMPLERATE / 1000);
-	      convBuffer [0] = convBuffer [convBufferSize];
-	      convIndex = 1;
-	   }
-	}
+	_I_Buffer. putDataIntoBuffer (b, amount);
+	return; 
 }
 
 

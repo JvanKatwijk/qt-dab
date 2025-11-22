@@ -127,13 +127,8 @@ public:
 	int			errorCode;
 
 	int 			currentTuner;
-
-	int16_t			convBufferSize;
-        int16_t			convIndex;
-        std::vector <std::complex<float> >      convBuffer;
-        int16_t			mapTable_int   [4 * 512];
-        float			mapTable_float [4 * 512];
-
+	bool			masterInitialized;
+	bool			slaveUninitialized;
 signals:
 	void			newGRdBValue		(int);
 	void			newLnaValue		(int);

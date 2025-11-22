@@ -92,6 +92,9 @@ uint16_t	secondDigit (v % 10);
 	myWidget	-> setWindowTitle ("dx display");
 	setPositionAndSize (s, myWidget, "DX_DISPLAY");
 	theChannel	= "";
+
+	connect (this, &superFrame::frameClosed,
+	         this, &dxDisplay::handle_frameClosed);
 }
 
 	dxDisplay::~dxDisplay () {
@@ -103,6 +106,7 @@ uint16_t	secondDigit (v % 10);
 }
 
 void	dxDisplay::storePosition () {
+	return;
 	if (!myWidget -> isHidden ())
 	   storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
 	myWidget	-> hide ();
@@ -132,6 +136,10 @@ void	dxDisplay::show	() {
 
 void	dxDisplay::hide	() {
 	myWidget	-> hide ();
+}
+
+bool	dxDisplay::isHidden () {
+	myWidget	-> isHidden ();
 }
 
 void	dxDisplay::addRow (transmitter &theTransmitter, bool isStrongest) {
@@ -287,5 +295,9 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 8) -> setText ("??");
 	tableWidget	-> item (row, 9) -> setText ("??");
 	tableWidget	-> item (row, 0) -> setText ( "");
+}
+
+void	dxDisplay::handle_frameClosed	() {
+	hide ();
 }
 

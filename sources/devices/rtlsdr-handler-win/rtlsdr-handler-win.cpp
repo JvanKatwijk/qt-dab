@@ -36,8 +36,9 @@
 #include	"errorlog.h"
 #include	"settings-handler.h"
 
-//#define	CORRF	0.005
 #define	READLEN_DEFAULT	(4 * 8192)
+
+static clock_t time1	= 0;
 //
 //	For the callback, we do need some environment which
 //	is passed through the ctx parameter
@@ -114,14 +115,6 @@ char	manufac [256], product [256], serial [256];
 	theFilter. resize (currentDepth);
 
 	isActive. store (false);
-//#ifdef	__MINGW32__
-//	const char *libraryString	= "librtlsdr-v3.dll";
-//#elif __linux__
-////	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
-//	const char *libraryString	= "librtlsdr.so";
-//#elif __APPLE__
-//	const char *libraryString	= "librtlsdr.dylib";
-//#endif
 	phandle = new QLibrary (libraryString);
 	phandle -> load ();
 
@@ -158,10 +151,6 @@ char	manufac [256], product [256], serial [256];
 	   throw (device_exception ("Opening rtlsdr device failed"));
 	}
 
-	deviceModel	= rtlsdr_get_device_name (deviceIndex);
-	deviceVersion	-> setText (deviceModel);
-	QString tunerType	= get_tunerType (rtlsdr_get_tuner_type (theDevice));
-	product_display	-> setText (tunerType);
 
 	r = rtlsdr_set_sample_rate (theDevice, SAMPLERATE);
 	if (r < 0) {
@@ -169,6 +158,7 @@ char	manufac [256], product [256], serial [256];
 	   throw (device_exception ("Setting samplerate for rtlsdr failed"));
 	}
 
+	setVFOFRequency (220000000);
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);
 	fprintf (stderr, "Supported gain values (%d): ", gainsCount);
 	{  int gains [gainsCount];
@@ -180,10 +170,15 @@ char	manufac [256], product [256], serial [256];
 	   fprintf (stderr, "\n");
 	}
 
+	QString tunerType	= get_tunerType (rtlsdr_get_tuner_type (theDevice));
+	deviceModel	= rtlsdr_get_device_name (deviceIndex);
+	deviceVersion	-> setText (deviceModel);
+	product_display	-> setText (tunerType);
+
 	if (rtlsdr_set_tuner_bandwidth != nullptr) {
-	   r = rtlsdr_set_tuner_bandwidth (theDevice, KHz (1575));
+	   r = rtlsdr_set_tuner_bandwidth (theDevice, KHz (17500));
 	   if (r != 0) {
-	      QString t = QString ("cannot set frequency to  1575 KHz");
+	      QString t = QString ("cannot set frequency to 17500 KHz");
 	      theErrorLogger -> add ("RTLSDR", t);
 	   }
 	}
@@ -361,12 +356,12 @@ void	rtlsdrHandler_win::set_ExternalGain	(const QString &gain) {
 }
 //
 void	rtlsdrHandler_win::set_autogain	(int dummy) {
+bool agc	= gcControl -> isChecked ();
 	(void)dummy;
-	int res = rtlsdr_set_agc_mode (theDevice,
-	                              agcControl -> isChecked () ? 1 : 0);
+	int res = rtlsdr_set_agc_mode (theDevice, agc);
 	if (res != 0) {
 	   QString t = QString ("Cannot set agc mode to ") +
-	                            (agcControl -> isChecked () ? "1" : "0");
+	                            agc ? "1" : "0":
 	   theErrorLogger -> add ("RTLSDR", t);
 	   return;
 	}
