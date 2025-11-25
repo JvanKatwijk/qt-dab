@@ -435,14 +435,12 @@ equals (QT_MAJOR_VERSION, 6) {
 	 LIBS		+= -lqwt-qt6
 	}else{  LIBS += -lqwt-qt5
 	}
-}
 equals (QT_MAJOR_VERSION, 5) {
    TARGET               = qt-dab-qt5-6.9.5
 }
 else {
    TARGET               = qt-dab-qt6-6.9.5
 }
-!mac {
 
 #mac {
 # Should be possible to make on non Macs as well.
@@ -471,7 +469,7 @@ CONFIG		+= spyServer-8
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
-CONFIG		+= datastreamer
+#CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
 
@@ -505,13 +503,12 @@ isEmpty(GITHASHSTRING) {
 
 #for for 64 bit
 	equals (QT_MAJOR_VERSION, 5) {
-        TARGET          = qt-dab64-qt5-6.9.5
+        TARGET          = qt5-dab64-6.9.5
         }
         else {  
-        TARGET          = qt-dab64-qt6-6.9.5
+        TARGET          = qt6-dab64-6.9.5
         }
 ##for for 64 bit
-	TARGET		= qt-dab64-9.5
 	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -532,7 +529,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-	CONFIG		+= viterbi-scalar
+#	CONFIG		+= viterbi-scalar
 #	CONFIG		+= spiral-sse
 #	CONFIG		+= spiral-no-sse
 	CONFIG		+= viterbi-avx2

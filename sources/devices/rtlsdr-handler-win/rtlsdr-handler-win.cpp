@@ -175,7 +175,6 @@ char	manufac [256], product [256], serial [256];
 	   throw (device_exception ("Setting samplerate for rtlsdr failed"));
 	}
 
-	setVFOFRequency (220000000);
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);
 	fprintf (stderr, "Supported gain values (%d): ", gainsCount);
 	{  int gains [gainsCount];
