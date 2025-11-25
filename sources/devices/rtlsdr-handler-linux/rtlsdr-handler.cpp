@@ -234,10 +234,10 @@ char	manufac [256], product [256], serial [256];
 	connect (this, &rtlsdrHandler::new_gainIndex,
 	         gainControl, &QComboBox::setCurrentIndex);
 	iqDumper	= nullptr;
-	xmlWriter	= nullptr;
 	iq_dumping. store (false);
 	xml_dumping. store (false);
-	workerhandle	= nullptr;
+	xmlWriter. reset ();
+	workerHandle. reset ();
 }
 
 	rtlsdrHandler::~rtlsdrHandler () {

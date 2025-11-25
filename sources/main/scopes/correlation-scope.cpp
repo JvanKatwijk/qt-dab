@@ -134,10 +134,6 @@ int	input	= v. size ();
 	      break;
 	   int x_coord = (int)(x. phase / 360 * 2048 + T_g - 104);
 static int teller = 0;
-	if (++teller > 30) {
-	   fprintf (stderr, "x-coord = %d\n", x_coord);
-	   teller = 0;
-	}
 	   if ((x_coord < X_axis [0]) || (x_coord >= X_axis [0] + amount))
 	      continue;
 
@@ -165,7 +161,7 @@ static int teller = 0;
 				         X_axis [amount - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 
-	float baseLine		= Min - 10;
+	float baseLine		= Min;
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         baseLine,
 	                                 baseLine + 30 + sliderValue);

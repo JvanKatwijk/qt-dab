@@ -936,7 +936,12 @@ fdk-aac {
         INCLUDEPATH     += ./helpers/specials/fdk-aac
         HEADERS         += ./sources/backend/audio/fdk-aac.h
         SOURCES         += ./sources/backend/audio/fdk-aac.cpp
+unix {
+	LIBS		+= -lfdk-aac
+}
+win32 {
 	LIBS		+= -lfdk-aac-2
+}
 }
 
 mapserver {
