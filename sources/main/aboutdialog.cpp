@@ -113,7 +113,7 @@ QString aacComment;
                            "<li> All SDRplay RSP devices<a href=\"https://www.sdrplay.com/\">SDRplay/a></li>"
 #endif
 #if defined (HAVE_RTLSDR) || defined  (HAVE_RTLSDR_V3) || defined ( HAVE_RTLSDR_V4)
-                           "<li> rtlsdr dabstick <a href=\"https://osmocom.org/projects/rtl-sdr/wiki/rtl-sdr\">rtl-sdr (dabstick)</a> </li>"
+                           "<li> rtlsdr dabstick <a href=\"https://osmocom.org/projects/rtl-sdr/wiki/rtl-sdr\">rtl-sdr (dabstick)(windows version from https://github.com/old-dab)</a> </li>"
 #endif
 #ifdef HAVE_AIRSPY_2
                            "<li> Airspy devices <a href=\"https://github.com/airspy\">AirSpy</a></li>"

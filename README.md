@@ -17,7 +17,7 @@ Qt-DAB  has a single *main* widget that contains essentially all that is needed 
 
 Of course, as for previous versions, for the current version,
 *Qt-DAB-6.9.5*, predefined executables and installers are available.
-For Windows  **two** 32 bit installers are available, and for Linux there is an x64 AppImage.
+For Windows  a 32 bit installer is available, and for Linux there is an x64 AppImage.
 
 -------------------------------------------------------------------
 What is new/different in Qt-DAB-6.9.5
@@ -30,7 +30,7 @@ differences.
 
  * improved support for the SDRplay RspDuo: tuner selection is possible,
 
- * Windows support for both RTLSDR V3 and V4,
+ * Windows support for both RTLSDR V3 and V4 in a single installer,
 
  * the scanList has a more prominent role. It shows the (channel, service) pairsof all channels visited. Using file input, the scanList will not be visible (seems logical), and the configuration window as a selector indicating that on program termination the list is cleared (obviously normally it is maintained between program invocations),
 

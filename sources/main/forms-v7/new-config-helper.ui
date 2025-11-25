@@ -151,7 +151,7 @@
          <item>
           <widget class="smallPushButton" name="pathButton">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The files containing slides - if being saved - will be saved in a folder/directory Qt-DAB-files in the home folder/directory. The tii files as well as the log file (both of caourse when enabled) are also stored in that folder/directory. The path can be altered by entering an EXISTING folder/directory in the menu that appears when the button is touched. That path will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The files containing slides - if being saved - will be saved in a folder/directory Qt-DAB-files in the home folder/directory. The tii files as well as the log file (both of course when enabled) are also stored in that folder/directory. The path can be altered by entering an EXISTING folder/directory in the menu that appears when the button is touched. That path will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>path</string>
@@ -280,7 +280,7 @@
         </font>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;touching this button allws you to select a port for communication with a webbrowser when showing a map.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;touching this button allows you to select a port for communication with a webbrowser when showing a map.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>port</string>

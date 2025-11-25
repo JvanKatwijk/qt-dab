@@ -111,9 +111,9 @@ int	input	= v. size ();
 	(void)T_g;
 	if ((int)(v. size ()) < amount)
 	   amount = v. size ();
-	for (int i = input / 2 - amount / 2;
-	     i < input / 2 + amount / 2; i ++) {
+	for (int i = T_g - 104; i < T_g - 104 + amount; i ++) {
 	   X_axis [teller] = i;
+	   int index = i - (T_g - 100);
 	   Y_value [teller] = get_db (v [i]);
 	   if (Y_value [teller] > Max)
 	      Max = Y_value [teller];
@@ -132,7 +132,12 @@ int	input	= v. size ();
 	   up_to_4 ++;
 	   if (up_to_4 > 4)
 	      break;
-	   int x_coord = (int)(x. phase / 360 * 2048 + 400);
+	   int x_coord = (int)(x. phase / 360 * 2048 + T_g - 104);
+static int teller = 0;
+	if (++teller > 30) {
+	   fprintf (stderr, "x-coord = %d\n", x_coord);
+	   teller = 0;
+	}
 	   if ((x_coord < X_axis [0]) || (x_coord >= X_axis [0] + amount))
 	      continue;
 

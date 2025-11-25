@@ -73,7 +73,9 @@ typedef int (*  pfnrtlsdr_cancel_async) (rtlsdr_dev_t *);
 typedef int (*  pfnrtlsdr_set_direct_sampling) (rtlsdr_dev_t *, int);
 typedef uint32_t (*  pfnrtlsdr_get_device_count)();
 typedef	int (* pfnrtlsdr_set_freq_correction)(rtlsdr_dev_t *, int);
+typedef	int (* pfnrtlsdr_set_freq_correction_ppb)(rtlsdr_dev_t *, int);
 typedef	char *(* pfnrtlsdr_get_device_name)(int);
+typedef	int (* pfnrtlsdr_get_version)();
 }
 //	This class is a simple wrapper around the
 //	rtlsdr library, the relevant functions of it
@@ -136,6 +138,11 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 
+	void		set_off_agc		();
+	void		set_hw_agc		();
+	void		set_sw_agc		();
+	void		init_autogain		(int);
+
 	float		convTable	[256];
 	void		reportOverflow		(bool);
 	float		m_dcI;
@@ -163,7 +170,9 @@ private:
 	pfnrtlsdr_set_direct_sampling	rtlsdr_set_direct_sampling;
 	pfnrtlsdr_get_device_count rtlsdr_get_device_count;
 	pfnrtlsdr_set_freq_correction rtlsdr_set_freq_correction;
+	pfnrtlsdr_set_freq_correction_ppb rtlsdr_set_freq_correction_ppb;
 	pfnrtlsdr_get_device_name rtlsdr_get_device_name;
+	pfnrtlsdr_get_version rtlsdr_get_version;
 	
 signals:
 	void		new_gainIndex		(int);
@@ -171,7 +180,7 @@ signals:
 private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(int);
-	void		set_ppmCorrection	(int);
+	void		set_ppmCorrection	(double);
 	void		set_xmlDump		();
 	void		set_iqDump		();
 	void		set_filter		(int);

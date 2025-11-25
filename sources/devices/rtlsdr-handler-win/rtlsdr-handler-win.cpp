@@ -84,6 +84,7 @@ void	run () {
 //	fprintf (stderr, "dll_task terminates\n");
 	}
 };
+
 //	Our wrapper is a simple classs
 	rtlsdrHandler_win::rtlsdrHandler_win (QSettings *s,
 	                                    const QString libraryString,
@@ -114,14 +115,6 @@ char	manufac [256], product [256], serial [256];
 	theFilter. resize (currentDepth);
 
 	isActive. store (false);
-//#ifdef	__MINGW32__
-//	const char *libraryString	= "librtlsdr-v3.dll";
-//#elif __linux__
-////	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
-//	const char *libraryString	= "librtlsdr.so";
-//#elif __APPLE__
-//	const char *libraryString	= "librtlsdr.dylib";
-//#endif
 	phandle = new QLibrary (libraryString);
 	phandle -> load ();
 
@@ -163,6 +156,22 @@ char	manufac [256], product [256], serial [256];
 	QString tunerType	= get_tunerType (rtlsdr_get_tuner_type (theDevice));
 	product_display	-> setText (tunerType);
 
+	if (rtlsdr_get_version != nullptr) {
+           uint32_t V = rtlsdr_get_version ();
+           uint16_t major       = V >> 24;
+           uint16_t minor       = (V & 0XFF0000) >> 16;
+           uint8_t micro        = (V & 0xFF00) >> 8;
+           uint8_t nano         = (V & 0XFF);
+	   libVersion   -> setText (QString ("Library ") +
+	                            QString::number (major) +
+                                    ":" + QString::number (minor) +
+                                    "-" + QString::number (micro) +
+                                    ":" + QString::number (nano) +
+	                            ":" + libraryString);
+        }
+        else
+	   libVersion	-> setText (libraryString);
+
 	r = rtlsdr_set_sample_rate (theDevice, SAMPLERATE);
 	if (r < 0) {
 	   delete phandle;
@@ -187,22 +196,16 @@ char	manufac [256], product [256], serial [256];
 	      theErrorLogger -> add ("RTLSDR", t);
 	   }
 	}
-	r = rtlsdr_set_tuner_gain_mode (theDevice, 1);
-	if (r != 0) {
-	   QString t = QString ("cannot set gainmode to 1");
-	   theErrorLogger -> add ("RTLSDR", t);
-	}
 //
-	libVersion	-> setText (libraryString);
 //	See what the saved values are and restore the GUI settings
 	temp =  value_s (rtlsdrSettings, "rtlsdrSettings",
 	                              "externalGain", "10");
 	k	= gainControl -> findText (temp);
 	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
-	temp		= value_s (rtlsdrSettings, "rtlsdrSettings",
-	                                        "autogain", "autogain_on");
-	agcControl	-> setChecked (temp == "autogain_on");
+	int agc = value_i (rtlsdrSettings, "rtlsdrSettings",
+                                     "agcMode", 1);
+        init_autogain (agc);
 	
 	ppm_correction	->  
 	     setValue (value_i (rtlsdrSettings, "rtlsdrSettings",
@@ -224,10 +227,6 @@ char	manufac [256], product [256], serial [256];
 
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
-	if (agcControl -> isChecked ())
-	   rtlsdr_set_agc_mode (theDevice, 1);
-	else
-	   rtlsdr_set_agc_mode (theDevice, 0);
 
 	res = rtlsdr_set_tuner_gain	(theDevice, 
 	                         gainControl -> currentText (). toInt ());
@@ -249,14 +248,14 @@ char	manufac [256], product [256], serial [256];
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
 	         this, &rtlsdrHandler_win::set_ExternalGain);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
-	connect (agcControl, &QCheckBox::checkStateChanged,
-#else
-	connect (agcControl, &QCheckBox::stateChanged,
-#endif
-	         this, &rtlsdrHandler_win::set_autogain);
-	connect (ppm_correction, qOverload<int>(&QSpinBox::valueChanged),
+	connect (ppm_correction, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &rtlsdrHandler_win::set_ppmCorrection);
+	connect (agc_hw, &QRadioButton::toggled,
+                 this, &rtlsdrHandler_win::set_hw_agc);
+        connect (agc_sw, &QRadioButton::toggled,
+                 this, &rtlsdrHandler_win::set_sw_agc);
+        connect (agc_off, &QRadioButton::toggled,
+                 this, &rtlsdrHandler_win::set_off_agc);
 	connect (xml_dumpButton, &QPushButton::clicked,
 	         this, &rtlsdrHandler_win::set_xmlDump);
 	connect (iq_dumpButton, &QPushButton::clicked,
@@ -277,8 +276,6 @@ char	manufac [256], product [256], serial [256];
 //	and for saving/restoring the gain setting:
 	connect (this, &rtlsdrHandler_win::new_gainIndex,
 	         gainControl, &QComboBox::setCurrentIndex);
-	connect (this, &rtlsdrHandler_win::new_agcSetting,
-	         agcControl, &QCheckBox::setChecked);
 	iqDumper	= nullptr;
 	xmlWriter	= nullptr;
 	iq_dumping. store (false);
@@ -303,13 +300,18 @@ char	manufac [256], product [256], serial [256];
 	QString gainText	= gainControl -> currentText ();
 	store (rtlsdrSettings, "rtlsdrSettings",
 	                       "externalGain", gainText);
-	store (rtlsdrSettings, "rtlsdrSettings",
-	                   "autogain", agcControl -> isChecked () ? 1 : 0);
+	int     agc     = agc_off -> isChecked () ? 1 :
+                                  agc_sw  -> isChecked () ? 2 : 0;
+        store (rtlsdrSettings, "rtlsdrSettings", "agcMode", agc);
 	store (rtlsdrSettings, "rtlsdrSettings",
 	                    "ppm_correction", ppm_correction -> value());
 	store (rtlsdrSettings, "rtlsdrSettings",
 	                    "filterDepth", filterDepth -> value ());
 	rtlsdrSettings	-> sync ();
+	if (xmlWriter != nullptr) {
+	   delete xmlWriter;
+	   xmlWriter = nullptr;
+	}
 	myFrame. hide ();
 	usleep (1000);
 	rtlsdr_close (theDevice);
@@ -323,14 +325,19 @@ void	rtlsdrHandler_win::set_filter	(int c) {
 }
 
 bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
-	_I_Buffer. FlushRingBuffer();
-	(void) this -> rtlsdr_set_center_freq (theDevice, freq);
+	int res =  this -> rtlsdr_set_center_freq (theDevice, freq);
+	if (res != 0) {
+           QString t = QString ("Cannot set frequency to ") +
+                                            QString::number (freq);
+           theErrorLogger -> add ("RTLSDR", t);
+           return false;
+        }
+
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
 	lastFrequency	= freq;
 	this -> toSkip = skipped;
-	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	tunedFrequency	-> setText (QString::number(freq / KHz (1)) + " kHz");
 	if (workerHandle == nullptr) {	// usualy it will be non zero
@@ -338,6 +345,7 @@ bool	rtlsdrHandler_win::restartReader	(int32_t freq, int skipped) {
 	   (void)this -> rtlsdr_reset_buffer (theDevice);
 	   workerHandle	= new dll_driver (this);
 	}
+	_I_Buffer. FlushRingBuffer ();
 	isActive. store (true);
 	return true;
 }
@@ -360,23 +368,39 @@ void	rtlsdrHandler_win::set_ExternalGain	(const QString &gain) {
 	}
 }
 //
-void	rtlsdrHandler_win::set_autogain	(int dummy) {
-	(void)dummy;
-	int res = rtlsdr_set_agc_mode (theDevice,
-	                              agcControl -> isChecked () ? 1 : 0);
-	if (res != 0) {
-	   QString t = QString ("Cannot set agc mode to ") +
-	                            (agcControl -> isChecked () ? "1" : "0");
-	   theErrorLogger -> add ("RTLSDR", t);
-	   return;
+void	rtlsdrHandler_win::init_autogain	(int level) {
+	if (level == 1)
+           agc_off      -> setChecked (true);
+        else
+        if (level == 2)
+           agc_sw       -> setChecked (true);
+        else    // level == 0
+           agc_hw       -> setChecked (true);
+
+        set_autogain (level);
+}
+
+void	rtlsdrHandler_win::set_hw_agc	() {
+	set_autogain (0);
+}
+
+void	rtlsdrHandler_win::set_sw_agc	() {
+	set_autogain (2);
+}
+
+void	rtlsdrHandler_win::set_off_agc	() {
+	set_autogain (1);
+}
+
+void	rtlsdrHandler_win::set_autogain (int level) {
+	rtlsdr_set_agc_mode (theDevice, level == 0);
+	rtlsdr_set_tuner_gain_mode (theDevice, level);
+	if (level == 1) {
+	   gainControl -> setEnabled (true);
+	   set_ExternalGain (gainControl -> currentText ());
 	}
-	res = rtlsdr_set_tuner_gain (theDevice, 
-	                       gainControl -> currentText (). toInt ());
-	if (res != 0) {
-	   QString t = QString ("Cannot set tuner gain to ") +
-	                           gainControl -> currentText ();
-	   theErrorLogger -> add ("RTLSDR", t);
-	}
+	else
+	   gainControl -> setEnabled (false);
 }
 //
 void	rtlsdrHandler_win::set_biasControl	(int dummy) {
@@ -392,10 +416,13 @@ void	rtlsdrHandler_win::set_biasControl	(int dummy) {
 	}
 }
 //	correction is in Hz
-void	rtlsdrHandler_win::set_ppmCorrection	(int32_t ppm) {
-	if (this -> rtlsdr_set_freq_correction == nullptr)
-	   return;
-	int res = this -> rtlsdr_set_freq_correction (theDevice, ppm);
+void	rtlsdrHandler_win::set_ppmCorrection	(double ppm) {
+int res;
+        if (rtlsdr_set_freq_correction_ppb != nullptr)
+           res = this -> rtlsdr_set_freq_correction_ppb (theDevice, ppm * 1000);
+        else
+           res = this -> rtlsdr_set_freq_correction (theDevice, ppm);
+
 	if (res != 0) {
 	   QString t = QString ("Cannot set ppm to ") +
 	                                    QString::number (ppm);
@@ -415,7 +442,7 @@ int32_t	rtlsdrHandler_win::Samples () {
 	return _I_Buffer. GetRingBufferReadAvailable ();
 }
 //
-
+//
 bool	rtlsdrHandler_win::load_rtlFunctions() {
 //
 //	link the required procedures
@@ -590,6 +617,15 @@ bool	rtlsdrHandler_win::load_rtlFunctions() {
 	   fprintf (stderr, "biasControl will not work\n");
 //	nullpointer - if function is not available - is handled
 //
+//	Optional function, null pointer is handled
+	rtlsdr_set_freq_correction_ppb =
+	           (pfnrtlsdr_set_freq_correction_ppb)
+	               phandle -> resolve ("rtlsdr_set_freq_correction_ppb");
+
+//	Optional function, null pointer is handled
+	rtlsdr_get_version =
+	           (pfnrtlsdr_get_version)
+	               phandle -> resolve ("rtlsdr_get_version");
 	fprintf (stderr, "OK, functions seem to be loaded\n");
 	return true;
 }
@@ -716,7 +752,8 @@ void	rtlsdrHandler_win::close_xmlDump () {
 //
 void    rtlsdrHandler_win::record_gainSettings (int freq) {
 QString	gain	= gainControl	-> currentText ();
-int	agc	= agcControl	-> isChecked () ? 1 : 0;
+int     agc     = agc_off -> isChecked () ? 1 :
+                  agc_sw  -> isChecked () ? 2 : 0;
 QString theValue        = gain + ":" + QString::number (agc);
 QString freqVal		= QString::number (freq);
 	store (rtlsdrSettings, "rtlsdrSettings", freqVal, theValue);
@@ -741,19 +778,28 @@ QString freqVal		= QString::number (freq);
 
 	int k	= gainControl -> findText (temp);
 	if (k != -1) {
-	   gainControl	-> blockSignals (true);
+	   gainControl	-> setEnabled (false);
 	   new_gainIndex (k);
 	   while (gainControl -> currentText () != temp)
 	      usleep (1000);
-	   gainControl	-> blockSignals (false);
 	}
-
-	agcControl	-> blockSignals (true);
-	new_agcSetting (agc == 1);
-	while (agcControl -> isChecked () != (agc == 1))
-	   usleep (1000);
-	set_autogain (agcControl -> isChecked ());
-	agcControl	-> blockSignals (false);
+	if (agc == 1) {
+	   gainControl -> setEnabled (true);
+	   agc_off	-> setEnabled (false);
+	   agc_off	-> setChecked (true);
+	   agc_off	-> setEnabled (true);
+	}
+	else
+	if (agc == 0) {
+	   agc_hw	-> setEnabled (false);
+	   agc_hw	-> setChecked (true);
+	   agc_hw	-> setEnabled (true);
+	}
+	else {	// agc == 2
+	   agc_sw	-> setEnabled (false);
+	   agc_sw	-> setChecked (true);
+	   agc_sw	-> setEnabled (true);
+	}
 }
 
 #define	IQ_BUFSIZE	4096

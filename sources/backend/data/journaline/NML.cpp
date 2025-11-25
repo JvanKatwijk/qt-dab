@@ -105,9 +105,6 @@ const char *NML::ObjectTypeString[]=
 {"illegal", "menu", "plain", "title", "list"};
 
 
-
-
-
 NMLFactory *NMLFactory::_instance = 0;
 
 NMLFactory::NMLFactory()
@@ -156,7 +153,6 @@ NML *NMLFactory::CreateErrorDump(NML::NewsObjectId_t oid,
     n->SetErrorDump(oid, rno, error_msg);
     return n;
 }
-
 
 
 /// generate an invalid NML error object
