@@ -364,6 +364,7 @@ QString h;
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
 	serviceLabel	-> setToolTip ("<font color=\"black\">the label displays the selected service. If a logo can be found, it will be displayed, otherwise the shortname is displayed");
+
 	motLabel	-> setStyleSheet ("QLabel {color : red}");
 	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
 
@@ -582,17 +583,21 @@ QString h;
 //
 	peakLeftDamped          = -100;
 	peakRightDamped         = -100;
- 
-	leftAudio	-> setFillBrush	(QColor ("white"));
-	rightAudio	-> setFillBrush (QColor ("white"));
+	
 	leftAudio	-> setBorderWidth	(0);
 	rightAudio	-> setBorderWidth	(0);
-	leftAudio	-> setValue (-30);
-	rightAudio	-> setValue (-30);
-	leftAudio	-> setAlarmBrush (Qt::red);
-	rightAudio	-> setAlarmBrush (Qt::red);
-	leftAudio	-> setAlarmEnabled (true);  
-	rightAudio	-> setAlarmEnabled(true);
+	leftAudio	-> setValue (-35);
+	rightAudio	-> setValue (-35);
+	QwtLinearColorMap * mapLeft = new QwtLinearColorMap ();
+	mapLeft	-> setColorInterval (QColor (0, 50, 200), QColor(255, 0, 0));
+	mapLeft -> addColorStop (0.75, QColor (100, 50, 0)); 
+	mapLeft -> addColorStop (0.4, QColor (0, 200, 50)); 
+	leftAudio -> setColorMap (mapLeft);
+	QwtLinearColorMap * mapRight = new QwtLinearColorMap ();
+	mapRight -> setColorInterval (QColor(0, 50, 200), QColor(255, 0, 0));
+	mapRight -> addColorStop (0.75, QColor (100, 50, 0)); 
+	mapRight -> addColorStop (0.4, QColor (0, 200, 50)); 
+	rightAudio -> setColorMap (mapRight);
 
 	journalineKey		= -1;
 //	do we show controls?

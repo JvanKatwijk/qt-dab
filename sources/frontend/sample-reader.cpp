@@ -57,7 +57,6 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	                            RingBuffer<Complex> *spectrumBuffer_i):
 	                               theRig (theRig_i),
 	                               spectrumBuffer (spectrumBuffer_i) {
-int	i;
 	bufferSize		= 32768;
 	localBuffer. resize (bufferSize);
 	localCounter		= 0;
@@ -71,7 +70,7 @@ int	i;
 	IQ_Imag		= 0;
 
 	repetitionCounter	= 8;
-	for (i = 0; i < SAMPLERATE; i ++)
+	for (int i = 0; i < SAMPLERATE; i ++)
 	   oscillatorTable [i] = Complex
 	                            (cos (2.0 * M_PI * i / SAMPLERATE),
 	                             sin (2.0 * M_PI * i / SAMPLERATE));

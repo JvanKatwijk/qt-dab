@@ -30,9 +30,10 @@
 #include	<QSettings>
 #include	<qwt_compass.h>
 #include	"db-element.h"
+#include	"super-frame.h"
 class	RadioInterface;
 
-class	dxDisplay:public QFrame {
+class	dxDisplay:public superFrame {
 Q_OBJECT
 public:
 		dxDisplay	(RadioInterface *, QSettings *);
@@ -44,6 +45,7 @@ public:
 	void	cleanUp		();
 	void	show		();
 	void	hide		();
+	bool	isHidden	();
 	int	nrRows		();
 private:
 	QScrollArea	*myWidget;
@@ -52,6 +54,8 @@ private:
 	QwtCompass	*theDial;
 	QString		theChannel;
 	void		dump	(FILE *);
+public slots:
+	void		handle_frameClosed	();
 };
 
 	

@@ -456,6 +456,7 @@ CONFIG		+= double
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay-duo
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
@@ -617,7 +618,7 @@ sdrplay-v2 {
 	FORMS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }
 #
-#	the SDRplay
+#	the SDRplay V3
 #
 sdrplay-v3 {
 	DEFINES		+= HAVE_SDRPLAY_V3
@@ -642,6 +643,18 @@ sdrplay-v3 {
 	                   ./sources/devices/sdrplay-handler-v3/RspDuo-handler.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/RspDx-handler.cpp 
 	FORMS		+= ./sources/devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+#	LIBS		+= -ldl
+}
+#
+sdrplay-duo {
+	DEFINES		+= HAVE_DUO
+	DEPENDPATH	+= ./sources/devices/sdrplay-handler-duo
+	INCLUDEPATH	+= ./sources/devices/sdrplay-handler-duo \
+	                   ./sources/devices/sdrplay-handler-duo/include
+        HEADERS         += ./sources/devices/sdrplay-handler-duo/sdrplay-handler-duo.h \
+                           ./sources/devices/sdrplay-handler-duo/duo-commands.h 
+        SOURCES         += ./sources/devices/sdrplay-handler-duo/sdrplay-handler-duo.cpp 
+	FORMS		+= ./sources/devices/sdrplay-handler-duo/duo-widget.ui
 #	LIBS		+= -ldl
 }
 #
