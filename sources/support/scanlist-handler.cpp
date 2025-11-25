@@ -103,9 +103,12 @@ const QString scanListElement = channel + ":" + serviceName;
 
 bool	inserted	= false;
 	for (int i = 0; i < scanList. size (); i ++) {
-	   if (scanList. at (i) == scanListElement)
+	   if (scanList. at (i) == scanListElement) {
 	      return;
+	   }
+	}
 
+	for (int i = 0; i < scanList. size (); i ++) {
 	   QStringList ss = scanList [i]. split (":", Qt::SkipEmptyParts);
 	   QString ch = ss [0];	
 	   bool ok;

@@ -428,13 +428,6 @@ PKGCONFIG	+= zlib
 #PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 
-equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-6.9.5
-}
-else {
-   TARGET               = qt-dab-qt6-6.9.5
-}
-!mac {
 INCLUDEPATH	+= /usr/local/include
 #correct this for the correct path to the qwt6 library on your system
 #LIBS		+= -lqwt
@@ -443,6 +436,13 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 }
+equals (QT_MAJOR_VERSION, 5) {
+   TARGET               = qt-dab-qt5-6.9.5
+}
+else {
+   TARGET               = qt-dab-qt6-6.9.5
+}
+!mac {
 
 #mac {
 # Should be possible to make on non Macs as well.
@@ -456,7 +456,7 @@ CONFIG		+= double
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-CONFIG		+= sdrplay-duo
+#CONFIG		+= sdrplay-duo
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
