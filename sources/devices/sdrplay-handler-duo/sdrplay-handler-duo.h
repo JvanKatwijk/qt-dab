@@ -35,7 +35,7 @@
 #include	"ui_duo-widget.h"
 #include	<sdrplay_api.h>
 
-class	generalCommand;
+class	duoCommand;
 class	errorLogger;
 
 #ifdef __MINGW32__
@@ -63,13 +63,18 @@ public:
 	int16_t		bitDepth		();
 	QString		deviceName		();
 
-	void            updatePowerOverload (
+	void            updatePowerOverload_A (
+	                                 sdrplay_api_EventParamsT *params);
+	void            updatePowerOverload_B (
 	                                 sdrplay_api_EventParamsT *params);
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	std::atomic<bool>	receiverRuns;
 	int		theGain;
 	sdrplay_api_CallbackFnsT	cbFns;
 	void		processInput		(std::complex<float> *, int);
+	void		showTunerGain_A		(double);
+	void		showTunerGain_B		(double);
+	std::atomic<char>	currentTuner;
 
 private:
 public:
@@ -93,7 +98,8 @@ public:
 		               sdrplay_api_SwapRspDuoDualTunerModeSampleRate;
 	sdrplay_api_SwapRspDuoMode_t	sdrplay_api_SwapRspDuoMode;
 	sdrplay_api_DeviceT             *chosenDevice;
-	sdrplay_api_RxChannelParamsT	*chParams;
+	sdrplay_api_RxChannelParamsT	*chParams_A;
+	sdrplay_api_RxChannelParamsT	*chParams_B;
 	sdrplay_api_DeviceParamsT	*deviceParams;
 
 	errorLogger		*theErrorLogger;
@@ -102,7 +108,7 @@ public:
 	float			denominator;
 	std::atomic<bool>       threadRuns;
 	void			run			();
-	bool			messageHandler		(generalCommand *);
+	bool			messageHandler		(duoCommand *);
 
 	QString			recorderVersion;
 	
@@ -119,31 +125,33 @@ public:
 	HINSTANCE		Handle;
 	double			ppmValue;
 	bool			biasT;
-	std::queue<generalCommand *>	serverQueue;
+	std::queue<duoCommand *>	serverQueue;
 	QSemaphore		serverJobs;
 	HINSTANCE               fetchLibrary            ();
 	void                    releaseLibrary          ();
 	bool			loadFunctions		();
 	int			errorCode;
 
-	int 			currentTuner;
-	bool			masterInitialized;
-	bool			slaveUninitialized;
 signals:
 	void			newGRdBValue		(int);
 	void			newLnaValue		(int);
 	void			newAgcSetting		(bool);
-	void			showTunerGain		(double);
 private slots:
-	void			setIfGainReduction	(int);
-	void			setLnaGainReduction	(int);
-	void			setAgcControl		(int);
-	void			setPpmControl		(int);
+	void			setIfGainReduction_A	(int);
+	void			setIfGainReduction_B	(int);
+	void			setLnaGainReduction_A	(int);
+	void			setLnaGainReduction_B	(int);
+	void			setAgcControl_A		(int);
+	void			setAgcControl_B		(int);
+	void			setPpmControl_A		(int);
+	void			setPpmControl_B		(int);
+	void			setNotch_A		(int);
+	void			setNotch_B		(int);
 	void			setBiasT		(int);
-	void			setNotch		(int);
-	void			setSelectTuner		(const QString &);
-	void			reportOverloadState	(bool);
-	void			displayGain		(double);
+	void			reportOverloadState_A	(bool);
+	void			reportOverloadState_B	(bool);
+	void			handle_Tuner_A		();
+	void			handle_Tuner_B		();
 public slots:
 	void			setLnaBounds		(int, int);
 	void			setSerial		(const QString &);
@@ -158,18 +166,17 @@ signals:
 	void			setDeviceNameSignal	(const QString &);
 	void			setSerialSignal		(const QString &);
 	void			setApiVersionSignal	(float);
-	void			setAntennaSelectSignal	(bool);
-	void			overloadStateChanged	(bool);
+	void			overloadStateChanged_A	(bool);
+	void			overloadStateChanged_B	(bool);
 private:
 //	workers for the duo, 
 	bool			do_restart		(int);
-	bool			do_setAgc		(int, bool);
-	bool			do_setGRdB		(int);
-	bool			do_setPpm		(double);
-	bool			do_setLna		(int);
+	bool			do_setAgc		(char, int, bool);
+	bool			do_setGRdB		(char, int);
+	bool			do_setPpm		(char, double);
+	bool			do_setLna		(char, int);
+	bool			do_setNotch		(char, bool);
 	bool			do_setBiasT		(bool);
-	bool			do_setNotch		(bool);
-	bool			do_setTuner		(int);
 
 };
 

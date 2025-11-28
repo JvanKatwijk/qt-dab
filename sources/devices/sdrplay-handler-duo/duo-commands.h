@@ -30,13 +30,17 @@
 #define DUO_RESTART	        0100
 #define DUO_STOP		0101
 #define DUO_SETFREQUENCY	0102
-#define DUO_SETAGC		0103
-#define DUO_SETGRDB		0104
-#define DUO_SETPPM		0105
-#define DUO_SETLNA		0106
-#define	DUO_SETBIAS_T		0110
-#define	DUO_SETNOTCH		0111
-#define	DUO_SETTUNER		0112
+#define DUO_SETAGC_A		0103
+#define DUO_SETAGC_B		1103
+#define DUO_SETGRDB_A		0104
+#define DUO_SETGRDB_B		1104
+#define DUO_SETPPM_A		0105
+#define DUO_SETPPM_B		1105
+#define DUO_SETLNA_A		0106
+#define DUO_SETLNA_B		1106
+#define	DUO_SETNOTCH_A		0110
+#define	DUO_SETNOTCH_B		1110
+#define	DUO_SETBIAS_T		0111
 
 #include	<QSemaphore>
 #include	<stdio.h>
@@ -53,107 +57,136 @@ public:
 	duoCommand () {}
 };
 
-class	restartRequest: public duoCommand {
+class	duo_restart: public duoCommand {
 public:
 	int	freq;
-	bool	result;
-	restartRequest (int newFrequency):
-	   duoCommand (SET_RESTART) {
+	duo_restart (int newFrequency):
+	   duoCommand (DUO_RESTART) {
 	   this	-> freq = newFrequency;
 	}
 
-	~restartRequest	() {}
+	~duo_restart	() {}
 };
 
-class	stopRequest: public duoCommand {
+class	duo_stop: public duoCommand {
 public:
-	stopRequest ():
-	   duoCommand (SET_STOP) {
+	duo_stop ():
+	   duoCommand (DUO_STOP) {
 	}
 
-	~stopRequest	() {}
+	~duo_stop	() {}
 };
 
-class set_frequencyRequest: public duoCommand {
-public:
-	int freq;
-	set_frequencyRequest (int newFreq):
-	   duoCommand (DUO_SETFREQUENCY) {
-	   this	-> freq = newFreq;
-	}
-
-	~set_frequencyRequest	() {}
-};
-
-class agcRequest: public duoCommand {
+class duo_Agc_A: public duoCommand {
 public:
 	int	setPoint;
 	bool	agcMode;
-	agcRequest (bool onoff, int setPoint) :
-	                duoCommand (DUO_SETAGC) {
+	duo_Agc_A (bool onoff, int setPoint) :
+	                duoCommand (DUO_SETAGC_A) {
 	   this	-> setPoint	= setPoint;
 	   this	-> agcMode	= onoff;
 	}
-	~agcRequest	() {}
+	~duo_Agc_A	() {}
 };
 
-class	GRdBRequest: public duoCommand {
+class duo_Agc_B: public duoCommand {
+public:
+	int	setPoint;
+	bool	agcMode;
+	duo_Agc_B (bool onoff, int setPoint) :
+	                duoCommand (DUO_SETAGC_B) {
+	   this	-> setPoint	= setPoint;
+	   this	-> agcMode	= onoff;
+	}
+	~duo_Agc_B	() {}
+};
+
+class	duo_GRdB_A: public duoCommand {
 public:
 	int	GRdBValue;
-	GRdBRequest (int GRdBValue):
-	               duoCommand (DUO_SETGRDB) {
+	duo_GRdB_A (int GRdBValue):
+	               duoCommand (DUO_SETGRDB_A) {
 	   this	-> GRdBValue	= GRdBValue;
 	}
-	~GRdBRequest	() {}
+	~duo_GRdB_A	() {}
 };
 
-class	ppmRequest: public duoCommand {
+class	duo_GRdB_B: public duoCommand {
 public:
-	int	ppmValue;
-	ppmRequest (int ppmValue):
-	           duoCommand (DUO_SETPPM) {
-	   this	-> ppmValue	= ppmValue;
+	int	GRdBValue;
+	duo_GRdB_B (int GRdBValue):
+	               duoCommand (DUO_SETGRDB_B) {
+	   this	-> GRdBValue	= GRdBValue;
 	}
-	~ppmRequest	() {}
+	~duo_GRdB_B	() {}
 };
 
-class	lnaRequest: public duoCommand {
+class	duo_lna_A: public duoCommand {
 public:
 	int	lnaState;
-	lnaRequest (int lnaState):
-	           duoCommand (DUO_SETLNA) {
+	duo_lna_A (int lnaState):
+	           duoCommand (DUO_SETLNA_A) {
 	   this	-> lnaState	= lnaState;
 	}
-	~lnaRequest	() {}
+	~duo_lna_A	() {}
 };
 
-class	biasT_Request: public duoCommand {
+class	duo_lna_B: public duoCommand {
+public:
+	int	lnaState;
+	duo_lna_B (int lnaState):
+	           duoCommand (DUO_SETLNA_B) {
+	   this	-> lnaState	= lnaState;
+	}
+	~duo_lna_B	() {}
+};
+
+class	duo_ppm_A: public duoCommand {
+public:
+	int	ppmValue;
+	duo_ppm_A (int ppmValue):
+	           duoCommand (DUO_SETPPM_A) {
+	   this	-> ppmValue	= ppmValue;
+	}
+	~duo_ppm_A	() {}
+};
+
+class	duo_ppm_B: public duoCommand {
+public:
+	int	ppmValue;
+	duo_ppm_B (int ppmValue):
+	           duoCommand (DUO_SETPPM_B) {
+	   this	-> ppmValue	= ppmValue;
+	}
+	~duo_ppm_B	() {}
+};
+
+class	duo_notch_A: public duoCommand {
 public:
 	bool	checked;
-	biasT_Request (bool biasT_value):
+	duo_notch_A (bool notch_value):
+	            duoCommand (DUO_SETNOTCH_A) {
+	   this -> checked = notch_value;
+	}
+	~duo_notch_A	() {}
+};
+
+class	duo_notch_B: public duoCommand {
+public:
+	bool	checked;
+	duo_notch_B (bool notch_value):
+	            duoCommand (DUO_SETNOTCH_B) {
+	   this -> checked = notch_value;
+	}
+	~duo_notch_B	() {}
+};
+
+class	duo_biasT: public duoCommand {
+public:
+	bool	checked;
+	duo_biasT (bool biasT_value):
 	            duoCommand (DUO_SETBIAS_T) {
 	   this -> checked = biasT_value;
 	}
-	~biasT_Request	() {}
-};
-	
-class	notch_Request: public duoCommand {
-public:
-	bool	checked;
-	notch_Request (bool notch_value):
-	            duoCommand (DUO_SETNOTCH) {
-	   this -> checked = notch_value;
-	}
-	~notch_Request	() {}
-};
-
-class	tunerRequest: public duoCommand {
-public:
-	int	tuner;
-	tunerRequest (int tuner) :
-	           duoCommand (DUO_SETTUNER) {
-	   this	-> tuner	= tuner;
-	fprintf (stderr, "Creating a message for set_tuner for tuner %d\n", tuner);
-	}
-	~tunerRequest	() {}
+	~duo_biasT	() {}
 };

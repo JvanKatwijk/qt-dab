@@ -454,7 +454,7 @@ CONFIG		+= double
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-#CONFIG		+= sdrplay-duo
+CONFIG		+= sdrplay-duo
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy-2
