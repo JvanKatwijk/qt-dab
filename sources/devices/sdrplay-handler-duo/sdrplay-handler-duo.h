@@ -28,6 +28,7 @@
 #include	<QSemaphore>
 #include	<atomic>
 #include	<stdio.h>
+#include	<mutex>
 #include	<queue>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
@@ -71,10 +72,10 @@ public:
 	std::atomic<bool>	receiverRuns;
 	int		theGain;
 	sdrplay_api_CallbackFnsT	cbFns;
-	void		processInput		(std::complex<float> *, int);
+	void		processInput		(uint8_t, std::complex<float> *, int);
 	void		showTunerGain_A		(double);
 	void		showTunerGain_B		(double);
-	std::atomic<char>	currentTuner;
+	std::atomic<uint8_t>	currentTuner;
 
 private:
 public:
@@ -114,13 +115,10 @@ public:
 	
 	int16_t			hwVersion;
 	QSettings		*sdrplaySettings;
-	bool			agcMode;
 	int16_t			nrBits;
 	float			apiVersion;
 	QString			serial;
 	QString			deviceModel;
-	int			GRdBValue;
-	int			lnaState;
 	int			freq;
 	HINSTANCE		Handle;
 	double			ppmValue;
@@ -131,7 +129,13 @@ public:
 	void                    releaseLibrary          ();
 	bool			loadFunctions		();
 	int			errorCode;
-
+	void			process_A	(std::complex<float> *, int);
+	void			process_B	(std::complex<float> *, int);
+	std::mutex		bufferLocker;
+	std::atomic<bool>	A_Buffer_filled;
+	std::atomic<bool>	B_Buffer_filled;
+	std::vector<std::complex<float>> A_Buffer;
+	std::vector<std::complex<float>> B_Buffer;
 signals:
 	void			newGRdBValue		(int);
 	void			newLnaValue		(int);
@@ -145,21 +149,18 @@ private slots:
 	void			setAgcControl_B		(int);
 	void			setPpmControl_A		(int);
 	void			setPpmControl_B		(int);
-	void			setNotch_A		(int);
-	void			setNotch_B		(int);
+	void			setNotch		(int);
 	void			setBiasT		(int);
 	void			reportOverloadState_A	(bool);
 	void			reportOverloadState_B	(bool);
-	void			handle_Tuner_A		();
-	void			handle_Tuner_B		();
+	void			handle_TunerSelect	(const QString &);
+
 public slots:
 	void			setLnaBounds		(int, int);
 	void			setSerial		(const QString &);
 	void			setApiVersion		(float);
 	void			showLnaGain		(int);
 	void			showState		(const QString &);
-//
-//	just for the Duo
 	void			enableBiasT		(bool);
 signals:
 	void			setLnaBoundsSignal	(int, int);
@@ -175,7 +176,7 @@ private:
 	bool			do_setGRdB		(char, int);
 	bool			do_setPpm		(char, double);
 	bool			do_setLna		(char, int);
-	bool			do_setNotch		(char, bool);
+	bool			do_setNotch		(bool);
 	bool			do_setBiasT		(bool);
 
 };

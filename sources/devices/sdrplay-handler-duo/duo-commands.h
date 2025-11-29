@@ -38,8 +38,7 @@
 #define DUO_SETPPM_B		1105
 #define DUO_SETLNA_A		0106
 #define DUO_SETLNA_B		1106
-#define	DUO_SETNOTCH_A		0110
-#define	DUO_SETNOTCH_B		1110
+#define	DUO_SETNOTCH		0110
 #define	DUO_SETBIAS_T		0111
 
 #include	<QSemaphore>
@@ -161,24 +160,14 @@ public:
 	~duo_ppm_B	() {}
 };
 
-class	duo_notch_A: public duoCommand {
+class	duo_notch: public duoCommand {
 public:
 	bool	checked;
-	duo_notch_A (bool notch_value):
-	            duoCommand (DUO_SETNOTCH_A) {
+	duo_notch (bool notch_value):
+	            duoCommand (DUO_SETNOTCH) {
 	   this -> checked = notch_value;
 	}
-	~duo_notch_A	() {}
-};
-
-class	duo_notch_B: public duoCommand {
-public:
-	bool	checked;
-	duo_notch_B (bool notch_value):
-	            duoCommand (DUO_SETNOTCH_B) {
-	   this -> checked = notch_value;
-	}
-	~duo_notch_B	() {}
+	~duo_notch	() {}
 };
 
 class	duo_biasT: public duoCommand {

@@ -4,6 +4,33 @@
 
 ![6.9](/res/read_me/qt-dab-logo.png?raw=true)
 
+
+-------------------------------------------------------------------------
+Just for playing around (Not in the precompiled version still)
+--------------------------------------------------------------------------
+
+The SDRplay RSPDuo is obviously an incredible device, depending on the
+mode two separate tuners.
+The regular SDRplay V3 device handling software in Qt-DAB is already
+capable of handling the Duo in single mode, with tuner selection.
+
+As a programming exercise, I added - as a separate device handler -
+a "duo" handler, where two tuners are running on the same channel
+
+![6.9](/res/read_me/rsp-duocontrol.png?raw=true)
+
+The device handler shows left the control for the "A" tuner, to
+the right for the "B" tuner, and in between a selector for selecting
+  * output is from tuner A
+  * output is from tuner B
+  * output is the addition of tuners A and B, i.e. A + B
+  * output is the subtraction of the B output from the A output.
+
+The "A" tuner has - apart from the agc selector, a "AM notch" selector,
+and the "B" tuner has - apart from the "agc selector a "biasT" selector.
+
+
+
 --------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------

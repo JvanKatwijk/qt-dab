@@ -38,17 +38,17 @@
 
 #define SDRPLAY_RSPduo_ 3
 
-#define SDRPLAY_SETTINGS        "SDRPLAY_SETTINGS_V3"
-#define SDRPLAY_IFGRDB          "sdrplay-ifgrdb"
-#define SDRPLAY_LNASTATE        "sdrplay-lnastate"
-#define SDRPLAY_PPM             "sdrplay-ppm"
-#define SDRPLAY_AGCMODE         "sdrplay_agcMode"
-#define SDRPLAY_BIAS_T          "biasT_selector"
+#define SDRPLAY_SETTINGS        "SDRPLAY_SETTINGS_DUO"
+#define SDRPLAY_AGCMODE_A	"sdrplay_agcMode_A"
+#define SDRPLAY_AGCMODE_B	"sdrplay_agcMode_B"
+#define SDRPLAY_IFGRDB_A	"sdrplay-ifgrdb_A"
+#define SDRPLAY_IFGRDB_B	"sdrplay-ifgrdb_B"
+#define SDRPLAY_LNASTATE_A	"sdrplay-lnastate_A"
+#define SDRPLAY_LNASTATE_B	"sdrplay-lnastate_B"
+#define SDRPLAY_PPM_A		"sdrplay-ppm_A"
+#define SDRPLAY_PPM_B		"sdrplay-ppm_B"
+#define SDRPLAY_BIAS_T		"biasT_selector"
 #define SDRPLAY_NOTCH           "notch_selector" 
-#define SDRPLAY_ANTENNA_DX      "Antenna_dx" 
-#define SDRPLAY_ANTENNA_RSP2    "Antenna_rsp2" 
-#define SDRPLAY_ANTENNA_duo     "Antenna_duo"
-#define SDRPLAY_TUNER           "tuner"
 
 static int lnaStates [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 //
@@ -105,30 +105,50 @@ std::string errorMessage (int errorCode) {
 
 	GRdBSelector_A 		-> setValue (
 	            value_i (sdrplaySettings, SDRPLAY_SETTINGS,
-	                                          SDRPLAY_IFGRDB, 20));
-	GRdBValue		= GRdBSelector_A -> value ();
-	
+	                                          SDRPLAY_IFGRDB_A, 20));
+	GRdBSelector_B 		-> setValue (
+	            value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_IFGRDB_B, 20));
 	lnaGainSetting_A		-> setValue (
 	            value_i (sdrplaySettings, SDRPLAY_SETTINGS,
-	                                          SDRPLAY_LNASTATE, 4));
+	                                          SDRPLAY_LNASTATE_A, 3));
 	lnaGainSetting_A		-> setMaximum (9);
-	lnaState		= lnaGainSetting_A -> value ();
+	int lnaState_A			= lnaGainSetting_A -> value ();
+	lnaGRdBDisplay_A		-> display (lnaStates [lnaState_A]);
+
+	lnaGainSetting_B		-> setValue (
+	            value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_LNASTATE_B, 3));
+	lnaGainSetting_B		-> setMaximum (9);
+	int lnaState_B			= lnaGainSetting_B -> value ();
+	lnaGRdBDisplay_B		-> display (lnaStates [lnaState_B]);
 
 	ppmControl_A		-> setValue (
 	            value_f (sdrplaySettings, SDRPLAY_SETTINGS,
-	                                          SDRPLAY_PPM, 0.0));
-	ppmValue		= ppmControl_A -> value ();
+	                                          SDRPLAY_PPM_A, 0.0));
+	ppmControl_B		-> setValue (
+	            value_f (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                          SDRPLAY_PPM_B, 0.0));
 
-	agcMode		= value_i (sdrplaySettings, SDRPLAY_SETTINGS,
-	                                      SDRPLAY_AGCMODE, 0) != 0;
+	int agcMode_A	= value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                      SDRPLAY_AGCMODE_A, 0) != 0;
 
-	if (agcMode) {
+	if (agcMode_A) {
 	   agcControl_A -> setChecked (true);
 	   GRdBSelector_A         -> hide ();
 	   gainsliderLabel_A      -> hide ();
 	}
 
-	biasT           =
+	int agcMode_B	= value_i (sdrplaySettings, SDRPLAY_SETTINGS,
+	                                      SDRPLAY_AGCMODE_B, 0) != 0;
+
+	if (agcMode_B) {
+	   agcControl_B -> setChecked (true);
+	   GRdBSelector_B         -> hide ();
+	   gainSliderLabel_B      -> hide ();
+	}
+
+	int biasT           =
                value_i (sdrplaySettings, SDRPLAY_SETTINGS,
 	                                      SDRPLAY_BIAS_T, 0) != 0;
         if (biasT)
@@ -138,7 +158,7 @@ std::string errorMessage (int errorCode) {
                value_i (sdrplaySettings, SDRPLAY_SETTINGS,
 	                                      SDRPLAY_NOTCH, 0) != 0;
 	if (notch)
-	   notch_selector_A -> setChecked (true);
+	   notch_selector -> setChecked (true);
 //
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector_A, qOverload<int>(&QSpinBox::valueChanged),
@@ -168,17 +188,11 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_duo::setPpmControl_B);
 
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
-	connect (notch_selector_A, &QCheckBox::checkStateChanged,	
+	connect (notch_selector, &QCheckBox::checkStateChanged,	
 #else
-	connect (notch_selector_A, &QCheckBox::stateChanged,	
+	connect (notch_selector, &QCheckBox::stateChanged,	
 #endif
-	         this, &sdrplayHandler_duo::setNotch_A);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
-	connect (notch_selector_B, &QCheckBox::checkStateChanged,	
-#else
-	connect (notch_selector_B, &QCheckBox::stateChanged,	
-#endif
-	         this, &sdrplayHandler_duo::setNotch_B);
+	         this, &sdrplayHandler_duo::setNotch);
 
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (biasT_selector, &QCheckBox::checkStateChanged,	
@@ -201,12 +215,17 @@ std::string errorMessage (int errorCode) {
 #endif
 	         this, &sdrplayHandler_duo::reportOverloadState_B);
 
-	connect (tunerA_selector, &QPushButton::clicked,
-	         this, &sdrplayHandler_duo::handle_Tuner_A);
-	connect (tunerB_selector, &QPushButton::clicked,
-	         this, &sdrplayHandler_duo::handle_Tuner_B);
+	connect (tunerSelect,
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+                    qOverload<const QString &> (&QComboBox::textActivated),
+#else
+                    qOverload<const QString &> (&QComboBox::activated),
+#endif
+	         this, &sdrplayHandler_duo::handle_TunerSelect);
 
 	currentTuner. store ('A');
+	A_Buffer_filled. store (false);
+	B_Buffer_filled. store (false);
 	lastFrequency	= MHz (220);
 	theGain		= -1;
 	debugControl	-> hide ();
@@ -251,15 +270,6 @@ std::string errorMessage (int errorCode) {
 //	thread should be stopped by now
 	myFrame. hide ();
 	storeWidgetPosition (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS);
-
-	store (sdrplaySettings, SDRPLAY_SETTINGS,
-	                          SDRPLAY_PPM, ppmControl_A -> value ());
-	store (sdrplaySettings, SDRPLAY_SETTINGS,
-	                          SDRPLAY_IFGRDB, GRdBSelector_A -> value ());
-	store (sdrplaySettings, SDRPLAY_SETTINGS,
-	                          SDRPLAY_LNASTATE, lnaGainSetting_A -> value ());
-	store (sdrplaySettings, SDRPLAY_SETTINGS,
-	                          SDRPLAY_AGCMODE, agcControl_A -> isChecked() ? 1 : 0);
 	sdrplaySettings	-> sync();
 }
 
@@ -410,22 +420,13 @@ duo_ppm_B r (ppm);
         messageHandler (&r);
 }
 
-void	sdrplayHandler_duo::setNotch_A (int v) {
-duo_notch_A r (notch_selector_A -> isChecked () ? 1 : 0);
+void	sdrplayHandler_duo::setNotch (int v) {
+duo_notch r (notch_selector -> isChecked () ? 1 : 0);
 	(void)v;
 	messageHandler (&r);
 	store (sdrplaySettings, SDRPLAY_SETTINGS,
 	                           SDRPLAY_NOTCH,
-	                              notch_selector_A -> isChecked () ? 1 : 0);
-}
-
-void	sdrplayHandler_duo::setNotch_B (int v) {
-duo_notch_B r (notch_selector_B -> isChecked () ? 1 : 0);
-	(void)v;
-	messageHandler (&r);
-	store (sdrplaySettings, SDRPLAY_SETTINGS,
-	                           SDRPLAY_NOTCH,
-	                              notch_selector_B -> isChecked () ? 1 : 0);
+	                              notch_selector -> isChecked () ? 1 : 0);
 }
 
 void	sdrplayHandler_duo::setBiasT (int v) {
@@ -480,7 +481,7 @@ bool    sdrplayHandler_duo::messageHandler (duoCommand *r) {
 }
 
 static
-void    StreamBCallback (short *xi, short *xq,
+void    StreamACallback (short *xi, short *xq,
                          sdrplay_api_StreamCbParamsT *params,
                          unsigned int numSamples,
 	                 unsigned int reset,
@@ -493,18 +494,16 @@ std::complex<float> localBuf [numSamples];
 	if (!p -> receiverRuns. load ())
 	   return;
 
-	if (p -> currentTuner. load () != 'B')
-	   return;
 	for (int i = 0; i <  (int)numSamples; i ++) {
 	   std::complex<float> symb =
 	            std::complex<float> (xi [i] / 2048.0, xq [i] / 2048.0);
 	   localBuf [i] = symb;
 	}
-	p -> processInput (localBuf, numSamples);
+	p -> processInput ('A', localBuf, numSamples);
 }
 
 static
-void	StreamACallback (short *xi, short *xq,
+void	StreamBCallback (short *xi, short *xq,
                          sdrplay_api_StreamCbParamsT *params,
                          unsigned int numSamples, unsigned int reset,
                          void *cbContext) {
@@ -516,14 +515,12 @@ std::complex<float> localBuf [numSamples];
 	if (!p -> receiverRuns. load ())
 	   return;
 
-	if (p -> currentTuner. load () !='A')
-	   return;
 	for (int i = 0; i <  (int)numSamples; i ++) {
 	   std::complex<float> symb =
 	            std::complex<float> (xi [i] / 2048.0, xq [i] / 2048.0);
 	   localBuf [i] = symb;
 	}
-	p -> processInput (localBuf, numSamples);
+	p -> processInput ('B', localBuf, numSamples);
 }
 
 static
@@ -718,7 +715,8 @@ int	deviceIndex	= 0;
 //	Configure tuner parameters (depends on selected Tuner
 //	which parameters to use)
 	chParams_A	= deviceParams -> rxChannelA;
-	if (chParams_A == nullptr) {
+	chParams_B	= deviceParams -> rxChannelB;
+	if ((chParams_A == nullptr) || (chParams_B == nullptr)) {
 	   fprintf (stderr, "ChannelParams = NULL\n");
 	   throw (25);
 	}
@@ -734,8 +732,18 @@ int	deviceIndex	= 0;
         chParams_A	-> ctrlParams. agc. decay_ms = 500;
         chParams_A	-> ctrlParams. agc. decay_delay_ms = 200;
         chParams_A	-> ctrlParams. agc. decay_threshold_dB = 3;
-//	chParams_A	-> ctrlParams.agc.enable = sdrplay_api_AGC_CTRL_EN;
-	chParams_A	-> ctrlParams.agc.enable = sdrplay_api_AGC_DISABLE;
+
+	chParams_B	-> tunerParams. rfFreq. rfHz    = (float)220000000;
+	chParams_B	-> tunerParams. bwType = sdrplay_api_BW_1_536;
+	chParams_B	-> tunerParams. ifType = sdrplay_api_IF_2_048;
+	chParams_B	-> tunerParams. gain.gRdB = 40;
+	chParams_B	-> tunerParams. gain.LNAstate = 3;
+
+        chParams_B	-> ctrlParams. agc. setPoint_dBfs = -30;
+        chParams_B	-> ctrlParams. agc. attack_ms = 500;
+        chParams_B	-> ctrlParams. agc. decay_ms = 500;
+        chParams_B	-> ctrlParams. agc. decay_delay_ms = 200;
+        chParams_B	-> ctrlParams. agc. decay_threshold_dB = 3;
 
 //	assign callback functions
 	cbFns. StreamACbFn	= StreamACallback;
@@ -745,16 +753,18 @@ int	deviceIndex	= 0;
 	err	= sdrplay_api_Init (chosenDevice -> dev, &cbFns, this);
 	fprintf (stderr, "%s\n", sdrplay_api_GetErrorString (err));
 
-        if (GRdBValue > 59)
-           this -> GRdBValue = 59;
-        if (GRdBValue < 20)
-           this -> GRdBValue = 20;
-
-        if (this -> agcMode) { 
+        if (agcControl_A -> isChecked ()) { 
            chParams_A	-> ctrlParams. agc. enable = sdrplay_api_AGC_CTRL_EN;
 	}
 	else {
 	   chParams_A   -> ctrlParams. agc. enable =
+                                                  sdrplay_api_AGC_DISABLE;
+	}
+        if (agcControl_B -> isChecked ()) { 
+           chParams_B	-> ctrlParams. agc. enable = sdrplay_api_AGC_CTRL_EN;
+	}
+	else {
+	   chParams_B   -> ctrlParams. agc. enable =
                                                   sdrplay_api_AGC_DISABLE;
 	}
 	deviceLabel	-> setText (deviceModel);
@@ -864,20 +874,11 @@ int	deviceIndex	= 0;
 	         break;
 	      }
 
-	      case DUO_SETNOTCH_A: {
-	         duo_notch_A *p =
-	                       (duo_notch_A *)(serverQueue. front ());
+	      case DUO_SETNOTCH: {
+	         duo_notch *p =
+	                       (duo_notch *)(serverQueue. front ());
 	         serverQueue. pop ();
-	         p -> result = do_setNotch ('A', p -> checked);
-                 p -> waiter. release (1);
-	         break;
-	      }
-
-	      case DUO_SETNOTCH_B: {
-	         duo_notch_B *p =
-	                       (duo_notch_B *)(serverQueue. front ());
-	         serverQueue. pop ();
-	         p -> result = do_setNotch ('B', p -> checked);
+	         p -> result = do_setNotch (p -> checked);
                  p -> waiter. release (1);
 	         break;
 	      }
@@ -984,6 +985,10 @@ sdrplay_api_ErrT err;
 	   fprintf (stderr, "error %s in setAgc\n",
 	                            errorString. toLatin1 (). data ());
 	}
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                             (tuner == 'A') ?  SDRPLAY_AGCMODE_A:
+	                                               SDRPLAY_AGCMODE_B, on);
+
 	return err == sdrplay_api_Success;
 }
 
@@ -1002,11 +1007,14 @@ sdrplay_api_ErrT        err;
 	   theErrorLogger -> add (deviceModel, errorString);
 	   return false;
 	}
-	this	-> lnaState	= lnaState;
 	if (tuner == 'A')
            lnaGRdBDisplay_A  -> display (lnaStates [lnaState]);
 	else
            lnaGRdBDisplay_B  -> display (lnaStates [lnaState]);
+	store (sdrplaySettings, SDRPLAY_SETTINGS,
+	                       (tuner == 'A') ?  SDRPLAY_LNASTATE_A:
+	                                         SDRPLAY_LNASTATE_B,  lnaState);
+
 	return true;
 }
 
@@ -1019,21 +1027,52 @@ sdrplay_api_ErrT err;
 	                                          sdrplay_api_Tuner_B,
 	                           sdrplay_api_Update_Tuner_Gr,
 	                           sdrplay_api_Update_Ext1_None);
-	if (err == sdrplay_api_Success) {
-	   this -> GRdBValue = GRdBValue;
-	   return true;
-	}
-	return false;
+	if (err != sdrplay_api_Success) 
+	   return false;
+	store  (sdrplaySettings, SDRPLAY_SETTINGS,
+	                         (tuner == 'A') ?  SDRPLAY_IFGRDB_A:
+	                                           SDRPLAY_IFGRDB_B, GRdBValue);
+
+	return true;
 }
 
-bool	sdrplayHandler_duo::do_setNotch (char tuner, bool on) {
-	(void)tuner; (void)on;
-	return false;
+bool	sdrplayHandler_duo::do_setNotch (bool on) {
+sdrplay_api_ErrT err;
+sdrplay_api_RspDuoTunerParamsT * rspDuoTunerParams;
+
+        rspDuoTunerParams = &(chParams_A -> rspDuoTunerParams);
+        rspDuoTunerParams -> rfNotchEnable = on;   
+        rspDuoTunerParams -> tuner1AmNotchEnable = on;
+
+        err = sdrplay_api_Update (chosenDevice -> dev,
+	                          sdrplay_api_Tuner_A,
+                                  (sdrplay_api_ReasonForUpdateT)(sdrplay_api_Update_RspDuo_RfNotchControl | sdrplay_api_Update_RspDuo_Tuner1AmNotchControl),
+	                          sdrplay_api_Update_Ext1_None);
+        if (err != sdrplay_api_Success) {
+           QString errorString = sdrplay_api_GetErrorString (err);
+           showState (errorString);
+           theErrorLogger -> add (deviceModel, errorString);
+        }
+        return err == sdrplay_api_Success;
 }
 
 bool	sdrplayHandler_duo::do_setBiasT	(bool biasT_value) {
-	(void)biasT_value;
-	return false;
+sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
+sdrplay_api_ErrT        err;
+
+	rspDuoTunerParams	= &(chParams_B -> rspDuoTunerParams);
+	rspDuoTunerParams	-> biasTEnable = biasT_value;
+	err = sdrplay_api_Update (chosenDevice -> dev,
+	                          sdrplay_api_Tuner_B,
+	                          sdrplay_api_Update_RspDuo_BiasTControl,
+		                  sdrplay_api_Update_Ext1_None);
+	                                                  
+	if (err != sdrplay_api_Success) {
+	   QString errorString = sdrplay_api_GetErrorString (err);
+	   showState (errorString);
+	   theErrorLogger -> add (deviceModel, errorString);
+	}
+	return err == sdrplay_api_Success;
 }
 
 //
@@ -1292,17 +1331,69 @@ void	sdrplayHandler_duo::enableBiasT (bool b) {
 	  biasT_selector -> hide ();
 }
 
-void	sdrplayHandler_duo::processInput (std::complex<float> *b, int amount) {
-	_I_Buffer. putDataIntoBuffer (b,  amount);
+void	sdrplayHandler_duo::processInput (uint8_t tuner, std::complex<float> *b, int amount) {
+	if (currentTuner. load () == tuner)
+	      _I_Buffer. putDataIntoBuffer (b,  amount);
+	else
+	if (tuner == 'A')
+	   process_A (b, amount);
+	else
+	if (tuner == 'B')
+	   process_B (b, amount);
 }
 
-void	sdrplayHandler_duo::handle_Tuner_A () {
-	currentTuner. store ('A');
-	showTuner	-> setText ("Tuner A");
+void	sdrplayHandler_duo::handle_TunerSelect (const QString &s) {
+	if (s == "Tuner A")
+	   currentTuner. store ('A');
+	else
+	if (s == "Tuner B")
+	   currentTuner. store ('B');
+	else
+	if (s == "A + B")
+	   currentTuner. store ('A' + 'B');
+	else
+	   currentTuner. store ('A' - 'B');
+	A_Buffer_filled. store (false);
+	B_Buffer_filled. store (false);
 }
 
-void	sdrplayHandler_duo::handle_Tuner_B () {
-	currentTuner. store ('B');
-	showTuner	-> setText ("Tuner B");
+void	sdrplayHandler_duo::process_A (std::complex<float> *b, int amount) {
+	A_Buffer. resize (amount);
+	bufferLocker. lock ();
+	if (B_Buffer_filled. load ()) {
+	   for (int i = 0; i < amount; i ++)
+	      if (currentTuner. load () == 'A' + 'B')
+	         b [i] += B_Buffer [i];
+	      else
+	         b [i] -= B_Buffer [i];
+	   _I_Buffer. putDataIntoBuffer (b, amount);
+	   B_Buffer_filled. store (false);
+	   bufferLocker. unlock ();
+	   return;
+	}
+	for (int i = 0; i < amount; i ++)
+	   A_Buffer [i] = b [i];
+	A_Buffer_filled. store (true);
+	bufferLocker. unlock ();
 }
-
+	 
+void	sdrplayHandler_duo::process_B (std::complex<float> *b, int amount) {
+	B_Buffer. resize (amount);
+	bufferLocker. lock ();
+	if (A_Buffer_filled. load ()) {
+	   for (int i = 0; i < amount; i ++)
+	      if (currentTuner. load () == 'A' + 'B')
+	         b [i] += A_Buffer [i];
+	      else
+	         b [i] = A_Buffer [i] - b [i];
+	   _I_Buffer. putDataIntoBuffer (b, amount);
+	   A_Buffer_filled. store (false);
+	   bufferLocker. unlock ();
+	   return;
+	}
+	for (int i = 0; i < amount; i ++)
+	   B_Buffer [i] = b [i];
+	B_Buffer_filled. store (true);
+	bufferLocker. unlock ();
+}
+	 

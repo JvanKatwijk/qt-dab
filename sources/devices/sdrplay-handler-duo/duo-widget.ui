@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
-    <height>354</height>
+    <width>385</width>
+    <height>326</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>SDRplay-duo</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
@@ -106,7 +106,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_9">
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -261,7 +261,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="notch_selector_A">
+          <widget class="QCheckBox" name="notch_selector">
            <property name="font">
             <font>
              <family>Droid Sans</family>
@@ -282,33 +282,28 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <widget class="QComboBox" name="tunerSelect">
        <item>
-        <widget class="QLabel" name="showTuner">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
+        <property name="text">
+         <string>Tuner A</string>
+        </property>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QPushButton" name="tunerA_selector">
-           <property name="text">
-            <string>tuner A</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="tunerB_selector">
-           <property name="text">
-            <string>tuner B</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="text">
+         <string>Tuner B</string>
+        </property>
        </item>
-      </layout>
+       <item>
+        <property name="text">
+         <string>A + B</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>A - B</string>
+        </property>
+       </item>
+      </widget>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -421,20 +416,6 @@
            </property>
            <property name="text">
             <string>agc</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="notch_selector_B">
-           <property name="font">
-            <font>
-             <family>Droid Sans</family>
-             <italic>true</italic>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>notch</string>
            </property>
           </widget>
          </item>
