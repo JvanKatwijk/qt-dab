@@ -585,7 +585,9 @@ QString h;
 	peakRightDamped         = -100;
 	
 	leftAudio	-> setBorderWidth	(0);
+	leftAudio	-> setScalePosition	(QwtThermo::NoScale);
 	rightAudio	-> setBorderWidth	(0);
+	rightAudio	-> setScalePosition	(QwtThermo::NoScale);
 	leftAudio	-> setValue (-35);
 	rightAudio	-> setValue (-35);
 	QwtLinearColorMap * mapLeft = new QwtLinearColorMap ();
@@ -4778,5 +4780,10 @@ void	RadioInterface::devSL_visibility	() {
 	   theDeviceChoser. hide ();
 	else
 	   theDeviceChoser. show ();
+}
+
+void	RadioInterface::tell_programType	(int SId, int programType) {
+	if (channel. currentService. SId == SId)
+	   programTypeLabel	-> setText (getProgramType (programType));
 }
 

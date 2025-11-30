@@ -66,6 +66,8 @@
 	         myRadioInterface, &RadioInterface::lto_ecc);
 	connect (this, &fibDecoder::setFreqList,
 	         myRadioInterface, &RadioInterface::setFreqList);
+	connect (this, &fibDecoder::tell_programType,
+	         myRadioInterface, &RadioInterface::tell_programType);
 //
 //	Note that they may change "roles", 
 	currentConfig	= new fibConfig	(&theEnsemble, myRadioInterface);
@@ -851,6 +853,8 @@ int16_t	offset	= 16;
 	   uint8_t typeCode	= getBits_5 (d, offset + 27);
 	   for (uint16_t i = 0; i < theEnsemble. primaries. size (); i ++) {
 	      if (theEnsemble. primaries [i]. SId == SId) {
+	         if (theEnsemble. primaries [i]. programType == 0)
+	            tell_programType (SId, typeCode);
 	         theEnsemble. primaries [i]. programType = typeCode;
 	         break;
 	      }

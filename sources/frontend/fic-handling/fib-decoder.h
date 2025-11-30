@@ -177,6 +177,7 @@ signals:
 	void		nrServices		(int);
 	void		lto_ecc			(int, int);
 	void		setFreqList		();
+	void		tell_programType	(int, int);
 };
 
 

@@ -72,10 +72,11 @@ public:
 	std::atomic<bool>	receiverRuns;
 	int		theGain;
 	sdrplay_api_CallbackFnsT	cbFns;
-	void		processInput		(uint8_t, std::complex<float> *, int);
+	void		processInput		(uint8_t,
+	                                         std::complex<float> *,
+	                                         int, int);
 	void		showTunerGain_A		(double);
 	void		showTunerGain_B		(double);
-	std::atomic<uint8_t>	currentTuner;
 
 private:
 public:
@@ -129,8 +130,11 @@ public:
 	void                    releaseLibrary          ();
 	bool			loadFunctions		();
 	int			errorCode;
-	void			process_A	(std::complex<float> *, int);
-	void			process_B	(std::complex<float> *, int);
+	void			process_A	(std::complex<float> *,
+	                                         int, int);
+	void			process_B	(std::complex<float> *,
+	                                         int, int);
+	std::atomic<uint8_t>	currentTuner;
 	std::mutex		bufferLocker;
 	std::atomic<bool>	A_Buffer_filled;
 	std::atomic<bool>	B_Buffer_filled;

@@ -486,7 +486,9 @@ void    StreamACallback (short *xi, short *xq,
                          unsigned int numSamples,
 	                 unsigned int reset,
                          void *cbContext) {
-sdrplayHandler_duo *p	= static_cast<sdrplayHandler_duo *> (cbContext);
+sdrplayHandler_duo *p	=
+	           static_cast<sdrplayHandler_duo *> (cbContext);
+
 std::complex<float> localBuf [numSamples];
 	(void)params;
 	if (reset)
@@ -499,7 +501,8 @@ std::complex<float> localBuf [numSamples];
 	            std::complex<float> (xi [i] / 2048.0, xq [i] / 2048.0);
 	   localBuf [i] = symb;
 	}
-	p -> processInput ('A', localBuf, numSamples);
+	p -> processInput ('A', localBuf,
+	                     numSamples, params -> firstSampleNum);
 }
 
 static
@@ -520,7 +523,8 @@ std::complex<float> localBuf [numSamples];
 	            std::complex<float> (xi [i] / 2048.0, xq [i] / 2048.0);
 	   localBuf [i] = symb;
 	}
-	p -> processInput ('B', localBuf, numSamples);
+	p -> processInput ('B', localBuf,
+	                     numSamples, params -> firstSampleNum);
 }
 
 static
@@ -1331,17 +1335,6 @@ void	sdrplayHandler_duo::enableBiasT (bool b) {
 	  biasT_selector -> hide ();
 }
 
-void	sdrplayHandler_duo::processInput (uint8_t tuner, std::complex<float> *b, int amount) {
-	if (currentTuner. load () == tuner)
-	      _I_Buffer. putDataIntoBuffer (b,  amount);
-	else
-	if (tuner == 'A')
-	   process_A (b, amount);
-	else
-	if (tuner == 'B')
-	   process_B (b, amount);
-}
-
 void	sdrplayHandler_duo::handle_TunerSelect (const QString &s) {
 	if (s == "Tuner A")
 	   currentTuner. store ('A');
@@ -1357,8 +1350,25 @@ void	sdrplayHandler_duo::handle_TunerSelect (const QString &s) {
 	B_Buffer_filled. store (false);
 }
 
-void	sdrplayHandler_duo::process_A (std::complex<float> *b, int amount) {
+void	sdrplayHandler_duo::processInput (uint8_t tuner,
+	                                  std::complex<float> *b,
+	                                  int amount,
+	                                  int firstSampleNum) {
+	if (currentTuner. load () == tuner)
+	      _I_Buffer. putDataIntoBuffer (b,  amount);
+	else
+	if (tuner == 'A')
+	   process_A (b, amount, firstSampleNum);
+	else
+	if (tuner == 'B')
+	   process_B (b, amount, firstSampleNum);
+}
+
+void	sdrplayHandler_duo::process_A (std::complex<float> *b,
+	                               int amount,
+	                               int firstSampleNum) {
 	A_Buffer. resize (amount);
+
 	bufferLocker. lock ();
 	if (B_Buffer_filled. load ()) {
 	   for (int i = 0; i < amount; i ++)
@@ -1377,8 +1387,11 @@ void	sdrplayHandler_duo::process_A (std::complex<float> *b, int amount) {
 	bufferLocker. unlock ();
 }
 	 
-void	sdrplayHandler_duo::process_B (std::complex<float> *b, int amount) {
+void	sdrplayHandler_duo::process_B (std::complex<float> *b,
+	                               int amount,
+	                               int firstSampleNum) {
 	B_Buffer. resize (amount);
+
 	bufferLocker. lock ();
 	if (A_Buffer_filled. load ()) {
 	   for (int i = 0; i < amount; i ++)

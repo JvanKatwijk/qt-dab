@@ -640,5 +640,7 @@ public slots:
 	                                                         const QString &);
 	void			nrActiveServices		(int);
 	void			handle_activeServices		();
-
+//
+//	and from the fib handler
+	void			tell_programType		(int, int);
 };
