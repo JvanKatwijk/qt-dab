@@ -139,7 +139,7 @@ void	dxDisplay::hide	() {
 }
 
 bool	dxDisplay::isHidden () {
-	myWidget	-> isHidden ();
+	return myWidget	-> isHidden ();
 }
 
 void	dxDisplay::addRow (transmitter &theTransmitter, bool isStrongest) {
