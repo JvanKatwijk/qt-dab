@@ -1,6 +1,6 @@
 #
 /*
- *	Copyright (C) 2025
+ *	Copyright (C) 2016 .. 2023
  *	Jan van Katwijk (J.vanKatwijk@gmail.com)
  *	Lazy Chair Computing
  *
@@ -24,6 +24,7 @@
 #pragma once
 
 #include	<QObject>
+#include	<thread>
 #include	<atomic>
 #include	<string>
 #include	<vector>
@@ -33,8 +34,6 @@
 #include	<QSettings>
 #include	"tii-mapper.h"
 #include	"db-element.h"
-#include	<QTcpSocket>
-#include	<QTcpServer>
 class	RadioInterface;
 //
 
@@ -47,15 +46,19 @@ public:
 	                         bool		autoBrowse,
 	                         QSettings	*settings = nullptr);
 		~httpHandler	();
+	void	start		();
+	void	stop		();
+	void	run		();
 	void	putData		(uint8_t, position);
 	void	putData		(uint8_t	type,
 	                         transmitter	&Tr,
 	                         const QString & theTime);
+	bool	isRunning	();
 private:
 	QSettings		*dabSettings;
 	FILE			*saveFile;
 	RadioInterface		*parent;
-	int			mapPort;
+	QString			mapPort;
 	position		homeAddress;
 	std::vector<transmitter> transmitterVector;
 
@@ -65,18 +68,17 @@ private:
 	std::string	browserAddress;
 #endif
 	std::atomic<bool>	running;
-	QString		theMap		(position address);
-	QString		coordinatesToJson (std::vector<transmitter> &t);
+	std::thread	threadHandle;
+	std::string     theMap		(position address);
+	std::string	coordinatesToJson (std::vector<transmitter> &t);
 	std::vector<transmitter> transmitterList;
 	std::mutex	locker;
 	bool		autoBrowser_off;
 	bool		runs;
 	bool		closing;
-	QTcpServer	*my_tcpServer;
 signals:
+	void		terminating	();
 	void		setChannel	(const QString &);
-private slots:
-	void		newConnection	();
-	void		readData	();
+	void		stop_ok		();
 };
 

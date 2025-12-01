@@ -56,6 +56,7 @@
 	   const MAP_MAX_TRANS		= 2;
 	   const MAP_NORM_TRANS 	= 4;
 	   const MAP_CURRENT 		= 8;
+	   const MAP_CLOSE 		= 16;
 
 	   const ICON_OTHERFRAME	= 0;
 	   const ICON_FURTHEST		= 1;
@@ -312,6 +313,9 @@
 	               updateCurrent (target);
 	               continue;
 	            }
+	            if (target. type == MAP_CLOSE) {
+	               closeServer ();
+	               return;
 	            else {		// we add an element 
 	               if (!((target. type == MAP_MAX_TRANS) ||
 	                                 (target. type == MAP_NORM_TRANS))) 
@@ -330,6 +334,15 @@
 	            }
 	         }
 	      });
+	   }
+
+	   function closeServer	() {
+	      try {
+	          window. close ();
+	      } catch (e) {}
+	      try {
+	         server. close ();
+	      } catch (e) {}
 	   }
 
 	   function initialize () {

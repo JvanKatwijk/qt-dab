@@ -242,7 +242,6 @@ int16_t	row	= tableWidget -> rowCount ();
 void	dxDisplay::addRow (uint8_t mainId, uint8_t subId,
 	                                       const QString &channel) {
 int16_t	row	= tableWidget -> rowCount ();
-
 	tableWidget	-> insertRow (row);
 	QTableWidgetItem *item0	= new QTableWidgetItem;
 	item0		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
@@ -285,6 +284,7 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> setItem (row, 9, item9);
 
 	tableWidget	-> setCurrentItem (item0);
+	fprintf (stderr, "Row %d bij dxDisplay\n", row);
 	tableWidget	-> item (row, 1) -> setText (QString::number (mainId));
 	tableWidget	-> item (row, 2) -> setText (QString::number (subId));
 	tableWidget	-> item (row, 3) -> setText (channel);

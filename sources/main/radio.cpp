@@ -1340,7 +1340,8 @@ void	RadioInterface::TerminateProcess () {
 	while (theSCANHandler. active ())
 	   usleep (1000);
 	if (mapHandler != nullptr)
-	   mapHandler ->  stop ();
+	   delete mapHandler;
+
 	theSCANHandler. hide ();
 	channelTimer.	stop	();
 //
@@ -3629,10 +3630,13 @@ bool	RadioInterface::autoStart_http () {
 	if (mapHandler != nullptr)  
 	   return false;
 
-	mapHandler = new httpHandler (this,
-	                              localPos,
-	                              "",
-	                              configHandler_p -> localBrowserSelector_active (),	                      dabSettings_p);
+	try {
+	   mapHandler = new httpHandler (this,
+	                                 localPos,
+	                                 "",
+	                                 configHandler_p -> localBrowserSelector_active (),
+	                                 dabSettings_p);
+	} catch (int e) {}
 	return mapHandler != nullptr;
 }
 
@@ -3645,31 +3649,37 @@ void	RadioInterface::handle_httpButton	() {
 	}
 
 	if (mapHandler == nullptr)  {
-	   mapHandler = new httpHandler (this,
-	                                 localPos,
-	                                 QString (""),
-	                                 configHandler_p -> localBrowserSelector_active (),
-	                                 dabSettings_p);
+	   try {
+	      mapHandler = new httpHandler (this,
+	                                    localPos,
+	                                    QString (""),
+	                                    configHandler_p -> localBrowserSelector_active (),
+	                                    dabSettings_p);
+	   } catch (int e) {}
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}
-	else {
-	   locker. lock ();
+	else {		// forced stop
+	   mapHandler -> putData (MAP_CLOSE, position {-1, -1});
+	   int delayTeller = 0;
+	   while (delayTeller < 40) {
+	      usleep (100000);
+	      delayTeller ++;
+	   }
+	   fprintf (stderr, "We moeten deleten\n");
 	   delete mapHandler;
-	   mapHandler = nullptr;
-	   locker. unlock ();
+	   mapHandler	= nullptr;
 	   httpButton	-> setText ("http");
 	}
 }
 
 void	RadioInterface::http_terminate	() {
-	locker. lock ();
-	if (mapHandler != nullptr) {
-	   delete mapHandler;
-	   mapHandler = nullptr;
-	}
-	locker. unlock ();
-	httpButton -> setText ("http");
+//	locker. lock ();
+//	if (!mapHandler. isNull ()) {
+//	   mapHandler. reset ();
+//	}
+//	locker. unlock ();
+//	httpButton -> setText ("http");
 }
 
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {

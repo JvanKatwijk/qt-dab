@@ -59,6 +59,7 @@
 	   const MAP_CURRENT 		= 8;
 	   const SHOW_SINGLE		= 16;	
 	   const SHOW_ALL		= 32;
+	   const MAP_CLOSE		= 64;
 
 	   const ICON_FURTHEST		= 1;
 	   const ICON_TOPFRAME		= 2;
@@ -213,6 +214,15 @@
 	            if (target. type == MAP_CURRENT) {
 	               continue;
 	            }
+	            if (target. type == MAP_CLOSE) {
+	               try {
+	                  server. close ();
+	               } catch (e) {}
+	               try {
+	                  window. close ();
+	               } catch (e) {}
+	               return;
+	            }
 	            else {		// we add an element 
                        let current = document. getElementById ('testing');
 	               if (isStrongest (target)) {
@@ -346,7 +356,7 @@
 /* Setup our timer to poll from the server. */
 	   window.setInterval(function () {
 	      fetchData ();
-	   }, 2000);
+	   }, 1000);
 	}
 
 //
