@@ -1339,8 +1339,6 @@ void	RadioInterface::TerminateProcess () {
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
-	if (mapHandler != nullptr)
-	   mapHandler ->  stop ();
 	theSCANHandler. hide ();
 	channelTimer.	stop	();
 //
@@ -1364,12 +1362,16 @@ void	RadioInterface::TerminateProcess () {
 	   delete the_aboutLabel;
 	}
 //
+	if (mapHandler != nullptr) {
+	   mapHandler ->  stop ();
+	   delete mapHandler;
+	}
+
 //	handling the scanlist
 	if (configHandler_p -> get_clearScanList ())
 	   theScanlistHandler. clearScanList ();
 	theScanlistHandler. dump ();
 	theScanlistHandler. hide ();
-//
 //
 //	hiding the ensemblehandler is needed since it is
 //	using a protected pointer
@@ -1413,7 +1415,7 @@ void	RadioInterface::TerminateProcess () {
 	if (streamerOut_p != nullptr)
 	   streamerOut_p	-> stop ();
 #endif
-	if (theOFDMHandler != nullptr)	// dhould not happen
+	if (theOFDMHandler != nullptr)	// hould always happen
 	   theOFDMHandler		-> stop ();
 	if (inputDevice_p != nullptr)
 	   delete inputDevice_p;
@@ -1431,6 +1433,7 @@ void	RadioInterface::TerminateProcess () {
 	delete		techWindow_p;
 	delete		configHandler_p;
 	delete		theOFDMHandler;
+	hide ();
 	close ();
 	fprintf (stderr, ".. end the radio silences\n");
 }
