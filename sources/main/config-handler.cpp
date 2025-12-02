@@ -999,6 +999,10 @@ void	configHandler::set_activeServices	(int activeS) {
 	activeServices	-> setText (QString::number (activeS));
 }
 
+bool	configHandler::get_close_mapHandler	() {
+	return close_mapHandler	-> isChecked ();
+}
+
 void	configHandler::handle_dcRemoval		(int h) {
 	(void)h;
 	bool b = this ->  dcRemoval -> isChecked ();

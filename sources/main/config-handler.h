@@ -80,6 +80,7 @@ public:
 	bool	get_audioServices_only	();
 	bool	get_allTIISelector	();
 
+	bool	get_close_mapHandler	();
 	bool	get_dcRemoval		();
 	bool	get_saveTitles		();
 
@@ -110,7 +111,11 @@ private slots:
 	void	color_pathButton	();
 //
 //	and the handlers:
+	void	handle_tiiSelector		(int);
+	void	handle_tiiThreshold		(int);
+	void	handle_allTIISelector		(int);
 	void	handle_audioSelectButton	();
+	void	handle_pathButton		();
 	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
@@ -120,26 +125,31 @@ private slots:
 	void	handle_ordersubChannelIds	();
 	void	handle_portSelector		();
 	void	handle_skinSelector		();
-	void	handle_onTop			(int);
-	void	handle_localDB_Selector		(int);
+
+//	void	handle_upload_selector		(int);
 	void	handle_utc_selector		(int);
+	void	handle_auto_http		(int);
+//	void	handle_clear_on_exit		(int);
+
+	void	handle_localDB_Selector		(int);
 	void	handle_localBrowser		(int);
+	void	handle_onTop			(int);
+//	void	handle_close_mapHandler		(int);
+
+//	void	handle_firstCorrelation		(int);
+//	void	handle_etiActivated		(int);
+//	void	handle_logger			(int);
+	void	handle_saveTitles		(int);
+
 	void	handle_showAll_Selector		(int);
 	void	handle_saveSlides		(int);
-	void	handle_decoderSelector		(const QString &s);
-	void	handle_tiiThreshold		(int);
-	void	handle_pathButton		();
-	void	handle_allTIISelector		(int);
 	void	handle_audioServices_only	(int);
-	void	handle_auto_http		(int);
-	
 	void	handle_dcRemoval		(int);
-	void	handle_saveTitles		(int);
-	void	handle_tiiCollisions		(int);
+
 	void	handle_tiiFilter		(int);
 
-	void	handle_tiiSelector		(int);
-
+	void	handle_decoderSelector		(const QString &s);
+	void	handle_tiiCollisions		(int);
 	void	handle_mouseClicked		();
 
 signals:

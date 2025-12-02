@@ -72,11 +72,11 @@ public:
 	   transmitterName	= "not in database";
 	   latitude		= 0;
 	   longitude		= 0;
-	   power		= 0;
+	   altitude		= 0;
 	   height		= 0;
-	   power		= 0;
 	   polarization		= "";
 	   frequency		= 0;
+	   power		= 0;
 	   direction		= "";
 	}
 	~dbElement	()	{}
@@ -97,7 +97,6 @@ public:
 	float		phase;
 	bool		norm;
 	bool		collision;
-
 	bool		isStrongest;
 //
 //	for the http driver
@@ -128,26 +127,30 @@ public:
 
 	transmitter () {
 	   valid		= false;
-//	   ensemble		= "";
-//	   country		= "not known";
-//	   channel		= "";
-//	   ensemble		= "";
-//	   Eid			= 0;
-//	   mainId		= 255;
-//	   subId		= 255;
-//	   transmitterName	= "not in database";
-//	   latitude		= 0;
-//	   longitude		= 0;
-//	   power		= 0;
-//	   height		= 0;
-//	   power		= 0;
-//	   polarization		= "";
-//	   frequency		= 0;
-//	   direction		= "";
-//	   phase		= 0;
-//	   norm			= false;
-//	   collision		= false;
-//	   isStrongest		= false;
+	   country		= "not known";
+	   channel		= "";
+	   ensemble		= "";
+	   Eid			= 0;
+	   mainId		= 0;
+	   subId		= 0;
+	   transmitterName	= "not in database";
+	   latitude		= 0;
+	   longitude		= 0;
+	   altitude		= 0;
+	   height		= 0;
+	   polarization		= "";
+	   frequency		= 0;
+	   power		= 0;
+	   direction		= "";
+
+	   pattern		= 0;
+	   strength		= 0;
+	   distance		= 0;
+	   azimuth		= 0;
+	   phase		= 0;
+	   norm			= false;
+	   collision		= false;
+	   isStrongest		= false;
 	}
 	~transmitter	()	{}
 };

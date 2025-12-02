@@ -1339,8 +1339,12 @@ void	RadioInterface::TerminateProcess () {
 	stopScanning ();
 	while (theSCANHandler. active ())
 	   usleep (1000);
-	if (mapHandler != nullptr)
+	mapHandler_locker. lock ();
+	if (mapHandler != nullptr) {
 	   delete mapHandler;
+	   mapHandler = nullptr;
+	}
+	mapHandler_locker. unlock ();
 
 	theSCANHandler. hide ();
 	channelTimer.	stop	();
@@ -2541,8 +2545,10 @@ int	tunedFrequency	=
 	theDXDisplay. setChannel (channel. channelName, channel. ensembleName);
 	theNewDisplay. 		cleanTII	();
 	theNewDisplay. 		showTransmitters (channel. transmitters);
-	if (mapHandler != nullptr)
+	mapHandler_locker. lock ();
+	if (mapHandler != nullptr) 
 	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
+	mapHandler_locker. unlock ();
 
 	if (theSCANHandler. active ()) {
 	   theOFDMHandler	-> start ();
@@ -3599,8 +3605,12 @@ void	RadioInterface::handle_LoggerButton (int s) {
 
 void	RadioInterface::set_transmitters_local  (bool isChecked) {
 	channel. targetPos	= position {0, 0};
-	if ((isChecked) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos);
+	if (isChecked) {
+	   mapHandler_locker. lock ();
+	   if (mapHandler != nullptr)
+	      mapHandler -> putData (MAP_RESET, channel. targetPos);
+	   mapHandler_locker. unlock ();
+	}
 }
 
 void	RadioInterface::selectDecoder (int decoder) {
@@ -3629,6 +3639,7 @@ bool	RadioInterface::autoStart_http () {
 	   return false;
 	if (mapHandler != nullptr)  
 	   return false;
+	
 
 	try {
 	   mapHandler = new httpHandler (this,
@@ -3660,26 +3671,33 @@ void	RadioInterface::handle_httpButton	() {
 	      httpButton -> setText ("http-on");
 	}
 	else {		// forced stop
-	   mapHandler -> putData (MAP_CLOSE, position {-1, -1});
-	   int delayTeller = 0;
-	   while (delayTeller < 40) {
-	      usleep (100000);
-	      delayTeller ++;
+//	Two options. If the server is running, issue a mapClose
+//	request. If the server is not running, just delete
+	   if (mapHandler == nullptr) 	// nothing to do
+	      return;
+	   if (!configHandler_p -> get_close_mapHandler () ||
+	                          (!mapHandler -> isListening ())) {
+	      http_terminate ();
+	      return;
 	   }
-	   fprintf (stderr, "We moeten deleten\n");
-	   delete mapHandler;
-	   mapHandler	= nullptr;
-	   httpButton	-> setText ("http");
+//	handler is running and we want the map closed
+	   connect (mapHandler, &httpHandler::mapClose_processed,
+	            this, &RadioInterface::http_terminate);
+	   mapHandler_locker. lock ();
+	   mapHandler -> putData (MAP_CLOSE, position (-1, -1));
+	   mapHandler_locker. unlock ();
 	}
 }
 
 void	RadioInterface::http_terminate	() {
-//	locker. lock ();
-//	if (!mapHandler. isNull ()) {
-//	   mapHandler. reset ();
-//	}
-//	locker. unlock ();
-//	httpButton -> setText ("http");
+	fprintf (stderr, "Going to delete mapserver\n");
+	locker. lock ();
+	if (mapHandler != nullptr) {
+	   delete mapHandler;
+	   mapHandler	= nullptr;
+	}
+	locker. unlock ();
+	httpButton -> setText ("http");
 }
 
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {
@@ -4081,10 +4099,12 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	            configHandler_p -> utcSelector_active () ?
 	                                     QDateTime::currentDateTimeUtc () :
 	                                     QDateTime::currentDateTime ();
-
-	   mapHandler -> putData (key,
-	                          theTr,
-	                          theTime. toString (Qt::TextDate));
+	   mapHandler_locker. lock ();
+	   if (mapHandler != nullptr)
+	      mapHandler -> putData (key,
+	                             theTr,
+	                             theTime. toString (Qt::TextDate));
+	   mapHandler_locker. unlock ();
 	}
 }
 

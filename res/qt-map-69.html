@@ -202,6 +202,16 @@
 	         let ttt = document. getElementById ('current');
 	         for (var t = 0; t < data. length; t ++) {
 	            let target = data [t];
+	            if (target. type == MAP_CLOSE) {
+	               try {
+	                  server. close ();
+	               } catch (e) {}
+	               try {
+	                  window. close ();
+	               } catch (e) {}
+	               continue;
+	            }
+	            else
 	            if (target. type == MAP_RESET) {
 	               handle_map_reset ();
 	               continue;
@@ -213,15 +223,6 @@
 	            else
 	            if (target. type == MAP_CURRENT) {
 	               continue;
-	            }
-	            if (target. type == MAP_CLOSE) {
-	               try {
-	                  server. close ();
-	               } catch (e) {}
-	               try {
-	                  window. close ();
-	               } catch (e) {}
-	               return;
 	            }
 	            else {		// we add an element 
                        let current = document. getElementById ('testing');

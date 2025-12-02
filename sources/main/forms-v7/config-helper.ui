@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>521</width>
-    <height>440</height>
+    <width>534</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -490,13 +490,20 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="3">
+      <widget class="QCheckBox" name="clearScanList_selector">
+       <property name="text">
+        <string>clear on exit</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="0">
       <widget class="QCheckBox" name="closeDirect_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>close without asking</string>
+        <string>close, no asking</string>
        </property>
       </widget>
      </item>
@@ -516,7 +523,17 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration whether or not the main widget should ALWAYS be op top. Note that setting will be applied the next time the program will start.&lt;/p&gt;&lt;p&gt;Note further that in Windows a problem may occur: a warning message might be invisible, hidden by the main widget op top.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>main widget on top</string>
+        <string>main on top</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QCheckBox" name="close_mapHandler">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, then at stopping the map handler, a request is issued to close the map.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>close map</string>
        </property>
       </widget>
      </item>
@@ -541,12 +558,19 @@
       </widget>
      </item>
      <item row="2" column="2">
-      <widget class="QCheckBox" name="localBrowserSelector">
+      <widget class="QCheckBox" name="logger_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, a log file is maintained (as usual for windows in the folder in the home folder and for Linux in the directory /tmp in a folder/directory Qt-DAB-files) in a txt file :logFile.txt, in which activities such as selecting a device, channel, service, dump are written, preceded by the time of the activity.&lt;/p&gt;&lt;p&gt;The setting of the selector is maintained between program invocations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>start browser manually</string>
+        <string>  logger</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QCheckBox" name="saveTitlesSelector">
+       <property name="text">
+        <string>save titles</string>
        </property>
       </widget>
      </item>
@@ -576,31 +600,14 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Many ensembles contain both audio and data services (e.g. TPEG, EPG). If selected here, only audio services and  the EPG service if part of the ensemble will be shown in the services list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>audio services only</string>
+        <string>audio  only</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QCheckBox" name="logger_selector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, a log file is maintained (as usual for windows in the folder in the home folder and for Linux in the directory /tmp in a folder/directory Qt-DAB-files) in a txt file :logFile.txt, in which activities such as selecting a device, channel, service, dump are written, preceded by the time of the activity.&lt;/p&gt;&lt;p&gt;The setting of the selector is maintained between program invocations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>  logger</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
+     <item row="3" column="3">
       <widget class="QCheckBox" name="dcRemoval">
        <property name="text">
         <string>dc removal</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="2">
-      <widget class="QCheckBox" name="saveTitlesSelector">
-       <property name="text">
-        <string>save titles</string>
        </property>
       </widget>
      </item>
@@ -636,9 +643,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="clearScanList_selector">
+      <widget class="QCheckBox" name="localBrowserSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
-        <string>clear on exit</string>
+        <string> browser manually</string>
        </property>
       </widget>
      </item>

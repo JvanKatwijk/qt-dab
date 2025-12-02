@@ -426,6 +426,7 @@ private:
 //	short hands
 	void                    newChannelIndex        (int);
 	std::mutex		locker;
+	std::mutex		mapHandler_locker;
 	void			setSoundLabel		(bool);
 //	scan functions
 	void			startScan_to_data	();

@@ -140,7 +140,7 @@ using namespace std;
 #define		MAP_FRAME	1
 #define		MAP_MAX_TRANS	2
 #define		MAP_NORM_TRANS	4
-#define		MAP_CURRENR	8
+#define		MAP_CURRENT	8
 #define		MAP_CLOSE	64
 
 #define		SHOW_SINGLE	16

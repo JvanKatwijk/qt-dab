@@ -38,7 +38,7 @@
 class	RadioInterface;
 //
 
-class	httpHandler: public QObject {
+class	httpHandler: public QTcpServer {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
@@ -66,15 +66,15 @@ private:
 #endif
 	std::atomic<bool>	running;
 	QString		theMap		(position address);
-	QString		coordinatesToJson (std::vector<transmitter> &t);
+	QString		coordinatesToJson (transmitter &t);
 	std::vector<transmitter> transmitterList;
 	std::mutex	locker;
 	bool		autoBrowser_off;
 	bool		runs;
 	bool		closing;
-	QTcpServer	*my_tcpServer;
 signals:
 	void		setChannel	(const QString &);
+	void		mapClose_processed	();
 private slots:
 	void		newConnection	();
 	void		readData	();
