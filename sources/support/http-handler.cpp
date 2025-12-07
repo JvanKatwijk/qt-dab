@@ -25,12 +25,14 @@
 #include	<QTextStream>
 #include	<QDataStream>
 #include	<QByteArray>
+#include	<QDesktopServices>
+#include	<QMessageBox>
+
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<unistd.h>
 #include	<sys/types.h>
 #include	"distances.h"
-#include	<QDesktopServices>
 #include	<cstring>
 
 #include	"settings-handler.h"
@@ -39,41 +41,34 @@
 #include	"http-handler.h"
 #include	"radio.h"
 
-static bool stopLoading	= false;
-
-	httpHandler::httpHandler (RadioInterface *parent,
-	                          position	 homeAddress,
-	                          const QString &saveName,
-	                          bool		autoBrowser_off,
+	httpHandler::httpHandler (RadioInterface *theRadio,
+	                          const QString &fileName,
+	                          position	homeAddress,
+	                          bool		autoBrowser_on,
 	                          QSettings	*settings) {
-	this	-> parent	= parent;
-	this	-> mapPort			=
+	this	-> theRadio	= theRadio;
+	this	-> fileName	= fileName;
+	int  mapPort		=
 	            value_i (settings, MAP_HANDLING, MAP_PORT_SETTING,
                                                                   8080);
 	QString address		= 
 	            value_s (settings, MAP_HANDLING, BROWSER_ADDRESS,
 	                                                "http://localhost");
+	QString browserAddress		= address + ":" + QString::number (mapPort);
+	this	-> homeAddress		= homeAddress;
+	this	-> maxDelay		=
+	            value_i (settings, MAP_HANDLING, MAP_TIMEOUT, 3000);
 
-	QString temp		= address + ":" + QString::number (mapPort);
-	this	-> homeAddress	= homeAddress;
-	this	-> autoBrowser_off	= autoBrowser_off;
-#ifdef	__MINGW32__
-	this	-> browserAddress	= temp. toStdWString ();
-#else
-	this	-> browserAddress	= temp. toStdString ();;
-#endif
-	this	-> running. store (false);
-	this	-> dabSettings		= settings;
-
-	transmitterVector. resize (0);
+	delayTimer. setSingleShot (true);
+	connect (this, &httpHandler::setChannel,
+	         theRadio, &RadioInterface::channelSignal);
 	connect (this, &QTcpServer::newConnection,
 	         this, &httpHandler::newConnection);
-	connect (this, &httpHandler::setChannel,
-	         parent, &RadioInterface::channelSignal);
+	connect (&delayTimer, &QTimer::timeout,
+	         this, &httpHandler::handle_timeOut);
 
-	if (!autoBrowser_off) {
-	   if (!QDesktopServices::
-	        openUrl(QUrl (QString::fromStdString (browserAddress)))) {
+	if (!autoBrowser_on) {
+	   if (!QDesktopServices::openUrl(QUrl (browserAddress))) {
 	      fprintf (stderr, "cannot open URL\n");
 	      throw device_exception ("cannot open URL");
 	      return;
@@ -85,12 +80,9 @@ static bool stopLoading	= false;
 	   return;
 	}
 
-	saveFile	= fopen (saveName. toUtf8 (). data (), "w");
-	if (saveFile != nullptr) {
-	   fprintf (saveFile, "Home location; %f; %f\n\n", 
-	                         homeAddress. latitude, homeAddress. longitude);
-	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power, altitude, height, dir\n\n");
-	}
+	transmitterList. resize (0);
+	connection_stopped	= false;
+	closingLevel		= 0;
 }
 
 	httpHandler::~httpHandler	() {
@@ -100,61 +92,99 @@ static bool stopLoading	= false;
 
 void	httpHandler::newConnection	() {
 	if (this -> hasPendingConnections ()) {
-	   QTcpSocket *client = this -> nextPendingConnection ();
-	   connect (client, &QTcpSocket::readyRead,
-	            this, &httpHandler::readData);
-	   connect (client, &QAbstractSocket::disconnected,
-	            &QTcpSocket::deleteLater);
+	   QTcpSocket *socket = this -> nextPendingConnection ();
+	   connect (socket, &QTcpSocket::readyRead,
+	            this, &httpHandler::readSocket);
+	   connect (socket, &QAbstractSocket::disconnected,
+	            this, &httpHandler::discardSocket);
+	   connect  (socket, &QTcpSocket::errorOccurred,
+	             this, &httpHandler::onSocketError);
+	}
+}
+//
+//	There are three possibilities here
+//	a. connection will be restored and we go on
+//	b. the issues a MAP_CLOSE and are now ready to give up
+//	c. if the map wa skilled, the timer will go off and we give up
+void	httpHandler::discardSocket () {
+QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
+	if (closingLevel >= 2) {
+	   delayTimer. stop ();
+	   disconnect (socket, &QTcpSocket::readyRead,
+                       this, &httpHandler::readSocket);
+	   disconnect  (socket, &QTcpSocket::errorOccurred,
+	                this, &httpHandler::onSocketError);
+	   socket	-> close ();
+	   socket	= nullptr;
+	   connect (this, &httpHandler::mapClose_processed,
+	            theRadio, &RadioInterface::http_terminate);
+	   emit mapClose_processed ();
+	}
+	else {
+	   socket -> deleteLater ();
+	   delayTimer. start (maxDelay);
 	}
 }
 
-void	httpHandler::readData () {
+void	httpHandler::onSocketError (QAbstractSocket::SocketError socketerror) {
+QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
+	(void)socketerror;
+	fprintf (stderr, "error %s\n",
+	              socket -> errorString (). toLatin1 (). data ());
+}
+//
+bool	httpHandler::isConnected () {
+	return !connection_stopped;
+}
+
+void	httpHandler::readSocket () {
 QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	if (worker == nullptr)
 	   return;
-
-	bool	keepAlive	= true;
-	QByteArray data	= worker -> readAll ();
-	QString request	= QString (data);
-	int version	= request. contains ("HTTP/1.1") ? 11 : 10;
+	delayTimer. stop ();	// it seems we are reconnected
+	if (closingLevel > 0)
+	   return;
+	closingLevel		= 0;
+	bool	keepAlive	= false;
+	QByteArray data		= worker -> readAll ();
+	QString request		= QString (data);
+	int version		= request. contains ("HTTP/1.1") ? 11 : 10;
 	keepAlive	= (version == 11) ? 
-	                     request. contains ("Connection: close"):
+	                     !request. contains ("Connection: close"):
 	                     request. contains ("Connection: keep-alive");
-//	fprintf (stderr, "request -> %s\n", request. toLatin1 (). data ());
 //	Identify the URL
 	QStringList list	= request. split (" ");
 	if (list. size () < 2) 
 	   return;
-	QString theQuestion	= list [1];
+	QString askingFor	= list [1];
 	QString content;
 	QString ctype;
-//	fprintf (stderr, "theQuestion = %s\n", theQuestion. toLatin1 (). data ());
-	closing	= false;
-	if (theQuestion == "/data.json") {
-	   if (transmitterList. size () > 0) {
-	      locker. lock ();
-	      transmitter t = transmitterList [0];
+//	fprintf (stderr, "askingFor = %s\n", theQuestion. toLatin1 (). data ());
+	if (askingFor == "/data.json") {
+	   locker. lock ();
+	   if (transmitterList. size () > 0) { 
+	      transmitter t	= transmitterList [0];
+	      content		= transmitterToJsonObject (t);
 	      transmitterList. erase (transmitterList. begin ());
-	      locker. unlock ();
-	      content = coordinatesToJson (t);
 	      if (t. type == MAP_CLOSE) {
-	         closing = true;
-	         keepAlive = false;
+	         closingLevel = 1;
 	      }
 	   }
+	   locker. unlock ();
 	   if (content != "") {
 	      ctype       = "application/json;charset=utf-8";
 	   }
 	}
 	else	
-	if (theQuestion == "/channelSelector::") {
+	if (askingFor == "/channelSelector::") {
            setChannel (list [2]);
         }
         else {
-           content	= theMap (homeAddress);
+           content	= theMap (fileName, homeAddress);
            ctype	= "text/html;charset=utf-8";
         }
 	QByteArray theContents = content. toUtf8 ();
+
 //	Create the header
 	char hdr [2048];
 	sprintf (hdr,
@@ -168,18 +198,26 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	      keepAlive ? "keep-alive" : "close",
 	      (int)(theContents. size ()));
 	QByteArray theData = hdr;
-	int e = worker -> write (theData);
-	int f = worker -> write (theContents);
-	
-	if (closing)
+	(void)worker -> write (theData);
+	(void)worker -> write (theContents);
+
+	if (closingLevel > 0) {
 	   worker -> waitForBytesWritten ();
-	if (!keepAlive)
+	   closingLevel = 2;
+	}
+	if (!keepAlive || (closingLevel > 0))
 	   worker -> disconnectFromHost ();
-	if (closing)
-	   emit mapClose_processed ();
+}
+//
+//	This timeout is initiated after a disconnect
+void	httpHandler::handle_timeOut () {
+	connection_stopped	= true;
+	connect (this, &httpHandler::mapClose_processed,
+	         theRadio, &RadioInterface::cleanUp_mapHandler);
+	emit mapClose_processed ();
 }
 
-QString	httpHandler::theMap (position homeAddress) {
+QString	httpHandler::theMap (const QString &fileName, position homeAddress) {
 int	bodySize;
 char	*body;
 std::string latitude	= std::to_string (homeAddress. latitude);
@@ -189,9 +227,8 @@ int	cc;
 int teller	= 0;
 int params	= 0;
 
-	
 // read map file from resource file
-	QFile file (":res/qt-map-69.html");
+	QFile file (fileName);
 	if (file. open (QFile::ReadOnly)) {
 	   QByteArray record_data (1, 0);
 	   QDataStream in (&file);
@@ -225,6 +262,7 @@ int params	= 0;
 	         body [teller ++] = (char)cc;
 	      index ++;
 	   }
+	   body [teller ++] = 0;
 	}
 	else {
 	   fprintf (stderr, "cannot open file\n");
@@ -251,13 +289,10 @@ std::string s = std::to_string (f);
 	return std::string (temp);
 }
 //
-QString httpHandler::coordinatesToJson (transmitter &t) { 
+QString httpHandler::transmitterToJsonObject (transmitter &t) { 
 char buf [512];
 QString Jsontxt;
-	if (t. type == MAP_CLOSE)
-	   fprintf (stderr, "close signaal\n");
-	else
-	   fprintf (stderr, "type = %d\n", t. type);
+
 	Jsontxt += "[\n";
 	QString direction	= t. direction;
 	if (direction. size () < 3)
@@ -289,13 +324,9 @@ QString Jsontxt;
 	Jsontxt += "\n]\n";
 	return Jsontxt;
 }
-
-void	httpHandler::putData	(uint8_t type,
-	                         position target) {
-	for (unsigned long i = 0; i < transmitterList. size (); i ++)
-	   if ((transmitterList [i]. latitude == target. latitude) &&
-	       (transmitterList [i]. longitude == target. longitude))
-	      return;
+//
+//	For "special" keys we use 
+void	httpHandler::putData	(uint8_t type) {
 
 	transmitter t;
 	t. type			= type;
@@ -304,61 +335,27 @@ void	httpHandler::putData	(uint8_t type,
 	if ((type == MAP_RESET) || (type == MAP_CLOSE))
 	   transmitterList. resize (0);
 	transmitterList. push_back (t);
-	stopLoading	= true;
 	locker. unlock ();
 }
 
 void	httpHandler::putData	(uint8_t	type,
 	                         transmitter	&theTr,
 	                         const QString	&theTime) {
-//	                         const QString	&channelName,
-//	                         float	 snr) {
 	float latitude	= theTr. latitude;
 	float longitude	= theTr. longitude;
+	locker. lock ();
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
 	   if ((transmitterList [i]. latitude == latitude) &&
 	       (transmitterList [i]. longitude == longitude ) &&
-	       (transmitterList [i]. type == type))
-	      return;
-
-	fprintf (stderr, "type = %d\n", type);
-	theTr. type		= type;
-	theTr. dateTime		= theTime;
-//	theTr. strength		= snr;
-
-	locker. lock ();
-	transmitterList. push_back (theTr);
-//	transmitterList. push_back (t);
-	locker. unlock ();
-	return;
-	for (int i = 0; i < (int)(transmitterVector. size ()); i ++) {
-	   if ((transmitterVector. at (i). transmitterName ==
-	               theTr. transmitterName) &&
-	       (transmitterVector. at (i). channel ==
-	               theTr. channel) &&
-	       (transmitterVector. at (i). type ==
-	                         theTr. type)) {
+	       (transmitterList [i]. type == type)) {
+	      locker. unlock ();
 	      return;
 	   }
-	}
-	
-	if ((saveFile != nullptr)  &&
-	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
-	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f, %d, %d, %s\n",
-	                      theTr. channel. toUtf8 (). data (),
-	                      theTr. latitude,
-	                      theTr. longitude,
-	                      theTr. transmitterName. toUtf8 (). data (),
-	                      theTr. dateTime. toUtf8 (). data (),
-	                      theTr. mainId,
-	                      theTr. subId,
-	                      (int)(theTr. distance),
-	                      (int)(theTr. azimuth),
-	                      theTr. power,
-	                      (int)(theTr. altitude),
-	                      (int)(theTr. height),
-	                      theTr. direction. toUtf8 (). data ());
-	   transmitterVector. push_back (theTr);
-	}
+
+	theTr. type		= type;
+	theTr. dateTime		= theTime;
+
+	transmitterList. push_back (theTr);
+	locker. unlock ();
 }
 

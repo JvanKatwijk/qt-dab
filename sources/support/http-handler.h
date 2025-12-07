@@ -31,10 +31,12 @@
 #include	<mutex>
 #include	<QString>
 #include	<QSettings>
+#include	<QTimer>
 #include	"tii-mapper.h"
 #include	"db-element.h"
 #include	<QTcpSocket>
 #include	<QTcpServer>
+#include	<QAbstractSocket>
 class	RadioInterface;
 //
 
@@ -42,41 +44,36 @@ class	httpHandler: public QTcpServer {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
+	                         const QString &fileName,
 	                         position	address,
-	                         const QString	&saveName,
 	                         bool		autoBrowse,
 	                         QSettings	*settings = nullptr);
 		~httpHandler	();
-	void	putData		(uint8_t, position);
+	bool	isConnected	();
+	void	putData		(uint8_t	type);
 	void	putData		(uint8_t	type,
 	                         transmitter	&Tr,
 	                         const QString & theTime);
 private:
-	QSettings		*dabSettings;
-	FILE			*saveFile;
-	RadioInterface		*parent;
-	int			mapPort;
+	QTimer			delayTimer;
+	RadioInterface		*theRadio;
+	QString			fileName;
 	position		homeAddress;
-	std::vector<transmitter> transmitterVector;
-
-#ifdef	__MINGW32__
-	std::wstring	browserAddress;
-#else
-	std::string	browserAddress;
-#endif
-	std::atomic<bool>	running;
-	QString		theMap		(position address);
-	QString		coordinatesToJson (transmitter &t);
+	QString			theMap		(const QString &fileName,
+	                                         position address);
+	QString			transmitterToJsonObject (transmitter &t);
 	std::vector<transmitter> transmitterList;
-	std::mutex	locker;
-	bool		autoBrowser_off;
-	bool		runs;
-	bool		closing;
+	std::mutex		locker;
+	bool			connection_stopped;
+	std::atomic<int>	closingLevel;
+	int			maxDelay;
 signals:
-	void		setChannel	(const QString &);
+	void		setChannel		(const QString &);
 	void		mapClose_processed	();
 private slots:
-	void		newConnection	();
-	void		readData	();
+	void		newConnection		();
+	void		readSocket		();
+	void		discardSocket		();
+	void		handle_timeOut		();
+	void		onSocketError 		(QAbstractSocket::SocketError); 
 };
-

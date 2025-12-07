@@ -245,6 +245,7 @@ public:
 
 	bool	channelOn		();
 	bool	devScopeOn		();
+	int	wachter;
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 	void			focusInEvent (QFocusEvent *);
@@ -329,6 +330,8 @@ private:
 #endif
 	QTimer			pauzeTimer;
 	QTimer			stressTimer;
+
+	QTimer			theTimer;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
@@ -568,6 +571,7 @@ public slots:
 	                                                         int);
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			waitingToDelete		();
 	void			handle_aboutLabel	();
 	void			show_pauzeSlide		();
 	void			handle_timeTable	();
@@ -644,4 +648,5 @@ public slots:
 //
 //	and from the fib handler
 	void			tell_programType		(int, int);
+	void			cleanUp_mapHandler	();
 };

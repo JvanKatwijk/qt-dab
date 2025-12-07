@@ -201,12 +201,11 @@ char	manufac [256], product [256], serial [256];
 //
 //	See what the saved values are and restore the GUI settings
 	temp =  value_s (rtlsdrSettings, "rtlsdrSettings",
-	                              "externalGain", "10");
+	                                         "externalGain", "10");
 	k	= gainControl -> findText (temp);
 	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
-	int agc = value_i (rtlsdrSettings, "rtlsdrSettings",
-                                     "agcMode", 1);
+	int agc = value_i (rtlsdrSettings, "rtlsdrSettings", "agcMode", 1);
         init_autogain (agc);
 	
 	ppm_correction	->  

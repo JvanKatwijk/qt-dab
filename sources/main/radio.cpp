@@ -325,7 +325,7 @@ QString h;
 //#elif HAVE_RTLSDR_V4
 //	SystemVersion	= QString ("9.5") + " with RTLSDR-V4";
 //#else
-	SystemVersion	= QString ("9.5");
+	SystemVersion	= QString ("9.6");
 //#endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion ;
@@ -530,7 +530,7 @@ QString h;
 	connect (deviceSelectorLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::devSL_visibility);
 
-	aboutLabel -> setText (" © V6.9.5");
+	aboutLabel -> setText (" © V6.9.6");
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_aboutLabel);
@@ -2547,7 +2547,7 @@ int	tunedFrequency	=
 	theNewDisplay. 		showTransmitters (channel. transmitters);
 	mapHandler_locker. lock ();
 	if (mapHandler != nullptr) 
-	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
+	   mapHandler -> putData (MAP_FRAME);
 	mapHandler_locker. unlock ();
 
 	if (theSCANHandler. active ()) {
@@ -3608,7 +3608,7 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 	if (isChecked) {
 	   mapHandler_locker. lock ();
 	   if (mapHandler != nullptr)
-	      mapHandler -> putData (MAP_RESET, channel. targetPos);
+	      mapHandler -> putData (MAP_RESET);
 	   mapHandler_locker. unlock ();
 	}
 }
@@ -3639,18 +3639,19 @@ bool	RadioInterface::autoStart_http () {
 	   return false;
 	if (mapHandler != nullptr)  
 	   return false;
-	
 
 	try {
 	   mapHandler = new httpHandler (this,
+	                                 ":res/qt-map-69.html",
 	                                 localPos,
-	                                 "",
 	                                 configHandler_p -> localBrowserSelector_active (),
 	                                 dabSettings_p);
 	} catch (int e) {}
 	return mapHandler != nullptr;
 }
-
+//
+//
+static int teller = 0;
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
 	if (localPos. latitude == 0) {
@@ -3659,11 +3660,13 @@ void	RadioInterface::handle_httpButton	() {
 	   return;
 	}
 
+	fprintf (stderr, "mapHandler = %s null\n",
+	                       mapHandler == nullptr ? "indeed" : "not");
 	if (mapHandler == nullptr)  {
 	   try {
 	      mapHandler = new httpHandler (this,
+	                                    ":res/qt-map-69.html",
 	                                    localPos,
-	                                    QString (""),
 	                                    configHandler_p -> localBrowserSelector_active (),
 	                                    dabSettings_p);
 	   } catch (int e) {}
@@ -3672,32 +3675,72 @@ void	RadioInterface::handle_httpButton	() {
 	}
 	else {		// forced stop
 //	Two options. If the server is running, issue a mapClose
-//	request. If the server is not running, just delete
+//	request. If the server is running without a map just delete
 	   if (mapHandler == nullptr) 	// nothing to do
 	      return;
-	   if (!configHandler_p -> get_close_mapHandler () ||
-	                          (!mapHandler -> isListening ())) {
-	      http_terminate ();
+	   int auto_http   = value_i (dabSettings_p, CONFIG_HANDLER,
+                                               AUTO_HTTP, 0);
+	   if ((auto_http != 0) ||
+	       !configHandler_p -> get_close_mapSelector () ||
+	       !mapHandler -> isConnected ()) {
+	      cleanUp_mapHandler ();
 	      return;
 	   }
 //	handler is running and we want the map closed
-	   connect (mapHandler, &httpHandler::mapClose_processed,
-	            this, &RadioInterface::http_terminate);
+//	we send a signal, and "poll" for the result
 	   mapHandler_locker. lock ();
-	   mapHandler -> putData (MAP_CLOSE, position (-1, -1));
+	   mapHandler -> putData (MAP_CLOSE);
 	   mapHandler_locker. unlock ();
+	   teller	= 0;
+	   connect (&theTimer, &QTimer::timeout,
+	            this, &RadioInterface::waitingToDelete);
+	   theTimer. start (1000);
 	}
 }
 
-void	RadioInterface::http_terminate	() {
+void	RadioInterface::waitingToDelete () {
+	teller ++;
+	if ((teller < 300) && (wachter == 0)) {
+	   theTimer. start (10000);
+	   return;
+	}
+	disconnect (&theTimer, &QTimer::timeout,
+                    this, &RadioInterface::waitingToDelete);
+	cleanUp_mapHandler ();
+}
+
+void	RadioInterface::cleanUp_mapHandler () {
+	disconnect (mapHandler, &httpHandler::mapClose_processed,
+	            this, &RadioInterface::http_terminate);
 	fprintf (stderr, "Going to delete mapserver\n");
 	locker. lock ();
 	if (mapHandler != nullptr) {
+	   mapHandler -> close ();
 	   delete mapHandler;
 	   mapHandler	= nullptr;
 	}
 	locker. unlock ();
 	httpButton -> setText ("http");
+	fprintf (stderr, "mapHandler is gone\n");
+}
+//
+//	
+void	RadioInterface::http_terminate	() {
+	wachter = 1;
+	return;
+	disconnect (mapHandler, &httpHandler::mapClose_processed,
+	            this, &RadioInterface::http_terminate);
+
+	fprintf (stderr, "Going to delete mapserver\n");
+	locker. lock ();
+	if (mapHandler != nullptr) {
+	   mapHandler -> close ();
+	   delete mapHandler;
+	   mapHandler	= nullptr;
+	}
+	locker. unlock ();
+	httpButton -> setText ("http");
+	fprintf (stderr, "mapHandler is gone\n");
 }
 
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {

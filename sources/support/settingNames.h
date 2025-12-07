@@ -59,6 +59,7 @@
 #define	SAVE_SERVICE_SETTING	"saveService"
 
 #define	MAP_PORT_SETTING	"mapPort"
+#define	MAP_TIMEOUT		"timeOut"
 
 #define	SHOWALL_SETTING		"showAll_Setting"
 #define	SHOWALL_TII		"show_all_tii"

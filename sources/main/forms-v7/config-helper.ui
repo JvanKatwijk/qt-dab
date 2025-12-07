@@ -528,7 +528,7 @@
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QCheckBox" name="close_mapHandler">
+      <widget class="QCheckBox" name="close_mapSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, then at stopping the map handler, a request is issued to close the map.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>

@@ -80,7 +80,7 @@ public:
 	bool	get_audioServices_only	();
 	bool	get_allTIISelector	();
 
-	bool	get_close_mapHandler	();
+	bool	get_close_mapSelector	();
 	bool	get_dcRemoval		();
 	bool	get_saveTitles		();
 
@@ -134,7 +134,7 @@ private slots:
 	void	handle_localDB_Selector		(int);
 	void	handle_localBrowser		(int);
 	void	handle_onTop			(int);
-//	void	handle_close_mapHandler		(int);
+	void	handle_close_mapSelector	(int);
 
 //	void	handle_firstCorrelation		(int);
 //	void	handle_etiActivated		(int);

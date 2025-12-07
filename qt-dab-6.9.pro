@@ -27,7 +27,7 @@ unix {
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#MAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
@@ -436,10 +436,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-6.9.5
+   TARGET               = qt-dab-qt5-6.9.6
 }
 else {
-   TARGET               = qt-dab-qt6-6.9.5
+   TARGET               = qt-dab-qt6-6.9.6
 }
 
 #mac {
@@ -503,12 +503,11 @@ isEmpty(GITHASHSTRING) {
 
 #for for 64 bit
 	equals (QT_MAJOR_VERSION, 5) {
-        TARGET          = qt5-dab64-6.9.5
+        TARGET          = qt5-dab64-6.9.6
         }
         else {  
-        TARGET          = qt6-dab64-6.9.5
+        TARGET          = qt6-dab64-6.9.6
         }
-##for for 64 bit
 	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

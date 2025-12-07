@@ -136,6 +136,10 @@ int	index_for_key (int key) {
 	                                ON_TOP_SETTING, 0) == 1;
 	this ->  onTop -> setChecked (b);
 //
+	b = value_i (dabSettings, CONFIG_HANDLER,
+	                          "close_map", 0) != 0;
+	this	-> close_mapSelector	-> setChecked (b);
+
 //	third row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                          CLOSE_DIRECT_SETTING, 0) != 0;
@@ -243,6 +247,12 @@ int	index_for_key (int key) {
 	         myRadioInterface, &RadioInterface::handle_activeServices);
 	connect (this, &configHandler::set_dcRemoval,
 	         myRadioInterface, &RadioInterface::handle_dcRemoval);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (close_mapSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (close_mapSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_close_mapSelector);
 	set_Colors ();
 }
 
@@ -999,8 +1009,14 @@ void	configHandler::set_activeServices	(int activeS) {
 	activeServices	-> setText (QString::number (activeS));
 }
 
-bool	configHandler::get_close_mapHandler	() {
-	return close_mapHandler	-> isChecked ();
+void	configHandler::handle_close_mapSelector (int h) {
+	(void)h;
+	bool b = this ->  close_mapSelector -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, "close_map", b ? 1 : 0);
+}
+
+bool	configHandler::get_close_mapSelector	() {
+	return close_mapSelector	-> isChecked ();
 }
 
 void	configHandler::handle_dcRemoval		(int h) {
