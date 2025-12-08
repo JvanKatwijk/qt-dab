@@ -128,7 +128,10 @@ QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 
 void	httpHandler::onSocketError (QAbstractSocket::SocketError socketerror) {
 QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
+	if (socketerror = QAbstractSocket::RemoteHostClosedError)
+	   emit mapClose_processed ();
 	(void)socketerror;
+	fprintf (stderr, "socket error %d\n", socketerror);
 	fprintf (stderr, "error %s\n",
 	              socket -> errorString (). toLatin1 (). data ());
 }

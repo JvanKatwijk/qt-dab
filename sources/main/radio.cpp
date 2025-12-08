@@ -274,9 +274,8 @@ QString h;
 	connect (folder_shower, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_folderButton);
 	dxMode     = value_i (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
-	tiiButton -> setText (dxMode ? "tii local" : "dx display");
-	connect (tiiButton, &QPushButton::clicked,
-	         this, &RadioInterface::handle_tiiButton);
+	connect (distanceLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_distanceLabel);
 
 //	put the widgets in the right place and create the workers
 	setPositionAndSize	(dabSettings_p, this, S_MAIN_WIDGET);
@@ -507,8 +506,6 @@ QString h;
 	         this, &RadioInterface::color_configButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
-	connect (tiiButton, &smallPushButton::rightClicked,
-	         this, &RadioInterface::color_tiiButton);
 	connect (prevServiceButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_prevServiceButton);
 	connect (nextServiceButton, &smallPushButton::rightClicked,
@@ -3247,12 +3244,6 @@ QString httpButton_font	=
 	   value_s (dabSettings_p, COLOR_SETTINGS, HTTP_BUTTON + "_font",
 	                                              BLACK);
 
-QString	tiiButton_color =
-	   value_s (dabSettings_p, COLOR_SETTINGS, TII_BUTTON + "_color",
-	                                              YELLOW);
-QString tiiButton_font	=
-	   value_s (dabSettings_p, COLOR_SETTINGS, TII_BUTTON + "_font",
-	                                              BLACK);
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	spectrumButton ->
@@ -3273,9 +3264,6 @@ QString tiiButton_font	=
 	httpButton	->
 	              setStyleSheet (temp. arg (httpButton_color,
 	                                        httpButton_font));
-	tiiButton	->
-	              setStyleSheet (temp. arg (tiiButton_color,
-	                                        tiiButton_font));
 	prevServiceButton ->
 	              setStyleSheet (temp. arg (prevServiceButton_color,
 	                                        prevServiceButton_font));
@@ -3314,10 +3302,6 @@ void	RadioInterface::color_configButton	() 	{
 
 void	RadioInterface::color_httpButton	() 	{
 	setButtonColors (httpButton, HTTP_BUTTON);
-}
-
-void	RadioInterface::color_tiiButton	() 	{
-	setButtonColors (tiiButton, TII_BUTTON);
 }
 
 void	RadioInterface::setButtonColors	(QPushButton *b,
@@ -4528,18 +4512,15 @@ bool exists	= false;
 	fclose (theFile);
 }
 
-void	RadioInterface::handle_tiiButton () {
+void	RadioInterface::handle_distanceLabel () {
 	dxMode	= !dxMode;
 	store (dabSettings_p, CONFIG_HANDLER, S_DX_MODE, dxMode ? 1 : 0);
 	theDXDisplay. cleanUp ();
 	if (!dxMode) {
 	   theDXDisplay. hide ();
-	   tiiButton	-> setText ("dx display");
 	}
 	if (dxMode) {
-	   distanceLabel	-> setText ("");
 	   theDXDisplay. show ();
-	   tiiButton	-> setText ("tii local");
 	}
 	theOFDMHandler -> setDXMode (dxMode);
 }

@@ -113,7 +113,6 @@ class	configHandler;
 #define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
-#define	TII_BUTTON		QString ("tiiButton")
 /*
  *	The main gui object. It inherits from
  *	QWidget and the generated form
@@ -608,7 +607,7 @@ private slots:
 	void			handle_httpButton	();
 	void			setVolume		(int);
 	void			handle_snrLabel		();
-	void			handle_tiiButton	();
+	void			handle_distanceLabel	();
 //
 //	color handlers
 	void			handle_labelColor	();
@@ -620,7 +619,6 @@ private slots:
 	void			color_nextServiceButton ();
 	void			color_configButton	();
 	void			color_httpButton	();
-	void			color_tiiButton		();
 
 	void			devSL_visibility	();
 

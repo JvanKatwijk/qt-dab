@@ -5,32 +5,6 @@
 ![6.9](/res/read_me/qt-dab-logo.png?raw=true)
 
 
--------------------------------------------------------------------------
-Just for playing around (Not in the precompiled version still)
---------------------------------------------------------------------------
-
-The SDRplay RSPDuo is obviously an incredible device, depending on the
-mode two separate tuners.
-The regular SDRplay V3 device handling software in Qt-DAB is already
-capable of handling the Duo in single mode, with tuner selection.
-
-As a programming exercise, I added - as a separate device handler -
-a "duo" handler, where two tuners are running on the same channel
-
-![6.9](/res/read_me/rsp-duocontrol.png?raw=true)
-
-The device handler shows left the control for the "A" tuner, to
-the right for the "B" tuner, and in between a selector for selecting
-  * output is from tuner A
-  * output is from tuner B
-  * output is the addition of tuners A and B, i.e. A + B
-  * output is the subtraction of the B output from the A output.
-
-The "A" tuner has - apart from the agc selector, a "AM notch" selector,
-and the "B" tuner has - apart from the "agc selector a "biasT" selector.
-
-
-
 --------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------
@@ -43,25 +17,21 @@ Qt-DAB  has a single *main* widget that contains essentially all that is needed 
 ![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-6.9.5*, predefined executables and installers are available.
-For Windows  a 32 bit installer is available, and for Linux there is an x64 AppImage.
+*Qt-DAB-6.9.6*, predefined executables and installers are available.
+For Windows  a 64 bit installer is available, and for Linux there is an x64 AppImage.
 
 -------------------------------------------------------------------
-What is new/different in Qt-DAB-6.9.5
+What is new/different in Qt-DAB-6.9.6
 -------------------------------------------------------------------
 
-While Qt-DAB-6.9.5 resembles Qt-DAB-6.9.4, there are a few noticeable
+While Qt-DAB-6.9.6 resembles Qt-DAB-6.9.4, there are a few noticeable
 differences.
 
- * the combobox on the configuration widget with which an input device was selected is gone. Now the main widget shows on the top line a small icon with which a device selection table can be made visible. After selecting a device, the device selection table disappears automatically.
+ * improved support for the SDRplay RspDuo: tuner selection is possible and using two tuners on the same channel is also posisble;
 
- * improved support for the SDRplay RspDuo: tuner selection is possible,
+ * on closing the map, the http (i.e. map)hander will stop automatically, while closing the httpHandler will - try to - close the map;
 
- * Windows support for both RTLSDR V3 and V4 in a single installer,
-
- * the scanList has a more prominent role. It shows the (channel, service) pairs of all channels visited. Using file input, the scanList will not be visible (seems logical), and the configuration window as a selector indicating that on program termination the list is cleared (obviously normally it is maintained between program invocations),
-
- * preloaded database. The precompiled versions contain a preloaded database. The configuration widget has a selector to choose between loading - on program startup - this preloaded database or one you loaded into the home directory.
+ * on the main window, the "dxDisplay" button disappeared. Clicking on the botton line (i.e. where the strongest transmitter is shown) shows (or hides) the dxDisplay.
 
 Table of Contents
 =================================================================
@@ -114,7 +84,7 @@ Features
 Widgets and scopes
 =======================================================================
 
-![6.9](/res/read_me/Qt_DAB-6.9.5.png)
+![6.9](/res/read_me/Qt_DAB-6.9.6.png)
 
 The *main widget* (see picture) of Qt-DAB (always visible), contains  the settings for controlling the visibility of other widgets.
 The window shows - left half - a list of services (either from the currently selected channel or from the favourites). Selecting a service is just by clicking on the name.
@@ -141,11 +111,13 @@ whether or not a signal should be audible.
 
 ![6.9](/res/read_me/mainwindow-buttons.png)
 
+At the bottom:
+
  * the button labeled *scan* controls the visibility of a the scan handler widget;
  * the button labeled *http* controls the http handler with which a map (with the transmitters) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
- * the bottom line shows the transmitter name from which the data is received, and - in this case - that the avx2 instruction extension is used for some computations.
+ * the bottom line shows the transmitter name from the transmitter with the  strongest data, and - in this case - that the avx2 instruction extension is used for some computations.
 
 ![6.9](/res/read_me/services.png)
 
@@ -277,6 +249,9 @@ cleared on program exit.
 Also new is the selector **local DB**. If enabled on program startup Qt-DAB will
 load the embedded TII database, rather than trying to load a TII database from the user's home directory.
 
+Finally, new is the selector **map close**. If enabled, closing the map as
+sketched before is enabled.
+
 ![8.8](/res/read_me/service-and-titles.png)
 
 Slightly experimental is the possibility to save **titles** (parts
@@ -297,6 +272,7 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
 
   * SDR DABsticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick in the precompiled Windows versions, 
   *  All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library, New is extended support for the SDRPlay RspDuo. Tuner selection (and tuner 2 is connected to a port with biasT support) is now operational;
+  * a special entry exists for the SDRplay RSPDuo, one for running both tuners simultaneously;
   * HACKRF One, 
   * Airspy, including Airspy mini (be aware that AirspyHF is **not** able to provide the samplerate required for DAB),
   * LimeSDR, 
@@ -304,7 +280,7 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
   * **untested** UHD (anyone wants to help testing?)
 
 ![6.9](/res/read_me/rtlsdr-control.png?raw=true)
-![6.9](/res/read_me/sdrplay-control.png?raw=true)
+![6.9](/res/read_me/rsp-duocontrol.png?raw=true)
 
 Apart from the untested UHD device, support for these 6 devices is commonly
 included in the precompiled versions.
