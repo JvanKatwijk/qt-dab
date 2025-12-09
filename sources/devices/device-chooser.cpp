@@ -23,11 +23,12 @@
 #include	"device-chooser.h"
 #include	<QFileDialog>
 #include	<QMessageBox>
+#include	<QInputDialog>
 #include	"device-exceptions.h"
+#include	"settings-handler.h"
 #include	"errorlog.h"
 
 #include	<QModelIndex>
-
 #ifdef	HAVE_RTLSDR_V3
 #include	"rtlsdr-handler-win.h"
 #define	RTLSDR_DEVICE_V3	0200
@@ -295,8 +296,23 @@ int	deviceNumber	= getDeviceIndex (s);
 	      break;
 #endif
 #ifdef	HAVE_PLUTO
-	   case PLUTO_DEVICE:
-	      return new plutoHandler (dabSettings, version, theErrorLogger);
+	   case PLUTO_DEVICE: {
+	      bool ok = false;
+	      QString context =
+	          value_s (dabSettings, CONFIG_HANDLER,
+	                              "plutoContext", "pluto.local");
+	      context = QInputDialog::
+	                    getText (this, tr("QInputDialog::getText()"),
+                                     tr("pluto context:"),
+	                             QLineEdit::Normal,
+                                     context, &ok);
+	      if (!ok || context.isEmpty ())
+	         return nullptr;
+	      store (dabSettings, CONFIG_HANDLER,
+	                              "plutoContext", context);
+	      return new plutoHandler (dabSettings, version,
+	                                         context, theErrorLogger);
+	   }
 #endif
 #ifdef HAVE_RTL_TCP
 	   case RTL_TCP_DEVICE:

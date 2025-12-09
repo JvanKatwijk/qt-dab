@@ -623,8 +623,10 @@ void	rtlsdrHandler::set_iqDump	() {
 bool	rtlsdrHandler::setup_iqDump () {
 	QString fileName = QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         QDir::homePath(),
-	fileName        = QDir::toNativeSeparators (fileName));
+	                                         QDir::homePath (),
+	                                         "raw (*.raw)");
+
+	fileName        = QDir::toNativeSeparators (fileName);
 	iqDumper	= fopen (fileName. toUtf8 (). data (), "wb");
 	if (iqDumper == nullptr)
 	   return false;

@@ -51,9 +51,9 @@ char*	get_ch_name (const char* type, int id) {
 //	repository, Fedora does NOT
 ///////////////////////////////////////////////////////////////////////////
 
-
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             const QString &recorderVersion,
+	                             const QString &context,
 	                             errorLogger *theLogger):
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
@@ -131,7 +131,8 @@ char*	get_ch_name (const char* type, int id) {
 	}
 
 	if (ctx == nullptr) {
-	   ctx = iio_create_network_context ("pluto.local");
+//	   ctx = iio_create_network_context ("pluto.local");
+	   ctx = iio_create_network_context (context. toLatin1 (). data ());
 	   contextName	-> setText ("pluto.local");
 	}
 

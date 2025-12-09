@@ -158,6 +158,16 @@
           </widget>
          </item>
          <item>
+          <widget class="smallPushButton" name="skinButton">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few &amp;quot;skin&amp;quot;s for the widgets in the program. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>skin</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="smallPushButton" name="audioSelectButton">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation). Note that if no audio channels for the Qt_audio driver can be found, the default setting of portaudio is applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -447,12 +457,9 @@
       </widget>
      </item>
      <item row="1" column="5">
-      <widget class="smallPushButton" name="skinButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few &amp;quot;skin&amp;quot;s for the widgets in the program. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
+      <widget class="smallPushButton" name="nogniets">
        <property name="text">
-        <string>skin</string>
+        <string/>
        </property>
       </widget>
      </item>

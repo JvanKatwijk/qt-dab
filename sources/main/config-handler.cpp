@@ -301,6 +301,7 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_pathButton);
 	connect (skinButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_skinButton);
+
 //
 //	real handlers
 	connect (scheduleButton, &QPushButton::clicked,
@@ -1041,5 +1042,3 @@ bool	configHandler::get_saveTitles		() {
 bool	configHandler::get_clearScanList       () {
 	return clearScanList_selector	-> isChecked ();
 }
-
-

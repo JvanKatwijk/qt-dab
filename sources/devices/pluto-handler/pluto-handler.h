@@ -40,12 +40,6 @@
 #include	"ui_pluto-widget.h"
 #include	"xml-filewriter.h"
 
-//#ifdef __MINGW32__
-//#define GETPROCADDRESS  GetProcAddress
-//#else
-//#define GETPROCADDRESS  dlsym
-//#endif
-
 class	errorLogger;
 
 #ifndef	PLUTO_RATE
@@ -132,6 +126,7 @@ class	plutoHandler:  //public QThread,
 Q_OBJECT
 public:
 			plutoHandler		(QSettings *,
+	                                         const QString &,
 	                                         const QString &,
 	                                         errorLogger *);
             		~plutoHandler		();
