@@ -1363,7 +1363,7 @@ void	RadioInterface::TerminateProcess () {
 	}
 //
 	if (mapHandler != nullptr) {
-	   mapHandler ->  stop ();
+//	   mapHandler ->  stop ();
 	   delete mapHandler;
 	}
 

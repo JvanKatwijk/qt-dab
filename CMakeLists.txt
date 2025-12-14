@@ -177,6 +177,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	set (${objectName}_HDRS
 	     ./sources/main/radio.h
 	     ./sources/main/aboutdialog.h
+	     ./sources/main/dxDisplay.h
 	     ./sources/main/config-handler.h
 	     ./sources/main/ensemble-handler.h
 	     ./sources/main/techdata.h
@@ -232,7 +233,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/dab-tables.h
 	     ./sources/support/distances.h
 	     ./sources/support/dl-cache.h
-	     ./sources/support/dxDisplay.h
 	     ./sources/support/element-selector.h
 	     ./sources/support/fft-handler.h
 	     ./sources/support/findfilenames.h
@@ -321,6 +321,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/main.cpp
 	     ./sources/main/radio.cpp
 	     ./sources/main/aboutdialog.cpp
+	     ./sources/main/dxDisplay.cpp
 	     ./sources/main/config-handler.cpp
 	     ./sources/main/ensemble-handler.cpp
 	     ./sources/main/techdata.cpp
@@ -367,7 +368,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/dab-params.cpp
 	     ./sources/support/dab-tables.cpp
 	     ./sources/support/distances.cpp
-	     ./sources/support/dxDisplay.cpp
 	     ./sources/support/element-selector.cpp
 	     ./sources/support/fft-handler.cpp
 	     ./sources/support/findfilenames.cpp
@@ -448,6 +448,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/config-handler.h 
 	     ./sources/main/techdata.h
 	     ./sources/main/aboutdialog.h 
+	     ./sources/main/dxDisplay.h
 	     ./sources/main/display-widget.h 
 	     ./sources/main/scopes/correlation-scope.h 
 	     ./sources/main/scopes/spectrum-scope.h 
@@ -484,7 +485,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/scan-handler.h 
 	     ./sources/support/scantable-handler.h 
 	     ./sources/support/audiosystem-selector.h
-	     ./sources/support/dxDisplay.h
 	     ./sources/support/converter_48000.h
 	     ./sources/support/scanlist-handler.h
 	     ./sources/support/scheduler.h

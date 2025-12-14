@@ -18,18 +18,20 @@ Qt-DAB  has a single *main* widget that contains essentially all that is needed 
 
 Of course, as for previous versions, for the current version,
 *Qt-DAB-6.9.6*, predefined executables and installers are available.
-For Windows  a 64 bit installer is available, and for Linux there is an x64 AppImage.
+For Linux there is an x64 AppImage, for Windows there is a single 64 bit installer, one with separate entries to select a V3 or V4 rtlsdr device.
 
 -------------------------------------------------------------------
 What is new/different in Qt-DAB-6.9.6
 -------------------------------------------------------------------
 
-While Qt-DAB-6.9.6 resembles Qt-DAB-6.9.4, there are a few noticeable
+While Qt-DAB-6.9.6 resembles previous versions, there are a few noticeable
 differences.
+
+ * on the configuration window, the possibility of selecting the TII decoder is removed. The **best** TII decoder is now the only one.
 
  * improved support for the SDRplay RspDuo: tuner selection is possible and using two tuners on the same channel is also posisble;
 
- * on closing the map, the http (i.e. map)hander will stop automatically, while closing the httpHandler will - try to - close the map;
+ *  the configuration windows shows a selector *map close*. If set, on closing the map, the http (i.e. map)hander will stop automatically, while closing the httpHandler will close the map. Note that if **browser manually** is selected, this does not apply.
 
  * on the main window, the "dxDisplay" button disappeared. Clicking on the botton line (i.e. where the strongest transmitter is shown) shows (or hides) the dxDisplay.
 
@@ -58,7 +60,7 @@ Introduction
 
 *Qt-DAB* is designed to be used with a variety of SDR devices.
 Precompiled versions for Windows and Linux (x64) are available
-that support most of these devices for which Qt-DAB provides support (see below).
+that support most devices for which Qt-DAB provides support (see below).
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well, though it is most likely not a trivial exercise.
 
 *Qt-DAB* is GUI driven, the full GUI shows 4+ widgets, one of them is the
@@ -69,16 +71,16 @@ Features
 =================================================================
   
   * Qt-DAB supports most common SDR devices directly. The device interface is quite simple and in a different document it is explained in detail how to use the interface  to implement control for other devices;
-  * Qt-DAB supports a **scanList**, i.e. a list with channel/service pairs encountered. Obviously, selecting a service from this list is possible;
-  * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
-  * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaneously, and displays the transmitters on a map. A separate tool is available to download the required database.
+  * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaneously, and Qt-DAB displays the transmitters on a map. A separate tool is available to download a database, the precompiled versions contain a copy of the database;
   * Qt-DAB starts EPG/SPI services automatically as background task and provides means to show resulting time tables;
-  * Qt-DAB supports **journaline**, often transmitted as subservice, and auto starts a small journaline window;
+  * Qt-DAB supports **journaline**, often transmitted as subservice, if a journaline (sub)service is detected, auto starts a small journaline window;
+  * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
   * Qt-DAB allows running an arbitrary amount of audio services from the current ensemble as *background service*, with the output sent to a file,
-  * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
+  * Qt-DAB supports a **scanList**, i.e. a list with channel/service pairs encountered. Obviously, selecting a service from this list is possible;
   * Qt-DAB offers the possibility of generating an **ETI file** from the currently selected channel,
   * Qt-DAB offers different views on the input data, see below,
   * Qt-DAB offers the possibility of scanning through all - or a selected subset - channels of the band,
+  * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
   * and much more ...
 
 Widgets and scopes
@@ -86,11 +88,11 @@ Widgets and scopes
 
 ![6.9](/res/read_me/Qt_DAB-6.9.6.png)
 
-The *main widget* (see picture) of Qt-DAB (always visible), contains  the settings for controlling the visibility of other widgets.
-The window shows - left half - a list of services (either from the currently selected channel or from the favourites). Selecting a service is just by clicking on the name.
+The *main widget* (see picture) of Qt-DAB (always visible), contains selectors for controlling the visibility of other widgets.
+The window shows - left half - a list of services (either from the currently selected channel or from **favourites**). Selecting a service is just by clicking on the name.
 The right half of the widget shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
-  * touching the *ensemble name* (NPO (8001) in the picture) makes the *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible, touching the name again will hide it;
+  * touching the *ensemble name* (NPO (8001) in the picture top left) makes the *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible, touching the name again will hide it;
 
 ![6.9](/res/read_me/content-table.png)
 
@@ -98,26 +100,24 @@ The right half of the widget shows the dynamic label, and the slides - if transm
 
 The picture above shows the topline op the right half of the main window.
 
- * touching the small icon left on the top of the right half will show (or hide) the *technical widget*, a widget showing all technical details as well as strength indicators and 
-a spectrum of the audio of the selected service;
+ * touching the small icon left on the top of the right half will show (or hide) the *technical widget*, a widget showing all technical details as well as strength indicators and a spectrum of the audio of the selected service;
  * touching the small icon to the right next, the folder/directory in which the slides, the tii log and the log file are written is shown;
  * touching the small **blue** icon causes the device list to be displayed.
 
 ![6.9](/res/read_me/devicelist.png)
 
- * touching the icon showing a *speaker* controls **muting** the signal and shows
-whether or not a signal should be audible.
- * touching the *copyright symbol* shows (or, if visible, hides) a small widget with acknowledgements for using external libraries;
+ * touching the icon showing a *speaker* controls **muting** the signal and shows whether or not a signal should be audible.
+ * touching the *copyright symbol* shows (or, if visible, hides) a small **about** window with acknowledgements for using external libraries;
 
 ![6.9](/res/read_me/mainwindow-buttons.png)
 
-At the bottom:
+At the bottom of the right half of the window, one sees 4 buttons:
 
  * the button labeled *scan* controls the visibility of a the scan handler widget;
- * the button labeled *http* controls the http handler with which a map (with the transmitters) will be shown;
+ * the button labeled *http* controls the http handler with which a map (with the transmitters displayed on their location) will be shown;
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
- * the bottom line shows the transmitter name from the transmitter with the  strongest data, and - in this case - that the avx2 instruction extension is used for some computations.
+ * the bottom line shows the transmitter name from the transmitter with the  strongest data, and - in this case - that the avx2 instruction extension is used for some computations. Clicking on that bottom line controls the visibility of the dxDisplay.
 
 ![6.9](/res/read_me/services.png)
 
@@ -282,11 +282,12 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
 ![6.9](/res/read_me/rtlsdr-control.png?raw=true)
 ![6.9](/res/read_me/rsp-duocontrol.png?raw=true)
 
-Apart from the untested UHD device, support for these 6 devices is commonly
+Apart from the untested UHD device, support for these 6 device types is commonly
 included in the precompiled versions.
 It was noted by users that when using the support library for the V4 version of the RTLSDR (aka DABsticks)  devices  with V3 devices  the software was rather deaf.
-To accommodate that, there are **two** precompiled Windows versions,
-one with "built-in" support for the V4 versions, and one supporting the V3 versions of the DAB sticks.
+To accommodate that, there are **two** device entries, 
+one supporting the V3 versions of the DAB sticks. While the driver is
+essentially the same, they use different device libraries.
 
 In Qt-DAB the approach is to **dynamically** load the functions from the manufacturer's device library as soon as a device is selected (and not sooner).
 This approach allows  distributing versions that are configured with devices not installed on the user's system.
@@ -384,9 +385,15 @@ Displaying TII data
 
 As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses a database (gratefully made available by "www.fmList.org") to map the decoded TII data to name and location of the transmitter.
 
-A copy of that database can be loaded by a small utility, a "db-loader",
-precompiled for Windows and Linux-x64.
+In recent versions, a copy of that database is part of the precompiled
+versions. The **configuration and control** window contains selector
+that by default is set "on", meaning that on program startup that 
+database is used.
+A fresh copy of that database can be installed in the user's home directory
+by a small utility, a "db-loader", precompiled for Windows and Linux-x64.
 The db-loader installs the database, file ".txdata.ti" in the user's home directory, that is where Qt-DAB expects a database - with that name - to be found.
+The **configuration and control** window contains a button to load the
+database from the user's home directory.
 
 ![6.9](/res/read_me/db-loader.png?raw=true)
 
@@ -416,10 +423,10 @@ The "compass" shows the direction of the signal from the selected transmitter.
 Qt-DAB has - on the main widget -  a button labeled *http*,
 when touched, a webserver is initiated that - when running - shows
 the position(s) of the transmitter(s) received on the map. 
-
-Note that two preconditions have to be met:
- * a "home" location has to be known (see the button *coordinates*);
- * a TII database is installed (see the **db-loader** mentioned above).
+(Note that since recently, Qt-DAB contains a **default** home location -
+somewhere in Amsterdam - that - together with  default database - allows the
+software to handle TII data and show the result of decoding on a map).
+It is advised to update the user's home location).
 
 New in the current version of Qt-DAB is the display - per  transmitter location - of the channels that contain data, together with the TII value (mainId, subId) transmitted from that location.
 Clicking on a transmitterlocation, displays the details of that location, i.e.
