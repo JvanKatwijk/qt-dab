@@ -111,7 +111,6 @@ private slots:
 	void	color_pathButton	();
 //
 //	and the handlers:
-	void	handle_tiiSelector		(int);
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
 	void	handle_audioSelectButton	();
@@ -145,8 +144,6 @@ private slots:
 	void	handle_saveSlides		(int);
 	void	handle_audioServices_only	(int);
 	void	handle_dcRemoval		(int);
-
-	void	handle_tiiFilter		(int);
 
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_tiiCollisions		(int);

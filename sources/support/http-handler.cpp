@@ -57,7 +57,7 @@
 	QString browserAddress		= address + ":" + QString::number (mapPort);
 	this	-> homeAddress		= homeAddress;
 	this	-> maxDelay		=
-	            value_i (settings, MAP_HANDLING, MAP_TIMEOUT, 3000);
+	            value_i (settings, MAP_HANDLING, MAP_TIMEOUT, 2000);
 
 	delayTimer. setSingleShot (true);
 	connect (this, &httpHandler::setChannel,
@@ -82,7 +82,7 @@
 
 	transmitterList. resize (0);
 	connection_stopped	= false;
-	closingLevel		= 0;
+	closingInProgress. store (false);
 }
 
 	httpHandler::~httpHandler	() {
@@ -105,35 +105,25 @@ void	httpHandler::newConnection	() {
 //	There are three possibilities here
 //	a. connection will be restored and we go on
 //	b. the issues a MAP_CLOSE and are now ready to give up
-//	c. if the map wa skilled, the timer will go off and we give up
+//	c. if the map was killed, the timer will go off and we give up
 void	httpHandler::discardSocket () {
 QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
-	if (closingLevel >= 2) {
-	   delayTimer. stop ();
-	   disconnect (socket, &QTcpSocket::readyRead,
-                       this, &httpHandler::readSocket);
-	   disconnect  (socket, &QTcpSocket::errorOccurred,
-	                this, &httpHandler::onSocketError);
-	   socket	-> close ();
-	   socket	= nullptr;
-	   connect (this, &httpHandler::mapClose_processed,
-	            theRadio, &RadioInterface::http_terminate);
-	   emit mapClose_processed ();
-	}
-	else {
-	   socket -> deleteLater ();
-	   delayTimer. start (maxDelay);
-	}
+	socket -> deleteLater ();
 }
 
 void	httpHandler::onSocketError (QAbstractSocket::SocketError socketerror) {
 QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
-	if (socketerror = QAbstractSocket::RemoteHostClosedError)
-	   emit mapClose_processed ();
-	(void)socketerror;
-	fprintf (stderr, "socket error %d\n", socketerror);
-	fprintf (stderr, "error %s\n",
-	              socket -> errorString (). toLatin1 (). data ());
+	if (socketerror = QAbstractSocket::RemoteHostClosedError) {
+	   if (delayTimer. isActive ())
+	      delayTimer. stop ();
+	   if (closingInProgress. load ()) {	// reacting on button switch
+	      connect (this, &httpHandler::mapClose_processed,
+	               theRadio, &RadioInterface::http_terminate);
+	      emit mapClose_processed ( );
+	   }
+	   else
+	      delayTimer. start (1000);
+	}
 }
 //
 bool	httpHandler::isConnected () {
@@ -145,9 +135,9 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	if (worker == nullptr)
 	   return;
 	delayTimer. stop ();	// it seems we are reconnected
-	if (closingLevel > 0)
+	if (closingInProgress. load ())
 	   return;
-	closingLevel		= 0;
+	closingInProgress. store (false);
 	bool	keepAlive	= false;
 	QByteArray data		= worker -> readAll ();
 	QString request		= QString (data);
@@ -170,7 +160,7 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	      content		= transmitterToJsonObject (t);
 	      transmitterList. erase (transmitterList. begin ());
 	      if (t. type == MAP_CLOSE) {
-	         closingLevel = 1;
+	         closingInProgress. store (true);
 	      }
 	   }
 	   locker. unlock ();
@@ -203,20 +193,26 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	QByteArray theData = hdr;
 	(void)worker -> write (theData);
 	(void)worker -> write (theContents);
-
-	if (closingLevel > 0) {
+//
+//	In case we have sent a close signal
+	if (closingInProgress. load ()) {
 	   worker -> waitForBytesWritten ();
-	   closingLevel = 2;
 	}
-	if (!keepAlive || (closingLevel > 0))
-	   worker -> disconnectFromHost ();
+	delayTimer. start (maxDelay);
 }
 //
-//	This timeout is initiated after a disconnect
+//	This timeout is initiated after a (potential) disconnect
+//	Under normal circumstances, after purhing the httpButton,
+//	an error is signalled and the error function takes
+//	care 
 void	httpHandler::handle_timeOut () {
 	connection_stopped	= true;
-	connect (this, &httpHandler::mapClose_processed,
-	         theRadio, &RadioInterface::cleanUp_mapHandler);
+	if (closingInProgress. load ())
+	   connect (this, &httpHandler::mapClose_processed,
+	            theRadio, &RadioInterface::http_terminate);
+	else
+	   connect (this, &httpHandler::mapClose_processed,
+	            theRadio, &RadioInterface::cleanUp_mapHandler);
 	emit mapClose_processed ();
 }
 

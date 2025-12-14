@@ -47,8 +47,8 @@ uint16_t	secondDigit (v % 10);
 
 	tableWidget 	= new QTableWidget (0, 13);
 	tableWidget	-> setColumnWidth (0, 30);	// mark
-	tableWidget	-> setColumnWidth (1, 45);	// pattern
-	tableWidget	-> setColumnWidth (2, 50);	// tii value
+	tableWidget	-> setColumnWidth (1, 50);	// pattern
+	tableWidget	-> setColumnWidth (2, 55);	// tii value
 	tableWidget	-> setColumnWidth (3, 50);	// phase
 	tableWidget	-> setColumnWidth (4, 60);	// strength
 	tableWidget	-> setColumnWidth (5, 70);	// azimuth
@@ -98,6 +98,7 @@ uint16_t	secondDigit (v % 10);
 }
 
 	dxDisplay::~dxDisplay () {
+	storeWidgetPosition (dxSettings, myWidget, "DX_DISPLAY");
 	int16_t	rows	= tableWidget -> rowCount ();
 	for (int row = rows; row > 0; row --)
 	   tableWidget -> removeRow (row);

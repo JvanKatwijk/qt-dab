@@ -112,6 +112,7 @@ uint8_t patternTable [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
+
 		TII_Detector::TII_Detector (uint8_t dabMode,
 	                                     phaseTable *theTable):
 	                                     params (dabMode),
@@ -125,14 +126,22 @@ uint8_t patternTable [] = {
 	for (int i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
 
-	table_2. resize (carriers / 2);
-	int teller = 0;
+	rotationTable. resize (carriers);
+        int teller = 0;
         for (int carrier = - carriers / 2;
                        carrier < carriers / 2; carrier += 2) {
-	   int index    = carrier < 0 ? carrier + T_u : carrier + 1;
-           table_2 [teller ++] = theTable -> refTable [index] *
+           int index    = carrier < 0 ? carrier + T_u : carrier + 1;
+	   Complex r	= theTable -> refTable [index] *
                                  conj (theTable -> refTable [index + 1]);
+//
+//	the "arg" or r is one of 0 .. 3 * PI/2
+	   float aa = (arg (r) < 0) ? arg (r) + 2 * M_PI : arg (r);
+	   int bb  = aa < 1 ? 0 :
+	                aa < 2 ? 1:
+	                aa < 3.5 ? 2 : 3;
+	   rotationTable [teller ++] = bb;
         }
+
 }
 
 	TII_Detector::~TII_Detector () {
@@ -153,7 +162,8 @@ void	TII_Detector::addBuffer (const std::vector<Complex>  &v) {
 Complex tmpBuffer [T_u];
 
 	for (int i = 0; i < T_u; i ++)
-           tmpBuffer [i] = v [T_g + i];
+//	   tmpBuffer [i] = v [i];
+	   tmpBuffer [i] = v [T_g + i];
 	my_fftHandler. fft (tmpBuffer);
 	for (int i = 0; i < T_u; i ++)
 	   nullSymbolBuffer [i] += tmpBuffer [i];
@@ -170,12 +180,32 @@ QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db,
 	return result;
 }
 
+uint8_t		TII_Detector::getRotation (int n) {
+	return rotationTable [n];
+}
+
 uint16_t	TII_Detector::getPattern (int n) {
 	return patternTable [n];
 }
 
 uint16_t	TII_Detector::nrPatterns () {
 	return (uint16_t)sizeof (patternTable);
+}
+
+// rotate  0, 90, 180 or -90 degrees
+Complex		TII_Detector::rotate (Complex value, uint8_t phaseIndicator) {   
+	switch (phaseIndicator) {   
+	   case 3:
+	      return Complex (-imag (value), real (value));
+	   case 2:
+	      return -value;
+	   case 1:
+	      return Complex (imag (value), -real (value));
+	   case 0:
+              return value;
+	   default: 	// should not happen
+	      return value;
+	}
 }
 
 

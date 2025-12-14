@@ -91,7 +91,8 @@ int	teller = 0;
 	   for (int j = 0; j < nrSections; j ++) {
 	      Complex X = decodedBuffer [i + j * 192];
 	      outVec_etsi [i] += X ;
-	      outVec_nonetsi [i] += X * conj (table_2 [i + j * 192]);
+	      outVec_nonetsi [i] += rotate (X, getRotation (i + j * 192));
+
 	   }
 	}
 }

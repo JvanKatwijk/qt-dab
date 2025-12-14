@@ -1434,7 +1434,7 @@ void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
 }
 
 bool	fibDecoder::evenFrame		() {
-	return (CIFcount_lo. load () & 0x07) == 0;
+	return (CIFcount_lo. load () & 0x07) >= 4;
 }
 //
 

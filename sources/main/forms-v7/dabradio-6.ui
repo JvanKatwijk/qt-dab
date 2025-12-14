@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
-    <height>342</height>
+    <width>539</width>
+    <height>313</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,7 +60,7 @@
           <x>0</x>
           <y>0</y>
           <width>239</width>
-          <height>188</height>
+          <height>159</height>
          </rect>
         </property>
        </widget>
@@ -510,6 +510,12 @@
        </item>
        <item>
         <widget class="clickablelabel" name="distanceLabel">
+         <property name="minimumSize">
+          <size>
+           <width>141</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clicking on this label shows - or hides - the dxDisplay&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -525,7 +531,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>168</width>
+           <width>108</width>
            <height>20</height>
           </size>
          </property>

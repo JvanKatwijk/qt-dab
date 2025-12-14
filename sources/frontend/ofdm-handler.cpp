@@ -37,10 +37,7 @@
 #include	"settings-handler.h"
 
 #include	"tii-detector-1.h"
-#include	"tii-detector-2.h"
 
-#define	TII_OLD	0100
-#define	TII_NEW	0101
 /**
   *	\brief ofdmHandler
   *	The ofdmHandler class is the driver of the processing
@@ -105,8 +102,6 @@
 	                                           S_DX_MODE, 0) != 0;
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
 	                                           "decoders", DECODER_1); 
-	this	-> selectedTII		= value_i (dabSettings, CONFIG_HANDLER,		 	                                   "tii-detector", 1) == 0 ?
-	                                          TII_OLD : TII_NEW;
 
 	this	-> etiOn		= false;
 	ofdmBuffer. resize (3 * T_s);
@@ -207,8 +202,7 @@ void	ofdmHandler::stop	() {
    */
 void	ofdmHandler::run	() {
 timeSyncer	myTimeSyncer (&theReader);
-TII_Detector_B	theTIIDetector_OLD (p -> dabMode, &theTable, settings_p);
-TII_Detector_A	theTIIDetector_NEW (p -> dabMode, &theTable);
+TII_Detector	theTIIDetector (p -> dabMode, &theTable);
 freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
@@ -246,10 +240,7 @@ int	snrCount	= 0;
 	         frameCount	= 0;
 	         sampleCount	= 0;
 	         setSynced (false);
-	         if (selectedTII == TII_NEW)
-	            theTIIDetector_NEW. reset ();
-	         else
-	            theTIIDetector_OLD. reset ();
+	         theTIIDetector. reset ();
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
 	               inSync	= true;
@@ -359,7 +350,6 @@ int	snrCount	= 0;
   *	We read the missing samples in the ofdm buffer
   */
 	      sampleCount	+= T_u;
-	      bool frame_with_TII = 
 	                   (p -> dabMode == 1) &&
 	                     theFicHandler. evenFrame ();
 	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer);
@@ -470,25 +460,19 @@ int	snrCount	= 0;
 //
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
-	      if (frame_with_TII) {
-	         if (selectedTII == TII_NEW)
-	            theTIIDetector_NEW. addBuffer (ofdmBuffer);
-	         else
-	            theTIIDetector_OLD. addBuffer (ofdmBuffer);
+	      if ((p -> dabMode == 1) &&
+	                     theFicHandler. evenFrame ()) {
+	         theTIIDetector. addBuffer (ofdmBuffer);
 	         if (++tiiCounter >= tiiDelay) {
-	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
-	                                                          T_u);
+	            tiiCounter = 0;
+	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data (),
+	                                                          T_null);
 	            showTIIspectrum ();
 	            QVector<tiiData> resVec =
-	                selectedTII == TII_NEW ?
-	                       theTIIDetector_NEW. processNULL (tiiThreshold,
-	                                                 tiiCollisions_active,
-	                                                 tiiFilter_active):
-	                       theTIIDetector_OLD. processNULL (tiiThreshold,
+	                       theTIIDetector. processNULL (tiiThreshold,
 	                                                 tiiCollisions_active,
 	                                                 tiiFilter_active);
 	            showTIIData (resVec, 0);
-	            tiiCounter = 0;
 	         }
 	      }
 	      else {	// compute SNR
@@ -705,10 +689,7 @@ void	ofdmHandler::setDXMode		(bool b) {
 }
 
 void	ofdmHandler::selectTII		(uint8_t a) {
-	if (a == 0)
-	   selectedTII = TII_OLD;
-	else
-	   selectedTII = TII_NEW;
+	(void)a;
 }
 
 void	ofdmHandler::setSpeedUp	(bool b) {

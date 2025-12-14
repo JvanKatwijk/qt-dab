@@ -65,7 +65,7 @@ private:
 	std::vector<transmitter> transmitterList;
 	std::mutex		locker;
 	bool			connection_stopped;
-	std::atomic<int>	closingLevel;
+	std::atomic<bool>	closingInProgress;
 	int			maxDelay;
 signals:
 	void		setChannel		(const QString &);

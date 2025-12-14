@@ -38,7 +38,6 @@
 
 #define	READLEN_DEFAULT	(4 * 8192)
 
-static clock_t time1	= 0;
 //
 //	For the callback, we do need some environment which
 //	is passed through the ctx parameter
@@ -88,9 +87,10 @@ void	run () {
 
 //	Our wrapper is a simple classs
 	rtlsdrHandler_win::rtlsdrHandler_win (QSettings *s,
-	                                    const QString libraryString,
-	                                    const QString &recorderVersion,
-	                                    errorLogger	*theLogger):
+	                                      const QString libraryString,
+	                                      int theVersion,
+	                                      const QString &recorderVersion,
+	                                      errorLogger	*theLogger):
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, SAMPLERATE) {
 int16_t	deviceCount;
@@ -100,17 +100,18 @@ QString	temp;
 int	k;
 char	manufac [256], product [256], serial [256];
 
-	this	-> libraryString	= libraryString;
 	rtlsdrSettings			= s;
+	this	-> libraryString	= libraryString;
+	storageName			= QString ("rtlsdrSettings-V") +
+	                                       QString::number(theVersion);
 	this	-> recorderVersion	= recorderVersion;
 	this	-> theErrorLogger	= theLogger;
-	(void)theLogger;
 	setupUi (&myFrame);
 //	setPositionAndSize (s, &myFrame, "rtlsdrSettings");
 	myFrame. show ();
 	filtering			= false;
 
-	currentDepth	=  value_i (rtlsdrSettings, "rtlsdrSettings",
+	currentDepth	=  value_i (rtlsdrSettings, storageName,
 	                                               "filterDepth", 5);
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
@@ -200,19 +201,19 @@ char	manufac [256], product [256], serial [256];
 	}
 //
 //	See what the saved values are and restore the GUI settings
-	temp =  value_s (rtlsdrSettings, "rtlsdrSettings",
+	temp =  value_s (rtlsdrSettings, storageName,
 	                                         "externalGain", "10");
 	k	= gainControl -> findText (temp);
 	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
-	int agc = value_i (rtlsdrSettings, "rtlsdrSettings", "agcMode", 1);
+	int agc = value_i (rtlsdrSettings, storageName, "agcMode", 1);
         init_autogain (agc);
 	
 	ppm_correction	->  
-	     setValue (value_i (rtlsdrSettings, "rtlsdrSettings",
+	     setValue (value_i (rtlsdrSettings, storageName,
 	                                 "ppm_correction", 0));
 	save_gainSettings	=
-	     value_i (rtlsdrSettings, "rtlsdrSettings",
+	     value_i (rtlsdrSettings, storageName,
 	                             "save_gainSettings", 1) != 0;
 
 	int res = this -> rtlsdr_set_center_freq (theDevice, 220000000);
@@ -297,16 +298,15 @@ char	manufac [256], product [256], serial [256];
 //         rtlsdr_close (theDevice);    // will crash if activated
         }
 
-	storeWidgetPosition (rtlsdrSettings, &myFrame, "rtlsdrSettings");
+	storeWidgetPosition (rtlsdrSettings, &myFrame, storageName);
 	QString gainText	= gainControl -> currentText ();
-	store (rtlsdrSettings, "rtlsdrSettings",
-	                       "externalGain", gainText);
+	store (rtlsdrSettings, storageName, "externalGain", gainText);
 	int     agc     = agc_off -> isChecked () ? 1 :
                                   agc_sw  -> isChecked () ? 2 : 0;
-        store (rtlsdrSettings, "rtlsdrSettings", "agcMode", agc);
-	store (rtlsdrSettings, "rtlsdrSettings",
+        store (rtlsdrSettings, storageName, "agcMode", agc);
+	store (rtlsdrSettings, storageName,
 	                    "ppm_correction", ppm_correction -> value());
-	store (rtlsdrSettings, "rtlsdrSettings",
+	store (rtlsdrSettings, storageName,
 	                    "filterDepth", filterDepth -> value ());
 	rtlsdrSettings	-> sync ();
 	if (xmlWriter != nullptr) {
@@ -713,7 +713,9 @@ bool	isValid (QChar c) {
 }
 
 bool	rtlsdrHandler_win::setup_xmlDump (bool direct) {
-QString channel		= rtlsdrSettings -> value ("channel", "xx"). toString ();
+
+QString channel		= value_s (rtlsdrSettings, storageName,
+	                                   "channel", "xx"). toString ();
 
 	if (xmlWriter != nullptr)
 	   return false;
@@ -758,14 +760,14 @@ int     agc     = agc_off -> isChecked () ? 1 :
                   agc_sw  -> isChecked () ? 2 : 0;
 QString theValue        = gain + ":" + QString::number (agc);
 QString freqVal		= QString::number (freq);
-	store (rtlsdrSettings, "rtlsdrSettings", freqVal, theValue);
+	store (rtlsdrSettings, storageName, freqVal, theValue);
 }
 
 void	rtlsdrHandler_win::update_gainSettings (int freq) {
 int	agc;
 QString	theValue	= "";
 QString freqVal		= QString::number (freq);
-	theValue	= value_s (rtlsdrSettings, "rtlsdrSettings",
+	theValue	= value_s (rtlsdrSettings, storageName,
 	                                             freqVal, theValue);
 
 	if (theValue == QString (""))

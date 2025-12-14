@@ -180,7 +180,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theScanlistHandler (this,
 	                                                        scanListFile),
 	                                        theErrorLogger (Si),
-	                                        theDeviceChoser (&theErrorLogger, Si),
+	                                        theDeviceChooser (&theErrorLogger, Si),
 	                                        theDXDisplay (this, Si),
 	                                        theLogger	(Si),
 	                                        theSCANHandler (this, Si,
@@ -221,7 +221,7 @@ QString h;
 	globals. diff_length	=
 	          value_i (dabSettings_p, DAB_GENERAL, "diff_length", DIFF_LENGTH);
 	globals. tii_delay   =
-	          value_i (dabSettings_p, DAB_GENERAL, "tii_delay", 3);
+	          value_i (dabSettings_p, DAB_GENERAL, "tii_delay", 2);
 	if (globals. tii_delay < 2)
 	   globals. tii_delay	= 2;
 	globals. tii_depth      =
@@ -575,7 +575,7 @@ QString h;
 	           value_s (dabSettings_p, DAB_GENERAL, 
 	                                      SELECTED_DEVICE, "no device");
 
-	if (theDeviceChoser. getDeviceIndex (h) >= 0)
+	if (theDeviceChooser. getDeviceIndex (h) >= 0)
 	   inputDevice_p	= createDevice (h, &theLogger);
 //
 	peakLeftDamped          = -100;
@@ -646,20 +646,20 @@ QString h;
 	}
 
 	if (inputDevice_p != nullptr) {
-	   connect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	   connect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	            this, &RadioInterface::newDevice);
 	   if (inputDevice_p -> isFileInput ())
 	      scanListButton -> setEnabled (false);
-	   theDeviceChoser. hide ();
+	   theDeviceChooser. hide ();
 	   startDirect ();
 	   qApp	-> installEventFilter (this);
 	   return;
 	}
 //	What we want here is that we start up after a device
 //	is selected
-	connect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	connect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	         this, &RadioInterface::doStart);
-	theDeviceChoser. show ();
+	theDeviceChooser. show ();
 	qApp	-> installEventFilter (this);
 }
 //
@@ -675,15 +675,12 @@ void	RadioInterface::doStart (const QString &dev) {
 	if (inputDevice_p == nullptr) {
 	   return;
 	}
-	disconnect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	disconnect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	            this, &RadioInterface::doStart);
-	connect (&theDeviceChoser, &deviceChooser::deviceSelected,
+	connect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	         this, &RadioInterface::newDevice);
-	if (inputDevice_p -> isFileInput ())
-	   scanListButton -> setEnabled (false);
-	else
-	   scanListButton -> setEnabled (true);
-	theDeviceChoser. hide ();
+	scanListButton -> setEnabled (!inputDevice_p -> isFileInput ());
+	theDeviceChooser. hide ();
 	startDirect ();
 }
 //
@@ -1477,7 +1474,7 @@ void	RadioInterface::updateTimeDisplay() {
 //	precondition: everything is quiet
 deviceHandler	*RadioInterface::createDevice (const QString &s,
 	                                        logger *theLogger) {
-deviceHandler	*inputDevice = theDeviceChoser.
+deviceHandler	*inputDevice = theDeviceChooser.
 	                               createDevice  (s, version);
 	
 	(void)theLogger;		// for now
@@ -1508,7 +1505,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	stopChannel	();
 	soundOut_p	-> stop ();
 //	soundOut_p	-> suspend ();
-	fprintf (stderr, "disconnecting\n");
+//	fprintf (stderr, "disconnecting\n");
 	if (inputDevice_p != nullptr) {
 	   inputDevice_p	-> stopReader	();
 	   inputDevice_p	-> stopDump	();
@@ -1523,7 +1520,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice_p = new deviceHandler ();
 	   return;		// nothing will happen
 	}
-	theDeviceChoser. hide ();
+	theDeviceChooser. hide ();
 	soundOut_p	-> restart ();
 	startDirect ();		// will set running
 }
@@ -3635,6 +3632,21 @@ bool	RadioInterface::autoStart_http () {
 }
 //
 //
+//	handling the httpButton has some interesting aspects
+//	while it is obvious to start not only a server, but also
+//	a browser with the web, killing both is less obvious.
+//	If the "user" kills the broweser containing the map,
+//	a simple timeout is sufficient to handle the killing of
+//	the server.
+//	If, however, the user touches the httpButton to stop the
+//	webbrowsing, a special "token" is sent to the browser which
+//	is understood by the javascript code (we hope).
+//	The response is - at least in most cases - an error, caught
+//	by the httphandler, telling to inform the "radio" to stop
+//	the http server. It turned out that just killing the http server
+//	from within the signal code caused - sometimes - a crash
+//	That is why an indirection is added, the radio code will wait 
+//	for a number of seconds for a signal to arrive to kill the http handler
 static int teller = 0;
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
@@ -3644,8 +3656,6 @@ void	RadioInterface::handle_httpButton	() {
 	   return;
 	}
 
-	fprintf (stderr, "mapHandler = %s null\n",
-	                       mapHandler == nullptr ? "indeed" : "not");
 	if (mapHandler == nullptr)  {
 	   try {
 	      mapHandler = new httpHandler (this,
@@ -3676,6 +3686,7 @@ void	RadioInterface::handle_httpButton	() {
 	   mapHandler -> putData (MAP_CLOSE);
 	   mapHandler_locker. unlock ();
 	   teller	= 0;
+	   stillWaiting	= true;
 	   connect (&theTimer, &QTimer::timeout,
 	            this, &RadioInterface::waitingToDelete);
 	   theTimer. start (1000);
@@ -3684,8 +3695,8 @@ void	RadioInterface::handle_httpButton	() {
 
 void	RadioInterface::waitingToDelete () {
 	teller ++;
-	if ((teller < 300) && (wachter == 0)) {
-	   theTimer. start (10000);
+	if ((teller < 10) && stillWaiting) {
+	   theTimer. start (1000);
 	   return;
 	}
 	disconnect (&theTimer, &QTimer::timeout,
@@ -3696,7 +3707,7 @@ void	RadioInterface::waitingToDelete () {
 void	RadioInterface::cleanUp_mapHandler () {
 	disconnect (mapHandler, &httpHandler::mapClose_processed,
 	            this, &RadioInterface::http_terminate);
-	fprintf (stderr, "Going to delete mapserver\n");
+//	fprintf (stderr, "Going to delete mapserver\n");
 	locker. lock ();
 	if (mapHandler != nullptr) {
 	   mapHandler -> close ();
@@ -3705,26 +3716,12 @@ void	RadioInterface::cleanUp_mapHandler () {
 	}
 	locker. unlock ();
 	httpButton -> setText ("http");
-	fprintf (stderr, "mapHandler is gone\n");
+//	fprintf (stderr, "mapHandler is gone\n");
 }
 //
 //	
 void	RadioInterface::http_terminate	() {
-	wachter = 1;
-	return;
-	disconnect (mapHandler, &httpHandler::mapClose_processed,
-	            this, &RadioInterface::http_terminate);
-
-	fprintf (stderr, "Going to delete mapserver\n");
-	locker. lock ();
-	if (mapHandler != nullptr) {
-	   mapHandler -> close ();
-	   delete mapHandler;
-	   mapHandler	= nullptr;
-	}
-	locker. unlock ();
-	httpButton -> setText ("http");
-	fprintf (stderr, "mapHandler is gone\n");
+	stillWaiting = false;
 }
 
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {
@@ -3879,16 +3876,17 @@ std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 
 	if (theTIIBuffer. GetRingBufferReadAvailable () < SAMPLERATE / 1000)
 	   return;
+	theTIIBuffer. getDataFromBuffer (inBuffer. data (),
+	                               theTIIBuffer. GetRingBufferReadAvailable () - SAMPLERATE / 1000);
 	theTIIBuffer. getDataFromBuffer (inBuffer. data (), SAMPLERATE / 1000);
 	theTIIBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
 	           (theNewDisplay. getTab () == SHOW_TII)) {
 	   if (channel. subId != 0)
 	      theNewDisplay. showTII (inBuffer,
-	                           channel. tunedFrequency, channel. subId);
+	                              channel. tunedFrequency, channel. subId);
 	   else
-	      theNewDisplay. showTII (inBuffer,
-	                           channel. tunedFrequency, -1);
+	      theNewDisplay. showTII (inBuffer, channel. tunedFrequency, -1);
 	}
 }
 
@@ -4830,10 +4828,10 @@ bool	RadioInterface::handle_keyEvent (int theKey) {
 }
 
 void	RadioInterface::devSL_visibility	() {
-	if (theDeviceChoser. isVisible ())
-	   theDeviceChoser. hide ();
+	if (theDeviceChooser. isVisible ())
+	   theDeviceChooser. hide ();
 	else
-	   theDeviceChoser. show ();
+	   theDeviceChooser. show ();
 }
 
 void	RadioInterface::tell_programType	(int SId, int programType) {

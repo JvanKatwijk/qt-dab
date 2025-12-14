@@ -244,7 +244,6 @@ public:
 
 	bool	channelOn		();
 	bool	devScopeOn		();
-	int	wachter;
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 	void			focusInEvent (QFocusEvent *);
@@ -272,7 +271,7 @@ private:
 
 	scanListHandler		theScanlistHandler;
 	errorLogger		theErrorLogger;
-	deviceChooser		theDeviceChoser;
+	deviceChooser		theDeviceChooser;
 	dxDisplay		theDXDisplay;
 	logger			theLogger;
 	scanHandler		theSCANHandler;
@@ -331,6 +330,7 @@ private:
 	QTimer			stressTimer;
 
 	QTimer			theTimer;
+	bool			stillWaiting;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;

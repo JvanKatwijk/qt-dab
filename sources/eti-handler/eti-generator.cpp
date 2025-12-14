@@ -69,8 +69,8 @@ uint8_t	theVector [6144];
 //	again the last fib.
 //	In between there are more fib fields filled than CIFS
 //
-//	Since the odpprocessor (together with the decoder) takes quite an
-//	amount of cycles, the eti-generation is done in a different thread
+//	The odpprocessor (together with the decoder) takes quite an
+//	amount of cycles
 //	Note CIF counts from 0 .. 3
 //
 		etiGenerator::etiGenerator	(uint8_t   dabMode,
@@ -338,15 +338,15 @@ int	index	= -1;
 	for (int i = 0; i < my_ficHandler -> nrChannels (); i ++) {
 	   channel_data data;
 	   my_ficHandler -> getChannelInfo (&data, i);
-	   parameter *t	= new parameter;
-	   t -> input	= input;
-	   t -> subChId	= data. id;
-	   t -> uepFlag	= data. uepFlag;
-	   t -> bitRate	= data. bitrate;
+	   parameter *t		= new parameter;
+	   t -> input		= input;
+	   t -> subChId		= data. id;
+	   t -> uepFlag		= data. uepFlag;
+	   t -> bitRate		= data. bitrate;
 	   t -> protLevel	= data. protlev;
 	   t -> start_cu	= data. start_cu;
 	   t -> size		= data. size;
-	   t -> output	= &output [offset];
+	   t -> output		= &output [offset];
 	   offset 		+= data. bitrate * 24 / 8;
 //
 //	We try to "reuse" the deconvolvers, i.e. if one

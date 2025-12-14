@@ -123,11 +123,11 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/config-handler.h \
 	   ./sources/main/techdata.h \
 	   ./sources/main/aboutdialog.h \
+	   ./sources/main/dxDisplay.h \
 	   ./sources/support/equalizer.h \
 	   ./sources/support/qwt-2.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
-	   ./sources/support/dxDisplay.h \
 	   ./sources/support/audiosystem-selector.h \
 	   ./sources/support/dl2-handler.h \
 	   ./sources/support/http-handler.h \
@@ -141,9 +141,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/freqsyncer.h \
 	   ./sources/frontend/phasetable.h \
 	   ./sources/frontend/freq-interleaver.h \
-	   ./sources/frontend/tii-detector.h \
 	   ./sources/frontend/tii-detector-1.h \
-	   ./sources/frontend/tii-detector-2.h \
 	   ./sources/frontend/fic-handling/fic-handler.h \
 	   ./sources/frontend/fic-handling/ensemble.h  \
 	   ./sources/frontend/fic-handling/fib-dbtypes.h  \
@@ -282,12 +280,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/ensemble-handler.cpp \
 	   ./sources/main/techdata.cpp \
 	   ./sources/main/config-handler.cpp \
-	   ./sources/support/scan-handler.cpp \
-	   ./sources/support/scantable-handler.cpp \
-	   ./sources/support/audiosystem-selector.cpp \
-	   ./sources/support/dxDisplay.cpp \
-	   ./sources/support/dl2-handler.cpp \
-	   ./sources/support/http-handler.cpp \
+	   ./sources/main/dxDisplay.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
 	   ./sources/frontend/timesyncer.cpp \
@@ -298,9 +291,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/frontend/freqsyncer.cpp \
 	   ./sources/frontend/phasetable.cpp \
 	   ./sources/frontend/freq-interleaver.cpp \
-	   ./sources/frontend/tii-detector.cpp \
 	   ./sources/frontend/tii-detector-1.cpp \
-	   ./sources/frontend/tii-detector-2.cpp \
 	   ./sources/frontend/fic-handling/fic-handler.cpp \
 	   ./sources/frontend/fic-handling/ensemble.cpp  \
 	   ./sources/frontend/fic-handling/fib-config.cpp  \
@@ -340,36 +331,41 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/epg/epg-compiler.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
 	   ./sources/output/audio-player.cpp \
-	   ./sources/support/crc-handlers.cpp \
+	   ./sources/support/audiosystem-selector.cpp \
+	   ./sources/support/bandpass-filter.cpp \
+	   ./sources/support/basic-print.cpp \
 	   ./sources/support/charsets.cpp \
-	   ./sources/support/distances.cpp \
-	   ./sources/support/time-converter.cpp \
-	   ./sources/support/logger.cpp \
-	   ./sources/support/errorlog.cpp \
-	   ./sources/support/settings-handler.cpp \
-	   ./sources/support/position-handler.cpp \
-	   ./sources/support/riffWriter.cpp \
+	   ./sources/support/content-table.cpp \
 	   ./sources/support/converter_48000.cpp \
-	   ./sources/support/fft-handler.cpp \
+	   ./sources/support/coordinates.cpp \
+	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/dab-params.cpp \
 	   ./sources/support/dab-tables.cpp \
+	   ./sources/support/distances.cpp \
+	   ./sources/support/dl2-handler.cpp \
+	   ./sources/support/element-selector.cpp \
+	   ./sources/support/errorlog.cpp \
+	   ./sources/support/fft-handler.cpp \
+	   ./sources/support/findfilenames.cpp \
+	   ./sources/support/fir-filters.cpp \
+	   ./sources/support/http-handler.cpp \
+	   ./sources/support/ITU_Region_1.cpp \
+	   ./sources/support/logger.cpp \
+	   ./sources/support/mapport.cpp \
+	   ./sources/support/position-handler.cpp \
+	   ./sources/support/riffWriter.cpp \
+	   ./sources/support/scan-handler.cpp \
 	   ./sources/support/scanlist-handler.cpp \
+	   ./sources/support/scantable-handler.cpp \
 	   ./sources/support/scheduler.cpp \
 	   ./sources/support/schedule-selector.cpp \
-	   ./sources/support/element-selector.cpp \
-	   ./sources/support/time-table.cpp \
-	   ./sources/support/findfilenames.cpp \
-	   ./sources/support/content-table.cpp \
-	   ./sources/support/ITU_Region_1.cpp \
-	   ./sources/support/coordinates.cpp \
+	   ./sources/support/settings-handler.cpp \
 	   ./sources/support/skin-handler.cpp \
-	   ./sources/support/mapport.cpp \
-	   ./sources/support/bandpass-filter.cpp \
-	   ./sources/support/fir-filters.cpp \
 	   ./sources/support/tii-mapper.cpp \
 	   ./sources/support/tii-reader.cpp \
+	   ./sources/support/time-converter.cpp \
+	   ./sources/support/time-table.cpp \
 	   ./sources/support/uploader.cpp \
-	   ./sources/support/basic-print.cpp \
 	   ./sources/support/gui-elements/presetcombobox.cpp \
 	   ./sources/support/gui-elements/circular-button.cpp \
 	   ./sources/support/gui-elements/clickable-label.cpp \

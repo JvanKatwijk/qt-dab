@@ -23,32 +23,40 @@
 
 #pragma once
 
-#include	<tii-detector.h>
 #include	<cstdint>
 #include	"dab-params.h"
 #include	<complex>
 #include	<vector>
 #include	"dab-constants.h"
-//#include	"fft-handler.h"
+#include	"fft-handler.h"
 #include	"phasetable.h"
 #include	<QVector>
-class	QSettings;
 
-class	TII_Detector_A : public TII_Detector {
+#define NUM_GROUPS      8
+#define GROUPSIZE       24
+class	TII_Detector {
 public:
-			TII_Detector_A	(uint8_t dabMode, phaseTable *theTable);
-			~TII_Detector_A	();
+			TII_Detector	(uint8_t dabMode, phaseTable *theTable);
+			~TII_Detector	();
 	void		reset		();
+	void		addBuffer	(const std::vector<Complex> &);
 	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
 private:
-//	std::vector<Complex> table_2;
+	dabParams	params;
+	int16_t		T_u;
+	int16_t		T_g;
+	int16_t		carriers;
+	fftHandler	my_fftHandler;
 	bool		carrierDelete;
 	Complex		decodedBuffer [768];
+	std::vector<Complex> nullSymbolBuffer;
+	void		resetBuffer	();
 	void		collapse	(const Complex *, 
 	                                 Complex *, Complex *, bool);
-
 	int		tiiThreshold;
+	std::vector<uint8_t>	rotationTable;
+	Complex		rotate		(Complex, uint8_t);
 };
 
 

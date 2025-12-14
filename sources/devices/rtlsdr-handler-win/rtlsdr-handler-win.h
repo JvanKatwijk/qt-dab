@@ -86,7 +86,7 @@ class	rtlsdrHandler_win:
 Q_OBJECT
 public:
 			rtlsdrHandler_win	(QSettings *,
-	                                         const QString,
+	                                         const QString, int,
 	                                 	 const QString &,
 	                                 	 errorLogger *);
 			~rtlsdrHandler_win	();
@@ -133,6 +133,7 @@ private:
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
 
+	QString		storageName;
 	QString		get_tunerType		(int);
 	bool		filtering;
 	LowPassFIR	theFilter;

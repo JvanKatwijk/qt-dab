@@ -176,8 +176,6 @@ int	index_for_key (int key) {
 
 	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0);
 	this	-> tiiCollisions -> setValue (c);
-	b = value_i (dabSettings, CONFIG_HANDLER, TII_FILTER, 1) != 0;
-	this	-> tiiFilter -> setChecked (b);
 
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
@@ -194,25 +192,17 @@ int	index_for_key (int key) {
 	                                 DECODERS, DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 
-	int v = value_i (dabSettings, CONFIG_HANDLER, TII_DETECTOR_SETTING, 1);
-	this	-> tiiSelector	-> setChecked (v != 0);
-	if (v == 0) {
-	   tiiCollisions -> setEnabled (false);
-	   tiiThreshold_setter -> setMinimum (4);
-	}
-	else
-	   tiiThreshold_setter -> setMinimum (6);
+	tiiCollisions -> setEnabled (false);
+	tiiThreshold_setter -> setMinimum (6);
 
-	v = value_i (dabSettings, CONFIG_HANDLER,
+	int v = value_i (dabSettings, CONFIG_HANDLER,
 	                             TII_THRESHOLD, 12);
 	this -> tiiThreshold_setter -> setValue (v);
-
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
+
 	connect (this, &configHandler::process_tiiCollisions,
 	         myRadioInterface, &RadioInterface::handle_tiiCollisions);
-	connect (this, &configHandler::process_tiiFilter,
-	         myRadioInterface, &RadioInterface::handle_tiiFilter);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -224,25 +214,11 @@ int	index_for_key (int key) {
 	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_tiiCollisions);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (tiiFilter, &QCheckBox::checkStateChanged,
-#else
-	connect (tiiFilter, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_tiiFilter);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (tiiSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (tiiSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_tiiSelector);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (allTIISelector, &QCheckBox::checkStateChanged,
 #else
 	connect (allTIISelector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_allTIISelector);
-	connect (this, &configHandler::process_tiiSelector,
-	         myRadioInterface, &RadioInterface::process_tiiSelector);
 	connect (activeServices, &clickablelabel::clicked,
 	         myRadioInterface, &RadioInterface::handle_activeServices);
 	connect (this, &configHandler::set_dcRemoval,
@@ -973,25 +949,6 @@ uint8_t x       = audioServices_only -> isChecked ();
 void	configHandler::handle_tiiCollisions     (int value) {
         store (dabSettings, CONFIG_HANDLER, "tiiCollisions", value);
 	process_tiiCollisions (value);
-}
-
-void	configHandler::handle_tiiFilter         (int state) {
-bool    x       = tiiFilter     -> isChecked ();
-        (void)state;
-        store (dabSettings, CONFIG_HANDLER, TII_FILTER, x ? 1 : 0);
-	process_tiiFilter (x);
-}
-
-void	configHandler::handle_tiiSelector	(int state) {
-bool	x 	= tiiSelector	-> isChecked ();
-	(void)state;
-	store (dabSettings, CONFIG_HANDLER, TII_DETECTOR_SETTING, x ? 1 : 0);
-	tiiCollisions -> setEnabled (x);
-	if (x) 
-	   tiiThreshold_setter -> setMinimum (6);
-	else
-	   tiiThreshold_setter -> setMinimum (4);
-	process_tiiSelector (x);
 }
 
 void	configHandler::handle_mouseClicked () {

@@ -92,9 +92,10 @@ void	Qt_Audio::stop	() {
 	if (theIODevice != nullptr)
 	   delete theIODevice;
 	theIODevice	= nullptr;
-	m_audioSink. reset ();
+//	m_audioSink. reset ();
 	disconnect (m_audioSink. get (), &QAudioSink::stateChanged,
                     this, &Qt_Audio::state_changed);
+	m_audioSink. reset ();
 }
 
 //	restart

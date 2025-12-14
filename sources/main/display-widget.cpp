@@ -339,19 +339,21 @@ floatQwt	Y_value [512];
 	   return;
 
 	theFFT. fft (v);
-//
+
 //	smoothen the data a little
 	for (uint32_t i = 0; i < v. size (); i ++)
-	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.8) +
-	                       abs (v [i]) * DABFLOAT (0.2);
+	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.6) +
+	                       abs (v [i]) * DABFLOAT (0.4);
 //
 //	in the regular scope we just show the data the tii decoder will
 //	be working on
+
 	floatQwt resVec [192];
 	for (int i = 0; i < 192; i ++) {
 	   resVec [i] = 0;
 	   for (int j = 0; j < 2; j ++) {
-	      int index = (1024 + 2 * i + j * 384) % 1024;
+	      int index = (2 * i + j * 384);
+//	      int index = (1024 + 2 * i + j * 384) % 1024;
 	      resVec [i] += 2 * abs (workingBuffer [index] + workingBuffer [index + 1]);
 	   }
 	   X_axis [i] = i;

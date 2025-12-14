@@ -46,8 +46,10 @@ virtual	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
 
 protected:
 	dabParams	params;
-	std::vector<Complex> table_2;
 	void		resetBuffer	();
+	std::vector<uint8_t>	rotationTable;
+	uint8_t		getRotation	(int);
+	Complex		rotate		(Complex, uint8_t);
 	uint16_t	getPattern	(int);
 	uint16_t	nrPatterns	();
 	std::vector<Complex>	nullSymbolBuffer;
