@@ -45,9 +45,11 @@
 	                          const QString &fileName,
 	                          position	homeAddress,
 	                          bool		autoBrowser_on,
+	                          bool		close_map_on_exit,
 	                          QSettings	*settings) {
 	this	-> theRadio	= theRadio;
 	this	-> fileName	= fileName;
+	this	-> close_map_on_exit = close_map_on_exit;
 	int  mapPort		=
 	            value_i (settings, MAP_HANDLING, MAP_PORT_SETTING,
                                                                   8080);
@@ -56,8 +58,6 @@
 	                                                "http://localhost");
 	QString browserAddress		= address + ":" + QString::number (mapPort);
 	this	-> homeAddress		= homeAddress;
-	this	-> maxDelay		=
-	            value_i (settings, MAP_HANDLING, MAP_TIMEOUT, 2000);
 
 	delayTimer. setSingleShot (true);
 	connect (this, &httpHandler::setChannel,
@@ -102,27 +102,30 @@ void	httpHandler::newConnection	() {
 	}
 }
 //
-//	There are three possibilities here
-//	a. connection will be restored and we go on
-//	b. the issues a MAP_CLOSE and are now ready to give up
-//	c. if the map was killed, the timer will go off and we give up
 void	httpHandler::discardSocket () {
 QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 	socket -> deleteLater ();
 }
-
+//
+//	If "closingInProgress" is true, the user has indicated that the
+//	http driver is to be stopped, with as secondary effect that the
+//	browser stops displaying the map and issues an error 1
+//	Otherwise, the user killed the browser and the
+//	http Handler is killed if the close_map_on_exit is true
+//	Note that the function is a "slot", issuing a signal
+//	that directly kills the httpHandler will crash the system
 void	httpHandler::onSocketError (QAbstractSocket::SocketError socketerror) {
 QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 	if (socketerror = QAbstractSocket::RemoteHostClosedError) {
-	   if (delayTimer. isActive ())
-	      delayTimer. stop ();
 	   if (closingInProgress. load ()) {	// reacting on button switch
 	      connect (this, &httpHandler::mapClose_processed,
 	               theRadio, &RadioInterface::http_terminate);
 	      emit mapClose_processed ( );
 	   }
-	   else
-	      delayTimer. start (1000);
+	   else {	// 
+	      if (close_map_on_exit)
+	         delayTimer. start (1000);
+	   }
 	}
 }
 //
@@ -152,7 +155,6 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	QString askingFor	= list [1];
 	QString content;
 	QString ctype;
-//	fprintf (stderr, "askingFor = %s\n", theQuestion. toLatin1 (). data ());
 	if (askingFor == "/data.json") {
 	   locker. lock ();
 	   if (transmitterList. size () > 0) { 
@@ -169,8 +171,10 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	   }
 	}
 	else	
-	if (askingFor == "/channelSelector::") {
-           setChannel (list [2]);
+	if (askingFor. startsWith ("/channelSelector::")) {
+	   QStringList s = askingFor. split ("::");
+	   if (s. size () > 1)
+              setChannel (s [1]);
         }
         else {
            content	= theMap (fileName, homeAddress);
@@ -198,14 +202,15 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	if (closingInProgress. load ()) {
 	   worker -> waitForBytesWritten ();
 	}
-	delayTimer. start (maxDelay);
 }
 //
 //	This timeout is initiated after a (potential) disconnect
-//	Under normal circumstances, after purhing the httpButton,
+//	Under normal circumstances, after pushing the httpButton,
 //	an error is signalled and the error function takes
 //	care 
 void	httpHandler::handle_timeOut () {
+	if (!close_map_on_exit)
+	   return;
 	connection_stopped	= true;
 	if (closingInProgress. load ())
 	   connect (this, &httpHandler::mapClose_processed,

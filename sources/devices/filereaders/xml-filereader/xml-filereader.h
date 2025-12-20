@@ -61,8 +61,12 @@ private:
 	uint64_t		filePointer;
 	QScopedPointer<xmlDescriptor>	theDescriptor;
 	QScopedPointer<xml_Reader> theReader;
+	std::atomic<bool>	sliderFree;
 public slots:
-	void			setProgress	(int, int);
+	void			setProgress		(int, int);
 	void			handle_continuousButton ();
+	void			handle_sliderPressed	();
+	void			handle_sliderMoved	(int);
+	void			handle_sliderReleased	();
 };
 

@@ -714,8 +714,8 @@ bool	isValid (QChar c) {
 
 bool	rtlsdrHandler_win::setup_xmlDump (bool direct) {
 
-QString channel		= value_s (rtlsdrSettings, storageName,
-	                                   "channel", "xx"). toString ();
+QString channel		= value_s (rtlsdrSettings, "dab-general",
+	                                   "channel", "xx");
 
 	if (xmlWriter != nullptr)
 	   return false;

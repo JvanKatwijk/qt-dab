@@ -350,17 +350,23 @@ int	deviceNumber	= getDeviceIndex (s);
 	      QString fileName	= getFileName (fileType);
 	      if (fileName == "")
 	         throw (device_exception ("no file"));
-	      switch (fileType) {
-	         case RAW_FILE_RAW:
-	         case RAW_FILE_IQ:
-	            return new rawFiles (dabSettings, fileName);
-	         case WAV_FILE:
+	      FILE *test = fopen (fileName. toLatin1 (). data (), "r");
+	      char buffer [10];
+	      int s = fread (buffer, 1, 10, test);
+	      fclose (test);
+	      if (s < 10)
+	         throw (device_exception ("illegal file"));
+	      buffer [6] = 0;
+	      if (QString (buffer) == "<?xml ")
+	         return new xml_fileReader (dabSettings, fileName);
+	      buffer [4] = 0;
+	      if ((QString (buffer) == "RIFF") ||
+	          (QString (buffer) == "BW64"))
 	            return new newFiles (dabSettings, fileName);
-	         case XML_FILE:
-	            return new xml_fileReader (dabSettings, fileName);
-	         default:
-	            throw (device_exception ("no file"));
-	      }
+	      if ((fileType == RAW_FILE_RAW) ||
+	          (fileType == RAW_FILE_IQ))
+	            return new rawFiles (dabSettings, fileName);
+	      throw (device_exception ("no file"));
 	   }
 	   break;
 

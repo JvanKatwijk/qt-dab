@@ -472,6 +472,7 @@ int	ind	= -1;
 bool	sdrplayHandler_v3::setupXmlDump (bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                               "channel", "xx");
+	fprintf (stderr, "Direct = %d\n", direct);
 	xmlWriter	= nullptr;
 	try {
 	   xmlWriter	= new xml_fileWriter (sdrplaySettings,

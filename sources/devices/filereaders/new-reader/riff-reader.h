@@ -36,7 +36,9 @@ public:
 	int		read		(std::complex<float> *, uint64_t);
 	uint64_t	elementCount	();
 	QString		fileType	();
+	int		sampleSize	();
 	uint64_t	currentPos	();
+	void		set_newPosition	(uint64_t);
 	int		getVFOFrequency	();
 	QString		getDevice	();
 private:
@@ -47,6 +49,7 @@ private:
         uint16_t	nrChannels;
         uint32_t	samplingRate;
 
+	std::atomic<uint64_t> newPosition;
 	void	setupFor_wavType	(uint32_t);
 	void	setupFor_bw64Type	(uint32_t);
 	int	read4Bytes		(std::complex<float> *, uint64_t);
@@ -62,4 +65,6 @@ private:
 	float		denominator;
 	int		readBytes;
 	QString		typeOfFile;
+
+	uint64_t	basePosition;
 };

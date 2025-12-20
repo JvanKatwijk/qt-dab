@@ -52,11 +52,11 @@ uint16_t	secondDigit (v % 10);
 	tableWidget	-> setColumnWidth (3, 50);	// phase
 	tableWidget	-> setColumnWidth (4, 60);	// strength
 	tableWidget	-> setColumnWidth (5, 70);	// azimuth
-	tableWidget	-> setColumnWidth (6, 70);	// power
-	tableWidget	-> setColumnWidth (7, 50);	// altitude
-	tableWidget	-> setColumnWidth (8, 60);	// height
-	tableWidget	-> setColumnWidth (9, 60);	// direction
-	tableWidget	-> setColumnWidth (10, 80);	// distamce
+	tableWidget	-> setColumnWidth (6, 80);	// distamce
+	tableWidget	-> setColumnWidth (7, 70);	// power
+	tableWidget	-> setColumnWidth (8, 50);	// altitude
+	tableWidget	-> setColumnWidth (9, 60);	// height
+	tableWidget	-> setColumnWidth (10, 60);	// direction
 	tableWidget	-> setColumnWidth (11, 80);	// delay
 	tableWidget	-> setColumnWidth (12, 250);	// transmitter
 
@@ -65,10 +65,17 @@ uint16_t	secondDigit (v % 10);
 //	headerView	-> resizeSection (0, 50);
 	tableWidget 	-> setHorizontalHeaderLabels (
 	                QStringList () << tr ("x") << tr ("pat") <<
-	                tr ("tii") << tr ("phase") << tr ("strength") <<
-	                tr ("azimuth")  << tr ("power") <<
-	                tr ("alt") << tr ("height") << tr ("dir") <<
-	                tr ("dist") << tr ("delay") << tr ("transmitter")); 
+	                tr ("tii") <<
+	                tr ("phase") <<
+	                tr ("strength") <<
+	                tr ("azimuth")  << 
+	                tr ("dist") <<
+	                tr ("power") <<
+	                tr ("alt") <<
+	                tr ("height") <<
+	                tr ("dir") <<
+	                tr ("delay") <<
+	                tr ("transmitter")); 
 
 	theDial		= new QwtCompass ();
 	theDial		-> setLineWidth (8);
@@ -183,13 +190,13 @@ int16_t	row	= tableWidget -> rowCount ();
 	item4		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 4, item4);
 
-	QTableWidgetItem *item5 = new QTableWidgetItem;	// dist
-	item5		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	tableWidget	-> setItem (row, 5, item5);
-
 	QTableWidgetItem *item6 = new QTableWidgetItem;	// azimuth
 	item6		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 6, item6);
+
+	QTableWidgetItem *item5 = new QTableWidgetItem;	// dist
+	item5		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 5, item5);
 
 	QTableWidgetItem *item7 = new QTableWidgetItem;	// power
 	item7		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -203,11 +210,11 @@ int16_t	row	= tableWidget -> rowCount ();
 	item9		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 9, item9);
 
-	QTableWidgetItem *item10 = new QTableWidgetItem;	// direction
+	QTableWidgetItem *item10 = new QTableWidgetItem; // direction
 	item10		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 10, item10);
 
-	QTableWidgetItem *item11 = new QTableWidgetItem;	// delayr
+	QTableWidgetItem *item11 = new QTableWidgetItem; // delay
 	item11		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 11, item11);
 
@@ -228,11 +235,11 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 3) -> setText (ss);
 	tableWidget	-> item (row, 4) -> setText (QString::number (strength, 'f', 1) );
 	tableWidget	-> item (row, 5) -> setText (QString::number (azimuth, 'f', 1) + QString::fromLatin1 (" \xb0 "));
-	tableWidget	-> item (row, 6) -> setText (QString::number (power, 'f', 1) + " KW ");
-	tableWidget	-> item (row, 7) -> setText (QString::number (altitude) +  " m");
-	tableWidget	-> item (row, 8) -> setText (QString::number (height) +  " m");
-	tableWidget	-> item (row, 9) -> setText (dir);
-	tableWidget	-> item (row, 10) -> setText (QString::number (distance, 'f', 1) + " km");
+	tableWidget	-> item (row, 6) -> setText (QString::number (distance, 'f', 1) + " km");
+	tableWidget	-> item (row, 7) -> setText (QString::number (power, 'f', 1) + " KW ");
+	tableWidget	-> item (row, 8) -> setText (QString::number (altitude) +  " m");
+	tableWidget	-> item (row, 9) -> setText (QString::number (height) +  " m");
+	tableWidget	-> item (row, 10) -> setText (dir);
 	tableWidget	-> item (row, 11) -> setText (QString::number (delay, 'f', 1) + " samples");
 	tableWidget	-> item (row, 12) -> setText (transmitterName);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");

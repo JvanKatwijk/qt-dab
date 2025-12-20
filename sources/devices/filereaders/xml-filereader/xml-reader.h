@@ -48,6 +48,7 @@ public:
 			~xml_Reader	();
 	void		stopReader	();
 	bool		handle_continuousButton	();
+	void		handle_progressSlider	(int);
 private:
 	union bitsToFloat {
 	   uint32_t bitValue;
@@ -61,6 +62,7 @@ private:
 	xml_fileReader	*parent;
 	uint64_t	nrElements;
 	uint64_t	samplesToRead;
+	std::atomic<int>	newPosition;
 
 	float		mapTable	[256];
 	std::atomic<bool> running;

@@ -645,6 +645,6 @@ public slots:
 	void			handle_activeServices		();
 //
 //	and from the fib handler
-	void			tell_programType		(int, int);
+	void			tell_programType		(uint32_t, int);
 	void			cleanUp_mapHandler	();
 };

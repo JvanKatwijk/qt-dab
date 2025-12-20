@@ -111,7 +111,9 @@ int	input	= v. size ();
 	(void)T_g;
 	if ((int)(v. size ()) < amount)
 	   amount = v. size ();
-	for (int i = T_g - 104; i < T_g - 104 + amount; i ++) {
+	if (T_g - 154 + amount >= v. size ())
+	   amount = v. size () - (T_g - 154);
+	for (int i = T_g - 154; i < T_g - 154 + amount; i ++) {
 	   X_axis [teller] = i;
 	   int index = i - (T_g - 100);
 	   Y_value [teller] = get_db (v [i]);

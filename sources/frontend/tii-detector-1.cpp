@@ -192,13 +192,12 @@ Complex	TII_Detector::rotate (Complex value, uint8_t phaseIndicator) {
 //	Each "value" is the sum of 4 pairs of subsequent carriers,
 //	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
 void	TII_Detector::collapse (const Complex *inVec,
-	                        Complex *etsiVec, Complex *nonetsiVec,
-	                        bool tiiFilter) {
+	                        Complex *etsiVec, Complex *nonetsiVec) {
 Complex buffer [carriers / 2];
 
 	memcpy (buffer, inVec, carriers / 2 * sizeof (Complex));
 
-	int nrSections	= tiiFilter ? 2 : 4;
+	int nrSections	= 4;
 //	a single carrier cannot be a TII carrier.
 	if (carrierDelete) {
 	   for (int i = 0; i < SECTION_SIZE; i++) {
@@ -251,8 +250,7 @@ int	fcmp (const void *a, const void *b) {
 }
 
 QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db, 
-	                                    uint8_t selected_subId,
-	                                    bool tiiFilter) {
+	                                    uint8_t selected_subId) {
 //	collapsed ETSI float values
 float	etsi_floatTable [NUM_GROUPS * GROUPSIZE];	
 //	collapsed non-ETSI float values
@@ -278,7 +276,7 @@ int Teller = 0;
 	       nullSymbolBuffer [fftIdx] * conj (nullSymbolBuffer [fftIdx + 1]);
 	}
 
-	collapse (decodedBuffer, etsiTable, nonetsiTable, tiiFilter);
+	collapse (decodedBuffer, etsiTable, nonetsiTable);
 
 
 // fill the float tables, determine the abs value of the strongest carrier
@@ -393,7 +391,7 @@ int Teller = 0;
 	   if (count >= 4) {
 	      element. mainId	= mainId;
 	      element. subId	= subId;
-	      element. strength = jan_abs (sum) / max / (tiiFilter ? 2 : 4);
+	      element. strength = jan_abs (sum) / max / 4;
 	      element. phase	= arg (sum) * F_DEG_PER_RAD;
 	      element. norm	= norm;
 	      element. collision	= false;

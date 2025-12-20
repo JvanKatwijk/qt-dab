@@ -20,7 +20,6 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-//#include	<QFileDialog>
 #include	<QString>
 #include	"xml-filereader.h"
 #include	<cstdio>
@@ -70,7 +69,15 @@
 	   throw device_exception (fileName. toStdString () + "no xml file");
 	}
 
-	fileProgress		-> setValue (0);
+	progressSlider		-> setValue (0);
+	sliderFree. store (true);
+	connect (progressSlider, &QSlider::sliderPressed,
+	         this, &xml_fileReader::handle_sliderPressed);
+	connect (progressSlider, &QSlider::sliderMoved,
+	         this, &xml_fileReader::handle_sliderMoved);
+	connect (progressSlider, &QSlider::sliderReleased,
+	         this, &xml_fileReader::handle_sliderReleased);
+
         currentTime		-> display (0);
 	samplerateDisplay	-> display (theDescriptor -> sampleRate);
 	nrBitsDisplay		-> display (theDescriptor -> bitsperChannel);
@@ -106,12 +113,13 @@
 }
 
 	xml_fileReader::~xml_fileReader	() {
-	if (running. load()) {
+	if (running. load ()) {
 	   theReader	-> stopReader();
 	   while (theReader -> isRunning())
 	      usleep (100);
 	   theReader. reset ();
 	}
+
 	storeWidgetPosition (xmlFilesSettings, &myFrame, XMLSETTINGS);
 	if (theFile != nullptr)		// cannot happen
 	   fclose (theFile);
@@ -161,7 +169,8 @@ int32_t	xml_fileReader::Samples	() {
 }
 
 void	xml_fileReader::setProgress (int samplesRead, int samplesToRead) {
-	fileProgress	-> setValue ((float)samplesRead / samplesToRead * 100);
+	if (sliderFree. load ())
+	   progressSlider -> setValue ((float)samplesRead / samplesToRead * 100);
 	currentTime	-> display (samplesRead / (float)SAMPLERATE);
 	totalTime	-> display (samplesToRead / (float)SAMPLERATE);
 }
@@ -185,5 +194,20 @@ bool	xml_fileReader::isFileInput	() {
 QString	xml_fileReader::deviceName	() {
 QString res = QString ("xml-file : ") + fileName;
 	return res;
+}
+
+void	xml_fileReader::handle_sliderPressed	() {
+	sliderFree. store (false);
+}
+
+void	xml_fileReader::handle_sliderMoved	(int value) {
+	if (theReader == nullptr)
+	   return;
+//	fprintf (stderr, "set to %d\n", value);
+	theReader	-> handle_progressSlider (value);
+}
+
+void	xml_fileReader::handle_sliderReleased	() {
+	sliderFree. store (true);
 }
 

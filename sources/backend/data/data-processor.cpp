@@ -189,7 +189,6 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	         int currentLength = series. size ();
 	         if (currentLength + udlen * 8 > 8 * 8192) {
 	            assembling = false;
-//	            fprintf (stderr, "too large???\n");
 	            return;
 	         }
 	         series. resize (currentLength + udlen * 8);
@@ -201,9 +200,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   case 1:  // Last data group packet
 	      if (assembling) {
 	         int currentLength = series. size ();
-	         if (currentLength + udlen * 8 > 8 * 8192) {
+	         if (currentLength + udlen * 8  >= 8 * 8192) {
 	            assembling = false;
-//	            fprintf (stderr, "too large???\n");
 	            return;
 	         }
 	         series. resize (currentLength + udlen * 8);
@@ -220,15 +218,17 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	      return;
 
 	      case 3: { // Single packet, mostly padding
-	         if (Length > 3 * 8 + udlen * 8) {
-	            series. resize (udlen * 8);
-	            for (uint8_t i = 0; i < udlen * 8; i ++)
-	               series [i] = vec [3 * 8 + i];
-	            if (series. size () > 0)
-	               my_dataHandler -> add_mscDatagroup (series);
-	         }
-	         series. resize (0);
-              }
+	         if (assembling) {
+	            if (Length > 3 * 8 + udlen * 8) {
+	               series. resize (udlen * 8);
+	               for (uint8_t i = 0; i < udlen * 8; i ++)
+	                  series [i] = vec [3 * 8 + i];
+	               if (series. size () > 0)
+	                  my_dataHandler -> add_mscDatagroup (series);
+	            }
+                 }
+	      }
+	      series. resize (0);
 	      assembling = false;
 	      return;
 

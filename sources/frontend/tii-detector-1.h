@@ -40,7 +40,7 @@ public:
 			~TII_Detector	();
 	void		reset		();
 	void		addBuffer	(const std::vector<Complex> &);
-	QVector<tiiData>	processNULL	(int16_t, uint8_t, bool);
+	QVector<tiiData>	processNULL	(int16_t, uint8_t);
 
 private:
 	dabParams	params;
@@ -53,7 +53,7 @@ private:
 	std::vector<Complex> nullSymbolBuffer;
 	void		resetBuffer	();
 	void		collapse	(const Complex *, 
-	                                 Complex *, Complex *, bool);
+	                                 Complex *, Complex *);
 	int		tiiThreshold;
 	std::vector<uint8_t>	rotationTable;
 	Complex		rotate		(Complex, uint8_t);

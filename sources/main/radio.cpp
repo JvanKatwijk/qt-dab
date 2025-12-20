@@ -319,13 +319,7 @@ QString h;
 	else
 	   httpButton	-> setEnabled (false);
 
-//#ifdef HAVE_RTLSDR_V3
-//	SystemVersion	= QString ("9.5") + " with RTLSDR-V3";
-//#elif HAVE_RTLSDR_V4
-//	SystemVersion	= QString ("9.5") + " with RTLSDR-V4";
-//#else
 	SystemVersion	= QString ("9.6");
-//#endif
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion ;
 #else
@@ -1117,26 +1111,30 @@ const char *type;
 	if (dirs || ((value_i (dabSettings_p, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
 	                                         (path_for_files != ""))) {
-	   QString pict;
-	   if (!dirs) 
-	      pict = path_for_files + pictureName;
+	   QString theEid = QString::number (channel. Eid, 16). toUpper ();
+	   QString nameElement;
+	   if (backgroundFlag)
+	      nameElement = channel. ensembleName + "(" + theEid + ")";
 	   else
-	      pict = path_for_files + QString::number (channel. Eid, 16). toUpper () + "/" + pictureName;
-	   QString temp = pict;
-	   temp = temp. left (temp. lastIndexOf (QChar ('/')));
-	   if (!QDir (temp). exists())
-	      QDir (). mkpath (temp);	
-	   pict	= QDir::toNativeSeparators (pict);
+	      nameElement = channel. ensembleName + "(" + theEid + ")" +
+	                       channel. currentService. serviceName. trimmed ();
+	   QString theDir = dirs ?
+	                     path_for_files + theEid + "/":
+	                     path_for_files + "slides-" + nameElement + "/";
+	   if (!QDir (theDir). exists())
+	      QDir (). mkpath (theDir);	
+	   theDir	= QDir::toNativeSeparators (theDir);
+	   QString pict	= theDir + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
-	   if (x == nullptr) {
-	      QString t = QString ("Problem opening picture file (writing) ") +
-	                                    pict;
-	      theErrorLogger. add ("main", t);
-	   }
-	   else {
+	   if (x != nullptr) {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
 	      (void)fwrite (data. data(), 1, data.length(), x);
 	      fclose (x);
+	   }
+	   else {
+	      QString t = QString ("Problem opening picture file (writing) ") +
+	                                    pict;
+	      theErrorLogger. add ("main", t);
 	   }
 	}
 
@@ -3666,6 +3664,7 @@ void	RadioInterface::handle_httpButton	() {
 	                                    ":res/qt-map-69.html",
 	                                    localPos,
 	                                    configHandler_p -> localBrowserSelector_active (),
+	       	                            configHandler_p -> get_close_mapSelector (),
 	                                    dabSettings_p);
 	   } catch (int e) {}
 	   if (mapHandler != nullptr)
@@ -3903,9 +3902,9 @@ std::vector<float> inBuffer (s);
 	if (!theNewDisplay. isHidden ()) {
 	   if (theNewDisplay. getTab () == SHOW_CORRELATION)
 	      theNewDisplay. showCorrelation (inBuffer,
-	                                       maxVals,
-	                                       g,
-	                                       channel. transmitters);
+	                                      maxVals,
+	                                      g,
+	                                      channel. transmitters);
 	}
 }
 
@@ -4021,7 +4020,8 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   }
 	   else {
 //	first copy the db data, theTransmitter is properly initalized
-//	with the db Calues, now the dynamics
+//	with the db Values, now the dynamics
+//	we just check on the ensemblename
 	      theTransmitter. valid	= true;
 	      position thePosition;
 	      thePosition. latitude     = theTransmitter. latitude;
@@ -4035,8 +4035,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theTransmitter. pattern	= r [i]. pattern;
 	      theTransmitter. isStrongest	= false;
 	      channel. transmitters. push_back (theTransmitter);	
-//	      transmitterDesc t = {true,  false, theTransmitter};
-//	      channel. transmitters. push_back (t);	
 	   }
 	   if (dxMode)
 	      addtoLogFile (&theTransmitter);
@@ -4400,6 +4398,7 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 }
 
 void	RadioInterface::channelSignal (const QString &channel) {
+	fprintf (stderr, "xxx");
 	stopChannel ();
 	channelSelector	-> setEnabled (false);
 	int k = channelSelector -> findText (channel);
@@ -4838,7 +4837,8 @@ void	RadioInterface::devSL_visibility	() {
 	   theDeviceChooser. show ();
 }
 
-void	RadioInterface::tell_programType	(int SId, int programType) {
+void	RadioInterface::tell_programType	(uint32_t SId,
+	                                                int programType) {
 	if (channel. currentService. SId == SId)
 	   programTypeLabel	-> setText (getProgramType (programType));
 }

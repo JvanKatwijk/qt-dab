@@ -45,7 +45,7 @@ bool	isValid (QChar c) {
                                          const QString  &deviceModel,
                                          const QString  &recorderVersion,
 	                                 bool direct):
-	                                          filenameFinder (settings) {
+	                                        filenameFinder (settings) {
 uint8_t t	= 0;
 	QString fileName	=
 	              filenameFinder. find_xmlName (deviceName, channel, direct);

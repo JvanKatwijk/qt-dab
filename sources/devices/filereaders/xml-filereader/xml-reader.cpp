@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -62,7 +62,8 @@ struct timeval tv;
 	this	-> fd		= fd;
 	this	-> filePointer	= filePointer;
 	sampleBuffer		= b;
-//
+	newPosition. store (0);
+
 //	convBufferSize is a little confusing since the actual 
 //	buffer is one larger
 	convBufferSize		= fd -> sampleRate / 1000;
@@ -87,7 +88,7 @@ struct timeval tv;
 	connect (this, &xml_Reader::setProgress,
 	         parent, &xml_fileReader::setProgress);
 
-	fprintf (stderr, "reader task wordt gestart\n");
+//	fprintf (stderr, "reader task wordt gestart\n");
 	start ();
 }
 
@@ -140,6 +141,20 @@ int	startPoint	= filePointer;
 	            samplesRead += readSamples (file,
 	                                        &xml_Reader::readElements_Q);
 
+	         if (newPosition. load () > 0) {
+//	            fprintf (stderr, "newposition %d\n",
+//	                                   newPosition. load ());
+	            samplesRead =
+	                        (int) (newPosition. load () / 100.0 * samplesToRead);
+//	            fprintf (stderr, "samplesRead %ld\n", samplesRead);
+	            uint64_t filePos = startPoint + samplesRead * 
+	                                                    fd -> sampleSize ();
+//	            fprintf (stderr, "startPoint %d, filePos %d\n",
+//	                                (int)startPoint, (int)filePos);
+	            fseek (file, filePos, SEEK_SET);
+	            newPosition. store (0);
+	            cycleCount = 200;
+	         }
 	         if (++cycleCount >= 200) {
 	            setProgress (samplesRead, samplesToRead);
 	            cycleCount = 0;
@@ -196,8 +211,8 @@ std::complex<float> temp [SAMPLERATE / 1000];
 	for (int i = 0; i < SAMPLERATE / 1000; i ++) {
 	   int16_t inpBase	= mapTable_int [i];
 	   float   inpRatio	= mapTable_float [i];
-	   temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
-	                       compmul (convBuffer [inpBase], 1 - inpRatio);
+	   temp [i] = convBuffer [inpBase + 1] * inpRatio +
+	                  convBuffer [inpBase] * (1.0f - inpRatio);
 	}
 	convBuffer [0] = convBuffer [convBufferSize];
 	convIndex = 1;
@@ -795,5 +810,9 @@ float	scaler	= float (shift (nrBits));
 	   }
 	   return;
 	}
+}
+
+void	xml_Reader::handle_progressSlider	(int v) {
+	newPosition. store (v);
 }
 

@@ -25,12 +25,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QProgressBar" name="fileProgress">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File progress&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <widget class="QSlider" name="progressSlider">
+     <property name="maximum">
+      <number>100</number>
      </property>
-     <property name="value">
-      <number>24</number>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
     </widget>
    </item>

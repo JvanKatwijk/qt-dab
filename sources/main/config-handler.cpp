@@ -155,7 +155,7 @@ int	index_for_key (int key) {
 	this -> showAll_selector -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           SAVE_SLIDES_SETTING, 0) == 1;
+	                           SAVE_SLIDES_SETTING, 1) == 1;
 	this	-> saveSlides -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
@@ -408,6 +408,14 @@ void	configHandler::set_connections () {
 	connect (showAll_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_showAll_Selector);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (saveSlides, &QCheckBox::checkStateChanged,
+#else
+	connect (saveSlider, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_saveSlides);
+
 
 //	sixth ine
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)

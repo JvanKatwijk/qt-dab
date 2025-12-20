@@ -43,6 +43,7 @@ public:
 
 class xmlDescriptor {
 public:
+	int		sampleSize	();
 	QString		deviceName;
 	QString		deviceModel;
 	QString		recorderName;

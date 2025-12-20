@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -51,11 +51,11 @@ struct timeval  tv;
 	this	-> _I_Buffer	= _I_Buffer;
 
 	fseek (filePointer, 0, SEEK_END);
-	fileLength		= ftell (filePointer);
-	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
+	fileLength	= ftell (filePointer);
+//	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
 	fseek (filePointer, 0, SEEK_SET);
 	period          = (RAW_BUFFERSIZE * 1000) / (2 * SAMPLERATE / 1000);  // full IQś read
-	fprintf (stderr, "Period = %d\n", (int)period);
+//	fprintf (stderr, "Period = %d\n", (int)period);
 	for (int i = 0; i < 256; i ++)
 //	the offset 127.38f is due to the input data comes usually from 
 //	an  SDR stick which has its DC offset a bit shifted from ideal
@@ -64,6 +64,7 @@ struct timeval  tv;
 	running. store (false);
 	connect (this, &rawReader::setProgress,
 	         parent,   &rawFiles::setProgress);
+	newPosition. store (0);
 	fseek (filePointer, 0, SEEK_SET);
 	start	();
 }
@@ -79,10 +80,9 @@ void	rawReader::stopReader() {
 	      usleep (200);
 	}
 }
-
 //
 void	rawReader::run () {
-int64_t	nextStop;
+uint64_t nextStop;
 int	teller	= 0;
 std::complex<float> localBuffer [RAW_BUFFERSIZE / 2];
 
@@ -90,12 +90,21 @@ std::complex<float> localBuffer [RAW_BUFFERSIZE / 2];
 	nextStop        = getMyTime();
 	try {
 	   while (running. load()) {
-	      while (_I_Buffer -> WriteSpace() < RAW_BUFFERSIZE + 10) {
+	      while (_I_Buffer -> WriteSpace () < RAW_BUFFERSIZE + 10) {
 	         if (!running. load())
 	            throw (32);
 	         usleep (100);
 	      }
-	
+
+	      if (newPosition. load () > 0) {
+	         int newPos =
+	             (int)(newPosition. load () / 100.0 * fileLength / 2);
+	         int sampleSize = 2;
+	         fseek (filePointer, newPos * sampleSize, SEEK_SET);
+	         newPosition. store (0);
+	         teller = 20;
+	      }
+
 	      if (++teller >= 20) {
 	         int xx = ftell (filePointer);
 	         float progress = (float)xx / fileLength;
@@ -125,5 +134,9 @@ std::complex<float> localBuffer [RAW_BUFFERSIZE / 2];
 	   }
 	} catch (int e) {}
 	fprintf (stderr, "taak voor replay eindigt hier\n");
+}
+
+void	rawReader::handle_progressSlider (int v) {
+	newPosition. store (v);
 }
 

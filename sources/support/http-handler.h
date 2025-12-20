@@ -47,6 +47,7 @@ public:
 	                         const QString &fileName,
 	                         position	address,
 	                         bool		autoBrowse,
+	                         bool		map_close_on_exit,
 	                         QSettings	*settings = nullptr);
 		~httpHandler	();
 	bool	isConnected	();
@@ -59,6 +60,7 @@ private:
 	RadioInterface		*theRadio;
 	QString			fileName;
 	position		homeAddress;
+	bool			close_map_on_exit;
 	QString			theMap		(const QString &fileName,
 	                                         position address);
 	QString			transmitterToJsonObject (transmitter &t);

@@ -88,11 +88,10 @@ uint16_t	rawContentType = 0;
                  pointer += 5;
                  break;
 
-              case 03:
+              case 03: {
                  if ((segment [pointer + 1] & 0200) != 0) {
                     length = (segment [pointer + 1] & 0177) << 8 |
                               segment [pointer + 2];
-	            
                     pointer += 3 ;
                  }
                  else {
@@ -100,11 +99,43 @@ uint16_t	rawContentType = 0;
                     pointer += 2;
                  }
 	         switch (paramId) {
-	            case 12: {
+	            case 0:	// reserved for MOT protocol extensons
+	            case 2:	// reserved for MOT protocol extenions
+	            case 3:	// reserved for MOT protocol extenions
+	            case 4:	// reserved for MOT protocol extenions
+	            case 6:	// reserved for MOT protocol extenions
+	            case 8:	// reserved for MOT protocol extenions
+	            case 14:	// reserved for MOT protocol extenions
+	            case 15:	// reserved for MOT protocol extenions
+	               pointer += length;
+	               break;
+
+	            case 5:	// trigger time
+	               pointer += length;	// 
+	               break;
+
+	            case 7:	// retransmsission distance
+	               pointer += length;	// 6.3.4.1.5
+	               break;
+
+	            case 9:	// expiration time
+	               pointer += length;	//6.2.3.1.1
+	               break;
+
+	            case 10:	// priority
+	               pointer += length;	// 6.2.3.1.4
+	               break;
+	 
+	            case 11:	// label
+	               pointer += length;
+	               break;
+
+	            case 12: {	// contentName 6.2.2.1.1
                        uint8_t charSet = segment [pointer] >> 4;
 	               QByteArray nameText;
                        for (int i = 1; i < length; i ++) {
-                          nameText. append (segment [pointer + i]);
+	                  if (pointer + i < 12)
+                             nameText. append (segment [pointer + i]);
 	               }
 	               name = toQStringUsingCharset (
 	                           (const char *)nameText. data (),
@@ -113,18 +144,17 @@ uint16_t	rawContentType = 0;
                        pointer += length;
 	               break;
 	            }
-	            case 2:	// creation time
-	            case 3:	// start validity
-	            case 4:	// expiretime
-	            case 5:	// triggerTime
-	            case 6:	// version number
-	            case 7: 	// retransmission distance
-	            case 8:	// group reference
-	            case 10:	// priority
-	            case 11:	// label
-	            case 15:	// content description
-//	               fprintf (stderr, "Key was %d\n", paramId);
-                       pointer += length;
+
+	            case 13:	// Unique Body Version
+	               pointer += length;
+	               break;
+
+	            case 16:	// Mime type
+                       pointer += length;	// 6.2.2.1.2
+	               break;
+
+	            case 17:	// compression type
+	               pointer += length;	// 6.2.2.1.3
 	               break;
 
 	            default:
@@ -132,6 +162,7 @@ uint16_t	rawContentType = 0;
 	               break;
 	         }
               }
+	   }
 	}
 }
 

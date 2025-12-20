@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -91,7 +91,7 @@ Blocks	b;
 }
 
 void	xmlDescriptor::add_freqtoBlock	(int blockno, int freq) {
-	fprintf (stderr, "adding freq %d %d\n", blockno, freq);
+//	fprintf (stderr, "adding freq %d %d\n", blockno, freq);
 	blockList. at (blockno). frequency = freq;
 }
 
@@ -187,8 +187,8 @@ int		zeroCount = 0;
 	   if (component. tagName () == "deviceGain") {
 	      QString SR = component. attribute ("Value", "-1");
 	      deviceGain	= SR. toInt ();
-	      fprintf (stderr, "The gain is %d (%s)\n",
-	                                    deviceGain, SR.toLatin1 (). data ());
+//	      fprintf (stderr, "The gain is %d (%s)\n",
+//	                                    deviceGain, SR.toLatin1 (). data ());
 	   }
 	   if (component. tagName () == "Datablocks") {
 //	      QString Count = component.attribute ("Count", "3");
@@ -199,7 +199,7 @@ int		zeroCount = 0;
 	         if (nodes. at (j). isComment ()) {
 	            continue;
 	         }
-	      fprintf (stderr, "Datablocks has %d siblings\n", nodes. count ());
+//	      fprintf (stderr, "Datablocks has %d siblings\n", nodes. count ());
 	         QDomElement Child = nodes. at (j). toElement ();
 	         if (Child. tagName () == "Datablock") {
 	            bool ok;
@@ -241,5 +241,12 @@ int		zeroCount = 0;
 	}
 	*ok	= nrBlocks > 0;
 //	printDescriptor ();
+}
+
+int	xmlDescriptor::sampleSize () {
+int	bytes	= bitsperChannel <= 8 ? 1 :
+	          bitsperChannel <= 16 ? 2 :
+	          bitsperChannel <= 24 ? 3 : 4;
+	return nrChannels * bytes;
 }
 

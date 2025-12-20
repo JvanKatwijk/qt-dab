@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -49,14 +49,17 @@ public:
 	bool		isFileInput	();
 	int		getVFOFrequency	();
 private:
+	RingBuffer<std::complex<float>>	_I_Buffer;
+	riffReader	theReader;
 	QSettings	*newFilesSettings;
 	QString		fileName;
-	RingBuffer<std::complex<float>>	_I_Buffer;
 	int32_t		bufferSize;
-	riffReader	theReader;
 	QScopedPointer<newReader> readerTask;
-	std::atomic<bool>	running;
+	std::atomic<bool>	sliderFree;
 public slots:
 	void		setProgress	(int, float);
+	void		handle_sliderPressed    ();
+        void		handle_sliderMoved      (int);
+        void		handle_sliderReleased   (); 
 };
 

@@ -139,8 +139,6 @@
                                              TII_THRESHOLD, 6);
 	tiiCollisions_active = value_i (settings_p, CONFIG_HANDLER,
 	                                      "tiiCollisions", 1) != 0;
-	tiiFilter_active = value_i (settings_p, CONFIG_HANDLER,
-	                                      "tiiFilter", 1) != 0;
 	theOfdmDecoder. handle_decoderSelector (decoder);
 
 	this	-> snr		= 10;	// until we know better
@@ -167,7 +165,7 @@ void	ofdmHandler::setTIICollisions	(bool b) {
 }
 
 void	ofdmHandler::setTIIFilter	(bool b) {
-	tiiFilter_active	= b;
+	(void)b;
 }
 
 void	ofdmHandler::start () {
@@ -470,8 +468,7 @@ int	snrCount	= 0;
 	            showTIIspectrum ();
 	            QVector<tiiData> resVec =
 	                       theTIIDetector. processNULL (tiiThreshold,
-	                                                 tiiCollisions_active,
-	                                                 tiiFilter_active);
+	                                                 tiiCollisions_active);
 	            showTIIData (resVec, 0);
 	         }
 	      }

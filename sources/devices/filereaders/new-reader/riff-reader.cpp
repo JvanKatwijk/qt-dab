@@ -55,6 +55,7 @@ char header [5];
            throw device_exception (val. toStdString ());
         }
 
+	newPosition. store (0);
 	this	-> fileName	= fileName;
         fread (header, 1, 4, filePointer);
         fread (&segmentSize, 1, 4, filePointer);
@@ -184,6 +185,7 @@ char header [5];
 	      fseek (filePointer, segmentSize, SEEK_CUR);
 	   fread (header, 1, 4, filePointer);
 //	   fprintf (stderr, "Now we read %s\n", header);
+
 	   if (feof (filePointer)) {
 	      QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -202,8 +204,11 @@ char header [5];
 	fread (&xxx, 1, 4, filePointer);
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = xxx / blockAlign;
+//	fprintf (stderr, "nrElements %d\n", nrElements);
 	remainingElements	= nrElements;
 	std::fgetpos (filePointer, &baseofData);
+	basePosition = ftell (filePointer);
+//	fprintf (stderr, "base = %d\n", (int)basePosition);
 }
 
 void	riffReader::setupFor_bw64Type (uint32_t segmentSize) {
@@ -342,6 +347,12 @@ void	riffReader::reset	() {
 
 int	riffReader::read (std::complex<float> *buffer, uint64_t nrSamples) {
 
+	if (newPosition. load () > 0) {
+	   uint64_t offset = newPosition. load () * sampleSize ();
+	   fseek (filePointer, basePosition + offset, SEEK_SET);
+	   remainingElements = nrElements - newPosition. load ();
+	   newPosition. store (0);
+	}
 	switch (readBytes) {
 	   case READ4BYTES:
 	      return read4Bytes (buffer, nrSamples);
@@ -422,3 +433,11 @@ QString		riffReader::getDevice	() {
 	return theDevice;
 }
 
+int	riffReader::sampleSize () {
+	return readBytes == READ4BYTES ? 4 :
+	                    READ6BYTES ? 6 : 8;
+}
+
+void	riffReader::set_newPosition (uint64_t v) {
+	newPosition. store (v);
+}

@@ -38,6 +38,7 @@ public:
 			~newReader	();
 	void		startReader	();
 	void		stopReader	();
+	void		handle_progressSlider	(int);
 private:
 virtual void		run		();
 	riffReader	*theReader;
@@ -46,6 +47,7 @@ virtual void		run		();
 	std::atomic<bool>	running;
 	newFiles	*parent;
 	uint64_t	fileLength;
+	std::atomic<int> newPosition;
 signals:
 	void		setProgress	(int, float);
 };

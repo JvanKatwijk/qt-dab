@@ -62,7 +62,15 @@
 	int64_t fileLength      = ftell (filePointer);
         totalTime       -> display ((float)fileLength / (SAMPLERATE * 2));
 	fseek (filePointer, 0, SEEK_SET);
-	fileProgress    -> setValue (0);
+	progressSlider	-> setValue (0);
+	sliderFree. store (true);
+        connect (progressSlider, &QSlider::sliderPressed,
+                 this, &rawFiles::handle_sliderPressed);
+        connect (progressSlider, &QSlider::sliderMoved, 
+                 this, &rawFiles::handle_sliderMoved);
+        connect (progressSlider, &QSlider::sliderReleased,  
+                 this, &rawFiles::handle_sliderReleased);
+
         currentTime     -> display (0);
 	typeOfFile	-> setText ("raw, 8 bits");
 	sampleCount	-> setText (QString::number (fileLength / 2));
@@ -76,6 +84,7 @@
 	      usleep (100);
 	   readerTask. reset ();
 	}
+
 	storeWidgetPosition (rawFilesSettings, &myFrame, RAWSETTINGS);
 	if (filePointer != nullptr)
 	   fclose (filePointer);
@@ -120,8 +129,10 @@ int32_t	rawFiles::Samples() {
 }
 
 void	rawFiles::setProgress (int progress, float timelength) {
-	fileProgress      -> setValue (progress);
-	currentTime       -> display (timelength / 1000);
+	if (sliderFree. load ())
+	   progressSlider	-> setValue (progress);
+//	fileProgress	-> setValue (progress);
+	currentTime	-> display (timelength / 1000);
 }
 
 bool	rawFiles::isFileInput	() {
@@ -132,4 +143,19 @@ QString	rawFiles::deviceName	() {
 QString res	= "raw file: " + fileName;
 	return res;
 }
+
+void	rawFiles::handle_sliderPressed	() {
+	sliderFree. store (false);
+}
+
+void	rawFiles::handle_sliderMoved	(int value) {
+	if (readerTask == nullptr)
+	   return;
+	readerTask	-> handle_progressSlider (value);
+}
+
+void	rawFiles::handle_sliderReleased	() {
+	sliderFree. store (true);
+}
+
 

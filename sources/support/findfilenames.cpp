@@ -286,8 +286,8 @@ QTime	theTime;
 	                                        suggestedFilename + ".uff",
 	                                        "xml (*.uff)");
 	fileName	= QDir::toNativeSeparators (fileName);
-	if (fileName == "")
-	   fileName = suggestedFilename;
+//	if (fileName == "")
+//	   fileName = suggestedFilename;
 	return fileName;
 }
 

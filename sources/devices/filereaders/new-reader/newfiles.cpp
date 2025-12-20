@@ -36,7 +36,7 @@
 	newFiles::newFiles (QSettings *s,
 	                    const QString &fileName):
 	                               _I_Buffer (__BUFFERSIZE__),
-	                                  theReader (fileName) {
+	                               theReader (fileName) {
 	newFilesSettings	= s;
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, WAVSETTINGS);
@@ -44,7 +44,15 @@
 	myFrame. show	();
 	this -> fileName	= fileName;
 	nameofFile		-> setText (fileName);
-	fileProgress		-> setValue (0);
+	progressSlider		-> setValue (0);
+	sliderFree. store (true);
+        connect (progressSlider, &QSlider::sliderPressed,
+                 this, &newFiles::handle_sliderPressed);
+        connect (progressSlider, &QSlider::sliderMoved, 
+                 this, &newFiles::handle_sliderMoved);
+        connect (progressSlider, &QSlider::sliderReleased,  
+                 this, &newFiles::handle_sliderReleased);
+
 	currentTime		-> display (0);
 //
 //	The reader knows it all
@@ -61,13 +69,13 @@
 	int32_t	Freq	= theReader. getVFOFrequency ();
 	if (Freq > 0)
 	   frequencyLabel -> setText (" Freq:" + QString::number (Freq / 1000));
-	running. store (false);
+	readerTask. reset ();
 }
 //
 //	Note that running == true <==> readerTask has value assigned
 
 	newFiles::~newFiles	() {
-	if (running. load()) {
+	if (!readerTask. isNull ()) {
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
 	      usleep (500);
@@ -79,21 +87,17 @@
 bool	newFiles::restartReader		(int32_t freq, int skipped) {
 	(void)freq;
 	(void)skipped;
-	if (running. load())
-           return true;
         readerTask. reset (new newReader (this, &theReader, &_I_Buffer));
-        running. store (true);
         return true;
 }
 
 void	newFiles::stopReader	() {
-       if (running. load()) {
+	if (!readerTask. isNull ()) {
            readerTask   -> stopReader();
            while (readerTask -> isRunning())
               usleep (100);
 	   readerTask. reset ();
         }
-        running. store (false);
 }
 
 //	size is in I/Q pairs
@@ -113,7 +117,9 @@ int32_t	newFiles::Samples() {
 }
 
 void    newFiles::setProgress (int progress, float timelength) {
-        fileProgress	-> setValue (progress);
+        if (sliderFree. load ())
+	   progressSlider -> setValue (progress);
+//	fileProgress	-> setValue (progress);
 	currentTime	-> display (QString ("%1").arg(timelength, 0, 'f', 1));
 }
 
@@ -129,3 +135,20 @@ QString	newFiles::deviceName	() {
 	return QString (".wav file: ") + fileName;
 }
 
+
+void	newFiles::handle_sliderPressed    () {
+        sliderFree. store (false);
+}       
+  
+void	newFiles::handle_sliderMoved      (int value) {
+        if (readerTask == nullptr)
+           return;
+//	fprintf (stderr, "set to %d\n", value);
+        readerTask -> handle_progressSlider (value);
+}       
+        
+void	newFiles::handle_sliderReleased   () {
+        sliderFree. store (true);
+}
+
+	

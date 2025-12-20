@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -53,13 +53,17 @@ public:
 	QString		deviceName	();
 	bool		isFileInput	();
 private:
+	RingBuffer<std::complex<float>>	_I_Buffer;
+	QScopedPointer<rawReader> readerTask;
 	QSettings	*rawFilesSettings;
 	QString		fileName;
-	RingBuffer<std::complex<float>>	_I_Buffer;
 	FILE		*filePointer;
-	QScopedPointer<rawReader> readerTask;
 	std::atomic<bool>	running;
+	std::atomic<bool>	sliderFree;
 public slots:
-	void		setProgress	(int, float);
+	void		setProgress		(int, float);
+	void		handle_sliderPressed	();
+	void		handle_sliderMoved	(int);
+	void		handle_sliderReleased	(); 
 };
 

@@ -79,8 +79,8 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", 0);
 	basePort 	=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "basePort",  1234);
-	ipAddress	=
-	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
+//	ipAddress	=
+//	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
 
 	gainSelector	-> setValue (Gain);
 	PpmSelector	-> setValue (Ppm);
@@ -147,9 +147,9 @@ void	rtl_tcp_client::wantConnect () {
 
 	QString s = ipAddress;
 	toServer. connectToHost (QHostAddress (s), basePort);
-	if (!toServer.waitForConnected(2000)) {
-	   QMessageBox::warning(&myFrame,
-	                      tr("sdr"), tr("connection failed\n"));
+	if (!toServer.waitForConnected (2000)) {
+	   QMessageBox::warning (&myFrame,
+	                         tr("sdr"), tr("connection failed\n"));
 	   QString t = "Connection to " + s + "failed";
 	   theErrorLogger -> add ("RTL_TCP", t);
 	   return;
@@ -172,9 +172,9 @@ bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
 	vfoFrequency = freq;
 	this -> toSkip = skipped;
 //	here the command to set the frequency
-	sendVFO (freq);
 	connect (&toServer, &QIODevice::readyRead,
 	         this, &rtl_tcp_client::readData);
+	sendVFO (freq);
 	return true;
 }
 
@@ -209,7 +209,7 @@ int16_t	rtl_tcp_client::bitDepth	() {
 void	rtl_tcp_client::readData () {
 uint8_t buffer [2 * SEGMENT_SIZE];
 std::complex<float> localBuffer [SEGMENT_SIZE];
-
+static int geweest = false;
 	if (!dongleInfoIn) {
 	   dongleInfo_t dongleInfo;
 	   if (toServer. bytesAvailable () >=
@@ -241,7 +241,6 @@ std::complex<float> localBuffer [SEGMENT_SIZE];
 	              break;
 	         }
 	         tunerLabel -> setText (tunerText);
-	         fprintf (stderr, "gainType %X\n", dongleInfo. tunerGainCount);
 	      }
 	   }
 	}
@@ -251,7 +250,7 @@ std::complex<float> localBuffer [SEGMENT_SIZE];
 	      xmlWriter -> add ((std::complex<uint8_t> *)buffer, SEGMENT_SIZE);
 
 	   while (toServer. bytesAvailable() > 2 * SEGMENT_SIZE) {
-	      toServer. read ((char *)buffer, SEGMENT_SIZE);
+	      toServer. read ((char *)buffer, 2 * SEGMENT_SIZE);
 	      for (int i = 0; i < SEGMENT_SIZE; i ++)
 	         localBuffer [i] =
 	           std::complex<float> (convTable [buffer [2 * i]],

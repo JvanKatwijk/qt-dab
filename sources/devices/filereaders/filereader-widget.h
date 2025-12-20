@@ -25,6 +25,7 @@
 
 #include	<QLabel>
 #include	<QProgressBar>
+#include	<QSlider>
 #include	<QLCDNumber>
 #include	<QHBoxLayout>
 #include	<QVBoxLayout>
@@ -33,7 +34,7 @@ class	filereaderWidget {
 public:
 	QLabel		*titleLabel;
 	QLabel		*nameofFile;
-	QProgressBar	*fileProgress;
+	QSlider		*progressSlider;
 	QLCDNumber	*currentTime;
 	QLabel		*seconds;
 	QLCDNumber	*totalTime;
@@ -57,7 +58,7 @@ void	setupUi		(QWidget *qw) {
 	amountLabel	= new QLabel (" nr samples ");
 	sampleCount	= new QLabel ();
 	frequencyLabel	= new QLabel	();
-	fileProgress	= new QProgressBar ();
+	progressSlider	= new QSlider	(Qt::Horizontal);
 	currentTime	= new QLCDNumber	();
 	currentTime	->  setFrameShape (QFrame::NoFrame);
 	currentTime	->  setSegmentStyle (QLCDNumber::Flat);
@@ -86,7 +87,7 @@ void	setupUi		(QWidget *qw) {
 	base		-> addWidget (nameofFile);
 	base		-> addItem	(line_2);
 	base		-> addItem	(line_3);
-	base		-> addWidget (fileProgress);
+	base		-> addWidget	(progressSlider);
 	base		-> addItem   (bottom);
 	
 	qw		-> setLayout (base);

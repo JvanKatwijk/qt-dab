@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -44,6 +44,7 @@ struct timeval  tv;
 	fileLength		= theReader -> elementCount ();
 	theReader	-> reset ();
 	period          = (BUFFERSIZE * 1000) / (SAMPLERATE / 1000);// full IQś read
+	newPosition. store (0);
 	running. store (false);
 	start ();
 }
@@ -79,6 +80,14 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	         usleep (100);
 	      }
 
+	      if (newPosition. load () > 0) {
+	         uint64_t newPos =
+	               (uint64_t)(newPosition. load () / 100.0 * fileLength);
+	         theReader	-> set_newPosition (newPos);         
+                 newPosition. store (0); 
+                 teller = 20;
+              }
+
 	      if (++teller >= 20) {
 	         int64_t xx = theReader -> currentPos ();
 	         float progress = (float)xx / fileLength;
@@ -98,5 +107,9 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	         usleep (nextStop - getMyTime());
 	   }
 	} catch (int e) {}
+}
+
+void	newReader::handle_progressSlider	(int value) {
+	newPosition. store (value);
 }
 
