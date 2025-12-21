@@ -65,7 +65,7 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
         myFrame. show   ();
 
 	for (int i = 0; i < 256; i ++)
-	   convTable [i] = ((float)i - 128.0) / 128.0;
+	   convTable [i] = ((float)i - 127.38) / 128.0;
 
 	ipAddress		= "127.0.0.1";	// the default
 	addressSelector		-> setInputMask ("000.000.000.000");
@@ -84,8 +84,7 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
 
 	gainSelector	-> setValue (Gain);
-	PpmSelector	-> setValue (Ppm);
-	agcSelector	-> setChecked (AgcMode);
+	ppmSelector	-> setValue (Ppm);
 	portSelector	-> setValue (basePort);
 	addressSelector	-> setText (ipAddress);
 	vfoFrequency	= DEFAULT_FREQUENCY;
@@ -95,18 +94,10 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         this, &rtl_tcp_client::wantConnect);
 	connect (tcp_disconnect, &QPushButton::clicked,
 	         this, &rtl_tcp_client::setDisconnect);
-	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &rtl_tcp_client::sendGain);
-	connect (PpmSelector, qOverload<double>(&QDoubleSpinBox::valueChanged),
+	connect (ppmSelector, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &rtl_tcp_client::set_fCorrection);
 	connect (xml_dumpButton, &QPushButton::clicked,
 	         this, &rtl_tcp_client::set_xmlDump);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (agcSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (agcSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &rtl_tcp_client::setAgcMode);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (biasTSelector, &QCheckBox::checkStateChanged,
 #else
@@ -117,6 +108,14 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         this, &rtl_tcp_client::setPort);
 	connect (addressSelector, &QLineEdit::returnPressed,
 	         this, &rtl_tcp_client::setAddress);
+	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &rtl_tcp_client::sendGain);
+	connect  (hw_agc, &QRadioButton::clicked,
+	          this, &rtl_tcp_client::set_agc_hw);
+	connect  (sw_agc, SIGNAL (clicked()),
+	          this, SLOT (set_agc_sw ()));
+	connect  (manual, SIGNAL (clicked ()),
+	          this, SLOT (set_manual ()));
 
 	xml_dumping. store (false);
 	theState	-> setText("waiting to start");
@@ -178,6 +177,7 @@ bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
 //	here the command to set the frequency
 	connect (&toServer, &QIODevice::readyRead,
 	         this, &rtl_tcp_client::readData);
+	setBandwidth (1536000);
 	sendVFO (freq);
 	return true;
 }
@@ -297,11 +297,22 @@ void	rtl_tcp_client::sendRate (int32_t rate) {
 	sendCommand (0x02, rate);
 }
 
-void	rtl_tcp_client::setAgcMode (int agc) {
+void	rtl_tcp_client::setAgcMode (uint8_t agc) {
 	(void)agc;
 	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
-	bool b	= agcSelector -> isChecked ();
-	sendCommand (0x03, b);
+	if (agc == 0)
+	   hw_agc	-> setChecked (true);
+	else
+	if (agc == 2)
+	   sw_agc	-> setChecked (true);
+	sendCommand (0x08, agc == 0);
+	sendCommand (0x03, agc);
+	if (agc == 1) {
+	   Gain = gainSelector -> value ();
+	   sendCommand (0x04, 10 * Gain);
+	}
+	gainSelector	-> setEnabled (agc == 1);
+	gainLabel	-> setEnabled (agc == 1);
 	
 }
 void	rtl_tcp_client::sendGain (int gain) {
@@ -335,6 +346,18 @@ void	rtl_tcp_client::setAddress () {
 //	addressSelector -> setInputMask ("000.000.000.000");
 	ipAddress = addressSelector -> text ();
 	fprintf (stderr, "ipAddress %s\n", ipAddress. toLatin1 (). data ());
+}
+
+void	rtl_tcp_client::set_agc_hw () {
+	setAgcMode (0);
+}
+
+void	rtl_tcp_client::set_agc_sw () {
+	setAgcMode (2);
+}
+
+void	rtl_tcp_client::set_manual () { 
+	setAgcMode (1);
 }
 
 void	rtl_tcp_client::setDisconnect () {

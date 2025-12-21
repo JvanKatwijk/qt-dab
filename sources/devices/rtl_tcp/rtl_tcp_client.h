@@ -89,6 +89,7 @@ private:
         void            close_xmlDump           ();
         std::atomic<bool> xml_dumping;
 
+	void		setAgcMode		(uint8_t);
 private slots:
 	void		sendGain	(int);
 	void		set_fCorrection	(double);
@@ -99,7 +100,9 @@ private slots:
 	void		setBandwidth	(int);
 	void		setPort		(int);
 	void		setAddress	();
-	void		setAgcMode	(int);
+	void		set_manual	();
+	void		set_agc_hw	();
+	void		set_agc_sw	();
 
 	void		set_xmlDump	();
 };

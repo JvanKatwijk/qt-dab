@@ -134,7 +134,7 @@ uint16_t	rawContentType = 0;
                        uint8_t charSet = segment [pointer] >> 4;
 	               QByteArray nameText;
                        for (int i = 1; i < length; i ++) {
-	                  if (pointer + i < 12)
+	                  if (i < 32)
                              nameText. append (segment [pointer + i]);
 	               }
 	               name = toQStringUsingCharset (
@@ -219,7 +219,6 @@ void	motObject::addBodySegment (const uint8_t	*bodySegment,
 
 void	motObject::handleComplete	() {
 QByteArray result;
-
 	for (const auto &it : motMap)
 	   result. append (it. second);
 //	fprintf (stderr,

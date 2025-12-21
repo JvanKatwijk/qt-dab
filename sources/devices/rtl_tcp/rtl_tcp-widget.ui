@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>214</width>
-    <height>310</height>
+    <width>206</width>
+    <height>373</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,7 +93,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="PpmSelector">
+      <widget class="QDoubleSpinBox" name="ppmSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ppm control. Tells the device the offset (in ppm) of the observed oscillator offset.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -111,62 +111,97 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QCheckBox" name="biasTSelector">
-       <property name="text">
-        <string>biasT</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="agcSelector">
-       <property name="text">
-        <string>agc</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="xml_dumpButton">
+    <widget class="QCheckBox" name="biasTSelector">
      <property name="text">
-      <string>PushButton</string>
+      <string>biasT</string>
      </property>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_7">
      <item>
+      <widget class="QLabel" name="gainLabel">
+       <property name="text">
+        <string>IF Gain</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QSpinBox" name="gainSelector">
        <property name="suffix">
         <string> dB</string>
        </property>
        <property name="maximum">
-        <number>999</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="gainLabel">
-       <property name="text">
-        <string>Gain</string>
+        <number>99</number>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="tunerLabel">
-     <property name="text">
-      <string>rtl_tcp_client</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="agcLabel">
+       <property name="text">
+        <string>AGC</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="hw_agc">
+       <property name="text">
+        <string>hw</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="sw_agc">
+       <property name="text">
+        <string>sw</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="manual">
+       <property name="text">
+        <string>off</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item>
+      <widget class="QLabel" name="tunerLabel">
+       <property name="text">
+        <string>Tuner</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QLabel" name="theState">
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="xml_dumpButton">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the dabstick into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a 'Save as ...' dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Dump to xml file</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Qt-DAB: rtl_tcp client</string>
      </property>
     </widget>
    </item>

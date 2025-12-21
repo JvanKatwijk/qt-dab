@@ -4022,7 +4022,14 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 //	first copy the db data, theTransmitter is properly initalized
 //	with the db Values, now the dynamics
 //	we just check on the ensemblename
-	      theTransmitter. valid	= true;
+	      if (!configHandler_p -> get_allTIISelector () &&
+	         (theTransmitter. ensemble. trimmed () !=
+	                          channel. ensembleName. trimmed ()))
+	         continue;	
+	      else
+	         theTransmitter. valid	=
+	                  theTransmitter. ensemble. trimmed () ==
+	                                   channel. ensembleName. trimmed ();
 	      position thePosition;
 	      thePosition. latitude     = theTransmitter. latitude;
 	      thePosition. longitude    = theTransmitter. longitude;
@@ -4040,7 +4047,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      addtoLogFile (&theTransmitter);
 //	   need_to_print = true;
 	}
-
 //
 	int	bestIndex = -1;
 	float Strength	= -100;
@@ -4056,7 +4062,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   teller ++;
 	}
 
-
 	if (bestIndex >= 0) {
 	   channel. transmitters [bestIndex]. isStrongest = true;
 	}
@@ -4071,6 +4076,21 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   channel. height		= ce -> height;
 	   channel. distance		= ce -> distance;
 	   channel. azimuth		= ce -> azimuth; 
+	}
+
+	// just show on the main widget the strongest
+	for (auto &theTr: channel. transmitters) {
+	   if (theTr. distance < 0)
+	      continue;
+	   if (theTr. isStrongest) {
+	      QString labelText = createTIILabel (theTr);
+	         
+	      QFont font	= distanceLabel -> font ();
+	      font. setPointSize (9);
+	      distanceLabel	-> setFont (font);
+	      distanceLabel	-> setText (labelText);
+	      break;
+	   }
 	}
 
 //	if the list has somehow changed, rewrite it
@@ -4094,21 +4114,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theDXDisplay. addRow (theTr,
 	                             bestIndex == teller);
 	      teller ++;
-	   }
-	}
-	else {	// just show on the main widget the strongest
-	   for (auto &theTr: channel. transmitters) {
-	      if (theTr. distance < 0)
-	         continue;
-	      if (theTr. isStrongest) {
-	         QString labelText = createTIILabel (theTr);
-	         
-	         QFont font	= distanceLabel -> font ();
-	         font. setPointSize (9);
-	         distanceLabel	-> setFont (font);
-	         distanceLabel	-> setText (labelText);
-	         break;
-	      }
 	   }
 	}
 //
