@@ -68,6 +68,7 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	   convTable [i] = ((float)i - 128.0) / 128.0;
 
 	ipAddress		= "127.0.0.1";	// the default
+	addressSelector		-> setInputMask ("000.000.000.000");
 
 	Gain		=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "Gain", 20);
@@ -79,8 +80,8 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", 0);
 	basePort 	=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "basePort",  1234);
-//	ipAddress	=
-//	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
+	ipAddress	=
+	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
 
 	gainSelector	-> setValue (Gain);
 	PpmSelector	-> setValue (Ppm);
@@ -129,11 +130,11 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	stopReader ();
 	store (remoteSettings, RTL_TCP_SETTINGS, "remoteserver",
 	                                toServer. peerAddress (). toString ());
-	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
+//	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Gain", Gain);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Ppm", Ppm);
-	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
-	store (remoteSettings, RTL_TCP_SETTINGS, "biasT", biasT);
+//	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
+//	store (remoteSettings, RTL_TCP_SETTINGS, "biasT", biasT);
 	toServer. close ();
 	connected = false;
 	myFrame. hide ();
@@ -145,16 +146,19 @@ void	rtl_tcp_client::wantConnect () {
 	   setDisconnect ();
 	}
 
-	QString s = ipAddress;
-	toServer. connectToHost (QHostAddress (s), basePort);
+	ipAddress = addressSelector -> text ();
+	if (ipAddress == "")
+	   return;
+	toServer. connectToHost (QHostAddress (ipAddress), basePort);
 	if (!toServer.waitForConnected (2000)) {
 	   QMessageBox::warning (&myFrame,
 	                         tr("sdr"), tr("connection failed\n"));
-	   QString t = "Connection to " + s + "failed";
+	   QString t = "Connection to " + ipAddress + "failed";
 	   theErrorLogger -> add ("RTL_TCP", t);
 	   return;
 	}
 
+	store (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
 	connected	= true;
 	theState -> setText ("connected");
 	sendRate	(SAMPLERATE);
@@ -295,8 +299,10 @@ void	rtl_tcp_client::sendRate (int32_t rate) {
 
 void	rtl_tcp_client::setAgcMode (int agc) {
 	(void)agc;
+	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
 	bool b	= agcSelector -> isChecked ();
 	sendCommand (0x03, b);
+	
 }
 void	rtl_tcp_client::sendGain (int gain) {
 	Gain	= gain;
@@ -312,6 +318,7 @@ void	rtl_tcp_client::set_fCorrection (double ppm) {
 
 void	rtl_tcp_client::setBiasT (int biast) {
 	biasT = biasTSelector -> isChecked () ? 1 : 0;
+	store (remoteSettings, RTL_TCP_SETTINGS, "biasT", biasT);
 	sendCommand (0x0e, biast);
 }
 
@@ -321,11 +328,13 @@ void	rtl_tcp_client::setBandwidth (int bw) {
 
 void	rtl_tcp_client::setPort (int port) {
 	basePort = port;
+	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
 }
 
 void	rtl_tcp_client::setAddress () {
-	addressSelector -> setInputMask ("000.000.000.000");
+//	addressSelector -> setInputMask ("000.000.000.000");
 	ipAddress = addressSelector -> text ();
+	fprintf (stderr, "ipAddress %s\n", ipAddress. toLatin1 (). data ());
 }
 
 void	rtl_tcp_client::setDisconnect () {

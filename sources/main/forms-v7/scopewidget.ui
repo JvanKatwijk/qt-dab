@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>607</height>
+    <width>795</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_12">
+    <layout class="QHBoxLayout" name="horizontalLayout_13">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
@@ -69,65 +69,75 @@
           <attribute name="title">
            <string>Corr</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QSlider" name="correlationSlider">
-               <property name="value">
-                <number>50</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QSlider" name="correlationSlider">
+                 <property name="value">
+                  <number>50</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Vertical</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QwtPlot" name="correlationDisplay">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>171</height>
+                  </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fine time synchronization is by correlation. Ideally the match is on or around the 504-th sample.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QwtPlot" name="correlationDisplay">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fine time synchronization is by correlation. Ideally the match is on or around the 504-th sample.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QPushButton" name="show_marksButton">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The encoding of the TII data (if any) can be used to get an estimate of the delay of the signal. This estimate (not always very accurate) then can be used  to label the peaks in the correlation scope (these peaks can also be used to compute a delay in the arrival of the signal of a particular transmitter) label the peaks in the correlation scope with the TII numbers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>show marks</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="correlationsVector">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around sample number 504. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>TextLabel</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="correlationLength">
-               <property name="minimum">
-                <number>400</number>
-               </property>
-               <property name="maximum">
-                <number>8005</number>
-               </property>
-               <property name="singleStep">
-                <number>50</number>
-               </property>
-               <property name="value">
-                <number>600</number>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QPushButton" name="show_marksButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The encoding of the TII data (if any) can be used to get an estimate of the delay of the signal. This estimate (not always very accurate) then can be used  to label the peaks in the correlation scope (these peaks can also be used to compute a delay in the arrival of the signal of a particular transmitter) label the peaks in the correlation scope with the TII numbers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>show marks</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="correlationsVector">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around sample number 504. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="correlationLength">
+                 <property name="minimum">
+                  <number>400</number>
+                 </property>
+                 <property name="maximum">
+                  <number>8005</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>50</number>
+                 </property>
+                 <property name="value">
+                  <number>600</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
@@ -239,7 +249,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
           <widget class="QSlider" name="waterfallSlider">
            <property name="maximum">
@@ -258,7 +268,7 @@
            <property name="maximumSize">
             <size>
              <width>448</width>
-             <height>232</height>
+             <height>171</height>
             </size>
            </property>
            <property name="toolTip">
