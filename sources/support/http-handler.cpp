@@ -140,12 +140,11 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	delayTimer. stop ();	// it seems we are reconnected
 	if (closingInProgress. load ())
 	   return;
-	closingInProgress. store (false);
-	bool	keepAlive	= false;
+//	closingInProgress. store (false);
 	QByteArray data		= worker -> readAll ();
 	QString request		= QString (data);
 	int version		= request. contains ("HTTP/1.1") ? 11 : 10;
-	keepAlive	= (version == 11) ? 
+	bool keepAlive	= (version == 11) ? 
 	                     !request. contains ("Connection: close"):
 	                     request. contains ("Connection: keep-alive");
 //	Identify the URL

@@ -85,7 +85,6 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	connect (this, &sampleReader::show_dcOffset,
 	         mr, &RadioInterface::show_dcOffset);
 	running. store (true);
-
 }
 
 	sampleReader::~sampleReader () {
@@ -178,7 +177,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	}
 
 	sampleCount	+= nrSamples;
-	
+
 	if (saving && (spectrumBuffer != nullptr) &&
 	             (sampleCount > SAMPLERATE / repetitionCounter)) {
 //	   show_corrector	(corrector);

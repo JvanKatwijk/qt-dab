@@ -75,7 +75,7 @@ private:
 	bool		connected;
 	int16_t		Gain;
 	double		Ppm;
-	int16_t		AgcMode;
+	int16_t		agcMode;
 	int16_t		biasT;
 	QString		ipAddress;
 	QTcpSocket	toServer;
@@ -100,7 +100,7 @@ private slots:
 	void		setBandwidth	(int);
 	void		setPort		(int);
 	void		setAddress	();
-	void		set_manual	();
+	void		set_agc_off	();
 	void		set_agc_hw	();
 	void		set_agc_sw	();
 

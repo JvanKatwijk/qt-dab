@@ -76,15 +76,25 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         value_f (remoteSettings, RTL_TCP_SETTINGS, "Ppm",  0);
 	biasT		=
 	         value_f (remoteSettings, RTL_TCP_SETTINGS, "biasT",  0);
-	AgcMode		=
+	agcMode		=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", 0);
 	basePort 	=
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "basePort",  1234);
 	ipAddress	=
 	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
 
+	
 	gainSelector	-> setValue (Gain);
 	ppmSelector	-> setValue (Ppm);
+	if (agcMode == 0)   
+           hw_agc       -> setChecked (true);
+        else
+	if (agcMode == 1)
+	   agc_off	-> setChecked (true);
+	else
+        if (agcMode == 2)
+           sw_agc       -> setChecked (true);
+
 	portSelector	-> setValue (basePort);
 	addressSelector	-> setText (ipAddress);
 	vfoFrequency	= DEFAULT_FREQUENCY;
@@ -114,8 +124,8 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	          this, &rtl_tcp_client::set_agc_hw);
 	connect  (sw_agc, SIGNAL (clicked()),
 	          this, SLOT (set_agc_sw ()));
-	connect  (manual, SIGNAL (clicked ()),
-	          this, SLOT (set_manual ()));
+	connect  (agc_off, SIGNAL (clicked ()),
+	          this, SLOT (set_agc_off ()));
 
 	xml_dumping. store (false);
 	theState	-> setText("waiting to start");
@@ -127,8 +137,8 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	storeWidgetPosition (remoteSettings, &myFrame, RTL_TCP_SETTINGS);
 
 	stopReader ();
-	store (remoteSettings, RTL_TCP_SETTINGS, "remoteserver",
-	                                toServer. peerAddress (). toString ());
+//	store (remoteSettings, RTL_TCP_SETTINGS, "remoteserver",
+//	                                toServer. peerAddress (). toString ());
 //	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Gain", Gain);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Ppm", Ppm);
@@ -161,12 +171,13 @@ void	rtl_tcp_client::wantConnect () {
 	connected	= true;
 	theState -> setText ("connected");
 	sendRate	(SAMPLERATE);
-	setAgcMode	(AgcMode);
+	setAgcMode	(agcMode);
 	set_fCorrection (Ppm);
 	setBandwidth	(1536000);
 	setBiasT	(biasT);
 	toServer. waitForBytesWritten ();
 	dongleInfoIn	= false;
+	dongleInfoIn	= true;
 }
 
 bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
@@ -178,6 +189,7 @@ bool	rtl_tcp_client::restartReader (int32_t freq, int skipped) {
 	connect (&toServer, &QIODevice::readyRead,
 	         this, &rtl_tcp_client::readData);
 	setBandwidth (1536000);
+	setAgcMode (agcMode);
 	sendVFO (freq);
 	return true;
 }
@@ -213,7 +225,7 @@ int16_t	rtl_tcp_client::bitDepth	() {
 void	rtl_tcp_client::readData () {
 uint8_t buffer [2 * SEGMENT_SIZE];
 std::complex<float> localBuffer [SEGMENT_SIZE];
-static int geweest = false;
+
 	if (!dongleInfoIn) {
 	   dongleInfo_t dongleInfo;
 	   if (toServer. bytesAvailable () >=
@@ -249,6 +261,7 @@ static int geweest = false;
 	   }
 	}
 
+	dongleInfoIn = true;
 	if (dongleInfoIn) {
 	   if (xml_dumping. load ())
 	      xmlWriter -> add ((std::complex<uint8_t> *)buffer, SEGMENT_SIZE);
@@ -298,10 +311,13 @@ void	rtl_tcp_client::sendRate (int32_t rate) {
 }
 
 void	rtl_tcp_client::setAgcMode (uint8_t agc) {
-	(void)agc;
-	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
+	agcMode	= agc;
+	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", agcMode);
 	if (agc == 0)
 	   hw_agc	-> setChecked (true);
+	else
+	if (agc == 1)
+	   agc_off	-> setChecked (true);
 	else
 	if (agc == 2)
 	   sw_agc	-> setChecked (true);
@@ -313,8 +329,8 @@ void	rtl_tcp_client::setAgcMode (uint8_t agc) {
 	}
 	gainSelector	-> setEnabled (agc == 1);
 	gainLabel	-> setEnabled (agc == 1);
-	
 }
+
 void	rtl_tcp_client::sendGain (int gain) {
 	Gain	= gain;
 	sendCommand (0x04, 10 * gain);
@@ -356,7 +372,7 @@ void	rtl_tcp_client::set_agc_sw () {
 	setAgcMode (2);
 }
 
-void	rtl_tcp_client::set_manual () { 
+void	rtl_tcp_client::set_agc_off () { 
 	setAgcMode (1);
 }
 
@@ -370,7 +386,7 @@ void	rtl_tcp_client::setDisconnect () {
 	store (remoteSettings, RTL_TCP_SETTINGS, "basePort", basePort);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Gain", Gain);
 	store (remoteSettings, RTL_TCP_SETTINGS, "Ppm", Ppm);
-	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", AgcMode);
+	store (remoteSettings, RTL_TCP_SETTINGS, "AgcMode", agcMode);
 	store (remoteSettings, RTL_TCP_SETTINGS, "biasT", biasT);
 	toServer. close ();
 	connected = false;

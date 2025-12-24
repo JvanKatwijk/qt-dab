@@ -162,7 +162,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="manual">
+      <widget class="QRadioButton" name="agc_off">
        <property name="text">
         <string>off</string>
        </property>
