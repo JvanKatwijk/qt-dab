@@ -2972,6 +2972,8 @@ void	RadioInterface::nextFor_scan_continuous () {
 }
 
 ////////////////////////////////////////////////////////////////////////////
+//	preparing texts for csv file
+///////////////////////////////////////////////////////////////////////////
 QString RadioInterface::buildHeadLine () {
 QString SNR 		= "SNR " + QString::number (channel. snr);
 QString	tii;
