@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
+    <width>618</width>
     <height>313</height>
    </rect>
   </property>
@@ -277,6 +277,13 @@
         <widget class="QLabel" name="stereoLabel">
          <property name="text">
           <string>stereo</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="protectionLabel">
+         <property name="text">
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>
