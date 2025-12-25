@@ -2373,6 +2373,12 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	programTypeLabel	-> setText (getProgramType (ad. programType));
 	rateLabel		-> setStyleSheet ("color:magenta");
 	rateLabel		-> setText (QString::number (ad. bitRate) + "kbit");
+	QString protL	= getProtectionLevel (ad. shortForm, ad. protLevel);
+	protectionLabel		-> setStyleSheet ("color:red");
+	QFont font		= protectionLabel -> font ();
+	font. setPointSize (9);
+	protectionLabel		-> setFont (font);
+	protectionLabel		-> setText (protL);
 //	show service related data
 	techWindow_p	-> showServiceData 	(&ad);
 }
@@ -2432,6 +2438,7 @@ void	RadioInterface::cleanScreen	() {
 	sbrLabel			-> setText ("");
 	audiorateLabel			-> setText ("");
 	rateLabel			-> setText ("");
+	protectionLabel			-> setText ("");
 
 	stereoSetting			= false;
 	setStereo	(false);
@@ -4023,15 +4030,16 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   else {
 //	first copy the db data, theTransmitter is properly initalized
 //	with the db Values, now the dynamics
-//	we just check on the ensemblename
-	      if (!configHandler_p -> get_allTIISelector () &&
-	         (theTransmitter. ensemble. trimmed () !=
-	                          channel. ensembleName. trimmed ()))
-	         continue;	
-	      else
-	         theTransmitter. valid	=
-	                  theTransmitter. ensemble. trimmed () ==
-	                                   channel. ensembleName. trimmed ();
+//	we  could just check on the ensemblename, however,
+//	the name in the database is not always equal to the ensemblename
+//	      if (!configHandler_p -> get_allTIISelector () &&
+//	         (theTransmitter. ensemble. trimmed () !=
+//	                          channel. ensembleName. trimmed ()))
+//	         continue;	
+//	      else
+//	         theTransmitter. valid	=
+//	                  theTransmitter. ensemble. trimmed () ==
+//	                                   channel. ensembleName. trimmed ();
 	      position thePosition;
 	      thePosition. latitude     = theTransmitter. latitude;
 	      thePosition. longitude    = theTransmitter. longitude;
@@ -4043,6 +4051,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	      theTransmitter. collision	= r [i]. collision;
 	      theTransmitter. pattern	= r [i]. pattern;
 	      theTransmitter. isStrongest	= false;
+	      theTransmitter. valid	= true;
 	      channel. transmitters. push_back (theTransmitter);	
 	   }
 	   if (dxMode)
