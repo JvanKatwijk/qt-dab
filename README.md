@@ -14,19 +14,26 @@ in the spectrum of this NULL part one can see a few elements with
 an amplitude larger than the others.
 
 Decoding is by extracting these elements, and applying a mapping process
-that - eventually - results in a (mainId, subId) pair.
+that - eventually - results in a (mainId, subId) pair, identifyinf the
+transmitter.
 
-The difficulty in the decoding is recognizing data andeliminating the noise.
+The difficulty in the decoding is recognizing data and avoiding the noise.
 The decoder uses a **threshold** value to do this.
+The configuration window contains an element with which the threshold
+value can be set. The default value is 6 dB, which is rather low.
 
-What happens if the decoder sees noise as signal, is obviously that the
+What happens if the decoder sees noise as signal is, obviously, that the
 decoder generates (mainId, subId) pairs that are faulty.
 These pairs are matched in a database to find the attributes of the
 transmitter. Of course, in most cases a faulty (mainId, subId) pair
 does not lead to the recognition of a transmitter
 
-The cofiguration window contains a selector **all tii** that - when set - shows
-from all identifies (mainId, subId) pairs a transmitter. With a decent antenna aand a low threshold value might give dozens of lines like below
+The configuration window contains a selector, labeled **all tii**, that 
+- when set - shows for all identified (mainId, subId) pairs a transmitter.
+With a decent antenna aand a low threshold value one might (and probably will)
+dozens of lines - like below - telling a transmitter "not in database"
+(Of course, if the selector is not set, the (mainId, subId) pairs for which
+not transmitter is found are eliminated from the output).
 
 ![6.9](/res/read_me/erroneous-lines.png?raw=true)
 
