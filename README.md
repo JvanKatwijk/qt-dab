@@ -5,6 +5,31 @@
 ![6.9](/res/read_me/qt-dab-logo.png?raw=true)
 
 
+------------------------------------------------------------------------
+A note on TII decoding
+-------------------------------------------------------------------------
+
+TII decoding uses het spectrum of the "NULL" part of the DAB frames,
+in the spectrum of this NULL part one can see a few elements with
+an amplitude larger than the others.
+
+Decoding is by extracting these elements, and applying a mapping process
+that - eventually - results in a (mainId, subId) pair.
+
+The difficulty in the decoding is recognizing data andeliminating the noise.
+The decoder uses a **threshold** value to do this.
+
+What happens if the decoder sees noise as signal, is obviously that the
+decoder generates (mainId, subId) pairs that are faulty.
+These pairs are matched in a database to find the attributes of the
+transmitter. Of course, in most cases a faulty (mainId, subId) pair
+does not lead to the recognition of a transmitter
+
+The cofiguration window contains a selector **all tii** that - when set - shows
+from all identifies (mainId, subId) pairs a transmitter. With a decent antenna aand a low threshold value might give dozens of lines like below
+
+![6.9](/res/read_me/erroneous-lines.png?raw=true)
+
 --------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------
