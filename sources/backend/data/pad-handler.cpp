@@ -584,6 +584,7 @@ uint16_t	index;
 	                                             false,
 	   	                                     transportId,
 	                                             &data [index + 2],
+	                                             -1,
 	                                             segmentSize,
 	                                             lastFlag,
 	                                             backgroundFlag));
@@ -595,14 +596,15 @@ uint16_t	index;
 //	                          currentSlide -> get_transportId(),
 //	                                           transportId);
 //	         delete currentSlide;
-	         currentSlide. reset (new motObject (myRadioInterface,
-	                                         false,
-	   	                                 transportId,
-	                                         &data [index + 2],
-	                                         segmentSize,
-	                                         lastFlag,
-	                                         backgroundFlag
-	                                       ));
+//	         currentSlide. reset (new motObject (myRadioInterface,
+//	                                         false,
+//	   	                                 transportId,
+//	                                         &data [index + 2],
+//	                                         -1,
+//	                                         segmentSize,
+//	                                         lastFlag,
+//	                                         backgroundFlag
+//	                                       ));
 	      }
 	      break;
 
@@ -610,8 +612,8 @@ uint16_t	index;
 	      if (currentSlide. isNull ())
 	         return;
 	      if (currentSlide -> get_transportId() == transportId) {
-//	         fprintf (stderr, "add segment %d of  %d\n",
-//	                           segmentNumber, transportId);
+	         fprintf (stderr, "add segment %d of  %d\n",
+	                           segmentNumber, transportId);
 	         currentSlide -> addBodySegment (&data [index + 2],
 	                                         segmentNumber,
 	                                         segmentSize,
@@ -657,7 +659,8 @@ void	padHandler::add_toDL2 (const uint8_t *data,
 	   return;
 	uint8_t NT	= data [0] & 0x03;
 	uint8_t IT	= CB & 0x08;
-	for (int i = 0; i <= NT; i ++) {
+	for (int i = 0; i < NT; i ++) {
+//	for (int i = 0; i <= NT; i ++) {
 	   uint8_t contentType	= data [1 + 3 * i + 0] & 0x3F;
 	   uint8_t startMarker	= data [1 + 3 * i + 1] & 0x7F;
 	   uint8_t lengthMarker = data [1 + 3 * i + 2] & 0x7F;

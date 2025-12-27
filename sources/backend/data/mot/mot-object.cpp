@@ -20,8 +20,14 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *	MOT handling is a crime, here we have a single class responsible
- *	for handling a single MOT message with a given transportId
+ *	We pack each MOT object into a single instance of the class
+ *	motObject. The class is instantiated with a "type 3", i.e.
+ *	header object.
+ *	MOTobjects are identified by their TransportId.
+ *	The callers assure that when calling motObject or 
+ *	its functions, they share their unique transportId;
+ *	The associated body segments have to wait until the header
+ *	is in.
  */
 #include	"mot-object.h"
 #include	"radio.h"
@@ -32,6 +38,7 @@
 	                         bool		dirElement,
 	                         uint16_t	transportId,
 	                         const uint8_t	*segment,
+	                         int		dataLength,
 	                         int32_t	segmentSize,
 	                         bool		lastFlag,
 	                         bool		backgroundFlag) {
@@ -58,16 +65,13 @@ uint16_t	rawContentType = 0;
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
 
 // Extract the content type
-//	int b	= (segment [5] >> 1) & 0x3F;
+	int b	= (segment [5] >> 1) & 0x3F;
 	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
 
-//	fprintf (stderr, "headerSize %d, bodySize %d. contentType %d, transportId %X, segmentSize %d, lastFlag %d\n",
-//	               headerSize, bodySize, b, transportId, 
-//	               segmentSize, lastFlag);
-
-//	we are actually only interested in the name, if any
+//	fprintf (stderr, "Creating MOT object with TransportId %d\n",
+//	                                                   transportId);
 	int reference = segmentSize == -1 ? headerSize :
 	                 headerSize == -1 ? segmentSize :
 	                  std::min ((int)headerSize, (int)segmentSize);
@@ -89,14 +93,14 @@ uint16_t	rawContentType = 0;
                  break;
 
               case 03: {
-                 if ((segment [pointer + 1] & 0200) != 0) {
-                    length = (segment [pointer + 1] & 0177) << 8 |
+                 if ((segment [pointer + 1] & 0x80) != 0) {
+                    length = (segment [pointer + 1] & 0x7F) << 8 |
                               segment [pointer + 2];
-                    pointer += 3 ;
+                    pointer = pointer + 3 ;
                  }
                  else {
-                    length = segment [pointer + 1] & 0177;
-                    pointer += 2;
+                    length = segment [pointer + 1] & 0x7F;
+	            pointer = pointer + 2;
                  }
 	         switch (paramId) {
 	            case 0:	// reserved for MOT protocol extensons
@@ -154,11 +158,17 @@ uint16_t	rawContentType = 0;
 	               break;
 
 	            case 17:	// compression type
+//	               fprintf (stderr, "we have compression type\n");
 	               pointer += length;	// 6.2.2.1.3
 	               break;
 
+	            case 33:	// CAInfo
+//	               fprintf (stderr, "CAInfo detected\n");
+	               pointer += length;	//6.2.3.2.1
+	               break;
+
 	            default:
-	               pointer += headerSize;	// this is so wrong!!!
+	               pointer += length;	// this is so wrong!!!
 	               break;
 	         }
               }
@@ -175,7 +185,8 @@ uint16_t	motObject::get_transportId () {
 
 //      type 4 is a segment.
 //	The pad/dir software will only call this whenever it has
-//	established that the current slide has the right transportId
+//	established that the current slide has a header with the
+//	same transport Id
 //
 //	Note that segments do not need to come in in the right order
 void	motObject::addBodySegment (const uint8_t	*bodySegment,
@@ -189,8 +200,6 @@ void	motObject::addBodySegment (const uint8_t	*bodySegment,
 	if (motMap. find (segmentNumber) != motMap. end ())
 	   return;
 
-//	fprintf (stderr, "adding segment %d to %d (last ? %d)\n",
-//	                    segmentNumber, transportId, lastFlag);
 //      Note that the last segment may have a different size
         if (!lastFlag && (this -> segmentSize == -1))
            this -> segmentSize = segmentSize;
@@ -221,13 +230,7 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-//	fprintf (stderr,
-//	"Handling complete %X %s, type %X, dirElement %d\n",
-//	                  transportId, name. toLatin1 (). data (),
-//	                                                  (int)contentType,
-//	                                dirElement);
-//	if ((name == "") && !dirElement) 
-//	   name = QString::number (get_transportId (), 16);
+	
 	if (name != "")
 	   handle_motObject (result, name, (int)contentType,
 	                            dirElement, backgroundFlag);

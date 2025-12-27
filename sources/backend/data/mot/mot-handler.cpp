@@ -31,11 +31,13 @@
 //
 //	we "cache" the most recent single motSlides (not those in a directory)
 //
+
+#define TABLESIZE	128
 struct motTable_ {
 	uint16_t	transportId;
 	int32_t		orderNumber;
 	motObject	*motSlide;
-} motTable [55];
+} motTable [TABLESIZE];
 
 	motHandler::motHandler (RadioInterface *mr,
 	                         bool backgroundFlag) {
@@ -44,7 +46,7 @@ struct motTable_ {
 	orderNumber		= 0;
 
 	theDirectory		= nullptr;
-	for (int i = 0; i < 55; i ++) {
+	for (int i = 0; i < TABLESIZE; i ++) {
 	   motTable [i]. orderNumber	= -1;
 	   motTable [i]. motSlide	= nullptr;
 	}
@@ -52,7 +54,7 @@ struct motTable_ {
 
 	motHandler::~motHandler	() {
 
-	for (int i = 0; i < 55; i ++) {
+	for (int i = 0; i < TABLESIZE; i ++) {
 	   if (motTable [i]. orderNumber > 0) {
 	      if (motTable [i]. motSlide != nullptr) {
 	         delete motTable [i]. motSlide;
@@ -125,7 +127,7 @@ int32_t	i;
 	uint32_t segmentSize    = ((motVector [0] & 0x1F) << 8) |
 	                                motVector [1];
 	switch (groupType) {
-	   case 3:
+	   case 3:	// mot header
 	      if (segmentNumber == 0) {
 	         motObject *h = getHandle (transportId);
 	         if (h != nullptr) 
@@ -133,7 +135,8 @@ int32_t	i;
 	         h = new motObject (myRadioInterface,
 	                            false,	// not within a directory
 	                            transportId,
-	                            &motVector [2],	
+	                            &motVector [2],
+	                            motVector. size () - 2,
 	                            segmentSize,
 	                            lastFlag,
 	                            backgroundFlag);
@@ -143,23 +146,15 @@ int32_t	i;
 
 	   case 4: {
 	      motObject *h = getHandle (transportId);
-	      if ((h == nullptr)  && (segmentNumber == 0)) {
-	         h = new motObject (myRadioInterface,
-	                            false,	// not within a directory
-	                            transportId,
-	                            &motVector [2],	
-	                            segmentSize,
-	                            lastFlag,
-	                            backgroundFlag);
-	         setHandle (h, transportId);
-	      }
-	      if (h != nullptr)
+//	      fprintf (stderr, "adding segment for %d\n", transportId);
+	      if (h != nullptr) {
 	         h -> addBodySegment (&motVector [2],
 	                              segmentNumber,
 	                              segmentSize,
 	                              lastFlag);
 	      }
-	      break;
+	   }
+	   break;
 
 	   case 6:
 	      if (segmentNumber == 0) { 	// MOT directory
@@ -189,7 +184,6 @@ int32_t	i;
 	                                            backgroundFlag);
 	      }
 	      else {
-//	         fprintf (stderr, "Creating directory segment %X\n", transportId);
 	         if ((theDirectory == nullptr) || 
 	                (theDirectory -> get_transportId() != transportId))
 	            break;
@@ -210,7 +204,7 @@ int32_t	i;
 motObject	*motHandler::getHandle (uint16_t transportId) {
 int	i;
 
-	for (i = 0; i < 15; i ++) 
+	for (i = 0; i < TABLESIZE; i ++) 
 	   if ((motTable [i]. orderNumber >= 0) &&
 	                   (motTable [i]. transportId == transportId))
 	      return motTable [i]. motSlide;
@@ -224,7 +218,7 @@ int	i;
 int	oldest	= orderNumber;
 int	index	= 0;
 
-	for (i = 0; i < 15; i ++)
+	for (i = 0; i < TABLESIZE; i ++)
 	   if (motTable [i]. orderNumber == -1) {
 	      motTable [i]. orderNumber = orderNumber ++;
 	      motTable [i]. transportId = transportId;
@@ -234,7 +228,7 @@ int	index	= 0;
 //
 //	if here, the cache is full, so we delete the oldest one
 	index	= 0;
-	for (i = 0; i < 15; i ++)
+	for (i = 0; i < TABLESIZE; i ++)
 	   if (motTable [i]. orderNumber < oldest) {
 	      oldest = motTable [i]. orderNumber;
 	      index = i;

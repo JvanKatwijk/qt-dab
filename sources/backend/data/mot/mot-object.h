@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2015 .. 2017
+ *    Copyright (C) 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB program
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ public:
 	                   bool		dirElement,
 	                   uint16_t	transportId,
 	                   const uint8_t	*segment,
+	                   int		dataLength,
 	                   int32_t	segmentSize,
 	                   bool		lastFlag,
 	                   bool		backgroundFlag);
@@ -68,7 +69,6 @@ private:
 	std::map<int, QByteArray> motMap;
 
 signals:
-        void	the_picture	(QByteArray, int, QString);
 	void	handle_motObject (QByteArray, QString, int, bool, bool);
 };
 

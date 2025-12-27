@@ -101,8 +101,8 @@ void	correlationScope::display	(const std::vector<float> &v,
 	                                 int amount,
 	                                 int sliderValue,
 	                                 const std::vector<corrElement> &ss) {
-auto *X_axis	= dynVec (floatQwt, amount);
-auto *Y_value	= dynVec (floatQwt, amount);
+floatQwt X_axis [amount];
+floatQwt Y_value [amount];
 floatQwt Max	= -200;
 floatQwt Min	= 1000;
 int	teller	= 0;
@@ -129,13 +129,12 @@ int	input	= v. size ();
 	   delete x;
 	}
 	Markers. resize (0);
-	int up_to_4	= 0;
+	int up_to_5	= 0;
 	for (auto &x : ss) {
-	   up_to_4 ++;
-	   if (up_to_4 > 4)
+	   up_to_5 ++;
+	   if (up_to_5 > 5)
 	      break;
 	   int x_coord = (int)(x. phase / 360 * 2048 + T_g - 104);
-static int teller = 0;
 	   if ((x_coord < X_axis [0]) || (x_coord >= X_axis [0] + amount))
 	      continue;
 
@@ -144,11 +143,11 @@ static int teller = 0;
 	   marker -> setYValue (200);  
 	   marker -> setLineStyle (QwtPlotMarker::VLine);
 //	   QwtText theText = x. Name;
-	   QwtText theText = ">>>>>> (" + QString::number (x. mainId) +
+	   QwtText theText = ">>>> (" + QString::number (x. mainId) +
 	                      " " + QString::number (x. subId) + ")";
 	   QFont zz = theText. font ();
 	   int pp = zz. pointSize ();
-	   zz . setPointSize (pp + 3);
+	   zz . setPointSize (pp + 2);
 	   theText. setFont (zz);
 	   marker -> setLinePen (labelColor, 1.0);
 	   marker -> setLabelOrientation (Qt::Orientation::Vertical);

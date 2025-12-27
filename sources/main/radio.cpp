@@ -3756,10 +3756,10 @@ void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
 QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	pauzeTimer. stop ();
-//	int nr		= rand () % 11;
+	int nr		= rand () % 11;
 	slideName	= slideName. arg (pauzeSlideTeller);
 	if (p. load (slideName, "png")) {
-	QString tooltipText;
+	QString tooltipText = "";
 	   switch (pauzeSlideTeller) {
 	      case 2:
 	         tooltipText = "homebrew 60-ies";
@@ -3888,8 +3888,9 @@ std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 
 	if (theTIIBuffer. GetRingBufferReadAvailable () < SAMPLERATE / 1000)
 	   return;
-	theTIIBuffer. getDataFromBuffer (inBuffer. data (),
-	                               theTIIBuffer. GetRingBufferReadAvailable () - SAMPLERATE / 1000);
+	
+//	theTIIBuffer. getDataFromBuffer (inBuffer. data (),
+//	                               theTIIBuffer. GetRingBufferReadAvailable () - SAMPLERATE / 1000);
 	theTIIBuffer. getDataFromBuffer (inBuffer. data (), SAMPLERATE / 1000);
 	theTIIBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&

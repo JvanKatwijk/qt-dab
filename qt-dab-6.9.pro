@@ -12,10 +12,11 @@ QT		+= network
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++20
 
+#mingw64 on Windows does not seem to support lto
 win32 {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -O3 -ffast-math -g
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
+QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
 unix {
@@ -430,7 +431,7 @@ INCLUDEPATH	+= /usr/local/include
 #LIBS		+= -lqwt
 equals (QT_MAJOR_VERSION, 6) {
 	 LIBS		+= -lqwt-qt6
-	}else{  LIBS += -lqwt-qt5
+	}else{  LIBS += -lqwt-qt
 	}
 equals (QT_MAJOR_VERSION, 5) {
    TARGET               = qt-dab-qt5-6.9.6
@@ -498,23 +499,15 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-#for for 64 bit
-	equals (QT_MAJOR_VERSION, 5) {
+#for for 64 bit, only 6.9.6
         TARGET          = qt5-dab64-6.9.6
-        }
-        else {  
-        TARGET          = qt6-dab64-6.9.6
-        }
 	DEFINES		+= __BITS64__
-	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
-	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-	equals (QT_MAJOR_VERSION, 6) {
-        INCLUDEPATH     += /usr/i686-w64-mingw32/sys-root/mingw/include/qt6/qwt
-        } else {
-        INCLUDEPATH     += /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
-        }
-
-	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+	DESTDIR		=  /d/systems/qt-dab/linux-bin
+#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+#	INCLUDEPATH     += /usr/i686-w64-mingw32/sys-root/mingw/include/qt6/qwt
+	INCLUDEPATH	+= /mingw64/include/qwt-qt6
+#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+	LIBS		+= -L/mingw64/lib
 	CONFIG		+= dabstick-win
 	CONFIG		+= airspy-2
 	CONFIG          += spyServer-16
@@ -525,10 +518,10 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-#	CONFIG		+= viterbi-scalar
+	CONFIG		+= viterbi-scalar
 #	CONFIG		+= spiral-sse
 #	CONFIG		+= spiral-no-sse
-	CONFIG		+= viterbi-avx2
+#	CONFIG		+= viterbi-avx2
 #	CONFIG		+= spiral-sse
 	CONFIG		+= double
 #	CONFIG		+= single
@@ -545,12 +538,7 @@ isEmpty(GITHASHSTRING) {
 #correct this for the correct path to the qwt6 library on your system
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
 #LIBS		+= -lqwt
-	equals (QT_MAJOR_VERSION, 6) {
-	        LIBS		+= -lqwt-qt6
-	}
-	else {
-	        LIBS		+= -lqwt-qt5
-	}
+	LIBS		+= -lqwt-qt6
 	CONFIG		+= fdk-aac
 #	CONFIG		+= faad
 #

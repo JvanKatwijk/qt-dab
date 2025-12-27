@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2017
+ *    Copyright (C) 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -43,8 +43,6 @@
 	this	-> dirSize	= dirSize;
 	this	-> numObjects	= objects;
 	this	-> dir_segmentSize	= segmentSize;
-//	fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
-//	                             transportId, dirSize, objects, segmentSize);
 	dir_segments. resize (dirSize);
 	motComponents. resize (objects);
 	for (int i = 0; i < objects; i ++) {
@@ -146,6 +144,7 @@ uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         true,
 	                                         transportId,
 	                                         segment,
+	                                         -1,
 	                                         -1,
 	                                         false,
 	                                         backgroundFlag);

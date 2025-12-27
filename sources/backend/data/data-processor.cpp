@@ -54,7 +54,7 @@
 	this	-> FEC_scheme		= pd -> FEC_scheme;
 	this	-> dataBuffer		= dataBuffer;
 
-	tracer. resize (0);
+//	tracer. resize (0);
 	AppVector. resize (RSDIMS * FRAMESIZE + 48);
 	FECVector. resize (9 * 22);
 	for (int i = 0; i < 9; i ++)
@@ -141,6 +141,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
 //	   fprintf (stderr, "crc fails %d\n", Length);
+	   assembling = false;
 	   return;
 	}
 //	fprintf (stderr, "packet crc OK %d\n", Length);
@@ -204,7 +205,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 //	               fprintf (stderr, "(%d %d) ",
 //	                              tracer [i]. key, tracer [i]. size);
 //	            fprintf (stderr, "\n");
-	           
+//	           
 	            assembling = false;
 	            return;
 	         }
