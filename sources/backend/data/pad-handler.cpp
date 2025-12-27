@@ -612,8 +612,6 @@ uint16_t	index;
 	      if (currentSlide. isNull ())
 	         return;
 	      if (currentSlide -> get_transportId() == transportId) {
-	         fprintf (stderr, "add segment %d of  %d\n",
-	                           segmentNumber, transportId);
 	         currentSlide -> addBodySegment (&data [index + 2],
 	                                         segmentNumber,
 	                                         segmentSize,
