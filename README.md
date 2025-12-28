@@ -760,8 +760,7 @@ Copyright and acknowledgements
 	Lazy Chair Computing
 
 	Copyright of libraries used - Qt, qwt, fftw, portaudio,
-	libsamplerate, ;ibusb-1, libfaad, libfdk-aac,
-	- is gratefully acknowledged.
+	libusb-1, libfaad, libfdk-aac, - is gratefully acknowledged.
 
 	In developing Qt-DAB many people have contributed, special thanks
 	to 
@@ -770,10 +769,11 @@ Copyright and acknowledgements
 	* and Jarod Middelman
 	for continuous feedback and suggestions, and
 
-	* Rolf Zerr 
-	* Stefan Poeschel for important code contributions.
+	* Rolf Zerr,
+	* Stefan Poeschel
+	for important code contributions.
 
-	Qt-DAB is distributed under e GPL V2 library,  in the hope that
+	Qt-DAB is distributed under the GPL V2 library, in the hope that
 	it will be useful, but WITHOUT ANY WARRANTY; without even the
 	implied warranty of MERCHANTABILITY or FITNESS FOR A
 	PARTICULAR PURPOSE.  See the GNU General Public License for
