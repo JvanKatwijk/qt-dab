@@ -44,28 +44,13 @@ About Qt-DAB
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 Qt-DAB is GUI based, for a command line version, see **dab-cmdline**.
-Qt-DAB  has a single *main* widget that contains essentially all that is needed for selecting channels and services and listening to a service. Other widgets, visible under user control, show a myriad of controls, and a tremendous amount of data in the DAB signal and the resulting audio, 
+Qt-DAB  has a single *main* widget that contains essentially all that is needed for selecting channels and services and listening to a service. Other widgets, visible under user control, show a myriad of controls, and a tremendous amount of data extracted from the DAB signal and the resulting audio, 
 
 ![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
 *Qt-DAB-6.9.6*, predefined executables and installers are available.
 For Linux there is an x64 AppImage, for Windows there is a single 64 bit installer, one with separate entries to select a V3 or V4 rtlsdr device.
-
--------------------------------------------------------------------
-What is new/different in Qt-DAB-6.9.6
--------------------------------------------------------------------
-
-While Qt-DAB-6.9.6 resembles previous versions, there are a few noticeable
-differences.
-
- * on the configuration window, the possibility of selecting the TII decoder is removed. The **best** TII decoder is now the only one.
-
- * improved support for the SDRplay RspDuo: tuner selection is possible and using two tuners on the same channel is also posisble;
-
- *  the configuration windows shows a selector *map close*. If set, on closing the map, the http (i.e. map)hander will stop automatically, while closing the httpHandler will close the map. Note that if **browser manually** is selected, this does not apply.
-
- * on the main window, the "dxDisplay" button disappeared. Clicking on the botton line (i.e. where the strongest transmitter is shown) shows (or hides) the dxDisplay.
 
 Table of Contents
 =================================================================
@@ -85,7 +70,7 @@ Table of Contents
 * [Installation on Linux](#installation-on-Linux)
 * [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
 * [Using user specified bands](#using-user-specified-bands)
-* [Copyright](#copyright)
+* [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
 Introduction
 =================================================================
@@ -95,15 +80,11 @@ Precompiled versions for Windows and Linux (x64) are available
 that support most devices for which Qt-DAB provides support (see below).
 Thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well, though it is most likely not a trivial exercise.
 
-*Qt-DAB* is GUI driven, the full GUI shows 4+ widgets, one of them is the
-*main widget* - one with sufficient controls to select channels and service(s)  which is always visible. This main widget contains selectors
-for controlling the visibility of (the) other widgets.
-
 Features
 =================================================================
   
   * Qt-DAB supports most common SDR devices directly. The device interface is quite simple and in a different document it is explained in detail how to use the interface  to implement control for other devices;
-  * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaneously, and Qt-DAB displays the transmitters on a map. A separate tool is available to download a database, the precompiled versions contain a copy of the database;
+  * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaneously, and Qt-DAB displays the transmitters on a map in a browser. A separate tool is available to download a database, the precompiled versions contain a copy of the database;
   * Qt-DAB starts EPG/SPI services automatically as background task and provides means to show resulting time tables;
   * Qt-DAB supports **journaline**, often transmitted as subservice, if a journaline (sub)service is detected, auto starts a small journaline window;
   * Qt-DAB supports so-called *favorites* (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
@@ -124,7 +105,7 @@ The *main widget* (see picture) of Qt-DAB (always visible), contains selectors f
 The window shows - left half - a list of services (either from the currently selected channel or from **favourites**). Selecting a service is just by clicking on the name.
 The right half of the widget shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
-  * touching the *ensemble name* (NPO (8001) in the picture top left) makes the *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible, touching the name again will hide it;
+  * touching the *ensemble name* (NPO (8001) in the picture seen top left) makes the *content table*, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible. Touching the ensemble name again will hide it;
 
 ![6.9](/res/read_me/content-table.png)
 
@@ -134,7 +115,7 @@ The picture above shows the topline op the right half of the main window.
 
  * touching the small icon left on the top of the right half will show (or hide) the *technical widget*, a widget showing all technical details as well as strength indicators and a spectrum of the audio of the selected service;
  * touching the small icon to the right next, the folder/directory in which the slides, the tii log and the log file are written is shown;
- * touching the small **blue** icon causes the device list to be displayed.
+ * NEW: touching the small **blue** icon causes the device list to be displayed. Touching the icon again hides the icon. After selecting a device, the widget will be hidden as well.
 
 ![6.9](/res/read_me/devicelist.png)
 
@@ -146,7 +127,7 @@ The picture above shows the topline op the right half of the main window.
 At the bottom of the right half of the window, one sees 4 buttons:
 
  * the button labeled *scan* controls the visibility of a the scan handler widget;
- * the button labeled *http* controls the http handler with which a map (with the transmitters displayed on their location) will be shown;
+ * the button labeled *http* controls the http handler with which a browser is started which shows a map (with the transmitters displayed on their location). NEW is that closing the http handler closes the browser as well (depending on a setting in the configuration window);
  * the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains views on and information of the DAB signal itself;
  * the button labeled *controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
  * the bottom line shows the transmitter name from the transmitter with the  strongest data, and - in this case - that the avx2 instruction extension is used for some computations. Clicking on that bottom line controls the visibility of the dxDisplay.
@@ -305,6 +286,7 @@ In the current set up, Qt-DAB supports 6 types of (physical) input devices:
   * SDR DABsticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick in the precompiled Windows versions, 
   *  All SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library, New is extended support for the SDRPlay RspDuo. Tuner selection (and tuner 2 is connected to a port with biasT support) is now operational;
   * a special entry exists for the SDRplay RSPDuo, one for running both tuners simultaneously;
+  * RtlSdr (i.e. DABStick) devices, with - for windows - separate entries for V3 and V4 versions,
   * HACKRF One, 
   * Airspy, including Airspy mini (be aware that AirspyHF is **not** able to provide the samplerate required for DAB),
   * LimeSDR, 
@@ -330,11 +312,11 @@ For Linux users, Ubuntu provides the required libraries in a repository (i.e. li
 
 Qt-DAB also supports input using a network:
   * an rtl_tcp server connected to an RTLSDR device.
-  * a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. Note that the AIRspyHF cannot deliver samples at the required samplerate. (Be aware that Qt-DAB processes the input with 2048000 Samples/second. Using the 16 bit version - 4 bytes per sample - requires a bandwidth of at least 8 M. I am using it with a wired connection between two laptops using the 8 bit version, using the WiFi is not likely to be successful).
+  * a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices. (Be aware that Qt-DAB processes the input with 2048000 Samples/second. Using the 16 bit version - 4 bytes per sample - requires a bandwidth of at least 8 M. I am using it with a wired connection between two laptops using the 8 bit version, using the WiFi is not likely to be successful).
 
 ![6.9](/res/read_me/spy-server16-control.png?raw=true)
 
-Note that - as the control suggests - it is possible to "dump" the unprocessed input to an xml type file (as can be seen on the control picture, the selected samplerate is 2500000).
+Note that - as the control window suggests - it is possible to "dump" the unprocessed input to an xml type file (as can be seen on the control picture, the selected samplerate is 2500000).
 
 Qt-DAB furthermore supports
   * Soapy (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000).
@@ -342,7 +324,7 @@ Qt-DAB furthermore supports
 ![6.9](/res/read_me/soapy-control.png?raw=true)
 
 Qt-DAB obviously supports:
- * reading and writing ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate 2048000. Qt-DAB generates such files.  NEW is the ability of Qt-DAB to generate this type of file with a size  **larger than 4 Gb**, their type is BW64. Obviously Qt-DAB has the ability to read such files back.
+ * reading (and writing) ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate 2048000. Qt-DAB generates such files.  NEW is the ability of Qt-DAB to generate this type of file with a size  **larger than 4 Gb**, their type is BW64. Obviously Qt-DAB has the ability to read such files back.
 
 ![6.8](/res/read_me/riff-reader-large.png?raw=true)
 ![6.8](/res/read_me/riff-reader-small.png?raw=true)
@@ -353,39 +335,10 @@ both the name of the SDR device as well as the channel frequency of the receptio
 
  * reading prerecorded dump rtlsdr type "raw" (8 bits) files. The RTLSDR device handlers show a button "dump" for dumping the raw input into a ".raw" file.
 
- * reading and writing so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device widget a button to control dumping the unmodified input into an xml file.
+ * reading (and writing) so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device widget a button to control dumping the unmodified input into an xml file.
 
 ![6.8](/res/read_me/xml-reader.png?raw=true)
 
-
-Tuning accuracy
-=======================================================================
-
-DAB frequencies are in the range of app 175 to 225 MHz. Different devices
-have a different **tuning accurary** in this range. While the different SDRPlay
-and AIRspy devices show a negligible tuning offset (usually 0 to 30 Hz),
-especially the popular DABsticks show - in general - a  offsets in the kHz range.
-
-![6.8](/res/read_me/tuning-offset.png?raw=true)
-
-The picture shows that on selecting channel 12C (22730 kHz) the device
-used - a simple dabstick - shows an offset of 8446 Hz, i.e. well over 
-8 kHz.
-While Qt-DAB is - as the picture shows - capable of compensating for
-tuner offsets of up to app 35 Khz, the **quality of the signal**
-is better with no or a small tuning offset.
-
-The widgets for (most) of the various device handlers show
-a "ppm" correction setting, where "ppm" stands for "Parts per Million".
-Setting the corrector to 1 at a selected frequency of 22730 kHz,
-implies that the oscillator of the device tunes to a frequency
-that is (app) 227 Hz higher.
-
-In this particular care, an offset of app 8.5 kHz on a selected frequency
-of app 227 MHz means an error of 8500 / 227, which is slight more than 37.
-So, setting the **ppm** corrector to 37 in this case causes the device
-to change the frequency such that the frequency the device tuned to
-corresponds almost to the frequency it should be.
 
 Scan control
 =======================================================================
@@ -460,7 +413,6 @@ somewhere in Amsterdam - that - together with  default database - allows the
 software to handle TII data and show the result of decoding on a map).
 It is advised to update the user's home location).
 
-New in the current version of Qt-DAB is the display - per  transmitter location - of the channels that contain data, together with the TII value (mainId, subId) transmitted from that location.
 Clicking on a transmitterlocation, displays the details of that location, i.e.
 the distance and some data of the transmitters on that location.
 
@@ -472,6 +424,11 @@ The  webbrowser listens to port 8080. By default, the "standard" browser
 on the system is activated. The *configuration and control* widget
 contains a selector for switching this off, such that one might choose
 one's own browser.
+
+NEW is that on closing the http handler and if on the configuration window
+the checkbix **map close** is selected, the webbrowser closes.
+If one closes the webbrowser, the - the other way around - the http handler
+is closed.
 
 EPG Handling and time tables
 =================================================================
@@ -505,18 +462,14 @@ While not in the region where I live, in some countries (Germany) DAB services a
 Qt-DAB uses the "NewsService Journaline (R) Decoder" software from Fruanhofer IIS Erlangen (in a slightly modified form (all rights gratefully acknowledged).
 
 ![6.9](/res/read_me/journaline-1.png?raw=true)
-
-The picture shows that different secondary data services are available, all sharing the same subchannel (channel 14), the one that actually contains the journaline data.
-
-Since it is a secondary **data service**, Qt-DAB automatically activates it (and makes it visible) on starting up the primary service it belongs to.
-
 ![6.9](/res/read_me/journaline-2.png?raw=true)
-![6.9](/res/read_me/journaline-3.png?raw=true)
+
+(Categorie names with an asterisks attatched show that new data is available)
 
 Logging errors
 =================================================================
 
-In the latest version, reporting of errors is now done in a systematic
+In recent versions, reporting of errors is now done in a systematic
 way. Especially errors with devices (I often get error messages when
 setting gain values in my SDRplay equipment), such as a device that
 does not start properly.
@@ -549,7 +502,7 @@ is available and includes in the latest **release**.
 Installation on Windows
 =================================================================
 
-For Windows  *installer*s can be found in the releases section of this repository
+For Windows an  *installer* can be found in the releases section of this repository
  * https://github.com/JvanKatwijk/qt-dab/releases.
 The installer will install the executable as well as required libraries,
 although for both SDRplay devices (when used) or for the Adam Pluto (when
@@ -799,7 +752,7 @@ one's own band. Specify in a file a list of channels, e.g.
 
 and pass the file on program start-up with the `-A` command line switch. The channel name is just any identifier, the channel frequency is given in kHz. Your SDR device obviously has to support the frequencies for these channels.
 
-Copyright
+Copyright and acknowledgements
 =================================================================
 
 	Copyright (C)  2016 .. 2025
@@ -809,7 +762,17 @@ Copyright
 	Copyright of libraries used - Qt, qwt, fftw, portaudio,
 	libsamplerate, ;ibusb-1, libfaad, libfdk-aac,
 	- is gratefully acknowledged.
-	
+
+	In developing Qt-DAB many people have contributed, special thanks
+	to 
+	* Herman Wijnants,
+	* Andreas Mikula,
+	* and Jarod Middelman
+	for continuous feedback and suggestions, and
+
+	* Rolf Zerr 
+	* Stefan Poeschel for important code contributions.
+
 	Qt-DAB is distributed under e GPL V2 library,  in the hope that
 	it will be useful, but WITHOUT ANY WARRANTY; without even the
 	implied warranty of MERCHANTABILITY or FITNESS FOR A

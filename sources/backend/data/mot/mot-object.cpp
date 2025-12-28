@@ -196,7 +196,8 @@ void	motObject::addBodySegment (const uint8_t	*bodySegment,
 
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
-
+//
+//	check already exists
 	if (motMap. find (segmentNumber) != motMap. end ())
 	   return;
 
