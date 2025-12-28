@@ -96,6 +96,7 @@ include_directories(
 	        ${${devicesLibName}_MOCS}
 	        ./sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ./sdrplay-handler-v3/sdrplay-commands.h 
+	        ./sdrplay-handler-v3/sdrplayselect.h 
 	        ./sdrplay-handler-v3/Rsp-device.h 
 	        ./sdrplay-handler-v3/RspI-handler.h 
 	        ./sdrplay-handler-v3/Rsp1A-handler.h 
@@ -113,6 +114,7 @@ include_directories(
 	        ${${devicesLibName}_HDRS}
 	        ./sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ./sdrplay-handler-v3/sdrplay-commands.h
+	        ./sdrplay-handler-v3/sdrplayselect-v3.h
 	        ./sdrplay-handler-v3/include/sdrplay_api.h
 	        ./sdrplay-handler-v3/Rsp-device.h 
 	        ./sdrplay-handler-v3/RspI-handler.h 
@@ -125,6 +127,7 @@ include_directories(
 	   set (${devicesLibName}_SRCS
 	        ${${devicesLibName}_SRCS}
 	        ./sdrplay-handler-v3/sdrplay-handler-v3.cpp
+	        ./sdrplay-handler-v3/sdrplayselect-v3.cpp
                 ./sdrplay-handler-v3/Rsp-device.cpp 
 	        ./sdrplay-handler-v3/RspI-handler.cpp 
 	        ./sdrplay-handler-v3/Rsp1A-handler.cpp 

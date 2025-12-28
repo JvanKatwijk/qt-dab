@@ -202,9 +202,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/ofdm-decoder.h
 	     ./sources/frontend/phasetable.h
 	     ./sources/frontend/freq-interleaver.h
-	     ./sources/frontend/tii-detector.h
 	     ./sources/frontend/tii-detector-1.h
-	     ./sources/frontend/tii-detector-2.h
 	     ./sources/frontend/fic-handling/fic-handler.h
 	     ./sources/frontend/fic-handling/ensemble.h
 	     ./sources/frontend/fic-handling/fib-dbtypes.h
@@ -345,9 +343,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/ofdm-decoder.cpp
 	     ./sources/frontend/phasetable.cpp
 	     ./sources/frontend/freq-interleaver.cpp
-	     ./sources/frontend/tii-detector.cpp
 	     ./sources/frontend/tii-detector-1.cpp
-	     ./sources/frontend/tii-detector-2.cpp
 	     ./sources/frontend/timesyncer.cpp
 	     ./sources/frontend/fic-handling/fic-handler.cpp
 	     ./sources/frontend/fic-handling/ensemble.cpp

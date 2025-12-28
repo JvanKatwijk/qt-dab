@@ -62,6 +62,9 @@ private:
 	QScopedPointer<xmlDescriptor>	theDescriptor;
 	QScopedPointer<xml_Reader> theReader;
 	std::atomic<bool>	sliderFree;
+
+	int			theRate;
+	int			theFrequency;
 public slots:
 	void			setProgress		(int, int);
 	void			handle_continuousButton ();

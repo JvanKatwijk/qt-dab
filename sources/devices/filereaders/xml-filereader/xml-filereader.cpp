@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2024
+ *    Copyright (C) 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -51,15 +51,17 @@
 	if (fileName == nullptr) 	// should not happen
 	   throw device_exception ("no file specified");
 //
-//	back to normal
-	setupUi	(&myFrame);
-	setPositionAndSize (s, &myFrame, XMLSETTINGS);
-	myFrame. show	();
-
 	theFile	= fopen (fileName. toUtf8 (). data (), "rb");
 	if (theFile == nullptr) {
 	   throw device_exception ("cannot open " + fileName. toStdString ());
 	}
+
+//	back to normal
+	setupUi	(&myFrame);
+	setPositionAndSize (s, &myFrame, XMLSETTINGS);
+	myFrame. show	();
+//
+//	we have a file, so show the filename
 	filenameLabel	-> setText (fileName);
 	
 	bool	ok	= false;
@@ -78,13 +80,16 @@
 	connect (progressSlider, &QSlider::sliderReleased,
 	         this, &xml_fileReader::handle_sliderReleased);
 
+	this	-> theRate	= theDescriptor -> sampleRate;
+	this	-> theFrequency	=
+	                        theDescriptor -> blockList [0]. frequency;
         currentTime		-> display (0);
-	samplerateDisplay	-> display (theDescriptor -> sampleRate);
+	samplerateDisplay	-> display (theRate);
 	nrBitsDisplay		-> display (theDescriptor -> bitsperChannel);
 	containerLabel		-> setText (theDescriptor -> container);
 	iqOrderLabel		-> setText (theDescriptor -> iqOrder);
 	byteOrderLabel		-> setText (theDescriptor -> byteOrder);
-	frequencyDisplay	-> display (theDescriptor -> blockList [0]. frequency / 1000.0);
+	frequencyDisplay	-> display (theFrequency / 1000.0);
 	deviceGainLabel		-> hide ();
 	if (theDescriptor -> deviceGain > 0) {
 	   deviceGainLabel	-> show ();
@@ -150,8 +155,7 @@ void	xml_fileReader::stopReader () {
 }
 
 //	size is in "samples"
-int32_t	xml_fileReader::getSamples	(std::complex<float> *V,
-	                                 int32_t size) {
+int32_t	xml_fileReader::getSamples	(std::complex<float> *V, int32_t size) {
 
 	if (theFile == nullptr)		// should not happen
 	   return 0;
@@ -169,14 +173,16 @@ int32_t	xml_fileReader::Samples	() {
 }
 
 void	xml_fileReader::setProgress (int samplesRead, int samplesToRead) {
+	if (theFile == nullptr)		// should not happen
+	   return;
 	if (sliderFree. load ())
 	   progressSlider -> setValue ((float)samplesRead / samplesToRead * 100);
-	currentTime	-> display (samplesRead / (float)SAMPLERATE);
-	totalTime	-> display (samplesToRead / (float)SAMPLERATE);
+	currentTime	-> display (samplesRead / theRate);
+	totalTime	-> display (samplesToRead / theRate);
 }
 
 int	xml_fileReader::getVFOFrequency	() {
-	return theDescriptor -> blockList [0]. frequency;
+	return theFrequency;
 }
 
 void	xml_fileReader::handle_continuousButton () {
@@ -203,7 +209,6 @@ void	xml_fileReader::handle_sliderPressed	() {
 void	xml_fileReader::handle_sliderMoved	(int value) {
 	if (theReader == nullptr)
 	   return;
-//	fprintf (stderr, "set to %d\n", value);
 	theReader	-> handle_progressSlider (value);
 }
 

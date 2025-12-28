@@ -38,10 +38,13 @@ class	RadioInterface;
 //class	virtual_dataHandler;
 class	packetdata;
 
-//typedef struct {
-//	int key;
-//	int size;
-//} traceElement;
+#ifdef	__TRACER__
+typedef struct {
+	int packetNumber;
+	int key;
+	int size;
+} traceElement;
+#endif
 
 class	dataProcessor final :public QObject, public frameProcessor {
 Q_OBJECT
@@ -70,8 +73,11 @@ private:
 	std::vector<uint8_t> FECVector;
 	bool		FEC_table [9];
 	reedSolomon my_rsDecoder;
-
-//	std::vector<traceElement> tracer;
+#ifdef	__TRACER__
+	std::vector<traceElement> tracer;
+	int		teller;
+	int		fouten;
+#endif
 	int		expected_cntIdx;
 	int32_t		streamAddress;		// int since we init with -1
 //
