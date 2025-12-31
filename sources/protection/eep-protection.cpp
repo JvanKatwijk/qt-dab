@@ -41,16 +41,16 @@ int16_t	L1 = 0,
         L2 = 0;
 int8_t	*PI1, *PI2, *PI_X;
 
-	if ((protLevel & (1 << 2)) == 0) {	// set A profiles
-	   switch (protLevel & 03) {
-	      case 0:			// actually level 1
+	if ((protLevel & (1 << 2)) == 0) { // set A profiles, 11.3.2 
+	   switch (protLevel & 03) {	// 2 bits, choose one of 4
+	      case 0:			// actually level A1
 	         L1	= 6 * bitRate / 8 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (24 - 1);
 	         PI2	= get_PCodes (23 - 1);
 	         break;
 
-	      case 1:			// actually level 2
+	      case 1:			// actually level A2
 	         if (bitRate == 8) {
 	            L1	= 5;
 	            L2	= 1;
@@ -64,14 +64,14 @@ int8_t	*PI1, *PI2, *PI_X;
 	         }
 	         break;
 
-	      case 2:			// actually level 3
+	      case 2:			// actually level A3
 	         L1	= 6 * bitRate / 8 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (8 - 1);
 	         PI2	= get_PCodes (7 - 1);
 	         break;
 
-	      case 3:			// actually level 4
+	      case 3:			// actually level A4
 	         L1	= 4 * bitRate / 8 - 3;
 	         L2	= 2 * bitRate / 8 + 3;
 	         PI1	= get_PCodes (3 - 1);

@@ -39,6 +39,7 @@
   *	that are processed by the "faadDecoder" class
   */
 	mp4Processor::mp4Processor (RadioInterface	*mr,
+	                            uint32_t		SId,
 	                            int16_t	bitRate,
 	                            RingBuffer<int16_t> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,

@@ -32,8 +32,10 @@
   *	Handles the pad segments passed on from mp2- and mp4Processor
   */
 	padHandler::padHandler	(RadioInterface *mr,
+	                         uint32_t	SId,
 	                            bool backgroundFlag):
 	                              myRadioInterface (mr) {
+	this	-> SId			= SId;
 	this	-> backgroundFlag	= backgroundFlag;
 
 	connect (this, &padHandler::showLabel,
@@ -581,13 +583,12 @@ uint16_t	index;
 	      if (currentSlide. isNull ()) {
 //	         fprintf (stderr, "creating %d\n", transportId);
 	         currentSlide. reset (new motObject (myRadioInterface,
+	                                             SId,
 	                                             false,
 	   	                                     transportId,
 	                                             &data [index + 2],
-	                                             -1,
 	                                             segmentSize,
-	                                             lastFlag,
-	                                             backgroundFlag));
+	                                             lastFlag));
 	      }
 	      else {
 	         if (currentSlide -> get_transportId() == transportId)

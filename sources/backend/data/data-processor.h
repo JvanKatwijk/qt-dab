@@ -38,26 +38,25 @@ class	RadioInterface;
 //class	virtual_dataHandler;
 class	packetdata;
 
-#ifdef	__TRACER__
 typedef struct {
 	int packetNumber;
 	int key;
 	int size;
 } traceElement;
-#endif
 
 class	dataProcessor final :public QObject, public frameProcessor {
 Q_OBJECT
 public:
 	dataProcessor	(RadioInterface *mr,
 	                 packetdata	*pd,
-	                 RingBuffer<uint8_t>	*dataBuffer,
-	                 bool backendFlag);
+	                 RingBuffer<uint8_t>	*dataBuffer);
 	~dataProcessor	();
 void	addtoFrame	(const std::vector<uint8_t> &);
 void	stop		();
+void	set_dataTracer	(bool b);
 private:
 	RadioInterface	*myRadioInterface;
+	uint32_t	SId;
 	int16_t		bitRate;
 	uint8_t		DSCTy;
 	int16_t		appType;
@@ -73,11 +72,10 @@ private:
 	std::vector<uint8_t> FECVector;
 	bool		FEC_table [9];
 	reedSolomon my_rsDecoder;
-#ifdef	__TRACER__
 	std::vector<traceElement> tracer;
 	int		teller;
 	int		fouten;
-#endif
+	bool		traceFlag;
 	int		expected_cntIdx;
 	int32_t		streamAddress;		// int since we init with -1
 //

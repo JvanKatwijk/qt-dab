@@ -121,7 +121,7 @@ int	index_for_key (int key) {
 	else
 	   this -> ordersubChannelIds -> setChecked (true);
 	serviceOrder	= x;
-
+//
 //	first row of checkboxes
 //	unused element
 	x =  value_i (dabSettings, CONFIG_HANDLER, LOG_MODE, 1);
@@ -229,6 +229,11 @@ int	index_for_key (int key) {
 	connect (close_mapSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_close_mapSelector);
+//
+//	Tracer special
+	connect	(tracerButton, &QPushButton::clicked,
+	         this, &configHandler::handle_tracerButton);
+	traceOn	= false;
 	set_Colors ();
 }
 
@@ -1007,3 +1012,14 @@ bool	configHandler::get_saveTitles		() {
 bool	configHandler::get_clearScanList       () {
 	return clearScanList_selector	-> isChecked ();
 }
+//
+void	configHandler::handle_tracerButton	() {
+	traceOn	= !traceOn;
+	if  (traceOn)
+	   tracerButton	-> setText ("trace on");
+	else
+	   tracerButton	-> setText ("");
+	emit signal_dataTracer	(traceOn);
+}
+
+

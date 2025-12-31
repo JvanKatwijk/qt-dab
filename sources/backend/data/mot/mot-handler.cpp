@@ -40,15 +40,16 @@ struct motTable_ {
 } motTable [TABLESIZE];
 
 	motHandler::motHandler (RadioInterface *mr,
-	                         bool backgroundFlag) {
+	                        uint32_t	SId) {
 	myRadioInterface	= mr;
-	this	-> backgroundFlag	= backgroundFlag;
+	this	-> SId		= SId;
 	orderNumber		= 0;
 
 	theDirectory		= nullptr;
 	for (int i = 0; i < TABLESIZE; i ++) {
 	   motTable [i]. orderNumber	= -1;
 	   motTable [i]. motSlide	= nullptr;
+	   motTable [i]. transportId	= 0;
 	}
 }
 
@@ -132,29 +133,27 @@ int32_t	i;
 	         motObject *h = getHandle (transportId);
 	         if (h != nullptr) 
 	            break;
+	         fprintf (stderr, "header for object %d\n", transportId);
 	         h = new motObject (myRadioInterface,
+	                            SId,
 	                            false,	// not within a directory
 	                            transportId,
 	                            &motVector [2],
-	                            motVector. size () - 2,
 	                            segmentSize,
-	                            lastFlag,
-	                            backgroundFlag);
+	                            lastFlag);
 	         setHandle (h, transportId);
 	      }
 	      break; 
 
 	   case 4: {
 	      motObject *h = getHandle (transportId);
-//	      fprintf (stderr, "adding segment for %d\n", transportId);
-	      if (h != nullptr) {
+	      if (h != nullptr) 
 	         h -> addBodySegment (&motVector [2],
 	                              segmentNumber,
 	                              segmentSize,
 	                              lastFlag);
 	      }
-	   }
-	   break;
+	      break;
 
 	   case 6:
 	      if (segmentNumber == 0) { 	// MOT directory
@@ -176,12 +175,12 @@ int32_t	i;
 //	         int32_t segSize
 //	                        = ((segment [9] & 0x1F) << 8) | segment [10];
 	         theDirectory	= new motDirectory (myRadioInterface,
+	                                            SId,
 	                                            transportId,
 	                                            segmentSize,
 	                                            dirSize,
 	                                            numObjects,
-	                                            segment,
-	                                            backgroundFlag);
+	                                            segment);
 	      }
 	      else {
 	         if ((theDirectory == nullptr) || 
@@ -195,6 +194,10 @@ int32_t	i;
 	      }
 	      break;
 
+	   case 7:
+	      fprintf (stderr, "transportId  in type 7 %d\n", transportId);
+	      break;
+	      
 	   default:
 //	      fprintf (stderr, "mot groupType %d\n", groupType);
 	      return;
@@ -219,7 +222,8 @@ int	oldest	= orderNumber;
 int	index	= 0;
 
 	for (i = 0; i < TABLESIZE; i ++)
-	   if (motTable [i]. orderNumber == -1) {
+	   if ((motTable [i]. orderNumber == -1) ||
+	       (motTable [i]. motSlide == nullptr)) {
 	      motTable [i]. orderNumber = orderNumber ++;
 	      motTable [i]. transportId = transportId;
 	      motTable [i]. motSlide	= h;

@@ -56,6 +56,7 @@ class	mp2Processor final: public QObject, public frameProcessor {
 Q_OBJECT
 public:
 			mp2Processor	(RadioInterface *,
+	                                 uint32_t,	// SId
 	                                 int16_t,
 	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,
@@ -100,6 +101,7 @@ private:
 	void		addbittoMP2	(std::vector<uint8_t> &, uint8_t, int16_t);
 	int16_t		numberofFrames;
 	int16_t		errorFrames;
+
 signals:
 	void		show_frameErrors	(int);
 	void		newAudio		(int, int, bool, bool);

@@ -47,12 +47,13 @@
 	                                            flag == BACK_GROUND,
 	                                            audiobuffer,
 	                                            databuffer,
-	                                            frameBuffer, dump) 
+	                                            frameBuffer, dump)
 #ifdef	__THREADED_BACKEND__
 	                                    ,freeSlots (NUMBER_SLOTS) 
 #endif 
 	                                          {
 	this	-> radioInterface	= mr;
+	this	-> backendType		= d -> type;
 	this	-> startAddr		= d -> startAddr;
 	this	-> Length		= d -> length;
         this    -> fragmentSize         = d -> length * CUSize;
@@ -183,5 +184,13 @@ void	Backend::stopRunning () {
 	while (!this -> isFinished ())
 	   usleep (1000);
 #endif
+}
+
+bool	Backend::is_dataBackend () {
+	return backendType == PACKET_SERVICE;
+}
+
+void	Backend::set_dataTracer	(bool b) {
+	driver. set_dataTracer (b);
 }
 

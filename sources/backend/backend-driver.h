@@ -45,6 +45,7 @@ public:
 	~backendDriver	();
 void	addtoFrame	(const std::vector<uint8_t> &outData);
 void	stop		();
+void	set_dataTracer	(bool);
 private:
 	std::atomic<bool> running;
 	logger		*theLogger;

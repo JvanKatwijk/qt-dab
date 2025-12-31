@@ -42,23 +42,25 @@
 	   if (((audiodata *)d) -> ASCTy == DAB_OLD) {
 	      theLogger ->  log (logger::LOG_SERVICE_STARTS,
 	                               "MP2 service ", d -> bitRate);
-              theProcessor. reset (new mp2Processor (mr,
-	                                       d -> bitRate,
-                                               audioBuffer,
-	                                       frameBuffer,
-	                                       dump,
-	                                       backgroundFlag));
+              theProcessor. reset (new mp2Processor (mr, 
+	                                             d	-> SId,
+	                                             d	-> bitRate,
+                                                     audioBuffer,
+	                                             frameBuffer,
+	                                             dump,
+	                                             backgroundFlag));
 	   }
            else
            if (((audiodata *)d) -> ASCTy == DAB_PLUS) {
 	      theLogger -> log (logger::LOG_SERVICE_STARTS,
 	                               "MP4 service ", d -> bitRate);
               theProcessor. reset (new mp4Processor (mr,
-	                                        d -> bitRate,
-                                                audioBuffer,
-	                                        frameBuffer,
-	                                        dump,
-	                                        backgroundFlag));
+	                                             d -> SId,
+	                                             d -> bitRate,
+                                                     audioBuffer,
+	                                             frameBuffer,
+	                                             dump,
+	                                             backgroundFlag));
 	   }
 	   else
 	      theProcessor. reset (new frameProcessor ());	// should not happen
@@ -67,14 +69,12 @@
 	if (d -> type == PACKET_SERVICE) {
 	   theProcessor. reset (new dataProcessor (mr,
 	                                     (packetdata *)d,
-	                                     dataBuffer,
-	                                     backgroundFlag));
+	                                     dataBuffer));
 	}
 	else
 	   theProcessor. reset (new frameProcessor ());	// should not happen
 	running. store (true);;
 }
-
 
     backendDriver::~backendDriver() {
 	running. store (false);
@@ -94,4 +94,9 @@ void	backendDriver::stop	() {
 	theProcessor -> stop ();
 	theProcessor. reset ();
 }
+
+void	backendDriver::set_dataTracer (bool b) {
+	theProcessor	-> set_dataTracer (b);
+}
+
 

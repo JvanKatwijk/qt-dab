@@ -244,7 +244,7 @@ bool	mscHandler::startBackend (descriptorType &d,
 	                                     frameBuffer,
 	                                     dump,
 	                                     flag,
-	                                     cpuSupport)); 
+	                                     cpuSupport));
 	nrServices ((int)(theBackends. size ()));
 	return true;
 }
@@ -287,3 +287,10 @@ int16_t	currentblk	= (blkno - 4) % numberofblocksperCIF;
 	}
 	locker. unlock();
 }
+
+void	mscHandler::set_dataTracer	(bool v) {
+	for (auto &be: theBackends) 
+	   if (be -> is_dataBackend ()) 
+	      be -> set_dataTracer (v);
+}
+

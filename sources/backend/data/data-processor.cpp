@@ -42,10 +42,10 @@
 //	fragmentsize == Length * CUSize
 	dataProcessor::dataProcessor	(RadioInterface *mr,
 	                                 packetdata	*pd,
-	                                 RingBuffer<uint8_t> *dataBuffer,
-	                                 bool	backgroundFlag):
+	                                 RingBuffer<uint8_t> *dataBuffer):
 	                                     my_rsDecoder (8, 0435, 0, 1, 16) {
 	this	-> myRadioInterface	= mr;
+	this	-> SId			= pd -> SId;
 	this	-> bitRate		= pd -> bitRate;
 	this	-> DSCTy		= pd -> DSCTy;
 	this	-> appType		= pd -> appType;
@@ -53,12 +53,10 @@
 	this	-> DGflag		= pd -> DGflag;
 	this	-> FEC_scheme		= pd -> FEC_scheme;
 	this	-> dataBuffer		= dataBuffer;
-
-#ifdef	__TRACER__
+	this	-> traceFlag		= false;
 	teller				= 0;
 	fouten				= 0;
 	tracer. resize (0);
-#endif
 	AppVector. resize (RSDIMS * FRAMESIZE + 48);
 	FECVector. resize (9 * 22);
 	for (int i = 0; i < 9; i ++)
@@ -98,7 +96,7 @@
 	      break;
 
 	   case 60:
-	      my_dataHandler. reset (new motHandler (mr, backgroundFlag));
+	      my_dataHandler. reset (new motHandler (mr, SId));
 	      break;
 	   
 	}
@@ -127,10 +125,11 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 	   if (length < pLength)	// be on the safe side
 	      return;
 
-	   if (!FEC_scheme) 
-	      handlePacket (data);
-	   else
+	   const uint16_t paddr = getBits (data, 6, 10);
+	   if ((paddr == 1022) || FEC_scheme)
 	      handleRSPacket (data);
+	   else
+	      handlePacket (data);
 //
 //	prepare for the next round
 	   length -= pLength;
@@ -141,33 +140,31 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 	}
 }
 void	dataProcessor::handlePacket (const uint8_t *vec) {
-#ifdef	__TRACER__
-	teller ++;
-#endif
+	if (traceFlag)
+	   teller ++;
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
-#ifdef	__TRACER__
-	   fouten ++;
-	   fprintf (stderr, "crc error in %d (%d) ->", teller, Length);
-	   for (int i = 0; i < tracer. size (); i ++)
-	      fprintf (stderr, "(%d -> %d %d) ",
+	   if (traceFlag) {
+	      fouten ++;
+	      fprintf (stderr, "crc error in %d (%d) ->", teller, Length);
+	      for (int i = 0; i < (int)(tracer. size ()); i ++)
+	         fprintf (stderr, "(%d -> %d %d) ",
 	                            tracer [i]. packetNumber,
 	                            tracer [i]. key, tracer [i]. size);
-	   fprintf (stderr, "\n");
-	   tracer. resize (0);
-#endif
+	      fprintf (stderr, "\n");
+	      tracer. resize (0);
+	   }
 	   assembling = false;
 	   return;
 	}
-//	fprintf (stderr, "packet crc OK %d\n", Length);
-#ifdef	__TRACER__
-	if (teller >= 2000) {
+	
+	if (traceFlag && (teller >= 2000)) {
 	   fprintf (stderr, "in %d packets, we had %d crc errors\n",
 	                           teller, fouten);
 	   teller = 0;
 	   fouten = 0;
 	}
-#endif
+
 //	Continuity index:
 	const uint8_t cntIdx	= getBits (vec, 2, 2);
 //	First/Last flag:
@@ -176,7 +173,6 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	const uint16_t paddr	= getBits (vec, 6, 10);
 //	Useful data length
 	const uint8_t udlen	= getBits (vec, 17,7); 
-//	fprintf (stderr, "udlen = %d\n", udlen);
 
 	if (paddr != packetAddress) 	// wrong address
 	   return;
@@ -190,9 +186,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 //	packet is OK, so try to process it
 //	which obviously  only makes sense if flflg == 2,
 	   assembling = false;
-#ifdef __TRACER__
-	   tracer. resize (0);
-#endif __TRACER__
+	   if (traceFlag)
+	      tracer. resize (0);
 	}
 
 	last_cntIdx = cntIdx;
@@ -205,14 +200,14 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 
 	switch (flflg) {
 	   case 2:  // First data group packet
-#ifdef	__TRACER__
-	      traceElement t;
-	      t. packetNumber = teller;
-	      t. key = 2;
-	      t. size = udlen;
-	      tracer. resize (0);
-	      tracer. push_back (t);
-#endif
+	      if (traceFlag) {
+	         traceElement t;
+	         t. packetNumber = teller;
+	         t. key = 2;
+	         t. size = udlen;
+	         tracer. resize (0);
+	         tracer. push_back (t);
+	      }
 	      series. resize (udlen * 8);
 	      for (uint16_t i = 0; i < udlen * 8; i ++)
 	         series [i] = vec [3 * 8 + i];
@@ -221,24 +216,25 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 
 	   case 0:    // Intermediate data group packet
 	      if (assembling) {
-#ifdef	__TRACER__
-	         traceElement t;
-	         t. packetNumber = teller;
-	         t. key = 0;
-	         t. size = udlen;
-	         tracer. push_back (t);
-#endif
+	         if (traceFlag) {
+	            traceElement t;
+	            t. packetNumber = teller;
+	            t. key = 0;
+	            t. size = udlen;
+	            tracer. push_back (t);
+	         }
 	         int currentLength = series. size ();
 	         if (currentLength + udlen * 8 > 8 * 8192) {
-#ifdef	__TRACER__
-	            fprintf (stderr, "%d elements, size %d\n",
-	                 tracer. size (), currentLength / 8 + udlen);
-	            for (int i = 0; i < tracer. size (); i ++)
-	               fprintf (stderr, "(%d -> %d %d) ",
-	                              tracer [i]. packetNumber,
-	                              tracer [i]. key, tracer [i]. size);
-	            fprintf (stderr, "\n");
-#endif
+	            if (traceFlag) {
+	               fprintf (stderr, "%d elements, size %d\n",
+	                        (int)(tracer. size ()),
+	                                   currentLength / 8 + udlen);
+	               for (int i = 0; i < (int)(tracer. size ()); i ++)
+	                  fprintf (stderr, "(%d -> %d %d) ",
+	                                   tracer [i]. packetNumber,
+	                                   tracer [i]. key, tracer [i]. size);
+	               fprintf (stderr, "\n");
+	            }
 	            assembling = false;
 	            return;
 	         }
@@ -250,24 +246,25 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 
 	   case 1:  // Last data group packet
 	      if (assembling) {
-#ifdef __TRACER__
-	         traceElement t;
-	         t. packetNumber = teller;
-	         t. key = 1;
-	         t. size = udlen;
-	         tracer. push_back (t);
-#endif
+	         if (traceFlag) {
+	            traceElement t;
+	            t. packetNumber = teller;
+	            t. key = 1;
+	            t. size = udlen;
+	            tracer. push_back (t);
+	         }
 	         int currentLength = series. size ();
 	         if (currentLength + udlen * 8  >= 8 * 8192) {
-#ifdef	__TRACER__
-	            fprintf (stderr, "%d elements, size %d\n",
-	                 tracer. size (), currentLength / 8 + udlen);
-	            for (int i = 0; i < tracer. size (); i ++)
-	               fprintf (stderr, "(%d -> %d %d) ",
+	            if (traceFlag) {
+	               fprintf (stderr, "%d elements, size %d\n",
+	                        (int)(tracer. size ()),
+	                             currentLength / 8 + udlen);
+	               for (int i = 0; i < (int)(tracer. size ()); i ++)
+	                  fprintf (stderr, "(%d -> %d %d) ",
 	                              tracer [i]. packetNumber,
 	                              tracer [i]. key, tracer [i]. size);
-	            fprintf (stderr, "\n");
-#endif
+	               fprintf (stderr, "\n");
+	            }
 	            assembling = false;
 	            return;
 	         }
@@ -309,7 +306,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 void	dataProcessor::handleRSPacket (const uint8_t  *vec) {
 int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
-//
+
+//	fprintf (stderr, "handling RS\n");
 //	we differentiate between the "data" packets and the "RS" packets
 //
 //	the "order" is first RSDIMS * FRAMESIZE packet elements
@@ -463,4 +461,15 @@ uint8_t rsOut	[FRAMESIZE];
 }
 
 void	dataProcessor::stop	() {}
+
+void	dataProcessor::set_dataTracer	(bool b) {
+	if (b) {
+	   teller = 0;
+	   fouten = 0;
+	   tracer. resize (0);
+	   traceFlag	= true;
+	}
+	else
+	   traceFlag	= false;
+}
 

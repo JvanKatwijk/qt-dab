@@ -48,12 +48,13 @@
   *	that are processed by the "faadDecoder" class
   */
 	mp4Processor::mp4Processor (RadioInterface	*mr,
+	                            uint32_t		SId,
 	                            int16_t		bitRate,
 	                            RingBuffer<complex16> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            FILE		*dump,
 	                            bool		backgroundFlag):
-	                                my_padhandler (mr, backgroundFlag),
+	                                my_padhandler (mr, SId, backgroundFlag),
  	                                my_rsDecoder (8, 0435, 0, 1, 10),
 	                                aacDecoder (mr, b) {
 	myRadioInterface	= mr;

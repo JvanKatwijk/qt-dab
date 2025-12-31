@@ -70,6 +70,8 @@ public:
 	void		resetEtiGenerator	();
 	void		setScanMode		(bool);
 	void		getFrameQuality		(int *, int*, int *);
+
+	void		set_dataTracer		(bool);
 //
 //	just a gadget
 	bool		serviceRuns		(uint32_t SId, uint16_t SCIds);

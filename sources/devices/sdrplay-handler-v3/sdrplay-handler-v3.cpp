@@ -683,9 +683,6 @@ int	deviceIndex	= 0;
 	}
 
 	chosenDevice	= &devs [deviceIndex];
-	fprintf (stderr, "We get from the API: tuner %d, Mode %d\n",
-	                       (int)(chosenDevice -> tuner),
-	                       (int)(chosenDevice -> rspDuoMode));
 	chosenDevice	-> tuner  = sdrplay_api_Tuner_A;
 	chosenDevice	-> rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
 	err	= sdrplay_api_SelectDevice (chosenDevice);

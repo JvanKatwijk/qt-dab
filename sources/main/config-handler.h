@@ -88,6 +88,7 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
+	bool		traceOn;
 	int		serviceOrder;
 	void		set_Colors		();
 	void		set_buttonColors	(QPushButton *b,
@@ -148,7 +149,9 @@ private slots:
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_tiiCollisions		(int);
 	void	handle_mouseClicked		();
-
+//
+//	for the tracer
+	void	handle_tracerButton		();
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);
@@ -166,5 +169,6 @@ signals:
 	void	process_tiiFilter	(bool);
 
 	void	process_tiiSelector	(bool);
+	void	signal_dataTracer	(bool);
 };
 

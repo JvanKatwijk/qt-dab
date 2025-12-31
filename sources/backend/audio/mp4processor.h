@@ -50,6 +50,7 @@ class	mp4Processor final : public QObject, public frameProcessor {
 Q_OBJECT
 public:
 			mp4Processor	(RadioInterface *,
+	                                 uint32_t,	// SId
 	                                 int16_t,
 	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,

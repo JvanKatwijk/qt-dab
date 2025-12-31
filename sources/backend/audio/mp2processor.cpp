@@ -226,12 +226,13 @@ struct quantizer_spec quantizer_table [17] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 	mp2Processor::mp2Processor (RadioInterface	*mr,
+	                            uint32_t		SId,
 	                            int16_t		bitRate,
 	                            RingBuffer<complex16> *buffer,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            FILE		*dump,
 	                            bool		backgroundFlag):
-	                                my_padhandler (mr, backgroundFlag) {
+	                                my_padhandler (mr, SId, backgroundFlag) {
 int16_t *nPtr = &N [0][0];
 
 	// compute N[i][j]

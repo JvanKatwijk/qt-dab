@@ -777,7 +777,6 @@ fibConfig::AppType element;
 	bitOffset	+= 8;
 	element. SId	= SId;
 	element. SCIds	= SCIds;
-
 	for (i = 0; i < NoApplications; i ++) {
 	   appType		= getBits (d, bitOffset, 11);
 	   int16_t length	= getBits_5 (d, bitOffset + 11);

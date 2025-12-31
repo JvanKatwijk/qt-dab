@@ -42,4 +42,8 @@ virtual	void	stop		() {
 	fprintf (stderr, "Should be overridden\n");
 }
 
+virtual	void	set_dataTracer	(bool b) {
+	(void)b;
+}
+
 };

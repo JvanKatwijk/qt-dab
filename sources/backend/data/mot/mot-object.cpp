@@ -35,27 +35,23 @@
 #include	"charsets.h"
 
 	   motObject::motObject (RadioInterface *mr,
+	                         uint32_t	SId,
 	                         bool		dirElement,
 	                         uint16_t	transportId,
 	                         const uint8_t	*segment,
-	                         int		dataLength,
 	                         int32_t	segmentSize,
-	                         bool		lastFlag,
-	                         bool		backgroundFlag) {
+	                         bool		lastFlag) {
 int32_t pointer = 7;
 uint16_t	rawContentType = 0;
 
-	(void)segmentSize;
-	(void)lastFlag;
+	this	-> SId			= SId;
 	this	-> dirElement		= dirElement;
-	this	-> backgroundFlag	= backgroundFlag;
-
 	this	-> name			= "";
+	this	-> transportId		= transportId;
+	this	-> segmentSize		= segmentSize;
 	connect (this, &motObject::handle_motObject,
 	         mr, &RadioInterface::handle_motObject);
-	this	-> transportId		= transportId;
 	this	-> numofSegments	= -1;
-	this	-> segmentSize		= -1;
 
 	headerSize     =
 	   ((segment [3] & 0x0F) << 9) |
@@ -70,11 +66,10 @@ uint16_t	rawContentType = 0;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
 
-//	fprintf (stderr, "Creating MOT object with TransportId %d\n",
-//	                                                   transportId);
 	int reference = segmentSize == -1 ? headerSize :
 	                 headerSize == -1 ? segmentSize :
 	                  std::min ((int)headerSize, (int)segmentSize);
+
         while ((uint16_t)pointer < reference) {
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
@@ -231,10 +226,10 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-	
+	if ((name == "") &!dirElement)
+	   name = QString::number (transportId, 16);
 	if (name != "")
-	   handle_motObject (result, name, (int)contentType,
-	                            dirElement, backgroundFlag);
+	   handle_motObject (result, name, (int)contentType, dirElement, SId);
 }
 
 int	motObject::get_headerSize	() {

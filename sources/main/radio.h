@@ -417,13 +417,15 @@ private:
 
 	void			startDirect		();
 	void			saveMOTObject		(QByteArray &,
+	                                                 int,
 	                                                 QString &);
 
 	void			saveMOTtext		(QByteArray &, int,
 	                                                 const QString &);
 	void			showMOTlabel		(QByteArray &, int,
 	                                                 const QString &,
-	                                                 int, bool);
+	                                                 int,
+	                                                 uint32_t);
 	void			stopMuting		();
 //	short hands
 	void                    newChannelIndex        (int);
@@ -448,6 +450,9 @@ private:
 	transmitter		*inList		(uint8_t, uint8_t);
 
 //	EPG extraction
+	void			process_epgData (const QString &obkectName,
+                                                 const QByteArray & result);
+
 	void			extractServiceInformation (const QDomDocument &,
 	                                                      uint32_t, bool);
 	void			saveServiceInfo	(const QDomDocument &, 
@@ -457,6 +462,7 @@ private:
 
 	void			read_pictureMappings	(uint32_t);
 	bool			get_serviceLogo		(QPixmap &, uint32_t);
+
 	QString			extractName	(const QString &);
 
 //
@@ -474,6 +480,9 @@ signals:
 
 	void			call_scanButton		();
 public slots:
+//	Tracer
+	void			signal_dataTracer       (bool);
+
 	void			lto_ecc			(int, int);
 	void			setFreqList		();
 	void			channelSignal		(const QString &);
@@ -498,7 +507,8 @@ public slots:
 	void			showLabel		(const QString &, int);
 	void			handle_motObject	(QByteArray,
 	                                                 QString,
-	                                                 int, bool, bool);
+	                                                 int, bool,
+	                                                 uint32_t);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();

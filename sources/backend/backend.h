@@ -54,9 +54,11 @@ public:
 	                 RingBuffer<uint8_t> *, FILE *, int, uint8_t);
 		~Backend();
 	int32_t	process		(int16_t *, int16_t);
-	void	stopRunning();
-//
+	void	stopRunning	();
+	bool	is_dataBackend	();
+	void	set_dataTracer	(bool);
 //	we need sometimes to access the key parameters for decoding
+	int		backendType;
 	int		serviceId;
 	int		startAddr;
 	int		Length;

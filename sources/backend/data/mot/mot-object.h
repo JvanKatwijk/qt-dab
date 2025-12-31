@@ -40,13 +40,12 @@ class	motObject: public QObject {
 Q_OBJECT
 public:
 		motObject (RadioInterface *mr,
+	                   uint32_t	SId,
 	                   bool		dirElement,
 	                   uint16_t	transportId,
 	                   const uint8_t	*segment,
-	                   int		dataLength,
 	                   int32_t	segmentSize,
-	                   bool		lastFlag,
-	                   bool		backgroundFlag);
+	                   bool		lastFlag);
 		~motObject	();
 	void	addBodySegment (const uint8_t	*bodySegment,
                                 int16_t	segmentNumber,
@@ -55,7 +54,7 @@ public:
 	uint16_t	get_transportId	();
 	int		get_headerSize	();
 private:
-	bool		backgroundFlag;
+	uint32_t	SId;
 	bool		dirElement;
 	QString		picturePath;
 	uint16_t	transportId;
@@ -69,6 +68,6 @@ private:
 	std::map<int, QByteArray> motMap;
 
 signals:
-	void	handle_motObject (QByteArray, QString, int, bool, bool);
+	void	handle_motObject (QByteArray, QString, int, bool, uint32_t);
 };
 

@@ -35,12 +35,12 @@ class	motDirectory: public QObject {
 Q_OBJECT
 public:
 			motDirectory	(RadioInterface *,
+	                                 uint32_t,	// SId
 	                                 uint16_t,
 	                                 int16_t,
 	                                 int32_t,
 	                                 int16_t,
-	                                 uint8_t *,
-	                                 bool);
+	                                 uint8_t *);
 			~motDirectory	();
 	motObject	*getHandle	(uint16_t);
 	void		setHandle	(motObject *, uint16_t);
@@ -54,8 +54,8 @@ private:
 	void		analyse_theDirectory();
 	uint16_t	transportId;
 
+	uint32_t	SId;
 	RadioInterface	*myRadioInterface;
-	bool		backgroundFlag;
 	std::vector<uint8_t>	dir_segments;
 	bool		marked [512];
 	int16_t		dir_segmentSize;

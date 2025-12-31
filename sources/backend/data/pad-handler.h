@@ -52,12 +52,14 @@ class	padHandler: public QObject {
 Q_OBJECT
 public:
 			padHandler		(RadioInterface *,
+	                                         uint32_t,	// SId
 	                                         bool);
 			~padHandler		();
 	void		processPAD		(const uint8_t *,
 	                                         int16_t, uint8_t, uint8_t);
 private:
 	RadioInterface	*myRadioInterface;
+	uint32_t	SId;
 	bool		backgroundFlag;
 	void		handle_variablePAD	(const uint8_t *,
 	                                             int16_t, uint8_t);

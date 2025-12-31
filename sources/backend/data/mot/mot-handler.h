@@ -32,14 +32,14 @@ class	motDirectory;
 
 class	motHandler:public virtual_dataHandler {
 public:
-		motHandler	(RadioInterface *, bool);
+		motHandler	(RadioInterface *, uint32_t SId);
 		~motHandler	();
 	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 private:
 	RadioInterface	*myRadioInterface;
-	bool		backgroundFlag;
 	void		setHandle	(motObject *, uint16_t);
 	motObject	*getHandle	(uint16_t);
 	int		orderNumber;
 	motDirectory	*theDirectory;
+	uint32_t	SId;
 };

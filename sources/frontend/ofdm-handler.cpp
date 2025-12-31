@@ -725,3 +725,7 @@ void	ofdmHandler::set_dcRemoval	(bool b) {
 	theReader. set_dcRemoval (b);
 }
 
+void	ofdmHandler::set_dataTracer	(bool b) {
+	theMscHandler. set_dataTracer (b);
+}
+

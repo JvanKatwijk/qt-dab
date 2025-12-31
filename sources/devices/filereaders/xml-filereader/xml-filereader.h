@@ -65,6 +65,7 @@ private:
 
 	int			theRate;
 	int			theFrequency;
+	int			dataStart;
 public slots:
 	void			setProgress		(int, int);
 	void			handle_continuousButton ();

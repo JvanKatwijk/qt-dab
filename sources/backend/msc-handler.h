@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2024
+ *    Copyright (C) 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -74,6 +74,7 @@ public:
 	void		resetChannel		();
 	void		resetBuffers		();
 	bool		serviceRuns		(uint32_t SId, uint16_t subChId);
+	void		set_dataTracer		(bool);
 private:
 
 	dabParams	params;

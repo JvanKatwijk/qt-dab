@@ -27,15 +27,15 @@
 #include	"radio.h"
 
 	motDirectory::motDirectory (RadioInterface *mr,
+	                            uint32_t	SId,
 	                            uint16_t	transportId,
 	                            int16_t	segmentSize,
 	                            int32_t	dirSize,
 	                            int16_t	objects,
-	                            uint8_t	*segment,
-	                            bool	backgroundFlag) {
+	                            uint8_t	*segment) {
 
 	this	-> myRadioInterface	= mr;
-	this	-> backgroundFlag	= backgroundFlag;
+	this	-> SId			= SId;
 	for (int i = 0; i < 512; i ++)
 	   marked [i] = false;
 	num_dirSegments	= -1;
@@ -141,13 +141,12 @@ uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 //	   fprintf (stderr, "motObject with transportId %d and \n", transportId);
 	   uint8_t *segment	= &dir_segments [currentBase + 2];
 	   motObject *handle	= new motObject (myRadioInterface,
+	                                         SId,
 	                                         true,
 	                                         transportId,
 	                                         segment,
 	                                         -1,
-	                                         -1,
-	                                         false,
-	                                         backgroundFlag);
+	                                         false);
 	   
 	   currentBase		+= 2 + handle -> get_headerSize();
 	   setHandle (handle, transportId);

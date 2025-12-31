@@ -304,6 +304,10 @@ QString h;
 	connect (configHandler_p, &configHandler::set_serviceOrder,
 	         theEnsembleHandler. data (),
 	                               &ensembleHandler::setServiceOrder);
+	connect (configHandler_p, &configHandler::signal_dataTracer,
+	         this, &RadioInterface::signal_dataTracer);
+
+
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 //
@@ -921,13 +925,21 @@ QString	dir = s;
 	QDir (). mkpath (dir);
 	return dir;
 }
-
+//
+//	to avoid confusions, each mot object arriving here carrier
+//	the SId of the service it belongs to.
+//	Data for background services other than the SPI servides,
+//	is basically ignored.
 void	RadioInterface::handle_motObject (QByteArray result,
-	                                  QString  objectName,
-	                                  int contentType,
-	                                  bool dirElement,
-	                                  bool backgroundFlag) {
+	                                  QString	objectName,
+	                                  int		contentType,
+	                                  bool		dirElement,
+	                                  uint32_t	SId) {
 QString realName;
+
+	if (!theOFDMHandler	-> is_SPI (SId) &&
+	   (channel. currentService. SId != SId))
+	   return;
 
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
@@ -939,7 +951,7 @@ QString realName;
 
 	   case MOTBaseTypeImage: 
 	      showMOTlabel (result, contentType,
-	                       objectName, dirElement, backgroundFlag);
+	                       objectName, dirElement, SId);
 	      break;
 
 	   case MOTBaseTypeAudio:
@@ -949,7 +961,7 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeTransport:
-	      saveMOTObject (result, objectName);
+	      saveMOTObject (result, contentType, objectName);
 	      break;
 
 	   case MOTBaseTypeSystem:
@@ -958,36 +970,9 @@ QString realName;
 	   case  MOTBaseTypeApplication: { 	// epg data
 	      if ((path_for_files == "") || (theSCANHandler. active ()))
 	         return;
-
 	      if (objectName == QString (""))
-	         objectName = "epg file";
-	      std::vector<uint8_t> epgData (result. begin(), result. end());
-	      QDomDocument epgDocument;
-	      uint8_t docType = epgVertaler. process_epg (epgDocument,
-	                                                  epgData, channel.lto);
-	      if (docType == noType)		// should not happen
-	         break;
-
-	      if (docType == serviceInformationType) {
-	         extractServiceInformation (epgDocument, channel. Eid, true);
-	         return;
-	      }
-	   
-	      QString theName = extractName (objectName);
-	      if (theName == "") 
-	         return;
-	
-	      QString temp = path_for_files +
-	                          QString::number (channel. Eid, 16). toUpper () + "/";
-	      if (!QDir (temp). exists ())
-	         QDir (). mkpath (temp);	
-	      theName  = temp + theName;
-	      QFile file (QDir::toNativeSeparators (theName));
-	      if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
-	         QTextStream stream (&file);
-	         stream << epgDocument. toString ();
-	         file. close ();
-	      }
+	         objectName	= "epgFile";	// should not happen
+	      process_epgData (objectName, result);
 	   }
 	   return;
 
@@ -995,6 +980,41 @@ QString realName;
 	      break;
 	}
 }
+
+
+void	RadioInterface::process_epgData (const QString &objectName,	
+	                                 const QByteArray &result) {
+
+std::vector<uint8_t> epgData (result. begin(), result. end());
+QDomDocument epgDocument;
+uint8_t docType = epgVertaler. process_epg (epgDocument, epgData, channel.lto);
+
+	if (docType == noType)		// should not happen
+	   return;
+
+	if (docType == serviceInformationType) {
+	   extractServiceInformation (epgDocument, channel. Eid, true);
+	   return;
+	}
+
+	QString theName = extractName (objectName);
+	if (theName == "") 
+	   return;
+	
+	QString temp = path_for_files +
+	                   QString::number (channel. Eid, 16). toUpper () + "/";
+	if (!QDir (temp). exists ())
+	   QDir (). mkpath (temp);	
+
+	theName  = temp + theName;
+	QFile file (QDir::toNativeSeparators (theName));
+	if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
+	   QTextStream stream (&file);
+	   stream << epgDocument. toString ();
+	   file. close ();
+	}
+}
+
 //
 //	In the MOT name, we look for a sequence of 8 digits with
 //	some constraints, and then for a sequence of 4 characters
@@ -1051,7 +1071,12 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 	if (path_for_files == "")
 	   return;
 
-	QString textName = QDir::toNativeSeparators (path_for_files + name);
+	QString path = path_for_files +
+	                        QString::number (channel. Eid, 16). toUpper ();
+	path	+= "/";
+	path	= QDir::toNativeSeparators (path);
+	path	= checkDir (path);
+	QString textName = path + name;
 
 	FILE *x = fopen (textName. toUtf8 (). data (), "w+b");
 	if (x == nullptr) {
@@ -1065,7 +1090,8 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 }
 
 void	RadioInterface::saveMOTObject (QByteArray  &result,
-	                                QString  &name) {
+	                               int contentType,
+	                               QString  &name) {
 	if (path_for_files == "")
 	   return;
 
@@ -1074,16 +1100,17 @@ void	RadioInterface::saveMOTObject (QByteArray  &result,
 	   name = "motObject_" + QString::number (counter);
 	   counter ++;
 	}
-	saveMOTtext (result, 5, name);
+	saveMOTtext (result, contentType, name);
 }
 
 //	MOT slide, to show
 void	RadioInterface::showMOTlabel	(QByteArray  &data,
-	                                 int contentType,
+	                                 int		contentType,
 	                                 const QString  &pictureName,
-	                                 int dirs,
-	                                 bool backgroundFlag) {
+	                                 int		dirs,
+	                                 uint32_t	SId) {
 const char *type;
+
 	if (!running. load () || (pictureName == QString ("")))
 	   return;
 
@@ -1108,18 +1135,34 @@ const char *type;
 	        return;
 	}
 
+	if (theOFDMHandler	-> is_SPI (SId)) {
+	   QString theEId = QString::number (channel. Eid, 16). toUpper ();
+	   QString path	= path_for_files + theEId + "/";
+	   if (!QDir (path). exists ())
+	      QDir(). mkpath (path);
+	   path	= QDir::toNativeSeparators (path);
+	   QString pict	= path + pictureName;
+	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
+	   if (x != nullptr) {
+	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
+	      (void)fwrite (data. data(), 1, data.length(), x);
+	      fclose (x);
+	   }
+	   return;
+	}
+
+	if (channel. currentService. SId != SId)  // current service
+	   return;		// cannot happen
+//
+//	handle slides for current service
 	if (dirs || ((value_i (dabSettings_p, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
 	                                         (path_for_files != ""))) {
-	   QString theEid = QString::number (channel. Eid, 16). toUpper ();
-	   QString nameElement;
-	   if (backgroundFlag)
-	      nameElement = channel. ensembleName + "(" + theEid + ")";
-	   else
-	      nameElement = channel. ensembleName + "(" + theEid + ")" +
+	   QString theEId = QString::number (channel. Eid, 16). toUpper ();
+	   QString nameElement = channel. ensembleName + "(" + theEId + ")" +
 	                       channel. currentService. serviceName. trimmed ();
 	   QString theDir = dirs ?
-	                     path_for_files + theEid + "/":
+	                     path_for_files + theEId + "/":
 	                     path_for_files + "slides-" + nameElement + "/";
 	   if (!QDir (theDir). exists())
 	      QDir (). mkpath (theDir);	
@@ -1138,7 +1181,7 @@ const char *type;
 	   }
 	}
 
-	if (backgroundFlag || dirs)
+	if (dirs)
 	   return;
 
 	QPixmap p;
@@ -3756,7 +3799,7 @@ void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
 QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	pauzeTimer. stop ();
-	int nr		= rand () % 11;
+//	int nr		= rand () % 11;
 	slideName	= slideName. arg (pauzeSlideTeller);
 	if (p. load (slideName, "png")) {
 	QString tooltipText = "";
@@ -4859,4 +4902,10 @@ void	RadioInterface::tell_programType	(uint32_t SId,
 	if (channel. currentService. SId == SId)
 	   programTypeLabel	-> setText (getProgramType (programType));
 }
+
+void	RadioInterface::signal_dataTracer	(bool b) {
+	if (theOFDMHandler != nullptr)
+	   theOFDMHandler -> set_dataTracer (b);
+}
+
 

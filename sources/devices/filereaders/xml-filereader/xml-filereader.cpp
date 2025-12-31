@@ -114,6 +114,21 @@
 	             theDescriptor -> blockList [0].nrElements);
 	connect (continuousButton, &QPushButton::clicked,
 	         this, &xml_fileReader::handle_continuousButton);
+
+	uint64_t nrElements = 0;	
+	for (uint16_t i = 0; i < theDescriptor -> nrBlocks; i ++) 
+	   nrElements += theDescriptor ->blockList [i]. nrElements;
+	uint16_t sampleSize = theDescriptor -> sampleSize ();
+
+	fseek (theFile, 0, SEEK_END);
+	uint64_t fileLength	= ftell (theFile);
+	
+	dataStart	= fileLength -
+	                   (uint64_t)(nrElements * (sampleSize / 2));
+	startpoint	-> setText (QString::number (dataStart));
+	if (dataStart < 0)   // as with DABstart
+	   dataStart = 5000;
+
 	running. store (false);
 }
 
@@ -139,7 +154,7 @@ bool	xml_fileReader::restartReader (int32_t freq, int skipped) {
 	   return true;
 	theReader. reset (new xml_Reader (this, theFile,
 	                                  theDescriptor. data (),
-	                                  5000, &_I_Buffer));
+	                                  dataStart, &_I_Buffer));
 	running. store (true);
 	return true;
 }
