@@ -563,7 +563,7 @@ As for Windows, two versions are available, one with and one without use of *avx
 
 The appImage contains next to the executable Qt-DAB program, the required interface libraries **but not the support libraries for the configured devices**. If you want to use a physical device - e.g. a DABstick, an SDRplay, or an AIRspy you need to install the driver libraries for the device as well.
 
-============================================================================
+
 Software for device support
 ===========================================================================
 
@@ -574,19 +574,19 @@ and the SDRPlay Dx-II. Use the 3.XX library instead.
 The libraries can be found on the website of SDRplay
  * www.sdrplay.com
 
-For using an **AIRspy** or a **Hackrf device** the Windows installers contain support libraries. For Ubuntu as well as the bullseye repository (for the RPI)
-the repository contains appropriate software.
+For using an **AIRspy** or a **Hackrf device** the Windows Installers contain support libraries. For **Linux**, the Ubuntu (and bullseye repository for the RPI)
+the repository contains appropriate software. 
 
-For using an **RTLSDR device** the Windows version contains driver software.
-For Linux, the Ubuntu (and bullseye) repositories do provide a package. However, using that package one needs the
+For using an **RTLSDR device** the Windows Installers contain support libraries.
+For **Linux**, the Ubuntu (and bullseye) repositories do provide a package. However, using that package one needs the
 kernel module to be blacklisted, see e.g.
  * https://www.reddit.com/r/RTLSDR/wiki/blacklist_dvb_usb_rtl28xxu/
 
 Personally, I prefer to build a version of the library myself,  installation is easy, see:
  * "https://osmocom.org/projects/rtl-sdr/wiki".
 
-For using the **LimeSDR device** the Windows version contains driver software.
-For Linux I went back to the sources and compiled the
+For using the **LimeSDR device** the Windows Installers contain support libraries.
+For **Linux** I went back to the sources and compiled the
 support library myself, see:
  * "https://wiki.myriadrf.org/Lime_Suite".
 
@@ -598,7 +598,6 @@ Linux I followed the instructions on
 Note that Ubuntu releases provide libraries for supporting the Pluto.
 
 Building an executable for Qt-DAB: a few notes
-
 =====================================================================
 
 It is strongly advised to use qmake/make for the compilation process,
