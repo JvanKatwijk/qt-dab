@@ -44,7 +44,7 @@ About Qt-DAB
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 Qt-DAB is GUI based, for a command line version, see **dab-cmdline**.
-Qt-DAB  has a single *main* widget that contains essentially all that is needed for selecting channels and services and listening to a service. Other widgets, visible under user control, show a myriad of controls, and a tremendous amount of data extracted from the DAB signal and the resulting audio, 
+Qt-DAB  has a single *main* window that contains essentially all that is needed for selecting channels and services and listening to a service. Other windows, visible under user control, show a myriad of controls, and a tremendous amount of data extracted from the DAB signal and the resulting audio, 
 
 ![6.9](/res/read_me/qt-dab-front-picture.png?raw=true)
 
@@ -57,9 +57,8 @@ Table of Contents
 
 * [Introduction](#introduction)
 * [Features](#features)
-* [Widgets and scopes](#widgets-and-scopes)
+* [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
-* [Tuning accuracy](#tuning-accuracy)
 * [Scan control](#scan-control)
 * [Displaying TII data](#displaying-TII-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
@@ -101,9 +100,9 @@ Widgets and scopes
 
 ![6.9](/res/read_me/Qt_DAB-6.9.6.png)
 
-The *main widget* (see picture) of Qt-DAB (always visible), contains selectors for controlling the visibility of other widgets.
+The **main window** (see picture) of Qt-DAB (always visible), contains selectors for controlling the visibility of other windows.
 The window shows - left half - a list of services (either from the currently selected channel or from **favourites**). Selecting a service is just by clicking on the name.
-The right half of the widget shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
+The right half of the window shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
 
   * touching the **ensemble name** (NPO (8001) in the picture seen top left) makes the **content table**, i.e. an overview of the content of the ensemble, visible with the possibility of storing the data in a file in ".csv" format. If the content table is visible. Touching the ensemble name again will hide it;
 
@@ -115,7 +114,7 @@ The picture above shows the topline op the right half of the main window.
 
  * touching the small icon left on the top of the right half will show (or hide) the **technical window**, a window showing all technical details as well as strength indicators and a spectrum of the audio of the selected service;
  * touching the small icon to the right next, the folder/directory in which the slides, the tii log and the log file are written is shown;
- * **NEW**: touching the small **blue** icon causes the device list to be displayed. Touching the icon again hides the icon. After selecting a device, the widget will be hidden as well.
+ * **NEW**: touching the small **blue** icon causes the device list to be displayed. Touching the icon again hides the icon. After selecting a device, the device list will be hidden as well.
 
 ![6.9](/res/read_me/devicelist.png)
 
@@ -169,7 +168,7 @@ The technical window shows - as the name suggests - technical details of
 the  selected audio service. If the audio of the service is also transmitted
 on FM, the FM frequency (frequencies) - derived from additional data in the DAB datastream - is shown as well.
 
-The buttons at the top of the widget control **dumping** the audio
+The buttons at the top of the window control **dumping** the audio
 (".wav" file) resp. the AAC or MP2 frames into a file. AAC amd MP2 encoded files can be processed by e.g. VLC.
 
 The **timeTable** button has only effect if on this channel (ensemble) an EPG 
@@ -192,7 +191,7 @@ The **scope** at the bottom shows the spectrum of the audio.
 
 As mentioned above, a **spectrum window** can be made visible by clicking
 on a button on the main window.
-The widget for the *spectrum scope* is equipped with a tab for selecting
+That window is equipped with a tab for selecting
 one of 6 views on the input signal.
 
 ![6.8](/res/read_me/spectrum-scope.png)
@@ -370,7 +369,7 @@ both the name of the SDR device as well as the channel frequency of the receptio
 
  * reading prerecorded dump rtlsdr type "raw" (8 bits) files. The RTLSDR device handlers show a button "dump" for dumping the raw input into a ".raw" file.
 
- * reading (and writing) so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device widget a button to control dumping the unmodified input into an xml file.
+ * reading (and writing) so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device window a button to control dumping the unmodified input into an xml file (e.g. for the Airspy this means with a samplerate of 25000000 or 3000000).
 
 ![6.8](/res/read_me/xml-reader.png?raw=true)
 
@@ -394,7 +393,7 @@ scantables can be created as separate files and read-in when required.
 The *show* button controls the visibility of the **scantable**, scantables
 can be loaded and stored in either the ".ini" file (use the "...default" buttons, or can be kept as xml file on a user defined place (the other load/store buttons).
 
-The table at the bottom of the widget is just for convenience, on scanning it displays the channel name being scanned currently, the ensemble name encountered and the number of services detected in the ensemble. Only for *scan single* the
+The table at the bottom of the window is just for convenience, on scanning it displays the channel name being scanned currently, the ensemble name encountered and the number of services detected in the ensemble. Only for *scan single* the
 transmitters that were identified are shown as well.
 
 Displaying TII data
@@ -423,7 +422,7 @@ home directory.
 As was shown earlier, one usually receives signals from more than
 one transmitter.
 While the line at the bottom on the right half of the Qt-DAB's main
-widget  always shows the strongest transmitter,
+window  always shows the strongest transmitter,
 Qt-DAB can also show data of **all** identified transmitters on a
 small separate window (if selected), the **dxDisplay**.
 
@@ -441,7 +440,7 @@ transmitter.
 
 ![6.8](/res/read_me/QTmap.png?raw=true)
 
-Qt-DAB has as said - on the main widget -  a button labeled **http**,
+Qt-DAB has as said - on the main window -  a button labeled **http**,
 when touched, a webserver is started  with on it a map centered around the
 home position, that - when running - shows the position(s) of the
 transmitter(s) received. 
@@ -480,8 +479,8 @@ Data decoded by this service will be stored in a separate directory that is itse
 ![6.9](/res/read_me/bbc-3.png?raw=true)
 
 If sufficient data is read in that directory, the software **might** find a service logo and a time table for the selected service.
-The logo - if found - is shown on the main widget (picture above) next to the service name.
-The time table - if found - is made visible by touching the timeTable button on the technical widget.
+The logo - if found - is shown on the main window (picture above) next to the service name.
+The time table - if found - is made visible by touching the timeTable button on the technical window.
 
 ![6.9](/res/read_me/timetable.png?raw=true)
 

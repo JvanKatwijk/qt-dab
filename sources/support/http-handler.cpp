@@ -115,14 +115,16 @@ QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 //	Note that the function is a "slot", issuing a signal
 //	that directly kills the httpHandler will crash the system
 void	httpHandler::onSocketError (QAbstractSocket::SocketError socketerror) {
-QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
+//QTcpSocket *socket = reinterpret_cast<QTcpSocket*>(sender());
 	if (socketerror == QAbstractSocket::RemoteHostClosedError) {
 	   if (closingInProgress. load ()) {	// reacting on button switch
 	      connect (this, &httpHandler::mapClose_processed,
 	               theRadio, &RadioInterface::http_terminate);
+	      fprintf (stderr, "Going to close a map\n");
 	      emit mapClose_processed ( );
 	   }
 	   else {	// 
+	      fprintf (stderr, "de http handler zou moeten sluiten\n");
 	      if (close_map_on_exit)
 	         delayTimer. start (1000);
 	   }

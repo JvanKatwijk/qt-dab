@@ -78,7 +78,7 @@ private:
 	fibConfig	*nextConfig;
 	void		adjustTime		(int32_t *dateTime);
 
-	void		process_FIG0		(uint8_t *);
+	void		process_FIG0		(uint8_t *, int);
 	void		process_FIG1		(uint8_t *);
 	void		FIG0Extension0		(uint8_t *);
 	void		FIG0Extension1		(uint8_t *);
@@ -93,7 +93,7 @@ private:
 	void		FIG0Extension10		(uint8_t *);
 //	void		FIG0Extension11		(uint8_t *);
 //	void		FIG0Extension12		(uint8_t *);
-	void		FIG0Extension13		(uint8_t *);
+	void		FIG0Extension13		(uint8_t *, int);
 	void		FIG0Extension14		(uint8_t *);
 	void		FIG0Extension15		(uint8_t *);
 //	void		FIG0Extension16		(uint8_t *);
@@ -137,7 +137,7 @@ private:
 	                                         int16_t,
 	                                         const uint8_t,
 	                                         const uint8_t,
-	                                         const uint8_t);
+	                                         const uint8_t, int);
 	int16_t		HandleFIG0Extension20	(uint8_t *,
 	                                         uint16_t,
 	                                         const uint8_t,

@@ -192,6 +192,8 @@ int16_t k;
 QString h;
 
 	dabSettings_p			= Si;
+	if (dabSettings_p != nullptr)
+	   fprintf (stderr, "Hoera\n");
 	this	-> error_report		= error_report;
 	this	-> fmFrequency		= fmFrequency;
 	this	-> dlTextFile		= nullptr;
@@ -750,7 +752,7 @@ void	RadioInterface::startDirect	() {
 	   bool succ = autoStart_http ();
 	   if (succ)
 	      httpButton	-> setText ("http-on");
-	} 
+	}
 	running. store (true);
 }
 
@@ -851,7 +853,7 @@ QString s;
 	      theSCANHandler.
 	                 addEnsemble (channelSelector -> currentText (), v);
 	      channelTimer. stop ();
-	      int switchStay		=
+	      int switchStay		= 
 	              configHandler_p -> switchStayValue ();
 	      if (theSCANHandler. dumpInFile ()) {
 	         inputDevice_p	-> startDump	();
@@ -2417,11 +2419,13 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	rateLabel		-> setStyleSheet ("color:magenta");
 	rateLabel		-> setText (QString::number (ad. bitRate) + "kbit");
 	QString protL	= getProtectionLevel (ad. shortForm, ad. protLevel);
+	QString crL	= getCodeRate (ad. shortForm, ad. protLevel);
 	protectionLabel		-> setStyleSheet ("color:red");
 	QFont font		= protectionLabel -> font ();
 	font. setPointSize (9);
 	protectionLabel		-> setFont (font);
-	protectionLabel		-> setText (protL);
+	protectionLabel		-> setText (protL+ " " + crL);
+
 //	show service related data
 	techWindow_p	-> showServiceData 	(&ad);
 }
@@ -3675,11 +3679,14 @@ bool	RadioInterface::autoStart_http () {
 	if (mapHandler != nullptr)  
 	   return false;
 
+	if (dabSettings_p == nullptr)
+	   fprintf (stderr, "FOUTE BOEL\n");
 	try {
 	   mapHandler = new httpHandler (this,
 	                                 ":res/qt-map-69.html",
 	                                 localPos,
 	                                 configHandler_p -> localBrowserSelector_active (),
+	       	                         configHandler_p -> get_close_mapSelector (),
 	                                 dabSettings_p);
 	} catch (int e) {}
 	return mapHandler != nullptr;

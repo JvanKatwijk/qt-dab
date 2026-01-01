@@ -48,7 +48,7 @@ public:
 	                         position	address,
 	                         bool		autoBrowse,
 	                         bool		map_close_on_exit,
-	                         QSettings	*settings = nullptr);
+	                         QSettings	*settings);
 		~httpHandler	();
 	bool	isConnected	();
 	void	putData		(uint8_t	type);

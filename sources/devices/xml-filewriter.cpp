@@ -29,6 +29,9 @@ struct kort_woord {
 	uint8_t byte_2;
 };
 
+static int bufferP_int16	= 0;
+static int bufferP_uint8	= 0;
+static int bufferP_int8		= 0;
 static inline
 bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-') || (c == '/');
@@ -56,6 +59,9 @@ uint8_t t	= 0;
 	if (xmlFile == nullptr)
 	   throw (21);
 
+	bufferP_int16		= 0;
+	bufferP_uint8		= 0;
+	bufferP_int8		= 0;
 //	fprintf (stderr, "file is open\n");
 	this	-> nrBits	= nrBits;
 	this	-> container	= container;
@@ -100,7 +106,6 @@ QString	topLine = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 
 #define	BLOCK_SIZE	8192
 static int16_t buffer_int16 [BLOCK_SIZE];
-static int bufferP_int16	= 0;
 void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
 //	nrElements	+= 2 * count;
 //	fprintf (stderr, "count %d\n", count);
@@ -116,7 +121,6 @@ void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
 }
 
 static uint8_t buffer_uint8 [BLOCK_SIZE];
-static int bufferP_uint8	= 0;
 void	xml_fileWriter::add	(std::complex<uint8_t> * data, int count) {
 //	nrElements	+= 2 * count;
 	for (int i = 0; i < count; i ++) {
@@ -131,7 +135,6 @@ void	xml_fileWriter::add	(std::complex<uint8_t> * data, int count) {
 }
 
 static int8_t buffer_int8 [BLOCK_SIZE];
-static int bufferP_int8	= 0;
 void	xml_fileWriter::add	(std::complex<int8_t> * data, int count) {
 //	nrElements	+= 2 * count;
 	for (int i = 0; i < count; i ++) {

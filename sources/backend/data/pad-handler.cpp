@@ -330,7 +330,8 @@ std::vector<uint8_t> data;		// for the local addition
 //
 //	A dynamic label is created from a sequence of (dynamic) xpad
 //	fields, starting with CI = 2, continuing with CI = 3
-void	padHandler::dynamicLabel (const uint8_t *data, int16_t length, uint8_t CI) {
+void	padHandler::dynamicLabel (const uint8_t *data,
+	                                int16_t length, uint8_t CI) {
 int16_t  dataLength                = 0;
 
 	if ((CI & 037) == 02) {	// start of segment
@@ -383,11 +384,13 @@ int16_t  dataLength                = 0;
 	            break;
 	         case 2:
 #ifdef	_PAD_TRACE_
-	            fprintf (stderr, "DL plus command\n");
+	            fprintf (stderr, "DL plus command, dataLength %d\n",
+	                                                  dataLength);
 #endif
 	            if (!backgroundFlag) {
-	               if (dataLength > 2)
-	                  add_toDL2 (&data [2], field_2, field_3);
+	               if (dataLength > 2) {
+	                  add_toDL2 (&data [2], dataLength - 2, field_2, field_3);
+	               }
 	            }
 	            break;
 	         default:
@@ -626,8 +629,6 @@ uint16_t	index;
 	      break;
 	}
 }
-
-//
 //
 //	Experimental code to extract titles and composers from
 //	the DL2 data
@@ -647,20 +648,24 @@ QString res;
 	return res;
 }
 
-void	padHandler::add_toDL2 (const uint8_t *data,
+void	padHandler::add_toDL2 (const uint8_t *data, int dataLength,
 	                              uint8_t field_2, uint8_t field_3) {
 	(void)field_2; (void)field_3;
 	if (DL2_record. theText. size () == 0)
 	   return;
-//	uint8_t CId	= (data [0] >> 4) & 0x0f;
+	int DL_size	= (int)((uint8_t)field_3) + 1;
+	uint8_t CId	= (data [0] >> 4) & 0x0f;
+	if (CId != 0)		// should not happen
+	   return;
 	uint8_t CB	= data [0] & 0x0f;
 	if ((CB & 04) == 0)	// IR should be "running"
 	   return;
 	uint8_t NT	= data [0] & 0x03;
 	uint8_t IT	= CB & 0x08;
-	for (int i = 0; i < NT; i ++) {
-//	for (int i = 0; i <= NT; i ++) {
-	   uint8_t contentType	= data [1 + 3 * i + 0] & 0x3F;
+	if (dataLength <= DL_size)
+	   return;
+	for (int i = 0; i <= NT; i ++) {
+	   uint8_t contentType	= data [1 + 3 * i + 0] & 0x7F;
 	   uint8_t startMarker	= data [1 + 3 * i + 1] & 0x7F;
 	   uint8_t lengthMarker = data [1 + 3 * i + 2] & 0x7F;
 	   switch (contentType) {
