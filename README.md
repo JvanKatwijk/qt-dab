@@ -151,7 +151,7 @@ of the scan list, i.e  *the list of all services seen*, shown below.
 
 As mentioned, Qt-DAB supports **favorites**,
 i.e. a list of (channel, service pairs). The list is maintained between program invocations. 
-The **services widget** on the main window is shown in one of two modes, selectable by the button (in the picture labeled **favourites**).
+The **services widget** on the main window is shown in one of two modes, selectable by the button (in the picture labeled) **favourites**.
 In **ensemble view** mode, the services in the current ensemble are shown, in the **favourites view** mode, the favourites are shown.
 
 In both views, **selecting a service** is just by clicking on the service name.

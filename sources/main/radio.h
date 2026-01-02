@@ -426,6 +426,8 @@ private:
 	                                                 const QString &,
 	                                                 int,
 	                                                 uint32_t);
+        
+	QString			slidePath		(bool, uint32_t);
 	void			stopMuting		();
 //	short hands
 	void                    newChannelIndex        (int);

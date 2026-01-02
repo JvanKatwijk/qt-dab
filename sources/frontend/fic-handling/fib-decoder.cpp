@@ -98,7 +98,7 @@ uint8_t	*d		= p;
 
 	   switch (FIGtype) {
 	      case 0:			
-	         process_FIG0 (d, FIGlength);	
+	         process_FIG0 (d);	
 	         break;
 
 	      case 1:			
@@ -124,7 +124,7 @@ uint8_t	*d		= p;
 }
 //
 //
-void	fibDecoder::process_FIG0 (uint8_t *d, int length) {
+void	fibDecoder::process_FIG0 (uint8_t *d) {
 uint8_t	extension	= getBits_5 (d, 8 + 3);
 
 	switch (extension) {
@@ -179,7 +179,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 13:             // user application information (6.3.6)
-	      FIG0Extension13 (d, length);
+	      FIG0Extension13 (d);
 	      break;
 
 	   case 14:             // FEC subchannel organization (6.2.2)
@@ -744,15 +744,15 @@ uint16_t	theTime	[6];
 }
 //
 //	User Application Information 6.3.6
-void	fibDecoder::FIG0Extension13 (uint8_t *d, int length) {
-int16_t	used	= 2;		// offset in bytes
-int16_t	Length		= getBits_5 (d, 3);
+void	fibDecoder::FIG0Extension13 (uint8_t *d) {
+int16_t	used			= 2;		// offset in bytes
+int16_t	length			= getBits_5 (d, 3);
 const uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 
-	while (used < Length) 
-	   used = HandleFIG0Extension13 (d, used, CN_bit, OE_bit, PD_bit, length);
+	while (used < length) 
+	   used = HandleFIG0Extension13 (d, used, CN_bit, OE_bit, PD_bit);
 }
 //
 //	section 6.3.6 User application Data
@@ -760,30 +760,21 @@ int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
 	                                   int16_t used,
 	                                   const uint8_t CN_bit,
 	                                   const uint8_t OE_bit,
-	                                   const uint8_t pdBit,
-	                                   int totalLength) {
+	                                   const uint8_t pdBit) {
 int16_t	bitOffset	= used * 8;
 uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
-uint16_t	SCIds;
-int16_t		NoApplications;
-int16_t		i;
 int16_t		appType;
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
 fibConfig::AppType element;
+
 	(void)OE_bit;
-	bitOffset	+= pdBit == 1 ? 32 : 16;
-	SCIds		= getBits_4 (d, bitOffset);
-	NoApplications	= getBits_4 (d, bitOffset + 4);
-	bitOffset	+= 8;
-	element. SId	= SId;
-	element. SCIds	= SCIds;
-	for (i = 0; i < NoApplications; i ++) {
-	   if (bitOffset + 22 >= totalLength * 8) {
-	      fprintf (stderr, "NoApplications %d, current %d, offset %d, length %d\n",
-	                        NoApplications, i, bitOffset, totalLength);
-	      break;
-	   }
+	bitOffset		+= pdBit == 1 ? 32 : 16;
+	uint16_t SCIds		= getBits_4 (d, bitOffset);
+	int16_t NoApplications	= getBits_4 (d, bitOffset + 4);
+	bitOffset		+= 8;
+	element. SId		= SId;
+	element. SCIds		= SCIds;
+	for (int i = 0; i < NoApplications; i ++) {
 	   appType		= getBits (d, bitOffset, 11);
 	   int16_t length	= getBits_5 (d, bitOffset + 11);
 	   element. Apptype	= appType;

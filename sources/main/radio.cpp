@@ -1005,10 +1005,11 @@ uint8_t docType = epgVertaler. process_epg (epgDocument, epgData, channel.lto);
 	
 	QString temp = path_for_files +
 	                   QString::number (channel. Eid, 16). toUpper () + "/";
+	temp = QDir::toNativeSeparators (temp);
+	theName  = temp + theName;
 	if (!QDir (temp). exists ())
 	   QDir (). mkpath (temp);	
 
-	theName  = temp + theName;
 	QFile file (QDir::toNativeSeparators (theName));
 	if (file. open (QIODevice::WriteOnly | QIODevice::Text)) { 
 	   QTextStream stream (&file);
@@ -1138,12 +1139,8 @@ const char *type;
 	}
 
 	if (theOFDMHandler	-> is_SPI (SId)) {
-	   QString theEId = QString::number (channel. Eid, 16). toUpper ();
-	   QString path	= path_for_files + theEId + "/";
-	   if (!QDir (path). exists ())
-	      QDir(). mkpath (path);
-	   path	= QDir::toNativeSeparators (path);
-	   QString pict	= path + pictureName;
+	   QString path		= slidePath (true, SId);
+	   QString pict		= path + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
@@ -1153,6 +1150,8 @@ const char *type;
 	   return;
 	}
 
+	fprintf (stderr, "waarom %s %X\n",
+	                pictureName. toLatin1 (). data (), SId);
 	if (channel. currentService. SId != SId)  // current service
 	   return;		// cannot happen
 //
@@ -1160,16 +1159,8 @@ const char *type;
 	if (dirs || ((value_i (dabSettings_p, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
 	                                         (path_for_files != ""))) {
-	   QString theEId = QString::number (channel. Eid, 16). toUpper ();
-	   QString nameElement = channel. ensembleName + "(" + theEId + ")" +
-	                       channel. currentService. serviceName. trimmed ();
-	   QString theDir = dirs ?
-	                     path_for_files + theEId + "/":
-	                     path_for_files + "slides-" + nameElement + "/";
-	   if (!QDir (theDir). exists())
-	      QDir (). mkpath (theDir);	
-	   theDir	= QDir::toNativeSeparators (theDir);
-	   QString pict	= theDir + pictureName;
+	   QString thePath	= slidePath (dirs, SId);
+	   QString pict		= thePath + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
@@ -1190,6 +1181,29 @@ const char *type;
 	if (p. loadFromData (data, type))
 	   displaySlide (p);
 }
+//
+//	SPI files are stored in a directory, with as name the EId
+//	of the ensemble. Regular slides are saved (obviously if
+//	the saving is set in the configuration window) in a
+//	directory with the name of the service, that is contained
+//	in a directory with the word "slides-" followed by the Eid
+QString	RadioInterface::slidePath	(bool kort, uint32_t SId) {
+QString thePath;
+
+	QString theEId = QString::number (channel. Eid, 16). toUpper ();
+	
+	if (kort)
+	   thePath = path_for_files + theEId + "/";
+	else {
+	   thePath = path_for_files + "slides-" +"(" + theEId + ")" +  "/";
+	   thePath +=  channel. currentService. serviceName. trimmed () + "/";
+	}
+	thePath	= QDir::toNativeSeparators (thePath);
+	if (!QDir (thePath). exists ())
+	   QDir (). mkpath (thePath);	
+	return thePath;
+}
+
 //
 //	sendDatagram is triggered by the ip handler,
 void	RadioInterface::sendDatagram	(int length) {

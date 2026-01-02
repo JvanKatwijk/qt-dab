@@ -133,7 +133,6 @@ int32_t	i;
 	         motObject *h = getHandle (transportId);
 	         if (h != nullptr) 
 	            break;
-	         fprintf (stderr, "header for object %d\n", transportId);
 	         h = new motObject (myRadioInterface,
 	                            SId,
 	                            false,	// not within a directory
