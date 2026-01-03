@@ -233,7 +233,7 @@ char*	get_ch_name (const char* type, int id) {
         }
         convIndex       = 0;
 	running. store (false);
-	int enabled;
+	int enabled	= 0;
 //
 //	go for the filter
 	ad9361_get_trx_fir_enable (get_ad9361_phy (ctx), &enabled);

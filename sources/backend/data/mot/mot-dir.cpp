@@ -94,7 +94,6 @@ void	motDirectory::directorySegment (uint16_t transportId,
 	                                bool	lastSegment) {
 int16_t	i;
 
-//	fprintf (stderr, "adding dir segment %d\n", segmentNumber);
 	if (this -> transportId != transportId)
 	   return;
 	if (this -> marked [segmentNumber])
@@ -112,6 +111,7 @@ int16_t	i;
 	      if (!this -> marked [i])
 	         return;
 //	   yes we have all data to build up the directory
+	
 	   analyse_theDirectory();
 	   
 //	   fprintf (stderr, "Going to inspect the directory\n");

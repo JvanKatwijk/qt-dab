@@ -20,23 +20,14 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
 unix {
-#QMAKE_CFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_LFLAGS	+=  -O3 -ffast-math -g
-#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
-#QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
-#QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
-#QMAKE_CFLAGS	+=  -pg
-#QMAKE_CXXFLAGS	+=  -pg
-#QMAKE_LFLAGS	+=  -pg
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.9.5.ico
 RESOURCES	+= resources.qrc
@@ -127,7 +118,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/aboutdialog.h \
 	   ./sources/main/dxDisplay.h \
 	   ./sources/support/equalizer.h \
-	   ./sources/support/qwt-2.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
 	   ./sources/support/audiosystem-selector.h \
@@ -187,6 +177,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/journaline/NML.h \
 	   ./sources/backend/data/epg/epg-compiler.h \
 	   ./sources/backend/data/epg/xml-extractor.h \
+	   ./sources/output/converter_48000.h \
 	   ./sources/output/audio-player.h \
 	   ./sources/support/dab-constants.h \
 	   ./sources/support/bit-extractors.h \
@@ -197,13 +188,9 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/time-converter.h \
 	   ./sources/support/logger.h \
 	   ./sources/support/errorlog.h \
-	   ./sources/support/settings-handler.h \
-	   ./sources/support/position-handler.h \
 	   ./sources/support/db-element.h \
 	   ./sources/support/settingNames.h \
 	   ./sources/support/fft-handler.h \
-	   ./sources/support/riffWriter.h \
-	   ./sources/support/converter_48000.h \
 	   ./sources/support/process-params.h \
 	   ./sources/support/ringbuffer.h \
 	   ./sources/support/dab-params.h \
@@ -226,6 +213,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/tii-reader.h \
 	   ./sources/support/uploader.h \
 	   ./sources/support/basic-print.h \
+	   ./sources/support/gui-elements/position-handler.h \
+	   ./sources/support/gui-elements/settings-handler.h \
 	   ./sources/support/gui-elements/presetcombobox.h \
 	   ./sources/support/gui-elements/circular-button.h \
 	   ./sources/support/gui-elements/clickable-label.h \
@@ -240,6 +229,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/smallspinbox.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
+	   ./sources/support/gui-elements/qwt-2.h \
+	   ./sources/devices/riffWriter.h \
 	   ./sources/devices/device-handler.h \
 	   ./sources/devices/device-chooser.h \
 	   ./sources/devices/device-exceptions.h \
@@ -332,13 +323,13 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/journaline/NML.cpp \
 	   ./sources/backend/data/epg/epg-compiler.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
+	   ./sources/output/converter_48000.cpp \
 	   ./sources/output/audio-player.cpp \
 	   ./sources/support/audiosystem-selector.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \
 	   ./sources/support/charsets.cpp \
 	   ./sources/support/content-table.cpp \
-	   ./sources/support/converter_48000.cpp \
 	   ./sources/support/coordinates.cpp \
 	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/dab-params.cpp \
@@ -354,20 +345,19 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/ITU_Region_1.cpp \
 	   ./sources/support/logger.cpp \
 	   ./sources/support/mapport.cpp \
-	   ./sources/support/position-handler.cpp \
-	   ./sources/support/riffWriter.cpp \
 	   ./sources/support/scan-handler.cpp \
 	   ./sources/support/scanlist-handler.cpp \
 	   ./sources/support/scantable-handler.cpp \
 	   ./sources/support/scheduler.cpp \
 	   ./sources/support/schedule-selector.cpp \
-	   ./sources/support/settings-handler.cpp \
 	   ./sources/support/skin-handler.cpp \
 	   ./sources/support/tii-mapper.cpp \
 	   ./sources/support/tii-reader.cpp \
 	   ./sources/support/time-converter.cpp \
 	   ./sources/support/time-table.cpp \
 	   ./sources/support/uploader.cpp \
+	   ./sources/support/gui-elements/settings-handler.cpp \
+	   ./sources/support/gui-elements/position-handler.cpp \
 	   ./sources/support/gui-elements/presetcombobox.cpp \
 	   ./sources/support/gui-elements/circular-button.cpp \
 	   ./sources/support/gui-elements/clickable-label.cpp \
@@ -382,6 +372,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/smallspinbox.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
+	   ./sources/devices/riffWriter.cpp \
 	   ./sources/devices/device-handler.cpp \
 	   ./sources/devices/device-chooser.cpp \
 	   ./sources/devices/xml-filewriter.cpp \
@@ -500,13 +491,12 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit, only 6.9.6
-        TARGET          = qt5-dab64-6.9.6
+        TARGET          = qt6-dab64-6.9.6
 	DEFINES		+= __BITS64__
 	DESTDIR		=  /d/systems/qt-dab/linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 #	INCLUDEPATH     += /usr/i686-w64-mingw32/sys-root/mingw/include/qt6/qwt
 	INCLUDEPATH	+= /mingw64/include/qwt-qt6
-#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 	LIBS		+= -L/mingw64/lib
 	CONFIG		+= dabstick-win
 	CONFIG		+= airspy-2

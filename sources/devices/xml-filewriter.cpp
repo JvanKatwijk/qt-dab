@@ -29,14 +29,6 @@ struct kort_woord {
 	uint8_t byte_2;
 };
 
-static int bufferP_int16	= 0;
-static int bufferP_uint8	= 0;
-static int bufferP_int8		= 0;
-static inline
-bool	isValid (QChar c) {
-	return c. isLetterOrNumber () || (c == '-') || (c == '/');
-}
-
 	xml_fileWriter::xml_fileWriter	(QSettings *settings,
 	                                 const QString &channel,
 	                                 int     nrBits,

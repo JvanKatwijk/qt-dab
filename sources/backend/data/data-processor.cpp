@@ -154,7 +154,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	      fprintf (stderr, "\n");
 	      tracer. resize (0);
 	   }
-	   assembling = false;
+//	   assembling = false;
 	   return;
 	}
 	

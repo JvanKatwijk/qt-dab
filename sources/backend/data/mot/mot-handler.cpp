@@ -194,7 +194,7 @@ int32_t	i;
 	      break;
 
 	   case 7:
-	      fprintf (stderr, "transportId  in type 7 %d\n", transportId);
+//	      fprintf (stderr, "transportId  in type 7 %d\n", transportId);
 	      break;
 	      
 	   default:

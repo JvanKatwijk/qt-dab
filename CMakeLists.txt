@@ -222,7 +222,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/basic-print.h
 	     ./sources/support/charsets.h
 	     ./sources/support/content-table.h
-	     ./sources/support/converter_48000.h
 	     ./sources/support/coordinates.h
 	     ./sources/support/country-codes.h
 	     ./sources/support/crc-handlers.h
@@ -241,7 +240,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/errorlog.h
 	     ./sources/support/mapport.h
 	     ./sources/support/mot-content-types.h
-	     ./sources/support/position-handler.h
 	     ./sources/support/process-params.h
 	     ./sources/support/ringbuffer.h
 	     ./sources/support/scan-handler.h
@@ -250,15 +248,15 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/scheduler.h
 	     ./sources/support/schedule-selector.h
 	     ./sources/support/settingNames.h
-	     ./sources/support/settings-handler.h
 	     ./sources/support/skin-handler.h
 	     ./sources/support/tii-mapper.h
 	     ./sources/support/tii-reader.h
 	     ./sources/support/time-converter.h
 	     ./sources/support/time-table.h
 	     ./sources/support/uploader.h
-	     ./sources/support/riffWriter.h
 	     ./sources/support/dl2-handler.h
+	     ./sources/support/gui-elements/position-handler.h
+	     ./sources/support/gui-elements/settings-handler.h
 	     ./sources/support/gui-elements/presetcombobox.h
 	     ./sources/support/gui-elements/circular-button.h
 	     ./sources/support/gui-elements/clickable-label.h
@@ -309,7 +307,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/mot/mot-handler.h
 	     ./sources/backend/data/mot/mot-object.h
 	     ./sources/output/audio-player.h
+	     ./sources/output/converter_48000.h
 	     ./sources/devices/device-handler.h
+	     ./sources/devices/riffWriter.h
 	     ./sources/devices/device-exceptions.h
 	     ./sources/qt-devicces/xml-filewriter.h
 	)
@@ -358,7 +358,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/charsets.cpp
 	     ./sources/support/bandpass-filter.cpp
 	     ./sources/support/content-table.cpp
-	     ./sources/support/converter_48000.cpp
 	     ./sources/support/coordinates.cpp
 	     ./sources/support/crc-handlers.cpp
 	     ./sources/support/dab-params.cpp
@@ -373,21 +372,20 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/logger.cpp
 	     ./sources/support/errorlog.cpp
 	     ./sources/support/mapport.cpp
-	     ./sources/support/position-handler.cpp
 	     ./sources/support/scan-handler.cpp
 	     ./sources/support/scanlist-handler.cpp
 	     ./sources/support/scantable-handler.cpp
 	     ./sources/support/scheduler.cpp
 	     ./sources/support/schedule-selector.cpp
-	     ./sources/support/settings-handler.cpp
 	     ./sources/support/skin-handler.cpp
 	     ./sources/support/tii-mapper.cpp
 	     ./sources/support/tii-reader.cpp
 	     ./sources/support/time-converter.cpp
 	     ./sources/support/time-table.cpp
 	     ./sources/support/uploader.cpp
-	     ./sources/support/riffWriter.cpp
 	     ./sources/support/dl2-handler.cpp
+	     ./sources/support/gui-elements/position-handler.cpp
+	     ./sources/support/gui-elements/settings-handler.cpp
 	     ./sources/support/gui-elements/presetcombobox.cpp
 	     ./sources/support/gui-elements/circular-button.cpp
 	     ./sources/support/gui-elements/clickable-label.cpp
@@ -434,7 +432,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/mot/mot-handler.cpp
 	     ./sources/backend/data/mot/mot-object.cpp
 	     ./sources/output/audio-player.cpp
+	     ./sources/output/converter_48000.cpp
 	     ./sources/devices/device-handler.cpp
+	     ./sources/devices/riffWriter.cpp
 	     ./sources/devices/xml-filewriter.cpp
 	)
 
@@ -481,7 +481,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/scan-handler.h 
 	     ./sources/support/scantable-handler.h 
 	     ./sources/support/audiosystem-selector.h
-	     ./sources/support/converter_48000.h
 	     ./sources/support/scanlist-handler.h
 	     ./sources/support/scheduler.h
 	     ./sources/support/schedule-selector.h
@@ -511,6 +510,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/epg/epg-compiler.h
 	     ./sources/backend/data/epg/xml-extractor.h
 	     ./sources/output/audio-player.h
+	     ./sources/output/converter_48000.h
 	)
 
 	set (${objectName}_UIS

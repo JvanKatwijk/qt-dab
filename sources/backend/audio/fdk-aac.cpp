@@ -20,7 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *	Use the fdk-aac library.
+ *    Use the fdk-aac library.
  */
 #include	"mp4processor.h"
 #include	"radio.h"
@@ -32,7 +32,7 @@
 //
 /**
   *	For interpreting the HeAAC frames we have the faad decoder
-  *	and the fdk-aac decoder`
+  *	and the fdk-aac decoder
   */
 	fdkAAC::fdkAAC (RadioInterface *mr,
 	                RingBuffer<complex16> *buffer) {

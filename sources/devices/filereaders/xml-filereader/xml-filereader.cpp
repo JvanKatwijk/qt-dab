@@ -126,7 +126,7 @@
 	dataStart	= fileLength -
 	                   (uint64_t)(nrElements * (sampleSize / 2));
 	startpoint	-> setText (QString::number (dataStart));
-	if (dataStart < 0)   // as with DABstart
+	if (dataStart <=1000)   // as with DABstart
 	   dataStart = 5000;
 
 	running. store (false);

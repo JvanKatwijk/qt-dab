@@ -32,8 +32,6 @@
 #include	"dab-constants.h"
 #include	"tii-reader.h"
 
-//#include	"scan-handler.h"
-
 #define	SEPARATOR	';'
 #define	COUNTRY		1
 #define	CHANNEL		2
@@ -63,7 +61,7 @@ std::vector<dbElement> res;
 	}
 
 	res. resize (0);
-//	Rflag =  s. endsWith (".txdata.tii");
+	Rflag =  s. endsWith (".txdata.tii");
 	Rflag	= true;
 	QFile file (s);
 	if (!file. open (QFile::ReadOnly))

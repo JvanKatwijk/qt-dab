@@ -188,12 +188,6 @@ static	int	cnt	= 0;
 //	their length, relative to each other,
 //	Ideally, the X and Y are of equal size, in practice they are not.
 
-static inline
-int	sign (DABFLOAT x) {
-	return x < 0 ? -1 : x > 0 ? 1 : 0;
-}
-
-
 void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 	if (v < -limit)
 	   v = -limit;
@@ -221,7 +215,6 @@ void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 //
 //	Decoder 4 is an interpretation of the so-called "Optimal 3" 
 //	version in the aforementioned paper.
-
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,

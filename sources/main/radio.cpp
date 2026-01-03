@@ -192,8 +192,6 @@ int16_t k;
 QString h;
 
 	dabSettings_p			= Si;
-	if (dabSettings_p != nullptr)
-	   fprintf (stderr, "Hoera\n");
 	this	-> error_report		= error_report;
 	this	-> fmFrequency		= fmFrequency;
 	this	-> dlTextFile		= nullptr;
@@ -1150,8 +1148,6 @@ const char *type;
 	   return;
 	}
 
-	fprintf (stderr, "waarom %s %X\n",
-	                pictureName. toLatin1 (). data (), SId);
 	if (channel. currentService. SId != SId)  // current service
 	   return;		// cannot happen
 //

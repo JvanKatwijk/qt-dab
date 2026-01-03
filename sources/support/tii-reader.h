@@ -30,8 +30,8 @@
 #include	<QSettings>
 
 #ifdef	__MING32__
-#include	<winsock2.h>
 #include	<windows.h>
+#include	<winsock2.h>
 #endif
 
 class	tiiReader {

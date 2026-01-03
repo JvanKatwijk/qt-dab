@@ -22,12 +22,13 @@
  */
 //
 //	The RIFF writer writes the input samples into a "wav" file
-//	with the samplerate of SAMPLERATE (2048000), as 16 bit int's, and a "chunk"
-//	(chunk Id "freq") is added that contains the frequency
+//	with the samplerate of SAMPLERATE (2048000), as 16 bit int's,
+//	and a "chunk" (chunk Id "freq") is added that contains the frequency
 //
-//	The BW64 format is derived from Recommendation ITU-R BS.2088-1 (10/2019)
+//	The BW64 format is derived from
+//	"Recommendation ITU-R BS.2088-1 (10/2019)
 //	Long-form file format for the international
-//	exchange of audio programme materials with metadata
+//	exchange of audio programme materials with metadata"
 
 #include	"riffWriter.h"
 

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015 .. 2023
+ *    Copyright (C)  2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,7 +24,7 @@
 
 //
 //	In case there is access to a database, the elements of
-//	that database are read in and per line converted to am accessible
+//	that database are read in and per line converted to an accessible
 //	struct
 //
 //	we use the "key's" for fast detecting the database index (if any)
