@@ -228,142 +228,24 @@ DABFLOAT sum	= 0;
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
 	fft. fft (fft_buffer. data ());
-
-//	a little optimization: we do not interchange the
-//	positive/negative frequencies to their right positions.
-//	The de-interleaving understands this
-
-	for (int i = 0; i < carriers; i ++) {
-	   int16_t	index	= myMapper.  mapIn (i);
-	   if (index < 0) 
-	      index += T_u;
-	   Complex current	= fft_buffer [index];
-	   Complex prevS	= phaseReference [index];
-	   Complex fftBin	= current * normalize (conj (prevS));
-	   conjVector [index]	= fftBin;
-	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
 //
-//	updates
-	   
-	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
-	                                   abs (imag (fftBin)));
-
-	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
-	   angleVector [index]	=
-	                 compute_avg (angleVector [index], angle, ALPHA);
-	   stdDevVector [index]	= 
-	                 compute_avg (stdDevVector [index],
-	                                         angle * angle, ALPHA);
-
-	   meanLevelVector [index] =
-	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
-
-	   DABFLOAT d_x		=  abs (real (fftBin_at_1)) -
-	                                  meanLevelVector [index] / sqrt_2;
-	   DABFLOAT d_y		=  abs (imag (fftBin_at_1)) -
-	                                  meanLevelVector [index] / sqrt_2;
-	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
-	   sigmaSQ_Vector [index] =
-	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
-//
-	   switch (this -> decoder) {
-	      case DECODER_1: {
-	         DABFLOAT corrector	=
-	             1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
-	         corrector		/= (1 / snr + 2);
-	         Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (binAbsLevel * 
-	                                              jan_abs (prevS)));
-	         DABFLOAT scaler	=  140.0 / meanValue;
-	         DABFLOAT leftBit	= - real (R1) * scaler;
-	         limit_symmetrically (leftBit, MAX_VITERBI);
-	         softbits [i]		= (int16_t)leftBit;
-
-	         DABFLOAT rightBit	= - imag (R1) * scaler;
-	         limit_symmetrically (rightBit, MAX_VITERBI);
-	         softbits [i + carriers]	= (int16_t)rightBit;
-	         sum			+= jan_abs (R1);
-	      }
+//	map the fft output onto bits ("carrier" elements in, 2 * softbits out)
+	switch (this -> decoder) {
+	  case DECODER_1:
+	      sum	= decoder_12 (fft_buffer, softbits, snr, 1);
 	      break;
-	    
-	      case DECODER_2: {	// decoder 2
-	         DABFLOAT corrector	=
-	             meanLevelVector [index] / sigmaSQ_Vector [index];
-	         corrector		/= (1 / snr + 3);
-	         Complex R1	= corrector * normalize (fftBin) * 
-	                           (DABFLOAT)(sqrt (binAbsLevel *
-	                                      jan_abs (prevS)));
-	         DABFLOAT scaler	=  100.0 / meanValue;
-	         DABFLOAT leftBit	= - real (R1) * scaler;
-	         limit_symmetrically (leftBit, MAX_VITERBI);
-	         softbits [i]		= (int16_t)leftBit;
-
-	         DABFLOAT rightBit	= - imag (R1) * scaler;
-	         limit_symmetrically (rightBit, MAX_VITERBI);
-	         softbits [i + carriers]	= (int16_t)rightBit;
-	         sum			+= jan_abs (R1);
-	      }
+	  case DECODER_2:
+	      sum	= decoder_12 (fft_buffer, softbits, snr, 2);
 	      break;
-
-	      case DECODER_3:
-	      default: {	 // Optimal 1
-	         Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
-	         DABFLOAT scaler	=  140.0 / meanValue;
-	         DABFLOAT leftBit	= - real (R1) * scaler;
-	         limit_symmetrically (leftBit, MAX_VITERBI);
-	         softbits [i]		= (int16_t)leftBit;
-	         DABFLOAT rightBit	= - imag (R1) * scaler;
-	         limit_symmetrically (rightBit, MAX_VITERBI);
-	         softbits [i + carriers]   = (int16_t)rightBit;
-	         sum += jan_abs (R1);
-	      }
+	  default:
+	  case DECODER_3:
+	      sum	= decoder_3 (fft_buffer, softbits, snr);
 	      break;
-	   
-	      case DECODER_4 : {	// decoder 4, just for fun
-	         DABFLOAT A	= 1.0 / sigmaSQ_Vector [index];
-	         DABFLOAT P1	= makeA (1, current, prevS) * A;
-	         DABFLOAT P7	= makeA (7, current, prevS) * A;
-	         DABFLOAT P3	= makeA (3, current, prevS) * A;
-	         DABFLOAT P5	= makeA (5, current, prevS) * A;
-
-	         DABFLOAT IO_P1 = IO (P1);
-	         DABFLOAT IO_P7 = IO (P7);
-	         DABFLOAT IO_P3 = IO (P3);
-	         DABFLOAT IO_P5 = IO (P5);
-
-	         DABFLOAT F1	= (IO_P1 + IO_P7) / (IO_P3 + IO_P5);
-	         DABFLOAT F2	= (IO_P1 + IO_P3) / (IO_P5 + IO_P7);
-	         if (std::isinf (F1))
-	            F1 = 10.0;
-	         if (std::isinf (F2))
-	            F2 = 10.0;
-	         if (F1 < 0.01)
-	            F1 = 0.01;
-	         if (F2 < 0.01)
-	            F2 = 0.01;
-	         DABFLOAT b1 = log (F1);
-	         DABFLOAT b2 = log (F2);
-
-	         if (std::isnan (b1))
-	            b1 = 0;
-	         if (std::isnan (b2))
-	            b2 = 0;
-	         DABFLOAT scaler   =  140.0 / meanValue;
-
-	         DABFLOAT leftBit	=  - b1 * scaler;
-	         limit_symmetrically (leftBit, MAX_VITERBI);
-	         softbits [i]	= (int16_t)leftBit;
-
-	         DABFLOAT rightBit	=  - b2 * scaler;
-	         limit_symmetrically (rightBit, MAX_VITERBI);
-	         softbits [carriers + i] = (int16_t)rightBit;
-	         sum		+= abs (Complex (b1, b2));
-	      }
+	  case DECODER_4:
+	      sum	= decoder_4 (fft_buffer, softbits, snr);
 	      break;
-	   }
 	}
 
-//	avgBit		= compute_avg (avgBit, bitSum / carriers, 0.1);
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);
 	
 //		end of decoding	, now for displaying things	//
@@ -501,4 +383,185 @@ void	ofdmDecoder::handle_iqSelector	() {
 void	ofdmDecoder::handle_decoderSelector	(int decoder) {
 	this	-> decoder	= decoder;
 }
+//
+//	The various actual decoders
+static inline
+Complex toQ1	(const Complex f) {
+	return Complex (real (f) >= 0 ? real (f) : - real (f),
+	                imag (f) >= 0 ? imag (f) : - imag (f));
+}
 
+DABFLOAT ofdmDecoder::decoder_12 (const std::vector<Complex> &fft_buffer,
+	                        std::vector<int16_t> &softbits,
+	                        DABFLOAT	snr,
+	                        int		decType) {
+DABFLOAT sum	= 0;
+DABFLOAT corrFact	= (decType == 1) ? 1.5 : 1.0;
+DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
+	   
+	for (int i = 0; i < carriers; i ++) {
+	   int16_t	index	= myMapper.  mapIn (i);
+	   if (index < 0) 
+	      index += T_u;
+	   Complex current	= fft_buffer [index];
+	   Complex prevS	= phaseReference [index];
+	   Complex fftBin	= current * normalize (conj (prevS));
+	   conjVector [index]	= fftBin;
+	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
+//	updates
+	   Complex fftBin_at_1	= toQ1 (fftBin);
+
+	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
+	   angleVector [index]	=
+	                 compute_avg (angleVector [index], angle, ALPHA);
+	   stdDevVector [index]	= 
+	                 compute_avg (stdDevVector [index],
+	                                         angle * angle, ALPHA);
+
+	   meanLevelVector [index] =
+	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
+
+	   DABFLOAT d_x		=  real (fftBin_at_1) -
+	                                  meanLevelVector [index] / sqrt_2;
+	   DABFLOAT d_y		=  imag (fftBin_at_1) -
+	                                  meanLevelVector [index] / sqrt_2;
+	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
+	   sigmaSQ_Vector [index] =
+	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
+//
+	   DABFLOAT corrector	=
+	         corrFact *  meanLevelVector [index] / sigmaSQ_Vector [index];
+	   corrector		/= (1 / snr + 2);
+	   Complex R1	= corrector * normalize (fftBin) * 
+	                     (DABFLOAT)(sqrt (binAbsLevel * jan_abs (prevS)));
+	   DABFLOAT scaler	=  levelFact / meanValue;
+
+	   DABFLOAT leftBit	= - real (R1) * scaler;
+	   limit_symmetrically (leftBit, MAX_VITERBI);
+	   softbits [i]		= (int16_t)leftBit;
+
+	   DABFLOAT rightBit	= - imag (R1) * scaler;
+	   limit_symmetrically (rightBit, MAX_VITERBI);
+	   softbits [i + carriers]	= (int16_t)rightBit;
+	   sum			+= jan_abs (R1);
+	}
+	return sum;
+}
+
+
+DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
+	                        std::vector<int16_t> &softbits,
+	                        DABFLOAT	snr) {
+DABFLOAT	sum = 0;
+
+	for (int i = 0; i < carriers; i ++) {
+	   int16_t	index	= myMapper.  mapIn (i);
+	   if (index < 0) 
+	      index += T_u;
+	   Complex current	= fft_buffer [index];
+	   Complex prevS	= phaseReference [index];
+	   Complex fftBin	= current * normalize (conj (prevS));
+	   conjVector [index]	= fftBin;
+	   Complex fftBin_at_1	= toQ1 (fftBin);
+
+	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
+	   angleVector [index]	=
+	                 compute_avg (angleVector [index], angle, ALPHA);
+	   stdDevVector [index]	= 
+	                 compute_avg (stdDevVector [index],
+	                                         angle * angle, ALPHA);
+//
+	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
+	   DABFLOAT scaler	=  140.0 / meanValue;
+
+	   DABFLOAT leftBit	= - real (R1) * scaler;
+	   limit_symmetrically (leftBit, MAX_VITERBI);
+	   softbits [i]		= (int16_t)leftBit;
+
+	   DABFLOAT rightBit	= - imag (R1) * scaler;
+	   limit_symmetrically (rightBit, MAX_VITERBI);
+	   softbits [i + carriers]   = (int16_t)rightBit;
+	   sum += jan_abs (R1);
+	}
+	return sum;
+}
+
+DABFLOAT ofdmDecoder::decoder_4 (const std::vector<Complex> &fft_buffer,
+	                        std::vector<int16_t> &softbits,
+	                        DABFLOAT	snr) {
+DABFLOAT sum	= 0;
+
+	for (int i = 0; i < carriers; i ++) {
+	   int16_t	index	= myMapper.  mapIn (i);
+	   if (index < 0) 
+	      index += T_u;
+	   Complex current	= fft_buffer [index];
+	   Complex prevS	= phaseReference [index];
+	   Complex fftBin	= current * normalize (conj (prevS));
+	   conjVector [index]	= fftBin;
+	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
+//
+//	updates
+	   
+	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
+	                                   abs (imag (fftBin)));
+
+	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
+	   angleVector [index]	=
+	                 compute_avg (angleVector [index], angle, ALPHA);
+	   stdDevVector [index]	= 
+	                 compute_avg (stdDevVector [index],
+	                                         angle * angle, ALPHA);
+
+	   meanLevelVector [index] =
+	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
+
+	   DABFLOAT d_x		=  abs (real (fftBin_at_1)) -
+	                                  meanLevelVector [index] / sqrt_2;
+	   DABFLOAT d_y		=  abs (imag (fftBin_at_1)) -
+	                                  meanLevelVector [index] / sqrt_2;
+	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
+	   sigmaSQ_Vector [index] =
+	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
+//
+	   DABFLOAT A	= 1.0 / sigmaSQ_Vector [index];
+	   DABFLOAT P1	= makeA (1, current, prevS) * A;
+	   DABFLOAT P7	= makeA (7, current, prevS) * A;
+	   DABFLOAT P3	= makeA (3, current, prevS) * A;
+	   DABFLOAT P5	= makeA (5, current, prevS) * A;
+
+	   DABFLOAT IO_P1 = IO (P1);
+	   DABFLOAT IO_P7 = IO (P7);
+	   DABFLOAT IO_P3 = IO (P3);
+	   DABFLOAT IO_P5 = IO (P5);
+
+	   DABFLOAT F1	= (IO_P1 + IO_P7) / (IO_P3 + IO_P5);
+	   DABFLOAT F2	= (IO_P1 + IO_P3) / (IO_P5 + IO_P7);
+	   if (std::isinf (F1))
+	      F1 = 10.0;
+	   if (std::isinf (F2))
+	      F2 = 10.0;
+	   if (F1 < 0.01)
+	      F1 = 0.01;
+	   if (F2 < 0.01)
+	      F2 = 0.01;
+	   DABFLOAT b1 = log (F1);
+	   DABFLOAT b2 = log (F2);
+
+	   if (std::isnan (b1))
+	      b1 = 0;
+	   if (std::isnan (b2))
+	      b2 = 0;
+	   DABFLOAT scaler   =  140.0 / meanValue;
+
+	   DABFLOAT leftBit	=  - b1 * scaler;
+	   limit_symmetrically (leftBit, MAX_VITERBI);
+	   softbits [i]	= (int16_t)leftBit;
+
+	   DABFLOAT rightBit	=  - b2 * scaler;
+	   limit_symmetrically (rightBit, MAX_VITERBI);
+	   softbits [carriers + i] = (int16_t)rightBit;
+	   sum		+= abs (Complex (b1, b2));
+	}
+	return sum;
+}

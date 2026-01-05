@@ -30,7 +30,7 @@
 //	Long-form file format for the international
 //	exchange of audio programme materials with metadata"
 
-#include	"riffWriter.h"
+#include	"riff-writer.h"
 
 static
 const char	* riff	= "RIFF";

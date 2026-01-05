@@ -117,7 +117,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/snr-viewer/snr-viewer.h \
 	   ./sources/main/ensemble-handler.h \
 	   ./sources/main/config-handler.h \
-	   ./sources/main/techdata.h \
+	   ./sources/main/tech-window.h \
 	   ./sources/main/aboutdialog.h \
 	   ./sources/main/dxDisplay.h \
 	   ./sources/support/equalizer.h \
@@ -233,7 +233,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
 	   ./sources/support/gui-elements/qwt-2.h \
-	   ./sources/devices/riffWriter.h \
+	   ./sources/devices/riff-writer.h \
 	   ./sources/devices/device-handler.h \
 	   ./sources/devices/device-chooser.h \
 	   ./sources/devices/device-exceptions.h \
@@ -274,7 +274,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/snr-viewer/snr-viewer.cpp \
 	   ./sources/main/aboutdialog.cpp \
 	   ./sources/main/ensemble-handler.cpp \
-	   ./sources/main/techdata.cpp \
+	   ./sources/main/tech-window.cpp \
 	   ./sources/main/config-handler.cpp \
 	   ./sources/main/dxDisplay.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
@@ -375,7 +375,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/smallspinbox.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
-	   ./sources/devices/riffWriter.cpp \
+	   ./sources/devices/riff-writer.cpp \
 	   ./sources/devices/device-handler.cpp \
 	   ./sources/devices/device-chooser.cpp \
 	   ./sources/devices/xml-filewriter.cpp \

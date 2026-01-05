@@ -24,7 +24,7 @@
 #pragma once
 
 #include	<QObject>
-#include	"riffWriter.h"
+#include	"riff-writer.h"
 #include	"dab-constants.h"
 #include	<cstdio>
 #include	<mutex>

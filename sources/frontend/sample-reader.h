@@ -33,7 +33,7 @@
 #include	<vector>
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	"riffWriter.h"
+#include	"riff-writer.h"
 
 #include	"equalizer.h"
 //      Note:

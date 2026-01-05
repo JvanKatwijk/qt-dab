@@ -93,7 +93,7 @@ class	audioDisplay;
 class	dabStreamer;
 #endif
 
-class techData;
+class techWindow;
 //#include	"ui_config-helper.h"
 class	configHandler;
 
@@ -279,7 +279,7 @@ private:
 
 	QScopedPointer<ensembleHandler> theEnsembleHandler;
 	configHandler			*theConfigHandler;
-	techData			*theTechWindow;
+	techWindow			*theTechWindow;
 	ofdmHandler			*theOfdmHandler;
 	deviceHandler			*theDeviceHandler;
 	journaline_dataHandler		*journalineHandler;

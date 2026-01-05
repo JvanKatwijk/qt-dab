@@ -48,7 +48,7 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
-#include	"techdata.h"
+#include	"tech-window.h"
 #include	"aboutdialog.h"
 #include	"db-element.h"
 #include	"distances.h"
@@ -337,9 +337,9 @@ QString h;
 	               &ensembleHandler::start_background_task,
 	         this, &RadioInterface::handle_backgroundTask);
 	   
-	theTechWindow	= new techData (this, theQSettings, &theTechData);
+	theTechWindow	= new techWindow (this, theQSettings, &theTechData);
 	
-	connect (theTechWindow, &techData::frameClosed,
+	connect (theTechWindow, &techWindow::frameClosed,
 	         this, &RadioInterface::handle_techFrame_closed);
 
 	if (value_i (theQSettings, DAB_GENERAL, NEW_DISPLAY_VISIBLE, 0) != 0)
@@ -509,7 +509,7 @@ QString h;
 	         this, &RadioInterface::color_spectrumButton);
 //
 //	
-	connect (theTechWindow, &techData::handleTimeTable,
+	connect (theTechWindow, &techWindow::handleTimeTable,
 	         this, &RadioInterface::handle_timeTable);
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
@@ -2010,9 +2010,9 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_scanButton);
 //
 ////	and for the techWindow
-//	connect (theTechWindow. data (), &techData::handleAudioDumping,
+//	connect (theTechWindow. data (), &techWindow::handleAudioDumping,
 //	         this, &RadioInterface::handleAudiodumpButton);
-//	connect (theTechWindow. data (), &techData::handleFrameDumping,
+//	connect (theTechWindow. data (), &techWindow::handleFrameDumping,
 //	         this, &RadioInterface::handleFramedumpButton);
 }
 

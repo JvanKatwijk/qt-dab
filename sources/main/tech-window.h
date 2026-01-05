@@ -36,13 +36,13 @@ class	RadioInterface;
 class	QSettings;
 
 
-class	techData: public superFrame, public Ui_technical_data {
+class	techWindow: public superFrame, public Ui_technical_data {
 Q_OBJECT
 public:
-		techData	(RadioInterface *,
+		techWindow	(RadioInterface *,
 	                         QSettings *,
 	                         RingBuffer<std::complex<int16_t>> *audioData);
-		~techData	();
+		~techWindow	();
 	void	storePosition		();
 	void	showServiceData		(audiodata *);
 	void	cleanUp			();

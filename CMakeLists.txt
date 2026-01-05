@@ -180,7 +180,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/dxDisplay.h
 	     ./sources/main/config-handler.h
 	     ./sources/main/ensemble-handler.h
-	     ./sources/main/techdata.h
+	     ./sources/main/tech-window.h
 	     ./sources/main/display-widget.h 
              ./sources/main/scopes/spectrum-scope.h 
              ./sources/main/scopes/correlation-scope.h 
@@ -309,7 +309,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/output/audio-player.h
 	     ./sources/output/converter_48000.h
 	     ./sources/devices/device-handler.h
-	     ./sources/devices/riffWriter.h
+	     ./sources/devices/riff-writer.h
 	     ./sources/devices/device-exceptions.h
 	     ./sources/qt-devicces/xml-filewriter.h
 	)
@@ -322,7 +322,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/dxDisplay.cpp
 	     ./sources/main/config-handler.cpp
 	     ./sources/main/ensemble-handler.cpp
-	     ./sources/main/techdata.cpp
+	     ./sources/main/tech-window.cpp
 	     ./sources/main/display-widget.cpp 
              ./sources/main/scopes/correlation-scope.cpp 
              ./sources/main/scopes/spectrum-scope.cpp 
@@ -434,7 +434,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/output/audio-player.cpp
 	     ./sources/output/converter_48000.cpp
 	     ./sources/devices/device-handler.cpp
-	     ./sources/devices/riffWriter.cpp
+	     ./sources/devices/riff-writer.cpp
 	     ./sources/devices/xml-filewriter.cpp
 	)
 
@@ -442,7 +442,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/radio.h
 	     ./sources/main/ensemble-handler.h 
 	     ./sources/main/config-handler.h 
-	     ./sources/main/techdata.h
+	     ./sources/main/tech-window.h
 	     ./sources/main/aboutdialog.h 
 	     ./sources/main/dxDisplay.h
 	     ./sources/main/display-widget.h 

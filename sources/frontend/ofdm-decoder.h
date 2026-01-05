@@ -70,6 +70,17 @@ private:
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
 
+	DABFLOAT		decoder_12 (const std::vector<Complex> &,
+                                            std::vector<int16_t> &,
+                                            DABFLOAT        snr,
+                                            int             decType);
+	DABFLOAT		decoder_3  (const std::vector<Complex> &,
+                                            std::vector<int16_t> &,
+                                            DABFLOAT        snr);
+	DABFLOAT		decoder_4  (const std::vector<Complex> &,
+                                            std::vector<int16_t> &,
+                                            DABFLOAT        snr);
+
 	float		computeQuality		(Complex *);
 	float		compute_timeOffset      (Complex *,
 	                                         Complex *);

@@ -22,7 +22,7 @@
  */
 
 #include	<QSettings>
-#include	"techdata.h"
+#include	"tech-window.h"
 #include	"radio.h"
 #include	"audio-display.h"
 #include	"dab-tables.h"
@@ -32,7 +32,7 @@
 #include	"settings-handler.h"
 #include	"position-handler.h"
 
-#define	TECHDATA_SETTING	"techDataSettings"
+#define	TECHDATA_SETTING	"techWindowSettings"
 
 #define	DARK	"#00007f"
 #define	WHITE	"#ffffff"
@@ -40,7 +40,7 @@
 #define FRAMEDUMP_BUTTON        QString ("framedumpButton") 
 #define AUDIODUMP_BUTTON        QString ("audiodumpButton")
 
-		techData::techData	(RadioInterface *mr,
+		techWindow::techWindow	(RadioInterface *mr,
 	                                 QSettings	*s,
 	                                 RingBuffer<std::complex<int16_t>> *audioData):
 	                                         superFrame (nullptr) {
@@ -85,9 +85,9 @@
                                                 audiodumpButton_font));
 
 	connect (framedumpButton, &smallPushButton::rightClicked,
-                 this, &techData::colorFramedumpButton);
+                 this, &techWindow::colorFramedumpButton);
         connect (audiodumpButton, &smallPushButton::rightClicked,
-                 this, &techData::colorAudiodumpButton); 
+                 this, &techWindow::colorAudiodumpButton); 
 
 	connect (audiodumpButton, &QPushButton::clicked,
 	         mr, &RadioInterface::handleAudiodumpButton);
@@ -95,20 +95,27 @@
 	         mr, &RadioInterface::handleFramedumpButton);
 
 	connect (timeTable_button, &QPushButton::clicked,
-	         this, &techData::handleTimeTable);
+	         this, &techWindow::handleTimeTable);
+
+	bitRateLabel	-> setStyleSheet ("color:red");
+	uepField	-> setStyleSheet ("color:magenta");
+	codeRate	-> setStyleSheet ("color:magenta");
+	psLabel		-> setStyleSheet ("color:cyan");
+	sbrLabel	-> setStyleSheet ("color:cyan");
+	audiorateLabel	-> setStyleSheet ("color:red");
 }
 
-		techData::~techData	() {
+		techWindow::~techWindow	() {
 	hide ();
 	delete theAudioDisplay;
 }
 
-void	techData::storePosition	() {
+void	techWindow::storePosition	() {
 	if (!isHidden ())
 	   storeWidgetPosition (dabSettings, this, TECHDATA_SETTING);
 }
 
-void	techData::cleanUp	() {
+void	techWindow::cleanUp	() {
 	const QString ee ("-");
 	programName		-> setText (ee);
 	rsCorrections		-> display (0);
@@ -123,10 +130,10 @@ void	techData::cleanUp	() {
 	ASCTy			-> setText (ee);
 	language		-> setText (ee);
 	timeTable_button	-> setEnabled (false);
-	audioRate		-> display (0);
+	audiorateLabel		-> setText (QString::number (0));
 }
 
-void	techData::showServiceData	(audiodata *ad) {
+void	techWindow::showServiceData	(audiodata *ad) {
 	showServiceName		(ad -> serviceName, ad -> shortName);
 	showServiceId		(ad -> SId);
 	showStartAddress	(ad -> startAddr);
@@ -139,7 +146,7 @@ void	techData::showServiceData	(audiodata *ad) {
 	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
 }
 
-void	techData::showFrameErrors	(int e) {
+void	techWindow::showFrameErrors	(int e) {
 	QPalette p	= frameError_display -> palette();
 	if (100 - 4 * e < 80)
 	   p. setColor (QPalette::Highlight, Qt::red);
@@ -150,7 +157,7 @@ void	techData::showFrameErrors	(int e) {
 	frameError_display	-> setValue (100 - 4 * e);
 }
 
-void	techData::showAacErrors	(int e) {
+void	techWindow::showAacErrors	(int e) {
 	QPalette p      = aacError_display -> palette();
         if (100 - 4 * e < 80)
            p. setColor (QPalette::Highlight, Qt::red);
@@ -160,7 +167,7 @@ void	techData::showAacErrors	(int e) {
         aacError_display      -> setValue (100 - 4 * e);
 }
 
-void	techData::showRsErrors		(int e) {
+void	techWindow::showRsErrors		(int e) {
 	QPalette p	= rsError_display -> palette();
 	if (100 - 4 * e < 80)
 	   p. setColor (QPalette::Highlight, Qt::red);
@@ -170,32 +177,32 @@ void	techData::showRsErrors		(int e) {
 	rsError_display	-> setValue (100 - 4 * e);
 }
 
-void	techData::showRsCorrections	(int c, int ec) {
+void	techWindow::showRsCorrections	(int c, int ec) {
 	rsCorrections -> display (c);
 	ecCorrections -> display (ec);
 }
 
-void	techData::showTimetableButton	(bool b) {
+void	techWindow::showTimetableButton	(bool b) {
 	if (b)
 	   timeTable_button	-> setEnabled (true);
 	else
 	   timeTable_button	-> setEnabled (false);
 }
 
-void	techData::updateFM		(std::vector<int> &fmFrequencies) {
+void	techWindow::updateFM		(std::vector<int> &fmFrequencies) {
 	if (fmFrequencies. size () == 0)
 	   return;
 	showFm		(fmFrequencies);
 }
 
-void	techData::showFrameDumpButton	(bool b) {
+void	techWindow::showFrameDumpButton	(bool b) {
 	if (b)
 	   framedumpButton	-> show ();
 	else
 	   framedumpButton	-> hide ();
 }
 
-void	techData::showServiceName	(const QString &s1, const QString &s2) {
+void	techWindow::showServiceName	(const QString &s1, const QString &s2) {
 	if ((s2 != "") && (s1 != s2)) 
 	   programName	-> setText (s1 + "(" + s2 + ")");
 	else
@@ -214,38 +221,38 @@ QString res;
         return res;
 }
 
-void	techData::showServiceId		(int SId) {
+void	techWindow::showServiceId		(int SId) {
 QString text	= hextoString (SId);
 	serviceIdDisplay -> setText (text);
 }
 
-void	techData::showStartAddress	(int sa) {
+void	techWindow::showStartAddress	(int sa) {
 	startAddressDisplay	-> setText (QString::number (sa));
 }
 
-void	techData::showLength		(int l) {
+void	techWindow::showLength		(int l) {
 	lengthDisplay		-> setText (QString::number (l));
 }
 
-void	techData::showSubChId		(int subChId) {
+void	techWindow::showSubChId		(int subChId) {
 	subChIdDisplay		-> setText (QString::number (subChId));
 }
 
-void	techData::showLanguage		(int l) {
+void	techWindow::showLanguage		(int l) {
 	language	-> setAlignment (Qt::AlignRight);
 	language	-> setText (getLanguage (l));
 }
 
-void	techData::showUep		(int shortForm, int protLevel) {
+void	techWindow::showUep		(int shortForm, int protLevel) {
 	QString protL = getProtectionLevel (shortForm, protLevel);
 	uepField	-> setText (protL);
 }
 
-void	techData::showCodeRate		(int shortForm, int protLevel) {
+void	techWindow::showCodeRate		(int shortForm, int protLevel) {
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 
-void	techData::showFm		(std::vector<int> &v) {
+void	techWindow::showFm		(std::vector<int> &v) {
 	if (v. size () == 0) {
 	   fmFrequency	-> hide ();
 	   fmLabel	-> hide ();
@@ -266,7 +273,7 @@ void	techData::showFm		(std::vector<int> &v) {
 	}
 }
 
-void	techData::audioDataAvailable	(int amount, int rate) {
+void	techWindow::audioDataAvailable	(int amount, int rate) {
 std::complex<int16_t> buffer [amount];
 
 	audioData -> getDataFromBuffer (buffer, amount);
@@ -276,15 +283,15 @@ std::complex<int16_t> buffer [amount];
 	
 }
 
-void    techData::colorFramedumpButton   ()      {
+void    techWindow::colorFramedumpButton   ()      {
         setButtonColors (framedumpButton, FRAMEDUMP_BUTTON);
 }
 
-void    techData::colorAudiodumpButton   ()      {
+void    techWindow::colorAudiodumpButton   ()      {
         setButtonColors (audiodumpButton, AUDIODUMP_BUTTON);
 }
 
-void	techData::setButtonColors	(QPushButton *b,
+void	techWindow::setButtonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
 QColor	baseColor;
 QColor	textColor;
@@ -310,7 +317,7 @@ QColor	color;
 	store (dabSettings, COLOR_SETTINGS, buttonFont,  textColor_name);
 }
 
-void	techData::framedumpButton_text	(const QString &text, int size) {
+void	techWindow::framedumpButton_text	(const QString &text, int size) {
 	QFont font	= framedumpButton -> font ();
 	font. setPointSize (size);
 	framedumpButton	-> setFont (font);
@@ -318,7 +325,7 @@ void	techData::framedumpButton_text	(const QString &text, int size) {
 	framedumpButton	-> update ();
 }
 
-void	techData::audiodumpButton_text	(const QString &text, int size) {
+void	techWindow::audiodumpButton_text	(const QString &text, int size) {
 	QFont font	= audiodumpButton -> font ();
 	font. setPointSize (size);
 	audiodumpButton	-> setFont (font);
@@ -326,23 +333,21 @@ void	techData::audiodumpButton_text	(const QString &text, int size) {
 	audiodumpButton	-> update ();
 }
 
-void	techData::showRate	(int rate, bool ps, bool sbr) {
+void	techWindow::showRate	(int rate, bool ps, bool sbr) {
 	if (!ps)
 	   psLabel -> setText (" ");
 	else {
-	   psLabel -> setStyleSheet ("QLabel {color : white}");
 	   psLabel -> setText ("ps");
 	}
 	if (!sbr)
 	   sbrLabel -> setText ("  ");
 	else {
-	   sbrLabel -> setStyleSheet ("QLabel {color : white}");
 	   sbrLabel -> setText ("sbr");
 	}
-	audioRate	-> display (rate);
+	audiorateLabel	-> setText (QString::number (rate));
 }
 
-void	techData::showStereo	(bool b) {
+void	techWindow::showStereo	(bool b) {
 	 if (b) {
 	   stereoLabel	-> setStyleSheet ("QLabel {color : white}");
            stereoLabel  -> setText ("<i>stereo</i>");
@@ -351,16 +356,16 @@ void	techData::showStereo	(bool b) {
            stereoLabel  -> setText ("      ");
 }
 
-void	techData::showMissed	(int missed) {
+void	techWindow::showMissed	(int missed) {
 	missedSamples	-> display (missed);
 }
 
-void	techData::hideMissed	() {
+void	techWindow::hideMissed	() {
 	missedLabel	-> hide ();
 	missedSamples	-> hide ();
 }
 
-void	techData::isDABPlus	(bool b) {
+void	techWindow::isDABPlus	(bool b) {
 	if (b) {	// yes it is DAB+
 
 	   ASCTy	-> setText ("DAB+");
@@ -378,7 +383,7 @@ void	techData::isDABPlus	(bool b) {
 	}
 }
 
-void	techData::hideMissedLabel	() {
+void	techWindow::hideMissedLabel	() {
 	missedLabel	-> hide ();
 	missedSamples	-> hide ();
 }
