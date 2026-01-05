@@ -26,6 +26,9 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -pg  -O3
+#QMAKE_CXXFLAGS	+=  -pg  -O3
+#QMAKE_LFLAGS	+=  -pg  -O3
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
@@ -436,8 +439,8 @@ else {
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-CONFIG		+= double
-#CONFIG		+= single
+#CONFIG		+= double
+CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)

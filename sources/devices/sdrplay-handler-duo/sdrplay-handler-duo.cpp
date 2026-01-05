@@ -1367,6 +1367,7 @@ void	sdrplayHandler_duo::processInput (uint8_t tuner,
 void	sdrplayHandler_duo::process_A (std::complex<float> *b,
 	                               int amount,
 	                               int firstSampleNum) {
+	(void)firstSampleNum;
 	A_Buffer. resize (amount);
 
 	bufferLocker. lock ();
@@ -1390,6 +1391,7 @@ void	sdrplayHandler_duo::process_A (std::complex<float> *b,
 void	sdrplayHandler_duo::process_B (std::complex<float> *b,
 	                               int amount,
 	                               int firstSampleNum) {
+	(void)firstSampleNum;
 	B_Buffer. resize (amount);
 
 	bufferLocker. lock ();

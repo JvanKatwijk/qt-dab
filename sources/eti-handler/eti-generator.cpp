@@ -98,10 +98,10 @@ uint8_t	theVector [6144];
 //	we probably need "reset" when handling a change in configuration
 //
 void	etiGenerator::reset	() {
-	for (int i = 0; i < descrambler. size (); i ++)
+	for (uint32_t i = 0; i < descrambler. size (); i ++)
            delete [] descrambler [i];
         descrambler. resize (0);
-        for (int i = 0; i < protTable. size (); i ++)
+        for (uint32_t i = 0; i < protTable. size (); i ++)
            delete [] protTable [i];
         protTable. resize (0);
 
@@ -353,7 +353,7 @@ int	index	= -1;
 //	already exists, we use it, otherwise we add a new one
 //	For the NPO with 8 services, we need 3 deconvolvers
 	   index	= -1;
-	   int key	= 0;
+	   uint32_t key	= 0;
 	   for (; key < protTable. size (); key ++) {
 	      int16_t bitRate, protLevel; bool uepFlag;
 	      protTable [key] -> getParameters (bitRate, protLevel, uepFlag);
@@ -442,10 +442,10 @@ void	etiGenerator::stop_etiGenerator		() {
 	if (etiFile != nullptr) {
 	   fclose (etiFile);
 	}
-	for (int i = 0; i < descrambler. size (); i ++)
+	for (uint32_t i = 0; i < descrambler. size (); i ++)
            delete [] descrambler [i];
         descrambler. resize (0);
-        for (int i = 0; i < protTable. size (); i ++)
+        for (uint32_t i = 0; i < protTable. size (); i ++)
            delete protTable [i];
         protTable. resize (0);
 	etiFile	= nullptr;

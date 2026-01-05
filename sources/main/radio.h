@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2024
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -155,13 +155,8 @@ struct	theTime {
 	int	second;
 };
 
-//typedef struct {
-//	uint32_t serviceId;
-//	std::vector<multimediaElement> elements;
-//} mmDescriptor;
-//
-//	Pretty important, the channel descriptor is supposed to
-//	contain all data related to the currently selected class
+//	The channel descriptor is supposed to
+//	contain all data related to the currently selected channel
 
 class	channelDescriptor {
 public:
@@ -170,34 +165,37 @@ public:
 }
 	~channelDescriptor () {
 }
-
+//
+	QDate		theDate;
+//	static channel info
 	QString		channelName;
-	int		tunedFrequency;
-	bool		realChannel;
-	bool		etiActive;
-	QString		ensembleName;
 	uint32_t	Eid;
+	QString		ensembleName;
+	QString		countryName;
+	int		tunedFrequency;
 	int		nrServices;	// measured
 	int		serviceCount;	// from FIC or nothing
-	dabService	currentService;
-	std::vector<dabService> runningTasks;
+	bool		realChannel;	// false if file input
 	bool		hasEcc;
 	uint8_t		eccByte;
 	int		lto;
-	QString		countryName;
+//	info on the transmitters seen
 	int		nrTransmitters;
 	std::vector<transmitter>	transmitters;
-	QString		transmitterName;
-	int		snr;
-	bool		announcing;
+	QString		strongestTransmitter;
 	position	targetPos;
-	QDate		theDate;
 	int8_t		mainId;
 	int8_t		subId;
 	float		height;
 	float		distance;
 	float		azimuth;
+	int		snr;
+//	info on services
+	dabService	currentService;
 	bool		audioActive;
+	bool		etiActive;	//
+	bool		announcing;
+	std::vector<dabService> runningTasks;
 	std::vector<mmDescriptor>servicePictures;
 	void	cleanChannel () {
 	   transmitters. resize (0);
@@ -215,14 +213,12 @@ public:
 	   targetPos		= position {0, 0};
 	   mainId		= -1;
 	   subId		= -1;
-	   transmitterName	= "";
+	   strongestTransmitter	= "";
 	   snr			= 0;
 	   announcing		= false;
 	   height		= -1;
 	   distance		= -1;
 	   audioActive	 	= false;
-	   currentService. isValid	= false;
-	   currentService. frameDumper	= nullptr;
 	}
 };
 
@@ -276,59 +272,162 @@ private:
 	logger			theLogger;
 	scanHandler		theSCANHandler;
 	tiiMapper		theTIIProcessor;
-	timeTableHandler	myTimeTable;
-	xmlExtractor		xmlHandler;
-	epgCompiler		epgVertaler;
+	timeTableHandler	theTimeTableHandler;
+	xmlExtractor		theXmlExtractor;
+	epgCompiler		theEpgCompiler;
 //	end of variables that are initalized
 
 	QScopedPointer<ensembleHandler> theEnsembleHandler;
-//	QScopedPointer<configHandler>	configHandler_p;
-//	QScopedPointer<ofdmHandler>	theOFDMHandler;
-//	QScopedPointer<techData>	techWindow_p;
-	configHandler			*configHandler_p;
-	techData			*techWindow_p;
-	ofdmHandler			*theOFDMHandler;
-	deviceHandler			*inputDevice_p;
-	bool				autoStart_http		();
-	bool				dxMode;
+	configHandler			*theConfigHandler;
+	techData			*theTechWindow;
+	ofdmHandler			*theOfdmHandler;
+	deviceHandler			*theDeviceHandler;
 	journaline_dataHandler		*journalineHandler;
-	int				journalineKey;
+	httpHandler			*theHttpHandler;
+	contentTable			*theContentTable;
+	contentTable			*theScanTable;
+	QDialog				*theAboutLabel;
+	QSettings			*theQSettings;
+#ifdef	HAVE_PLUTO_RXTX
+	dabStreamer			*theDabStreamer;
+#endif
+	audioPlayer			*theAudioPlayer;
+#ifdef	DATA_STREAMER
+	tcpServer			*theDataStreamer;
+#endif
+#ifdef	CLOCK_STREAMER
+	tcpServer			*theClockStreamer;
+#endif
 //
+	void			connectGUI		();
+	void			disconnectGUI		();
+	void			cleanScreen		();
+	void			hideButtons		();
+	void			showButtons		();
+	void			setChannelButton	(int);
+	void			set_Colors		();
+	void			setButtonColors		(QPushButton *,
+	                                                 const QString &);
+	void			displaySlide		(const QPixmap &,	
+	                                                 const QString &t = "");
+	deviceHandler		*createDevice		(const QString &,
+	                                                             logger *);
+
+	QString			convertTime		(int, int, int,
+	                                                      int, int);
+	QString			convertTime		(struct theTime &);
+
+//
+	void			startDirect		();
+	bool			autoStart_http		();
+	void			start_etiHandler	();
+	void			stop_etiHandler		();
+	void			startAudioservice	(audiodata &);
+	void			startPacketservice	(packetdata &);
+	void			startAudioDumping	();
+	void			stopAudioDumping	();
+	void			scheduledAudioDumping	();
+	void			scheduledDLTextDumping	();
+	void			scheduledFICDumping	();
+	void			startSourceDumping	();
+	void			stopSourceDumping	();
+	void			startFrameDumping	();
+	void			stopFrameDumping	();
+	void			scheduled_frameDumping	(const QString &);
+	void			startChannel		(const QString &,
+	                                                 const QString firstService = "");
+	void			stopChannel		();
+	void			stopService		(dabService &);
+	void			startService		(dabService &, int);
+	void			start_epgService	(packetdata &);
+	void			scheduleSelect		(const QString &s);
+
+
+	QString			checkDir		(const QString &);
+	void			saveMOTObject		(QByteArray &,
+	                                                 int,
+	                                                 QString &);
+	void			saveMOTtext		(QByteArray &, int,
+	                                                 const QString &);
+	void			showMOTlabel		(QByteArray &, int,
+	                                                 const QString &,
+	                                                 int,
+	                                                 uint32_t);
+	QString			slidePath		(bool, uint32_t);
+	void			stopMuting		();
+	void			setPeakLevel	(const std::vector<float> &);
+	QString			createTIILabel	(const transmitter &);
+	void			addtoLogFile	(const transmitter &);
+	void			removeFromList	(uint8_t, uint8_t);
+	transmitter		*inList		(uint8_t, uint8_t);
+
+//	short hands
+	void                    newChannelIndex        (int);
+
+//	scan functions
+	void			startScan_to_data	();
+	void			startScan_single	();
+	void			startScan_continuous	();
+	void			nextFor_scan_to_data	();
+	void			nextFor_scan_single	();
+	void			nextFor_scan_continuous	();
+	void			stopScan_to_data	();
+	void			stopScan_single	();
+	void			stopScan_continuous	();
+	QString			buildHeadLine		();
+	QString			build_kop		();
+	QString			build_cont_addLine	(const transmitter &);
+	QString		        build_transmitterLine	(const transmitter &);
+
+	void			show_for_single_scan	();
+	void			show_for_continuous	();
+
+//	EPG extraction
+	void			process_epgData 	(const QString &,
+                                                 	const QByteArray &);
+
+	void			extractServiceInformation (const QDomDocument &,
+	                                                      uint32_t, bool);
+	void			saveServiceInfo		(const QDomDocument &, 
+	                                                      uint32_t);
+	bool			process_ensemble 	(const QDomElement &,	                                                              uint32_t);
+	int			processService		(const QDomElement &);
+
+	void			read_pictureMappings	(uint32_t);
+	bool			get_serviceLogo		(QPixmap &, uint32_t);
+
+	QString			extractName		(const QString &);
+
+//
+//	announcements
+	QPixmap			fetchAnnouncement 	(int id);
+	void			announcement_start	(uint16_t, uint16_t);	
+	void			announcement_stop	(uint16_t);
+//
+//	key events for setting focus to windows
+	bool			handle_keyEvent		(int);
+
+	int			journalineKey;
+
+	std::atomic<bool>	running;
 //	Since the local position does not depend on the channel selected
 //	the local position is not stored in the channel data
 	position		localPos;
 	dabService		nextService;
 	std::vector<QPixmap>	strengthLabels;
-	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			SystemVersion;
 	QString			version;
-	int			fmFrequency;
-	contentTable		*contentTable_p;
-	contentTable		*scanTable_p;
-	channelDescriptor	channel;
-	QDialog			*the_aboutLabel;
 	bool			error_report;
-	QSettings		*dabSettings_p;
+	int			fmFrequency;
+	channelDescriptor	channel;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	bool			stereoSetting;
-	std::atomic<bool>	running;
+	bool			dxMode;
 //
 	QString			labelStyle;
-#ifdef	HAVE_PLUTO_RXTX
-	dabStreamer		*streamerOut_p;
-#endif
-	audioPlayer		*soundOut_p;
-#ifdef	DATA_STREAMER
-	tcpServer		*dataStreamer_p;
-#endif
-#ifdef	CLOCK_STREAMER
-	tcpServer		*clockStreamer_p;
-#endif
 	QTimer			pauzeTimer;
-	QTimer			stressTimer;
-
 	QTimer			theTimer;
 	bool			stillWaiting;
 	QString			path_for_files;
@@ -339,20 +438,14 @@ private:
 #endif
 	bool			sourceDumping;
 	bool			audioDumping;
-	void			set_Colors		();
-	void			setChannelButton	(int);
 
-	void			displaySlide	(const QPixmap &,	
-	                                              const QString &t = "");
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
-	void			write_servicePictures	(uint32_t);
 	QTimer			muteTimer;
+//	void			write_servicePictures	(uint32_t);
 	int			muteDelay;
 	int32_t			numberofSeconds;
-	void			connectGUI		();
-	void			disconnectGUI		();
 
 	struct theTime		localTime;
 	struct theTime		UTC;
@@ -365,261 +458,225 @@ private:
 	float			peakRightDamped;
 	int			audioTeller;
 	int			pauzeSlideTeller;
-	QPixmap			fetchAnnouncement (int id);
 
-	QString			convertTime		(int, int, int, int, int);
-	QString			convertTime		(struct theTime &);
-	void			setButtonColors		(QPushButton *,
-	                                                 const QString &);
-	QString			footText		();
-	QString			presetText		();
-	void			cleanScreen		();
-	void			hideButtons		();
-	void			showButtons		();
-	deviceHandler		*createDevice		(const QString &,
-	                                                             logger *);
-
-	void			start_etiHandler	();
-	void			stop_etiHandler		();
-	QString			checkDir		(const QString &);
-//
-	void			startAudioservice	(audiodata &);
-	void			startPacketservice	(packetdata &);
-	void			startAudioDumping	();
-	void			stopAudioDumping	();
-	void			scheduledAudioDumping	();
-	void			scheduledDLTextDumping	();
-	void			scheduledFICDumping	();
 	FILE			*ficDumpPointer;
 
-	void			startSourceDumping	();
-	void			stopSourceDumping	();
-	void			startFrameDumping	();
-	void			stopFrameDumping	();
-	void			scheduled_frameDumping	(const QString &);
-	void			startChannel		(const QString &,
-	                                                 const QString firstService = "");
-	void			stopChannel		();
-	void			stopService		(dabService &);
-	void			startService		(dabService &, int);
-	void			start_epgService	(packetdata &);
-	void			localSelect		(const QString &c,
-	                                                 const QString &s);
-	void			scheduleSelect		(const QString &s);
-
-	QString			buildHeadLine		();
-	QString			build_kop		();
-	QString			build_cont_addLine	(const transmitter &);
-	QString		        build_transmitterLine	(const transmitter &);
-
-	void			show_for_single_scan	();
-	void			show_for_continuous	();
-
-	void			startDirect		();
-	void			saveMOTObject		(QByteArray &,
-	                                                 int,
-	                                                 QString &);
-
-	void			saveMOTtext		(QByteArray &, int,
-	                                                 const QString &);
-	void			showMOTlabel		(QByteArray &, int,
-	                                                 const QString &,
-	                                                 int,
-	                                                 uint32_t);
-        
-	QString			slidePath		(bool, uint32_t);
-	void			stopMuting		();
-//	short hands
-	void                    newChannelIndex        (int);
 	std::mutex		locker;
 	std::mutex		mapHandler_locker;
 	void			setSoundLabel		(bool);
-//	scan functions
-	void			startScan_to_data	();
-	void			startScan_single	();
-	void			startScan_continuous	();
-	void			nextFor_scan_to_data	();
-	void			nextFor_scan_single	();
-	void			nextFor_scan_continuous	();
-	void			stopScan_to_data	();
-	void			stopScan_single	();
-	void			stopScan_continuous	();
-
-	void			setPeakLevel	(const std::vector<float> &);
-	QString			createTIILabel	(const transmitter &);
-	void			addtoLogFile	(const transmitter &);
-	void			removeFromList	(uint8_t, uint8_t);
-	transmitter		*inList		(uint8_t, uint8_t);
-
-//	EPG extraction
-	void			process_epgData (const QString &obkectName,
-                                                 const QByteArray & result);
-
-	void			extractServiceInformation (const QDomDocument &,
-	                                                      uint32_t, bool);
-	void			saveServiceInfo	(const QDomDocument &, 
-	                                                      uint32_t);
-	bool			process_ensemble (const QDomElement &, uint32_t);
-	int			processService	(const QDomElement &);
-
-	void			read_pictureMappings	(uint32_t);
-	bool			get_serviceLogo		(QPixmap &, uint32_t);
-
-	QString			extractName	(const QString &);
-
-//
-//	announcements
-	void			announcement_start	(uint16_t, uint16_t);	
-	void			announcement_stop	(uint16_t);
-//
-//	key events for setting focus to windows
-	bool			handle_keyEvent		(int);
-//
-signals:
-	void			select_ensemble_font	();
-	void			select_ensemble_fontSize	();
-	void			select_ensemble_fontColor	();
-
-	void			call_scanButton		();
-public slots:
-//	Tracer
-	void			signal_dataTracer       (bool);
-
-	void			lto_ecc			(int, int);
-	void			setFreqList		();
-	void			channelSignal		(const QString &);
-	void			show_dcOffset		(float);
-	void			startScanning		();
-	void			stopScanning		();
-	void			show_quality		(float, float, float);
-	void			show_rsCorrections	(int, int);
-	void			show_clock_error	(int);
-
-	void			show_Corrector		(int, float);
-	void			addToEnsemble		(const QString &,
-	                                                          int, int);
-	void			ensembleName		(int, const QString &);
-	void			nrServices		(int);
-	void			show_frameErrors	(int);
-	void			show_rsErrors		(int);
-	void			show_aacErrors		(int);
-	void			show_ficQuality		(int, int);
-	void			show_ficBER		(float);
-	void			set_synced		(bool);
-	void			showLabel		(const QString &, int);
-	void			handle_motObject	(QByteArray,
-	                                                 QString,
-	                                                 int, bool,
-	                                                 uint32_t);
-	void			sendDatagram		(int);
-	void			handle_tdcdata		(int, int);
-	void			changeinConfiguration	();
-	void			newAudio		(int, int, bool, bool);
 
 	void			localSelect_SS		(const QString &,
 	                                                 const QString &);
-	
-	void			setStereo		(bool);
-	void			set_streamSelector	(int);
-	void			no_signal_found		();
-	void			show_mothandling	(bool);
-	void			set_sync_lost		();
-	void			closeEvent		(QCloseEvent *event);
-	void			clockTime		(int, int, int,
-	                                                 int, int,
-	                                                 int, int, int, int);
-	void			announcement		(int, int);
-	void			newFrame		(int);
+//
+signals:
+	void			select_ensemble_font		();
+	void			select_ensemble_fontSize	();
+	void			select_ensemble_fontColor	();
+	void			call_scanButton		();
 
-	void			handle_presetSelect	(const QString &,
-	                                                 const QString &);
-	void			handle_contentSelector	(const QString &);
-	
-	void			http_terminate		();
-	void			show_channel		(int);
+public slots:
+//	signals from the configuration window
 
-	void			handle_iqSelector	();
-
-	void			show_spectrum		(int);
 	void			handle_tiiThreshold	(int);
+	void			handle_tiiCollisions		(int);
+	void			handle_activeServices		();
+	void			handle_dcRemoval		(bool);
+	void			selectDecoder			(int);
+	void			set_transmitters_local		(bool);
+	void			handle_scheduleButton	();
+	void			handle_devicewidgetButton	();
+	void			handle_dlTextButton		();
+	void			handle_resetButton	();
+	void			handle_snrButton	();
+	void			handle_set_coordinatesButton	();
+	void			handle_loadTable		();
+	void			handle_sourcedumpButton	();
+	void			handle_correlationSelector	(int);
+	void			handle_LoggerButton		(int);
+	void			handle_eti_activeSelector	(int);
+	void			set_streamSelector	(int);
+
+//	connected in the Radio, coming from the config handler
+	void			handle_configFrame_closed	();
+	void			signal_dataTracer       (bool);
+
+//	signals from ensemblehandler
+	void			localSelect		(const QString &c,
+	                                                 const QString &s);
+	void			handle_backgroundTask	(const QString &);
+//
+//	signals from ofdmHandler
+	void			set_synced		(bool);
+	void			set_sync_lost		();
 	void			show_tiiData		(QVector<tiiData>,
 	                                                 int);
 	void			show_tii_spectrum       ();
 	void			show_snr		(float);
+	void			show_clock_error	(int);
 	void			show_null		(int, int);
+	void			show_channel		(int);
+	void			show_Corrector		(int, float);
+//
+//	signals from ofdmDecoder
 	void			showIQ			(int);
+	void			show_quality		(float, float, float);
+	void			show_stdDev		(int);
+//
+//	signals from fib-config
+	void			announcement		(int, int);
+
+//	signals from fic-handler
+	void			show_ficQuality		(int, int);
+	void			show_ficBER		(float);
+
+//	signals from fib-decoder
+	void			ensembleName		(int, const QString &);
+	void			clockTime		(int, int, int,
+	                                                 int, int,
+	                                                 int, int, int, int);
+	void			changeinConfiguration	();
+	void			nrServices		(int);
+	void			lto_ecc			(int, int);
+	void			setFreqList		();
+	void			tell_programType		(uint32_t, int);
+	void			addToEnsemble		(const QString &,
+	                                                          int, int);
+
+//	signals from the techWindow
+	void			handleAudiodumpButton 	();
+	void			handleFramedumpButton	();
+	void			handle_timeTable	();
+	void			handle_techFrame_closed		();
+
+//	signals from theNewDisplay
+	void			handle_iqSelector	();
+	void			handle_newDisplayFrame_closed	();
+	
+//	signals from correlator
 	void			showCorrelation		(int, int,
 	                                                 QVector<int>);
-	void			show_stdDev		(int);
+//
+//	signals from samplereader
+	void			show_spectrum		(int);
+	void			show_dcOffset		(float);
+
+//	signals	from mscHandler
+	void			nrActiveServices		(int);
+
+//	signals from faad decoder/fdk-aac/mp2Processor
+	void			newAudio		(int, int, bool, bool);
+
+//	signals from mp2Processor/ mp4 processor
+	void			show_frameErrors	(int);
+	void			setStereo		(bool);
+	void			newFrame		(int);
+
+//	signals from mp4Processor
+	void			show_rsErrors		(int);
+	void			show_aacErrors		(int);
+	void			show_rsCorrections	(int, int);
+
+//	signals from data-processor
+
+//	signals from ip-datahandler
+	void			sendDatagram		(int);
+
+//	signals from journaline-controller
+	void			startJournaline		(int);
+	void			stopJournaline		(int);
+	void			journalineData		(QByteArray, int);
+
+//	signals from padHandler
+	void			showLabel		(const QString &, int);
+	void			show_mothandling	(bool);
+	void			show_dl2			(uint8_t,
+	                                                         uint8_t,
+	                                                         const QString &);
+
+//	signals from MOTObject
+	void			handle_motObject	(QByteArray,
+	                                                 QString,
+	                                                 int, bool,
+	                                                 uint32_t);
+
+//	signals from tdc-dataHandler
+	void			handle_tdcdata		(int, int);
+
+//	signals from httpHandler
+	void			channelSignal		(const QString &);
+	void			cleanUp_mapHandler	();
+	void			http_terminate		();
+
+//
+//	signals from contentTable
+	void			handle_contentSelector	(const QString &);
+
+//	signals from Qt_Audio
+	void			deviceListChanged		();
+
+//	signals	from scanHandler
+	void			startScanning		();
+	void			stopScanning		();
+
+//	signals from scanListHandler
+	void			handleScanListSelect	(const QString &);
+
+//	signals	from scheduler
+	void			scheduler_timeOut	(const QString &);
+
+//	Local signals
+
+	
+	void			no_signal_found		();
+	void			closeEvent		(QCloseEvent *event);
+
+	void			handle_presetSelect	(const QString &,
+	                                                 const QString &);
+	
+
 	void			showPeakLevel		(float, float);
 
-	void			handle_techFrame_closed		();
-	void			handle_configFrame_closed	();
 	void			handle_deviceFrame_closed	();
-	void			handle_newDisplayFrame_closed	();
 
 	void			doStart			(const QString &);
 	void			newDevice		(const QString &);
-	void			handle_scheduleButton	();
-	void			handle_devicewidgetButton	();
-	void			handle_resetButton	();
-	void			handle_dlTextButton		();
-	void			handle_snrButton	();
-	void			handle_sourcedumpButton	();
-	void			scheduler_timeOut	(const QString &);
 	void			show_changeLabel (const QStringList notInOld,
                                           	  const QStringList notInNew);
-
-	void			process_tiiSelector	(bool);
 //
-//	triggered from the techdata
-	void			handleFramedumpButton	();
-	void			handleAudiodumpButton 	();
-
-	void			startJournaline			(int);
-	void			stopJournaline			(int);
-	void			journalineData			(QByteArray,
-	                                                         int);
-//	Somehow, these must be connected to the GUI
+//
 private slots:
-	void			waitingToDelete		();
+//	button and selectorhandlers
+	void			handle_configButton	();
+	void			handle_httpButton	();
 	void			handle_aboutLabel	();
-	void			show_pauzeSlide		();
-	void			handle_timeTable	();
 	void			handle_contentButton	();
 	void			handle_detailButton	();
 	void			handle_scanButton	();
 	void			handle_etiHandler	();
-
 	void			handle_spectrumButton	();
-
 	void			handle_scanListButton	();
 	void			handle_presetButton	();
 	void			handle_prevServiceButton        ();
 	void			handle_nextServiceButton        ();
-
-	void			handle_channelSelector		(const QString &);
 	void			handle_nextChannelButton	();
 	void			handle_prevChannelButton	();
+	void			handle_muteButton	();
+	void			handle_folderButton	();
+	void			devSL_visibility	();
 
-	void			handle_muteButton		();
-	void			handle_folderButton		();
-
-	void			handleScanListSelect	(const QString &);
-	void			TerminateProcess	();
-	void			updateTimeDisplay	();
-	void			channel_timeOut		();
-
-	void			handle_backgroundTask	(const QString &);
-
-	void			setPresetService	();
-	void			muteButton_timeOut	();
-
-	void			handle_configButton	();
-	void			handle_httpButton	();
+	void			handle_channelSelector	(const QString &);
 	void			setVolume		(int);
 	void			handle_snrLabel		();
 	void			handle_distanceLabel	();
+//
+//
+	void			TerminateProcess	();
+	void			updateTimeDisplay	();
+	void			channel_timeOut		();
+	void			setPresetService	();
+	void			muteButton_timeOut	();
+	void			waitingToDelete		();
+	void			show_pauzeSlide		();
 //
 //	color handlers
 	void			handle_labelColor	();
@@ -632,31 +689,4 @@ private slots:
 	void			color_configButton	();
 	void			color_httpButton	();
 
-	void			devSL_visibility	();
-
-//
-//	config handlers
-public slots:
-	void			selectDecoder			(int);
-	void			set_transmitters_local		(bool);
-	void			handle_correlationSelector	(int);
-	void			handle_LoggerButton		(int);
-	void			handle_set_coordinatesButton	();
-//	void			handle_transmSelector		(int);
-	void			handle_eti_activeSelector	(int);
-	void			handle_dcRemoval		(bool);
-	void			handle_loadTable		();
-	void			handle_tiiCollisions		(int);
-	void			handle_tiiFilter		(bool);
-
-	void			deviceListChanged		();
-	void			show_dl2			(uint8_t,
-	                                                         uint8_t,
-	                                                         const QString &);
-	void			nrActiveServices		(int);
-	void			handle_activeServices		();
-//
-//	and from the fib handler
-	void			tell_programType		(uint32_t, int);
-	void			cleanUp_mapHandler	();
 };

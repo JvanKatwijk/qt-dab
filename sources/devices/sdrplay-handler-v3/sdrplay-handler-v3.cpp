@@ -705,7 +705,7 @@ int	deviceIndex	= 0;
 	hwVersion	= devs [deviceIndex]. hwVer;
 //
 	try {
-	   int antennaValue;
+	   int antennaValue	= 'A';
 	   int	lnaBounds;
 	   bool	notch	= value_i (sdrplaySettings, SDRPLAY_SETTINGS,
 	                                          SDRPLAY_NOTCH, 0) != 0;

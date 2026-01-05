@@ -43,6 +43,7 @@
 	                                          1,
 	                                          biasT,
 	                                          ppmValue) {
+	(void)antennaValue;
 	theErrorLogger			= theLogger;
 //	setAntenna (antennaValue);
 	this	-> deviceModel		= "RSP-Dx";

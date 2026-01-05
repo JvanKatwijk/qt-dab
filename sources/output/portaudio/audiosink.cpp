@@ -132,7 +132,7 @@ int16_t	outputDevice;
 	   qDebug ("Open ostream error\n");
 	   return false;
 	}
-	fprintf (stderr, "stream opened\n");
+//	fprintf (stderr, "stream opened\n");
 	paCallbackReturn = paContinue;
 	err = Pa_StartStream (ostream);
 	if (err != paNoError) {

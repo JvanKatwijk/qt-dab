@@ -217,12 +217,12 @@ void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 //	version in the aforementioned paper.
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
-	                     int32_t blkno,
+	                     int32_t	blkno,
 	                     std::vector<int16_t> &softbits,
-	                     DABFLOAT snr) {
+	                     DABFLOAT	snr) {
 
 DABFLOAT sum	= 0;
-DABFLOAT bitSum	= 0;
+//DABFLOAT bitSum	= 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
@@ -266,100 +266,100 @@ DABFLOAT bitSum	= 0;
 	   sigmaSQ_Vector [index] =
 	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
 //
-	   if (this -> decoder == DECODER_1) {
-	      DABFLOAT corrector	=
-	          1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
-	      corrector			/= (1 / snr + 2);
-	      Complex R1	= corrector * normalize (fftBin) * 
+	   switch (this -> decoder) {
+	      case DECODER_1: {
+	         DABFLOAT corrector	=
+	             1.5 *  meanLevelVector [index] / sigmaSQ_Vector [index];
+	         corrector		/= (1 / snr + 2);
+	         Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (binAbsLevel * 
 	                                              jan_abs (prevS)));
-	      DABFLOAT scaler		=  140.0 / meanValue;
-	      DABFLOAT leftBit		= - real (R1) * scaler;
-	      limit_symmetrically (leftBit, MAX_VITERBI);
-	      softbits [i]		= (int16_t)leftBit;
+	         DABFLOAT scaler	=  140.0 / meanValue;
+	         DABFLOAT leftBit	= - real (R1) * scaler;
+	         limit_symmetrically (leftBit, MAX_VITERBI);
+	         softbits [i]		= (int16_t)leftBit;
 
-	      DABFLOAT rightBit		= - imag (R1) * scaler;
-	      limit_symmetrically (rightBit, MAX_VITERBI);
-	      softbits [i + carriers]	= (int16_t)rightBit;
-
-	      sum			+= jan_abs (R1);
-	   }
-	   else 
-	   if (this -> decoder == DECODER_2) {	// decoder 2
-	      DABFLOAT corrector	=
-	          meanLevelVector [index] / sigmaSQ_Vector [index];
-	      corrector		/= (1 / snr + 3);
-	      Complex R1	= corrector * normalize (fftBin) * 
+	         DABFLOAT rightBit	= - imag (R1) * scaler;
+	         limit_symmetrically (rightBit, MAX_VITERBI);
+	         softbits [i + carriers]	= (int16_t)rightBit;
+	         sum			+= jan_abs (R1);
+	      }
+	      break;
+	    
+	      case DECODER_2: {	// decoder 2
+	         DABFLOAT corrector	=
+	             meanLevelVector [index] / sigmaSQ_Vector [index];
+	         corrector		/= (1 / snr + 3);
+	         Complex R1	= corrector * normalize (fftBin) * 
 	                           (DABFLOAT)(sqrt (binAbsLevel *
 	                                      jan_abs (prevS)));
-	      DABFLOAT scaler		=  100.0 / meanValue;
-	      DABFLOAT leftBit		= - real (R1) * scaler;
-	      limit_symmetrically (leftBit, MAX_VITERBI);
-	      softbits [i]		= (int16_t)leftBit;
+	         DABFLOAT scaler	=  100.0 / meanValue;
+	         DABFLOAT leftBit	= - real (R1) * scaler;
+	         limit_symmetrically (leftBit, MAX_VITERBI);
+	         softbits [i]		= (int16_t)leftBit;
 
-	      DABFLOAT rightBit		= - imag (R1) * scaler;
-	      limit_symmetrically (rightBit, MAX_VITERBI);
-	      softbits [i + carriers]	= (int16_t)rightBit;
+	         DABFLOAT rightBit	= - imag (R1) * scaler;
+	         limit_symmetrically (rightBit, MAX_VITERBI);
+	         softbits [i + carriers]	= (int16_t)rightBit;
+	         sum			+= jan_abs (R1);
+	      }
+	      break;
 
-	      sum			+= jan_abs (R1);
-	   }
-	   else
-	   if (this -> decoder == DECODER_3) {  // Optimal 1
-	      Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
-	      DABFLOAT scaler   =  140.0 / meanValue;
+	      case DECODER_3:
+	      default: {	 // Optimal 1
+	         Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
+	         DABFLOAT scaler	=  140.0 / meanValue;
+	         DABFLOAT leftBit	= - real (R1) * scaler;
+	         limit_symmetrically (leftBit, MAX_VITERBI);
+	         softbits [i]		= (int16_t)leftBit;
+	         DABFLOAT rightBit	= - imag (R1) * scaler;
+	         limit_symmetrically (rightBit, MAX_VITERBI);
+	         softbits [i + carriers]   = (int16_t)rightBit;
+	         sum += jan_abs (R1);
+	      }
+	      break;
+	   
+	      case DECODER_4 : {	// decoder 4, just for fun
+	         DABFLOAT A	= 1.0 / sigmaSQ_Vector [index];
+	         DABFLOAT P1	= makeA (1, current, prevS) * A;
+	         DABFLOAT P7	= makeA (7, current, prevS) * A;
+	         DABFLOAT P3	= makeA (3, current, prevS) * A;
+	         DABFLOAT P5	= makeA (5, current, prevS) * A;
 
-	      DABFLOAT leftBit  = - real (R1) * scaler;
-	      limit_symmetrically (leftBit, MAX_VITERBI);
-	      softbits [i]      = (int16_t)leftBit;
+	         DABFLOAT IO_P1 = IO (P1);
+	         DABFLOAT IO_P7 = IO (P7);
+	         DABFLOAT IO_P3 = IO (P3);
+	         DABFLOAT IO_P5 = IO (P5);
 
-	      DABFLOAT rightBit = - imag (R1) * scaler;
-	      limit_symmetrically (rightBit, MAX_VITERBI);
-	      softbits [i + carriers]   = (int16_t)rightBit;
+	         DABFLOAT F1	= (IO_P1 + IO_P7) / (IO_P3 + IO_P5);
+	         DABFLOAT F2	= (IO_P1 + IO_P3) / (IO_P5 + IO_P7);
+	         if (std::isinf (F1))
+	            F1 = 10.0;
+	         if (std::isinf (F2))
+	            F2 = 10.0;
+	         if (F1 < 0.01)
+	            F1 = 0.01;
+	         if (F2 < 0.01)
+	            F2 = 0.01;
+	         DABFLOAT b1 = log (F1);
+	         DABFLOAT b2 = log (F2);
 
-	      sum += jan_abs (R1);
-	   }
-	   else 	// experimental optimum 3
-	   if (this -> decoder == DECODER_4) {	// decoder 4
-//	      DABFLOAT A = meanLevelVector [index] /
-	      DABFLOAT A =       1.0 / sigmaSQ_Vector [index];
-	      DABFLOAT P1 =  makeA (1, current, prevS) * A;
-	      DABFLOAT P7 =  makeA (7, current, prevS) * A;
-	      DABFLOAT P3 =  makeA (3, current, prevS) * A;
-	      DABFLOAT P5 =  makeA (5, current, prevS) * A;
+	         if (std::isnan (b1))
+	            b1 = 0;
+	         if (std::isnan (b2))
+	            b2 = 0;
+	         DABFLOAT scaler   =  140.0 / meanValue;
 
-	      DABFLOAT IO_P1 = IO (P1);
-	      DABFLOAT IO_P7 = IO (P7);
-	      DABFLOAT IO_P3 = IO (P3);
-	      DABFLOAT IO_P5 = IO (P5);
+	         DABFLOAT leftBit	=  - b1 * scaler;
+	         limit_symmetrically (leftBit, MAX_VITERBI);
+	         softbits [i]	= (int16_t)leftBit;
 
-	      DABFLOAT F1	= (IO_P1 + IO_P7) / (IO_P3 + IO_P5);
-	      DABFLOAT F2	= (IO_P1 + IO_P3) / (IO_P5 + IO_P7);
-	      if (std::isinf (F1))
-	         F1 = 10.0;
-	      if (std::isinf (F2))
-	         F2 = 10.0;
-	      if (F1 < 0.01)
-	         F1 = 0.01;
-	      if (F2 < 0.01)
-	         F2 = 0.01;
-	      DABFLOAT b1 = log (F1);
-	      DABFLOAT b2 = log (F2);
-
-	      if (std::isnan (b1))
-	         b1 = 0;
-	      if (std::isnan (b2))
-	         b2 = 0;
-	      DABFLOAT scaler   =  140.0 / meanValue;
-
-	      DABFLOAT leftBit	=  - b1 * scaler;
-	      limit_symmetrically (leftBit, MAX_VITERBI);
-	      softbits [i]	= (int16_t)leftBit;
-
-	      DABFLOAT rightBit	=  - b2 * scaler;
-	      limit_symmetrically (rightBit, MAX_VITERBI);
-	      softbits [carriers + i] = (int16_t)rightBit;
-
-	      sum		+= abs (Complex (b1, b2));
+	         DABFLOAT rightBit	=  - b2 * scaler;
+	         limit_symmetrically (rightBit, MAX_VITERBI);
+	         softbits [carriers + i] = (int16_t)rightBit;
+	         sum		+= abs (Complex (b1, b2));
+	      }
+	      break;
 	   }
 	}
 
