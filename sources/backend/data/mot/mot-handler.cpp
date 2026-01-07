@@ -131,8 +131,6 @@ int32_t	i;
 	   case 3:	// mot header
 	      if (segmentNumber == 0) {
 	         motObject *h = getHandle (transportId);
-	         if (h != nullptr) 
-	            break;
 	         h = new motObject (myRadioInterface,
 	                            SId,
 	                            false,	// not within a directory

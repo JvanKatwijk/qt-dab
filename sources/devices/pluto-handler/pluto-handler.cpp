@@ -47,7 +47,7 @@ char*	get_ch_name (const char* type, int id) {
         return tmpstr;
 }
 //
-//	Nite that while Ubuntu 22 has the support libraries in the
+//	Note that while Ubuntu 22 has the support libraries in the
 //	repository, Fedora does NOT
 ///////////////////////////////////////////////////////////////////////////
 

@@ -584,7 +584,6 @@ uint16_t	index;
 	switch (groupType) {
 	   case 3:
 	      if (currentSlide. isNull ()) {
-//	         fprintf (stderr, "creating %d\n", transportId);
 	         currentSlide. reset (new motObject (myRadioInterface,
 	                                             SId,
 	                                             false,
@@ -599,16 +598,14 @@ uint16_t	index;
 //	         fprintf (stderr, "out goes %d, in comes %d\n",
 //	                          currentSlide -> get_transportId(),
 //	                                           transportId);
-//	         delete currentSlide;
-//	         currentSlide. reset (new motObject (myRadioInterface,
-//	                                         false,
-//	   	                                 transportId,
-//	                                         &data [index + 2],
-//	                                         -1,
-//	                                         segmentSize,
-//	                                         lastFlag,
-//	                                         backgroundFlag
-//	                                       ));
+	         currentSlide. reset (new motObject (myRadioInterface,
+	                                             SId,
+	                                             false,
+	   	                                     transportId,
+	                                             &data [index + 2],
+	                                             segmentSize,
+	                                             backgroundFlag
+	                                          ));
 	      }
 	      break;
 

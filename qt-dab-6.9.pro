@@ -26,9 +26,6 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
-#QMAKE_CFLAGS	+=  -pg  -O3
-#QMAKE_CXXFLAGS	+=  -pg  -O3
-#QMAKE_LFLAGS	+=  -pg  -O3
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
