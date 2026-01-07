@@ -49,9 +49,6 @@
 #ifdef	HAVE_AIRSPY
 #include	"airspy-handler.h"
 #define	AIRSPY_DEVICE		0204
-#elif	HAVE_AIRSPY_2
-#include	"airspy-2.h"
-#define	AIRSPY_DEVICE		0204
 #endif
 #ifdef	HAVE_HACKRF
 #include	"hackrf-handler.h"
@@ -161,9 +158,9 @@
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 	addtoList ("dabstick");
 #endif
-#ifdef	HAVE_AIRSPY_2
-	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
-	addtoList ("airspy-2");
+#ifdef	HAVE_AIRSPY_DEVICE
+	deviceList. push_back (deviceItem ("airspy", AIRSPY_DEVICE));
+	addtoList ("airspy");
 #endif
 #ifdef	HAVE_HACKRF
 	deviceList. push_back (deviceItem ("hackrf", HACKRF_DEVICE));
@@ -281,9 +278,9 @@ int	deviceNumber	= getDeviceIndex (s);
 	                                                     theErrorLogger);
 	      break;
 #endif
-#ifdef 	HAVE_AIRSPY_2
+#ifdef 	HAVE_AIRSPY
 	   case AIRSPY_DEVICE:
-	      return new airspy_2 (dabSettings, version, theErrorLogger);
+	      return new airspyHandler (dabSettings, version, theErrorLogger);
 	      break;
 #endif
 #ifdef	HAVE_HACKRF

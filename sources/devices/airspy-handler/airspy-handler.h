@@ -87,22 +87,21 @@ extern "C"  {
  typedef int (*pfn_airspy_set_sensitivity_gain)(struct airspy_device* device, uint8_t value);
 }
 
-class airspy_2 final: // public QObject,
-	              public deviceHandler, public Ui_airspyWidget {
+class airspyHandler: public deviceHandler, public Ui_airspyWidget {
 Q_OBJECT
 public:
-			airspy_2		(QSettings *,
+			airspyHandler		(QSettings *,
 	                                         const QString &,
 	                                         errorLogger *);
-			~airspy_2		();
-	int32_t		defaultFrequency	();
+			~airspyHandler		();
+//	int32_t		defaultFrequency	();
 	bool		restartReader		(int32_t, int samplesSkipped = 0);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *v, int32_t size);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
-	int		getBufferSpace		();
+//	int		getBufferSpace		();
 	QString		deviceName		();
 
 	void		startDump		();

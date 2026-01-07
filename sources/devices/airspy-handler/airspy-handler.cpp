@@ -9,7 +9,7 @@
  *
  * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
  *
- *	recoding, taking parts and extending for the airspy_2 interface
+ *	recoding, taking parts and extending for the airspyHandler interface
  *	for the Qt-DAB program
  *	jan van Katwijk
  *	Lazy Chair Computing
@@ -20,7 +20,7 @@
 #include	<QTime>
 #include	<QDate>
 #include	"dab-constants.h"
-#include	"airspy-2.h"
+#include	"airspy-handler.h"
 #include	"position-handler.h"
 #include	"airspyselect.h"
 #include	"device-exceptions.h"
@@ -37,9 +37,9 @@ const	int	EXTIO_NS	=  8192;
 static
 const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
-	airspy_2::airspy_2 (QSettings *s,
-	                    const QString  &recorderVersion,
-	                    errorLogger	*theLogger) :
+	airspyHandler::airspyHandler (QSettings *s,
+	                              const QString  &recorderVersion,
+	                              errorLogger	*theLogger) :
                                          _I_Buffer (4 * 1024 * 1024) {
 int	result;
 int	distance	= 1000000;
@@ -135,7 +135,7 @@ uint32_t samplerateCount;
 	   throw (device_exception ("Cannot handle the samplerates"));
 	}
 
-	fprintf (stderr, "selected samplerate = %d\n", selectedRate);
+	samplerateLabel	-> setText (QString::number (selectedRate));
 	result = my_airspy_set_samplerate (device, selectedRate);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -165,38 +165,38 @@ uint32_t samplerateCount;
 //
 	restore_gainSettings (tab);
 	connect (linearitySlider, &QSlider::valueChanged,
-	         this, &airspy_2::set_linearity);
+	         this, &airspyHandler::set_linearity);
 	connect (sensitivitySlider, &QSlider::valueChanged,
-	         this, &airspy_2::set_sensitivity);
+	         this, &airspyHandler::set_sensitivity);
 	connect (lnaSlider, &QSlider::valueChanged,
-	         this, &airspy_2::set_lna_gain);
+	         this, &airspyHandler::set_lna_gain);
 	connect (vgaSlider, &QSlider::valueChanged,
-	         this, &airspy_2::set_vga_gain);
+	         this, &airspyHandler::set_vga_gain);
 	connect (mixerSlider, &QSlider::valueChanged,
-	         this, &airspy_2::set_mixer_gain);
+	         this, &airspyHandler::set_mixer_gain);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (lnaButton, &QCheckBox::checkStateChanged,
 #else
 	connect (lnaButton, &QCheckBox::stateChanged,
 #endif
-	         this, &airspy_2::set_lna_agc);
+	         this, &airspyHandler::set_lna_agc);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (mixerButton, &QCheckBox::checkStateChanged,
 #else
 	connect (mixerButton, &QCheckBox::stateChanged,
 #endif
-	         this, &airspy_2::set_mixer_agc);
+	         this, &airspyHandler::set_mixer_agc);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasButton, &QCheckBox::checkStateChanged,
 #else
 	connect (biasButton, &QCheckBox::stateChanged,
 #endif
-	         this, &airspy_2::set_rf_bias);
+	         this, &airspyHandler::set_rf_bias);
 	connect (tabWidget, &QTabWidget::currentChanged,
-	         this, &airspy_2::switch_tab);
+	         this, &airspyHandler::switch_tab);
 	connect (dumpButton, &QPushButton::clicked,
-	         this, &airspy_2::set_xmlDump);
-	connect (this, &airspy_2::new_tabSetting,
+	         this, &airspyHandler::set_xmlDump);
+	connect (this, &airspyHandler::new_tabSetting,
 	         tabWidget, &QTabWidget::setCurrentIndex);
 //
 	displaySerial	-> setText (getSerial());
@@ -206,7 +206,7 @@ uint32_t samplerateCount;
 	dumping. store (false);
 }
 
-	airspy_2::~airspy_2 () {
+	airspyHandler::~airspyHandler () {
 	stopReader ();
 	myFrame. hide ();
 	storeWidgetPosition (airspySettings, &myFrame, AIRSPY_SETTINGS);
@@ -232,7 +232,7 @@ uint32_t samplerateCount;
 	delete library_p;
 }
 
-bool	airspy_2::restartReader	(int32_t freq, int samplesSkipped) {
+bool	airspyHandler::restartReader	(int32_t freq, int samplesSkipped) {
 int	result;
 //int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 
@@ -286,7 +286,7 @@ int	result;
 	return true;
 }
 
-void	airspy_2::stopReader() {
+void	airspyHandler::stopReader() {
 int	result;
 
 	if (!running. load())
@@ -310,12 +310,12 @@ int	result;
 }
 //
 //	Directly copied from the airspy extio dll from Andrea Montefusco
-int airspy_2::callback (airspy_transfer* transfer) {
-airspy_2 *p;
+int airspyHandler::callback (airspy_transfer* transfer) {
+airspyHandler *p;
 
 	if (!transfer)
 	   return 0;		// should not happen
-	p = static_cast<airspy_2 *> (transfer -> ctx);
+	p = static_cast<airspyHandler *> (transfer -> ctx);
 
 // we read  AIRSPY_SAMPLE_INT16_IQ:
 	int32_t bytes_to_write = transfer -> sample_count * sizeof (int16_t) * 2; 
@@ -328,7 +328,7 @@ airspy_2 *p;
 //	2*2 = 4 bytes for sample, as per AirSpy USB data stream format
 //	Rate conversion is done using the samplerate library
 //	with a selectable "quality level"
-int 	airspy_2::data_available (void *buf, int buf_size) {	
+int 	airspyHandler::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
 std::complex<float> temp [SAMPLERATE / 1000];
@@ -368,7 +368,7 @@ std::complex<float> temp [SAMPLERATE / 1000];
 	return 0;
 }
 //
-const char *airspy_2::getSerial () {
+const char *airspyHandler::getSerial () {
 airspy_read_partid_serialno_t read_partid_serialno;
 int result = my_airspy_board_partid_serialno_read (device,
 	                                          &read_partid_serialno);
@@ -385,29 +385,29 @@ int result = my_airspy_board_partid_serialno_read (device,
 }
 //
 //	not used here
-int	airspy_2::open() {
+int	airspyHandler::open() {
 	return 0;
 }
 
 //
 //	These functions are added for the SDR-J interface
-void	airspy_2::resetBuffer	() {
+void	airspyHandler::resetBuffer	() {
 	_I_Buffer. FlushRingBuffer	();
 }
 
-int16_t	airspy_2::bitDepth		() {
+int16_t	airspyHandler::bitDepth		() {
 	return 13;
 }
 
-int32_t	airspy_2::getSamples (std::complex<float> *v, int32_t size) {
+int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 	return _I_Buffer. getDataFromBuffer (v, size);
 }
 
-int32_t	airspy_2::Samples		() {
+int32_t	airspyHandler::Samples		() {
 	return _I_Buffer. GetRingBufferReadAvailable();
 }
 //
-const char* airspy_2::board_id_name() {
+const char* airspyHandler::board_id_name() {
 uint8_t bid;
 
 	if (my_airspy_board_id_read (device, &bid) == AIRSPY_SUCCESS)
@@ -416,7 +416,7 @@ uint8_t bid;
 	   return "UNKNOWN";
 }
 //
-bool	airspy_2::load_airspyFunctions() {
+bool	airspyHandler::load_airspyFunctions() {
 //
 //	link the required procedures
 	my_airspy_init	= (pfn_airspy_init)
@@ -598,15 +598,15 @@ bool	airspy_2::load_airspyFunctions() {
 	return true;
 }
 
-int	airspy_2::getBufferSpace	() {
-	return _I_Buffer. GetRingBufferWriteAvailable ();
-}
+//int	airspyHandler::getBufferSpace	() {
+//	return _I_Buffer. GetRingBufferWriteAvailable ();
+//}
 
-QString	airspy_2::deviceName	() {
+QString	airspyHandler::deviceName	() {
 	return QString ("AIRspy :") + QString (getSerial ());
 }
 
-void	airspy_2::set_xmlDump () {
+void	airspyHandler::set_xmlDump () {
 	if (xmlWriter. isNull ()) {
 	   setup_xmlDump (false);
 	}
@@ -615,15 +615,15 @@ void	airspy_2::set_xmlDump () {
 	}
 }
 
-void	airspy_2::startDump	() {
+void	airspyHandler::startDump	() {
 	setup_xmlDump (true);
 }
 
-void	airspy_2::stopDump	() {
+void	airspyHandler::stopDump	() {
 	close_xmlDump	();
 }
 
-bool	airspy_2::setup_xmlDump (bool direct) {
+bool	airspyHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (airspySettings, DAB_GENERAL,
 	                                            "channel", "xx");
 	try {
@@ -646,7 +646,7 @@ QString channel		= value_s (airspySettings, DAB_GENERAL,
 	return true;
 }
 
-void	airspy_2::close_xmlDump () {
+void	airspyHandler::close_xmlDump () {
 	if (xmlWriter. isNull ())	// this can happen !!
 	   return;
 	dumping. store (false);
@@ -659,7 +659,7 @@ void	airspy_2::close_xmlDump () {
 //
 //	gain settings are maintained on a per-channel and per tab base,
 //	Values are recorded on both switching tabs and changing channels
-void	airspy_2::record_gainSettings	(int freq, int tab) {
+void	airspyHandler::record_gainSettings	(int freq, int tab) {
 QString	res;
 QString key;
 
@@ -690,7 +690,7 @@ QString key;
 //	When starting a channel, the gain sliders from the previous
 //	time that channel was the current channel, are restored
 //	Note that the device settings are NOT yet updated
-void	airspy_2::restore_gainSliders	(int freq, int tab) {
+void	airspyHandler::restore_gainSliders	(int freq, int tab) {
 int	lna	= 0;
 int	mixer	= 0;
 int	bias	= 0;
@@ -710,20 +710,20 @@ QString	def	= "";
 	switch (tab) {
 	   case 0:
 	      disconnect (sensitivitySlider, &QSlider::valueChanged,
-	                  this, &airspy_2::set_sensitivity);
+	                  this, &airspyHandler::set_sensitivity);
 	      sensitivitySlider -> setValue (list. at (0). toInt ());
 	      connect (sensitivitySlider, &QSlider::valueChanged,
-	               this, &airspy_2::set_sensitivity);
+	               this, &airspyHandler::set_sensitivity);
 	      lna	= list. at (1). toInt ();
 	      mixer	= list. at (2). toInt ();
 	      bias	= list. at (3). toInt ();
 	      break;
 	   case 1:
 	      disconnect (linearitySlider, &QSlider::valueChanged,
-	                  this, &airspy_2::set_linearity);
+	                  this, &airspyHandler::set_linearity);
 	      linearitySlider -> setValue (list. at (0). toInt ());
 	      connect (linearitySlider, &QSlider::valueChanged,
-	               this, &airspy_2::set_linearity);
+	               this, &airspyHandler::set_linearity);
 	      lna	= list. at (1). toInt ();
 	      mixer	= list. at (2). toInt ();
 	      bias	= list. at (3). toInt ();
@@ -731,20 +731,20 @@ QString	def	= "";
 
 	   default:	// classic view
 	      disconnect (vgaSlider, &QSlider::valueChanged,
-	                  this, &airspy_2::set_vga_gain);
+	                  this, &airspyHandler::set_vga_gain);
 	      disconnect (mixerSlider, &QSlider::valueChanged,
-	                  this, &airspy_2::set_mixer_gain);
+	                  this, &airspyHandler::set_mixer_gain);
 	      disconnect (lnaSlider, &QSlider::valueChanged,
-	                  this, &airspy_2::set_lna_gain);
+	                  this, &airspyHandler::set_lna_gain);
 	      vgaSlider		-> setValue (list. at (0). toInt ());
 	      mixerSlider	-> setValue (list. at (1). toInt ());
 	      lnaSlider		-> setValue (list. at (2). toInt ());
 	      connect (vgaSlider, &QSlider::valueChanged,
-	               this, &airspy_2::set_vga_gain);
+	               this, &airspyHandler::set_vga_gain);
 	      connect (mixerSlider, &QSlider::valueChanged,
-	               this, &airspy_2::set_mixer_gain);
+	               this, &airspyHandler::set_mixer_gain);
 	      connect (lnaSlider, &QSlider::valueChanged,
-	               this, &airspy_2::set_lna_gain);
+	               this, &airspyHandler::set_lna_gain);
 	      lna	= list. at (3). toInt ();
 	      mixer	= list. at (4). toInt ();
 	      bias	= list. at (5). toInt ();
@@ -756,19 +756,19 @@ QString	def	= "";
 #else
 	disconnect (lnaButton, &QCheckBox::stateChanged,
 #endif
-	            this, &airspy_2::set_lna_agc);
+	            this, &airspyHandler::set_lna_agc);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	disconnect (mixerButton, &QCheckBox::checkStateChanged,
 #else
 	disconnect (mixerButton, &QCheckBox::stateChanged,
 #endif
-	            this, &airspy_2::set_mixer_agc);
+	            this, &airspyHandler::set_mixer_agc);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	disconnect (biasButton, &QCheckBox::checkStateChanged,
 #else
 	disconnect (biasButton, &QCheckBox::stateChanged,
 #endif
-	            this, &airspy_2::set_rf_bias);
+	            this, &airspyHandler::set_rf_bias);
 	if (lna != 0)
 	   lnaButton	-> setChecked (true);
 	if (mixer != 0)
@@ -780,22 +780,22 @@ QString	def	= "";
 #else
 	connect (lnaButton, &QCheckBox::stateChanged,
 #endif
-	         this, &airspy_2::set_lna_agc);
+	         this, &airspyHandler::set_lna_agc);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (mixerButton, &QCheckBox::checkStateChanged,
 #else
 	connect (mixerButton, &QCheckBox::stateChanged,
 #endif
-	         this, &airspy_2::set_mixer_agc);
+	         this, &airspyHandler::set_mixer_agc);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasButton, &QCheckBox::checkStateChanged,
 #else
 	connect (biasButton, &QCheckBox::stateChanged,
 #endif
-	         this, &airspy_2::set_rf_bias);
+	         this, &airspyHandler::set_rf_bias);
 }
 
-void	airspy_2::restore_gainSettings	(int tab) {
+void	airspyHandler::restore_gainSettings	(int tab) {
 	switch (tab) {
 	   case 0:	//sensitivity
 	      set_sensitivity (sensitivitySlider -> value ());
@@ -818,7 +818,7 @@ void	airspy_2::restore_gainSettings	(int tab) {
 	   set_rf_bias (1);
 }
 
-void	airspy_2::switch_tab (int t) {
+void	airspyHandler::switch_tab (int t) {
 	record_gainSettings (lastFrequency / MHz (1),
 	                           tabWidget -> currentIndex ());
 	tabWidget       -> blockSignals (true);
@@ -840,7 +840,7 @@ uint8_t airspy_sensitivity_vga_gains[GAIN_COUNT] = { 13, 12, 11, 10, 9, 8, 7, 6,
 uint8_t airspy_sensitivity_mixer_gains[GAIN_COUNT] = { 12, 12, 12, 12, 11, 10, 10, 9, 9, 8, 7, 4, 4, 4, 3, 2, 2, 1, 0, 0, 0, 0 };
 uint8_t airspy_sensitivity_lna_gains[GAIN_COUNT] = { 14, 14, 14, 14, 14, 14, 14, 14, 14, 13, 12, 12, 9, 9, 8, 7, 6, 5, 3, 2, 1, 0 };
 
-void	airspy_2::set_linearity (int value) {
+void	airspyHandler::set_linearity (int value) {
 int	result = my_airspy_set_linearity_gain (device, value);
 int	temp;
 	if (result != AIRSPY_SUCCESS) {
@@ -858,7 +858,7 @@ int	temp;
 	linearity_vgaDisplay	-> display (temp);
 }
 
-void	airspy_2::set_sensitivity (int value) {
+void	airspyHandler::set_sensitivity (int value) {
 int	result = my_airspy_set_sensitivity_gain (device, value);
 int	temp;
 	if (result != AIRSPY_SUCCESS) {
@@ -878,7 +878,7 @@ int	temp;
 
 //	Original functions from the airspy extio dll
 /* Parameter value shall be between 0 and 15 */
-void	airspy_2::set_lna_gain (int value) {
+void	airspyHandler::set_lna_gain (int value) {
 int result = my_airspy_set_lna_gain (device, lnaGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -891,7 +891,7 @@ int result = my_airspy_set_lna_gain (device, lnaGain = value);
 }
 
 /* Parameter value shall be between 0 and 15 */
-void	airspy_2::set_mixer_gain (int value) {
+void	airspyHandler::set_mixer_gain (int value) {
 int result = my_airspy_set_mixer_gain (device, mixerGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -904,7 +904,7 @@ int result = my_airspy_set_mixer_gain (device, mixerGain = value);
 }
 
 /* Parameter value shall be between 0 and 15 */
-void	airspy_2::set_vga_gain (int value) {
+void	airspyHandler::set_vga_gain (int value) {
 int result = my_airspy_set_vga_gain (device, vgaGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -921,7 +921,7 @@ int result = my_airspy_set_vga_gain (device, vgaGain = value);
 	0=Disable LNA Automatic Gain Control
 	1=Enable LNA Automatic Gain Control
 */
-void	airspy_2::set_lna_agc	(int dummy) {
+void	airspyHandler::set_lna_agc	(int dummy) {
 	(void)dummy;
 	lna_agc	= lnaButton	-> isChecked ();
 	int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
@@ -937,7 +937,7 @@ void	airspy_2::set_lna_agc	(int dummy) {
 	0=Disable MIXER Automatic Gain Control
 	1=Enable MIXER Automatic Gain Control
 */
-void	airspy_2::set_mixer_agc	(int dummy) {
+void	airspyHandler::set_mixer_agc	(int dummy) {
 	(void)dummy;
 	mixer_agc	= mixerButton -> isChecked ();
 
@@ -951,7 +951,7 @@ int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 }
 
 /* Parameter value shall be 0=Disable BiasT or 1=Enable BiasT */
-void	airspy_2::set_rf_bias (int dummy) {
+void	airspyHandler::set_rf_bias (int dummy) {
 	(void)dummy;
 	rf_bias	= biasButton -> isChecked ();
 int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
@@ -963,7 +963,7 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	}
 }
 
-void	airspy_2::showStatus	(const QString s) {
+void	airspyHandler::showStatus	(const QString s) {
 	statusLabel -> setText (s);
 }
 

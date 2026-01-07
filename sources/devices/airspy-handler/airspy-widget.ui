@@ -555,12 +555,25 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>371</width>
+     <width>201</width>
      <height>18</height>
     </rect>
    </property>
    <property name="text">
     <string>statusLabel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="samplerateLabel">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>90</y>
+     <width>141</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>rate</string>
    </property>
   </widget>
  </widget>

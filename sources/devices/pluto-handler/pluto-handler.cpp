@@ -98,6 +98,7 @@ char*	get_ch_name (const char* type, int id) {
 
 	rx_cfg. bw_hz			= 1536000;
 	rx_cfg. fs_hz			= PLUTO_RATE;
+	rateLabel	-> setText (QString::number (PLUTO_RATE));
 	rx_cfg. lo_hz			= 220000000;
 	rx_cfg. rfport			= "A_BALANCED";
 
@@ -133,7 +134,7 @@ char*	get_ch_name (const char* type, int id) {
 	if (ctx == nullptr) {
 //	   ctx = iio_create_network_context ("pluto.local");
 	   ctx = iio_create_network_context (context. toLatin1 (). data ());
-	   contextName	-> setText ("pluto.local");
+	   contextName	-> setText (context);
 	}
 
 	if (ctx == nullptr) {

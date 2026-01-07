@@ -446,7 +446,7 @@ CONFIG		+= sdrplay-v3
 CONFIG		+= sdrplay-duo
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
-CONFIG		+= airspy-2
+CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
@@ -499,7 +499,7 @@ isEmpty(GITHASHSTRING) {
 	INCLUDEPATH	+= /mingw64/include/qwt-qt6
 	LIBS		+= -L/mingw64/lib
 	CONFIG		+= dabstick-win
-	CONFIG		+= airspy-2
+	CONFIG		+= airspy
 	CONFIG          += spyServer-16
         CONFIG          += spyServer-8
 	CONFIG		+= rtl_tcp
@@ -654,9 +654,10 @@ hackrf {
 #
 # airspy support
 #
+
 airspy {
 	DEFINES		+= HAVE_AIRSPY
-	DEPENDPATH	+= ./sources/devices/airspy 
+	DEPENDPATH	+= ./sources/devices/airspy-handler
 	INCLUDEPATH	+= ./sources/devices/airspy-handler \
 	                   ./sources/devices/airspy-handler/libairspy
 	HEADERS		+= ./sources/devices/airspy-handler/airspy-handler.h \
@@ -665,32 +666,6 @@ airspy {
 	SOURCES		+= ./sources/devices/airspy-handler/airspy-handler.cpp \
 	                   ./sources/devices/airspy-handler/airspyselect.cpp
 	FORMS		+= ./sources/devices/airspy-handler/airspy-widget.ui
-}
-
-airspy-2 {
-	DEFINES		+= HAVE_AIRSPY_2
-	DEPENDPATH	+= ./sources/devices/airspy-2 
-	INCLUDEPATH	+= ./sources/devices/airspy-2 \
-	                   ./sources/devices/airspy-2/libairspy
-	HEADERS		+= ./sources/devices/airspy-2/airspy-2.h \
-	                   ./sources/devices/airspy-2/airspyselect.h \
-	                   ./sources/devices/airspy-2/libairspy/airspy.h
-	SOURCES		+= ./sources/devices/airspy-2/airspy-2.cpp \
-	                   ./sources/devices/airspy-2/airspyselect.cpp
-	FORMS		+= ./sources/devices/airspy-2/airspy-widget.ui
-}
-
-#	extio dependencies, windows only
-#
-extio {
-	DEFINES		+= HAVE_EXTIO
-	INCLUDEPATH	+= ./sources/devices/extio-handler
-	HEADERS		+= ./sources/devices/extio-handler/extio-handler.h \
-	                   ./sources/devices/extio-handler/common-readers.h \
-	                   ./sources/devices/extio-handler/virtual-reader.h
-	SOURCES		+= ./sources/devices/extio-handler/extio-handler.cpp \
-	                   ./sources/devices/extio-handler/common-readers.cpp \
-	                   ./sources/devices/extio-handler/virtual-reader.cpp
 }
 
 #
