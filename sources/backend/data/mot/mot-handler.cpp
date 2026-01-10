@@ -131,14 +131,16 @@ int32_t	i;
 	   case 3:	// mot header
 	      if (segmentNumber == 0) {
 	         motObject *h = getHandle (transportId);
-	         h = new motObject (myRadioInterface,
-	                            SId,
-	                            false,	// not within a directory
-	                            transportId,
-	                            &motVector [2],
-	                            segmentSize,
-	                            lastFlag);
-	         setHandle (h, transportId);
+	         if (h == nullptr) {
+	            h = new motObject (myRadioInterface,
+	                               SId,
+	                               false,	// not within a directory
+	                               transportId,
+	                               &motVector [2],
+	                               segmentSize,
+	                               lastFlag);
+	            setHandle (h, transportId);
+	         }
 	      }
 	      break; 
 

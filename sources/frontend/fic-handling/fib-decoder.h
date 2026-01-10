@@ -67,6 +67,7 @@ public:
 	int		freeSpace		();
 	QList<contentType> contentPrint		();
 	bool		is_SPI			(const uint32_t);
+	std::vector<basicService> getServices	();
 protected:
 	void		processFIB		(uint8_t *, uint16_t);
 private:

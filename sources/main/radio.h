@@ -87,7 +87,7 @@ class	ofdmHandler;
 class	deviceHandler;
 class	audioPlayer;
 class	common_fft;
-class	timeTableHandler;
+class	timeTableControl;
 class	audioDisplay;
 #ifdef	HAVE_PLUTO_RXTX
 class	dabStreamer;
@@ -272,7 +272,6 @@ private:
 	logger			theLogger;
 	scanHandler		theSCANHandler;
 	tiiMapper		theTIIProcessor;
-	timeTableHandler	theTimeTableHandler;
 	xmlExtractor		theXmlExtractor;
 	epgCompiler		theEpgCompiler;
 //	end of variables that are initalized
@@ -353,7 +352,8 @@ private:
 	                                                 const QString &,
 	                                                 int,
 	                                                 uint32_t);
-	QString			slidePath		(bool, uint32_t);
+	QString			slidePath		(bool, uint32_t,
+	                                                   const QString &);
 	void			stopMuting		();
 	void			setPeakLevel	(const std::vector<float> &);
 	QString			createTIILabel	(const transmitter &);
@@ -408,6 +408,8 @@ private:
 	bool			handle_keyEvent		(int);
 
 	int			journalineKey;
+
+	timeTableControl	*theControl;
 
 	std::atomic<bool>	running;
 //	Since the local position does not depend on the channel selected
@@ -499,6 +501,7 @@ public slots:
 //	connected in the Radio, coming from the config handler
 	void			handle_configFrame_closed	();
 	void			signal_dataTracer       (bool);
+	void			timeTableFrame_closed	();
 
 //	signals from ensemblehandler
 	void			localSelect		(const QString &c,
@@ -545,7 +548,6 @@ public slots:
 //	signals from the techWindow
 	void			handleAudiodumpButton 	();
 	void			handleFramedumpButton	();
-	void			handle_timeTable	();
 	void			handle_techFrame_closed		();
 
 //	signals from theNewDisplay
@@ -668,6 +670,8 @@ private slots:
 	void			setVolume		(int);
 	void			handle_snrLabel		();
 	void			handle_distanceLabel	();
+
+	void			handle_startTimeTable	();
 //
 //
 	void			TerminateProcess	();

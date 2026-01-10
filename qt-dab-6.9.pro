@@ -36,8 +36,9 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #
 #       For more parallel processing, uncomment the following
 #       defines
-#DEFINES	+= __MSC_THREAD__
 DEFINES		+= __THREADED_BACKEND__
+
+#	not yet functioning
 #DEFINES        += _UPLOAD_SCAN_RESULT_
 
 #DEFINES	+= __EPG_TRACE__  
@@ -117,12 +118,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/tech-window.h \
 	   ./sources/main/aboutdialog.h \
 	   ./sources/main/dxDisplay.h \
-	   ./sources/support/equalizer.h \
-	   ./sources/support/scan-handler.h \
-	   ./sources/support/scantable-handler.h \
-	   ./sources/support/audiosystem-selector.h \
-	   ./sources/support/dl2-handler.h \
-	   ./sources/support/http-handler.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
 	   ./sources/frontend/timesyncer.h \
@@ -179,6 +174,13 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/epg/xml-extractor.h \
 	   ./sources/output/converter_48000.h \
 	   ./sources/output/audio-player.h \
+	   ./sources/support/equalizer.h \
+	   ./sources/support/scan-handler.h \
+	   ./sources/support/scantable-handler.h \
+	   ./sources/support/audiosystem-selector.h \
+	   ./sources/support/dl2-handler.h \
+	   ./sources/support/http-handler.h \
+	   ./sources/support/timetable-control.h \
 	   ./sources/support/dab-constants.h \
 	   ./sources/support/bit-extractors.h \
 	   ./sources/support/charsets.h \
@@ -336,6 +338,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/dab-tables.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/dl2-handler.cpp \
+	   ./sources/support/timetable-control.cpp \
 	   ./sources/support/element-selector.cpp \
 	   ./sources/support/errorlog.cpp \
 	   ./sources/support/fft-handler.cpp \

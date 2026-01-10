@@ -181,6 +181,12 @@ public:
 	int16_t		FEC_scheme;
 
 };
+
+class	basicService {
+public:
+	QString		serviceName;
+	int32_t		SId;
+};
 //
 class	descriptorType {
 public:

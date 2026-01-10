@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>313</height>
+    <height>316</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,7 +60,7 @@
           <x>0</x>
           <y>0</y>
           <width>239</width>
-          <height>159</height>
+          <height>162</height>
          </rect>
         </property>
        </widget>
@@ -223,7 +223,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="epgLabel">
+        <widget class="clickablelabel" name="epgLabel">
          <property name="text">
           <string/>
          </property>

@@ -300,6 +300,11 @@ QString duration;
 	   bodyText = bodyText. left (55) + "...";
 	item3	-> setText (bodyText);
 	programDisplay -> setItem (row, 3, item3);
+//	fprintf (stderr,
+//	    "<tr>\n<th>%s</th>\n<th>%s</th>\n<th>%s</th>\n</tr>\n",
+//	      start. toLatin1 (). data (),
+//	      duration. toLatin1 (). data (),
+//	      bodyText. toLatin1 (). data ());
 }
 
 void	timeTableHandler::addRow	() {	// add empty row

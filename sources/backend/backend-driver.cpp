@@ -29,11 +29,10 @@
 //	Driver program for the selected backend. Embodying that in a
 //	separate class makes the "Backend" class simpler.
 
-
 	backendDriver::backendDriver (RadioInterface *mr,
 	                              logger		*theLogger,
-	                              descriptorType *d,
-	                              bool	backgroundFlag,
+	                              descriptorType	*d,
+	                              bool		backgroundFlag,
 	                              RingBuffer<std::complex<int16_t>> *audioBuffer,
 	                              RingBuffer<uint8_t> *dataBuffer,
 	                              RingBuffer<uint8_t> *frameBuffer,

@@ -25,6 +25,7 @@
 #include	<stdint.h>
 #include	<vector>
 #include	<QString>
+#include	"dab-constants.h"
 
 //	ensemble information relates to FIG1, basically some
 //	general, i.e. ensemble wide, data and mapping tables for
@@ -62,6 +63,7 @@ public:
 	QString	SIdToserv	(uint32_t SId);
 	int	programType	(uint32_t);
 	std::vector<int>	fmFrequencies	(uint32_t);
+	std::vector<basicService>	getServices	();
 };
 
 

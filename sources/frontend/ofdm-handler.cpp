@@ -280,9 +280,11 @@ int	snrCount	= 0;
 	         bool nullShower	= false;
 	         totalSamples	+= sampleCount;
 	         if (frameCount >= 10) {
-	            int diff	= (totalSamples - frameCount * T_F);
-	            diff	= (int)((float)SAMPLERATE / (frameCount * T_F) * diff);
-	            showClockError (diff);
+	            float rateError = SAMPLERATE * 
+	                          (totalSamples / ((float)frameCount * T_F) - 1);
+//	            int diff	= (totalSamples - frameCount * T_F);
+//	            diff	= (int)((float)SAMPLERATE / (frameCount * T_F) * diff);
+	            showClockError ((int)rateError);
 	            totalSamples = 0;
 	            frameCount	= 0;
 	            nullShower = true;
@@ -727,5 +729,9 @@ void	ofdmHandler::set_dcRemoval	(bool b) {
 
 void	ofdmHandler::set_dataTracer	(bool b) {
 	theMscHandler. set_dataTracer (b);
+}
+
+std::vector<basicService>  ofdmHandler::getServices	() {
+	return theFicHandler. getServices ();
 }
 

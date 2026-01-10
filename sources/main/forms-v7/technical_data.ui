@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>309</width>
-    <height>659</height>
+    <height>660</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,16 +56,6 @@
       </widget>
      </item>
     </layout>
-   </item>
-   <item>
-    <widget class="smallPushButton" name="timeTable_button">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If an EPG service is active then - at least after some time - it is possible that the EPG handler has processed time table data.&lt;/p&gt;&lt;p&gt;Touching this button will activate the time table handler. If no time table can be found it will be reported.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>timeTable</string>
-     </property>
-    </widget>
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout_2">
@@ -399,13 +389,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="bitRateLabel">
-       <property name="text">
-        <string>bitRate</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="uepField">
        <property name="minimumSize">
         <size>
@@ -438,6 +421,20 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="bitRateLabel">
+       <property name="text">
+        <string>bitRate</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="audiorateLabel">
+       <property name="text">
+        <string>48000</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="psLabel">
        <property name="text">
         <string>ps</string>
@@ -448,13 +445,6 @@
       <widget class="QLabel" name="sbrLabel">
        <property name="text">
         <string>sbr</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="audiorateLabel">
-       <property name="text">
-        <string>48000</string>
        </property>
       </widget>
      </item>

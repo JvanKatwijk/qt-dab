@@ -34,6 +34,7 @@
 #include	<QSettings>
 #include	<vector>
 #include	<cstdint>
+#include	"dab-constants.h"
 #include	"sample-reader.h"
 #include	"fic-handler.h"
 #include	"msc-handler.h"
@@ -120,6 +121,8 @@ public:
 	void		setCorrelationOrder	(bool);
 	void		setDXMode		(bool);
 	void		set_dcRemoval		(bool);
+
+	std::vector<basicService> getServices	();
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;

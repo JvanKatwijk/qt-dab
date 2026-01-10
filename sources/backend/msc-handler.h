@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -23,14 +23,7 @@
 #
 #pragma once
 
-#ifdef __MSC_THREAD__
-#include	<QThread>
-#include	<QWaitCondition>
-#include	<QSemaphore>
-#include	"fft-handler.h"
-#else
 #include	<QObject>
-#endif
 #include	<QMutex>
 #include	<atomic>
 #include	<cstdio>
@@ -48,11 +41,7 @@ class	RadioInterface;
 class	Backend;
 class	logger;
 
-#ifdef	__MSC_THREAD__
-class mscHandler: public QThread  {
-#else
 class	mscHandler: public QObject {
-#endif
 Q_OBJECT
 public:
 			mscHandler		(RadioInterface *,
@@ -83,11 +72,6 @@ private:
 	RingBuffer<uint8_t>	*frameBuffer;
 	logger		*theLogger;
 	uint8_t		cpuSupport;
-#ifdef	__MSC_THREAD__
-	fftHandler	fft;
-        QSemaphore      bufferSpace;
-#endif
-
 	RingBuffer<uint8_t>	*dataBuffer;
 	QMutex		locker;
 	bool		audioService;
@@ -103,16 +87,7 @@ private:
         void            processMsc	(int32_t n);
         QMutex          helper;
 	int		nrBlocks;
-#ifdef	__MSC_THREAD__
-	std::vector<Complex>     phaseReference;
-        void            processBlock_0	();
-        std::vector<std::vector<Complex > > command;
-        int16_t         amount;
-	void            run();
-        QWaitCondition  commandHandler;
-        std::atomic<bool>       running;
-#endif
 signals:
-	void		nrServices	(int);
+	void		activeServices	(int);
 };
 

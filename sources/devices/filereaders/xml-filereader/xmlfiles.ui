@@ -225,7 +225,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QFormLayout" name="formLayout">
+    <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -234,12 +234,9 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLCDNumber" name="nrBitsDisplay">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of bits recorded&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+      <widget class="QLabel" name="nrBitsDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
       </widget>
      </item>
@@ -251,12 +248,9 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLCDNumber" name="nrElementsDisplay">
-       <property name="digitCount">
-        <number>10</number>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+      <widget class="QLabel" name="nrElementsDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
       </widget>
      </item>
@@ -268,15 +262,9 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLCDNumber" name="frequencyDisplay">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Initial frequency of the recorded ensemble (in kHz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="digitCount">
-        <number>8</number>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+      <widget class="QLabel" name="samplerateDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
       </widget>
      </item>
@@ -288,15 +276,9 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLCDNumber" name="samplerateDisplay">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sampling rate in Hz (normally 2048000 Hz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="digitCount">
-        <number>8</number>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
+      <widget class="QLabel" name="frequencyDisplay">
+       <property name="text">
+        <string>0</string>
        </property>
       </widget>
      </item>

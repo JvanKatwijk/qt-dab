@@ -21,7 +21,7 @@
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>GackRF one</string>
+          <string>Hackrf One</string>
          </property>
         </widget>
        </item>

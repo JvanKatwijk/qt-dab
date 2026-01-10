@@ -84,12 +84,19 @@
 	this	-> theFrequency	=
 	                        theDescriptor -> blockList [0]. frequency;
         currentTime		-> display (0);
-	samplerateDisplay	-> display (theRate);
-	nrBitsDisplay		-> display (theDescriptor -> bitsperChannel);
+	frequencyDisplay	-> setAlignment (Qt::AlignRight);
+	frequencyDisplay	-> setText (QString::number (theFrequency / 1000) + " kHz");
+	samplerateDisplay	-> setAlignment (Qt::AlignRight);
+	samplerateDisplay	-> setText (QString::number (theRate));
+	nrBitsDisplay		-> setAlignment (Qt::AlignRight);
+	nrBitsDisplay		-> setText (QString::number (theDescriptor -> bitsperChannel));
+	QString res = QString::number (theDescriptor -> blockList [0]. nrElements);
+	nrElementsDisplay	-> setAlignment (Qt::AlignRight);
+	nrElementsDisplay	-> setText (res);
+
 	containerLabel		-> setText (theDescriptor -> container);
 	iqOrderLabel		-> setText (theDescriptor -> iqOrder);
 	byteOrderLabel		-> setText (theDescriptor -> byteOrder);
-	frequencyDisplay	-> display (theFrequency / 1000.0);
 	deviceGainLabel		-> hide ();
 	if (theDescriptor -> deviceGain > 0) {
 	   deviceGainLabel	-> show ();
@@ -104,8 +111,6 @@
 	recorderName		-> setText (theDescriptor -> recorderName);
 	recorderVersion		-> setText (theDescriptor -> recorderVersion);
 	recordingTime		-> setText (theDescriptor -> recordingTime);
-	QString res = QString::number (theDescriptor -> blockList [0]. nrElements);
-	nrElementsDisplay	-> display (res);
 #ifdef __MINGW32__
 	fprintf (stderr, "nrElements = %lld\n",
 #else
@@ -126,7 +131,7 @@
 	dataStart	= fileLength -
 	                   (uint64_t)(nrElements * (sampleSize / 2));
 	startpoint	-> setText (QString::number (dataStart));
-	if (dataStart <=1000)   // as with DABstart
+	if (dataStart <=1000)   // as with DABstar
 	   dataStart = 5000;
 
 	running. store (false);

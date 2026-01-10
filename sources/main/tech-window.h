@@ -48,7 +48,6 @@ public:
 	void	cleanUp			();
 	void	isDABPlus		(bool);
 	void	hideMissedLabel		();
-	void	showTimetableButton	(bool);
 	void	updateFM		(std::vector<int> &);
 private:
 	RadioInterface		*myRadioInterface;
@@ -90,7 +89,6 @@ private slots:
 	void		colorAudiodumpButton	();
 
 signals:
-	void		handleTimeTable		();
 	void		handleAudioDumping	();
 	void		handleFrameDumping	();
 };

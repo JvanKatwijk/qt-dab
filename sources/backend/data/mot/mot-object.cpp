@@ -119,6 +119,7 @@ uint16_t	rawContentType = 0;
 	               break;
 
 	            case 9:	// expiration time
+//	               fprintf (stderr, "expiration time\n");
 	               pointer += length;	//6.2.3.1.1
 	               break;
 

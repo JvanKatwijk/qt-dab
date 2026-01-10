@@ -139,6 +139,7 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 	   data = &(data [pLength]);
 	}
 }
+
 void	dataProcessor::handlePacket (const uint8_t *vec) {
 	if (traceFlag)
 	   teller ++;
@@ -164,7 +165,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   teller = 0;
 	   fouten = 0;
 	}
-
+//
+//	TS 300 401 5.3.2.0
 //	Continuity index:
 	const uint8_t cntIdx	= getBits (vec, 2, 2);
 //	First/Last flag:

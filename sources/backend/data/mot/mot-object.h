@@ -66,7 +66,7 @@ private:
 	QString		name;
 	void		handleComplete	();
 	std::map<int, QByteArray> motMap;
-
+	
 signals:
 	void	handle_motObject (QByteArray, QString, int, bool, uint32_t);
 };

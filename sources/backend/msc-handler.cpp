@@ -50,40 +50,21 @@ static int cifTable [] = {18, 72, 0, 36};
 	                                       params (dabMode),
 	                                       myMapper (dabMode),
 	                                       myRadioInterface (mr),
-	                                       frameBuffer (frameBuffer_i)
-#ifdef	__MSC_THREAD__
-	                                       ,fft (params. get_T_u (), false)
-	                                       ,bufferSpace (params. get_L())
-#endif		                            
-{
+	                                       frameBuffer (frameBuffer_i) {
 	this	-> theLogger	= theLogger;
 	this	-> cpuSupport	= cpuSupport;
 	cifVector. resize (55296);
 	BitsperBlock		= 2 * params. get_carriers();
 	softBits. resize (BitsperBlock);
 	nrBlocks		= params. get_L();
-	connect (this, &mscHandler::nrServices,
+	connect (this, &mscHandler::activeServices,
 	         mr, &RadioInterface::nrActiveServices);
 	
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
-#ifdef	__MSC_THREAD__
-	phaseReference	.resize (params. get_T_u());
-	command. resize (nrBlocks);
-	for (int i = 0; i < nrBlocks; i ++)
-	   command [i]. resize (params. get_T_u());
-	amount          = 0;
-	running. store (false);
-	start ();
-#endif
 }
 
 		mscHandler::~mscHandler () {
-#ifdef	__MSC_THREAD__
-	running. store (false);
-	while (isRunning())
-	   usleep (100);
-#endif
 	locker. lock();
 	for (auto &b : theBackends) {
 	   b -> stopRunning();
@@ -97,84 +78,9 @@ static int cifTable [] = {18, 72, 0, 36};
 //	Input is put into a buffer, a the code in a separate thread
 //	will handle the data from the buffer
 void	mscHandler::processBlock_0 (Complex *b) {
-#ifdef	__MSC_THREAD__
-	bufferSpace. acquire (1);
-	memcpy (command [0]. data(), b,
-	            params. get_T_u() * sizeof (Complex));
-	helper. lock();
-	amount ++;
-        commandHandler. wakeOne();
-        helper. unlock();
-#else
-	(void)b;
 	fprintf (stderr, "Why am I called?\n");
-#endif
 }
 
-#ifdef	__MSC_THREAD__
-void	mscHandler::processMsc	(std::vector<Complex> &b,
-	                                   int offset,  int blkno) {
-	bufferSpace. acquire (1);
-        memcpy (command [blkno]. data (), &(b. data ())[offset],
-	            params. get_T_u() * sizeof (Complex));
-        helper. lock();
-        amount ++;
-        commandHandler. wakeOne();
-        helper. unlock();
-}
-
-void    mscHandler::run () {
-int	currentBlock	= 0;
-Complex fft_buffer [params. get_T_u ()];
-Complex conjVector [params. get_T_u ()];
-int	carriers	= params. get_carriers ();
-
-	if (running. load ()) {
-	   fprintf (stderr, "already running\n");
-	   return;
-	}
-
-	running. store (true);
-        while (running. load()) {
-           helper. lock();
-           commandHandler. wait (&helper, 100);
-           helper. unlock();
-           while ((amount > 0) && running. load()) {
-	      memcpy (fft_buffer, command [currentBlock]. data(),
-	                 params. get_T_u() * sizeof (Complex));
-//
-//	block 3 and up are needed as basis for demodulation the "mext" block
-//	"our" msc blocks start with blkno 4
-	      fft. fft (fft_buffer);
-              if (currentBlock >= 4) {
-                 for (int i = 0; i < carriers; i ++) {
-                    int16_t      index   = myMapper. mapIn (i);
-                    if (index < 0)
-                       index += params. get_T_u();
-
-                    Complex  r1 = fft_buffer [index] *
-                                       conj (phaseReference [index]);
-	            conjVector [index] = r1;
-
-	            float ab1	= jan_abs (r1);
-                    softBbits [i]	=  (int16_t) (- real (r1) * MAX_VITERBI / ab1);
-                    softBits [carriers + i] =
-	                           (int16_t) (- imag (r1) * MAX_VITERBI / ab1);
-                 }
-
-	         processMscBlock (softBits, currentBlock);
-	      }
-	      memcpy (phaseReference. data (), fft_buffer,
-	                 params. get_T_u() * sizeof (Complex));
-              bufferSpace. release (1);
-              helper. lock();
-              currentBlock = (currentBlock + 1) % (nrBlocks);
-              amount -= 1;
-              helper. unlock();
-           }
-        }
-}
-#else
 void	mscHandler::processMsc	(std::vector<Complex> &b,
 	                                      int offset, int blkno) {
 	(void)b;
@@ -182,7 +88,6 @@ void	mscHandler::processMsc	(std::vector<Complex> &b,
 	(void)blkno;
 	fprintf (stderr, "I should not be called\n");
 }
-#endif
 //
 //	Note, the set_Channel function is called from within a
 //	different thread than the process_mscBlock method is,
@@ -191,13 +96,6 @@ void	mscHandler::processMsc	(std::vector<Complex> &b,
 //	thread executing process_mscBlock
 void	mscHandler::resetBuffers	() {
 	resetChannel ();
-#ifdef	__MSC_THREAD__
-	running. store (false);
-	while (isRunning ())
-	   wait (100);
-	bufferSpace. release (params. get_L () - bufferSpace. available ());
-	start ();
-#endif
 }
 
 void	mscHandler::resetChannel () {
@@ -209,7 +107,7 @@ void	mscHandler::resetChannel () {
 	}
 	theBackends. resize (0);
 	locker. unlock ();
-	nrServices ((int)(theBackends. size ()));
+	activeServices ((int)(theBackends. size ()));
 }
 
 void	mscHandler::stopBackend	(const QString &serviceName,
@@ -227,7 +125,7 @@ void	mscHandler::stopBackend	(const QString &serviceName,
 	   }
 	}
 	locker. unlock ();
-	nrServices ((int)(theBackends. size ()));
+	activeServices ((int)(theBackends. size ()));
 }
 //
 //	Note that - in general - the backens run in their own thread
@@ -245,7 +143,7 @@ bool	mscHandler::startBackend (descriptorType &d,
 	                                     dump,
 	                                     flag,
 	                                     cpuSupport));
-	nrServices ((int)(theBackends. size ()));
+	activeServices ((int)(theBackends. size ()));
 	return true;
 }
 

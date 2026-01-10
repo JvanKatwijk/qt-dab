@@ -32,6 +32,7 @@
 #include	<QColorDialog>
 #include	<QToolTip>
 #include	<QKeyEvent>
+#include	<QDesktopServices>
 #include	<fstream>
 #include	"dab-constants.h"
 #include	"mot-content-types.h"
@@ -52,6 +53,7 @@
 #include	"aboutdialog.h"
 #include	"db-element.h"
 #include	"distances.h"
+#include	"timetable-control.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
 #ifdef	TCP_STREAMER
@@ -186,7 +188,6 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                        theSCANHandler (this, Si,
 	                                                        freqExtension),
 	                                        theTIIProcessor (),
-	                                        theTimeTableHandler (this, Si),
 	                                        theEpgCompiler (&theErrorLogger) {
 int16_t k;
 QString h;
@@ -306,7 +307,6 @@ QString h;
 	connect (theConfigHandler, &configHandler::signal_dataTracer,
 	         this, &RadioInterface::signal_dataTracer);
 
-
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 //
@@ -346,6 +346,8 @@ QString h;
 	   theNewDisplay. show ();
 	else
 	   theNewDisplay. hide ();
+
+	theControl	= nullptr;
 
 	journalineHandler = nullptr;
 	peakLeftDamped	= 0;
@@ -469,7 +471,6 @@ QString h;
 	pauzeTimer. setSingleShot (true);
 	connect (&pauzeTimer, &QTimer::timeout,
 	         this, &RadioInterface::show_pauzeSlide);
-	theTimeTableHandler. hide ();
 
 	connect (&theScanlistHandler, &scanListHandler::handleScanListSelect,
 	         this, &RadioInterface::handleScanListSelect);
@@ -509,8 +510,6 @@ QString h;
 	         this, &RadioInterface::color_spectrumButton);
 //
 //	
-	connect (theTechWindow, &techWindow::handleTimeTable,
-	         this, &RadioInterface::handle_timeTable);
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
 
@@ -538,6 +537,8 @@ QString h;
 	epgLabel	-> setPixmap (epgP. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
 	epgLabel	-> setToolTip ("this icon is visible when the EPG processor is active,  the service will always run in the background");
+	connect (epgLabel, &clickablelabel::clicked,
+	         this, &RadioInterface::handle_startTimeTable);
 	epgLabel	-> hide ();
 	show_pauzeSlide ();
 
@@ -592,6 +593,10 @@ QString h;
 	mapRight -> addColorStop (0.75, QColor (100, 50, 0)); 
 	mapRight -> addColorStop (0.4, QColor (0, 200, 50)); 
 	rightAudio -> setColorMap (mapRight);
+//
+	audiorateLabel	-> setStyleSheet ("color:cyan");
+	psLabel		-> setStyleSheet ("color:cyan"); 
+	sbrLabel	-> setStyleSheet ("color:cyan");
 
 	journalineKey		= -1;
 //	do we show controls?
@@ -984,7 +989,8 @@ void	RadioInterface::process_epgData (const QString &objectName,
 
 std::vector<uint8_t> epgData (result. begin(), result. end());
 QDomDocument epgDocument;
-uint8_t docType = theEpgCompiler. process_epg (epgDocument, epgData, channel.lto);
+uint8_t docType = theEpgCompiler. process_epg (epgDocument,
+	                                        epgData, channel.lto);
 
 	if (docType == noType)		// should not happen
 	   return;
@@ -1134,12 +1140,11 @@ const char *type;
 	}
 
 	if (theOfdmHandler	-> is_SPI (SId)) {
-	   QString path		= slidePath (true, SId);
-	   QString pict		= path + pictureName;
-	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
+	   QString path		= slidePath (true, SId, pictureName);
+	   FILE *x = fopen (path. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
-	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
-	      (void)fwrite (data. data(), 1, data.length(), x);
+	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pictureName);
+	      (void)fwrite (data. data(), 1, data.length (), x);
 	      fclose (x);
 	   }
 	   return;
@@ -1152,7 +1157,7 @@ const char *type;
 	if (dirs || ((value_i (theQSettings, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
 	                                         (path_for_files != ""))) {
-	   QString thePath	= slidePath (dirs, SId);
+	   QString thePath	= slidePath (dirs, SId, pictureName);
 	   QString pict		= thePath + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
@@ -1180,7 +1185,8 @@ const char *type;
 //	the saving is set in the configuration window) in a
 //	directory with the name of the service, that is contained
 //	in a directory with the word "slides-" followed by the Eid
-QString	RadioInterface::slidePath	(bool kort, uint32_t SId) {
+QString	RadioInterface::slidePath	(bool kort, uint32_t SId,
+	                                       const QString &pictureName) {
 QString thePath;
 
 	(void)SId;
@@ -1195,7 +1201,7 @@ QString thePath;
 	thePath	= QDir::toNativeSeparators (thePath);
 	if (!QDir (thePath). exists ())
 	   QDir (). mkpath (thePath);	
-	return thePath;
+	return thePath + pictureName;
 }
 
 //
@@ -1272,8 +1278,6 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 	setSoundLabel (false);
 	if (channel. etiActive)
 	   theOfdmHandler -> resetEtiGenerator ();
-	theTimeTableHandler. clear ();
-	theTimeTableHandler. hide ();
 //	and stop the service
 	for (auto &serv :channel. runningTasks) 
 	   stopService (serv);
@@ -1291,7 +1295,6 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 	      startService (serv, index);
 	}
 }
-
 //
 //	In order to not overload with an enormous amount of
 //	signals, we trigger this function at most 10 times a second
@@ -1305,18 +1308,15 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	   audioTeller = 0;
 	   if (!theTechWindow -> isHidden ())
 	      theTechWindow	-> showRate (rate, ps, sbr);
-	   audiorateLabel	-> setStyleSheet ("color:cyan");
 	   audiorateLabel	-> setText (QString::number (rate));
 	   if (!ps)
 	      psLabel -> setText (" ");
 	   else {
-	      psLabel -> setStyleSheet ("color:cyan"); 
 	      psLabel -> setText ("ps");
 	   }
 	   if (!sbr)
 	      sbrLabel -> setText ("  "); 
 	   else {
-	      sbrLabel -> setStyleSheet ("color:cyan");
 	      sbrLabel -> setText ("sbr");
 	   }
 	}
@@ -1389,6 +1389,9 @@ void	RadioInterface::TerminateProcess () {
 	   delete theHttpHandler;
 	   theHttpHandler = nullptr;
 	}
+	if (theControl != nullptr)
+	   delete theControl;
+	theControl		= nullptr;
 	mapHandler_locker. unlock ();
 	theSCANHandler. hide ();
 	channelTimer.	stop	();
@@ -1427,14 +1430,6 @@ void	RadioInterface::TerminateProcess () {
 //	hiding the ensemblehandler is needed since it is
 //	using a protected pointer
 	theEnsembleHandler	-> hide ();
-
-//	stopChannel will handle the contentTable and timetable
-//	if (theContentTable != nullptr) {
-//	   theContentTable -> clearTable ();
-//	   theContentTable -> hide ();
-//	   delete theContentTable;
-//	}
-//	theTimeTableHandler.	hide ();
 
 //	should be hidden  to ensure the parent can be killed
 	theSNRViewer.	hide ();	
@@ -1526,7 +1521,10 @@ void	RadioInterface::updateTimeDisplay() {
 	}
 }
 //
-//	precondition: everything is quiet
+////////////////////////////////////////////////////////////////////////
+//	selecting and allocating a device
+////////////////////////////////////////////////////////////////////////
+
 deviceHandler	*RadioInterface::createDevice (const QString &s,
 	                                        logger *theLogger) {
 deviceHandler	*inputDevice = theDeviceChooser.
@@ -1580,6 +1578,9 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	startDirect ();		// will set running
 }
 
+///////////////////////////////////////////////////////////////////////
+//	handling time
+////////////////////////////////////////////////////////////////////////
 static
 const char *monthTable [] = {
 	"jan", "feb", "mar", "apr", "may", "jun",
@@ -1628,7 +1629,7 @@ void	RadioInterface::clockTime (int year, int month, int day,
 	QDate theDate (year, month, day);
 	channel. theDate = theDate;
 
-	QFont font	= serviceLabel -> font ();
+	QFont font		= serviceLabel -> font ();
 	font. setPointSize (16);
 	font. setBold (true);
 	localTimeDisplay	-> setStyleSheet (labelStyle);
@@ -1656,7 +1657,8 @@ char minuteString [3];
 QString	RadioInterface::convertTime (struct theTime &t) {
 	return convertTime (t. year, t. month, t. day, t. hour, t. minute);
 }
-//
+////////////////////////////////////////////////////////////////////////////
+//	reporting errors
 //	called from the MP4 decoder
 void	RadioInterface::show_frameErrors (int s) {
 	if (!running. load ()) 
@@ -1673,7 +1675,7 @@ void	RadioInterface::show_rsErrors (int s) {
 	   theTechWindow	-> showRsErrors (s);
 }
 //
-//	called from the NP4 decoder
+//	called from the MP4 decoder
 void	RadioInterface::show_aacErrors (int s) {
 	if (!running. load ())
 	   return;
@@ -1702,7 +1704,7 @@ void	RadioInterface::show_ficBER	(float ber) {
 	if (!theNewDisplay. isHidden ())
 	   theNewDisplay. showFICBER (ber);
 }
-//
+//////////////////////////////////////////////////////////////////////
 //	called from the PAD handler
 void	RadioInterface::show_mothandling (bool b) {
 static bool old_mot = false;
@@ -1722,8 +1724,6 @@ void	RadioInterface::set_synced	(bool b) {
 }
 //
 //	called from the PAD handler
-
-
 void	RadioInterface::showLabel	(const QString &s, int charset) {
 	(void)charset;
 #ifdef	HAVE_PLUTO_RXTX
@@ -1735,6 +1735,7 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	   dynamicLabel	-> setStyleSheet (labelStyle);
 	   dynamicLabel	-> setText (s);
 	}
+
 	if ((s == "") || (dlTextFile == nullptr) ||
 	                                (theDLCache. addifNew (s)))
 	   return;
@@ -1930,9 +1931,6 @@ void	RadioInterface::scheduled_frameDumping (const QString &s) {
 	   return;
 	theTechWindow ->  framedumpButton_text ("recording", 12);
 }
-//----------------------------------------------------------------------
-//	End of section on dumping
-//----------------------------------------------------------------------
 //
 //	called from the mp4 handler, using a signal
 void	RadioInterface::newFrame        (int amount) {
@@ -1950,6 +1948,10 @@ uint8_t	*buffer  = (uint8_t *) alloca (amount * sizeof (uint8_t));
 	      fwrite (buffer, amount, 1, channel. currentService. frameDumper);
 	}
 }
+
+//----------------------------------------------------------------------
+//	End of section on dumping
+//----------------------------------------------------------------------
 
 void	RadioInterface::handle_spectrumButton	() {
 	if (!running. load ())
@@ -2155,25 +2157,25 @@ void	RadioInterface::localSelect (const QString &service,
 //	selecting from the preset list and handling delayed services
 void	RadioInterface::handle_presetSelect (const QString &channel,
 	                                     const QString &service) {
-	if (!theDeviceHandler -> isFileInput ())
-	   localSelect_SS (service, channel);
-	else
+	if (theDeviceHandler -> isFileInput ())
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Selection not possible"));
+	else
+	   localSelect_SS (service, channel);
 }
 //
 //	selecting from the scan list, which is essential
 //	the same as handling form the preset list
 void	RadioInterface::handleScanListSelect (const QString &s) {
 	if (!theDeviceHandler -> isFileInput ()) {
-	   QStringList list        = splitter (s);
-	   if (list. length () != 2)
-	      return;
-	   localSelect_SS (list. at (1), list. at (0));
-	}
-	else
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Selection not possible"));
+	   return;
+	}
+	QStringList list        = splitter (s);
+	if (list. length () != 2)
+	   return;
+	localSelect_SS (list. at (1), list. at (0));
 }
 //
 //	selecting from a content description
@@ -2189,9 +2191,9 @@ QStringList list	= splitter (s);
 	if (list. length () != 2)
 	   return;
 	presetTimer. stop ();
-	fprintf (stderr, "we found %s %s\n",
-	                   list. at (1). toLatin1 (). data (),
-	                   list. at (0). toLatin1 (). data ());
+//	fprintf (stderr, "we found %s %s\n",
+//	                   list. at (1). toLatin1 (). data (),
+//	                   list. at (0). toLatin1 (). data ());
 	localSelect_SS (list. at (1), list. at (0));
 }
 //
@@ -2242,7 +2244,6 @@ QString serviceName	= service;
 
 ///////////////////////////////////////////////////////////////////////////
 
-//void	RadioInterface::stopService	(dabService s) {
 void	RadioInterface::stopService	(dabService &s) {
 	if (!s. isValid)
 	   return;
@@ -2257,7 +2258,6 @@ void	RadioInterface::stopService	(dabService &s) {
 	   theAudioPlayer -> suspend ();
 	   stopAudioDumping ();
 	   stopFrameDumping ();
-	   theTimeTableHandler. clear ();
 
 //	and clean up the technical widget
 	   theTechWindow	-> cleanUp ();
@@ -2335,7 +2335,6 @@ QString serviceName	= s. serviceName;
 	      channel. currentService. isAudio	= true;
 	      channel. currentService. ASCTy	= ad. ASCTy;
 	      channel. currentService. subChId	= ad. subchId;
-	      theTechWindow -> showTimetableButton (true);
 	      startAudioservice (ad);
 //	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	      serviceLabel	-> setText (serviceName);
@@ -2350,15 +2349,8 @@ QString serviceName	= s. serviceName;
 	      }
 	      else
 	         iconLabel -> setText (ad. shortName);
-	      if (theTimeTableHandler. isVisible ()) {
-	          theTimeTableHandler. setUp (channel. theDate, channel. Eid,
-	                               channel. currentService. SId,
-	                               serviceName);
-	         if (hasIcon)
-	            theTimeTableHandler. addLogo (p);
-	      }
-	      theTechWindow	-> isDABPlus  (ad. ASCTy == DAB_PLUS);
 	   }
+	   theTechWindow	-> isDABPlus  (ad. ASCTy == DAB_PLUS);
 	}
 	else 
 	if (theOfdmHandler -> serviceType (index) == PACKET_SERVICE) {
@@ -2646,10 +2638,9 @@ void	RadioInterface::stopChannel	() {
 	epgLabel	-> hide ();
 	presetTimer. stop 	();		// if running
 	channelTimer. stop	();		// if running
-	if (theTimeTableHandler. isVisible ()) { 
-	   theTimeTableHandler. clear ();
-	   theTimeTableHandler. hide ();
-	}
+	if (theControl != nullptr)
+	   delete theControl;
+	theControl = nullptr;
 
 	theDeviceHandler		-> stopReader	();
 	theDeviceHandler		-> stopDump	();
@@ -3478,24 +3469,6 @@ void	RadioInterface::scheduledFICDumping () {
 	if (ficDumpFileName == "")
 	   return;
 	theOfdmHandler -> startFicDump (ficDumpFileName);
-}
-
-void	RadioInterface::handle_timeTable	() {
-	if (theTimeTableHandler. isVisible ()) {
-	   theTimeTableHandler. clear ();
-	   theTimeTableHandler. hide ();
-	   return;
-	}
-	if (!channel. currentService. isValid ||
-	                     !channel. currentService. isAudio)
-	   return;
-
-	theTimeTableHandler. setUp (channel. theDate, channel. Eid,
-	                     channel. currentService. SId,
-	                     channel. currentService. serviceName);
-	QPixmap p;
-	if (get_serviceLogo (p, channel. currentService. SId)) // this may be
-	   theTimeTableHandler. addLogo (p);
 }
 
 //----------------------------------------------------------------------
@@ -4494,15 +4467,19 @@ void	RadioInterface::show_changeLabel (const QStringList notInOld,
 }
 
 void	RadioInterface::handle_folderButton	() {
-	QString tempPath	= theFilenameFinder. basicPath ();
-#ifdef __MINGW32__
-	LPCWSTR temp = (const wchar_t *)tempPath. utf16 ();
-	ShellExecute (nullptr, L"open", temp,
-	                                   nullptr, nullptr, SW_SHOWDEFAULT);
-#else
-	std::string x = "xdg-open " + tempPath. toStdString ();
-	(void)system (x. c_str ());
-#endif
+QString Qt_files	= theFilenameFinder. basicPath ();
+	Qt_files	= checkDir (Qt_files);
+//
+//	we never know whether or not all spaces are removed
+	QDesktopServices::openUrl (QUrl (Qt_files, QUrl::TolerantMode));
+//#ifdef __MINGW32__
+//	LPCWSTR temp = (const wchar_t *)Qt_files. utf16 ();
+//	ShellExecute (nullptr, L"open", temp,
+//	                                   nullptr, nullptr, SW_SHOWDEFAULT);
+//#else
+//	std::string x = "xdg-open " + Qt_files. toStdString ();
+//	(void)system (x. c_str ());
+//#endif
 }
 
 const char *directionTable [] = {
@@ -4914,4 +4891,28 @@ void	RadioInterface::signal_dataTracer	(bool b) {
 	   theOfdmHandler -> set_dataTracer (b);
 }
 
+void	RadioInterface::handle_startTimeTable	() {
+	if (theControl != nullptr) {
+	   delete theControl;
+	   theControl	= nullptr;
+	   return;
+	}
+	   
+	std::vector<basicService> theServices = 
+	             theOfdmHandler	-> getServices ();
+	theControl = new timeTableControl (channel. ensembleName,
+	                                   channel. Eid,
+	                                   theServices,
+	                                   channel. theDate,
+	                                   theQSettings);
+	connect (theControl, &superFrame::frameClosed,
+	         this, &RadioInterface::timeTableFrame_closed);
+}
+
+void	RadioInterface::timeTableFrame_closed	(){
+	if (theControl != nullptr) {	// it better be
+	   delete theControl;
+	   theControl	= nullptr;
+	}
+}
 

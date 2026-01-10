@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2017 .. 2024
+ *    Copyright (C)  2017 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -50,13 +50,14 @@
 #endif
 QString	aacSupport;
 #ifdef __WITH_FDK_AAC__
-	LIB_INFO libInfo[FDK_MODULE_LAST];
-	FDKinitLibInfo(libInfo);
-	aacDecoder_GetLibInfo(libInfo);
+	LIB_INFO libInfo [FDK_MODULE_LAST];
+	FDKinitLibInfo (libInfo);
+	aacDecoder_GetLibInfo (libInfo);
 	
 	for (int i = 0; i < FDK_MODULE_LAST; i++) {
-	   if (libInfo[i].module_id == FDK_AACDEC) {
-	      aacSupport = QString(libInfo[i].title) + " " + QString(libInfo[i].versionStr);
+	   if (libInfo [i]. module_id == FDK_AACDEC) {
+	      aacSupport = QString(libInfo[i].title) + " "
+	                                 + QString(libInfo[i].versionStr);
 	      break;
 	   }
 	}
@@ -103,10 +104,9 @@ QString aacComment;
 	                 "<li> Andreas Mikula, for continuous support </li>" +
 	                 "<li> Jarod Middelman, for continuous feedback</li>" +
 	                 "<li> Stefan Poeschel, for providing code for saving AAC </li>" +
-	                 "<li> Rolf Zerr, for an improved TII decoder and some other improvements </li>" +
+	                 "<li> Rolf Zerr, for an improved code elements a.o TII decoder </li>" +
 	                 "</ul>");
-//	ui -> configuration -> setTextInteractionFlags (Qt::TextBrowserInteraction);
-	ui -> configuration -> setOpenExternalLinks(true);
+	ui -> configuration -> setOpenExternalLinks (true);
 	ui -> configuration -> setText (tr("Qt-DAB is configured with:")+
                            "<ul>"
 #if defined (HAVE_SDRPLAY_V3) || defined (HAVE_SDRPLAY_V2)
@@ -115,7 +115,7 @@ QString aacComment;
 #if defined (HAVE_RTLSDR) || defined  (HAVE_RTLSDR_V3) || defined ( HAVE_RTLSDR_V4)
                            "<li> rtlsdr dabstick <a href=\"https://osmocom.org/projects/rtl-sdr/wiki/rtl-sdr\">rtlsdr</a>with improvements from \"olddab\" </li>"
 #endif
-#ifdef HAVE_AIRSPY_2
+#ifdef HAVE_AIRSPY
                            "<li> Airspy devices <a href=\"https://github.com/airspy\">AirSpy</a></li>"
 #endif
 #ifdef	HAVE_HACKRF 
@@ -138,39 +138,41 @@ QString aacComment;
 #endif
                            "<li>  and has support for reading (and writing) files in different formats, including files (in xml and in RIFF/Raw64 format) with sizes larger than 4 Gb.</li>"
 	"</ul>");
-ui->disclaimer->setText("<p>Copyright © 2016-2024 Jan van Katwijk</p>"
-                            "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
-                            "and associated documentation files (the “Software”), to deal in the Software without restriction, "
-                            "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "
-                            "and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, "
-                            "subject to the following conditions: </p>"
+ui->disclaimer->setText("<p>Copyright © 2016-2026 Jan van Katwijk</p>"
+                            "<p>Qt-DAB is distributed under the GPL V2 license "
+                            "in the hope that it will be useful, "
+                            "but WITHOUT ANA WARRANTY; without even the"
+                            "implied warranty of MERCHANTIBILITY or FITNESS FOR, "
+                            "A PARTICULAR PURPOSE."
+	                    "See the Gnu General Public License for more details </p>"
                             "The above copyright notice and this permission notice shall be included in all copies or substantial "
                             "portions of the Software.</p>"
-                            "<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING "
-                            "BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. "
-                            "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, "
-                            "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH "
-                            "THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.");
+);
 
-    QObject::connect(
-        ui->version, &QLabel::linkActivated,
-        [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
+	QObject::connect (
+           ui -> version, &QLabel::linkActivated,
+             [=](const QString & link) {
+	      QDesktopServices::openUrl(QUrl::fromUserInput(link)); 
+	     }
         );
 
-    QObject::connect(
-                ui->author, &QLabel::linkActivated,
-                [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-            );
-    QObject::connect(
-                ui->libraries, &QLabel::linkActivated,
-                [=]( const QString & link ) { QDesktopServices::openUrl(QUrl::fromUserInput(link)); }
-            );
+	QObject::connect (
+           ui -> author, &QLabel::linkActivated,
+             [=](const QString & link) {
+	        QDesktopServices::openUrl(QUrl::fromUserInput(link));
+	     }
+        );
 
-    //resize(minimumSizeHint());
+	QObject::connect(
+           ui -> libraries, &QLabel::linkActivated,
+             [=](const QString & link) {
+	        QDesktopServices::openUrl(QUrl::fromUserInput(link));
+	      }
+         );
+
 }
 
-AboutDialog::~AboutDialog()
-{
-    delete ui;
+	AboutDialog::~AboutDialog () {
+	delete ui;
 }
 

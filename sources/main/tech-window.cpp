@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2023
+ *    Copyright (C)  2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -53,12 +53,9 @@
 
 	setPositionAndSize (dabSettings, this, TECHDATA_SETTING);
 
-//	formLayout -> setLabelAlignment (Qt::AlignLeft);
-//
 //	we start being hidden, the radio decides whether we are visible
 //	or not
 	this	-> hide ();
-	timeTable_button	-> setEnabled (false);
 	theAudioDisplay	= new audioDisplay (mr, audio, dabSettings);
 
 	QString framedumpButton_color = 
@@ -94,9 +91,6 @@
 	connect	(framedumpButton, &QPushButton::clicked,
 	         mr, &RadioInterface::handleFramedumpButton);
 
-	connect (timeTable_button, &QPushButton::clicked,
-	         this, &techWindow::handleTimeTable);
-
 	bitRateLabel	-> setStyleSheet ("color:red");
 	uepField	-> setStyleSheet ("color:magenta");
 	codeRate	-> setStyleSheet ("color:magenta");
@@ -129,7 +123,6 @@ void	techWindow::cleanUp	() {
 	codeRate		-> setText (ee);
 	ASCTy			-> setText (ee);
 	language		-> setText (ee);
-	timeTable_button	-> setEnabled (false);
 	audiorateLabel		-> setText (QString::number (0));
 }
 
@@ -180,13 +173,6 @@ void	techWindow::showRsErrors		(int e) {
 void	techWindow::showRsCorrections	(int c, int ec) {
 	rsCorrections -> display (c);
 	ecCorrections -> display (ec);
-}
-
-void	techWindow::showTimetableButton	(bool b) {
-	if (b)
-	   timeTable_button	-> setEnabled (true);
-	else
-	   timeTable_button	-> setEnabled (false);
 }
 
 void	techWindow::updateFM		(std::vector<int> &fmFrequencies) {
@@ -280,7 +266,6 @@ std::complex<int16_t> buffer [amount];
 	if (isHidden ())
 	   return;
 	theAudioDisplay -> createSpectrum (buffer, amount, rate);
-	
 }
 
 void    techWindow::colorFramedumpButton   ()      {
@@ -349,11 +334,13 @@ void	techWindow::showRate	(int rate, bool ps, bool sbr) {
 
 void	techWindow::showStereo	(bool b) {
 	 if (b) {
-	   stereoLabel	-> setStyleSheet ("QLabel {color : white}");
+	   stereoLabel	-> setStyleSheet ("QLabel {color : green}");
            stereoLabel  -> setText ("<i>stereo</i>");
         }
-        else
+        else {
+	   stereoLabel	-> setStyleSheet ("QLabel {color : white}");
            stereoLabel  -> setText ("      ");
+	}
 }
 
 void	techWindow::showMissed	(int missed) {

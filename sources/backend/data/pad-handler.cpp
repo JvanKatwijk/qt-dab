@@ -583,36 +583,21 @@ uint16_t	index;
 //	handling MOT in the PAD, we only deal here with type 3/4
 	switch (groupType) {
 	   case 3:
-//	      if (currentSlide. isNull ()) {
-	         currentSlide. reset (new motObject (myRadioInterface,
-	                                             SId,
-	                                             false,
-	   	                                     transportId,
-	                                             &data [index + 2],
-	                                             segmentSize,
-	                                             lastFlag));
-//	      }
-//	      else {
-//	         if (currentSlide -> get_transportId() == transportId)
-//	            break;
-//	         fprintf (stderr, "out goes %d, in comes %d\n",
-//	                          currentSlide -> get_transportId(),
-//	                                           transportId);
-//	         currentSlide. reset (new motObject (myRadioInterface,
-//	                                             SId,
-//	                                             false,
-//	   	                                     transportId,
-//	                                             &data [index + 2],
-//	                                             segmentSize,
-//	                                             backgroundFlag
-//	                                          ));
-//	      }
+	      if (currentSlide. isNull () ||
+	          (currentSlide -> get_transportId() != transportId))
+	          currentSlide. reset (new motObject (myRadioInterface,
+	                                              SId,
+	                                              false,
+	                                              transportId,
+	                                              &data [index + 2],
+	                                              segmentSize,
+	                                              lastFlag));
 	      break;
 
-	   case 4:
-	      if (currentSlide. isNull ())
+	   case 4: {
+	      if (currentSlide. isNull () ||
+	          (currentSlide -> get_transportId() != transportId))
 	         return;
-	      if (currentSlide -> get_transportId() == transportId) {
 	         currentSlide -> addBodySegment (&data [index + 2],
 	                                         segmentNumber,
 	                                         segmentSize,

@@ -65,3 +65,16 @@ std::vector<int> res;
 	return res;
 }
 
+std::vector<basicService> ensemble::getServices () {
+std::vector<basicService> result;
+	for (auto &serv: primaries) {
+	   basicService s;
+	   if ((serv. SId & 0xFFFF0000) != 0)
+	      continue;
+	   s. serviceName = serv. name;
+	   s. SId	= serv. SId;
+	   result. push_back (s);
+	}
+	return result;
+}
+

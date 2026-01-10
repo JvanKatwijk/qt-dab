@@ -88,8 +88,6 @@ int	index_for_key (int key) {
 	this	-> setupUi (this);
 	setPositionAndSize (settings, this, CONFIG_HANDLER);
 	hide ();
-//	connect (&myFrame, &superFrame::makePicture,
-//	         this, &configHandler::handle_mouseClicked);
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
 	
