@@ -150,7 +150,10 @@ void	timeTableControl::selectService (int row, int column) {
 	serviceHandler	= nullptr;
 	for (auto &e :otherTable) {
 	   if ((e. SId == SId) && e. hasTable) {
-	      serviceHandler	= new timeTableHandler (nullptr, dabSettings);
+	      serviceHandler	= new timeTableHandler (path_for_files,
+	                                                   dabSettings);
+	      connect (serviceHandler, &superFrame::frameClosed,
+	               this, &timeTableControl::cleanup_serviceHandler);
 	      serviceHandler	-> setUp (today, EId, SId, e. serviceName);
 //	      QOixmap p;
 //	      if (get_serviceLogo (p, channel. currentService. SId))
@@ -158,5 +161,11 @@ void	timeTableControl::selectService (int row, int column) {
 	      break;
 	   }
 	}
+}
+//
+//	the timetable window was closed, we close the timetable itself
+void	timeTableControl::cleanup_serviceHandler () {
+	delete serviceHandler;	
+	serviceHandler	= nullptr;
 }
 

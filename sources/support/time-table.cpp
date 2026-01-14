@@ -38,21 +38,11 @@
 //	showing a time table - the relevant xml file, decodes it
 //	and shows the result.
 //	
-	timeTableHandler::timeTableHandler (RadioInterface *radio,
-	                                    QSettings *dabSettings_p) {
-findfileNames	theFilenameFinder (dabSettings_p);
-QString		tempPath        = theFilenameFinder. basicPath ();
-;
-	this	-> radio	= radio;
-	path_for_files          =
-	                      value_s (dabSettings_p, DAB_GENERAL,
-	                                        S_FILE_PATH, tempPath);
-	if (!path_for_files. endsWith ("/"))
-	   path_for_files += "/";
-	
-	myWidget        = new QScrollArea (nullptr);
+	timeTableHandler::timeTableHandler (const QString &path,
+	                                    QSettings *dabSettings_p):
+	                                          superFrame (nullptr) {
 
-	myWidget        -> setWidgetResizable (true);
+	path_for_files	= path;
 	QHBoxLayout *lo	= new QHBoxLayout;
 	left	= new QPushButton ("prev");
 	left	-> setToolTip ("set the date one day back");
@@ -71,7 +61,7 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 	lo	-> addWidget (dateLabel);
 	lo	-> addWidget (right);
 	lo	-> addWidget (rem);
-	
+
 	QVBoxLayout	*lv = new QVBoxLayout ();
 	programDisplay	= new QTableWidget (0, 4);
 	programDisplay	-> setColumnWidth (0, 150);
@@ -80,8 +70,9 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 	programDisplay	-> setColumnWidth (3, 450);
 	lv		-> addLayout (lo);
 	lv		-> addWidget (programDisplay);
-	myWidget        -> setLayout (lv);
-	
+	this 	       -> setLayout (lv);
+
+	show ();
 	connect (left, &QPushButton::clicked,
 	         this, &timeTableHandler::handleLeft);
 	connect (right, &QPushButton::clicked,
@@ -96,20 +87,17 @@ QString		tempPath        = theFilenameFinder. basicPath ();
 	timeTableHandler::~timeTableHandler   () {
 	clear ();
 	delete	programDisplay;
-	delete	myWidget;
 }
 
 QString timeTableHandler::find_xmlFile (QDate& theDate,
 	                                uint32_t Eid, uint32_t Sid) {
-QString fileName;
-	fileName	= path_for_files + QString::number (Eid, 16). toUpper () + "/";
 	char temp [40];
 	const char * formatString;
 	formatString = "%4d%02d%02d_%4X_SI.xml";
 	sprintf (temp, formatString,
 	                 theDate. year (), theDate. month (),
 	                 theDate. day (), Sid);
-	return fileName + QString (temp);
+	return path_for_files + QString (temp);
 }
   
 void	timeTableHandler::setUp		(const QDate &theDate,
@@ -323,16 +311,16 @@ int	rows    = programDisplay -> rowCount ();
 	   programDisplay -> removeRow (i - 1);
 }
 
-void	timeTableHandler::show      () {
-	myWidget        -> show ();
-}
-
-void	timeTableHandler::hide      () {
-	myWidget        -> hide ();
-}
+//void	timeTableHandler::show      () {
+//	this	-> show ();
+//}
+//
+//void	timeTableHandler::hide      () {
+//	this	-> hide ();
+//}
 
 bool	timeTableHandler::isVisible () {
-	return !myWidget -> isHidden ();
+	return !this -> isHidden ();
 }
 
 QString	subString (const QString &s, int start, int length) {

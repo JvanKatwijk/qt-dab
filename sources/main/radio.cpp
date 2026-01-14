@@ -1320,6 +1320,7 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	      sbrLabel -> setText ("sbr");
 	   }
 	}
+
 	std::complex<int16_t> vec [amount];
 	while (theAudioBuffer. GetRingBufferReadAvailable () >= amount) {
 	   theAudioBuffer. getDataFromBuffer (vec, amount);
@@ -4914,5 +4915,11 @@ void	RadioInterface::timeTableFrame_closed	(){
 	   delete theControl;
 	   theControl	= nullptr;
 	}
+}
+
+void	RadioInterface::handle_correctPhase	(int k) {
+bool state	= theConfigHandler -> check_correctPhase ();
+	if (theOfdmHandler != nullptr)
+	   theOfdmHandler	-> set_correctPhase (state);
 }
 

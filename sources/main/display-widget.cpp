@@ -488,8 +488,9 @@ void	displayWidget::showCorrection	(int c) {
 }
 
 void	displayWidget::showClock_err	(int e) {
+	float xx	= 2 * M_PI * e / 2048000 * 2552;
 	if (!myFrame. isHidden ())
-	   clock_errorDisplay -> display (e);
+	   clock_errorDisplay -> display (xx);
 }
 
 void	displayWidget::showFrequency (const QString &channel, int freq) {

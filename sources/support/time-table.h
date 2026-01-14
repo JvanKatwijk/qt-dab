@@ -32,22 +32,23 @@
 #include	<QPushButton>
 #include	<QPixmap>
 #include	<QLabel>
+#include	"super-frame.h"
 #include	"xml-extractor.h"
 #include	<QDate>
 
 class	QSettings;
 class	RadioInterface;
 
-class	timeTableHandler: public QObject {
+class	timeTableHandler: public superFrame {
 Q_OBJECT
 public:
-		timeTableHandler	(RadioInterface *radio,
+		timeTableHandler	(const QString &path,
 	                                 QSettings *);
 		~timeTableHandler	();
 	void	display			(const scheduleDescriptor &);
 	void	clear			();
-	void    show            ();
-        void    hide            ();
+//	void    show            ();
+//	void    hide            ();
         bool    isVisible       ();
 	void	setUp		(const QDate &, uint32_t,
 	                                uint16_t, const QString &);
@@ -57,7 +58,6 @@ private:
 	void		addHeader	(const scheduleDescriptor &);
 	void		addProgram	(const programDescriptor &);
 	RadioInterface	*radio;
-	QScrollArea     *myWidget;
         QTableWidget    *programDisplay;
 	QPushButton	*left;
 	QPushButton	*right;

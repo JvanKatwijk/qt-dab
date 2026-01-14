@@ -260,12 +260,17 @@ void	techWindow::showFm		(std::vector<int> &v) {
 }
 
 void	techWindow::audioDataAvailable	(int amount, int rate) {
-std::complex<int16_t> buffer [amount];
+std::complex<int16_t> buffer [1024];
 
-	audioData -> getDataFromBuffer (buffer, amount);
-	if (isHidden ())
+	if (isHidden ()) {
+	   audioData -> FlushRingBuffer ();
 	   return;
-	theAudioDisplay -> createSpectrum (buffer, amount, rate);
+	}
+
+	while (audioData -> GetRingBufferReadAvailable () >= 1024) {
+	   audioData -> getDataFromBuffer (buffer, 1024);
+	   theAudioDisplay -> createSpectrum (buffer, 1024, rate);
+	}
 }
 
 void    techWindow::colorFramedumpButton   ()      {

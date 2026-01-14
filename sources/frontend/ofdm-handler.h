@@ -123,6 +123,8 @@ public:
 	void		set_dcRemoval		(bool);
 
 	std::vector<basicService> getServices	();
+
+	void		set_correctPhase	(bool);
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;
@@ -149,6 +151,7 @@ private:
 	int			totalFrames;
 	int			goodFrames;
 	int			badFrames;
+	float			rateError;
 	bool			tiiSwitch;
 	int16_t			tiiDepth;
 	int16_t			echoEepth;

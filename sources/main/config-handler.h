@@ -84,6 +84,7 @@ public:
 	bool	get_dcRemoval		();
 	bool	get_saveTitles		();
 
+	bool	check_correctPhase	();
 	bool	get_clearScanList	();
 private:
 	RadioInterface	*myRadioInterface;

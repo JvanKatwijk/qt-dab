@@ -74,7 +74,19 @@ static Complex W_table [8];
 static inline
 DABFLOAT makeA (int i, Complex S, Complex prevS) {
 	return abs  (prevS + W_table [i] * S);
-//	return abs  (prevS + w (-i) * S);
+}
+
+
+Complex makeComplex (DABFLOAT phase) {
+	return Complex (cos (phase), sin (phase));
+DABFLOAT p2   = phase * phase;
+DABFLOAT p3   = p2 * phase;
+DABFLOAT p4   = p3 * phase;
+DABFLOAT p5   = p4 * phase;
+DABFLOAT p6   = p5 * phase;
+DABFLOAT sine = phase - p3 / 6 + p5 / 120;
+DABFLOAT cosi = 1 - p2 / 2 + p4 / 24 - p6 / 720;
+      return Complex (cosi, sine);
 }
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
@@ -111,11 +123,12 @@ DABFLOAT makeA (int i, Complex S, Complex prevS) {
 	this	-> T_g		= T_s - T_u;
 
 	repetitionCounter	= 10;
-
+	correctPhase		= false;
 	reset ();
 	iqSelector		= SHOW_DECODED;
 //	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
+
 	sqrt_2			= sqrt (2);
 //
 //	Prefil some tables for faster access
@@ -219,7 +232,7 @@ void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t	blkno,
 	                     std::vector<int16_t> &softbits,
-	                     DABFLOAT	snr) {
+	                     DABFLOAT	snr, float clockError) {
 
 DABFLOAT sum	= 0;
 //DABFLOAT bitSum	= 0;
@@ -232,10 +245,12 @@ DABFLOAT sum	= 0;
 //	map the fft output onto bits ("carrier" elements in, 2 * softbits out)
 	switch (this -> decoder) {
 	  case DECODER_1:
-	      sum	= decoder_12 (fft_buffer, softbits, snr, 1);
+	      sum	= decoder_12 (fft_buffer, softbits,
+	                                              snr, 1, clockError);
 	      break;
 	  case DECODER_2:
-	      sum	= decoder_12 (fft_buffer, softbits, snr, 2);
+	      sum	= decoder_12 (fft_buffer, softbits,
+	                                              snr, 2, clockError);
 	      break;
 	  default:
 	  case DECODER_3:
@@ -394,21 +409,53 @@ Complex toQ1	(const Complex f) {
 DABFLOAT ofdmDecoder::decoder_12 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
 	                        DABFLOAT	snr,
-	                        int		decType) {
+	                        int		decType,
+	                        float		clockError) {
 DABFLOAT sum	= 0;
 DABFLOAT corrFact	= (decType == 1) ? 1.5 : 1.0;
 DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
-	   
+
+//
+//	Note for the reader
+//	Some cheap datsticks show a - sometime pretty large - clock offset.
+//	indicating that the samplerate is slightly off.
+//	We show the samplerate offset already for a long time,
+//	old-dab suggested - in a version derived from Qt-DAB - to compensate
+//	for the error
+//	If the clockerror is N, then the relatieve error increase between
+//	two successive block is app N / 750, the phase of that error
+//	is computed. Of course higher frequencies suffer more than lower
+//	frequencies, so old-dab had a scheme where, depending the
+//	relative frequency of the bin, the correction was stronger
+
+	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
+//	here we really start
 	   int16_t	index	= myMapper.  mapIn (i);
-	   if (index < 0) 
+	   int16_t	binIndex	= index;
+	   if (index < 0) {
 	      index += T_u;
+	      binIndex	+= carriers / 2;
+	   }
+	   else
+	      binIndex	+= carriers / 2 - 1;
+
+	   float phaseCorrector	= (carriers / 2 - binIndex) / (carriers / 2);
+	   float phaseError	= phaseBase * phaseCorrector;
 	   Complex current	= fft_buffer [index];
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
+//
+//	correction on the fftBin value using the approach from
+//	old-dab, see text above
+
+	   fftBin		= fftBin * (correctPhase ?
+	                                     makeComplex (-phaseError) : 1.0);
+
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
 //	updates
+
 	   Complex fftBin_at_1	= toQ1 (fftBin);
 
 	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
@@ -565,3 +612,8 @@ DABFLOAT sum	= 0;
 	}
 	return sum;
 }
+
+void	ofdmDecoder::set_correctPhase (bool b) {
+	correctPhase	= b;
+}
+

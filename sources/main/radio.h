@@ -496,8 +496,8 @@ public slots:
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
 	void			handle_eti_activeSelector	(int);
-	void			set_streamSelector	(int);
-
+	void			set_streamSelector		(int);
+	void			handle_correctPhase		(int);
 //	connected in the Radio, coming from the config handler
 	void			handle_configFrame_closed	();
 	void			signal_dataTracer       (bool);

@@ -33,13 +33,13 @@
 	                              dabSettings (dabSettings_i),
 	                              plotGrid (plotGrid_i),
 	                              spectrumCurve (""),
-	                              fft (2048, false) {
+	                              fft (1024, false) {
 
 int16_t	i;
 QString	colorString;
 
-	displaySize			= 512;
-	spectrumSize			= 2048;
+	displaySize			= 256;
+	spectrumSize			= 1024;
 	normalizer			= 16 * 2048;
 
 	for (int i = 0; i < displaySize; i ++)
@@ -81,7 +81,7 @@ QString	colorString;
         connect (lm_picker, qOverload<const QPointF&>(&QwtPlotPicker::selected),
                  this, &audioDisplay::rightMouseClick);
 
-   	spectrumCurve. setPen (QPen (curveColor, 2.0));
+   	spectrumCurve. setPen (QPen (curveColor, 3.0));
 	spectrumCurve. setOrientation (Qt::Horizontal);
 	spectrumCurve. setBaseline	(get_db (0));
 	if (brush) {

@@ -33,6 +33,7 @@
 #include	"radio.h"
 #include	"dab-constants.h"
 #include	"findfilenames.h"
+#include	"super-frame.h"
 
 class	QSettings;
 class	timeTableHandler;
@@ -67,5 +68,6 @@ private:
 	bool		checkFor 	(const QStringList &, int32_t);
 public	slots:
 	void		selectService	(int, int);
+	void		cleanup_serviceHandler	();
 };
 

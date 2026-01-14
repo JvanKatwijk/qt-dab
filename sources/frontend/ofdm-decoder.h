@@ -56,11 +56,14 @@ public:
 	void	processBlock_0		(std::vector<Complex>);
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
-	                                 std::vector<int16_t> &, DABFLOAT);
+	                                 std::vector<int16_t> &,
+	                                 DABFLOAT, float);
 	void	stop			();
 	void	reset			();
 	void	handle_iqSelector	();
 	void	handle_decoderSelector	(int);
+
+	void	set_correctPhase	(bool);
 private:
 	RadioInterface		*myRadioInterface;
 	dabParams		params;
@@ -70,10 +73,12 @@ private:
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
 
+	bool			correctPhase;
 	DABFLOAT		decoder_12 (const std::vector<Complex> &,
                                             std::vector<int16_t> &,
                                             DABFLOAT        snr,
-                                            int             decType);
+                                            int             decType,
+	                                    float	   rateError);
 	DABFLOAT		decoder_3  (const std::vector<Complex> &,
                                             std::vector<int16_t> &,
                                             DABFLOAT        snr);
@@ -81,6 +86,7 @@ private:
                                             std::vector<int16_t> &,
                                             DABFLOAT        snr);
 
+	std::vector<Complex>	compTable;
 	float		computeQuality		(Complex *);
 	float		compute_timeOffset      (Complex *,
 	                                         Complex *);

@@ -101,7 +101,7 @@ float	sampleReader::getSLevel () {
 Complex	sampleReader::getSample (float phaseOffset) {
 std::vector<Complex> buffer (1);
 
-	getSamples (buffer, 0, 1, phaseOffset, false);
+	getSamples (buffer, 0, 1, phaseOffset,  false);
 	return buffer [0];
 }
 

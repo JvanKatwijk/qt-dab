@@ -172,7 +172,7 @@ void	ofdmHandler::start () {
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
 	attempts			= 0;
-
+	rateError			= 0;
 	goodFrames			= 0;
 	badFrames			= 0;
 	totalFrames			= 0;
@@ -280,7 +280,7 @@ int	snrCount	= 0;
 	         bool nullShower	= false;
 	         totalSamples	+= sampleCount;
 	         if (frameCount >= 10) {
-	            float rateError = SAMPLERATE * 
+	            rateError = SAMPLERATE * 
 	                          (totalSamples / ((float)frameCount * T_F) - 1);
 //	            int diff	= (totalSamples - frameCount * T_F);
 //	            diff	= (int)((float)SAMPLERATE / (frameCount * T_F) * diff);
@@ -293,7 +293,7 @@ int	snrCount	= 0;
 	         }
 
 	         theReader. getSamples (ofdmBuffer, 0,
-	                               T_u, coarseOffset + fineOffset, false);
+	                               T_u, coarseOffset + fineOffset,  false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
 	                                               2.5 * thresHold);
@@ -401,7 +401,7 @@ int	snrCount	= 0;
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	         theReader. getSamples (ofdmBuffer, 0,
-	                                 T_s, coarseOffset + fineOffset, true);
+	                                 T_s, coarseOffset + fineOffset,  true);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
 	            FreqCorr +=
@@ -415,7 +415,8 @@ int	snrCount	= 0;
 //	If "eti_on" we process all data here
 	         if (etiOn) {
 	            theOfdmDecoder.
-	                   decode (ofdmBuffer, ofdmSymbolCount, softbits, snr);
+	                   decode (ofdmBuffer, ofdmSymbolCount,
+	                                            softbits, snr, rateError);
 	            if (ofdmSymbolCount <= 3) 
 	               theFicHandler.
 	                    processFICBlock (softbits, ofdmSymbolCount);
@@ -433,7 +434,8 @@ int	snrCount	= 0;
 //	the payload at all
 	         if (ofdmSymbolCount <= 3) {
 	            theOfdmDecoder.
-                           decode (ofdmBuffer, ofdmSymbolCount, softbits, snr);
+                           decode (ofdmBuffer, ofdmSymbolCount,
+	                                            softbits, snr, rateError);
 	            theFicHandler.   
                             processFICBlock (softbits, ofdmSymbolCount);
 	         }
@@ -444,7 +446,8 @@ int	snrCount	= 0;
 #else
 	         if (ofdmSymbolCount >= 4) {
 	            theOfdmDecoder.
-	                    decode (ofdmBuffer, ofdmSymbolCount, softbits, snr);
+	                    decode (ofdmBuffer, ofdmSymbolCount,
+	                                             softbits, snr, rateError);
 	            theMscHandler.
 	                    processMscBlock (softbits, ofdmSymbolCount);
 	         }
@@ -733,5 +736,9 @@ void	ofdmHandler::set_dataTracer	(bool b) {
 
 std::vector<basicService>  ofdmHandler::getServices	() {
 	return theFicHandler. getServices ();
+}
+
+void	ofdmHandler::set_correctPhase	(bool b) {
+	theOfdmDecoder. set_correctPhase (b);
 }
 
