@@ -76,17 +76,24 @@ DABFLOAT makeA (int i, Complex S, Complex prevS) {
 	return abs  (prevS + W_table [i] * S);
 }
 
-
+//
+//	Provided for computing the phase error by old-dab
+//	(aka Rolf Zerr)
 Complex makeComplex (DABFLOAT phase) {
-	return Complex (cos (phase), sin (phase));
-DABFLOAT p2   = phase * phase;
-DABFLOAT p3   = p2 * phase;
-DABFLOAT p4   = p3 * phase;
-DABFLOAT p5   = p4 * phase;
-DABFLOAT p6   = p5 * phase;
-DABFLOAT sine = phase - p3 / 6 + p5 / 120;
-DABFLOAT cosi = 1 - p2 / 2 + p4 / 24 - p6 / 720;
-      return Complex (cosi, sine);
+//	Minimax polynomial for sin(x) and cos(x) on [-pi/4, pi/4]
+//	Coefficients via Remez algorithm (Sollya)
+//	Max |error| < 1.5e-4 for sinus, < 6e-4 for cosinus
+
+	const DABFLOAT x2 =  phase * phase;
+	const DABFLOAT s1 =  0.99903142452239990234375f;
+	const DABFLOAT s2 = -0.16034401953220367431640625;
+	const DABFLOAT sine = phase * (x2 * s2 + s1);
+
+	const DABFLOAT c1 =  0.9994032382965087890625f;
+	const DABFLOAT c2 = -0.495580852031707763671875;
+	const DABFLOAT c3 =  3.679168224334716796875e-2;
+	const DABFLOAT cosine = c1 + x2 * (x2 * c3 + c2);
+	return Complex (cosine, sine);
 }
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
@@ -254,7 +261,8 @@ DABFLOAT sum	= 0;
 	      break;
 	  default:
 	  case DECODER_3:
-	      sum	= decoder_3 (fft_buffer, softbits, snr);
+	      sum	= decoder_3 (fft_buffer, softbits,
+	                                              snr, clockError);
 	      break;
 	  case DECODER_4:
 	      sum	= decoder_4 (fft_buffer, softbits, snr);
@@ -431,16 +439,17 @@ DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
 	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
+	   int16_t	carriers_2	= carriers / 2;
 	   int16_t	index	= myMapper.  mapIn (i);
 	   int16_t	binIndex	= index;
 	   if (index < 0) {
 	      index += T_u;
-	      binIndex	+= carriers / 2;
+	      binIndex	+= carriers_2;
 	   }
 	   else
-	      binIndex	+= carriers / 2 - 1;
+	      binIndex	+= carriers_2 - 1;
 
-	   float phaseCorrector	= (carriers / 2 - binIndex) / (carriers / 2);
+	   float phaseCorrector	= (carriers_2 - binIndex) / float (carriers_2);
 	   float phaseError	= phaseBase * phaseCorrector;
 	   Complex current	= fft_buffer [index];
 	   Complex prevS	= phaseReference [index];
@@ -449,21 +458,13 @@ DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
 //	correction on the fftBin value using the approach from
 //	old-dab, see text above
 
-	   fftBin		= fftBin * (correctPhase ?
-	                                     makeComplex (-phaseError) : 1.0);
-
+	   fftBin		= fftBin * makeComplex (-phaseError);
+	   stdDevVector [index]	= phaseError;
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
 //	updates
 
 	   Complex fftBin_at_1	= toQ1 (fftBin);
-
-	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
-	   angleVector [index]	=
-	                 compute_avg (angleVector [index], angle, ALPHA);
-	   stdDevVector [index]	= 
-	                 compute_avg (stdDevVector [index],
-	                                         angle * angle, ALPHA);
 
 	   meanLevelVector [index] =
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
@@ -498,25 +499,35 @@ DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
 
 DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
-	                        DABFLOAT	snr) {
+	                        DABFLOAT	snr,
+	                        float		clockError) {
 DABFLOAT	sum = 0;
 
+	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
+//	here we really start
+	   int16_t	carriers_2	= carriers / 2;
 	   int16_t	index	= myMapper.  mapIn (i);
-	   if (index < 0) 
+	   int16_t	binIndex	= index;
+	   if (index < 0) {
 	      index += T_u;
+	      binIndex	+= carriers_2;
+	   }
+	   else
+	      binIndex	+= carriers_2 - 1;
+
+	   float phaseCorrector	= (carriers_2 - binIndex) / float (carriers_2);
+	   float phaseError	= phaseBase * phaseCorrector;
+
 	   Complex current	= fft_buffer [index];
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
+	   fftBin		= fftBin * makeComplex (-phaseError);
+	   stdDevVector [index]	= phaseError;
 	   conjVector [index]	= fftBin;
 	   Complex fftBin_at_1	= toQ1 (fftBin);
 
-	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
-	   angleVector [index]	=
-	                 compute_avg (angleVector [index], angle, ALPHA);
-	   stdDevVector [index]	= 
-	                 compute_avg (stdDevVector [index],
-	                                         angle * angle, ALPHA);
+	   stdDevVector [index]	=  phaseError;
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	   DABFLOAT scaler	=  140.0 / meanValue;

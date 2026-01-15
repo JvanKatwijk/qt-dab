@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2022
+ *    Copyright (C)  2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -84,35 +84,37 @@ QString	colorString	= "black";
 	delete		grid;
 }
 
-void	devScope::display	(std::vector<float> V) {
-float	max	= 0;
-float	min	= 100;
-auto	*X_axis	= dynVec (floatQwt, V. size ());
-auto	*Y_values	= dynVec (floatQwt, V. size ());
-//double X_axis [V. size ()];
-//double Y_values [V. size ()];
-int	VSize	= V. size ();
-
-	for (int i = 0; i < VSize; i ++) {
-	   X_axis [i] = (float)(-VSize / 2 + i);
+void	devScope::display	(const std::vector<float> &V) {
+float	max	= -100;
+float	min	= 1000;
+int index_min; int index_max;
+floatQwt X_axis [1536];
+floatQwt Y_values [1536];
+//	we assume that V. size = 1536
+	for (int i = 0; i < V. size (); i ++) {
+	   X_axis [i] = -1536 / 2 + i;
 	   Y_values [i] = V [i];
-	   if (V [i] > max)
+	   if (V [i] > max) {
 	      max = V [i];
-	   if (V [i] < min)
+	      index_max = i;
+	   }
+	   if (V [i] < min) {
 	      min = V [i];
+	     index_min = i;
+	   }
 	}
 
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (floatQwt)X_axis [0],
-				         (floatQwt)X_axis [VSize - 1]);
+				         (floatQwt)X_axis [V. size () - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         -20, 20);
+				         min - 1, max + 1);
 	spectrumCurve. setBaseline (0);
-	Y_values [0]		= 0;
-	Y_values [VSize - 1]	= 0;
+//	Y_values [0]		= 0;
+//	Y_values [V. size () - 1]	= 0;
 
-	spectrumCurve. setSamples (X_axis, Y_values, VSize);
+	spectrumCurve. setSamples (X_axis, Y_values, V. size ());
 	plotgrid	-> replot (); 
 }
 

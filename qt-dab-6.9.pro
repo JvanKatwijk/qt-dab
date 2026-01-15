@@ -20,12 +20,12 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
 unix {
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]

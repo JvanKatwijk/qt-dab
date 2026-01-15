@@ -317,7 +317,6 @@ private:
 	QString			convertTime		(struct theTime &);
 
 //
-	void			startDirect		();
 	bool			autoStart_http		();
 	void			start_etiHandler	();
 	void			stop_etiHandler		();
@@ -431,6 +430,7 @@ private:
 	QString			labelStyle;
 	QTimer			pauzeTimer;
 	QTimer			theTimer;
+	QTimer			startTimer;
 	bool			stillWaiting;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
@@ -478,6 +478,7 @@ signals:
 
 public slots:
 //	signals from the configuration window
+	void			startDirect		();
 
 	void			handle_tiiThreshold	(int);
 	void			handle_tiiCollisions		(int);

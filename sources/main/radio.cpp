@@ -651,7 +651,10 @@ QString h;
 	   if (theDeviceHandler -> isFileInput ())
 	      scanListButton -> setEnabled (false);
 	   theDeviceChooser. hide ();
-	   startDirect ();
+	   startTimer. setInterval (1000);
+	   connect (&startTimer, &QTimer::timeout,
+	            this, &RadioInterface::startDirect);
+	   startTimer. start (10000);
 	   qApp	-> installEventFilter (this);
 	   return;
 	}
@@ -687,6 +690,8 @@ void	RadioInterface::doStart (const QString &dev) {
 //	we (re)start a device, if it happens to be a regular
 //	device, check for a preset name
 void	RadioInterface::startDirect	() {
+	disconnect (&startTimer, &QTimer::timeout,
+	            this, &RadioInterface::startDirect);
 	disconnect (channelSelector,
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	            qOverload<const QString &> (&QComboBox::textActivated),

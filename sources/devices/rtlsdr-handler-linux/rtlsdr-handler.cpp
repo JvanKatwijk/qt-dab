@@ -812,7 +812,7 @@ static int teller	= 0;
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples + ovf);
 	else
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples);
-	reportOverflow (ovf < 0);
+//	reportOverflow (ovf < 0);
 	if (++teller > 4 * 2048000) {
 //	   fprintf (stderr, "%f %f (%f)\n", sumI / teller, sumQ / teller,
 //	                                    sumI / sumQ);
@@ -844,14 +844,15 @@ void	rtlsdrHandler::reportOverflow (bool ovf) {
 static bool theOvf	= true;
 	if (ovf && !theOvf){
 	   overflowLabel -> setText ("Overload");
-           overflowLabel -> setStyleSheet ("QLabel {background-color : red; \
-                                                   color: white}");
+           overflowLabel -> setStyleSheet (
+	                 "QLabel {background-color : red; color: white}");
 	   theOvf	= true;
 	}
 	else
 	if (!ovf && theOvf) {		// space in the buffer is sufficient
-	   overflowLabel -> setStyleSheet("QLabel {background-color : green; \
-                                                   color: white}");
+	   overflowLabel -> setStyleSheet (
+	                 "QLabel {background-color : green; color: white}");
+
 	   theOvf	= false;
 	}
 	else
