@@ -33,7 +33,6 @@
 #include	<cstdio>
 #include	<atomic>
 #include	"dab-constants.h"
-#include	"fir-filters.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
@@ -75,21 +74,23 @@ typedef uint32_t (*  pfnrtlsdr_get_device_count)();
 typedef	int (* pfnrtlsdr_set_freq_correction)(rtlsdr_dev_t *, int);
 typedef	int (* pfnrtlsdr_set_freq_correction_ppb)(rtlsdr_dev_t *, int);
 typedef	char *(* pfnrtlsdr_get_device_name)(int);
+typedef int (* pfnrtlsdr_get_tuner_i2c_register)
+	                         (rtlsdr_dev_t *, uint8_t*, int *, int *);
 typedef	int (* pfnrtlsdr_get_version)();
 }
 //	This class is a simple wrapper around the
 //	rtlsdr library, the relevant functions of it
 //	are read in  from the dll (or .so file in linux)
 
-class	rtlsdrHandler_win: 
+class	rtlsdrHandler: 
 	               public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler_win	(QSettings *,
-	                                         const QString, int,
-	                                 	 const QString &,
-	                                 	 errorLogger *);
-			~rtlsdrHandler_win	();
+			rtlsdrHandler	(QSettings *,
+	                                 const QString, int,
+	                             	 const QString &,
+	                               	 errorLogger *);
+			~rtlsdrHandler	();
 	bool		restartReader	(int32_t, int skipped = 0);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
@@ -133,19 +134,19 @@ private:
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
 
+	bool		previousGain;
 	QString		storageName;
 	QString		get_tunerType		(int);
 	bool		filtering;
-	LowPassFIR	theFilter;
-	int		currentDepth;
 
 	void		set_off_agc		();
 	void		set_hw_agc		();
 	void		set_sw_agc		();
 	void		init_autogain		(int);
 
-	float		convTable	[256];
+	float		convTable	[256];	// for int8 -> float
 	void		reportOverflow		(bool);
+	void		reportGain		();
 	float		m_dcI;
 	float		m_dcQ;
 //	here we need to load functions from the dll
@@ -173,19 +174,24 @@ private:
 	pfnrtlsdr_set_freq_correction rtlsdr_set_freq_correction;
 	pfnrtlsdr_set_freq_correction_ppb rtlsdr_set_freq_correction_ppb;
 	pfnrtlsdr_get_device_name rtlsdr_get_device_name;
+	pfnrtlsdr_get_tuner_i2c_register rtlsdr_get_tuner_i2c_register;
 	pfnrtlsdr_get_version rtlsdr_get_version;
 	
 signals:
 	void		new_gainIndex		(int);
 	void		new_agcSetting		(bool);
+
+	void		tickSignal		(bool);
+public slots:
+	void		handle_tickSignal	(bool);
 private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(int);
 	void		set_ppmCorrection	(double);
 	void		set_xmlDump		();
 	void		set_iqDump		();
-	void		set_filter		(int);
 	void		set_biasControl		(int);
+	void		set_bandWidth		(int);
 };
 
 

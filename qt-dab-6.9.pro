@@ -447,7 +447,7 @@ CONFIG		+= single
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= sdrplay-duo
-CONFIG		+= dabstick-linux
+CONFIG		+= dabstick
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
@@ -501,8 +501,8 @@ isEmpty(GITHASHSTRING) {
 #	INCLUDEPATH     += /usr/i686-w64-mingw32/sys-root/mingw/include/qt6/qwt
 	INCLUDEPATH	+= /mingw64/include/qwt-qt6
 	LIBS		+= -L/mingw64/lib
-	CONFIG		+= dabstick-win
 	CONFIG		+= airspy
+	CONFIG		+= dabstick
 	CONFIG          += spyServer-16
         CONFIG          += spyServer-8
 	CONFIG		+= rtl_tcp
@@ -548,33 +548,17 @@ DEFINES	+= __DUMP_SNR__		# for experiments only
 }
 
 ###	dabstick
-#	Note: the windows version is bound to the dll, the
-#	linux version loads the function from the so
-dabstick-linux {
+dabstick {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-linux 
-	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-linux 
-	HEADERS		+= ./sources/devices/rtlsdr-handler-linux/rtlsdr-handler.h \
-	                   ./sources/devices/rtlsdr-handler-linux/dll-driver.h \
-	                   ./sources/devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	SOURCES		+= ./sources/devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
-	                   ./sources/devices/rtlsdr-handler-linux/dll-driver.cpp \
-	                   ./sources/devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
-	FORMS		+= ./sources/devices/rtlsdr-handler-linux/rtlsdr-widget.ui
-}
-
-dabstick-win {
 	DEFINES		+= HAVE_RTLSDR_V3
 	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ./sources/devices/rtlsdr-handler-win
-	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-win 
-#	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
-	HEADERS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.h \
-	                   ./sources/devices/rtlsdr-handler-win/rtl-dongleselect.h \
-	                   ./sources/devices/rtlsdr-handler-win/rtl-sdr.h
-	SOURCES		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-handler-win.cpp \
-	                   ./sources/devices/rtlsdr-handler-win/rtl-dongleselect.cpp 
-	FORMS		+= ./sources/devices/rtlsdr-handler-win/rtlsdr-widget.ui
+	DEPENDPATH	+= ./sources/devices/rtlsdr-handler
+	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler
+	HEADERS		+= ./sources/devices/rtlsdr-handler/rtlsdr-handler.h \
+	                   ./sources/devices/rtlsdr-handler/rtl-dongleselect.h
+	SOURCES		+= ./sources/devices/rtlsdr-handler/rtlsdr-handler.cpp \
+	                   ./sources/devices/rtlsdr-handler/rtl-dongleselect.cpp
+	FORMS		+= ./sources/devices/rtlsdr-handler/rtlsdr-widget.ui
 }
 
 #

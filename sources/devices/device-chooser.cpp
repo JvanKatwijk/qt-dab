@@ -29,14 +29,14 @@
 #include	"errorlog.h"
 
 #include	<QModelIndex>
-#ifdef	HAVE_RTLSDR_V3
-#include	"rtlsdr-handler-win.h"
-#define	RTLSDR_DEVICE_V3	0200
-#define	RTLSDR_DEVICE_V4	0201
-#endif
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
+#ifdef	__MINGW32__
+#define	RTLSDR_DEVICE_V3	0200
+#define	RTLSDR_DEVICE_V4	0201
+#else
 #define	RTLSDR_DEVICE		0222
+#endif
 #endif
 #ifdef	HAVE_SDRPLAY_V2
 #include	"sdrplay-handler-v2.h"
@@ -71,10 +71,6 @@
 #define	USRP_DEVICE		0211
 #endif
 #ifdef	__MINGW32__
-#ifdef	HAVE_EXTIO
-#include	"extio-handler.h"
-#define	EXTIO_DEVICE		0212
-#endif
 #endif
 #ifdef	HAVE_RTL_TCP
 #include	"rtl_tcp_client.h"
@@ -147,14 +143,13 @@
 #endif
 //
 //	RTLSDR  handlers for windows differ from the one for Linux
-#ifdef	HAVE_RTLSDR_V3
+#ifdef	HAVE_RTLSDR
+#ifdef	__MINGW32__
 	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
 	addtoList ("dabstick-v3");
 	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
 	addtoList ("dabstick-v4");
-#endif
-//	This is the one for linux
-#ifdef	HAVE_RTLSDR
+#else
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 	addtoList ("dabstick");
 #endif
@@ -259,24 +254,23 @@ int	deviceNumber	= getDeviceIndex (s);
 	                                                     theErrorLogger);
 	      break;
 #endif
-#ifdef	HAVE_RTLSDR_V3
+#ifdef	HAVE_RTLSDR
+#ifdef	__MINGW32__
 	   case RTLSDR_DEVICE_V3:
-	      return new rtlsdrHandler_win (dabSettings, 
-	                                   "librtlsdr-V3.dll", 3,
-	                                    version, theErrorLogger);
+	      return new rtlsdrHandler (dabSettings, "librtlsdr-V3.dll", 3,
+	                                           version, theErrorLogger);
 	      break;
 
 	   case RTLSDR_DEVICE_V4:
-	      return new rtlsdrHandler_win (dabSettings,	
-	                                   "librtlsdr-V4.dll", 4,
-	                                   version, theErrorLogger);
+	      return new rtlsdrHandler (dabSettings, "librtlsdr-V4.dll", 4,
+	                                           version, theErrorLogger);
+	      break;
+#else
+	   case RTLSDR_DEVICE:
+	      return new rtlsdrHandler (dabSettings, "librtlsdr.so", 3,
+	                                           version, theErrorLogger);
 	      break;
 #endif
-#ifdef	HAVE_RTLSDR
-	   case RTLSDR_DEVICE:
-	      return new rtlsdrHandler (dabSettings, version,
-	                                                     theErrorLogger);
-	      break;
 #endif
 #ifdef 	HAVE_AIRSPY
 	   case AIRSPY_DEVICE:

@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__DONGLE_SELECT__
-#define	__DONGLE_SELECT__
+#pragma once
 #
 #include	<QDialog>
 #include	<QLabel>
@@ -47,5 +46,4 @@ private slots:
 	void		selectDongle	(QModelIndex);
 };
 
-#endif
 

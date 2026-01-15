@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>240</width>
-    <height>445</height>
+    <width>281</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="gainLabelText">
        <property name="text">
         <string>gain</string>
        </property>
@@ -43,6 +43,24 @@
        </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set gain in dB, only possible values are displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>actual gain</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="tunerGainLabel">
+       <property name="text">
+        <string>TextLabel</string>
        </property>
       </widget>
      </item>
@@ -81,7 +99,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QCheckBox" name="biasControl">
        <property name="text">
@@ -90,45 +108,48 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QCheckBox" name="filterSelector">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DABsticks do not have much filtering. A software filter - 1560KHz wide - can be selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
+        <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>filter</string>
+          <string>ppm</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="filterDepth">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the depth of the software 1560 KHz filter. Be aware that for a filter depth N N* 2048000 extra additions and complex multiplications are done&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="minimum">
-          <number>5</number>
-         </property>
-         <property name="maximum">
-          <number>25</number>
-         </property>
-        </widget>
+        <widget class="QDoubleSpinBox" name="ppm_correction"/>
        </item>
       </layout>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>ppm</string>
+        <string>bandwidth (kHz)</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QDoubleSpinBox" name="ppm_correction"/>
+      <widget class="QSpinBox" name="bandwidth_selector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;bandwidth_selector&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="minimum">
+        <number>1500</number>
+       </property>
+       <property name="maximum">
+        <number>2200</number>
+       </property>
+       <property name="singleStep">
+        <number>10</number>
+       </property>
+       <property name="value">
+        <number>1750</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
