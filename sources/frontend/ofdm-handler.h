@@ -62,7 +62,6 @@ public:
 //	void		start			(int32_t);
 	void		stop			();
 
-	void		selectTII		(uint8_t);
 	void		startDumping		(const QString &, int, 
 	                                         int, const QString);
 	void		stopDumping		();
@@ -123,8 +122,6 @@ public:
 	void		set_dcRemoval		(bool);
 
 	std::vector<basicService> getServices	();
-
-	void		set_correctPhase	(bool);
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;

@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C)  2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,26 +17,36 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with dab-scanner; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #pragma once
 
-#include <QCloseEvent>
-#include <QObject>
-#include <QFrame>
+#include	<QString>
+#include	<QLabel>
+#include	<QTextEdit>
+#include	<QVBoxLayout>
+#include	"super-frame.h"
+class	RadioInterface;
 
-//
-//	Thanks to Philip, who pointed out that hiding the configwidget
-//	by clicking on the delete corner, was not registered as "hidden"
-//
-class superFrame : public QFrame {
+class	copyrightText:public superFrame {
 Q_OBJECT
-	using QFrame::QFrame;
-protected:
-	void closeEvent (QCloseEvent * event);
-signals:
-	void	frameClosed	();
-	void	makePicture	();
+public:
+	copyrightText	(RadioInterface *, const QString &);
+	~copyrightText	();
+private:
+
+	QLabel	*titleLabel;
+	QLabel	*authorLabel;
+	QLabel	*versionLabel;
+	QLabel	*buildLabel;
+	QLabel	*qtVersionLabel;
+	QLabel	*sourceLocationLabel;
+	QLabel	*librariesLabel;
+	QLabel	*configurationLabel;
+	QLabel	*acknowledgementsLabel;
+	QTextEdit	*disclaimerLabel;
+	QVBoxLayout	*theLayout;
 };
 

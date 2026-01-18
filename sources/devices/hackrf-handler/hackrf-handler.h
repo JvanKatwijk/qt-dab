@@ -70,6 +70,9 @@ typedef	int	(*pfn_hackrf_is_streaming) (hackrf_device *);
 typedef	const char	*(*pfn_hackrf_error_name) (enum hackrf_error errcode);
 typedef	const char	*(*pfn_hackrf_usb_board_id_name) (enum hackrf_usb_board_id);
 typedef int	(*pfn_hackrf_version_string_read)(hackrf_device *, char *, int);
+typedef const char * (*pfn_hackrf_library_version) ();
+typedef const char * (*pfn_hackrf_library_release) ();
+
 // contributed by Fabio
 typedef int	(*pfn_hackrf_set_antenna_enable)
 	                         (hackrf_device *, const uint8_t);
@@ -135,6 +138,8 @@ private:
 	pfn_hackrf_si5351c_write hackrf_si5351c_write;
 	pfn_hackrf_board_rev_read	hackrf_board_rev_read;
 
+	pfn_hackrf_library_version	hackrf_library_version;
+	pfn_hackrf_library_release	hackrf_library_release;
 	int			ppmValue;
 //	Fine aggiunta
 

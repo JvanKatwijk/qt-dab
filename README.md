@@ -33,7 +33,7 @@ The configuration window contains a selector, labeled **all tii**, that
 With a decent antenna aand a low threshold value one might (and probably will)
 dozens of lines - like below - telling a transmitter "not in database"
 (Of course, if the selector is not set, the (mainId, subId) pairs for which
-not transmitter is found are eliminated from the output).
+no transmitter is found are eliminated from the output).
 
 ![6.9](/res/read_me/erroneous-lines.png?raw=true)
 

@@ -53,13 +53,6 @@
        </item>
       </layout>
      </item>
-     <item>
-      <widget class="QCheckBox" name="correctPhase">
-       <property name="text">
-        <string>correct phase</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>

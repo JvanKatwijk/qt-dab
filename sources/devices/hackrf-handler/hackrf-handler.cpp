@@ -185,6 +185,7 @@ hackrf_error errorCode;
 
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
+	   
 	   char *serial = deviceList -> serial_numbers [0];
 	   if (serial != nullptr) 
 	      serialNumber	= serial;
@@ -198,9 +199,14 @@ hackrf_error errorCode;
 	                 deviceList -> usb_board_ids [0];
 	   usb_board_id_display ->
 	                setText (this -> hackrf_usb_board_id_name (board_id));
-	   char version [255];
-	   hackrf_version_string_read (theDevice, version, 255);
-	   versionDisplay -> setText (version);
+	   uint8_t res;
+	   hackrf_board_rev_read (theDevice, &res);
+	   revisionIndicator	-> display (res);
+
+	   QString ff = hackrf_library_version ();
+	   QString  gg = hackrf_library_release ();
+	   versionLabel -> setText ("library version " + ff);
+	   releaseLabel -> setText ("release " + gg);
 	}
 	connect (this, &hackrfHandler::signal_antEnable,
 	         biasT_button, &QCheckBox::setChecked);
@@ -646,13 +652,33 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	                     "Could not find hackrf_version_string_read\n");
 	   return false;
 	}
-//	this	-> hackrf_board_rev_read =
-//	              (pfn_hackrf_board_rev_read)
-//	                      library_p ->resolve ("hackrf_board_rev_read");
-//	if (hackrf_board_rev_read == nullptr) {
-//	   fprintf (stderr, "Could not find hackrf_board_rev_read\n");
-//	   return false;
-//	}
+
+	this	-> hackrf_library_version =
+	              (pfn_hackrf_library_version)
+	                     library_p -> resolve("hackrf_library_version");
+	if (hackrf_library_version == nullptr) {
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_library_version\n");
+	   return false;
+	}
+
+	this	-> hackrf_library_release =
+	              (pfn_hackrf_library_release)
+	                     library_p -> resolve("hackrf_library_release");
+	if (hackrf_library_release == nullptr) {
+	   theErrorLogger -> add ("Hackrf",
+	                     "Could not find hackrf_library_release\n");
+	   return false;
+	}
+
+	this	-> hackrf_board_rev_read =
+	              (pfn_hackrf_board_rev_read)
+	                      library_p ->resolve ("hackrf_board_rev_read");
+	if (hackrf_board_rev_read == nullptr) {
+	   fprintf (stderr, "Could not find hackrf_board_rev_read\n");
+	   return false;
+	}
+
 
 	fprintf (stderr, "OK, functions seem to be loaded\n");
 	return true;

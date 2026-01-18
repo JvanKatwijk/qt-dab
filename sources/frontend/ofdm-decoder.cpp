@@ -130,7 +130,6 @@ Complex makeComplex (DABFLOAT phase) {
 	this	-> T_g		= T_s - T_u;
 
 	repetitionCounter	= 10;
-	correctPhase		= false;
 	reset ();
 	iqSelector		= SHOW_DECODED;
 //	iqSelector		= SHOW_RAW;

@@ -77,6 +77,8 @@
 #include	<QScopedPointer>
 #include	"journaline-datahandler.h"
 
+class	copyrightText;
+
 typedef struct {
 	uint32_t serviceId;
 	std::vector<multimediaElement> elements;
@@ -284,8 +286,8 @@ private:
 	journaline_dataHandler		*journalineHandler;
 	httpHandler			*theHttpHandler;
 	contentTable			*theContentTable;
-	contentTable			*theScanTable;
-	QDialog				*theAboutLabel;
+	contentTable		*theScanTable;
+	copyrightText			*thecopyrightLabel;
 	QSettings			*theQSettings;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer			*theDabStreamer;
@@ -480,6 +482,7 @@ public slots:
 //	signals from the configuration window
 	void			startDirect		();
 
+	void			copyrightText_closed		();
 	void			handle_tiiThreshold	(int);
 	void			handle_tiiCollisions		(int);
 	void			handle_activeServices		();
@@ -498,7 +501,6 @@ public slots:
 	void			handle_LoggerButton		(int);
 	void			handle_eti_activeSelector	(int);
 	void			set_streamSelector		(int);
-	void			handle_correctPhase		(int);
 //	connected in the Radio, coming from the config handler
 	void			handle_configFrame_closed	();
 	void			signal_dataTracer       (bool);
@@ -646,12 +648,11 @@ public slots:
 	void			show_changeLabel (const QStringList notInOld,
                                           	  const QStringList notInNew);
 //
-//
 private slots:
 //	button and selectorhandlers
 	void			handle_configButton	();
 	void			handle_httpButton	();
-	void			handle_aboutLabel	();
+	void			handle_copyrightLabel	();
 	void			handle_contentButton	();
 	void			handle_detailButton	();
 	void			handle_scanButton	();

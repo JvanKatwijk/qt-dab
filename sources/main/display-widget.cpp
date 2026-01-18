@@ -39,6 +39,9 @@
 
 #define	DISPLAY_WIDGET_SETTINGS	"displayWidget"
 
+#define	T_u	2048
+#define	carriers	1546
+
 	displayWidget::displayWidget	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings):
 	                                         myFrame (nullptr),
@@ -331,30 +334,33 @@ void	displayWidget::showNULL	(Complex *v, int amount,
 //	data is from the NULL period with TII data, after the
 //	FFT, we collapse to 192 "bin"s
 void	displayWidget::showTII	(std::vector<Complex> v, int freq, int marker) {
-floatQwt	X_axis [512];
+floatQwt	X_axis [512];	//	for the waterfall
 floatQwt	Y_value [512];
 
+	if (v. size () != T_u)
+	   return;
+
 	(void)freq;
-	if (currentTab != SHOW_TII)
+	if (currentTab != SHOW_TII)	// should not happen
 	   return;
 
 	theFFT. fft (v);
 
 //	smoothen the data a little
 	for (uint32_t i = 0; i < v. size (); i ++)
-	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.6) +
-	                       abs (v [i]) * DABFLOAT (0.4);
+	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.9) +
+	                       abs (v [i]) * DABFLOAT (0.1);
 //
 //	in the regular scope we just show the data the tii decoder will
 //	be working on
-
-	floatQwt resVec [192];
-	for (int i = 0; i < 192; i ++) {
+	int startLoc	= T_u - carriers / 2;
+	floatQwt resVec [carriers / 8];
+	for (int i = 0; i < carriers / 8; i ++) {
 	   resVec [i] = 0;
-	   for (int j = 0; j < 2; j ++) {
-	      int index = (2 * i + j * 384);
-//	      int index = (1024 + 2 * i + j * 384) % 1024;
-	      resVec [i] += 2 * abs (workingBuffer [index] + workingBuffer [index + 1]);
+	   for (int j = 0; j < 4; j ++) {
+	      int index = ((startLoc + 2 * i + j * carriers / 4) % T_u);
+	      resVec [i] += 2 * workingBuffer [index] +
+	                                        workingBuffer [index + 1];
 	   }
 	   X_axis [i] = i;
 	}
@@ -362,15 +368,19 @@ floatQwt	Y_value [512];
 	TII_Scope_p		-> display (X_axis, resVec, 96, 
 	                                      tiiSlider -> value (), marker);
 //
-//	for the waterfall we upsample from 192 -> 512
-	for (int i = 0; i < 512; i ++) {
-	   int index = (int)((float)i / 512 * 192);
-	   Y_value [i] = resVec [index];
-	   X_axis [i] = index;
+//	for the waterfall we downsample again
+	for (int i = 0; i < T_u / 4; i ++) {
+	   Y_value [i] = 0;
+	   for (int j = 0; j < 4; j ++) {
+	      int index = (T_u / 2 + 4 * i + j) % T_u;
+	      Y_value [i] += workingBuffer [index];
+	   }
+	   X_axis [i] = -T_u / 2  +  4 * i;
 	}
 
 	for (int i = 0; i < 512; i ++)
-	   Y_value [i] = 4 * (Y_value [i] - get_db (0)) / 8;
+	   Y_value [i] = (get_db (Y_value [i]) - get_db (0));
+//	   Y_value [i] = 4 * (Y_value [i] - get_db (0)) / 8;
 	waterfallScope_p	-> display (X_axis, Y_value, 
 	                                    1.5 * waterfallSlider -> value (),
 	                                    96);
@@ -488,9 +498,8 @@ void	displayWidget::showCorrection	(int c) {
 }
 
 void	displayWidget::showClock_err	(int e) {
-	float xx	= 2 * M_PI * e / 2048000 * 2552;
 	if (!myFrame. isHidden ())
-	   clock_errorDisplay -> display (xx);
+	   clock_errorDisplay -> display (e);
 }
 
 void	displayWidget::showFrequency (const QString &channel, int freq) {

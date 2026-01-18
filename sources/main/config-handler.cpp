@@ -232,8 +232,6 @@ int	index_for_key (int key) {
 	connect	(tracerButton, &QPushButton::clicked,
 	         this, &configHandler::handle_tracerButton);
 	traceOn	= false;
-	connect (correctPhase, &QCheckBox::checkStateChanged,
-	         myRadioInterface, &RadioInterface::handle_correctPhase);
 	set_Colors ();
 }
 
@@ -1020,9 +1018,5 @@ void	configHandler::handle_tracerButton	() {
 	else
 	   tracerButton	-> setText ("");
 	emit signal_dataTracer	(traceOn);
-}
-
-bool	configHandler::check_correctPhase	() {
-	return correctPhase	-> isChecked ();
 }
 

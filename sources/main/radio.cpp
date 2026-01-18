@@ -50,7 +50,6 @@
 #include	"coordinates.h"
 #include	"mapport.h"
 #include	"tech-window.h"
-#include	"aboutdialog.h"
 #include	"db-element.h"
 #include	"distances.h"
 #include	"timetable-control.h"
@@ -75,6 +74,8 @@
 #include	"basic-print.h"
 
 #include	<filesystem>
+
+#include	"copyrightLabel.h"
 
 namespace	fs= std::filesystem;
 
@@ -196,7 +197,7 @@ QString h;
 	this	-> error_report		= error_report;
 	this	-> fmFrequency		= fmFrequency;
 	this	-> dlTextFile		= nullptr;
-	this	-> theAboutLabel	= nullptr;
+	this	-> thecopyrightLabel	= nullptr;
 	running. 		store (false);
 	stereoSetting			= false;
 	theContentTable			= nullptr;
@@ -222,9 +223,9 @@ QString h;
 	globals. diff_length	=
 	          value_i (theQSettings, DAB_GENERAL, "diff_length", DIFF_LENGTH);
 	globals. tii_delay   =
-	          value_i (theQSettings, DAB_GENERAL, "tii_delay", 2);
-	if (globals. tii_delay < 2)
-	   globals. tii_delay	= 2;
+	          value_i (theQSettings, DAB_GENERAL, "tii_delay", 3);
+	if (globals. tii_delay < 3)
+	   globals. tii_delay	= 3;
 	globals. tii_depth      =
 	          value_i (theQSettings, DAB_GENERAL, "tii_depth", 4);
 	globals. echo_depth     =
@@ -524,7 +525,7 @@ QString h;
 	aboutLabel -> setText (" © V6.9.6");
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked,
-	         this, &RadioInterface::handle_aboutLabel);
+	         this, &RadioInterface::handle_copyrightLabel);
 
 	connect (soundLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_muteButton);
@@ -651,10 +652,7 @@ QString h;
 	   if (theDeviceHandler -> isFileInput ())
 	      scanListButton -> setEnabled (false);
 	   theDeviceChooser. hide ();
-	   startTimer. setInterval (1000);
-	   connect (&startTimer, &QTimer::timeout,
-	            this, &RadioInterface::startDirect);
-	   startTimer. start (10000);
+	   startDirect ();
 	   qApp	-> installEventFilter (this);
 	   return;
 	}
@@ -690,8 +688,6 @@ void	RadioInterface::doStart (const QString &dev) {
 //	we (re)start a device, if it happens to be a regular
 //	device, check for a preset name
 void	RadioInterface::startDirect	() {
-	disconnect (&startTimer, &QTimer::timeout,
-	            this, &RadioInterface::startDirect);
 	disconnect (channelSelector,
 #if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	            qOverload<const QString &> (&QComboBox::textActivated),
@@ -1329,6 +1325,10 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	std::complex<int16_t> vec [amount];
 	while (theAudioBuffer. GetRingBufferReadAvailable () >= amount) {
 	   theAudioBuffer. getDataFromBuffer (vec, amount);
+	   if (!theTechWindow -> isHidden ()) {
+	      theTechData. putDataIntoBuffer (vec, amount);
+	      theTechWindow	-> audioDataAvailable (amount, rate);
+	   }
 #ifdef	HAVE_PLUTO_RXTX
 	   if (theDabStreamer != nullptr)
 	      theDabStreamer	-> audioOut (vec, amount, rate);
@@ -1338,12 +1338,11 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	   int size = theAudioConverter. convert (vec, amount, rate, tmpBuffer);
 	   if (!muteTimer. isActive ())
 	      theAudioPlayer -> audioOutput (tmpBuffer. data (), size);
-
-	   if (!theTechWindow -> isHidden ()) {
-	      theTechData. putDataIntoBuffer (vec, amount);
-	      theTechWindow	-> audioDataAvailable (amount, rate);
+	static int ttt = 0;
+	   if (++ ttt > 3) {
+	      setPeakLevel (tmpBuffer);
+	      ttt = 0;
 	   }
-	   setPeakLevel (tmpBuffer);
 	}
 }
 
@@ -1417,9 +1416,9 @@ void	RadioInterface::TerminateProcess () {
 	}
 //
 //	handling the aboutLabel
-	if (theAboutLabel != nullptr) {
-	   theAboutLabel -> hide ();
-	   delete theAboutLabel;
+	if (thecopyrightLabel != nullptr) {
+	   thecopyrightLabel -> hide ();
+	   delete thecopyrightLabel;
 	}
 //
 	if (theHttpHandler != nullptr) {
@@ -3922,8 +3921,6 @@ std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 	if (theTIIBuffer. GetRingBufferReadAvailable () < SAMPLERATE / 1000)
 	   return;
 	
-//	theTIIBuffer. getDataFromBuffer (inBuffer. data (),
-//	                               theTIIBuffer. GetRingBufferReadAvailable () - SAMPLERATE / 1000);
 	theTIIBuffer. getDataFromBuffer (inBuffer. data (), SAMPLERATE / 1000);
 	theTIIBuffer. FlushRingBuffer ();
 	if (!theNewDisplay. isHidden () &&
@@ -4324,14 +4321,19 @@ QPixmap p;
 	       setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 }
 	
-void	RadioInterface::handle_aboutLabel   () { 
-	if (theAboutLabel == nullptr) {
-	   theAboutLabel = new AboutDialog (nullptr);
-	   theAboutLabel -> show ();
+void	RadioInterface::handle_copyrightLabel   () { 
+	if (thecopyrightLabel == nullptr) {
+	   thecopyrightLabel	= new copyrightText (this, ".9.6");
+	   thecopyrightLabel -> show ();
 	   return;
 	}
-	delete theAboutLabel;
-	theAboutLabel	= nullptr;
+	copyrightText_closed ();
+}
+//
+//	killing the window generates a signal
+void	RadioInterface::copyrightText_closed	() {
+	delete thecopyrightLabel;
+	thecopyrightLabel	= nullptr;
 }
 //
 //	Starting a background task is by clicking with the right mouse button
@@ -4478,14 +4480,6 @@ QString Qt_files	= theFilenameFinder. basicPath ();
 //
 //	we never know whether or not all spaces are removed
 	QDesktopServices::openUrl (QUrl (Qt_files, QUrl::TolerantMode));
-//#ifdef __MINGW32__
-//	LPCWSTR temp = (const wchar_t *)Qt_files. utf16 ();
-//	ShellExecute (nullptr, L"open", temp,
-//	                                   nullptr, nullptr, SW_SHOWDEFAULT);
-//#else
-//	std::string x = "xdg-open " + Qt_files. toStdString ();
-//	(void)system (x. c_str ());
-//#endif
 }
 
 const char *directionTable [] = {
@@ -4920,11 +4914,5 @@ void	RadioInterface::timeTableFrame_closed	(){
 	   delete theControl;
 	   theControl	= nullptr;
 	}
-}
-
-void	RadioInterface::handle_correctPhase	(int k) {
-bool state	= theConfigHandler -> check_correctPhase ();
-	if (theOfdmHandler != nullptr)
-	   theOfdmHandler	-> set_correctPhase (state);
 }
 

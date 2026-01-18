@@ -164,10 +164,6 @@ void	ofdmHandler::setTIICollisions	(bool b) {
 	tiiCollisions_active = b;
 }
 
-void	ofdmHandler::setTIIFilter	(bool b) {
-	(void)b;
-}
-
 void	ofdmHandler::start () {
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
@@ -350,8 +346,6 @@ int	snrCount	= 0;
   *	We read the missing samples in the ofdm buffer
   */
 	      sampleCount	+= T_u;
-	                   (p -> dabMode == 1) &&
-	                     theFicHandler. evenFrame ();
 	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)
@@ -463,18 +457,25 @@ int	snrCount	= 0;
 //
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
-	      if ((p -> dabMode == 1) &&
-	                     theFicHandler. evenFrame ()) {
-	         theTIIDetector. addBuffer (ofdmBuffer);
-	         if (++tiiCounter >= tiiDelay) {
-	            tiiCounter = 0;
+//	" The TII signal shall fill the null symbol of each transmission
+//	frame comprising the CIFs of CIF count 0, 1, 2, 3
+//	modulo 8 (transmission mode I).
+//	We have the CIF count of the previous frame
+	      if (p -> dabMode == 1) {
+	         int16_t CIF_hi, CIF_lo;
+	         theFicHandler. getCIFcount (CIF_hi, CIF_lo); 
+	         if ((CIF_lo & 0x07) >= 4) {
+	            theTIIDetector. addBuffer (ofdmBuffer);
 	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data (),
-	                                                          T_null);
+	                                                              T_null);
 	            showTIIspectrum ();
-	            QVector<tiiData> resVec =
+	            if (++tiiCounter >= tiiDelay) {
+	               tiiCounter = 0;
+	               QVector<tiiData> resVec =
 	                       theTIIDetector. processNULL (tiiThreshold,
 	                                                 tiiCollisions_active);
-	            showTIIData (resVec, 0);
+	               showTIIData (resVec, 0);
+	            }
 	         }
 	      }
 	      else {	// compute SNR
@@ -690,10 +691,6 @@ void	ofdmHandler::setDXMode		(bool b) {
 	dxMode	= b;
 }
 
-void	ofdmHandler::selectTII		(uint8_t a) {
-	(void)a;
-}
-
 void	ofdmHandler::setSpeedUp	(bool b) {
 	freqSpeedUp	= b;
 	store (settings_p, CONFIG_HANDLER, "SPEED_UP", b ? 1 : 0);
@@ -736,9 +733,5 @@ void	ofdmHandler::set_dataTracer	(bool b) {
 
 std::vector<basicService>  ofdmHandler::getServices	() {
 	return theFicHandler. getServices ();
-}
-
-void	ofdmHandler::set_correctPhase	(bool b) {
-	theOfdmDecoder. set_correctPhase (b);
 }
 

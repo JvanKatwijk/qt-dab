@@ -153,6 +153,7 @@
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
 	addtoList ("dabstick");
 #endif
+#endif
 #ifdef	HAVE_AIRSPY
 	deviceList. push_back (deviceItem ("airspy", AIRSPY_DEVICE));
 	addtoList ("airspy");

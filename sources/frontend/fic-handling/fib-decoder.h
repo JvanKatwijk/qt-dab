@@ -61,7 +61,7 @@ public:
 	uint16_t	getAnnouncing		(uint16_t);
 	std::vector<int>	getFrequency	(const QString &);
 	void		getChannelInfo		(channel_data *, const int);
-	bool		evenFrame		();	
+	bool		nonTIIFrame		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	int		freeSpace		();

@@ -173,10 +173,10 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension10 (d);
 	      break;
 
-	   case 11:		// Reserved
+	   case 11:		// Obsolete
 	      break;
 
-	   case 12:		// Reserved
+	   case 12:		// Obsolete
 	      break;
 
 	   case 13:             // user application information (6.3.6)
@@ -191,7 +191,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension15 (d);
 	      break;
 
-	   case 16:		// Reserved
+	   case 16:		// Obsolete
 	      break;
 
 	   case 17:		// Program type (8.1.5)
@@ -214,7 +214,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      FIG0Extension21 (d);
 	      break;
 
-	   case 22:		// Reserved
+	   case 22:		// Obsolete
 	      break;
 
 	   case 23:		// Reserved
@@ -229,8 +229,8 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	   case 26:		// OE announcement switching (8.1.6.4)
 	      break;		// not implemented
 
-	   case 27:		// Reserved
-	   case 28:		// Reserved
+	   case 27:		// Obsolete
+	   case 28:		// Obsolete
 	   case 29:		// Reserved
 	   case 30:		// Reserved
 	   case 31:		// Reserved
@@ -1430,11 +1430,11 @@ void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
 	fibLocker. unlock ();
 }
 
-bool	fibDecoder::evenFrame		() {
+bool	fibDecoder::nonTIIFrame		() {
 	return (CIFcount_lo. load () & 0x07) >= 4;
 }
-//
 
+//
 
 uint32_t fibDecoder::julianDate		() {
 	return mjd;

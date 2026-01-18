@@ -125,12 +125,30 @@ void	spectrumScope::display		(floatQwt *X_axis,
 				         (floatQwt)X_axis [0],
 				         X_axis [displaySize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + 2.5 * Max);
 
-	spectrumCurve. setBaseline (get_db (0));
-	Y_value [0]		= get_db (0);
-	Y_value [displaySize - 1] = get_db (0);
+	if (hasMarker) {
+	   float MM	= get_db (0);
+	   float NN	= 1000000;
+	   for (int i = 0; i < displaySize; i ++) {
+	      Y_value [i] = get_db (Y_value [i]) - get_db (0);
+	      if (Y_value [i] > MM)
+	         MM = Y_value [i];
+	      if (Y_value [i] < NN)
+	         NN = Y_value [i];
+	   }
+	   plotgrid	-> setAxisScale (QwtPlot::yLeft,
+	                                   NN, 2 * MM - Amp / 100.0 * MM);
+	   spectrumCurve. setBaseline (NN - 10);
+	   Y_value [0]		= NN - 10;
+	   Y_value [displaySize - 1] = NN - 10;
+	}
+	else { 
+	   plotgrid	-> setAxisScale (QwtPlot::yLeft,
+				         get_db (0), get_db (0) + 2.5 * Max);
+	   spectrumCurve. setBaseline (get_db (0));
+	   Y_value [0]		= get_db (0);
+	   Y_value [displaySize - 1] = get_db (0);
+	}
 
 	spectrumCurve. setSamples (X_axis, Y_value, displaySize);
 	if (hasMarker && (marker != -1)) {

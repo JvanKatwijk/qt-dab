@@ -110,7 +110,7 @@
 	deviceModel		-> setText (theDescriptor -> deviceModel);
 	recorderName		-> setText (theDescriptor -> recorderName);
 	recorderVersion		-> setText (theDescriptor -> recorderVersion);
-	recordingTime		-> setText (theDescriptor -> recordingTime);
+	recordingTime		-> setText ("recorded at: " + theDescriptor -> recordingTime);
 #ifdef __MINGW32__
 	fprintf (stderr, "nrElements = %lld\n",
 #else

@@ -854,10 +854,7 @@ static int teller	= 0;
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples + ovf);
 	else
 	   (void)_I_Buffer. putDataIntoBuffer (tempBuf, nrSamples);
-//	reportOverflow (ovf < 0);
-	if (++teller > 4 * 2048000) {
-//	   fprintf (stderr, "%f %f (%f)\n", sumI / teller, sumQ / teller,
-//	                                    sumI / sumQ);
+
 	if (++teller >= 2048000) {
 	   emit tickSignal  (ovf < 0);
 	   teller = 0;
@@ -901,17 +898,10 @@ static bool theOvf	= true;
 	   theOvf	= true;
 	}
 	else
-<<<<<<< HEAD:sources/devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
-	if (!ovf && theOvf) {		// space in the buffer is sufficient
-	   overflowLabel -> setStyleSheet (
-	                 "QLabel {background-color : green; color: white}");
-
-=======
 	if (!ovf && theOvf) {		
 	   overflowLabel -> setText (" ");
 	   overflowLabel -> setStyleSheet("QLabel {background-color : green; \
                                                    color: white}");
->>>>>>> master:sources/devices/rtlsdr-handler/rtlsdr-handler.cpp
 	   theOvf	= false;
 	}
 	else

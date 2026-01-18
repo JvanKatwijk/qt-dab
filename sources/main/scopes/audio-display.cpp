@@ -105,7 +105,7 @@ void	audioDisplay::createSpectrum  (std::complex<int16_t> *data,
 	                              int amount, int sampleRate) {
 auto X_axis	= dynVec (floatQwt, displaySize);
 auto Y_values	= dynVec (floatQwt, displaySize);
-int16_t	averageCount	= 3;
+int16_t	averageCount	= 5;
 
 	if (amount > spectrumSize)
 	   amount = spectrumSize;

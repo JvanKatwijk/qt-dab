@@ -116,7 +116,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/ensemble-handler.h \
 	   ./sources/main/config-handler.h \
 	   ./sources/main/tech-window.h \
-	   ./sources/main/aboutdialog.h \
+	   ./sources/main/copyrightLabel.h \
 	   ./sources/main/dxDisplay.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
@@ -174,7 +174,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/epg/xml-extractor.h \
 	   ./sources/output/converter_48000.h \
 	   ./sources/output/audio-player.h \
-	   ./sources/support/equalizer.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
 	   ./sources/support/audiosystem-selector.h \
@@ -253,7 +252,6 @@ FORMS	+= ./sources/main/forms-v7/config-helper.ui
 #FORMS	+= ./sources/main/forms-v7/audio-description.ui
 #FORMS	+= ./sources/main/forms-v7/data-description.ui
 FORMS	+= ./sources/main/forms-v7/scopewidget.ui
-FORMS	+= ./sources/main/forms-v7/aboutdialog.ui
 FORMS	+= ./sources/main/snr-viewer/snr-widget.ui
 #FORMS	+= ./sources/devices/filereaders/filereader-widget.ui 
 FORMS	+= ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
@@ -271,7 +269,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/scopes/audio-display.cpp \
 	   ./sources/main/scopes/spectrogramdata.cpp \
 	   ./sources/main/snr-viewer/snr-viewer.cpp \
-	   ./sources/main/aboutdialog.cpp \
+	   ./sources/main/copyrightLabel.cpp \
 	   ./sources/main/ensemble-handler.cpp \
 	   ./sources/main/tech-window.cpp \
 	   ./sources/main/config-handler.cpp \
