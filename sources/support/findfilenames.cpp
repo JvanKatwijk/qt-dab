@@ -291,7 +291,6 @@ QTime	theTime;
 	return fileName;
 }
 
-
 QString	findfileNames::basicPath	() {
 
         QString tempPath	= QDir::homePath () + "/Qt-DAB-files/";
@@ -302,6 +301,19 @@ QString	findfileNames::basicPath	() {
 	tempPath	= checkDir (tempPath);
 
 	return QDir::fromNativeSeparators (tempPath);
+}
+
+QString	findfileNames::find_mapdumpName	(const QString &deviceName) {
+QString result	= basicPath ();
+QDate	theDate;
+QTime	theTime;
+	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
+	result	+= deviceName + "-" + timeString;
+	for (int i = 4; i < result. length (); i ++)
+	   if (!isValid (result. at (i)))
+	      result. replace (i, 1, "-");
+	result	= QDir::toNativeSeparators (result + ".xml");
+	return result;
 }
 
 QString	findfileNames::checkDir		(const QString &s) {

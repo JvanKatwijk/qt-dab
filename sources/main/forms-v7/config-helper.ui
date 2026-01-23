@@ -51,6 +51,16 @@
          </attribute>
         </widget>
        </item>
+       <item>
+        <widget class="QCheckBox" name="mapViewSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB provides the possibility of storing a representation of the map elements into a file, and showing the map off-line.&lt;/p&gt;&lt;p&gt;Having set this selector, instructs Qt-DAB to store a representation of the elements on the map into a file.&lt;/p&gt;&lt;p&gt;Name of the file is XXXYYY.xml, where XXX tells the name of the device used, and YYY tells the time and date of the &amp;quot;recording&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>mapview</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
@@ -610,6 +620,12 @@
       <widget class="QSpinBox" name="tiiCollisions">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If setting a subId value different from 0, the software searches for ALL mainIds, associated with that  subId.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="minimum">
+        <number>-1</number>
+       </property>
+       <property name="maximum">
+        <number>24</number>
        </property>
       </widget>
      </item>

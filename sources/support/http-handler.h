@@ -32,6 +32,8 @@
 #include	<QString>
 #include	<QSettings>
 #include	<QTimer>
+#include	<QDomDocument>
+#include	<QFile>
 #include	"tii-mapper.h"
 #include	"db-element.h"
 #include	<QTcpSocket>
@@ -48,17 +50,20 @@ public:
 	                         position	address,
 	                         bool		autoBrowse,
 	                         bool		map_close_on_exit,
+	                         const QString &,
 	                         QSettings	*settings);
 		~httpHandler	();
 	bool	isConnected	();
 	void	putData		(uint8_t	type);
 	void	putData		(uint8_t	type,
 	                         transmitter	&Tr,
-	                         const QString & theTime);
+	                         bool		utc);
 private:
 	QTimer			delayTimer;
 	RadioInterface		*theRadio;
-	QString			fileName;
+	QString			nameOfMap;
+	QString			saveName;
+	QSettings		*dabSettings;
 	position		homeAddress;
 	bool			close_map_on_exit;
 	QString			theMap		(const QString &fileName,
@@ -69,6 +74,12 @@ private:
 	bool			connection_stopped;
 	std::atomic<bool>	closingInProgress;
 	int			maxDelay;
+	std::vector<transmitter> saveStack;
+	bool			seenAlready	(const transmitter &);
+	QDomElement		getTransmitter	(QDomDocument &,
+	                                           const transmitter &tr);
+
+	void			saveMap		();
 signals:
 	void		setChannel		(const QString &);
 	void		mapClose_processed	();

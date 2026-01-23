@@ -79,7 +79,7 @@ public:
 //
 //	for the tii settings
 	void		setTIIThreshold		(int16_t);
-	void		setTIICollisions	(bool);
+	void		setTIICollisions	(int);
 	void		setTIIFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
@@ -140,7 +140,7 @@ private:
 	uint8_t			selectedTII;
 	DABFLOAT		snr;
 	int16_t			tiiThreshold;
-	bool			tiiCollisions_active;
+	int			tiiCollision;
 	bool			tiiFilter_active;
 
 	int			decoder;

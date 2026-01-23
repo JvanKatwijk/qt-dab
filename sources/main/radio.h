@@ -284,9 +284,9 @@ private:
 	ofdmHandler			*theOfdmHandler;
 	deviceHandler			*theDeviceHandler;
 	journaline_dataHandler		*journalineHandler;
-	httpHandler			*theHttpHandler;
+	httpHandler			*mapViewer;
 	contentTable			*theContentTable;
-	contentTable		*theScanTable;
+	contentTable			*theScanTable;
 	copyrightText			*thecopyrightLabel;
 	QSettings			*theQSettings;
 #ifdef	HAVE_PLUTO_RXTX

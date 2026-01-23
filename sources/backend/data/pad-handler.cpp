@@ -598,10 +598,10 @@ uint16_t	index;
 	      if (currentSlide. isNull () ||
 	          (currentSlide -> get_transportId() != transportId))
 	         return;
-	         currentSlide -> addBodySegment (&data [index + 2],
-	                                         segmentNumber,
-	                                         segmentSize,
-	                                         lastFlag);
+	      currentSlide -> addBodySegment (&data [index + 2],
+	                                      segmentNumber,
+	                                      segmentSize,
+	                                      lastFlag);
 	      }
 	      break;
 

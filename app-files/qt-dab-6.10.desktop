@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Qt6_DAB-6.9.6
-Exec=qt-dab-6.9.6
-Icon=qt-dab-6.9.5
+Name=Qt6_DAB-6.10
+Exec=qt-dab-6.10
+Icon=qt-dab-6.10
 Type=Application
 Categories=AudioVideo;
 Comment=Probably the most extended DAB decoder

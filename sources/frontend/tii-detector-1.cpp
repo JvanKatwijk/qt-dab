@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2024
+ *    Copyright (C) 2014 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,7 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 //
-//	This implementation of the TII decoder is taken from
+//	This implementation of the TII decoder is based on
 //	Rolf Zerr's (aka old-dab) implemementation as done in DABstar.
 //	All rights acknowledged.
 
@@ -140,7 +140,7 @@ uint16_t	nrPatterns () {
 //
            float aa = (arg (r) < 0) ? arg (r) + 2 * M_PI : arg (r);
 //	the "arg" of r is one of 0 .. 3 * PI/2
-	   rotationTable [teller ++]= (int)(floor ((aa + 0.1) / (M_PI / 2)));
+	   rotationTable [teller ++] = (int)(floor ((aa + 0.1) / (M_PI / 2)));
         }
 	carrierDelete	= false;
 	reset ();
@@ -400,7 +400,7 @@ int Teller = 0;
 	   }
 //
 //	Collisions still to be done
-	   if ((count > 4) && (selected_subId != 0)) {
+	   if ((count > 4) && (selected_subId > 0)) {
 	      sum = Complex (0,0);
 
 //	Calculate the level of the second main ID
@@ -442,7 +442,6 @@ int Teller = 0;
 	}
 //	fprintf(stderr, "max =%.0f, noise = %.1fdB\n", max, 10 * log10(noise/max));
 	if (max > 4000)
-//	if (max > 4000000)
 	   for (int i = 0; i < carriers / 2; i++)
 	      decodedBuffer [i] *= 0.9;
 	resetBuffer();

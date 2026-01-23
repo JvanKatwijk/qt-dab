@@ -202,7 +202,7 @@ QString h;
 	stereoSetting			= false;
 	theContentTable			= nullptr;
 	theScanTable			= nullptr;
-	theHttpHandler			= nullptr;
+	mapViewer			= nullptr;
 	theDXDisplay. hide ();
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
@@ -323,7 +323,7 @@ QString h;
 	else
 	   httpButton	-> setEnabled (false);
 
-	SystemVersion	= QString ("9.6");
+	SystemVersion	= QString ("10");
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
 	version		= "Qt6-DAB-6." + SystemVersion ;
 #else
@@ -1390,9 +1390,9 @@ void	RadioInterface::TerminateProcess () {
 	while (theSCANHandler. active ())
 	   usleep (1000);
 	mapHandler_locker. lock ();
-	if (theHttpHandler != nullptr) {
-	   delete theHttpHandler;
-	   theHttpHandler = nullptr;
+	if (mapViewer != nullptr) {
+	   delete mapViewer;
+	   mapViewer = nullptr;
 	}
 	if (theControl != nullptr)
 	   delete theControl;
@@ -1421,9 +1421,9 @@ void	RadioInterface::TerminateProcess () {
 	   delete thecopyrightLabel;
 	}
 //
-	if (theHttpHandler != nullptr) {
-//	   theHttpHandler ->  stop ();
-	   delete theHttpHandler;
+	if (mapViewer != nullptr) {
+//	   mapViewer ->  stop ();
+	   delete mapViewer;
 	}
 
 //	handling the scanlist
@@ -2599,8 +2599,8 @@ int	tunedFrequency	=
 	theNewDisplay. 		cleanTII	();
 	theNewDisplay. 		showTransmitters (channel. transmitters);
 	mapHandler_locker. lock ();
-	if (theHttpHandler != nullptr) 
-	   theHttpHandler -> putData (MAP_FRAME);
+	if (mapViewer != nullptr) 
+	   mapViewer -> putData (MAP_FRAME);
 	mapHandler_locker. unlock ();
 
 	if (theSCANHandler. active ()) {
@@ -3630,8 +3630,8 @@ void	RadioInterface::set_transmitters_local  (bool isChecked) {
 	channel. targetPos	= position {0, 0};
 	if (isChecked) {
 	   mapHandler_locker. lock ();
-	   if (theHttpHandler != nullptr)
-	      theHttpHandler -> putData (MAP_RESET);
+	   if (mapViewer != nullptr)
+	      mapViewer -> putData (MAP_RESET);
 	   mapHandler_locker. unlock ();
 	}
 }
@@ -3660,18 +3660,19 @@ void	RadioInterface::nrServices	(int n) {
 bool	RadioInterface::autoStart_http () {
 	if (localPos. latitude == 0) 
 	   return false;
-	if (theHttpHandler != nullptr)  
+	if (mapViewer != nullptr)  
 	   return false;
 
 	try {
-	   theHttpHandler = new httpHandler (this,
+	   mapViewer = new httpHandler (this,
 	                                 ":res/qt-map-69.html",
 	                                 localPos,
 	                                 theConfigHandler -> localBrowserSelector_active (),
-	       	                         theConfigHandler -> get_close_mapSelector (),
+	       	                         theConfigHandler -> get_close_mapSelector (),	
+	                                 "",
 	                                 theQSettings);
 	} catch (int e) {}
-	return theHttpHandler != nullptr;
+	return mapViewer != nullptr;
 }
 //
 //
@@ -3699,35 +3700,42 @@ void	RadioInterface::handle_httpButton	() {
 	   return;
 	}
 
-	if (theHttpHandler == nullptr)  {
+	if (mapViewer == nullptr)  {
 	   try {
-	      theHttpHandler = new httpHandler (this,
+	      bool sf = value_i (theQSettings, CONFIG_HANDLER, SAVE_HTTP, 0);
+	      QString saveName;
+	      if (sf)
+	         saveName =
+	               theFilenameFinder.
+	                   find_mapdumpName (theDeviceHandler -> deviceName ());
+	      mapViewer = new httpHandler (this,
 	                                    ":res/qt-map-69.html",
 	                                    localPos,
 	                                    theConfigHandler -> localBrowserSelector_active (),
 	       	                            theConfigHandler -> get_close_mapSelector (),
+	                                    saveName,
 	                                    theQSettings);
 	   } catch (int e) {}
-	   if (theHttpHandler != nullptr)
+	   if (mapViewer != nullptr)
 	      httpButton -> setText ("http-on");
 	}
 	else {		// forced stop
 //	Two options. If the server is running, issue a mapClose
 //	request. If the server is running without a map just delete
-	   if (theHttpHandler == nullptr) 	// nothing to do
+	   if (mapViewer == nullptr) 	// nothing to do
 	      return;
 	   int auto_http   = value_i (theQSettings, CONFIG_HANDLER,
                                                AUTO_HTTP, 0);
 	   if ((auto_http != 0) ||
 	       !theConfigHandler -> get_close_mapSelector () ||
-	       !theHttpHandler -> isConnected ()) {
+	       !mapViewer -> isConnected ()) {
 	      cleanUp_mapHandler ();
 	      return;
 	   }
 //	handler is running and we want the map closed
 //	we send a signal, and "poll" for the result
 	   mapHandler_locker. lock ();
-	   theHttpHandler -> putData (MAP_CLOSE);
+	   mapViewer -> putData (MAP_CLOSE);
 	   mapHandler_locker. unlock ();
 	   teller	= 0;
 	   stillWaiting	= true;
@@ -3749,18 +3757,18 @@ void	RadioInterface::waitingToDelete () {
 }
 
 void	RadioInterface::cleanUp_mapHandler () {
-	disconnect (theHttpHandler, &httpHandler::mapClose_processed,
+	disconnect (mapViewer, &httpHandler::mapClose_processed,
 	            this, &RadioInterface::http_terminate);
 //	fprintf (stderr, "Going to delete mapserver\n");
 	locker. lock ();
-	if (theHttpHandler != nullptr) {
-	   theHttpHandler -> close ();
-	   delete theHttpHandler;
-	   theHttpHandler	= nullptr;
+	if (mapViewer != nullptr) {
+	   mapViewer -> close ();
+	   delete mapViewer;
+	   mapViewer	= nullptr;
 	}
 	locker. unlock ();
 	httpButton -> setText ("http");
-//	fprintf (stderr, "theHttpHandler is gone\n");
+//	fprintf (stderr, "mapViewer is gone\n");
 }
 //
 //	
@@ -4159,7 +4167,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   }
 	}
 //
-	if (theHttpHandler == nullptr)
+	if (mapViewer == nullptr)
 	   return;
 //
 	for (auto &theTr : channel. transmitters) {
@@ -4169,15 +4177,10 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   uint8_t key = theConfigHandler -> showAll_Selector_active () ?
 	                                      SHOW_ALL: SHOW_SINGLE;
 	   
-	   QDateTime theTime = 
-	            theConfigHandler -> utcSelector_active () ?
-	                                     QDateTime::currentDateTimeUtc () :
-	                                     QDateTime::currentDateTime ();
+	   bool utc		= theConfigHandler -> utcSelector_active ();
 	   mapHandler_locker. lock ();
-	   if (theHttpHandler != nullptr)
-	      theHttpHandler -> putData (key,
-	                             theTr,
-	                             theTime. toString (Qt::TextDate));
+	   if (mapViewer != nullptr)
+	      mapViewer -> putData (key, theTr, utc);
 	   mapHandler_locker. unlock ();
 	}
 }

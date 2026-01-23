@@ -27,6 +27,7 @@
 #include	<QByteArray>
 #include	<QDesktopServices>
 #include	<QMessageBox>
+#include	<QDateTime>
 
 #include	<stdio.h>
 #include	<stdlib.h>
@@ -46,17 +47,21 @@
 	                          position	homeAddress,
 	                          bool		autoBrowser_on,
 	                          bool		close_map_on_exit,
+	                          const QString &saveName,
 	                          QSettings	*settings) {
 	this	-> theRadio	= theRadio;
-	this	-> fileName	= fileName;
+	this	-> nameOfMap	= fileName;
 	this	-> close_map_on_exit = close_map_on_exit;
+	this	-> saveName	= saveName;
+	this	-> dabSettings	= settings;
 	int  mapPort		=
 	            value_i (settings, MAP_HANDLING, MAP_PORT_SETTING,
                                                                   8080);
 	QString address		= 
 	            value_s (settings, MAP_HANDLING, BROWSER_ADDRESS,
 	                                                "http://localhost");
-	QString browserAddress		= address + ":" + QString::number (mapPort);
+	QString browserAddress		= address + ":" +
+	                                          QString::number (mapPort);
 	this	-> homeAddress		= homeAddress;
 
 	delayTimer. setSingleShot (true);
@@ -88,6 +93,8 @@
 	httpHandler::~httpHandler	() {
 	if (this -> isListening ())
 	   this -> close ();
+	if (this	-> saveName != "")
+	   saveMap	();
 }
 
 void	httpHandler::newConnection	() {
@@ -126,7 +133,8 @@ void	httpHandler::onSocketError (QAbstractSocket::SocketError socketerror) {
 	   else {	// 
 //	      fprintf (stderr, "de http handler zou moeten sluiten\n");
 	      if (close_map_on_exit)
-	         delayTimer. start (1000);
+	         if (!delayTimer. isActive ())
+	            delayTimer. start (1000);
 	   }
 	}
 }
@@ -178,7 +186,7 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
               setChannel (s [1]);
         }
         else {
-           content	= theMap (fileName, homeAddress);
+           content	= theMap (nameOfMap, homeAddress);
            ctype	= "text/html;charset=utf-8";
         }
 	QByteArray theContents = content. toUtf8 ();
@@ -203,6 +211,7 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	if (closingInProgress. load ()) {
 	   worker -> waitForBytesWritten ();
 	}
+	delayTimer. start (4000);
 }
 //
 //	This timeout is initiated after a (potential) disconnect
@@ -222,7 +231,7 @@ void	httpHandler::handle_timeOut () {
 	emit mapClose_processed ();
 }
 
-QString	httpHandler::theMap (const QString &fileName, position homeAddress) {
+QString	httpHandler::theMap (const QString &nameOfMap, position homeAddress) {
 int	bodySize;
 char	*body;
 std::string latitude	= std::to_string (homeAddress. latitude);
@@ -233,7 +242,7 @@ int teller	= 0;
 int params	= 0;
 
 // read map file from resource file
-	QFile file (fileName);
+	QFile file (nameOfMap);
 	if (file. open (QFile::ReadOnly)) {
 	   QByteArray record_data (1, 0);
 	   QDataStream in (&file);
@@ -345,7 +354,7 @@ void	httpHandler::putData	(uint8_t type) {
 
 void	httpHandler::putData	(uint8_t	type,
 	                         transmitter	&theTr,
-	                         const QString	&theTime) {
+	                         bool		utc) {
 	float latitude	= theTr. latitude;
 	float longitude	= theTr. longitude;
 	locker. lock ();
@@ -358,9 +367,77 @@ void	httpHandler::putData	(uint8_t	type,
 	   }
 
 	theTr. type		= type;
-	theTr. dateTime		= theTime;
+	QDateTime theTime	= utc ?  QDateTime::currentDateTimeUtc () :
+                                             QDateTime::currentDateTime ();
 
+	theTr. dateTime		= theTime. toString (Qt::TextDate);
 	transmitterList. push_back (theTr);
 	locker. unlock ();
+	if (saveName != "") 
+	   if (!seenAlready (theTr))
+	      saveStack. push_back (theTr);
 }
 
+bool	httpHandler::seenAlready (const transmitter &tr) {
+	for (auto &member: saveStack) 
+	   if ((member. channel == tr. channel) &&
+	       (member. transmitterName == tr. transmitterName))
+	      return true;
+	return false;
+}
+
+void	httpHandler::saveMap	() {
+QDomDocument theDocument;
+	QDomElement root	= theDocument. createElement ("mapView");
+	QDateTime theTime		= QDateTime::currentDateTime ();
+	theDocument. appendChild (root);
+	QDomElement element = theDocument. createElement ("Creator");
+	element. setAttribute ("generator", "Qt-DAB");
+	QString keyText	= theTime. toString (Qt::TextDate);
+	uint16_t key	= 0;
+	for (int i = 0; keyText. toLatin1 (). data () [i] != 0; i ++)
+	   key += keyText. toLatin1 (). data () [i];
+	element. setAttribute ("key", key & 0xFF);
+	element. setAttribute ("dateTime", keyText);
+	element. setAttribute ("home-X", homeAddress. latitude);
+	element. setAttribute ("home-Y", homeAddress. longitude);
+	root. appendChild (element);
+
+	for (auto &tr: saveStack) {
+	   QDomElement transm = getTransmitter (theDocument, tr);
+	   element. appendChild (transm);
+	}
+
+	QFile file (this -> saveName);
+        if (!file. open (QIODevice::WriteOnly | QIODevice::Text))
+           return;
+
+        QTextStream stream (&file);
+        stream << theDocument. toString ();
+        file. close ();
+}
+
+QDomElement httpHandler::getTransmitter (QDomDocument &doc,
+	                                        const transmitter &tr) {
+QDomElement element = doc. createElement ("Transmitter");
+
+	element. setAttribute ("country", tr. country);
+	element. setAttribute ("tiiPattern", QString::number (tr. pattern, 8));
+	element. setAttribute ("channel", tr. channel);
+	element. setAttribute ("ensemble", tr. ensemble);
+	element. setAttribute ("transmitterName", tr. transmitterName);
+	element. setAttribute ("Eid", QString::number (tr. Eid, 16));
+	element. setAttribute ("mainId", tr. mainId);
+	element. setAttribute ("subId", tr. subId);
+	element. setAttribute ("latitude", tr. latitude);
+	element. setAttribute ("longitude", tr. longitude);
+	element. setAttribute ("power", tr. power);
+	element. setAttribute ("height", tr. height);
+	element. setAttribute ("altitude", tr. altitude);
+	element. setAttribute ("polarization", tr. polarization);
+	element. setAttribute ("direction",  tr. direction);
+	element. setAttribute ("strength", tr. strength);
+	return element;
+}
+
+	

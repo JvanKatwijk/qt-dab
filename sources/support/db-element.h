@@ -90,6 +90,8 @@ public:
 //
 //	There are values differing per instance of the 
 //	same transmitter
+	float		home_X;
+	float		home_Y;
 	uint16_t	pattern;
 	float		strength;
 	float		distance;
@@ -118,7 +120,8 @@ public:
 	   frequency	= dbE -> frequency;
 	   power	= dbE -> power;
 	   direction	= dbE -> direction;
-
+	   home_X	= 0;
+	   home_Y	= 0;
 	   phase	= 0;
 	   norm		= false;
 	   collision	= false;

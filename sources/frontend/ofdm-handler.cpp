@@ -137,8 +137,8 @@
 	         mr,  &RadioInterface::show_Corrector);
 	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
                                              TII_THRESHOLD, 6);
-	tiiCollisions_active = value_i (settings_p, CONFIG_HANDLER,
-	                                      "tiiCollisions", 1) != 0;
+	tiiCollision	= value_i (settings_p, CONFIG_HANDLER,
+	                                      "tiiCollision", -1);
 	theOfdmDecoder. handle_decoderSelector (decoder);
 
 	this	-> snr		= 10;	// until we know better
@@ -160,8 +160,8 @@ void	ofdmHandler::setTIIThreshold	(int16_t threshold) {
 	tiiThreshold = threshold;
 }
 
-void	ofdmHandler::setTIICollisions	(bool b) {
-	tiiCollisions_active = b;
+void	ofdmHandler::setTIICollisions	(int subId) {
+	tiiCollision = subId;
 }
 
 void	ofdmHandler::start () {
@@ -473,25 +473,25 @@ int	snrCount	= 0;
 	               tiiCounter = 0;
 	               QVector<tiiData> resVec =
 	                       theTIIDetector. processNULL (tiiThreshold,
-	                                                 tiiCollisions_active);
+	                                                    tiiCollision);
 	               showTIIData (resVec, 0);
 	            }
 	         }
-	      }
-	      else {	// compute SNR
-	         float sum	= 0;
-	         for (int i = 0; i < T_null; i ++)
-	            sum += jan_abs (ofdmBuffer [i]);
-	         sum /= T_null;
-	         float snrV	=
-	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	         this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
-	         if (this -> snrBuffer_p != nullptr) 
-	            snrBuffer_p -> putDataIntoBuffer (&snr, 1);
-	         snrCount ++;
-	         if (snrCount >= 3) {
-	            snrCount = 0;
-	            showSnr (snr);
+	         else {	// compute SNR
+	            float sum	= 0;
+	            for (int i = 0; i < T_null; i ++)
+	               sum += jan_abs (ofdmBuffer [i]);
+	            sum /= T_null;
+	            float snrV	=
+	                 20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
+	            this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
+	            if (this -> snrBuffer_p != nullptr) 
+	               snrBuffer_p -> putDataIntoBuffer (&snr, 1);
+	            snrCount ++;
+	            if (snrCount >= 3) {
+	               snrCount = 0;
+	               showSnr (snr);
+	            }
 	         }
 	      }
 /**

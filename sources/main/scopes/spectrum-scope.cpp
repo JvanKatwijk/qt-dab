@@ -152,16 +152,16 @@ void	spectrumScope::display		(floatQwt *X_axis,
 
 	spectrumCurve. setSamples (X_axis, Y_value, displaySize);
 	if (hasMarker && (marker != -1)) {
-	   QwtText theText = "startpoint " + QString::number (marker);
-           QFont zz = theText. font ();
-           int pp = zz. pointSize ();
-           zz . setPointSize (pp + 3);
-           theText. setFont (zz);
-           Marker -> setLinePen (QColor ("yellow"), 1.0);
-           Marker -> setLabelOrientation (Qt::Orientation::Vertical);
-           Marker -> setLabelAlignment (Qt::AlignLeft);
-           Marker -> setLabel  (theText);
-	   Marker -> setXValue (marker + 96);
+	   QwtText theText = "subId " + QString::number (marker);
+	   QFont zz = theText. font ();
+	   int pp = zz. pointSize ();
+	   zz . setPointSize (pp + 3);
+	   theText. setFont (zz);
+	   Marker -> setLinePen (QColor ("yellow"), 1.0);
+	   Marker -> setLabelOrientation (Qt::Orientation::Vertical);
+	   Marker -> setLabelAlignment (Qt::AlignLeft);
+	   Marker -> setLabel  (theText);
+	   Marker -> setXValue (marker);
 	}
 	plotgrid	-> replot (); 
 }

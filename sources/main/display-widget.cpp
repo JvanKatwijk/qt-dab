@@ -380,7 +380,6 @@ floatQwt	Y_value [512];
 
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (get_db (Y_value [i]) - get_db (0));
-//	   Y_value [i] = 4 * (Y_value [i] - get_db (0)) / 8;
 	waterfallScope_p	-> display (X_axis, Y_value, 
 	                                    1.5 * waterfallSlider -> value (),
 	                                    96);

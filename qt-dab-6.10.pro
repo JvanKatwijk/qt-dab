@@ -426,10 +426,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-6.9.6
+   TARGET               = qt-dab-qt5-6.10
 }
 else {
-   TARGET               = qt-dab-qt6-6.9.6
+   TARGET               = qt-dab-qt6-6.10
 }
 
 #mac {
@@ -492,7 +492,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit, only 6.9.6
-        TARGET          = qt6-dab64-6.9.6
+        TARGET          = qt6-dab64-6.10
 	DEFINES		+= __BITS64__
 	DESTDIR		=  /d/systems/qt-dab/linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

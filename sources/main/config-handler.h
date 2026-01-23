@@ -112,6 +112,7 @@ private slots:
 	void	color_skinButton	();
 	void	color_pathButton	();
 //
+	void	handle_mapViewSelector		(int);
 //	and the handlers:
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);

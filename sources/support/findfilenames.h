@@ -39,6 +39,7 @@ public:
 		findfileNames			(QSettings *);
 		~findfileNames			();
 	QString	basicPath			();
+	QString find_mapdumpName		(const QString &deviceName);
 	FILE	*findContentDump_fileName	(const QString &channel);
 	FILE	*findFrameDump_fileName		(const QString &service,
 	                                         uint8_t, bool);

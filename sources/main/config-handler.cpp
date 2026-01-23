@@ -90,9 +90,13 @@ int	index_for_key (int key) {
 	hide ();
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
+
 	
 	int x =  value_i (dabSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10);
 	this	-> muteTimeSetting -> setValue (x);
+
+	x	= value_i (dabSettings, CONFIG_HANDLER, SAVE_HTTP, 0);
+	mapViewSelector		-> setChecked (x != 0);
 
         int fontSize    =  
 	         value_i (dabSettings, COLOR_SETTINGS, "fontSize", 10);
@@ -172,7 +176,7 @@ int	index_for_key (int key) {
 	                          "dcRemoval", 1) == 1;
 	this -> dcRemoval -> setChecked (b);
 
-	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollisions", 0);
+	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollision", 0);
 	this	-> tiiCollisions -> setValue (c);
 
 #ifndef	__MSC_THREAD__
@@ -190,8 +194,15 @@ int	index_for_key (int key) {
 	                                 DECODERS, DECODER_1);
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 
-	tiiCollisions -> setEnabled (false);
+//	tiiCollisions -> setEnabled (false);
 	tiiThreshold_setter -> setMinimum (6);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (mapViewSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (mapViewSelector, &QCheckBox::stateChanged,
+#endif
+	this, &configHandler::handle_mapViewSelector);
 
 	int v = value_i (dabSettings, CONFIG_HANDLER,
 	                             TII_THRESHOLD, 12);
@@ -1018,5 +1029,11 @@ void	configHandler::handle_tracerButton	() {
 	else
 	   tracerButton	-> setText ("");
 	emit signal_dataTracer	(traceOn);
+}
+
+void	configHandler::handle_mapViewSelector	(int k) {
+	(void)k;
+	bool b = this ->  mapViewSelector -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, "DAVE_HTTP", b ? 1 : 0);
 }
 
