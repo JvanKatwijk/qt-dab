@@ -393,7 +393,7 @@ QDomDocument theDocument;
 	theDocument. appendChild (root);
 	QDomElement element = theDocument. createElement ("Creator");
 	element. setAttribute ("generator", "Qt-DAB");
-	element. setAttribute ("dateTime", keyText);
+
 	element. setAttribute ("home-X", homeAddress. latitude);
 	element. setAttribute ("home-Y", homeAddress. longitude);
 	root. appendChild (element);

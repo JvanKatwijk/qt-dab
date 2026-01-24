@@ -36,6 +36,7 @@
 #include	<QPushButton>
 #include	<QCheckBox>
 #include	<QComboBox>
+#include	<QSpinBox>
 #include	"findfilenames.h"
 #include	"scantable-handler.h"
 
@@ -73,6 +74,7 @@ public:
 	int32_t		Frequency	(const QString &);
 	QString		getChannel	(int frequency);
 
+	int		switchStayValue	();
 private:
 	scantableHandler	scanTable;
 	QString		channel;
@@ -92,6 +94,7 @@ private:
 	QPushButton	*storeKnop;
 	QComboBox	*scanModeSelector;
 	QCheckBox	*dumpChecker;
+	QSpinBox	*switchStaySetting;
 
 #ifndef	__MINGW32__
 	dabFrequencies alternatives [128];
@@ -121,6 +124,7 @@ private slots:
 	void		handle_defaultStore	();
 	void		handle_loadKnop		();
 	void		handle_storeKnop	();
+	void		handle_switchStaySetting (int newV);
 
 	void		setDumpDir		();
 signals:

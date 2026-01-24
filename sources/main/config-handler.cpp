@@ -109,9 +109,6 @@ int	index_for_key (int key) {
 	x = value_i (dabSettings, CONFIG_HANDLER, "localDB", 1);
 	this	-> localDB_selector	-> setChecked (x);
 
-	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, 20);
-	this	-> switchStaySetting -> setValue (x);
-
 	x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
 	                               ALPHA_BASED);
 	if (x == ALPHA_BASED)
@@ -299,8 +296,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_muteTimeSetting);
 	connect (switchDelaySetting, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_switchDelaySetting);
-	connect (switchStaySetting, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &configHandler::handle_switchStaySetting);
 	connect (orderAlfabetical, &QRadioButton::clicked,
 	         this, &configHandler::handle_orderAlfabetical);
 	connect (orderServiceIds, &QRadioButton::clicked,
@@ -705,10 +700,6 @@ void	configHandler::handle_switchDelaySetting	(int newV) {
 	store (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING, newV);
 }
 
-void	configHandler::handle_switchStaySetting	(int newV) {
-	store (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, newV);
-}
-
 void	configHandler::handle_orderAlfabetical		() {
 	set_serviceOrder (ALPHA_BASED);
 	serviceOrder	= ALPHA_BASED;
@@ -899,10 +890,6 @@ QString	configHandler::currentStream		() {
 
 int	configHandler::switchDelayValue		() {
 	return switchDelaySetting	-> value () * 1000;
-}
-
-int	configHandler::switchStayValue		() {
-	return switchStaySetting	-> value () * 1000;
 }
 
 int	configHandler::muteValue		() {

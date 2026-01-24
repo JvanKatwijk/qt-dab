@@ -855,7 +855,7 @@ QString s;
 	                 addEnsemble (channelSelector -> currentText (), v);
 	      channelTimer. stop ();
 	      int switchStay		= 
-	              theConfigHandler -> switchStayValue ();
+	              theSCANHandler. switchStayValue ();
 	      if (theSCANHandler. dumpInFile ()) {
 	         theDeviceHandler	-> startDump	();
 	      }

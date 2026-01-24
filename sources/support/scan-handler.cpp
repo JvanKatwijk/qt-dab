@@ -156,12 +156,17 @@ QString scanmodeText (int e) {
         contentWidget	= new QTableWidget (0, 4);
 	QHBoxLayout *LH	= new QHBoxLayout ();
 	QHBoxLayout *LH_2	= new QHBoxLayout ();
+	switchStaySetting	= new QSpinBox ();
+	switchStaySetting	-> setMinimum	(20);
+	switchStaySetting	-> setSingleStep (20);
+	switchStaySetting	-> setToolTip ("the value specifies the number of seconds Qt-DAB will hold the current channel when data was detected. Increments are also in units of 20 seconds");
 	LH		-> addWidget (startKnop);
 	LH		-> addWidget (stopKnop);
 	LH		-> addWidget (showKnop);
 	LH		-> addWidget (clearKnop);
 	LH		-> addWidget (dumpDirKnop);
 	LH		-> addWidget (dumpChecker);
+	LH_2		-> addWidget (switchStaySetting);
 	LH_2		-> addWidget (defaultLoad);
 	LH_2		-> addWidget (defaultStore);
 	LH_2		-> addWidget (loadKnop);
@@ -175,6 +180,8 @@ QString scanmodeText (int e) {
         this ->  setLayout (LV);
 	this ->  setWindowTitle ("scan monitor");
 	setPositionAndSize (dabSettings, this, SCAN_HANDLER);
+	int x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, 20);
+        this    -> switchStaySetting -> setValue (x);
 
 	if (!no_scanTables)
 	   scanTable. setup_scanTable (selectedBand);
@@ -222,6 +229,10 @@ QString scanmodeText (int e) {
 	         theRadio, &RadioInterface::startScanning);
 	connect (this, &scanHandler::stopScanning,
 	         theRadio, &RadioInterface::stopScanning);
+
+	connect (switchStaySetting, qOverload<int>(&QSpinBox::valueChanged),
+                 this, &scanHandler::handle_switchStaySetting);
+
 }
 
 	scanHandler::~scanHandler () {
@@ -505,6 +516,14 @@ QString	scanHandler::getChannel	(int frequency) {
 	   if (selectedBand [i]. fKHz == frequency / 1000)
 	      return selectedBand [i]. key;
 	return "";
+}
+
+void    scanHandler::handle_switchStaySetting (int newV) {
+        store (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, newV);
+}       
+
+int	scanHandler::switchStayValue	() {
+	return switchStaySetting	-> value () * 1000;
 }
 
 int16_t scanHandler::channelIndex (const QString &channel) {

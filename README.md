@@ -36,7 +36,7 @@ The view selection is at the bottom
 than the home country. The mapviewer shows a **country selector** with which
 one may select one of the countries from which data is received.
 If a country is selected, the other three selectors (channel, ensemble and
-showAll) are restrictted to the selected country.
+showAll) are restricted to the selected country.
 
 Of course, the mapViewer starts the webbrowser if needed, that means
 that you can start the browser by clicking on the **http** button, but
@@ -55,8 +55,12 @@ Scanning an saving the file
 
 Qt-DAB-6.10 has - on the configuration window - a selector that - when set -
 tells Qt-DAB to generate a file from the contents of the map.
+
+![6.9](/res/read_me/stay-time.png?raw=true)
+
 **Please be aware that when scanning the time Qt-DAB will wait when
 encountering data in a channel before switching to the (a) next channel.
+The selector was moved from the configuration window to the scan handler.
 The default time is now set to 20 seconds, increments are 20 seconds each.**
 
 --------------------------------------------------------------------------

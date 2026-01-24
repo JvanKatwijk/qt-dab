@@ -236,19 +236,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="smallSpinBox" name="switchDelaySetting">
-           <property name="toolTip">
-            <string>Set here the delay, when searching for data in a channel, in seconds</string>
-           </property>
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>99999</number>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_2">
            <property name="toolTip">
@@ -259,29 +246,16 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>stay time (seconds)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="smallSpinBox" name="switchStaySetting">
+         <item row="1" column="1">
+          <widget class="smallSpinBox" name="switchDelaySetting">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Once - with scanning in single mode - a DAB stream is detected in a channel, the channel will stay &amp;quot;on&amp;quot; for the amount of minutes specified here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>Set here the delay, when searching for data in a channel, in seconds</string>
            </property>
            <property name="minimum">
-            <number>20</number>
+            <number>2</number>
            </property>
            <property name="maximum">
             <number>99999</number>
-           </property>
-           <property name="singleStep">
-            <number>20</number>
-           </property>
-           <property name="value">
-            <number>20</number>
            </property>
           </widget>
          </item>

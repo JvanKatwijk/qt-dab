@@ -29,7 +29,7 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-RC_ICONS	=  qt-dab-6.9.5.ico
+RC_ICONS	=  qt-dab-6.10.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
