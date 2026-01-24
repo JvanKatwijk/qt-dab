@@ -109,8 +109,7 @@ int	index_for_key (int key) {
 	x = value_i (dabSettings, CONFIG_HANDLER, "localDB", 1);
 	this	-> localDB_selector	-> setChecked (x);
 
-	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING,
-	                                           10);
+	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, 1);
 	this	-> switchStaySetting -> setValue (x);
 
 	x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
