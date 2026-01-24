@@ -1,41 +1,63 @@
-# Qt-DAB-6.9
+# Qt-DAB-6.10
 
 -------------------------------------------------------------------
 
 ![6.9](/res/read_me/qt-dab-logo.png?raw=true)
 
+------------------------------------------------------------------------
+Qt-DAB-6.10: Showing maps off-line
+-----------------------------------------------------------------------
+
+When scanning, we usually see a lot of "dots" appearing on the map.
+However, when we close, the information on what we have seen is lost.
+Qt-DAB-6.10 provides an option to save this information, and -
+at least as important - show it off-line.
+
+For that purpose, a small separate tool was built, the so-called
+**map-viewer**.
+With this map-viewer, a stored file, created by Qt-DAB-6.10, can be read in
+and a variety of "views" is possible.
+One of the interesting things now is of course that such a file can 
+be stored in an archive, and used later on to compare results, results
+from yourself of from others.
+
+![6.9](/res/read_me/map-viewer.png?raw=true)
+
+It seems obvious that the "reload" button is used to load or reload
+a file. 
+The view selection is at the bottom
+ * from the file, a list of channels with data is extracted, the **channel selector** lets you choose the channel, the data from which is then shown
+
+ * from the file, a list of ensembles is extracted, the **ensemble selector** lets you choose the ensemble, the data from which is shown.
+
+ * Of course, if you want all data to be shown, there is the "showAll" button.
+
+ * in some cases - e.g. in Belgium - one could receive data from more
+than the home country. The mapviewer shows a **country selector** with which
+one may select one of the countries from which data is received.
+If a country is selected, the other three selectors (channel, ensemble and
+showAll) are restrictted to the selected country.
+
+Of course, the mapViewer starts the webbrowser if needed, that means
+that you can start the browser by clicking on the **http** button, but
+if not done, selecting a channel or an ensemble (of "all") will start the
+browser.
+
+The default setting is on port 8081 (note, Qt-DAB uses 8080 as default),
+the port number can be changed, but changes will only have effect
+at the next program invocation.
 
 ------------------------------------------------------------------------
-A note on TII decoding
--------------------------------------------------------------------------
+Scanning an saving the file
+------------------------------------------------------------------------
 
-TII decoding uses het spectrum of the "NULL" part of the DAB frames,
-in the spectrum of this NULL part one can see a few elements with
-an amplitude larger than the others.
+![6.9](/res/read_me/selecting-map.png?raw=true)
 
-Decoding is by extracting these elements, and applying a mapping process
-that - eventually - results in a (mainId, subId) pair, identifyinf the
-transmitter.
-
-The difficulty in the decoding is recognizing data and avoiding the noise.
-The decoder uses a **threshold** value to do this.
-The configuration window contains an element with which the threshold
-value can be set. The default value is 6 dB, which is rather low.
-
-What happens if the decoder sees noise as signal is, obviously, that the
-decoder generates (mainId, subId) pairs that are faulty.
-These pairs are matched in a database to find the attributes of the
-transmitter. Of course, in most cases a faulty (mainId, subId) pair
-does not lead to the recognition of a transmitter
-
-The configuration window contains a selector, labeled **all tii**, that 
-- when set - shows for all identified (mainId, subId) pairs a transmitter.
-With a decent antenna aand a low threshold value one might (and probably will)
-dozens of lines - like below - telling a transmitter "not in database"
-(Of course, if the selector is not set, the (mainId, subId) pairs for which
-no transmitter is found are eliminated from the output).
-
-![6.9](/res/read_me/erroneous-lines.png?raw=true)
+Qt-DAB-6.10 has - on the configuration window - a selector that - when set -
+tells Qt-DAB to generate a file from the contents of the map.
+**Please be aware that when scanning the time Qt-DAB will wait when
+encountering data in a channel before switching to the (a) next channel.
+The default time is now set to 20 seconds, increments are 20 seconds each.**
 
 --------------------------------------------------------------------------
 About Qt-DAB

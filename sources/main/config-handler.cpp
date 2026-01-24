@@ -109,7 +109,7 @@ int	index_for_key (int key) {
 	x = value_i (dabSettings, CONFIG_HANDLER, "localDB", 1);
 	this	-> localDB_selector	-> setChecked (x);
 
-	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, 1);
+	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_STAY_SETTING, 20);
 	this	-> switchStaySetting -> setValue (x);
 
 	x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
@@ -902,7 +902,7 @@ int	configHandler::switchDelayValue		() {
 }
 
 int	configHandler::switchStayValue		() {
-	return switchStaySetting	-> value () * 60000;
+	return switchStaySetting	-> value () * 1000;
 }
 
 int	configHandler::muteValue		() {
