@@ -393,11 +393,6 @@ QDomDocument theDocument;
 	theDocument. appendChild (root);
 	QDomElement element = theDocument. createElement ("Creator");
 	element. setAttribute ("generator", "Qt-DAB");
-	QString keyText	= theTime. toString (Qt::TextDate);
-	uint16_t key	= 0;
-	for (int i = 0; keyText. toLatin1 (). data () [i] != 0; i ++)
-	   key += keyText. toLatin1 (). data () [i];
-	element. setAttribute ("key", key & 0xFF);
 	element. setAttribute ("dateTime", keyText);
 	element. setAttribute ("home-X", homeAddress. latitude);
 	element. setAttribute ("home-Y", homeAddress. longitude);
