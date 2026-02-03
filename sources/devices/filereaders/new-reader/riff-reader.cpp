@@ -112,7 +112,7 @@ char header [5];
         if (QString (header) == "JUNK") {
            int junkSize;
            fread (&junkSize, 1, 4, filePointer);
-           char junkBuffer [junkSize];
+           char *junkBuffer = dynVec (char, junkSize);
            fread (&junkBuffer, 1, junkSize, filePointer);
            fread (header, 1, 4, filePointer);
         }
@@ -370,7 +370,7 @@ int	riffReader::read (std::complex<float> *buffer, uint64_t nrSamples) {
 
 int	riffReader::read4Bytes (std::complex<float> *buffer,
 	                                    uint64_t nrSamples) {
-int16_t lBuf [2 * nrSamples];
+int16_t *lBuf  = dynVec (int16_t, 2 * nrSamples);
 
 	if (nrSamples > remainingElements) {
 	   nrSamples = remainingElements;
@@ -388,7 +388,7 @@ int16_t lBuf [2 * nrSamples];
 
 int	riffReader::read6Bytes (std::complex<float> *buffer,
 	                                    uint64_t nrSamples) {
-int8_t lBuf [3 * 2 * nrSamples];
+int8_t *lBuf  = dynVec (int8_t, 3 * 2 * nrSamples);
 int	next	= 0;
 
 	if (nrSamples > remainingElements) {

@@ -53,13 +53,13 @@
 
 ///////////////////////////////////////////////////////////////////////////
 	QString support;
-#ifdef  SSE_AVAILABLE
+#if defined (SSE_AVAILABLE)
         support         = "(spiral + sse)";
-#elif   NO_SSE_AVAILABLE
+#elif defined (NO_SSE_AVAILABLE)
         support         = "(spiral scalar)";
-#elif   __AVX2__
+#elif defined(__AVX2__)
         support         = "(yang + avx2)";
-#elif   __SSE4_1__
+#elif defined (__SSE4_1__)
         support         = "(yang + sse)";
 #else
         support         = "(yang scalar)";

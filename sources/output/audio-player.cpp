@@ -31,7 +31,7 @@
 	audioPlayer::audioPlayer	() {}
 	audioPlayer::~audioPlayer	() {}
 
-void	audioPlayer::audioOutput	(float *buffer, int amount) {
+void	audioPlayer::audioOutput	(float *buffer, uint32_t amount) {
 	fprintf (stderr, "You should not be here\n");
 	(void)buffer; (void) amount;
 }

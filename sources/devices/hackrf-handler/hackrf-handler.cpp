@@ -462,7 +462,7 @@ hackrf_error errorCode;
 //	Q_new		Asin(phi)	Acos(phi) Q_in
 
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
-std::complex<int8_t> temp [size];
+std::complex<int8_t> *temp = dynVec (std::complex<int8_t>, size);
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++) {
 	   V [i] = Complex (real (temp [i]) / 128.0, 

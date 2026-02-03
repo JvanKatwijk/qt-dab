@@ -20,6 +20,7 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
 unix {
+QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
@@ -423,7 +424,7 @@ INCLUDEPATH	+= /usr/local/include
 #LIBS		+= -lqwt
 equals (QT_MAJOR_VERSION, 6) {
 	 LIBS		+= -lqwt-qt6
-	}else{  LIBS += -lqwt-qt
+	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
    TARGET               = qt-dab-qt5-6.10
@@ -468,9 +469,9 @@ CONFIG		+= fdk-aac
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-#CONFIG		+= viterbi-scalar
+CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
-CONFIG		+= viterbi-avx2
+#CONFIG		+= viterbi-avx2
 #CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
@@ -566,7 +567,6 @@ sdrplay-v2 {
 	DEFINES		+= HAVE_SDRPLAY_V2
 	DEPENDPATH	+= ./sources/devices/sdrplay-handler-v2
 	INCLUDEPATH	+= ./sources/devices/sdrplay-handler-v2
-	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler-common
 	HEADERS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
 	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect-v2.h 
 	SOURCES		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 

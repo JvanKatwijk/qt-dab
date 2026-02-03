@@ -93,15 +93,17 @@ public:
 			hackrfHandler		(QSettings *,
 	                                         const QString &,
 	                                         errorLogger *);
-			~hackrfHandler		();
+			~hackrfHandler		() override;
 
-	bool		restartReader		(int32_t, int skipped = 0);
-	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *, int32_t);
-	int32_t		Samples			();
-	void		resetBuffer		();
-	int16_t		bitDepth		();
-	QString		deviceName		();
+	bool		restartReader		(int32_t,
+	                                         int skipped = 0) override;
+	void		stopReader		() override;
+	int32_t		getSamples		(std::complex<float> *,
+	                                         int32_t) override;
+	int32_t		Samples			() override;
+	void		resetBuffer		() override;
+	int16_t		bitDepth		() override;
+	QString		deviceName		() override;
 
 	void		startDump		();
 	void		stopDump		();

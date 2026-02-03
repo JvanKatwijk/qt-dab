@@ -93,16 +93,16 @@ public:
 			airspyHandler		(QSettings *,
 	                                         const QString &,
 	                                         errorLogger *);
-			~airspyHandler		();
-//	int32_t		defaultFrequency	();
-	bool		restartReader		(int32_t, int samplesSkipped = 0);
-	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *v, int32_t size);
-	int32_t		Samples			();
-	void		resetBuffer		();
-	int16_t		bitDepth		();
-//	int		getBufferSpace		();
-	QString		deviceName		();
+			~airspyHandler		() override;
+	bool		restartReader		(int32_t,
+	                                         int samplesSkipped = 0) override;
+	void		stopReader		() override;
+	int32_t		getSamples		(std::complex<float> *v,
+	                                         int32_t size) override;
+	int32_t		Samples			() override;
+	void		resetBuffer		() override;
+	int16_t		bitDepth		() override;
+	QString		deviceName		() override;
 
 	void		startDump		();
 	void		stopDump		();

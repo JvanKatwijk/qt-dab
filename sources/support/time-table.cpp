@@ -323,6 +323,7 @@ bool	timeTableHandler::isVisible () {
 	return !this -> isHidden ();
 }
 
+static
 QString	subString (const QString &s, int start, int length) {
 QString res;
 	for (int i = start; i < start + length; i ++)

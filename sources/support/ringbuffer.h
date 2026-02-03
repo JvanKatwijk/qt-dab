@@ -15,7 +15,7 @@
  *
  * This program uses the PortAudio Portable Audio Library.
  * For more information see: http://www.portaudio.com
- * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
+  Copyright (c) 1999-2000 Ross Bencina and Phil Burk
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files
@@ -150,8 +150,8 @@ public:
 	RingBuffer	(uint32_t elementCount) {
 	bufferSize	= checkSize (elementCount);
 	buffer. resize (2 * bufferSize * sizeof (elementtype));
-	writeIndex	= 0;
-	readIndex	= 0;
+	writeIndex. store (0);
+	readIndex. store (0);
 	smallMask	= (bufferSize)- 1;
 	bigMask		= (bufferSize << 1) - 1;
 }
@@ -162,15 +162,15 @@ public:
  * 	functions for checking available data for reading and space
  * 	for writing
  */
-int32_t	GetRingBufferReadAvailable() {
-	return (writeIndex - readIndex) & bigMask;
+uint32_t	GetRingBufferReadAvailable() {
+	return (writeIndex. load () - readIndex. load ()) & bigMask;
 }
 
-int32_t	ReadSpace	(){
+uint32_t	ReadSpace	(){
 	return GetRingBufferReadAvailable();
 }
 
-int32_t	GetRingBufferWriteAvailable () {
+uint32_t	GetRingBufferWriteAvailable () {
 	return  bufferSize - GetRingBufferReadAvailable();
 }
 
@@ -183,15 +183,16 @@ void	skipRead	(int32_t amount) {
 }
 
 void	FlushRingBuffer() {
-	writeIndex	= 0;
-	readIndex	= 0;
+	writeIndex. store (0);
+	readIndex. store (0);
 }
 /*	ensure that previous writes are seen before we
  *	update the write index (write after write)
  */
 int32_t AdvanceRingBufferWriteIndex (int32_t elementCount) {
 	PaUtil_WriteMemoryBarrier();
-	return writeIndex = (writeIndex + elementCount) & bigMask;
+	writeIndex. store ((writeIndex. load () + elementCount) & bigMask);
+	return writeIndex. load ();
 }
 
 /* ensure that previous reads (copies out of the ring buffer) are
@@ -199,8 +200,9 @@ int32_t AdvanceRingBufferWriteIndex (int32_t elementCount) {
  * (write-after-read) => full barrier
  */
 int32_t AdvanceRingBufferReadIndex (int32_t elementCount) {
-    PaUtil_FullMemoryBarrier();
-    return readIndex = (readIndex + elementCount) & bigMask;
+	PaUtil_FullMemoryBarrier ();
+	readIndex. store ((readIndex. load () + elementCount) & bigMask);
+	return readIndex. load ();
 }
 
 /***************************************************************************
@@ -219,7 +221,7 @@ uint32_t   available = GetRingBufferWriteAvailable();
 	   elementCount = available;
 
 /* Check to see if write is not contiguous. */
-	index = writeIndex & smallMask;
+	index = writeIndex. load () & smallMask;
 	if ((index + elementCount) > bufferSize ) {
         /* Write data in two blocks that wrap the buffer. */
            int32_t   firstHalf = bufferSize - index;
@@ -243,7 +245,8 @@ uint32_t   available = GetRingBufferWriteAvailable();
 
 int32_t advanceWriteIndex(int32_t elementCount) {
 	PaUtil_WriteMemoryBarrier();
-	return writeIndex = (writeIndex + elementCount) & bigMask;
+	writeIndex. store ((writeIndex. load () + elementCount) & bigMask);
+	return writeIndex. load ();
   }
 
 /* ensure that previous reads (copies out of the ring buffer) are
@@ -252,10 +255,11 @@ int32_t advanceWriteIndex(int32_t elementCount) {
  */
 int32_t	advanceReadIndex(int32_t elementCount) {
 	PaUtil_FullMemoryBarrier();
-	return readIndex = (readIndex + elementCount) & bigMask;
+	readIndex. store ((readIndex. load () + elementCount) & bigMask);
+	return readIndex. load ();
 }
 
-int32_t	putDataIntoBuffer (const void *data, int32_t elementCount) {
+int32_t	putDataIntoBuffer (const void *data, uint32_t elementCount) {
 int32_t size1, size2, numWritten;
 void	*data1;
 void	*data2;
@@ -275,7 +279,7 @@ void	*data2;
 	return numWritten;
 }
 
-int32_t getDataFromBuffer (void *data, int32_t elementCount ) {
+int32_t getDataFromBuffer (void *data, uint32_t elementCount ) {
 int32_t	size1, size2, numRead;
 void	*data1;
 void	*data2;
@@ -284,12 +288,15 @@ void	*data2;
 	                                    &data1, &size1,
 	                                    &data2, &size2 );
 	if (size2 > 0) {
-	   memcpy (data, data1, size1 * sizeof(elementtype));
-	   data = ((char *)data) + size1 *  sizeof(elementtype);
-	   memcpy (data, data2, size2 * sizeof(elementtype));
+	   memcpy (data, data1, static_cast <uint32_t>(size1) * sizeof (elementtype));
+	   data = static_cast<char *>(data) + 
+	                    static_cast<uint32_t>(size1) *  sizeof(elementtype);
+	   memcpy (data, data2,
+	                    static_cast<uint32_t>(size2) * sizeof(elementtype));
 	}
 	else
-           memcpy (data, data1, size1 * sizeof(elementtype));
+           memcpy (data, data1, 
+	                    static_cast<uint32_t>(size1) * sizeof(elementtype));
 
 	AdvanceRingBufferReadIndex (numRead );
 	return numRead;
@@ -311,7 +318,7 @@ uint32_t   available = GetRingBufferReadAvailable(); /* doesn't use memory barri
 	   elementCount = available;
 
 /* Check to see if read is not contiguous. */
-	index = readIndex & smallMask;
+	index = readIndex. load () & smallMask;
 	if ((index + elementCount) > bufferSize) {
         /* Write data in two blocks that wrap the buffer. */
            int32_t firstHalf = bufferSize - index;
@@ -336,7 +343,7 @@ uint32_t   available = GetRingBufferReadAvailable(); /* doesn't use memory barri
 int32_t	skipDataInBuffer (uint32_t n_values) {
 //	ensure that we have the correct read and write indices
     PaUtil_FullMemoryBarrier();
-    if ((int)n_values > GetRingBufferReadAvailable())
+    if (static_cast<uint32_t>(n_values) > GetRingBufferReadAvailable())
        n_values = GetRingBufferReadAvailable();
 	AdvanceRingBufferReadIndex (n_values);
 	return n_values;

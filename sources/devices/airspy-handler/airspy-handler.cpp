@@ -89,8 +89,7 @@ uint32_t samplerateCount;
 
 	uint64_t deviceList [4];
 	int	deviceIndex;
-	int numofDevs = my_airspy_list_devices (deviceList, 4)
-;
+	int numofDevs = my_airspy_list_devices (deviceList, 4);
 	if (numofDevs == 0) {
 	   delete library_p;
 	   throw (device_exception ("No airspy device was detected"));

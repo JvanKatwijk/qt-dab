@@ -420,7 +420,7 @@ void	configHandler::set_connections () {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (saveSlides, &QCheckBox::checkStateChanged,
 #else
-	connect (saveSlider, &QCheckBox::stateChanged,
+	connect (saveSlides, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_saveSlides);
 

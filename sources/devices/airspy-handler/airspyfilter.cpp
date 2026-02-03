@@ -21,6 +21,7 @@
  */
 
 #include	"airspyfilter.h"
+#include	"dab-constants.h"
 #include	<cmath>
 #ifndef M_PI
 # define M_PI           3.14159265358979323846  /* pi */
@@ -32,7 +33,7 @@
 	                               buffer_re (firSize),
 	                               buffer_im (firSize),
 	                               kernel (firSize) {
-float	tmp [firSize];
+float	*tmp	= dynVec (float, firSize);
 float	lo	= (float)(cutoffFreq) / sampleRate;
 float	sum	= 0.0;
 int16_t	i;

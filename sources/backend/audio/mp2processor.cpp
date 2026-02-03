@@ -611,7 +611,8 @@ int16_t	amount	= MP2framesize;
 	                                        sample_buf [2 * j + 1]);
 	               buffer -> putDataIntoBuffer (&s, 1);
 	            }
-	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)
+	            if (buffer -> GetRingBufferReadAvailable () >
+	                                             (uint32_t)baudRate / 8)
 	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
 	                         baudRate, false, false);
 	         }
@@ -660,7 +661,7 @@ uint8_t	newbyte = (01 << bitnr);
 
 void    mp2Processor::handle_PAD (const std::vector<uint8_t> &v) {
 int16_t vLength = 24 * bitRate / 8;
-uint8_t temp [vLength];
+uint8_t *temp = dynVec (uint8_t, vLength);
         if ((int)(v. size ()) < 24 * bitRate)  // should not happen
            return;
         for (int i = 0; i < vLength; i ++) {

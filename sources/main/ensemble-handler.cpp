@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2015, 202
+ *    Copyright (C)  2015, 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -78,7 +78,7 @@
 void	ensembleHandler::loadFavorites	(const QString &favFile) {
 QDomDocument xmlBOM;
 //
-//	start with an empty lis, waiting ....
+//	start with an empty list, waiting ....
 	favorites. resize (0);
 	QFile f (favFile);
 	if (!f. open (QIODevice::ReadOnly)) 

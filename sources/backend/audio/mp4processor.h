@@ -112,7 +112,7 @@ signals:
 	void		show_rsErrors			(int);
 	void		show_aacErrors			(int);
 	void		isStereo			(bool);
-	void		newFrame			(int);
+	void		newFrame			(uint32_t);
 	void		show_rsCorrections		(int, int);
 };
 

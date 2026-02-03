@@ -41,7 +41,7 @@ class	timeTableHandler;
 class	timeTableControl: public superFrame {
 Q_OBJECT
 public:
-		timeTableControl (QString &ensemble, int32_t EId,
+		timeTableControl (QString &ensemble, uint32_t EId,
 	                          std::vector<basicService> &services,
 	                          QDate today,
 	                          QSettings	*);

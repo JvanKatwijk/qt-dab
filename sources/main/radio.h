@@ -425,7 +425,7 @@ private:
 	int			fmFrequency;
 	channelDescriptor	channel;
 	int16_t			tii_delay;
-	int32_t			dataPort;
+//	int32_t			dataPort;
 	bool			stereoSetting;
 	bool			dxMode;
 //
@@ -519,14 +519,14 @@ public slots:
 	void			show_tii_spectrum       ();
 	void			show_snr		(float);
 	void			show_clock_error	(int);
-	void			show_null		(int, int);
-	void			show_channel		(int);
+	void			show_null		(uint32_t, int);
+	void			show_channel		(uint32_t);
 	void			show_Corrector		(int, float);
 //
 //	signals from ofdmDecoder
-	void			showIQ			(int);
+	void			showIQ			(uint32_t);
 	void			show_quality		(float, float, float);
-	void			show_stdDev		(int);
+	void			show_stdDev		(uint32_t);
 //
 //	signals from fib-config
 	void			announcement		(int, int);
@@ -558,7 +558,7 @@ public slots:
 	void			handle_newDisplayFrame_closed	();
 	
 //	signals from correlator
-	void			showCorrelation		(int, int,
+	void			showCorrelation		(uint32_t, int,
 	                                                 QVector<int>);
 //
 //	signals from samplereader
@@ -569,12 +569,12 @@ public slots:
 	void			nrActiveServices		(int);
 
 //	signals from faad decoder/fdk-aac/mp2Processor
-	void			newAudio		(int, int, bool, bool);
+	void			newAudio		(uint32_t, int, bool, bool);
 
 //	signals from mp2Processor/ mp4 processor
 	void			show_frameErrors	(int);
 	void			setStereo		(bool);
-	void			newFrame		(int);
+	void			newFrame		(uint32_t);
 
 //	signals from mp4Processor
 	void			show_rsErrors		(int);
@@ -584,7 +584,7 @@ public slots:
 //	signals from data-processor
 
 //	signals from ip-datahandler
-	void			sendDatagram		(int);
+	void			sendDatagram		(uint32_t);
 
 //	signals from journaline-controller
 	void			startJournaline		(int);
@@ -605,7 +605,7 @@ public slots:
 	                                                 uint32_t);
 
 //	signals from tdc-dataHandler
-	void			handle_tdcdata		(int, int);
+	void			handle_tdcdata		(int, uint32_t);
 
 //	signals from httpHandler
 	void			channelSignal		(const QString &);

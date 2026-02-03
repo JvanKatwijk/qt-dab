@@ -150,11 +150,11 @@ QString scanmodeText (int e) {
 	defaultLoad	-> setToolTip ("load the default scantable. Note that a \'+\' in the scanTable means SCAN this channel");
 	defaultStore	= new QPushButton ("store default");
 	defaultStore	-> setToolTip ("store the current settings of the scantable into the qt-dab.ini file");
-	loadKnop	= new QPushButton ("load scanfile");
-	storeKnop	= new QPushButton ("store scanfile");
+	loadKnop		= new QPushButton ("load scanfile");
+	storeKnop		= new QPushButton ("store scanfile");
 	scanModeSelector	= new QComboBox ();
-        contentWidget	= new QTableWidget (0, 4);
-	QHBoxLayout *LH	= new QHBoxLayout ();
+        contentWidget		= new QTableWidget (0, 4);
+	QHBoxLayout *LH		= new QHBoxLayout ();
 	QHBoxLayout *LH_2	= new QHBoxLayout ();
 	switchStaySetting	= new QSpinBox ();
 	switchStaySetting	-> setMinimum	(20);

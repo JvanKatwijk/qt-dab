@@ -227,7 +227,7 @@ void	audioSink::samplesMissed	(int &total, int &missed) {
 }
 //
 //	we call this with the amount of floats!!
-void	audioSink::audioOutput	(float *b, int32_t amount) {
+void	audioSink::audioOutput	(float *b, uint32_t amount) {
 //	if (_O_Buffer. GetRingBufferWriteAvailable () < amount) {
 //	   fprintf (stderr, "%d\n",
 //	        2 * amount - _O_Buffer. GetRingBufferReadAvailable ());

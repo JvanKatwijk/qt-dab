@@ -91,7 +91,7 @@ int index_min; int index_max;
 floatQwt X_axis [1536];
 floatQwt Y_values [1536];
 //	we assume that V. size = 1536
-	for (int i = 0; i < V. size (); i ++) {
+	for (uint32_t i = 0; i < V. size (); i ++) {
 	   X_axis [i] = -1536 / 2 + i;
 	   Y_values [i] = V [i];
 	   if (V [i] > max) {

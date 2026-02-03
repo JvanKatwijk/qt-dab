@@ -43,6 +43,6 @@ private:
 	int16_t	handledPackets;
 	RingBuffer<uint8_t>*	dataBuffer;
 signals:
-	void	writeDatagram		(int);
+	void	writeDatagram		(uint32_t);
 };
 

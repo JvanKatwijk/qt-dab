@@ -43,6 +43,7 @@
 #define	swap(a)	(((a) << 8) | ((a) >> 8))
 
 //---------------------------------------------------------------------------
+static
 uint16_t usCalculCRC (uint8_t *buf, int lg) {
 uint16_t crc;
 int	count;

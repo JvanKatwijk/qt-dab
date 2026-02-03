@@ -31,11 +31,11 @@
 	class	dlCache {
 private:
 	std::vector<QString> cache;
-	int	p;
+	uint16_t	p;
 	int	size;
 public:
-	dlCache	(int size) {
-	   (void)size;
+	dlCache	(int size_1) {
+	   (void)size_1;
 	   cache. resize (CACHE_SIZE);
 	   this	-> size	= CACHE_SIZE;
 	   p = 0;
@@ -50,7 +50,7 @@ void	add		(const QString &s) {
 }
 
 bool	isMember	(const QString &s) {
-	for (int i = 0; i < CACHE_SIZE; i ++)
+	for (uint16_t i = 0; i < CACHE_SIZE; i ++)
 	   if (cache [i] == s)
 	      return true;
 	return false;
@@ -68,6 +68,4 @@ bool	addifNew	(const QString &s) {
 	cache [p] = s;
 	p = (p + 1) & CACHE_MASK;
 	return false;
-}
-};
-
+} };

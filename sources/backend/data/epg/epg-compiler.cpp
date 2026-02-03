@@ -1536,6 +1536,7 @@ uint32_t res = (v [index] << 16) | (v [index + 1] << 8) | v [index + 2];
 	return QString::number (res);
 }
 
+static
 QString	twoDigits (int16_t v) {
 	if (v >= 10)
 	   return QString::number (v);

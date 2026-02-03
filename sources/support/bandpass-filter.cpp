@@ -34,7 +34,7 @@
 	                          int32_t sampleRate):
 	                                 kernel (filterSize),
 	                                 buffer (filterSize) {
-DABFLOAT	tmp [filterSize];
+DABFLOAT	*tmp 	= dynVec (DABFLOAT, filterSize);
 DABFLOAT	lo	= (DABFLOAT) ((high - low) / 2) / sampleRate;
 DABFLOAT	shift	= (DABFLOAT) ((high + low) / 2) / sampleRate;
 DABFLOAT	sum	= 0.0;

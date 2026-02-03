@@ -56,16 +56,17 @@ public:
 			sdrplayHandler_v3	(QSettings *,
 	                                         const QString &,
 	                                         errorLogger *);
-			~sdrplayHandler_v3	();
+			~sdrplayHandler_v3	() override;
 
-	bool		restartReader		(int32_t, int skipped = 0);
-	void		stopReader		();
+	bool		restartReader		(int32_t,
+	                                         int skipped = 0) override;
+	void		stopReader		() override;
 	int32_t		getSamples		(std::complex<float> *,
-	                                                          int32_t);
-	int32_t		Samples			();
-	void		resetBuffer		();
-	int16_t		bitDepth		();
-	QString		deviceName		();
+	                                         int32_t) override;
+	int32_t		Samples			() override;
+	void		resetBuffer		() override;
+	int16_t		bitDepth		() override;
+	QString		deviceName		() override;
 
 	void		startDump		();
 	void		stopDump		();

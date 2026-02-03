@@ -33,7 +33,7 @@ public:
 		audioPlayer	();
 virtual		~audioPlayer	();
 virtual bool	is_QtAudio	();
-virtual void	audioOutput	(float *, int);
+virtual void	audioOutput	(float *, uint32_t);
 virtual	void	stop		();
 virtual	void	restart		();
 virtual void	suspend		();

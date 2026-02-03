@@ -489,7 +489,7 @@ void    StreamACallback (short *xi, short *xq,
 sdrplayHandler_duo *p	=
 	           static_cast<sdrplayHandler_duo *> (cbContext);
 
-std::complex<float> localBuf [numSamples];
+std::complex<float> *localBuf = dynVec (std::complex<float>, numSamples);
 	(void)params;
 	if (reset)
 	   return;
@@ -511,7 +511,7 @@ void	StreamBCallback (short *xi, short *xq,
                          unsigned int numSamples, unsigned int reset,
                          void *cbContext) {
 sdrplayHandler_duo *p	= static_cast<sdrplayHandler_duo *> (cbContext);
-std::complex<float> localBuf [numSamples];
+std::complex<float> *localBuf = dynVec (std::complex<float>, numSamples);
 	(void)params;
 	if (reset)
 	   return;

@@ -60,7 +60,7 @@ public:
 	void		restart		();
 	void		suspend		();
 	void		resume		();
-	void		audioOutput	(float *, int32_t);
+	void		audioOutput	(float *, uint32_t);
 	QStringList	streams		();
 	bool		selectDevice	(int16_t, const QString &);
 

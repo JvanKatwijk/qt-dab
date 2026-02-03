@@ -44,7 +44,7 @@ private:
 	RadioInterface	 *myRadioInterface;
 	RingBuffer<uint8_t> *dataBuffer;
 signals:
-	void	bytesOut		(int, int);
+	void	bytesOut		(int, uint32_t);
 };
 
 

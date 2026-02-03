@@ -77,7 +77,7 @@ int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
-float	lbuf [T_u / 2];
+float	*lbuf 		= dynVec (float, T_u / 2);
 
 const	int SEARCH_GAP	= 10;
 const	int SEARCH_OFFSET = T_g / 2;
