@@ -104,7 +104,7 @@ void	newFiles::stopReader	() {
 int32_t	newFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
 	
-	while (_I_Buffer. GetRingBufferReadAvailable() < size)
+	while (_I_Buffer. GetRingBufferReadAvailable() < (uint32_t)size)
 	      usleep (100);
 
 	amount = _I_Buffer. getDataFromBuffer (V, size);

@@ -41,7 +41,8 @@ QString	dir = s;
 	return dir;
 }
 
-	timeTableControl::timeTableControl (QString &ensemble, int32_t EId,
+	timeTableControl::timeTableControl (QString &ensemble, 
+	                                    uint32_t EId,
 	                                    std::vector<basicService> &services,
 	                                    QDate today,
 	                                    QSettings *dabSettings):

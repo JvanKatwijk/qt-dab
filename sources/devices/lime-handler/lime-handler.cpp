@@ -56,9 +56,9 @@ lms_info_str_t limedevices [10];
 	                                                "filterDepth", 5);
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
-#ifdef  __MINGW32__
+#if defined (__MINGW32__)
         const char *libraryString = "LimeSuite.dll";
-#elif  __clang__
+#elif  defined (__APPLE__)
         const char *libraryString = "/opt/local/lib/libLimeSuite.dylib";
 #else
         const char *libraryString = "libLimeSuite.so";

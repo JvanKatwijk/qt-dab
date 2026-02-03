@@ -161,7 +161,7 @@ void	TII_Detector::reset		() {
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
 void    TII_Detector::addBuffer (const std::vector<Complex>  &v) {
-Complex tmpBuffer [T_u];
+Complex *tmpBuffer = dynVec (Complex, T_u);
 
         for (int i = 0; i < T_u; i ++)
            tmpBuffer [i] = v [T_g + i];
@@ -193,7 +193,7 @@ Complex	TII_Detector::rotate (Complex value, uint8_t phaseIndicator) {
 //	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
 void	TII_Detector::collapse (const Complex *inVec,
 	                        Complex *etsiVec, Complex *nonetsiVec) {
-Complex buffer [carriers / 2];
+Complex *buffer = dynVec (Complex, carriers / 2);
 
 	memcpy (buffer, inVec, carriers / 2 * sizeof (Complex));
 
@@ -444,8 +444,7 @@ int Teller = 0;
 	if (max > 4000)
 	   for (int i = 0; i < carriers / 2; i++)
 	      decodedBuffer [i] *= 0.9;
-	resetBuffer();
-	qsort (theResult. data (), theResult. size(),
-	                     sizeof (tiiData), &fcmp);
+	resetBuffer	();
+	qsort (theResult. data (), theResult. size (), sizeof (tiiData), &fcmp);
 	return theResult;
 }

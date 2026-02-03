@@ -291,6 +291,7 @@ int params	= 0;
 	return res;
 }
 
+static
 std::string dotNumber (float f) {
 char temp [256];
 std::string s = std::to_string (f);
@@ -389,7 +390,7 @@ bool	httpHandler::seenAlready (const transmitter &tr) {
 void	httpHandler::saveMap	() {
 QDomDocument theDocument;
 	QDomElement root	= theDocument. createElement ("mapView");
-	QDateTime theTime		= QDateTime::currentDateTime ();
+	QDateTime theTime	= QDateTime::currentDateTime ();
 	theDocument. appendChild (root);
 	QDomElement element = theDocument. createElement ("Creator");
 	element. setAttribute ("generator", "Qt-DAB");

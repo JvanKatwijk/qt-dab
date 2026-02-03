@@ -410,10 +410,10 @@ void	spyServer_client_8::connect_on () {
 }
 
 void	spyServer_client_8::data_ready	() {
-uint8_t buffer_8 [settings. batchSize * 2];
+uint8_t *buffer_8 = dynVec (uint8_t, settings. batchSize * 2);
 
 	while (connected && 
-	          (tmpBuffer. GetRingBufferReadAvailable () > 2 * settings. batchSize)) {
+	          (tmpBuffer. GetRingBufferReadAvailable () > (uint32_t)(2 * settings. batchSize))) {
 	   uint32_t samps =	
 	            tmpBuffer. getDataFromBuffer (buffer_8,
 	                                         2 * settings. batchSize) / 2;
@@ -450,7 +450,7 @@ uint8_t buffer_8 [settings. batchSize * 2];
               }
 	   }
 	   else {	// no resmpling
-	      std::complex<float> outB [samps];
+	      std::complex<float> *outB = dynVec (std::complex<float>, samps);
 	      for (uint32_t i = 0; i < samps; i ++) 
 	         outB [i] = std::complex<float> (
 	                       convTable [buffer_8 [2 * i]],

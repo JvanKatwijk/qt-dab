@@ -24,7 +24,7 @@
 //	inline functions for crc handling
 #pragma once
 #include	<stdint.h>
-//
+#include	"dab-constants.h"
 //	there depend on an large table
 //	calc_crc computes - as the name suggests the crc value
 uint16_t calc_crc	(const uint8_t *data, int length);
@@ -39,7 +39,7 @@ bool	check_CRC_bits (const uint8_t *inBuf, int32_t size) {
 static
 const uint8_t crcPolynome [] =
 	{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0};	// MSB .. LSB
-uint8_t workVector [size];
+uint8_t *workVector  = dynVec (uint8_t, size);
 uint8_t	b [16];
 int16_t	Sum	= 0;
 

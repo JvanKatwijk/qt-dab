@@ -97,23 +97,22 @@ bool	brush;
 }
 
 void	correlationScope::display	(const std::vector<float> &v,
-	                                 int T_g,
-	                                 int amount,
+	                                 uint32_t T_g,
+	                                 uint32_t amount,
 	                                 int sliderValue,
 	                                 const std::vector<corrElement> &ss) {
-floatQwt X_axis [amount];
-floatQwt Y_value [amount];
+floatQwt *X_axis = dynVec (floatQwt, amount);
+floatQwt *Y_value = dynVec (floatQwt, amount);
 floatQwt Max	= -200;
 floatQwt Min	= 1000;
 int	teller	= 0;
 int	input	= v. size ();
 
-	(void)T_g;
-	if ((int)(v. size ()) < amount)
+	if (v. size () < amount)
 	   amount = v. size ();
 	if (T_g - 154 + amount >= v. size ())
 	   amount = v. size () - (T_g - 154);
-	for (int i = T_g - 154; i < T_g - 154 + amount; i ++) {
+	for (uint32_t i = T_g - 154; i < T_g - 154 + amount; i ++) {
 	   X_axis [teller] = i;
 	   int index = i - (T_g - 100);
 	   Y_value [teller] = get_db (v [i]);

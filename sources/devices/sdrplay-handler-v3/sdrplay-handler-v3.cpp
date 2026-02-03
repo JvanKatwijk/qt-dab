@@ -64,6 +64,7 @@
 #define	SDRPLAY_ANTENNA_duo	"Antenna_duo"
 #define	SDRPLAY_TUNER		"tuner"
 
+static
 std::string errorMessage (int errorCode) {
 	switch (errorCode) {
 	   case 1:
@@ -526,7 +527,7 @@ void    StreamACallback (short *xi, short *xq,
 	                 unsigned int reset,
                          void *cbContext) {
 sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
-std::complex<int16_t> localBuf [numSamples];
+std::complex<int16_t> *localBuf = dynVec (std::complex<int16_t>, numSamples);
 
 	(void)params;
 	if (reset)

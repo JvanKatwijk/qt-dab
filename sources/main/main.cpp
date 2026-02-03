@@ -38,6 +38,7 @@
 #define	GITHASH	"      "
 #endif
 
+static
 QString fullPathfor (const QString &v, const QString &ending) {
 QString fileName;
 
@@ -168,6 +169,7 @@ QTranslator	theTranslator;
 //
 //	here we go for real!!
 	qRegisterMetaType<tiiData> ("tiiData");
+	qRegisterMetaType<uint32_t> ("uint32_t");
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	qRegisterMetaType<QVector<tiiData> >("QVector<tiiData>");
 	myRadioInterface = new RadioInterface (&dabSettings,
@@ -211,7 +213,7 @@ void	setTranslator (QTranslator *theTranslator, QString Language) {
 	   Language = "en_GB";
 	}
 
-	QLocale curLocale (QLocale ((const QString&)Language));
+	QLocale curLocale (QLocale (static_cast<const QString&>(Language)));
 	QLocale::setDefault (curLocale);
 }
 

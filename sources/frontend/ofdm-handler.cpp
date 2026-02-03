@@ -72,8 +72,7 @@
 	                                                p -> frameBuffer,
 	                                                theLogger,
 	                                                cpuSupport),
-	                                     theTable (p -> dabMode) {
-
+	                                    theTable (p -> dabMode) {
 	this	-> p			= p;
 	this	-> theLogger		= theLogger;
 	this	-> cpuSupport		= cpuSupport;
@@ -207,7 +206,7 @@ int	totalSamples	= 0;
 int	cCount		= 0;
 bool	inSync		= false;
 int	tryCounter	= 0;
-Complex tester	[T_u / 2];
+Complex *tester	= dynVec (Complex, T_u / 2);
 int	snrCount	= 0;
 
 	this	-> snr		= 10; 	// until really computed
@@ -278,8 +277,6 @@ int	snrCount	= 0;
 	         if (frameCount >= 10) {
 	            rateError = SAMPLERATE * 
 	                          (totalSamples / ((float)frameCount * T_F) - 1);
-//	            int diff	= (totalSamples - frameCount * T_F);
-//	            diff	= (int)((float)SAMPLERATE / (frameCount * T_F) * diff);
 	            showClockError ((int)rateError);
 	            totalSamples = 0;
 	            frameCount	= 0;

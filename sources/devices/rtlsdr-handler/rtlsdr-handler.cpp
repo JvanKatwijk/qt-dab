@@ -182,7 +182,7 @@ char	manufac [256], product [256], serial [256];
 
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);
 	fprintf (stderr, "Supported gain values (%d): ", gainsCount);
-	{  int gains [gainsCount];
+	{  int *gains = dynVec (int, gainsCount);
 	   gainsCount	= rtlsdr_get_tuner_gains (theDevice, gains);
 	   for (int i = gainsCount; i > 0; i--) {
 	      fprintf (stderr, "%.1f ", gains [i - 1] / 10.0);
@@ -256,7 +256,7 @@ char	manufac [256], product [256], serial [256];
 
 //	and attach the buttons/sliders to the actions
 	connect (gainControl,
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	         qOverload<const QString &>(&QComboBox::textActivated),
 #else
 	         qOverload<const QString &>(&QComboBox::activated),
@@ -284,7 +284,7 @@ char	manufac [256], product [256], serial [256];
 //	and for saving/restoring the gain setting:
 	connect (this, &rtlsdrHandler::new_gainIndex,
 	         gainControl, &QComboBox::setCurrentIndex);
-	connect (bandwidth_selector, &QSpinBox::valueChanged,
+	connect (bandwidth_selector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &rtlsdrHandler::set_bandWidth);
 	iqDumper	= nullptr;
 	xmlWriter	= nullptr;

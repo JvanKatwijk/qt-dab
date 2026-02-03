@@ -112,8 +112,8 @@ bool	spyHandler_8::readHeader	(struct MessageHeader &header) {
 	return true;
 }
 
-bool	spyHandler_8::readBody	(uint8_t *buffer, int size) {
-int	filler = 0;
+bool	spyHandler_8::readBody	(uint8_t *buffer, uint32_t size) {
+uint32_t	filler = 0;
 	while (running. load ()) {
 	   if (inBuffer. GetRingBufferReadAvailable () >  size / 2) {
 	      filler += inBuffer. getDataFromBuffer (buffer, size - filler);
@@ -161,7 +161,7 @@ bool	spyHandler_8::send_command (uint32_t cmd, std::vector<uint8_t> &args) {
 bool result;
 uint32_t headerLen	= sizeof (CommandHeader);
 uint16_t argLen		= args.size();
-uint8_t buffer [headerLen + argLen];
+uint8_t *buffer 	= dynVec (uint8_t, headerLen + argLen);
 CommandHeader header;
 
 //	if (!is_connected) {

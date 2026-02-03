@@ -141,7 +141,7 @@ const uint8_t bits [] =
 
 
 void	viterbi::deconvolve (const int16_t *inputValues, uint8_t *outVector) {
-uint8_t dataOut [(frameBits + K - 1) / 8 + 1];
+uint8_t *dataOut = dynVec (uint8_t, (frameBits + K - 1) / 8 + 1);
 
 	m_decoder -> reset ();
 //	fprintf (stderr, "nrInputValues %d\n", nrInputValues);

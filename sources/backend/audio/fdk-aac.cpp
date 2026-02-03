@@ -94,14 +94,14 @@ int		output_size	= 8 * 2048;
 	      complex16 s = complex16 (bufp [2 * i], bufp [2 * i + 1]);
 	      audioBuffer  -> putDataIntoBuffer (&s, 1);
 	   }
-	   if (audioBuffer -> GetRingBufferReadAvailable() >
-	                          (int)info -> sampleRate / 8)
+	   if (audioBuffer -> GetRingBufferReadAvailable () >
+	                          (uint32_t)info -> sampleRate / 8)
 	      newAudio (info -> frameSize, info -> sampleRate,
 	                sp -> psFlag, sp -> sbrFlag);
 	}
 	else
 	if (info -> numChannels == 1) {
-	   int16_t buffer [2 * info -> frameSize];
+	   int16_t *buffer = dynVec (int16_t, 2 * info -> frameSize);
 	   for (uint16_t i = 0; i < info -> frameSize; i ++) {
 	      buffer [2 * i]	= ((int16_t *)bufp) [i];
 	      buffer [2 * i + 1] = buffer [2 * i];
@@ -110,8 +110,8 @@ int		output_size	= 8 * 2048;
 
 	   audioBuffer  -> putDataIntoBuffer ((complex16 *)buffer,
 	                                      info -> frameSize);
-	   if (audioBuffer -> GetRingBufferReadAvailable() >
-	                          (int)info -> sampleRate / 8)
+	   if (audioBuffer -> GetRingBufferReadAvailable () >
+	                                    (uint32_t)info -> sampleRate / 8)
 	      newAudio (info -> frameSize, info -> sampleRate,
 	                sp   ->  psFlag, sp   ->  sbrFlag);
 

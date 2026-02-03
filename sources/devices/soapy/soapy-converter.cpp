@@ -50,7 +50,7 @@ void	soapyConverter::setup (int inputRate, int targetRate) {
 }
 
 void	soapyConverter::add	(std::complex<float> *inBuf, int nSamples) {
-std::complex<float> temp [targetRate / 1000];
+std::complex<float> *temp  = dynVec (std::complex<float>, targetRate / 1000);
 
 	if (inputRate == targetRate) {
 	   outBuffer -> putDataIntoBuffer (inBuf, nSamples);
@@ -81,6 +81,4 @@ std::complex<float> temp [targetRate / 1000];
 	   outBuffer -> putDataIntoBuffer (temp, framesOut);
 	}
 }
-
-
 

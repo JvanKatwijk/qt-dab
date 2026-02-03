@@ -59,7 +59,8 @@ double dy	= distance_2 (target. latitude,  home. longitude,
 	                    target. latitude, target. longitude);
 	return sqrt (dx * dx + dy * dy);
 }
-	
+
+static
 float	distance (float latitude1, float longitude1,
 	                      float latitude2, float longitude2) {
 bool	dy_sign	= latitude1 > latitude2;
@@ -74,7 +75,7 @@ double dy	= distance_2 (latitude1, longitude2,
 	                    latitude2, longitude2);
 	return sqrt (dx * dx + dy * dy);
 }
-	
+
 float	corner (position targetPos, position homePos) {
 bool dx_sign	= targetPos. longitude - homePos. longitude > 0;
 bool dy_sign	= targetPos. latitude  - homePos. latitude > 0;

@@ -64,6 +64,6 @@ private:
 	int32_t		displayCounter;
 
 signals:
-	void		showCorrelation	(int, int, QVector<int>);
+	void		showCorrelation	(uint32_t, int, QVector<int>);
 };
 

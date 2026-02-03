@@ -358,7 +358,7 @@ void myStreamCallback (int16_t		*xi,
 	               void		*cbContext) {
 int16_t	i;
 sdrplayHandler_v2 *p	= static_cast<sdrplayHandler_v2 *> (cbContext);
-std::complex<int16_t> localBuf [numSamples];
+std::complex<int16_t> *localBuf  = dynVec (std::complex<int16_t>, numSamples);
 
 	if (hwRemoved)
 	   fprintf (stderr, "Hardware removed\n");
@@ -384,7 +384,7 @@ std::complex<int16_t> localBuf [numSamples];
 	(void)	rfChanged;
 	(void)	fsChanged;
 }
-
+static
 void	myGainChangeCallback (uint32_t	GRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {

@@ -89,6 +89,7 @@ __int64 FileTimeToInt64 (FILETIME & ft) {
 	return (foo.QuadPart);
 }
 
+static
 bool getCpuTimes (size_t &idle_time, size_t &total_time) {
 FILETIME IdleTime, KernelTime, UserTime;
 size_t	thisIdle, thisKernel, thisUser;
@@ -103,6 +104,7 @@ size_t	thisIdle, thisKernel, thisUser;
 	return true;
 }
 #else
+static
 std::vector<size_t> getCpuTimes() {
 	std::ifstream proc_stat ("/proc/stat");
 	proc_stat. ignore (5, ' ');    // Skip the 'cpu' prefix.
@@ -110,14 +112,15 @@ std::vector<size_t> getCpuTimes() {
 	for (size_t time; proc_stat >> time; times. push_back (time));
 	return times;
 }
- 
+
+static
 bool getCpuTimes (size_t &idle_time, size_t &total_time) {
 	const std::vector <size_t> cpu_times = getCpuTimes();
 	if (cpu_times. size() < 4)
 	   return false;
 	idle_time  = cpu_times [3];
 	total_time = std::accumulate (cpu_times. begin(),
-	                            cpu_times. end(), (size_t)0);
+	                            cpu_times. end(), static_cast<size_t>(0));
 	return true;
 }
 #include	<unistd.h>
@@ -156,10 +159,10 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
 	                                const QString	&tiiFile,
-	                                bool		error_report,
+	                                bool		is_error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
-	                                int		fmFrequency,
+	                                int		fmFreq,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        theSpectrumBuffer (16 * 32768),
@@ -194,8 +197,8 @@ int16_t k;
 QString h;
 
 	theQSettings			= Si;
-	this	-> error_report		= error_report;
-	this	-> fmFrequency		= fmFrequency;
+	this	-> error_report		= is_error_report;
+	this	-> fmFrequency		= fmFreq;
 	this	-> dlTextFile		= nullptr;
 	this	-> thecopyrightLabel	= nullptr;
 	running. 		store (false);
@@ -407,13 +410,13 @@ QString h;
 	QStringList streams;
 	QString	temp;
 //
-	QString s = value_s (theQSettings, SOUND_HANDLING, SOUND_HANDLER,
+	QString sound = value_s (theQSettings, SOUND_HANDLING, SOUND_HANDLER,
 	                                                   S_PORT_AUDIO);
 //	
-	if (s != S_PORT_AUDIO) {	// try Qt_Audio
+	if (sound != S_PORT_AUDIO) {	// try Qt_Audio
 	   try {
 	      theAudioPlayer	= new Qt_Audio (this, theQSettings);
-	      streams		= ((Qt_Audio *)theAudioPlayer) -> streams ();
+	      streams		= static_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
 	      temp		=
 	          value_s (theQSettings, SOUND_HANDLING,
 	                                  AUDIO_STREAM_NAME, "default");
@@ -421,7 +424,7 @@ QString h;
 	      audioVolume	=
 	          value_i (theQSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, 50);
 	      volumeSlider		-> setValue (audioVolume);
-	      ((Qt_Audio *)theAudioPlayer)	-> setVolume (audioVolume);
+	      static_cast<Qt_Audio *>(theAudioPlayer)	-> setVolume (audioVolume);
 	      connect (volumeSlider, &QSlider::valueChanged,
 	               this, &RadioInterface::setVolume);
 	   } catch (...) {
@@ -433,7 +436,7 @@ QString h;
 //	as it does on U20
 	if (theAudioPlayer == nullptr) {
 	   theAudioPlayer	= new audioSink	(latency);
-	   streams	= ((audioSink *)theAudioPlayer) -> streams ();
+	   streams	= static_cast<audioSink *>(theAudioPlayer) -> streams ();
 	   temp		=
 	          value_s (theQSettings, SOUND_HANDLING,
 	                                 AUDIO_STREAM_NAME, "default");
@@ -522,7 +525,7 @@ QString h;
 	connect (deviceSelectorLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::devSL_visibility);
 
-	aboutLabel -> setText (" © V6.9.6");
+	aboutLabel -> setText (" © V6.10");
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked,
 	         this, &RadioInterface::handle_copyrightLabel);
@@ -777,17 +780,19 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 
 	serviceId ed;
 	ed. name	= serviceName;
-	ed. SId		= SId;
+	ed. SId		= static_cast<uint32_t>(SId);
 	ed. subChId	= subChId;
 	ed. channel	= channel. channelName;
 
 	if (theEnsembleHandler -> alreadyIn (ed))
 	   return;
 
-	if (((SId & 0xFFFF0000) == 0) && !theDeviceHandler -> isFileInput ())
+	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) &&
+	                          !theDeviceHandler -> isFileInput ())
 	   theScanlistHandler. addElement (channel. channelName, serviceName);
 
-	if (!theSCANHandler. active () && theOfdmHandler -> is_SPI (SId)) {
+	if (!theSCANHandler. active () &&
+	               theOfdmHandler -> is_SPI (static_cast<uint32_t>(SId))) {
 	   packetdata pd;
 	   int index = theOfdmHandler -> getServiceComp (serviceName);
 	   if (index < 0)	// cannot happen
@@ -800,9 +805,10 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	}
 //
 //	adding the service to the list (or not)
-	if (((SId & 0xFFFF0000) == 0) ||
+	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) ||
 	    (!theConfigHandler -> get_audioServices_only ()) ||
-	      ((SId & 0xFFFF0000) && theOfdmHandler -> is_SPI (SId))) {
+	      ((static_cast<uint32_t>(SId) & 0xFFFF0000) &&
+	                    theOfdmHandler -> is_SPI (static_cast<uint32_t>(SId)))) {
 	   if (theEnsembleHandler -> addToEnsemble (ed)) {
 	      if (theSCANHandler. active ())
 	         theSCANHandler. addService (channel. channelName);
@@ -819,11 +825,12 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 //	The ensembleId is written as hexadecimal, however, the 
 //	number display of Qt is only 7 segments ...
 static
-QString hextoString (int v) {
+QString hextoString (uint32_t v) {
 QString res;
 	for (int i = 0; i < 4; i ++) {
 	   const uint8_t t = (v & 0xF000) >> 12;
-	   QChar c = t <= 9 ? (char)('0' + t) : (char) ('A' + t - 10);
+	   QChar c = t <= 9 ? static_cast<char>('0' + t) :
+	                      static_cast<char> ('A' + t - 10);
 	   res. append (c);
 	   v <<= 4;
 	}
@@ -836,11 +843,12 @@ QString s;
 	if (!running. load())
 	   return;
 
-	ensembleId	-> setText (v + QString ("(") + hextoString (id) + QString (")"));
+	ensembleId	-> setText (v + QString ("(") +
+	          hextoString (static_cast<uint32_t>(id))+ QString (")"));
 
 //	transmitter_country	-> setText (channel. countryName);
 	channel. ensembleName	= v;
-	channel. Eid		= id;
+	channel. Eid		= static_cast<uint32_t>(id);
 	dynamicLabel		-> setText ("");
 //
 //	id we are scanning "to data", we reached the end
@@ -864,7 +872,7 @@ QString s;
 	}
 	else
 	if (!theSCANHandler. active ()) {
-	   read_pictureMappings (id);
+	   read_pictureMappings (static_cast<uint32_t>(id));
 //	... and is we are not scanning, clicking the ensembleName
 //	has effect
 	   connect (ensembleId, &clickablelabel::clicked,
@@ -944,7 +952,8 @@ QString realName;
 	   (channel. currentService. SId != SId))
 	   return;
 
-	switch (getContentBaseType ((MOTContentType)contentType)) {
+	switch (getContentBaseType (static_cast<MOTContentType>(contentType))) {
+	   default:		// should not happen
 	   case MOTBaseTypeGeneralData:
 	      break;
 
@@ -1058,7 +1067,7 @@ int base	= motName. lastIndexOf (QChar ('/'));
 	   sidString = "";
 	   for (int j = i; j < i + 4; j ++)
 	      sidString. push_back (realName. at (j));
-	   uint32_t sid = sidString. toInt (&ok, 16);
+	   uint32_t sid = sidString. toUInt (&ok, 16);
 	   if (ok) {
 	      QString name = theEnsembleHandler -> extractName (sid);
 	      if (name != "") {
@@ -1089,7 +1098,8 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 	   theErrorLogger. add ("main", t);
 	}
 	else {
-	   (void)fwrite (result. data (), 1, result.length(), x);
+	   (void)fwrite (result. data (), 1,
+	                        static_cast<size_t>(result.length ()), x);
 	   fclose (x);
 	}
 }
@@ -1109,7 +1119,7 @@ void	RadioInterface::saveMOTObject (QByteArray  &result,
 }
 
 //	MOT slide, to show
-void	RadioInterface::showMOTlabel	(QByteArray  &data,
+void	RadioInterface::showMOTlabel	(QByteArray  &motData,
 	                                 int		contentType,
 	                                 const QString  &pictureName,
 	                                 int		dirs,
@@ -1145,7 +1155,8 @@ const char *type;
 	   FILE *x = fopen (path. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pictureName);
-	      (void)fwrite (data. data(), 1, data.length (), x);
+	      (void)fwrite (motData. data (), 1,
+	                          static_cast<size_t>(motData.length ()), x);
 	      fclose (x);
 	   }
 	   return;
@@ -1163,7 +1174,8 @@ const char *type;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
 	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
-	      (void)fwrite (data. data(), 1, data.length(), x);
+	      (void)fwrite (motData. data(), 1,
+	                          static_cast<size_t>(motData.length ()), x);
 	      fclose (x);
 	   }
 	   else {
@@ -1177,7 +1189,7 @@ const char *type;
 	   return;
 
 	QPixmap p;
-	if (p. loadFromData (data, type))
+	if (p. loadFromData (motData, type))
 	   displaySlide (p);
 }
 //
@@ -1207,7 +1219,7 @@ QString thePath;
 
 //
 //	sendDatagram is triggered by the ip handler,
-void	RadioInterface::sendDatagram	(int length) {
+void	RadioInterface::sendDatagram	(uint32_t length) {
 uint8_t *localBuffer = dynVec (uint8_t, length);
 
 	if (theDataBuffer. GetRingBufferReadAvailable() < length) {
@@ -1227,7 +1239,7 @@ uint8_t *localBuffer = dynVec (uint8_t, length);
 }
 //
 //	tdcData is triggered by the backend.
-void	RadioInterface::handle_tdcdata (int frametype, int length) {
+void	RadioInterface::handle_tdcdata (int frametype, uint32_t length) {
 #ifdef DATA_STREAMER
 uint8_t *localBuffer = dynVec (uint8_t, length + 8);
 #endif
@@ -1299,7 +1311,7 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 //
 //	In order to not overload with an enormous amount of
 //	signals, we trigger this function at most 10 times a second
-void	RadioInterface::newAudio	(int amount, int rate,
+void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	                                          bool ps, bool sbr) {
 	if (!running. load ())
 	   return;
@@ -1322,7 +1334,7 @@ void	RadioInterface::newAudio	(int amount, int rate,
 	   }
 	}
 
-	std::complex<int16_t> vec [amount];
+	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, amount);
 	while (theAudioBuffer. GetRingBufferReadAvailable () >= amount) {
 	   theAudioBuffer. getDataFromBuffer (vec, amount);
 	   if (!theTechWindow -> isHidden ()) {
@@ -1350,7 +1362,7 @@ void	RadioInterface::setPeakLevel (const std::vector<float> &samples) {
 float	absPeakLeft	= 0;
 float	absPeakRight	= 0;
 	
-	for (int i = 0; i < (int)(samples. size ()) / 2; i ++) {
+	for (uint32_t i = 0; i < samples. size () / 2; i ++) {
 	   const float absLeft  = std::abs (samples [2 * i]);
 	   const float absRight = std::abs (samples [2 * i + 1]);
 	   if (absLeft  > absPeakLeft)  
@@ -1531,11 +1543,11 @@ void	RadioInterface::updateTimeDisplay() {
 ////////////////////////////////////////////////////////////////////////
 
 deviceHandler	*RadioInterface::createDevice (const QString &s,
-	                                        logger *theLogger) {
+	                                        logger *theLoggerParam) {
 deviceHandler	*inputDevice = theDeviceChooser.
 	                               createDevice  (s, version);
 	
-	(void)theLogger;		// for now
+	(void)theLoggerParam;		// for now
 	if (inputDevice	== nullptr)
 	   return nullptr;
 
@@ -1938,8 +1950,8 @@ void	RadioInterface::scheduled_frameDumping (const QString &s) {
 }
 //
 //	called from the mp4 handler, using a signal
-void	RadioInterface::newFrame        (int amount) {
-uint8_t	*buffer  = (uint8_t *) alloca (amount * sizeof (uint8_t));
+void	RadioInterface::newFrame        (uint32_t amount) {
+uint8_t	*buffer = dynVec (uint8_t, amount);
 
 	if (!running. load ())
 	   return;
@@ -1950,7 +1962,8 @@ uint8_t	*buffer  = (uint8_t *) alloca (amount * sizeof (uint8_t));
 	while (theFrameBuffer. GetRingBufferReadAvailable () >= amount) {
 	   theFrameBuffer. getDataFromBuffer (buffer, amount);
 	   if (channel. currentService. frameDumper != nullptr)
-	      fwrite (buffer, amount, 1, channel. currentService. frameDumper);
+	      fwrite (buffer, amount, 1,
+	                        channel. currentService. frameDumper);
 	}
 }
 
@@ -2110,7 +2123,7 @@ void	RadioInterface::announcement	(int SId, int flags) {
 	if (!running. load ())
 	   return;
 
-	if (channel. currentService. SId == (uint32_t)SId) {
+	if (channel. currentService. SId == static_cast<uint32_t>(SId)) {
 	   if (flags != 0)
 	      announcement_start (SId, flags);
 	   else
@@ -2160,13 +2173,13 @@ void	RadioInterface::localSelect (const QString &service,
 }
 	
 //	selecting from the preset list and handling delayed services
-void	RadioInterface::handle_presetSelect (const QString &channel,
+void	RadioInterface::handle_presetSelect (const QString &channelParam,
 	                                     const QString &service) {
 	if (theDeviceHandler -> isFileInput ())
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Selection not possible"));
 	else
-	   localSelect_SS (service, channel);
+	   localSelect_SS (service, channelParam);
 }
 //
 //	selecting from the scan list, which is essential
@@ -2269,7 +2282,7 @@ void	RadioInterface::stopService	(dabService &s) {
 //	and stop the service and erase it from the task list
 	   theOfdmHandler -> stopService (s. serviceName,
 	                                  s. subChId, FORE_GROUND);
-	   for (int i = 0; i < (int)channel. runningTasks. size (); i ++) {
+	   for (uint32_t i = 0; i < channel. runningTasks. size (); i ++) {
 	      if (channel. runningTasks [i]. serviceName == s. serviceName)
 	         if (channel. runningTasks [i]. runsBackground == false) {
 	            channel. runningTasks. erase
@@ -2307,7 +2320,7 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 	dabService s;
 	s. channel     = pd. channel;
 	s. serviceName = pd. serviceName;
-	s. SId         = pd. SId;
+	s. SId         = static_cast<uint32_t>(pd. SId);
 	s. subChId     = pd. subchId;
 	s. fd          = nullptr;
 	s. runsBackground = true;
@@ -2348,7 +2361,7 @@ QString serviceName	= s. serviceName;
 	      if (get_serviceLogo (p, channel. currentService. SId)) {
 	         hasIcon = true;
 	         int height = 60;
-	         int width = (int)((float)p. width () / p. height () * height);
+	         int width = static_cast<float>(p. width ()) / p. height () * height;
 	         iconLabel ->
 	            setPixmap (p. scaled (width, height));
 	      }
@@ -2365,8 +2378,8 @@ QString serviceName	= s. serviceName;
 	   if (!pd. defined) {
 	      QMessageBox::warning (this, tr ("Warning"),
  	                           tr ("insufficient data for this program\n"));
-	      QString s = "";
-	      store (theQSettings, DAB_GENERAL, PRESET_NAME, s);
+	      QString s2 = "";
+	      store (theQSettings, DAB_GENERAL, PRESET_NAME, s2);
 	      return;;
 	   }
 	   if (pd. appType == 7) {
@@ -2392,7 +2405,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	dabService s;
 	s. channel	= ad. channel;
 	s. serviceName	= ad. serviceName;
-	s. SId		= ad. SId;
+	s. SId		= static_cast<uint32_t>(ad. SId);
 	s. subChId	= ad. subchId;
 	s. fd		= nullptr;
 	s. runsBackground	= false;
@@ -2401,10 +2414,10 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 //	check the other components for this service (if any)
 	if (theOfdmHandler -> isPrimary (ad. serviceName)) {
 	   int nrComps	=
-	        theOfdmHandler -> getNrComps (ad. SId);
+	        theOfdmHandler -> getNrComps (static_cast<uint32_t>(ad. SId));
 	   for (int i = 1; i < nrComps; i ++) {
 	      int index =
-	           theOfdmHandler -> getServiceComp (ad. SId, i);
+	           theOfdmHandler -> getServiceComp (static_cast<uint32_t>(ad. SId), i);
 	      if ((index < 0) ||
 	             (theOfdmHandler -> serviceType (index) != PACKET_SERVICE))
 	         continue;
@@ -2701,7 +2714,7 @@ void	RadioInterface::stopChannel	() {
 //	next- and previous channel buttons
 /////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::handle_channelSelector (const QString &channel) {
+void	RadioInterface::handle_channelSelector (const QString &channelParam) {
 	if (!running. load ())
 	   return;
 
@@ -2709,7 +2722,7 @@ void	RadioInterface::handle_channelSelector (const QString &channel) {
 	presetTimer. stop ();
 	stopScanning	();
 	stopChannel	();
-	startChannel	(channel);
+	startChannel	(channelParam);
 }
 
 void	RadioInterface::handle_nextChannelButton () {
@@ -3093,7 +3106,7 @@ QString	theName;
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) +";"  +
 	                      QString::number (freeSpace) + ", " +
-	                      QString::number ((int) (freeSpace / 864.0 * 100)) + "%" + ";";
+	                      QString::number (static_cast<int> (freeSpace / 864.0 * 100)) + "%" + ";";
 	return headLine;
 }
 
@@ -3645,7 +3658,7 @@ void	RadioInterface:: set_streamSelector (int k) {
 	if (!running. load ())
 	   return;
 	QString str = theConfigHandler -> currentStream ();
-	((audioSink *)(theAudioPlayer)) -> selectDevice (k, str);
+	reinterpret_cast<audioSink *>(theAudioPlayer) -> selectDevice (k, str);
 	store (theQSettings, SOUND_HANDLING, AUDIO_STREAM_NAME, str);
 }
 //
@@ -3691,7 +3704,8 @@ bool	RadioInterface::autoStart_http () {
 //	from within the signal code caused - sometimes - a crash
 //	That is why an indirection is added, the radio code will wait 
 //	for a number of seconds for a signal to arrive to kill the http handler
-static int teller = 0;
+static
+int delay_teller = 0;
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
 	if (localPos. latitude == 0) {
@@ -3737,7 +3751,7 @@ void	RadioInterface::handle_httpButton	() {
 	   mapHandler_locker. lock ();
 	   mapViewer -> putData (MAP_CLOSE);
 	   mapHandler_locker. unlock ();
-	   teller	= 0;
+	   delay_teller	= 0;
 	   stillWaiting	= true;
 	   connect (&theTimer, &QTimer::timeout,
 	            this, &RadioInterface::waitingToDelete);
@@ -3746,8 +3760,8 @@ void	RadioInterface::handle_httpButton	() {
 }
 
 void	RadioInterface::waitingToDelete () {
-	teller ++;
-	if ((teller < 10) && stillWaiting) {
+	delay_teller ++;
+	if ((delay_teller < 10) && stillWaiting) {
 	   theTimer. start (1000);
 	   return;
 	}
@@ -3941,7 +3955,8 @@ std::vector<Complex> inBuffer (SAMPLERATE / 1000);
 	}
 }
 
-void	RadioInterface::showCorrelation	(int s, int g, QVector<int> maxVals) {
+void	RadioInterface::showCorrelation	(uint32_t s, int g,
+	                                        QVector<int> maxVals) {
 std::vector<float> inBuffer (s);
 
 	(void)g;
@@ -3956,8 +3971,9 @@ std::vector<float> inBuffer (s);
 	}
 }
 
-void	RadioInterface::show_null		(int amount, int startIndex) {
-Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
+void	RadioInterface::show_null		(uint32_t amount,
+	                                                 int startIndex) {
+Complex	*inBuffer = dynVec (Complex, amount);
 	theNULLBuffer. getDataFromBuffer (inBuffer, amount);
 	if (!theNewDisplay. isHidden ())
 	   if (theNewDisplay. getTab () ==  SHOW_NULL)
@@ -4101,27 +4117,27 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	int	bestIndex = -1;
 	float Strength	= -100;
 //	Now the list is updated, see whether or not the strongest is ...
-	int teller = 0;
+	int localTeller = 0;
 	for (auto &transm : channel. transmitters) {
 	   if (transm. valid &&
 	                  (transm. strength > Strength)) {
-	      bestIndex = teller;
+	      bestIndex = localTeller;
 	      Strength  = transm. strength;
 	   }
 	   transm. isStrongest = false;
-	   teller ++;
+	   localTeller ++;
 	}
 
 	if (bestIndex >= 0) {
-	   channel. transmitters [bestIndex]. isStrongest = true;
+	   channel. transmitters [static_cast<uint32_t>(bestIndex)]. isStrongest = true;
 	}
 //
 //	for content maps etc we need to have the data of the strongest
 //	signal
 	if (bestIndex >= 0) {
-	   transmitter *ce = &channel. transmitters [bestIndex];	
-	   channel. mainId		= ce -> mainId;
-	   channel. subId		= ce -> subId;
+	   transmitter *ce = &channel. transmitters [static_cast<uint32_t>(bestIndex)];	
+	   channel. mainId		= static_cast<int8_t>(ce -> mainId);
+	   channel. subId		= static_cast<int8_t>(ce -> subId);
 	   channel. strongestTransmitter	= ce -> transmitterName;
 	   channel. height		= ce -> height;
 	   channel. distance		= ce -> distance;
@@ -4149,7 +4165,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   theDXDisplay. show ();
 	   theDXDisplay. setChannel (channel. channelName,
 	                             channel. ensembleName);
-	   int teller = 0;
+	   int teller_2 = 0;
 	   for (auto &theTr : channel. transmitters) {
 	      if (!theConfigHandler -> get_allTIISelector ()) {
 	         if (theTr. distance < 0) {
@@ -4157,13 +4173,12 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	         }
 	      }
 	      
-	      if (bestIndex == teller) {
+	      if (bestIndex == localTeller) {
 	         QString labelText = createTIILabel (theTr);
 	         distanceLabel	-> setText (labelText);
 	      }
-	      theDXDisplay. addRow (theTr,
-	                             bestIndex == teller);
-	      teller ++;
+	      theDXDisplay. addRow (theTr, bestIndex == teller_2);
+	      teller_2 ++;
 	   }
 	}
 //
@@ -4185,7 +4200,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	}
 }
 
-void	RadioInterface::showIQ			(int amount) {
+void	RadioInterface::showIQ			(uint32_t amount) {
 std::vector<Complex> Values (amount);
 	theIQBuffer. getDataFromBuffer (Values. data (), amount);
 	theIQBuffer. FlushRingBuffer ();
@@ -4198,7 +4213,7 @@ void	RadioInterface::show_Corrector (int h, float l) {
 	   theNewDisplay. showCorrector (h, l);
 }
 
-void	RadioInterface::show_stdDev	(int amount) {
+void	RadioInterface::show_stdDev	(uint32_t amount) {
 std::vector<float>Values (amount);
 	stdDevBuffer. getDataFromBuffer (Values. data (), amount);
 	if (!theNewDisplay. isHidden ())
@@ -4230,12 +4245,12 @@ QPixmap p;
 	   return;
 	}
 
-	int amount = theSNRBuffer. GetRingBufferReadAvailable ();
-	if (amount <= 0)
+	uint32_t amount =  theSNRBuffer. GetRingBufferReadAvailable ();
+	if (amount == 0)
 	   return;
-	float *ss  = (float *) alloca (amount * sizeof (float));
+	float *ss = dynVec (float, amount);
 	theSNRBuffer. getDataFromBuffer (ss, amount);
-	for (int i = 0; i < amount; i ++) {
+	for (uint32_t i = 0; i < amount; i ++) {
 	   theSNRViewer. add_snr (ss [i]);
 	}
 	theSNRViewer. show_snr ();
@@ -4265,7 +4280,7 @@ void	RadioInterface::show_clock_error	(int d) {
 	}
 }
 
-void	RadioInterface::show_channel	(int n) {
+void	RadioInterface::show_channel	(uint32_t n) {
 std::vector<Complex> v (n);
 	theChannelBuffer. getDataFromBuffer (v. data (), n);
 	theChannelBuffer. FlushRingBuffer ();
@@ -4352,17 +4367,17 @@ audiodata ad;
 	if (!ad. defined)
 	   return;
 	
-	int teller	= 0;
+	int teller_3	= 0;
 	for (auto &task: channel. runningTasks) {
 	   if (task. serviceName == service) {
 	      theOfdmHandler -> stopService (service, ad. subchId, BACK_GROUND);
 	      if (task. fd != nullptr)
 	         fclose (task. fd);
 	      channel. runningTasks. erase
-	                        (channel. runningTasks. begin () + teller);
+	                        (channel. runningTasks. begin () + teller_3);
 	      return;
 	   }
-	   teller ++;
+	   teller_3 ++;
 	}
 	uint8_t audioType	= ad. ASCTy;
 	FILE *f = theFilenameFinder. findFrameDump_fileName (service,
@@ -4375,7 +4390,7 @@ audiodata ad;
 	dabService s;
 	s. channel	= ad. channel;
 	s. serviceName	= ad. serviceName;
-	s. SId		= ad. SId;
+	s. SId		= static_cast<uint32_t>(ad. SId);
 	s. subChId	= ad. subchId;
 	s. ASCTy	= ad. ASCTy;
 	s. fd		= f;
@@ -4432,7 +4447,7 @@ void	RadioInterface::setVolume	(int n) {
 	   }
 	   if (channel. audioActive)
 	      setSoundLabel (true);
-	   ((Qt_Audio *)theAudioPlayer) -> setVolume (n);
+	   reinterpret_cast<Qt_Audio *>(theAudioPlayer) -> setVolume (n);
 	   store (theQSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, audioVolume);
 	}
 }
@@ -4452,14 +4467,14 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 	theOfdmHandler -> setCorrelationOrder (b);
 }
 
-void	RadioInterface::channelSignal (const QString &channel) {
+void	RadioInterface::channelSignal (const QString &channelParam) {
 	stopChannel ();
 	channelSelector	-> setEnabled (false);
-	int k = channelSelector -> findText (channel);
+	int k = channelSelector -> findText (channelParam);
 	if (k != -1) 	
 	   channelSelector -> setCurrentIndex (k);
 	channelSelector	-> setEnabled (true);
-	startChannel (channel);
+	startChannel (channelParam);
 }
 
 void	RadioInterface::show_changeLabel (const QStringList notInOld,
@@ -4488,6 +4503,7 @@ QString Qt_files	= theFilenameFinder. basicPath ();
 const char *directionTable [] = {
 	"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
 
+static
 QString	fromAzimuth_toDirection (float azimuth) {
 int direction	= (azimuth) / 22.5;
 	return directionTable [(direction + 1) / 2];
@@ -4557,8 +4573,8 @@ bool exists	= false;
 	         theTransmitter. distance,
 	         theTransmitter. azimuth, symb. toLatin1 (). data (),
 	         theTransmitter. power,
-	         (int)(theTransmitter. altitude),
-	         (int)(theTransmitter. height),
+	         static_cast<int>(theTransmitter. altitude),
+	         static_cast<int>(theTransmitter. height),
 	         theTransmitter. direction. toLatin1 (). data ());
 	fclose (theFile);
 }
@@ -4586,7 +4602,7 @@ void	RadioInterface::handle_tiiCollisions     (int b) {
 
 void	RadioInterface::deviceListChanged	() {
 #ifndef	TCP_STREAMER
-QStringList streams	= ((Qt_Audio *)theAudioPlayer) -> streams ();
+QStringList streams	= reinterpret_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
 	theConfigHandler -> fill_streamTable (streams);
 	theConfigHandler -> show_streamSelector (true);
 #endif
@@ -4607,7 +4623,7 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 	   if (theElement. tagName () == "ensemble") {
 	      bool ok = false;
 	      QString Ident = theElement. attribute ("Eid");
-	      uint32_t ensemble = Ident. toInt (&ok, 16);
+	      uint32_t ensemble = Ident. toUInt (&ok, 16);
 	      if (Eid != ensemble)
 	         continue;
 //	      if (process_ensemble (theElement, Eid) && true)
@@ -4639,7 +4655,7 @@ bool	RadioInterface::process_ensemble (const QDomElement &node,
 int picturesSeen = 0;
 	QString Ident = node. attribute ("Eid");
 	bool ok = false;
-	uint32_t attrib = Ident. toInt (&ok, 16);
+	uint32_t attrib = Ident. toUInt (&ok, 16);
 	if (!ok || (Eid != attrib))
 	   return false;
 	QDomElement nameNode = 
@@ -4653,6 +4669,7 @@ int picturesSeen = 0;
 	return picturesSeen > 0;
 }
 
+static
 bool	containsPicture (mmDescriptor &set, multimediaElement &m) {
 	for (auto &mm : set. elements) {
 	   if ((mm. url == m. url) && (mm. width == m. width))
@@ -4663,9 +4680,9 @@ bool	containsPicture (mmDescriptor &set, multimediaElement &m) {
 
 int	RadioInterface::processService (const QDomElement &service) {
 mmDescriptor pictures;
-	uint32_t serviceId =
+	uint32_t theServiceId =
 	             theXmlExtractor. serviceSid (service);
-	pictures. serviceId = serviceId;
+	pictures. serviceId = theServiceId;
 	QDomElement mediaDescription =
 	            service. firstChildElement ("mediaDescription");
 	while (!mediaDescription. isNull ()) {
@@ -4680,8 +4697,8 @@ mmDescriptor pictures;
 	                   nextSiblingElement ("mediaDescription");
 	}
 	for (auto &pictureElement: channel. servicePictures) {
-	   uint32_t serviceId = pictureElement. serviceId;
-	   if (pictures. serviceId != serviceId)
+	   uint32_t thisServiceId = pictureElement. serviceId;
+	   if (pictures. serviceId != thisServiceId)
 	      continue;
 	   for (auto &me : pictures. elements) {
 	      if (!containsPicture (pictureElement, me)) {
@@ -4826,15 +4843,15 @@ void	RadioInterface::stopJournaline		(int currentKey) {
 	journalineKey	= -1;
 }
 
-void	RadioInterface::journalineData		(QByteArray data,
+void	RadioInterface::journalineData		(QByteArray J_data,
 	                                                 int currentKey) {
 	if (journalineHandler == nullptr)
 	   return;
 	if (currentKey != journalineKey)
 	   return;
-	std::vector<uint8_t> theMscdata (data. size());
-	for (int i = 0; i < data. size (); i ++)
-	   theMscdata [i] = data [i];
+	std::vector<uint8_t> theMscdata (static_cast<uint32_t>(J_data. size ()));
+	for (int32_t i = 0; i < J_data. size (); i ++)
+	   theMscdata [i] = static_cast<uchar>(J_data [i]);
 	journalineHandler	-> add_mscDatagroup (theMscdata);
 }
 

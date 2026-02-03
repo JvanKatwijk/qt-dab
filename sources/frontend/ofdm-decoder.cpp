@@ -63,6 +63,13 @@ DABFLOAT IO (DABFLOAT x) {
 	return besselTable [((int)(x * 32)) % 2048];
 }
 
+static
+void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
+	if (v < -limit)
+	   v = -limit;
+	if (v > limit)
+	   v = limit;
+}
 static inline
 Complex w (DABFLOAT kn) {
 	DABFLOAT re	= cos (kn * M_PI / 4);
@@ -79,6 +86,7 @@ DABFLOAT makeA (int i, Complex S, Complex prevS) {
 //
 //	Provided for computing the phase error by old-dab
 //	(aka Rolf Zerr)
+static
 Complex makeComplex (DABFLOAT phase) {
 //	Minimax polynomial for sin(x) and cos(x) on [-pi/4, pi/4]
 //	Coefficients via Remez algorithm (Sollya)
@@ -207,12 +215,6 @@ static	int	cnt	= 0;
 //	their length, relative to each other,
 //	Ideally, the X and Y are of equal size, in practice they are not.
 
-void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
-	if (v < -limit)
-	   v = -limit;
-	if (v > limit)
-	   v = limit;
-}
 //
 //	The decoders 1  and 2  are based on "Soft optimal 2" in
 //	"Soft decisions for DQPSK demodulation for the Viterbi
@@ -281,7 +283,7 @@ DABFLOAT sum	= 0;
 	         if (j != 0)
 	            if (jan_abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)
 	               maxAmp = jan_abs (fft_buffer [(T_u + j) % T_u]);
-	      Complex displayVector [carriers];
+	      Complex *displayVector = dynVec (Complex, carriers);
 
 	      if (iqSelector == SHOW_RAW) {
 	         for (int j = 0; j < carriers; j ++)
@@ -299,7 +301,7 @@ DABFLOAT sum	= 0;
 	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
 	                                              phaseReference. data ());
 	      if (devBuffer != nullptr) {
-	         float tempVector [carriers];
+	         float *tempVector = dynVec (float, carriers);
 	         for (int i = 0; i < carriers; i ++) {
 	            tempVector [i] =
 	                  stdDevVector [(T_u - carriers / 2 + i) % T_u];

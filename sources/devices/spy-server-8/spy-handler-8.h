@@ -70,7 +70,7 @@ private:
 	void	cleanRecords		();
 	bool	show_attendance		();
 	bool	readHeader	(struct MessageHeader &);
-	bool	readBody	(uint8_t *, int);
+	bool	readBody	(uint8_t *, uint32_t);
 	void	process_data	(uint8_t *, int);
 	bool	send_command	(uint32_t, std::vector<uint8_t> &);
 	bool	set_setting	(uint32_t, std::vector<uint32_t> &);

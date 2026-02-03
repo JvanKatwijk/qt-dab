@@ -53,7 +53,7 @@
 //
 //	an approach that works fine is to correlate the phasedifferences
 //	between subsequent carriers
-#define	SEARCH_RANGE	(2 * 32)
+#define	SEARCH_RANGE	(2 * 50)
 //
 //	Note: the vector v is being processed, its value is not constant
 int16_t	freqSyncer::

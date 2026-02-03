@@ -27,6 +27,8 @@
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
+#include	"dab-constants.h"
+
 class	RadioInterface;
 
 	Qt_Audio::Qt_Audio (RadioInterface *mr, 
@@ -98,16 +100,16 @@ QStringList nameList;
 //
 //	Note that - by convention - all audio samples here
 //	are in a rate 48000
-void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
+void	Qt_Audio::audioOutput (float *fragment, uint32_t size) {
 	if (!working. load ())
 	   return;
 	int aa = tempBuffer. GetRingBufferWriteAvailable ();
 	aa	= std::min ((int)(size * sizeof (float)), aa);
 	aa	&= ~03;
 	tempBuffer. putDataIntoBuffer ((char *)fragment, aa);
-	int periodSize = m_audioSink -> periodSize ();
-	char buffer [periodSize];
-	while ((m_audioSink -> bytesFree () >= periodSize) &&
+	uint32_t periodSize = m_audioSink -> periodSize ();
+	char *buffer = dynVec (char, periodSize);
+	while ((m_audioSink -> bytesFree () >=  (int)periodSize) &&
 	       (tempBuffer. GetRingBufferReadAvailable () >= periodSize)) {
 	   tempBuffer. getDataFromBuffer (buffer, periodSize);
 	   theWorker	-> write (buffer, periodSize);

@@ -96,7 +96,7 @@ int16_t	rows	= tableWidget -> rowCount ();
 	   tableWidget -> removeRow (i);
 }
 
-
+static
 int	dayDiff (const QString &dayRef, const QString &dayTest) {
 int index_1, index_2;
 

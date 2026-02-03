@@ -144,7 +144,7 @@ int teller	= 0;
 int	converter_48000::convert_48000	(complex16 *V,
 	                                 int amount,
 	                                 std::vector<float> & out) {
-Complex buffer [amount];
+Complex *buffer = dynVec (Complex, amount);
 	out. resize (2 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   buffer [i]	= Complex (real (V [i]) / 32768.0, 
@@ -159,7 +159,7 @@ Complex buffer [amount];
 void	converter_48000::dump (const float *buffer, int amount) {
 	if (!theWriter. isActive ())
 	   return;
-	int16_t lBuf [2 * amount];
+	int16_t *lBuf = dynVec (int16_t, 2 * amount);
 	for (int i = 0; i < 2 * amount; i ++)
 	   lBuf [i] = buffer [i] * 32768;
 	locker. lock ();
@@ -170,7 +170,7 @@ void	converter_48000::dump (const float *buffer, int amount) {
 void	converter_48000::dump (const Complex *buffer, int nrSamples) {
 	if (!theWriter. isActive ())
            return;
-        int16_t lBuf [2 * nrSamples];
+        int16_t *lBuf = dynVec (int16_t, 2 * nrSamples);
         for (int i = 0; i < nrSamples; i ++) {
            lBuf [2 * i]         = real (buffer [i]) * 32768;
            lBuf [2 * i + 1]     = imag (buffer [i]) * 32768;
@@ -185,7 +185,7 @@ void	converter_48000::dump (const complex16 *buffer,
 	                                          int nrSamples) {
 	if (!theWriter. isActive ())
 	   return;
-	int16_t lBuf [2 * nrSamples];
+	int16_t *lBuf = dynVec (int16_t, 2 * nrSamples);
 	for (int i = 0; i < nrSamples; i ++) {
 	   lBuf [2 * i] 	= real (buffer [i]);
 	   lBuf [2 * i + 1]	= imag (buffer [i]);

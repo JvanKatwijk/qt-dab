@@ -145,7 +145,7 @@ void	Qt_Audio::resume	() {
 }
 //      Note that - by convention - all audio samples here
 //      are in a rate 48000
-void    Qt_Audio::audioOutput (float *fragment, int32_t size) {
+void    Qt_Audio::audioOutput (float *fragment, uint32_t size) {
 	if (m_audioSink. isNull ())
 	   return;
 	if (theIODevice != nullptr)
