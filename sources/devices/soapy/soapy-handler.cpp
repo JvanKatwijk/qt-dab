@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,6 +27,7 @@
 
 #include	"soapy-handler.h"
 #include	"soapy-converter.h"
+#include	"soapy-select.h"
 #include	"dab-constants.h"
 #include	"unistd.h"
 
@@ -42,31 +43,49 @@ size_t length;
 
 QString	deviceString;
 QString	serial;
+std::vector<int> deviceIndexTable;
+
 	setupUi (&myFrame);
 	myFrame. show ();
+
 //	enumerate devices
 	SoapySDRKwargs *results = SoapySDRDevice_enumerate (NULL, &length);
 	for (size_t i = 0; i < length; i++) {
 	   fprintf (stderr, "Found device #%d: ", (int)i);
-	   for (size_t j = 0; j < results[i].size; j++) {
+	   bool isAudio	= false;
+	   for (size_t j = 0; j < results [i]. size; j++) {
 	      fprintf (stderr, "%s = %s\n",
 	                        results [i]. keys [j], results [i]. vals [j]);
 	      if (QString (results [i]. keys [j]) == "driver") {
+	         deviceIndexTable. push_back (i);
 	         deviceString = results [i]. vals [j];
 	         deviceNameLabel -> setText (deviceString);
 	      }
 	   }
-	   for (size_t j = 0; j < results[i].size; j++) {
-	      if (QString (results [i]. keys [j]) == "serial") {
-	         serial = results [i]. vals [j];
-	      }
-	   }
-	   break;
 	}
 
-	SoapySDRKwargsList_clear (results, length);
-	if (length == 0)
+	if (deviceIndexTable. size () == 0)
 	   throw device_exception ("No devices found\n");
+	int deviceIndex	= 0;
+	if (deviceIndexTable. size () > 1) {
+	   soapySelect soapySelector;
+	   for (auto &devIndex : deviceIndexTable) {
+	      for (size_t j = 0; j < results [devIndex]. size; j++) {
+                 if (QString (results [devIndex]. keys [j]) == "driver") {
+	            soapySelector. addtoList (results [devIndex]. vals [j]);
+	            break;
+	         }
+	      }
+	   }
+	   deviceIndex = soapySelector. QDialog::exec ();
+	}
+	for  (size_t j = 0; j < results [deviceIndex]. size; j ++) {
+	   if (QString (results [deviceIndex]. keys [j]) == "driver")
+	      deviceString = QString (results [deviceIndex]. vals [j]);
+	   if (QString (results [deviceIndex]. keys [j]) == "serial") 
+	      serial = results [deviceIndex]. vals [j];
+	}
+	SoapySDRKwargsList_clear (results, length);
 	deviceReady. store (false);
 	m_running. store (false);
 	deviceNameLabel	->  setText (deviceString);
@@ -153,6 +172,11 @@ void	soapyHandler::createDevice (const QString &deviceString) {
 	           SoapySDRDevice_getSampleRateRange (m_device, SOAPY_SDR_RX,
 	                                              0, &length);
 	int resultRate = findDesiredRange (sampleRange, length);
+	
+	if (deviceString. contains ("uhd") ||
+	    deviceString. contains ("UHD"))
+	   resultRate = 2048000;
+
 	if (resultRate < 0) 
 	   throw (device_exception ("no suitable samplerate found"));
 
@@ -224,7 +248,7 @@ void	soapyHandler::setGain	(int32_t gainValue) {
 }
 
 bool	soapyHandler::isFileInput	() {
-	return true;
+	return false;
 }
 
 void	soapyHandler::setAntenna (const std::string& antenna) {
@@ -295,7 +319,6 @@ channels.push_back(0);
            int ret = SoapySDRDevice_readStream (m_device, rxStream,
 	                                        buffs, samplesToRead, &flags,
 	                                        &timeNs, 100000);
-
 	   if (ret <= 0)
 	      continue;
 	   theConverter. add (buf. data (), ret);
@@ -326,10 +349,12 @@ channels.push_back(0);
 	m_running. store (false);
 }
 
-int	soapyHandler::findDesiredRange (SoapySDRRange * theRanges,
+int	soapyHandler::findDesiredRange (SoapySDRRange *theRanges,
 	                                                  int length) {
-int resultrate	= -1;
 	for (int i = 0; i < length; i ++) {
+	   fprintf (stderr, "samplerate range (min-max) %g -> %g\n",
+	                         theRanges [i]. minimum,
+	                         theRanges [i]. maximum);
 	   if ((theRanges [i]. minimum <= 2048000) &&
 	       (2048000 <= theRanges [i]. maximum))
 	      return 2048000;

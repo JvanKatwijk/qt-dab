@@ -22,6 +22,7 @@
  */
 
 #include	"soapy-converter.h"
+#include	"dab-constants.h"
 
 static int qualityTable [] = {
         SRC_SINC_BEST_QUALITY, SRC_SINC_MEDIUM_QUALITY,
@@ -35,6 +36,8 @@ static int qualityTable [] = {
 	soapyConverter::~soapyConverter	() {}
 
 void	soapyConverter::setup (int inputRate, int targetRate) {
+	this	-> inputRate	= inputRate;
+	this	-> targetRate	= targetRate;
 	double ratio            = (double)2048000 / inputRate;
         inputLimit              = 4096;
         outputLimit             = inputLimit * ratio;
@@ -50,7 +53,7 @@ void	soapyConverter::setup (int inputRate, int targetRate) {
 }
 
 void	soapyConverter::add	(std::complex<float> *inBuf, int nSamples) {
-std::complex<float> *temp  = dynVec (std::complex<float>, targetRate / 1000);
+std::complex<float> *temp  = dynVec (std::complex<float>, outputLimit);
 
 	if (inputRate == targetRate) {
 	   outBuffer -> putDataIntoBuffer (inBuf, nSamples);

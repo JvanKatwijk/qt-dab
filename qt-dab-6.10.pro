@@ -10,7 +10,7 @@ QT		+= widgets xml multimedia
 QT		+= network
 #CONFIG		+= console
 CONFIG		-= console
-QMAKE_CXXFLAGS	+= -std=c++20
+QMAKE_CXXFLAGS	+= -std=c++17
 
 #mingw64 on Windows does not seem to support lto
 win32 {
@@ -21,12 +21,12 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 
 unix {
 QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
@@ -451,7 +451,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-#CONFIG		+= soapy
+CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
 CONFIG		+= spyServer-16
@@ -668,9 +668,11 @@ soapy {
 	DEPENDPATH	+= ./sources/devices/soapy
 	INCLUDEPATH     += ./sources/devices/soapy
         HEADERS         += ./sources/devices/soapy/soapy-handler.h \
-	                   ./sources/devices/soapy/soapy-converter.h
+	                   ./sources/devices/soapy/soapy-converter.h \
+	                   ./sources/devices/soapy/soapy-select.h
         SOURCES         += ./sources/devices/soapy/soapy-handler.cpp \
-	                   ./sources/devices/soapy/soapy-converter.cpp
+	                   ./sources/devices/soapy/soapy-converter.cpp \
+	                   ./sources/devices/soapy/soapy-select.cpp
         FORMS           += ./sources/devices/soapy/soapy-widget.ui
 	LIBS		+= -lsamplerate
 	LIBS		+= -lSoapySDR -lm

@@ -24,8 +24,9 @@
  *	Simple base class for combining uep and eep deconvolvers
  */
 #include	<vector>
-#include	"protection.h"
 #include	<cstring>
+#include	<cstdio>
+#include	"protection.h"
 
        protection::protection  (int16_t bitRate,
 	                        int16_t protLevel, uint8_t cpuSupport):

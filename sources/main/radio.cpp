@@ -1504,7 +1504,7 @@ void	RadioInterface::TerminateProcess () {
 void	RadioInterface::updateTimeDisplay() {
 	if (!running. load())
 	   return;
-	
+
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
@@ -1513,7 +1513,7 @@ void	RadioInterface::updateTimeDisplay() {
 	               + QString::number (numberMinutes) + " min";
 	runtimeDisplay	-> setText (text);
 	if ((numberofSeconds % 2) == 0) {
-	   size_t idle_time	= 0, total_time;
+	   size_t idle_time	= 0, total_time = 0;
 	   getCpuTimes (idle_time, total_time);
 	   const float idle_time_delta =
 	                 static_cast<float>(idle_time - previous_idle_time);
@@ -4341,7 +4341,7 @@ QPixmap p;
 	
 void	RadioInterface::handle_copyrightLabel   () { 
 	if (thecopyrightLabel == nullptr) {
-	   thecopyrightLabel	= new copyrightText (this, ".9.6");
+	   thecopyrightLabel	= new copyrightText (this, ".10");
 	   thecopyrightLabel -> show ();
 	   return;
 	}

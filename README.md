@@ -450,6 +450,8 @@ tells the software to save the map contents into a file.
 ![6.10](/res/read_me/selecting-map.png?raw=true)
 
 For that purpose, a small utility is available. The utility allows
+reading in a generated map file, and displaying it, per country,
+per channel, per ensemble or completely.
 
 ![6.10](/res/read_me/map-viewer.png?raw=true)
 
