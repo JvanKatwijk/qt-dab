@@ -8,7 +8,7 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/Modules/CMakeFunctions.cmake)
 
 project(Qt-DAB VERSION 6)
-set (objectName qt-dab-6.9.4)
+set (objectName qt-dab-6.10)
 set (objectName "Qt-DAB")
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -66,19 +66,18 @@ set (TCP_STREAMER OFF)
 # select one or more devices (set to ON)
 # Note that since there are problems with the rtlsdr interface under Windows we split the rtlsdr interface
 # into two versions one for Linux and one for Window
-option(RTLSDR_LINUX OFF)	# use for Linux type systems
-option(RTLSDR_WIN OFF) 		# only for windows
-option(AIRSPY OFF)  
+option(RTLSDR ON)	
+option(AIRSPY ON)  
 option(SDRPLAY_V2 ON) 
-option(SDRPLAY_V3 OFF)
-option(HACKRF OFF)
-option(LIMESDR OFF) 
-option(PLUTO OFF) 
-option(SOAPY OFF)
-option(SPY_SERVER_8 OFF)
-option(SPY_SERVER_16 OFF)
-option(UHD OFF) 		# untested
-option(RTL_TCP OFF)      
+option(SDRPLAY_V3 ON)
+option(HACKRF ON)
+option(LIMESDR ON) 
+option(PLUTO ON) 
+option(SOAPY ON)
+option(SPY_SERVER_8 ON)
+option(SPY_SERVER_16 ON)
+option(UHD ON) 		# untested
+option(RTL_TCP ON)      
 
 # additional options
 option(USE_LTO "Set -flto flag" ON)  
@@ -94,10 +93,6 @@ option(VITERBI_NEON OFF)
 
 
 ####################################################################
-#	Use first option on "slow" cpus, i.e. RPI 3 or so
-#	Most of the FFT processing will be done in functions eunning
-#	in its own thread
-#add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 #
 #	Since more than one backend may be active, activating this
 #	option makes that each backend runs in its own thread
@@ -528,6 +523,20 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/epg/xml-extractor.h
 	     ./sources/output/audio-player.h
 	     ./sources/output/converter_48000.h
+	   ./sources/devices/riff-writer.h 
+	   ./sources/devices/device-handler.h 
+	   ./sources/devices/device-chooser.h 
+	   ./sources/devices/device-exceptions.h 
+	   ./sources/devices/xml-filewriter.h 
+	   ./sources/devices/filereaders/new-reader/newfiles.h 
+	   ./sources/devices/filereaders/new-reader/new-reader.h 
+	   ./sources/devices/filereaders/new-reader/riff-reader.h 
+	   ./sources/devices/filereaders/rawfiles-new/rawfiles.h 
+	   ./sources/devices/filereaders/rawfiles-new/raw-reader.h 
+	   ./sources/devices/filereaders/xml-filereader/element-reader.h 
+	   ./sources/devices/filereaders/xml-filereader/xml-filereader.h 
+	   ./sources/devices/filereaders/xml-filereader/xml-reader.h 
+	   ./sources/devices/filereaders/xml-filereader/xml-descriptor.h 
 	)
 
 	set (${objectName}_UIS
@@ -541,6 +550,426 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
 	   )
 
+
+##########################################################################
+#devices
+
+
+	if (SDRPLAY_V2)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./sources/devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/drplay-handler-v2/sdrplay-handler-v2.h
+	        ./sources/devices/sdrplay-handler-v2/sdrplayselect.h
+	   )
+
+	   include_directories (
+	     ./sources/devices/sdrplay-handler-v2
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.h
+	        ./sources/devices/sdrplay-handler-v2/sdrplayselect.h
+	        ./sources/devices/sdrplay-handler-v2/mirsdrapi-rsp.h
+           )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp
+	        ./sources/devices/sdrplay-handler-v2/sdrplayselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_SDRPLAY_V2)
+	endif (SDRPLAY_V2)
+
+	if (SDRPLAY_V3)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./sources/devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ./sources/devices/sdrplay-handler-v3/sdrplay-commands.h 
+	        ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.h 
+	        ./sources/devices/sdrplay-handler-v3/Rsp-device.h 
+	        ./sources/devices/sdrplay-handler-v3/RspI-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/RspII-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/RspDuo-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/RspDx-handler.h
+	   )
+
+	   include_directories (
+	     ./sources/devices/sdrplay-handler-v3
+	     ./sources/devices/sdrplay-handler-v3/include
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ./sources/devices/sdrplay-handler-v3/sdrplay-commands.h
+	        ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.h
+	        ./sources/devices/sdrplay-handler-v3/include/sdrplay_api.h
+	        ./sources/devices/sdrplay-handler-v3/Rsp-device.h 
+	        ./sources/devices/sdrplay-handler-v3/RspI-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/RspII-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/RspDuo-handler.h 
+	        ./sources/devices/sdrplay-handler-v3/RspDx-handler.h
+           )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
+	        ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.cpp
+                ./sources/devices/sdrplay-handler-v3/Rsp-device.cpp 
+	        ./sources/devices/sdrplay-handler-v3/RspI-handler.cpp 
+	        ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.cpp 
+	        ./sources/devices/sdrplay-handler-v3/RspII-handler.cpp 
+	        ./sources/devices/sdrplay-handler-v3/RspDuo-handler.cpp 
+	        ./sources/devices/sdrplay-handler-v3/RspDx-handler.cpp 
+	   )
+
+	 add_definitions (-DHAVE_SDRPLAY_V3)
+	endif (SDRPLAY_V3)
+
+	if (AIRSPY)
+#           find_package(LibAIRSPY)
+#           if (NOT LIBAIRSPY_FOUND)
+#               message(FATAL_ERROR "please install airspy library")
+#           endif ()
+#	   ## include_directories (${AIRSPYLIB_INCLUDE_DIR})
+
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./sources/devices/airspy-handler/airspy-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/airspy-handler/airspy-handler.h
+	        ./sources/devices/airspy-handler/airspyselect.h
+	   )
+
+	   include_directories (
+	     ./sources/devices/airspy-handler
+	     ./sources/devices/airspy-handler/libairspy
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/airspy-handler/airspy-handler.h
+	        ./sources/devices/airspy-handler/airspyselect.h
+	        ./sources/devices/airspy-handler/libairspy/airspy.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/airspy-handler/airspy-handler.cpp
+	        ./sources/devices/airspy-handler/airspyselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_AIRSPY)
+	endif (AIRSPY)
+
+	if (HACKRF)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./sources/devices/hackrf-handler/hackrf-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/hackrf-handler/hackrf-handler.h
+	   )
+
+	   include_directories (
+	     ./sources/devices/hackrf-handler
+	     ./sources/devices/hackrf-handler/libhackrf
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/hackrf-handler/hackrf-handler.h
+	        ./sources/devices/hackrf-handler/libhackrf/hackrf.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/hackrf-handler/hackrf-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_HACKRF)
+	endif (HACKRF)
+#
+	if (PLUTO)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./sources/devices/pluto-handler/pluto-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/pluto-handler/pluto-handler.h
+	   )
+
+	   include_directories (
+	     ./sources/devices/pluto-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/pluto-handler/pluto-handler.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/pluto-handler/pluto-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_PLUTO)
+	endif (PLUTO)
+#
+	if (LIMESDR)
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/lime-handler/lime-handler.h
+	        ./sources/devices/lime-handler/lime-widget.h
+	   )
+
+	   include_directories (
+	     ./sources/devices/lime-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/lime-handler/lime-handler.h
+	        ./sources/devices/lime-handler/lime-widget.h
+	        ./sources/devices/lime-handler/LimeSuite.h
+	        ./sources/devices/lime-handler/LMS7002M_parameters.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/lime-handler/lime-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_LIME)
+	endif (LIMESDR)
+
+	if (RTLSDR)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./sources/devices/rtlsdr-handler/rtlsdr-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/rtlsdr-handler/rtl-dongleselect.h
+	        ./sources/devices/rtlsdr-handler/rtlsdr-handler.h
+	   )
+
+	   include_directories (
+	        ./sources/devices/rtlsdr-handler
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/rtlsdr-handler/rtlsdr-handler.h
+	        ./sources/devices/rtlsdr-handler/rtl-dongleselect.h
+	        ./sources/devices/rtlsdr-handler/rtl-sdr.h
+	        ./sources/devices/rtlsdr-handler/rtl-sdr_export.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/rtlsdr-handler/rtlsdr-handler.cpp
+	        ./sources/devices/rtlsdr-handler/rtl-dongleselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_RTLSDR)
+	endif()
+
+	if (UHD)
+	   find_package(UHD REQUIRED)
+	   if (NOT UHD_FOUND)
+	      message(FATAL_ERROR "please install UHD library")
+	   endif ()
+	   list(APPEND extraLibs ${UHD_LIBRARIES})
+
+	   set(${objectName}_UIS
+	       ${${objectName}_UIS}
+               ./sources/devices/uhd/uhd-widget.ui
+	   )
+
+	   set(${objectName}_MOCS
+	      ${${objectName}_MOCS}
+	      ./sources/devices/uhd/uhd-handler.h
+	   )
+
+	   include_directories(
+	      ./sources/devices/uhd/
+	   )
+
+	   set(${objectName}_HDRS
+	      ${${objectName}_HDRS}
+	      ./sources/devices/uhd/uhd-handler.h
+	   )
+
+	   set(${objectName}_SRCS
+	      ${${objectName}_SRCS}
+	      ./sources/devices/uhd/uhd-handler.cpp
+	   )
+
+	   add_definitions(-DHAVE_UHD)
+	endif ()
+
+	if (SOAPY)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./sources/devices/soapy/soapy-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/soapy/soapy-handler.h
+	        ./sources/devices/soapy/soapy-converter.h
+	        ./sources/devices//soapy/soapy-select.h
+	   )
+
+	   include_directories (
+	        ./sources/devices/soapy/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/soapy/soapy-handler.h
+	        ./sources/devices/soapy/soapy-converter.h
+	        ./sources/devices/soapy/soapy-select.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/soapy/soapy-handler.cpp
+	        ./sources/devices/soapy/soapy-converter.cpp
+	        ./sources/devices/soapy/soapy-select.cpp
+	   )
+
+	   set (LIBSOAPY "-lSoapySDR -lsamplerate -lm")
+	   list(APPEND extraLibs ${LIBSOAPY})
+	   add_definitions (-DHAVE_SOAPY)
+	endif()
+
+	if (SPY_SERVER_8)
+	   include_directories (
+	        ./sources/devices/spy-server-8/
+	   )
+
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./sources/devices/spy-server-8/spyserver-widget-8.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/spy-server-8/spyserver-client-8.h
+	        ./sources/devices/spy-server-8/spy-handler-8.h
+	        ./sources/devices/spy-server-8/tcp-client-8.h
+	   )
+
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/spy-server-8/spyserver-client-8.h
+	        ./sources/devices/spy-server-8/spy-handler-8.h
+	        ./sources/devices/spy-server-8/tcp-client-8.h
+	        ./sources/devices/spy-server-8/spyserver-protocol.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/spy-server-8/spyserver-client-8.cpp
+	        ./sources/devices/spy-server-8/spy-handler-8.cpp
+	        ./sources/devices/spy-server-8/tcp-client-8.cpp
+	   )
+
+	   add_definitions (-DHAVE_SPYSERVER_8)
+	endif()
+
+	if (SPY_SERVER_16)
+	   include_directories (
+	        ./sources/devices/spy-server-16/
+	   )
+
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./sources/devices/spy-server-16/spyserver-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/spy-server-16/spyserver-client.h
+	        ./sources/devices/spy-server-16/spy-handler.h
+	        ./sources/devices/spy-server-16/tcp-client.h
+	   )
+
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/spy-server-16/spyserver-client.h
+	        ./sources/devices/spy-server-16/spy-handler.h
+	        ./sources/devices/spy-server-16/tcp-client.h
+	        ./sources/devices/spy-server-16/spyserver-protocol.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/spy-server-16/spyserver-client.cpp
+	        ./sources/devices/spy-server-16/spy-handler.cpp
+	        ./sources/devices/spy-server-16/tcp-client.cpp
+	   )
+
+	   add_definitions (-DHAVE_SPYSERVER_16)
+	endif()
+
+#
+	if (RTL_TCP)
+	   find_package (Qt6Network REQUIRED)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./sources/devices/rtl_tcp/rtl_tcp-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./sources/devices/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   include_directories (
+	      ./sources/devices/rtl_tcp
+	      ${Qt6Network_INCLUDE_DIRS}
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./sources/devices/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./sources/devices/rtl_tcp/rtl_tcp_client.cpp
+	   )
+
+	   set (RTLTCP_lib Qt6::Network)
+	   add_definitions (-DHAVE_RTL_TCP)
+	endif (RTL_TCP)
 
 #########################################################################
 
@@ -736,9 +1165,11 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	                       ${FAAD_LIBRARIES}
 	                       ${CMAKE_DL_LIBS}
 	)
-
-	add_subdirectory (./sources/devices/ /tmp)
-	target_link_libraries (${objectName} PRIVATE ${objectName}_devices)
+#
+#	add devices
+#
+#	add_subdirectory (./sources/devices/)
+#	target_link_libraries (${objectName} PRIVATE ${objectName}_devices)
 
 	INSTALL (TARGETS ${objectName} DESTINATION  ${CMAKE_INSTALL_PREFIX})
 #	INSTALL (TARGETS ${objectName} DESTINATION ./linux-bin)

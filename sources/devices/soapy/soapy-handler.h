@@ -89,7 +89,9 @@ private:
 	std::thread m_thread;
 	void	workerthread		();
 	void	process			(SoapySDRStream *stream);
-	int	findDesiredRange 	(SoapySDRRange * theRanges, int length);
+	int	findDesiredRange 	(SoapySDRRange *theRanges, int length);
+	int32_t	findDesiredBandwidth	(SoapySDRRange *theRanges, int length);
+
 private slots:
 	void	setAgc		(int);
 	void	setGain		(int);

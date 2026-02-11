@@ -218,8 +218,14 @@ void	soapyHandler::createDevice (const QString &deviceString,
 	   throw (device_exception ("no suitable samplerate found"));
 
 	samplerateLabel	-> setText (QString::number (resultRate));
-	fprintf (stderr, "Requesting samplerate  %d\n", resultRate);
-//	
+
+	int  selectedBandwidth = 0;
+	SoapySDRRange *widthRange =
+	           SoapySDRDevice_getBandwidthRange (m_device, SOAPY_SDR_RX,
+	                                              0, &length);
+	if (length > 0)
+	   selectedBandwidth = findDesiredBandwidth (widthRange, length);
+
 //	set the samplerate
 	if (SoapySDRDevice_setSampleRate (m_device,
 	                                  SOAPY_SDR_RX, 0, resultRate) != 0) {
@@ -230,22 +236,22 @@ void	soapyHandler::createDevice (const QString &deviceString,
 	   throw device_exception (errorMsg);
 	}
 //
-//	  // Verify the actual sample rate that was set
         actualRate = SoapySDRDevice_getSampleRate (m_device,
 	                                                  SOAPY_SDR_RX, 0);
         fprintf (stderr, "Actual sample rate set = %.0f Hz\n", actualRate);
-
-//	For DAB, we need exactly 2048000 Hz (or very close)
-        const int desiredRate = 2048000;
-        const double tolerance = 500000.0;
-
-        if (fabs (actualRate - desiredRate) > tolerance) {
-           fprintf (stderr, "Warning: Sample rate %.0f Hz differs from desired %d Hz\n",
-                    actualRate, desiredRate);
-	   resultRate = (int)actualRate;
-	   samplerateLabel -> setText (QString::number (resultRate));
-        }
-
+	samplerateLabel -> setText (QString::number (resultRate));
+//	
+//	set the Bandwidth
+	if (selectedBandwidth > 0)
+	   if (SoapySDRDevice_setBandwidth (m_device,
+	                                    SOAPY_SDR_RX,
+	                                    0, selectedBandwidth) != 0) {
+	   std::string errorMsg = 
+	              std::string ("Failed to set bandwidth: ") +
+	                                   SoapySDRDevice_lastError ();
+	   fprintf (stderr, "%s\n", errorMsg. c_str ());
+	}
+	bandwidthLabel	-> setText (QString::number (selectedBandwidth));
         theConverter. setup (resultRate, 2048000);
 
 	const bool automatic = true;
@@ -453,13 +459,29 @@ const int desiredRate	= 2048000;
 
 //	No exact match, do try something
 	for (int i = 0; i < length; i ++)
-	   if ((2048000 < theRanges [i]. minimum) &&
-	       (theRanges [i]. minimum - 2048000 < 5000000))
+	   if ((desiredRate < theRanges [i]. minimum) &&
+	       (theRanges [i]. minimum - desiredRate < 5000000))
 	      return theRanges [i]. minimum;
 
 	for (int i = 0; i < length; i ++)
-	   if ((2048000 > theRanges [i]. maximum) &&
-	      (2048000 - theRanges [i]. maximum < 100000))
+	   if ((desiredRate > theRanges [i]. maximum) &&
+	      (desiredRate - theRanges [i]. maximum < 100000))
+	      return theRanges [i]. maximum;
+	return -1;
+}
+
+int soapyHandler::findDesiredBandwidth (SoapySDRRange *theRanges,
+                                                          int length) {
+const uint32_t desiredBandwidth	= 1536000;
+
+	for (size_t i = 0; i < length; i++) 
+	   if ((theRanges [i]. minimum <= desiredBandwidth) &&
+	        (desiredBandwidth <= theRanges [i]. maximum))
+	      return desiredBandwidth;;
+
+  // No exact match, do try something
+	for (size_t i = 0; i < length; i++)
+	   if (theRanges [i]. minimum >= 1500000)
 	      return theRanges [i]. minimum;
 	return -1;
 }

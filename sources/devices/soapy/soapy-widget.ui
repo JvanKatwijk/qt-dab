@@ -75,11 +75,22 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="samplerateLabel">
-     <property name="text">
-      <string>2048000</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLabel" name="samplerateLabel">
+       <property name="text">
+        <string>2048000</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="bandwidthLabel">
+       <property name="text">
+        <string>1536000</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
