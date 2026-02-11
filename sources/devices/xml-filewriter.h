@@ -59,6 +59,7 @@ public:
 	void		add			(std::complex<int16_t> *, int);
 	void		add			(std::complex<uint8_t> *, int);
 	void		add			(std::complex<int8_t> *, int);
+	void		add			(std::complex<float> *, int);
 	void		computeHeader		();
 private:
 	findfileNames	filenameFinder;
@@ -77,6 +78,7 @@ private:
 	QString		timeString;
 
 
+	int		bufferP_float;
 	int		bufferP_int16;
 	int		bufferP_uint8;
 	int		bufferP_int8;

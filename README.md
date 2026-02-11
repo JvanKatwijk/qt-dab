@@ -329,7 +329,15 @@ Note that - as the control window suggests - it is possible to "dump" the unproc
 Qt-DAB furthermore supports
   * **Soapy** (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000).
 
-![6.9](/res/read_me/soapy-control.png?raw=true)
+![6.10](/res/read_me/soapy-control.png?raw=true)
+
+In 6.10 soapy is renewed and now shows a deviceselector when more than
+a single soapy-supported device is encountered.
+
+![6.10](/res/read_me/soapy-selection.png?raw=true)
+
+Furthermore, soapy now supports xml (i.e. ".uff") files to be written,
+although not in native format. 
 
 Qt-DAB obviously supports:
  * reading (and writing) ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate 2048000. Qt-DAB generates such files. As an extension to classical "riff" files that are limited

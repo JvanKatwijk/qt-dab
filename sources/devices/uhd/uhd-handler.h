@@ -21,7 +21,7 @@
  */
 #pragma once
 
-#include "virtual-input.h"
+#include "device-handler.h"
 
 #include	<uhd/usrp/multi_usrp.hpp>
 #include	"ringbuffer.h"
@@ -36,15 +36,15 @@
 class uhdHandler;
 //
 //	the real worker:
-class uhd_streamer : public QThread {
+class uhd_streamer : public QThread  {
 public:
-	uhd_streamer (uhdHandler *d);
-	void stop();
+	uhd_streamer	(uhdHandler *d);
+	void stop	();
 
 private:
 	uhdHandler	* m_theStick;
 virtual void 		run	();
-	std:atomic<bool> m_stop_signal_called;
+	std::atomic<bool> m_stop_signal_called;
 };
 
 
@@ -53,7 +53,7 @@ Q_OBJECT
 	friend class uhd_streamer;
 public:
 		uhdHandler 	(QSettings *dabSettings);
-	 	~uhdInput 	();
+	 	~uhdHandler 	();
 	int32_t	getVFOFrequency	();
 	bool	restartReader	(int32_t, int32_t);
 	void	stopReader	();
@@ -66,16 +66,17 @@ public:
 //
 private:
 	QSettings	*uhdSettings;
-	QFrame		*myFrame;
 	uhd::usrp::multi_usrp::sptr m_usrp;
 	uhd::rx_streamer::sptr m_rx_stream;
 	RingBuffer<std::complex<float> > *theBuffer;
 	uhd_streamer* m_workerHandle;
 	int32_t		inputRate;
 	int32_t		ringbufferSize;
+	int32_t		vfoOffset;
 private slots:
 	void	setExternalGain	(int);
 	void	set_fCorrection	(int);
 	void	set_KhzOffset	(int);
+	void	set_antenna	(const QString &);
 };
 

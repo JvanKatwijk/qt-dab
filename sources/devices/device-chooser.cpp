@@ -183,6 +183,7 @@
 #endif
 #ifdef	HAVE_UHD
 	deviceList. push_back (deviceItem ("uhd", USRP_DEVICE));
+	addtoList ("uhd");
 #endif
 #ifdef	HAVE_SPYSERVER_16
 	deviceList. push_back (deviceItem ("spyServer-16",

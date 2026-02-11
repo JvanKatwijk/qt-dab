@@ -22,27 +22,34 @@
  */
 #pragma once
 
+#include	<QObject>
 #include	"ringbuffer.h"
 #include	<complex>
 #include	<vector>
 #include	<samplerate.h>
 
-class soapyConverter {
+class soapyConverter: public QObject {
+Q_OBJECT
 public:
 		soapyConverter (RingBuffer<std::complex<float>> *outBuffer);
 		~soapyConverter	();
 	void	setup		(int, int);
-	void	add		(std::complex<float> *, int size);
+	void	add		(std::complex<float> *, uint32_t size);
+	void	reset		();
 private:
-	int		inputRate;
-	int		targetRate;
+	uint32_t	inputRate;
+	uint32_t	targetRate;
 	SRC_STATE       *converter;
         SRC_DATA        src_data;
-        int             inputLimit;
-        int             outputLimit;
-	int		inp;
+        uint32_t	inputLimit;
+        uint32_t	outputLimit;
+	uint32_t	inp;
+	void		copyDirect	(std::complex<float> *, int);
+	void		convert		();
         std::vector<float> inBuffer;
         std::vector<float> uitBuffer;
 	RingBuffer<std::complex<float>> *outBuffer;
+signals:
+	void		reportStatus	(const QString &);
 };
 

@@ -29,6 +29,13 @@ struct kort_woord {
 	uint8_t byte_2;
 };
 
+struct langwoord {
+	uint8_t byte_1;
+	uint8_t byte_2;
+	uint8_t byte_3;
+	uint8_t byte_4;
+};
+
 	xml_fileWriter::xml_fileWriter	(QSettings *settings,
 	                                 const QString &channel,
 	                                 int     nrBits,
@@ -51,6 +58,7 @@ uint8_t t	= 0;
 	if (xmlFile == nullptr)
 	   throw (21);
 
+	bufferP_float		= 0;
 	bufferP_int16		= 0;
 	bufferP_uint8		= 0;
 	bufferP_int8		= 0;
@@ -135,6 +143,20 @@ void	xml_fileWriter::add	(std::complex<int8_t> * data, int count) {
 	   if (bufferP_int8 >= BLOCK_SIZE) {
 	      fwrite (buffer_int8, sizeof (int8_t), BLOCK_SIZE, xmlFile);
 	      bufferP_int8 = 0;
+	      nrElements += BLOCK_SIZE;
+	   }
+	}
+}
+
+static float buffer_float [BLOCK_SIZE];
+void	xml_fileWriter::add	(std::complex<float> * data, int count) {
+//	nrElements	+= 2 * count;
+	for (int i = 0; i < count; i ++) {
+	   buffer_float [bufferP_float ++] = real (data [i]);
+	   buffer_float [bufferP_float ++] = imag (data [i]);
+	   if (bufferP_float >= BLOCK_SIZE) {
+	      fwrite (buffer_float, sizeof (float), BLOCK_SIZE, xmlFile);
+	      bufferP_float = 0;
 	      nrElements += BLOCK_SIZE;
 	   }
 	}

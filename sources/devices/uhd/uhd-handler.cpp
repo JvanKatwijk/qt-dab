@@ -1,3 +1,4 @@
+#
 /*
  *
  *    Copyright (C) 2015
@@ -20,6 +21,9 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"uhd-handler.h"
+#include	"position-handler.h"
+#include	"device-exceptions.h"
+#include	<QMessageBox>
 
 #include <uhd/types/tune_request.hpp>
 #include <uhd/utils/thread_priority.hpp>
@@ -34,7 +38,7 @@
 	uhd_streamer::uhd_streamer (uhdHandler *d) {
 	m_theStick		= d;
 	m_stop_signal_called. store (false);
-//create a receive streamer
+//	create a receive streamer
 	uhd::stream_args_t stream_args( "fc32", "sc16" );
 	m_theStick -> m_rx_stream =
 	          m_theStick -> m_usrp -> get_rx_stream (stream_args);
@@ -45,7 +49,7 @@
 	stream_cmd.time_spec	= uhd::time_spec_t();
 	m_theStick -> m_rx_stream -> issue_stream_cmd (stream_cmd);
 
-	start();
+	start ();
 }
 
 void	uhd_streamer::stop () {
@@ -98,19 +102,27 @@ void	uhd_streamer::run () {
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, "uhdSettings");
 	myFrame. show ();
-	this	-> inputRate	= Khz (2048);
+	this	-> inputRate		= Khz (2048);
 	this	-> ringbufferSize	= 1024;	// blocks of 1024 complexes
-	this	-> theBuffer	= nullptr;	// also indicates good init or not
+	this	-> theBuffer		= nullptr;
 	lastFrequency		= 100000;
 	m_workerHandle		= nullptr;
+
 //	create a usrp device.
 	std::string args;
+	std::vector<std::string> antennaList;
 	try {
 	   m_usrp = uhd::usrp::multi_usrp::make (args);
 //	Lock mboard clocks
 
 	   std::string ref ("internal");
 	   m_usrp -> set_clock_source (ref);
+
+	antennaList = m_usrp -> get_rx_antennas ();
+	if (!antennaList. empty ()) { 
+	   for (const auto &antenna : antennaList)
+	      antennaSelector -> addItem (antenna. c_str ()); 
+	}
 
 //	set sample rate
 	   m_usrp -> set_rx_rate (inputRate);
@@ -122,7 +134,7 @@ void	uhd_streamer::run () {
 	}
 	catch (...) {
 	   fprintf (stderr, "No luck with uhd\n");
-	   throw (std_exception_string ("No luck with USRP device");
+	   throw (device_exception ("No luck with USRP device"));
 	}
 //	some housekeeping for the local frame
 	externalGain		-> setMaximum (maxGain ());
@@ -141,6 +153,8 @@ void	uhd_streamer::run () {
 	         this, &uhdHandler::setExternalGain);
 	connect (KhzOffset, &QSpinBox::valueChanged,
 	         this, &uhdHandler::set_KhzOffset);
+	connect (antennaSelector, &QComboBox::textActivated,
+	         this, &uhdHandler::set_antenna);
 }
 
 	uhdHandler::~uhdHandler () {
@@ -159,7 +173,7 @@ void	uhd_streamer::run () {
 	}
 }
 
-int32_t	uhdhandler::getVFOFrequency	() {
+int32_t	uhdHandler::getVFOFrequency	() {
 int32_t freq = m_usrp -> get_rx_freq ();
 	std::cout << boost::format("Actual RX Freq: %f MHz...") % (freq/1e6) << std::endl << std::endl;
 	return freq;
@@ -185,10 +199,8 @@ void	uhdHandler::stopReader	() {
 	m_workerHandle = 0;
 }
 //
-int32_t	uhdHandler::getSamples	(DSPCOMPLEX *v, int32_t size) {
-	size = std::min ((uint32_t)size,
-	                 (uint32_t)(theBuffer -> GetRingBufferReadAvailable ()));
-	theBuffer -> getDataFromBuffer (v, size);
+int32_t	uhdHandler::getSamples	(std::complex<float> *v, int32_t size) {
+	size = (int32_t)theBuffer -> getDataFromBuffer (v, size);
 	return size;
 }
 
@@ -217,4 +229,22 @@ QString uhdHandler::deviceName	() {
 	return "USRP device";
 }
 
+void	uhdHandler::set_fCorrection	(int32_t f) {
+	(void)f;
+}
+
+void	uhdHandler::set_KhzOffset	(int32_t offset) {
+	vfoOffset	= offset;
+}
+
+void	uhdHandler::set_antenna (const QString &theAntenna) {
+	try {
+	   m_usrp -> set_rx_antenna (theAntenna. toStdString ());
+	}
+	catch (...) {
+	   QString warningString = "No " + theAntenna + " available";
+	   QMessageBox::warning (nullptr,
+	                         tr ("Warning"), warningString);
+	}
+}
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
-    <height>277</height>
+    <width>239</width>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,6 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -44,24 +43,34 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="serialNumber">
-     <property name="text">
-      <string>serial number</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="deviceNameLabel">
+       <property name="font">
+        <font>
+         <pointsize>13</pointsize>
+         <italic>true</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="serialNumber">
+       <property name="text">
+        <string>serial number</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <widget class="QLabel" name="deviceNameLabel">
-     <property name="font">
-      <font>
-       <pointsize>13</pointsize>
-       <weight>75</weight>
-       <italic>true</italic>
-       <bold>true</bold>
-      </font>
-     </property>
+    <widget class="QPushButton" name="dumpButton">
      <property name="text">
-      <string>TextLabel</string>
+      <string>dump</string>
      </property>
     </widget>
    </item>
@@ -75,14 +84,14 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QSpinBox" name="gainSelector"/>
-     </item>
-     <item>
       <widget class="QLabel" name="labelSpinbox_1">
        <property name="text">
         <string>gains</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="gainSelector"/>
      </item>
     </layout>
    </item>

@@ -28,17 +28,18 @@
 #pragma once
 
 #include	<QObject>
+#include	<SoapySDR/Device.h>
 #include	<atomic>
 #include	<thread>
 #include	"device-handler.h"
+#include	"settings-handler.h"
 #include	"ringbuffer.h"
-#include	<SoapySDR/Device.h>
 #include	"soapy-converter.h"
 #include	"ui_soapy-widget.h"
 
-class SoapySdr_Thread;
+class	SoapySdr_Thread;
 class	QSettings;
-
+class	xml_fileWriter;
 
 class soapyHandler : //public QObject,
 	              public deviceHandler, public Ui_soapyWidget {
@@ -59,29 +60,41 @@ public:
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;
 	soapyConverter	theConverter;
+	QSettings	*soapySettings;
 	SoapySDRStream	*rxStream;
-	void	setAntenna	(const std::string& antenna);
-	void	decreaseGain	();
-	void	increaseGain	();
+	void		setAntenna	(const std::string& antenna);
+	void		decreaseGain	();
+	void		increaseGain	();
 
-	void	createDevice	(const QString &);
-	int m_freq = 0;
+	QString		deviceString;
+	QString		serial;
+	xml_fileWriter	*xmlWriter;
+	bool		setup_xmlDump	(bool);
+        void		close_xmlDump	();
+
+	void		createDevice	(const QString &, bool);
+	double		actualRate;
+	int		m_freq = 0;
+	std::atomic<int> toSkip;
 	std::string m_driver_args;
 	std::string m_antenna;
 	SoapySDRDevice *m_device = nullptr;
 	std::atomic<bool> m_running;
+	std::atomic<bool> m_dumping;
 	std::atomic<bool> deviceReady;
 	bool m_sw_agc = false;
 	bool	hasAgc;
 	std::vector<double> m_gains;
 
 	std::thread m_thread;
-	void workerthread(void);
-	void process(SoapySDRStream *stream);
-
-	int	findDesiredRange (SoapySDRRange * theRanges, int length);
+	void	workerthread		();
+	void	process			(SoapySDRStream *stream);
+	int	findDesiredRange 	(SoapySDRRange * theRanges, int length);
 private slots:
 	void	setAgc		(int);
 	void	setGain		(int);
+	void	reportStatus	(const QString &);
+
+	void	handle_xmlDump	();
 };
 
