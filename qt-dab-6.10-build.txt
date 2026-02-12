@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export LD_LIBRARY_PATH=/home/jan/Qt/6.8.1/gcc_64/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/jan/Qt/6.8.3/gcc_64/lib:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/home/jan/qwt-6.3.0/lib
-export PATH=/home/jan/Qt/6.8.1/gcc_64/bin:$PATH
+export PATH=/home/jan/Qt/6.8.3/gcc_64/bin:$PATH
 
 ls -lh .
 rm -rf *_autogen

@@ -38,11 +38,12 @@ static int qualityTable [] = {
 void	soapyConverter::setup (int inputRate, int targetRate) {
 	this	-> inputRate	= inputRate;
 	this	-> targetRate	= targetRate;
-	double ratio            = (double)2048000 / inputRate;
-        inputLimit		= 1024;
+	double ratio            = (double)targetRate / inputRate;
+        inputLimit		= 4096;
         outputLimit             = (int)(inputLimit * ratio) + 10;
         int err;
 	converter               = src_new (SRC_SINC_FASTEST, 2, &err);
+
         inBuffer. resize (2 * inputLimit + 20);
         uitBuffer. resize (2 * outputLimit + 20);
         src_data. data_in       = inBuffer. data ();
@@ -91,9 +92,9 @@ void	soapyConverter::add	(std::complex<float> *inBuf,
 	   copyDirect (inBuf, nSamples);
 	   return;
 	}
-	for (uint32_t i = 0; i < inputLimit; i ++) {
-	   inBuffer [2 * inp] = real (inBuf [i]);
-	   inBuffer [2 * inp + 1] = imag (inBuf [i]);
+	for (uint32_t i = 0; i < nSamples; i ++) {
+	   inBuffer [2 * inp]		= real (inBuf [i]);
+	   inBuffer [2 * inp + 1]	= imag (inBuf [i]);
 	   inp ++;
 	   if (inp >= inputLimit) {
 	      convert ();
@@ -128,7 +129,7 @@ static int dropCount = 0;
 void	soapyConverter::convert () {
 std::complex<float> *temp  = dynVec (std::complex<float>, outputLimit);
 static int dropCount = 0;
-	src_data.       input_frames    = inp;
+	src_data.       input_frames    = inputLimit;
 	src_data.       output_frames   = outputLimit;
 	int res   = src_process (converter, &src_data);
 	if (res != 0) {
@@ -138,9 +139,11 @@ static int dropCount = 0;
 	   return;
 	}
 	uint32_t framesOut       = src_data. output_frames_gen;
-
 //	Check buffer space before writing converted samples
-	uint32_t available = outBuffer -> GetRingBufferWriteAvailable();
+	for (int i = 0; i < framesOut; i ++)
+	   temp [i] = std::complex<float> (4 * uitBuffer [2 * i],
+	                                   4 * uitBuffer [2 * i + 1]);
+	uint32_t available = outBuffer -> GetRingBufferWriteAvailable ();
 	if (available < framesOut) {
 	   if ((++dropCount % 100) == 0) {
 	      int32_t dropped = framesOut - available;
