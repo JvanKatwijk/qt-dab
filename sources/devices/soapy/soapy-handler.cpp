@@ -219,7 +219,7 @@ std::stringstream ss;
 	SoapySDR::RangeList rangelist =
 	            m_device -> getSampleRateRange (SOAPY_SDR_RX, 0);
 	selectedRate = findDesiredSamplerate (rangelist);
-	if (driver == "uhd") 
+	if ((driver == "uhd") || (drover == "UHD"))
 	   selectedRate = SAMPLERATE;
 	if (selectedRate < 0)
 	   throw device_exception ("no usable samplerate\n");
