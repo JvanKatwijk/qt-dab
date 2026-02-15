@@ -44,10 +44,9 @@ public:
 	void	reset		();
 	int	getSamples	(std::complex<float> *, int);
 	int	Samples		();
-	int	getGain		();
-	int	getGainCount	();
 	int16_t	bitDepth	();
 	bool	isFileInput	();
+	int32_t	getVFOFrequency	();
 
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;
@@ -56,7 +55,7 @@ private:
 	SoapySDR::Device *m_device;
 	SoapySDR::Stream *m_stream;
 	std::vector<std::string> gainsList;
-	std::string	streamFormat;
+	std::string		streamFormat;
 	std::atomic<bool>	m_running;
 	std::atomic<bool>	m_dumping;
 	std::atomic<int>	toSkip;
@@ -77,7 +76,7 @@ private:
 	xml_fileWriter		*xmlWriter;
 	bool			setup_xmlDump	(bool);
 	void			close_xmlDump	();
-
+	void			setGain		(uint8_t, int32_t);
 private slots:
 	void			setGain_0	(int);
 	void			setGain_1	(int);

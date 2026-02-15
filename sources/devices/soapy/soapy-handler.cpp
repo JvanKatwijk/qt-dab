@@ -49,13 +49,8 @@ std::vector<QString> labelString;
 	if (length == 0) 
 	   throw device_exception ("No devices found\n");
 
-	deviceString. resize (0);
-	serialString. resize (0);
-	labelString. resize (0);
-
 	for (size_t i = 0; i < length; i++) {
 	   bool isAudio = false;
-//	   fprintf (stderr, "Found device #%d:\n", (int)i);
 	   for (const auto &it : results [i]) {
 	      if (it. first ==  std::string ("driver")) {
 	         QString second = QString::fromStdString (it. second);
@@ -164,7 +159,6 @@ std::stringstream ss;
 //	gains
 
 	gainsList = m_device -> listGains (SOAPY_SDR_RX, 0);
-
 	if (gainsList. size () > 0) {
 	   SoapySDR::Range r =
 	            m_device -> getGainRange (SOAPY_SDR_RX, 0, gainsList[0]);
@@ -219,8 +213,9 @@ std::stringstream ss;
 	SoapySDR::RangeList rangelist =
 	            m_device -> getSampleRateRange (SOAPY_SDR_RX, 0);
 	selectedRate = findDesiredSamplerate (rangelist);
-	if ((driver == "uhd") || (drover == "UHD"))
+	if ((driver == "uhd") || (driver == "UHD"))
 	   selectedRate = SAMPLERATE;
+
 	if (selectedRate < 0)
 	   throw device_exception ("no usable samplerate\n");
 
@@ -244,15 +239,16 @@ std::stringstream ss;
 
 	m_device -> setFrequency (SOAPY_SDR_RX, 0, 220000000.0);
 
+	double dd;
+	streamFormat =
+	         m_device -> getNativeStreamFormat (SOAPY_SDR_RX, 0, dd);
+
 	std::vector<size_t> xxx;
 	m_stream = m_device -> setupStream (SOAPY_SDR_RX, "CF32",
 	                                       xxx, SoapySDR::Kwargs ());
 	if (m_stream == nullptr)
 	   throw  device_exception ("cannot open stream");
 
-	double dd;
-	streamFormat =
-	         m_device -> getNativeStreamFormat (SOAPY_SDR_RX, 0, dd);
 	statusLabel -> setText ("running");
 	m_thread	= std::thread (&soapyHandler::workerthread, this);
 }
@@ -269,6 +265,10 @@ bool	soapyHandler::restartReader (int32_t freq, int skipped) {
 
 void	soapyHandler::stopReader () {
 	theConverter. reset ();
+}
+
+int32_t	soapyHandler::getVFOFrequency	() {
+	return (int32_t)(m_device -> getFrequency (SOAPY_SDR_RX, 0));
 }
 
 int32_t soapyHandler::getSamples (std::complex<float> *buffer,
@@ -299,22 +299,23 @@ int16_t	soapyHandler::bitDepth	() {
 	return 12;
 }
 
-void	soapyHandler::setGain_0 (int32_t gain) {
+void	soapyHandler::setGain (uint8_t selector, int32_t gain) {
 	if (m_device == nullptr)
 	   return;
-	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [0], (float)gain);
+	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [selector],
+	                                              (float)gain);
+}
+
+void	soapyHandler::setGain_0 (int32_t gain) {
+	setGain (0, gain);
 }
 
 void	soapyHandler::setGain_1 (int32_t gain) {
-	if (m_device == nullptr)
-	   return;
-	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [1], (float)gain);
+	setGain (1, gain);
 }
 
 void	soapyHandler::setGain_2 (int32_t gain) {
-	if (m_device == nullptr)
-	   return;
-	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [2], (float)gain);
+	setGain (2, gain);
 }
 
 void	soapyHandler::set_agcControl (int32_t agc) {

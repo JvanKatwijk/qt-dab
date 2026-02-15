@@ -63,7 +63,7 @@ DABFLOAT IO (DABFLOAT x) {
 	return besselTable [((int)(x * 32)) % 2048];
 }
 
-static
+static inline
 void	limit_symmetrically (DABFLOAT &v, DABFLOAT limit) {
 	if (v < -limit)
 	   v = -limit;
@@ -296,6 +296,7 @@ DABFLOAT sum	= 0;
 	                      conjVector [T_u / 2 - carriers / 2 + j] / maxAmp; 
 	         }
 	      }
+
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
 	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
