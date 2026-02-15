@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>303</width>
-    <height>355</height>
+    <height>402</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,6 +59,24 @@
       <widget class="QLabel" name="bandwidthLabel">
        <property name="text">
         <string>153600</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QCheckBox" name="balanceIndicator">
+       <property name="text">
+        <string>IQ balance</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="DCModeIndicator">
+       <property name="text">
+        <string>DC Mode</string>
        </property>
       </widget>
      </item>

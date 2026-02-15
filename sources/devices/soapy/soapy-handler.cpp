@@ -195,6 +195,27 @@ std::stringstream ss;
 	            this, &soapyHandler::setGain_2);
 	}
 
+	balanceIndicator	-> hide ();
+	if (m_device -> hasIQBalanceMode (SOAPY_SDR_RX, 0)) {
+	   balanceIndicator	-> show ();
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+	   connect (balanceIndicator, &QCheckBox::checkStateChanged,
+#else   
+	   connect (balanceIndicator, &QCheckBox::stateChanged,
+#endif
+            this, &soapyHandler::handle_balanceIndicator);
+	}
+
+	DCModeIndicator	-> hide ();
+	if (m_device -> hasDCOffsetMode (SOAPY_SDR_RX, 0)) {
+	   DCModeIndicator	-> show ();
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+	   connect (DCModeIndicator, &QCheckBox::checkStateChanged,
+#else   
+	   connect (DCModeIndicator, &QCheckBox::stateChanged,
+#endif
+            this, &soapyHandler::handle_DCModeIndicator);
+	}
 //	frequencies
 	SoapySDR::RangeList freqList =
 	            m_device -> getFrequencyRange (SOAPY_SDR_RX, 0);
@@ -400,7 +421,23 @@ void * const buffs[] = {buffer};
 	   }
 	}
 }
-       
+
+void	soapyHandler::handle_balanceIndicator (int b) {
+	(void)b;
+	if (m_device == nullptr)
+	   return;
+	m_device -> setIQBalanceMode (SOAPY_SDR_RX, 0,
+	                                 balanceIndicator -> isChecked ());
+}
+
+void	soapyHandler::handle_DCModeIndicator	(int b) {
+	(void)b;
+	if (m_device == nullptr)
+	   return;
+	m_device -> setDCOffsetMode (SOAPY_SDR_RX, 0,
+	                                 DCModeIndicator -> isChecked ());
+}
+
 void    soapyHandler::reportStatus      (const QString &s) {
         statusLabel     -> setText (s);
 }
@@ -446,4 +483,5 @@ void	soapyHandler::handle_xmlDump () {
         else {
            close_xmlDump ();
         }  
-} 
+}
+ 

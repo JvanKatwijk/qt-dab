@@ -83,6 +83,8 @@ private slots:
 	void			setGain_2 	(int);
 	void			set_agcControl	(int);
 	void			handleAntenna 	(const QString &);
+	void			handle_balanceIndicator (int b);
+	void			handle_DCModeIndicator (int b);
 	void			handle_xmlDump	();
 
 public slots:
