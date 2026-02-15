@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>239</width>
-    <height>213</height>
+    <width>303</width>
+    <height>355</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,34 +16,6 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="deviceLabel">
-       <property name="text">
-        <string>soapy</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="agcControl">
-       <property name="font">
-        <font>
-         <family>DejaVu Sans Mono</family>
-         <italic>true</italic>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to switch on automatic gain control - based on the setting of the lnastate and the ifgain.&lt;/p&gt;&lt;p&gt;If switched on, the lnastate switch and the ifgain slider are switched off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>agc</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="deviceNameLabel">
        <property name="font">
@@ -68,14 +40,14 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="dumpButton">
+    <widget class="QLabel" name="deviceLabel">
      <property name="text">
-      <string>dump</string>
+      <string>soapy</string>
      </property>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QLabel" name="samplerateLabel">
        <property name="text">
@@ -86,25 +58,72 @@
      <item>
       <widget class="QLabel" name="bandwidthLabel">
        <property name="text">
-        <string>1536000</string>
+        <string>153600</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="labelSpinbox_1">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QSpinBox" name="gainSelector_0"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="gainSelector_1"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="QSpinBox" name="gainSelector_2"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="gainLabel_0">
        <property name="text">
-        <string>gains</string>
+        <string>TextLabel</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QSpinBox" name="gainSelector"/>
+     <item row="1" column="1">
+      <widget class="QLabel" name="gainLabel_1">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="gainLabel_2">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="agcControl">
+     <property name="font">
+      <font>
+       <family>DejaVu Sans Mono</family>
+       <italic>true</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to switch on automatic gain control - based on the setting of the lnastate and the ifgain.&lt;/p&gt;&lt;p&gt;If switched on, the lnastate switch and the ifgain slider are switched off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>agc</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="dumpButton">
+     <property name="text">
+      <string>dump</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="antennaSelector"/>
    </item>
    <item>
     <widget class="QLabel" name="statusLabel">

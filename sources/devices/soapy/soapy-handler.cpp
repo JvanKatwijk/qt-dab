@@ -1,15 +1,13 @@
-#
 /*
  *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
+ *    the Free Software Foundation recorder 2 of the License.
  *
  *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,479 +15,394 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB; if not, write to the Free Software
+ *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include	<cstdio> 
+#include 	<iostream>
 #include	<QSettings>
-#include	<vector>
-#include	<SoapySDR/Device.h>
-#include	<SoapySDR/Formats.h>
-
-#include	"soapy-handler.h"
-#include	"soapy-converter.h"
+#include 	"soapy-handler.h"
 #include	"soapy-select.h"
-#include	"dab-constants.h"
-#include	"unistd.h"
-
-#include        "xml-filewriter.h"
+#include	"settings-handler.h"
+#include	"position-handler.h"
 #include	"device-exceptions.h"
-#include	"radio.h"
+#include	"dab-constants.h"
+#include	"xml-filewriter.h"
 
-using namespace std;
-
-	soapyHandler::soapyHandler (QSettings *s) :
+	soapyHandler::soapyHandler (QSettings * settings):
 	                                     m_sampleBuffer (8 * 1024 * 1024),
 	                                     theConverter (&m_sampleBuffer) {
-size_t length;
+std::vector<QString> deviceString;
+std::vector<QString> serialString;
+std::vector<QString> labelString;
 
-std::vector<int> deviceIndexTable;
-
-	this	-> soapySettings	= s;
+	this	-> soapySettings = settings;
 	setupUi (&myFrame);
-	myFrame. show ();
+	setPositionAndSize (soapySettings, &myFrame, "soapySettings");
 
-	deviceString	= "";
-	serial		= "";
 	connect (&theConverter, &soapyConverter::reportStatus,
 	         this, &soapyHandler::reportStatus);
-//	enumerate devices
-	SoapySDRKwargs *results = SoapySDRDevice_enumerate (NULL, &length);
-	for (size_t i = 0; i < length; i++) {
-	   fprintf (stderr, "Found device #%d: ", (int)i);
-	   bool isAudio = false;
-	   QString currentDriver;
-	   for (size_t j = 0; j < results [i]. size; j++) {
-	      fprintf (stderr, "%s = %s\n",
-	                        results [i]. keys [j], results [i]. vals [j]);
-	      if (QString (results [i]. keys [j]) == "driver") {
-	         currentDriver = results [i]. vals [j];
-	         if (currentDriver == "audio") {
-	            isAudio = true;
-	            fprintf (stderr, "Skipping audio device\n");
-	            break;	// from "j" loop
-	         }
-	      }
-	   }
 
-	   if (!isAudio && !currentDriver. isEmpty ()) {
-	      deviceIndexTable. push_back (i);
-	      deviceString = currentDriver;
-	      deviceNameLabel -> setText (deviceString);
-	   }
-	}
-
-	if (deviceIndexTable. size () == 0)
+	SoapySDR::KwargsList results = SoapySDR::Device::enumerate ();
+//	const auto results = SoapySDR::Device::enumerate ();
+	size_t length = results. size ();
+	if (length == 0) 
 	   throw device_exception ("No devices found\n");
-	int selectedTableIndex	= 0;
-	if (deviceIndexTable. size () > 1) {
-	   soapySelect soapySelector;
-	   for (auto &devIndex : deviceIndexTable) {
-	      for (size_t j = 0; j < results [devIndex]. size; j++) {
-                 if (QString (results [devIndex]. keys [j]) == "driver") {
-	            soapySelector. addtoList (results [devIndex]. vals [j]);
-	            break;
-	         }
+
+	deviceString. resize (0);
+	serialString. resize (0);
+	labelString. resize (0);
+
+	for (size_t i = 0; i < length; i++) {
+	   bool isAudio = false;
+//	   fprintf (stderr, "Found device #%d:\n", (int)i);
+	   for (const auto &it : results [i]) {
+	      if (it. first ==  std::string ("driver")) {
+	         QString second = QString::fromStdString (it. second);
+	         if (second == "audio")
+	            isAudio = true;
+	         else 
+	            deviceString . push_back (second);
+	      }
+	      if (!isAudio) {
+	         if (it. first ==  std::string ("serial"))
+	            serialString. push_back (QString::fromStdString (it. second));
+	         if (it. first == std::string ("label"))
+	            labelString . push_back (QString::fromStdString (it. second));
 	      }
 	   }
-	   selectedTableIndex = soapySelector. QDialog::exec ();
-	   if ((selectedTableIndex < 0) ||
-	       (selectedTableIndex >= (int)deviceIndexTable. size ()))
-	      selectedTableIndex = 0;
 	}
 
-	// get the actual device index from the table
-	int deviceIndex	= deviceIndexTable [selectedTableIndex];
-	bool isUHDDevice = false;
-	for  (size_t j = 0; j < results [deviceIndex]. size; j ++) {
-	   if (QString (results [deviceIndex]. keys [j]) == "driver") {
-	      deviceString = QString (results [deviceIndex]. vals [j]);
-//	check for UHD devices, 
-	      QString driverLower = deviceString. toLower ();
-	      if (driverLower. contains ("uhd") ||
-	          driverLower. contains ("usrp")) {
-	         isUHDDevice = true;
-	         fprintf (stderr, "Detected UHD/USRP device: %s\n",
-                                    deviceString. toLatin1 (). data ());
-	      }
-	   }
-	   if (QString (results [deviceIndex]. keys [j]) == "serial") 
-	      serial = results [deviceIndex]. vals [j];
+	int deviceIndex = 0;
+	if (labelString. size () > 1) {
+	   soapySelect deviceSelector;
+	   for (auto &s : labelString) 
+	      deviceSelector. addtoList (s);
+	   deviceIndex = deviceSelector.QDialog::exec();
 	}
-	SoapySDRKwargsList_clear (results, length);
-	deviceReady. store (false);
+
+	selectedString	= deviceString [deviceIndex];
+	selectedSerial	= serialString [deviceIndex];
+
+	deviceLabel -> setText (selectedString);
+	serialNumber -> setText (selectedSerial);
+
+	antennaSelector -> hide ();
+	gainSelector_0  -> hide ();
+	gainSelector_1  -> hide ();
+	gainSelector_2  -> hide ();
+	gainLabel_0	-> hide ();
+	gainLabel_1	-> hide ();
+	gainLabel_2	-> hide ();
+	agcControl	-> hide ();
+
+	m_device	= nullptr;
+	m_stream	= nullptr;
 	m_running. store (false);
 	m_dumping. store (false);
-	deviceNameLabel	->  setText (deviceString);
-	serialNumber	->  setText (serial);
+	toSkip. store (0);
 	xmlWriter	= nullptr;
 	connect (dumpButton, &QPushButton::clicked,
 	         this, &soapyHandler::handle_xmlDump);
-	toSkip. store (0);
-	createDevice (deviceString, isUHDDevice);
+
+	m_freq		= 220000000;
+	createDevice (selectedString, selectedSerial);
 }
 
-	soapyHandler::~soapyHandler	() {
+	soapyHandler::~soapyHandler () {
+	close_xmlDump ();
 	m_running. store (false);
-	close_xmlDump	();		// if open
-	if (m_thread. joinable ()) {
+	if (m_thread. joinable ())
 	   m_thread. join ();
-	}
-
+	if (m_stream != nullptr)
+	   m_device -> closeStream (m_stream);
 	if (m_device != nullptr) {
-	   SoapySDRDevice_unmake (m_device);
+	   SoapySDR::Device::unmake (m_device);
 	   m_device = nullptr;
 	}
+	storeWidgetPosition (soapySettings, &myFrame, "soapySettings");
+	myFrame. hide ();
 }
 
-void	soapyHandler::createDevice (const QString &deviceString,
-	                                            bool isUHDDevice) {
-	fprintf (stderr, "going to use %s\n",
-	                                  deviceString. toLatin1 (). data ());
-	SoapySDRKwargs args = {};
-	SoapySDRKwargs_set (&args, "driver",
-	                           deviceString. toLatin1 (). data ());
-	m_device	 = SoapySDRDevice_make (&args);
-	SoapySDRKwargs_clear (&args);
+void	soapyHandler::createDevice (QString driver, QString serial) {
+std::stringstream ss;
 
-	if (m_device == NULL) {
-	   std::string ss = std::string ("SoapySDRDevice_make fail: ") +
-	                                   SoapySDRDevice_lastError ();
-	   throw device_exception (ss);
-	}
-//	query device info
-	size_t length;
-	char** names =
-	      SoapySDRDevice_listAntennas (m_device, SOAPY_SDR_RX, 0, &length);
-	fprintf (stderr, "Rx antennas: ");
-	for (size_t i = 0; i < length; i++)
-	   fprintf (stderr, "%s, ", names[i]);
-	printf ("\n");
-	SoapySDRStrings_clear (&names, length);
-//
-//	about gain
-	SoapySDRRange gainRange = SoapySDRDevice_getGainRange (m_device,
-	                                               SOAPY_SDR_RX, 0);
-	gainSelector -> setRange ((int)gainRange. minimum,
-	                          (int)gainRange. maximum);
-	double currentGain =
-	             (int) (gainRange. maximum + gainRange. minimum) / 2;
-	currentGain	= gainRange. minimum + currentGain;
-	try {
-	   SoapySDRDevice_setGain (m_device, SOAPY_SDR_RX, 0, currentGain);
-	}
-	catch (const out_of_range&) {
-	   fprintf (stderr, "Soapy gain %d is out of range\n",
-	                                              (int)currentGain);
-	}
-	gainSelector -> setValue ((int)currentGain);
-	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &soapyHandler::setGain);
+	QString handlerName = "driver=" + driver + ",serial=" + serial;
+	m_device = SoapySDR::Device::make (handlerName. toLatin1 (). data ());
+	if (m_device == nullptr)
+	   throw device_exception ("Could not find soapy support\n");
 
-	hasAgc	= SoapySDRDevice_hasGainMode (m_device, SOAPY_SDR_RX, 0);
-	if (hasAgc) 
-	   SoapySDRDevice_setGainMode (m_device, SOAPY_SDR_RX, 0, false); 
+	deviceNameLabel -> setText (QString::fromStdString (m_device -> getHardwareKey ()));
+
+	if (m_device -> hasGainMode (SOAPY_SDR_RX, 0)) {
+	   agcControl -> show ();
+	   if (m_device -> getGainMode (SOAPY_SDR_RX, 0))
+	      agcControl -> setChecked (true);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
-	connect (agcControl, &QCheckBox::checkStateChanged,
+	   connect(agcControl, &QCheckBox::checkStateChanged,
 #else
-	connect (agcControl, &QCheckBox::stateChanged,
+	   connect(agcControl, &QCheckBox::stateChanged,
 #endif
-	         this, &soapyHandler::setAgc);
-
-	SoapySDRRange *ranges =
-	       SoapySDRDevice_getFrequencyRange (m_device, SOAPY_SDR_RX, 0, &length);
-	fprintf (stderr, "Rx freq ranges: ");
-	for (size_t i = 0; i < length; i++)
-	   fprintf (stderr, "[%g Hz -> %g Hz], ",
-	                        ranges[i].minimum, ranges[i].maximum);
-	printf ("\n");
-	free (ranges);
-
-	SoapySDRRange *sampleRange =
-	           SoapySDRDevice_getSampleRateRange (m_device, SOAPY_SDR_RX,
-	                                              0, &length);
-	int resultRate = findDesiredRange (sampleRange, length);
-	
-	if (isUHDDevice) {
-	   fprintf (stderr, "UHD/USRP device detected, forcing sample rate to 2048000 Hz\n");
-           resultRate = 2048000;
+            this, &soapyHandler::set_agcControl);
 	}
 
-	if (resultRate < 0) 
-	   throw (device_exception ("no suitable samplerate found"));
+//formats
 
-	samplerateLabel	-> setText (QString::number (resultRate));
-
-	int  selectedBandwidth = 0;
-	SoapySDRRange *widthRange =
-	           SoapySDRDevice_getBandwidthRange (m_device, SOAPY_SDR_RX,
-	                                              0, &length);
-	if (length > 0)
-	   selectedBandwidth = findDesiredBandwidth (widthRange, length);
-
-//	set the samplerate
-	if (SoapySDRDevice_setSampleRate (m_device,
-	                                  SOAPY_SDR_RX, 0, resultRate) != 0) {
-	   std::string errorMsg = 
-	              std::string ("Failed to set samplerate: ") +
-	                                   SoapySDRDevice_lastError ();
-	   fprintf (stderr, "%s\n", errorMsg. c_str ());
-	   throw device_exception (errorMsg);
+//	antennas
+	std::vector <std::string> antennas =
+	          m_device -> listAntennas (SOAPY_SDR_RX, 0);
+	if (antennas. size () > 1) {
+	   for (size_t i = 0; i < antennas.size (); i++)
+	      antennaSelector -> addItem (QString::fromStdString (antennas [i]));
+	   connect (antennaSelector, &QComboBox::textActivated,
+                    this, &soapyHandler::handleAntenna);
+	   antennaSelector -> show();
 	}
-//
-        actualRate = SoapySDRDevice_getSampleRate (m_device,
-	                                                  SOAPY_SDR_RX, 0);
-        fprintf (stderr, "Actual sample rate set = %.0f Hz\n", actualRate);
-	samplerateLabel -> setText (QString::number (resultRate));
-//	
-//	set the Bandwidth
-	if (selectedBandwidth > 0)
-	   if (SoapySDRDevice_setBandwidth (m_device,
-	                                    SOAPY_SDR_RX,
-	                                    0, selectedBandwidth) != 0) {
-	   std::string errorMsg = 
-	              std::string ("Failed to set bandwidth: ") +
-	                                   SoapySDRDevice_lastError ();
-	   fprintf (stderr, "%s\n", errorMsg. c_str ());
+	if (antennas. size () > 0)
+	   m_device -> setAntenna (SOAPY_SDR_RX, 0, antennas [0]);
+
+//	gains
+
+	gainsList = m_device -> listGains (SOAPY_SDR_RX, 0);
+
+	if (gainsList. size () > 0) {
+	   SoapySDR::Range r =
+	            m_device -> getGainRange (SOAPY_SDR_RX, 0, gainsList[0]);
+	   gainSelector_0 -> setMinimum (r. minimum ());
+	   gainSelector_0 -> setMaximum (r. maximum ());
+	   gainLabel_0	-> setText (QString::fromStdString (gainsList [0]));
+	   gainSelector_0 -> show ();
+	   gainLabel_0 -> show();
+	   connect (gainSelector_1, qOverload<int>(&QSpinBox::valueChanged),
+	            this, &soapyHandler::setGain_0);
 	}
-	bandwidthLabel	-> setText (QString::number (selectedBandwidth));
-        theConverter. setup (resultRate, 2048000);
 
-	const bool automatic = true;
-	SoapySDRDevice_setFrequency (m_device, SOAPY_SDR_RX, 0,
-	                                              220000000, NULL);
+	if (gainsList. size () > 1) {
+	   SoapySDR::Range r =
+	            m_device -> getGainRange (SOAPY_SDR_RX, 0, gainsList [1]);
+	   gainSelector_1 -> setMinimum (r. minimum ());
+	   gainSelector_1 -> setMaximum (r. maximum ());
+	   gainLabel_1 -> setText (QString::fromStdString (gainsList [1]));
+	   gainSelector_1 -> show ();
+	   gainLabel_1 -> show ();
+	   connect (gainSelector_2, qOverload<int>(&QSpinBox::valueChanged),
+	            this, &soapyHandler::setGain_1);
+	}
 
-	rxStream =
-              SoapySDRDevice_setupStream (m_device, SOAPY_SDR_RX,
-                                          SOAPY_SDR_CF32, NULL, 0, NULL);
-        if (rxStream == nullptr)
-           throw (device_exception ("cannot open stream"));
+	if (gainsList. size () > 2) {
+	   SoapySDR::Range r =
+	            m_device -> getGainRange (SOAPY_SDR_RX, 0, gainsList [2]);
+	   gainSelector_2 -> setMinimum (r. minimum ());
+	   gainSelector_2 -> setMaximum (r. maximum ());
+	   gainLabel_2 -> setText (QString::fromStdString (gainsList [2]));
+	   gainSelector_2 -> show ();
+	   gainLabel_2 -> show ();
+	   connect (gainSelector_2, qOverload<int>(&QSpinBox::valueChanged),
+	            this, &soapyHandler::setGain_2);
+	}
 
-        int xx = SoapySDRDevice_activateStream (m_device, rxStream, 0, 0, 0);
-        if (xx != 0)
-           throw (device_exception ("cannot activate stream"));
+//	frequencies
+	SoapySDR::RangeList freqList =
+	            m_device -> getFrequencyRange (SOAPY_SDR_RX, 0);
+	bool low	= false;
+	bool high	= false;
+	for (auto &fr : freqList) {
+	   if (fr. minimum () <= MHz (75))
+	      low = true;
+	   if (fr. maximum () >= MHz (230))
+	      high = true;
+	}
+	if (!(low & high))
+	   throw device_exception ("Device no suitable for DAB reception");
 
-	m_running . store (true);
-	m_sw_agc	= true;
-	deviceReady	= true;
-	statusLabel	-> setText ("running");
+//	rates
+	SoapySDR::RangeList rangelist =
+	            m_device -> getSampleRateRange (SOAPY_SDR_RX, 0);
+	selectedRate = findDesiredSamplerate (rangelist);
+	if (driver == "uhd") 
+	   selectedRate = SAMPLERATE;
+	if (selectedRate < 0)
+	   throw device_exception ("no usable samplerate\n");
+
+	theConverter. setup (selectedRate, SAMPLERATE);
+
+	samplerateLabel -> setText (QString::number(selectedRate));
+	m_device -> setSampleRate (SOAPY_SDR_RX, 0, selectedRate);
+
+//	bandwidths
+	int32_t selectedWidth = 0;
+	SoapySDR::RangeList bandwidthList =
+	            m_device -> getBandwidthRange (SOAPY_SDR_RX, 0);
+	if (!bandwidthList. empty ())
+	   selectedWidth = findDesiredBandwidth (bandwidthList);
+	if (selectedWidth > 0) {
+    	   bandwidthLabel -> setText (QString::number (selectedWidth));
+	   m_device  -> setBandwidth (SOAPY_SDR_RX, 0, selectedWidth);
+	}
+	else
+	   bandwidthLabel -> setText ("????");
+
+	m_device -> setFrequency (SOAPY_SDR_RX, 0, 220000000.0);
+
+	std::vector<size_t> xxx;
+	m_stream = m_device -> setupStream (SOAPY_SDR_RX, "CF32",
+	                                       xxx, SoapySDR::Kwargs ());
+	if (m_stream == nullptr)
+	   throw  device_exception ("cannot open stream");
+
+	double dd;
+	streamFormat =
+	         m_device -> getNativeStreamFormat (SOAPY_SDR_RX, 0, dd);
+	statusLabel -> setText ("running");
 	m_thread	= std::thread (&soapyHandler::workerthread, this);
 }
 
-bool	soapyHandler::restartReader (int frequency, int skipped) {
-	if (!deviceReady)
-	   return false;
+bool	soapyHandler::restartReader (int32_t freq, int skipped) {
+	if (m_device != nullptr)
+	   m_device -> setFrequency (SOAPY_SDR_RX, 0, freq);
+	theConverter. reset ();
 	m_sampleBuffer. FlushRingBuffer ();
-	m_freq	= frequency;
-	toSkip	= skipped;
-	SoapySDRDevice_setFrequency (m_device, SOAPY_SDR_RX,
-	                                          0, frequency, NULL);
+	m_freq		= freq;
+	toSkip. store (skipped);
 	return true;
 }
 
-void	soapyHandler::stopReader	() {
-	reset ();
-}
-
-void	soapyHandler::reset () {
-	m_sampleBuffer.FlushRingBuffer();
+void	soapyHandler::stopReader () {
 	theConverter. reset ();
 }
 
-int32_t soapyHandler::getSamples (std::complex<float> *Buffer, int32_t size) {
-int32_t available = m_sampleBuffer. GetRingBufferReadAvailable ();
-	uint32_t amount = m_sampleBuffer. getDataFromBuffer (Buffer,
-	                                                    (uint32_t)size);
+int32_t soapyHandler::getSamples (std::complex<float> *buffer,
+	                                               int32_t amount) {
+	if (m_device == nullptr)
+	   return 0;
+	int real_amount = m_sampleBuffer. getDataFromBuffer (buffer,
+                                                            (uint32_t)amount);
 	if (m_dumping. load ())
-	   xmlWriter	-> add (Buffer, amount);
-	return amount;
+	   xmlWriter    -> add (buffer, real_amount);
+        return real_amount;
 }
 
-int32_t	soapyHandler::Samples	() {
-	return  m_sampleBuffer. GetRingBufferReadAvailable ();
+int32_t soapyHandler::Samples () {
+	if (m_device == nullptr)
+	   return 0;
+	return m_sampleBuffer. GetRingBufferReadAvailable ();
 }
 
-void	soapyHandler::setGain	(int32_t gainValue) {
-	if ((m_device != nullptr)  && (!agcControl -> isChecked ())) {
-           try {
-               SoapySDRDevice_setGain (m_device, SOAPY_SDR_RX, 0, gainValue);
-           }
-           catch (const out_of_range&) {
-              fprintf (stderr,  "Soapy gain %d is out of range\n", gainValue);
-	   }
-	}
+void soapyHandler::reset	() {
+	theConverter. reset ();
+	m_sampleBuffer. FlushRingBuffer ();
 }
 
-bool	soapyHandler::isFileInput	() {
+int16_t	soapyHandler::bitDepth	() {
+	if (streamFormat == std::string ("CS8"))
+	   return 8;
+	return 12;
+}
+
+void	soapyHandler::setGain_0 (int32_t gain) {
+	if (m_device == nullptr)
+	   return;
+	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [0], (float)gain);
+}
+
+void	soapyHandler::setGain_1 (int32_t gain) {
+	if (m_device == nullptr)
+	   return;
+	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [1], (float)gain);
+}
+
+void	soapyHandler::setGain_2 (int32_t gain) {
+	if (m_device == nullptr)
+	   return;
+	m_device -> setGain (SOAPY_SDR_RX, 0, gainsList [2], (float)gain);
+}
+
+void	soapyHandler::set_agcControl (int32_t agc) {
+	(void)agc;
+	if (m_device == nullptr)
+	   return;
+	m_device -> setGainMode (SOAPY_SDR_RX, 0,
+	                          agcControl -> isChecked () ? 1 : 0);
+}
+
+void	soapyHandler::handleAntenna (const QString & name) {
+	if (m_device == nullptr)
+	   return;
+	m_device -> setAntenna (SOAPY_SDR_RX, 0, name. toLatin1 (). data ());
+}
+
+bool	soapyHandler::isFileInput () {
 	return false;
 }
 
-void	soapyHandler::setAntenna (const std::string& antenna) {
-//        try {
-//            SoapySDRDevice_setAntenna (m_device, SOAPY_SDR_RX, 0, antenna);
-//            m_antenna = antenna;
-//        }
-//        catch (...) {
-//            fprintf (stderr, "Could not set antenna to %s\n",
-//	                                             antenna. c_str ());
-//        }
-}
+int32_t soapyHandler::findDesiredSamplerate (const SoapySDR::RangeList &range) {
 
-void	soapyHandler::increaseGain () {
-	if (m_device != nullptr) {
-        float current_gain = SoapySDRDevice_getGain (m_device, SOAPY_SDR_RX, 0);
-        for (const float g : m_gains) {
-            if (g > current_gain) {
-                SoapySDRDevice_setGain (m_device, SOAPY_SDR_RX, 0, g);
-                break;
-            }
-        }
-    }
-}
-
-void	soapyHandler::decreaseGain () {
-	if (m_device != nullptr) {
-        float current_gain = SoapySDRDevice_getGain (m_device, SOAPY_SDR_RX, 0);
-        for (auto it = m_gains.rbegin(); it != m_gains.rend(); ++it) {
-            if (*it > current_gain) {
-                SoapySDRDevice_setGain (m_device, SOAPY_SDR_RX, 0, *it);
-                break;
-            }
-        }
-    }
-}
-
-int32_t	soapyHandler::getGainCount () {
-    return m_gains.size ();
-}
-
-void	soapyHandler::setAgc (int status) {
-bool b	= agcControl -> isChecked ();
-	if (hasAgc) {
-	   SoapySDRDevice_setGainMode (m_device, SOAPY_SDR_RX, 0, b);
-	   gainSelector -> setEnabled (!b);
-	}
-	else
-	   m_sw_agc = b;
-}
-
-void	soapyHandler::workerthread () {
-std::vector<size_t> channels;
-channels. push_back (0);
-
-	const size_t mtu	= SoapySDRDevice_getStreamMTU (m_device,
-	                                                       rxStream);
-	const size_t samplesToRead = mtu;
-	std::vector<std::complex<float>> buf (samplesToRead);
-
-	int frames	= 0;
-	int amount	= 0;
-	int totalSamplesRead = 0;
-	int errorCount = 0;
-        fprintf (stderr, "soapyHandler: Worker thread started, MTU = %zu samples\n", mtu);
-
-	while (m_running. load ()) {
-	   void *buffs [1];
-	   buffs [0] = buf. data ();
-           int flags;                   //flags set by receive operation
-           long long timeNs;            //timestamp for receive buffer
-           int ret = SoapySDRDevice_readStream (m_device, rxStream,
-	                                        buffs, samplesToRead, &flags,
-	                                        &timeNs, 100000);
-	   if (ret <= 0) {
-	      if (ret < 0) {
-	         errorCount++;
-	         if (errorCount % 100 == 0) {
-	            fprintf (stderr,
-	                  "soapyHandler: readStream errors: %d (ret=%d)\n", errorCount, ret);
-	         }
-	      }
-              continue;
-	   }
-
-	   int skipRemaining = toSkip. load ();
-	   if (skipRemaining > 0) {
-	      int newSkip = skipRemaining - ret;
-	      toSkip. store (newSkip > 0 ? newSkip : 0);
-	      continue;
-           }
-
-	   theConverter. add (buf. data (), ret);
-	   frames ++;
-	   if (m_sw_agc and (frames >= 200)) {
-	      frames = 0;
-	      float maxnorm = 0;
-	      for (auto z : buf) {
-	         if (norm (z) > maxnorm) {
-	            maxnorm = norm (z);
-	         }
-	      }
-	      const float maxampl = sqrt (maxnorm);
-	      if (maxampl > 0.5f) {
-	         decreaseGain ();
-	      }
-	      else
-	      if (maxampl < 0.1f) {
-	         increaseGain ();
-	      }
-	   }
-	}
-	fprintf (stderr,
-	         "soapyHandler: Worker thread stopping, total samples read: %d\n", totalSamplesRead);
-
-
-//stop streaming
-	SoapySDRDevice_deactivateStream (m_device, rxStream, 0, 0);
-        SoapySDRDevice_closeStream (m_device, rxStream);
-
-	m_running. store (false);
-}
-
-int	soapyHandler::findDesiredRange (SoapySDRRange *theRanges,
-	                                                  int length) {
-const int desiredRate	= 2048000;
-
-	for (int i = 0; i < length; i ++) {
-	   fprintf (stderr, "samplerate range (min-max) %g -> %g\n",
-	                         theRanges [i]. minimum,
-	                         theRanges [i]. maximum);
-	   if ((theRanges [i]. minimum <= desiredRate) &&
-	       (desiredRate <= theRanges [i]. maximum))
-	      return desiredRate;
+	for (size_t i = 0; i < range. size (); i++) {
+	   if ((range [i]. minimum () <= SAMPLERATE) &&
+	       (SAMPLERATE <= range [i]. maximum ()))
+	      return SAMPLERATE;
 	}
 
 //	No exact match, do try something
-	for (int i = 0; i < length; i ++)
-	   if ((desiredRate < theRanges [i]. minimum) &&
-	       (theRanges [i]. minimum - desiredRate < 5000000))
-	      return theRanges [i]. minimum;
+	for (size_t i = 0; i < range. size (); i++)
+	   if ((SAMPLERATE < range [i]. minimum ()) &&
+	       (range [i]. minimum () - SAMPLERATE < 5000000))
+	      return range[i].minimum();
 
-	for (int i = 0; i < length; i ++)
-	   if ((desiredRate > theRanges [i]. maximum) &&
-	      (desiredRate - theRanges [i]. maximum < 100000))
-	      return theRanges [i]. maximum;
+	for (size_t i = 0; i < range. size (); i++)
+	   if ((SAMPLERATE > range [i]. maximum ()) &&
+	       (SAMPLERATE - range [i]. maximum () < 100000))
+	      return range[i].minimum();
 	return -1;
 }
 
-int soapyHandler::findDesiredBandwidth (SoapySDRRange *theRanges,
-                                                          int length) {
-const uint32_t desiredBandwidth	= 1536000;
+int32_t	soapyHandler::findDesiredBandwidth (const SoapySDR::RangeList &range) {
+	for (size_t i = 0; i < range. size (); i++) {
+	   if ((range [i]. minimum () <= 1536000) &&
+	       (1536000 <= range [i]. maximum ()))
+	      return 1536000;
+	}
 
-	for (size_t i = 0; i < length; i++) 
-	   if ((theRanges [i]. minimum <= desiredBandwidth) &&
-	        (desiredBandwidth <= theRanges [i]. maximum))
-	      return desiredBandwidth;;
-
-  // No exact match, do try something
-	for (size_t i = 0; i < length; i++)
-	   if (theRanges [i]. minimum >= 1500000)
-	      return theRanges [i]. minimum;
+//	No exact match, do try something
+	for (size_t i = 0; i < range.size(); i++)
+	   if (range [i]. minimum () >= 1500000)
+	      return range [i]. minimum ();
 	return -1;
 }
 
-void	soapyHandler::reportStatus	(const QString &s) {
-	statusLabel	-> setText (s);
-}
+void	soapyHandler::workerthread () {
+int32_t flag = 0;
+long long timeNS;
+std::complex<float> buffer[4096];
+void * const buffs[] = {buffer};
 
+	m_running. store (true);
+
+	m_device -> activateStream (m_stream);
+	while (m_running. load ()) {
+	   int32_t numRead =
+	               m_device -> readStream (m_stream, buffs,
+	                                        4096, flag, timeNS, 10000);
+	   int skipRemaining = toSkip. load ();
+	   if (skipRemaining > 0) {
+	      int newSkip = skipRemaining - numRead;
+	      toSkip. store (newSkip > 0 ? newSkip : 0);
+	      continue;
+	   }
+
+	   if (numRead > 0) {
+	      if (selectedRate == SAMPLERATE) {
+	         m_sampleBuffer. putDataIntoBuffer (buffer, numRead);
+	         continue;
+	      }
+	      theConverter. add (buffer, numRead);
+	   }
+	}
+}
+       
+void    soapyHandler::reportStatus      (const QString &s) {
+        statusLabel     -> setText (s);
+}
 
 bool	soapyHandler::setup_xmlDump (bool direct) {
 QString channel		= value_s (soapySettings, DAB_GENERAL,
@@ -499,11 +412,11 @@ QString channel		= value_s (soapySettings, DAB_GENERAL,
 	                                      channel,
 	                                      32,
 	                                      "float32",
-	                                      actualRate,
+	                                      selectedRate,
 	                                      m_freq,
 	                                      -1,
-	                                      deviceString,
-	                                      serial,
+	                                      selectedString,
+	                                      selectedSerial,
 	                                      "qt-dab",
 	                                      direct);
 	} catch (...) {

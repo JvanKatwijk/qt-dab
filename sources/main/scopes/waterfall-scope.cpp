@@ -65,6 +65,8 @@
 	plotgrid        -> enableAxis (QwtPlot::xBottom, false);
 	plotgrid        -> enableAxis (QwtPlot::yLeft, false);
 	this            -> detach ();
+//	delete 	colorMap;
+//	delete	axisMap;
 }
 
 void	waterfallScope::cleanUp () {

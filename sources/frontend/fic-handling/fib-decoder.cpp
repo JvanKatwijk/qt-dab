@@ -84,12 +84,12 @@
 //	FIB's are segments of 256 bits. When here, the segments already
 //	passed the crc and we start unpacking the bits into FIGs
 void	fibDecoder::processFIB (uint8_t *p, uint16_t fib) {
-int8_t	processedBytes	= 0;
+int8_t	availableBytes	= 30;
 uint8_t	*d		= p;
 
 	fibLocker. lock();
 	(void)fib;
-	while (processedBytes  < 30) {
+	while (availableBytes > 0) {
 	   uint8_t FIGtype	= getBits_3 (d, 0);
 	   uint8_t FIGlength	= getBits_5 (d, 3);
 	   if ((FIGtype == 0x07) && (FIGlength == 0x3F)) {
@@ -98,12 +98,16 @@ uint8_t	*d		= p;
 	   }
 
 	   switch (FIGtype) {
-	      case 0:			
-	         process_FIG0 (d);	
+	      case 0:
+	         if (availableBytes >= 2)
+	            process_FIG0 (d);	
+	         else
+	            fprintf (stderr, "x");
 	         break;
 
 	      case 1:			
-	         process_FIG1 (d);
+	         if (availableBytes >= 2)
+	            process_FIG1 (d);
 	         break;
 
 	      case 2:		// not yet implemented
@@ -116,10 +120,8 @@ uint8_t	*d		= p;
 	         break;
 	   }
 //
-//	Thanks to Ronny Kunze, who discovered that I used
-//	a p rather than a d
-	      processedBytes += getBits_5 (d, 3) + 1;
-	      d = p + processedBytes * 8;
+	   availableBytes -= (FIGlength + 1);
+	   d = d + (FIGlength + 1) * 8;
 	}
 	fibLocker. unlock();
 }

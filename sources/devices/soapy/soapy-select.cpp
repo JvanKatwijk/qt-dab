@@ -1,11 +1,10 @@
 #
 /*
- *    Copyright (C) 2026
+ *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB program
- *
+ *    This file is part of the Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,46 +19,43 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	<cstdio>
-#include	<QVBoxLayout>
-#include	"soapy-select.h"
+#include    "soapy-select.h"
+#include    <cstdio>
+#include    <QVBoxLayout>
 //
-//	Whenever there are two or more sdrplay devices connected
-//	to the computer, the user is asked to make a choice.
+//  Whenever there are two or more soapy devices connected
+//  to the computer, the user is asked to make a choice.
 
 	soapySelect::soapySelect	() {
-	toptext		= new QLabel (this);
-	toptext		-> setText ("Qt-DAB selector");
-	selectorDisplay	= new QListView (this);
-	QVBoxLayout	*layOut = new QVBoxLayout;
-	layOut		-> addWidget (selectorDisplay);
-	layOut		-> addWidget (toptext);
-	setWindowTitle (tr("soapy select"));
-	setLayout (layOut);
+	toptext		= new QLabel(this);
+	toptext ->	setText("device select");
+	selectorDisplay = new QListView (this);
+	QVBoxLayout *layOut = new QVBoxLayout;
+	layOut	->	addWidget (toptext);
+	layOut	->	addWidget (selectorDisplay);
+	setWindowTitle (tr("Qt-DAB soapy select"));
+	setLayout(layOut);
 
-	Devices = QStringList();
+	Devices		= QStringList ();
 	deviceList. setStringList (Devices);
-	selectorDisplay	-> setModel (&deviceList);
+	selectorDisplay -> setModel (&deviceList);
 	connect (selectorDisplay, &QListView::clicked,
 	         this, &soapySelect::select_device);
-	selectedItem	= -1;
+	selectedItem = -1;
 }
 
 	soapySelect::~soapySelect () {
 }
 
-void	soapySelect::addtoList (const char *v) {
-QString s (v);
-
-	Devices << s;
+void	soapySelect::addtoList (const QString &v) {
+	fprintf (stderr, "adding %s to list\n", v. toLatin1 (). data ());
+	Devices << v;
 	deviceList. setStringList (Devices);
-	selectorDisplay	-> setModel (&deviceList);
-	selectorDisplay	-> adjustSize();
-	adjustSize();
-	fprintf (stderr, "adding %s\n", v);
+	selectorDisplay -> setModel (&deviceList);
+	selectorDisplay -> adjustSize ();
+	adjustSize ();
 }
 
 void	soapySelect::select_device (QModelIndex s) {
-	QDialog::done (s. row());
+	QDialog::done (s.row ());
 }
-

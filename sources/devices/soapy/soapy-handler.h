@@ -1,14 +1,10 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
- *
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    This file is part of the Qt-DAB program
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -23,80 +19,73 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
+
 #pragma once
 
 #include	<QObject>
-#include	<SoapySDR/Device.h>
 #include	<atomic>
-#include	<thread>
-#include	"device-handler.h"
-#include	"settings-handler.h"
-#include	"ringbuffer.h"
-#include	"soapy-converter.h"
 #include	"ui_soapy-widget.h"
+#include	"device-handler.h"
+#include	"soapy-converter.h"
+#include 	"ringbuffer.h"
+#include	<SoapySDR/Device.hpp>
 
-class	SoapySdr_Thread;
 class	QSettings;
 class	xml_fileWriter;
 
-class soapyHandler : //public QObject,
-	              public deviceHandler, public Ui_soapyWidget {
+class soapyHandler: public deviceHandler, public Ui_soapyWidget {
 Q_OBJECT
 public:
 		soapyHandler	(QSettings *);
 		~soapyHandler	();
-	
 	bool	restartReader	(int, int skipped = 0);
 	void	stopReader	();
 	void	reset		();
-	int32_t getSamples	(std::complex<float> * Buffer, int32_t Size);
-	int32_t	Samples		();
-	float	getGain		() const;
-	int32_t	getGainCount	();
+	int	getSamples	(std::complex<float> *, int);
+	int	Samples		();
+	int	getGain		();
+	int	getGainCount	();
+	int16_t	bitDepth	();
 	bool	isFileInput	();
 
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;
-	soapyConverter	theConverter;
-	QSettings	*soapySettings;
-	SoapySDRStream	*rxStream;
-	void		setAntenna	(const std::string& antenna);
-	void		decreaseGain	();
-	void		increaseGain	();
+	soapyConverter  theConverter;
+	QSettings       *soapySettings;
+	SoapySDR::Device *m_device;
+	SoapySDR::Stream *m_stream;
+	std::vector<std::string> gainsList;
+	std::string	streamFormat;
+	std::atomic<bool>	m_running;
+	std::atomic<bool>	m_dumping;
+	std::atomic<int>	toSkip;
+	int32_t			selectedRate;
+	int32_t			m_freq;
+	std::thread		m_thread;
 
-	QString		deviceString;
-	QString		serial;
-	xml_fileWriter	*xmlWriter;
-	bool		setup_xmlDump	(bool);
-        void		close_xmlDump	();
+	QString			selectedString;
+	QString			selectedSerial;
+	void			workerthread	();
+	void			createDevice	(const QString d,
+	                                                 const QString s);
+	int			findDesiredSamplerate (const
+	                                       SoapySDR::RangeList &theRanges);
+	int			findDesiredBandwidth  (const
+	                                       SoapySDR::RangeList &theRanges);
 
-	void		createDevice	(const QString &, bool);
-	double		actualRate;
-	int		m_freq = 0;
-	std::atomic<int> toSkip;
-	std::string m_driver_args;
-	std::string m_antenna;
-	SoapySDRDevice *m_device = nullptr;
-	std::atomic<bool> m_running;
-	std::atomic<bool> m_dumping;
-	std::atomic<bool> deviceReady;
-	bool m_sw_agc = false;
-	bool	hasAgc;
-	std::vector<double> m_gains;
-
-	std::thread m_thread;
-	void	workerthread		();
-	void	process			(SoapySDRStream *stream);
-	int	findDesiredRange 	(SoapySDRRange *theRanges, int length);
-	int32_t	findDesiredBandwidth	(SoapySDRRange *theRanges, int length);
+	xml_fileWriter		*xmlWriter;
+	bool			setup_xmlDump	(bool);
+	void			close_xmlDump	();
 
 private slots:
-	void	setAgc		(int);
-	void	setGain		(int);
-	void	reportStatus	(const QString &);
+	void			setGain_0	(int);
+	void			setGain_1	(int);
+	void			setGain_2 	(int);
+	void			set_agcControl	(int);
+	void			handleAntenna 	(const QString &);
+	void			handle_xmlDump	();
 
-	void	handle_xmlDump	();
+public slots:
+	void			reportStatus	(const QString &);
 };
-

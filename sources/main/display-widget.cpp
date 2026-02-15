@@ -205,10 +205,17 @@ void	displayWidget::showSpectrum	(std::vector<Complex> &v, int freq) {
 int	l	= v. size ();
 floatQwt  X_axis [512];
 floatQwt  Y_value [512];
-
+static	int lastFreq	= -1;
 static floatQwt avg [4 * 512];
+
 	if (currentTab != SHOW_SPECTRUM)
 	   return;
+
+	if (freq != lastFreq) {
+	   for (int i = 0; i < 4 * 512; i ++)
+	      avg [i] = 0;
+	   lastFreq = freq;
+	}
 
 	theFFT. fft (v);
 	for (int i = 0; i < (int)(v. size ()) / 2; i ++) {

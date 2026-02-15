@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -31,18 +31,23 @@ static int qualityTable [] = {
 	soapyConverter::soapyConverter
 	                        (RingBuffer<std::complex<float>> *outBuffer){
 	this	-> outBuffer	= outBuffer;
+	converter		= nullptr;
 }
 
-	soapyConverter::~soapyConverter	() {}
+	soapyConverter::~soapyConverter	() {
+	if (converter != nullptr)
+	   converter = src_delete (converter);
+}
 
 void	soapyConverter::setup (int inputRate, int targetRate) {
 	this	-> inputRate	= inputRate;
 	this	-> targetRate	= targetRate;
 	double ratio            = (double)targetRate / inputRate;
-        inputLimit		= 4096;
+        inputLimit		= 1024;
         outputLimit             = (int)(inputLimit * ratio) + 10;
         int err;
-	converter               = src_new (SRC_SINC_FASTEST, 2, &err);
+	converter               = src_new (SRC_LINEAR, 2, &err);
+//	converter               = src_new (SRC_SINC_FASTEST, 2, &err);
 
         inBuffer. resize (2 * inputLimit + 20);
         uitBuffer. resize (2 * outputLimit + 20);
@@ -144,17 +149,19 @@ static int dropCount = 0;
 	   temp [i] = std::complex<float> (4 * uitBuffer [2 * i],
 	                                   4 * uitBuffer [2 * i + 1]);
 	uint32_t available = outBuffer -> GetRingBufferWriteAvailable ();
-	if (available < framesOut) {
-	   if ((++dropCount % 100) == 0) {
-	      int32_t dropped = framesOut - available;
-	      QString report = QString ("Buffer overload, dropped %1").
-	                                        arg (QString::number (dropped));
-	      reportStatus (report);
-	   }
-	   if (available > 0) {
-	      outBuffer -> putDataIntoBuffer (temp, available);
-           }
+	if (available >= framesOut) {
+	   outBuffer -> putDataIntoBuffer (temp, framesOut);
 	   return;
 	}
-	outBuffer -> putDataIntoBuffer (temp, framesOut);
+//
+//	limited space in the output buffer
+	if ((++dropCount % 100) == 0) {
+	   int32_t dropped = framesOut - available;
+	   QString report = QString ("Buffer overload, dropped %1").
+	                                     arg (QString::number (dropped));
+	   reportStatus (report);
+	}
+	if (available > 0) {
+	   outBuffer -> putDataIntoBuffer (temp, available);
+        }
 }

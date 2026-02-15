@@ -110,8 +110,7 @@ bool	brush;
 }
 
 	spectrumScope::~spectrumScope	() {
-
-//	delete		Marker;
+	delete		Marker;
 	delete		grid;
 }
 

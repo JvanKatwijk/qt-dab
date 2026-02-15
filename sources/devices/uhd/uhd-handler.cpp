@@ -118,11 +118,11 @@ void	uhd_streamer::run () {
 	   std::string ref ("internal");
 	   m_usrp -> set_clock_source (ref);
 
-	antennaList = m_usrp -> get_rx_antennas ();
-	if (!antennaList. empty ()) { 
-	   for (const auto &antenna : antennaList)
-	      antennaSelector -> addItem (antenna. c_str ()); 
-	}
+	   antennaList = m_usrp -> get_rx_antennas ();
+	   if (!antennaList. empty ()) { 
+	      for (const auto &antenna : antennaList)
+	         antennaSelector -> addItem (antenna. c_str ()); 
+	   }
 
 //	set sample rate
 	   m_usrp -> set_rx_rate (inputRate);

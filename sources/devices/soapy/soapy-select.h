@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2026
+ *    Copyright (C) 2028
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -20,29 +20,29 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
-#pragma once
-#
-#include	<QDialog>
-#include	<QLabel>
-#include	<QListView>
-#include	<QStringListModel>
-#include	<QStringList>
-#include	<cstdint>
 
-class	soapySelect: public QDialog {
+#pragma once
+
+#include <QDialog>
+#include <QLabel>
+#include <QListView>
+#include <QStringListModel>
+#include <QStringList>
+#include <cstdint>
+
+class   soapySelect: public QDialog {
 Q_OBJECT
 public:
 			soapySelect	();
 			~soapySelect	();
-	void		addtoList	(const char *);
+	void		addtoList	(const QString &);
 private:
 	QLabel		*toptext;
-	QListView	*selectorDisplay;
+	QListView 	*selectorDisplay;
 	QStringListModel deviceList;
-	QStringList	Devices;
+	QStringList 	Devices;
 	int16_t		selectedItem;
 private slots:
-void	select_device	(QModelIndex);
+	void		select_device	(QModelIndex);
 };
 

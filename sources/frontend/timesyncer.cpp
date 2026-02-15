@@ -29,7 +29,7 @@
 	sampleReader_p	= mr;
 }
 
-	timeSyncer::~timeSyncer() {}
+	timeSyncer::~timeSyncer () {}
 
 int	timeSyncer::sync (int T_null, int T_F) {
 float	cLevel		= 0;
