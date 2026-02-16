@@ -92,7 +92,8 @@ uint8_t	*d		= p;
 	while (availableBytes > 0) {
 	   uint8_t FIGtype	= getBits_3 (d, 0);
 	   uint8_t FIGlength	= getBits_5 (d, 3);
-	   if ((FIGtype == 0x07) && (FIGlength == 0x3F)) {
+	   if ((FIGlength >= availableBytes) ||
+	       (FIGtype == 0x07) && (FIGlength == 0x3F)) {
 	      fibLocker. unlock ();
 	      return;
 	   }
@@ -799,8 +800,7 @@ int16_t	used	= 2;			// in Bytes
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
 	(void)OE_bit; (void)PD_bit;
-	while (used < Length) {
-	   
+	while (used <= Length) {
 	   int16_t subChId	= getBits_6 (d, used * 8);
 	   uint8_t FEC_scheme	= getBits_2 (d, used * 8 + 6);
 	   used = used + 1;

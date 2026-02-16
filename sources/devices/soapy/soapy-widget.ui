@@ -83,7 +83,11 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QDoubleSpinBox" name="ppmIndicator"/>
+        <widget class="QDoubleSpinBox" name="ppmIndicator">
+         <property name="minimum">
+          <double>-99.989999999999995</double>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="label">

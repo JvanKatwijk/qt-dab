@@ -79,8 +79,8 @@ std::vector<QString> labelString;
 	selectedString	= deviceString [deviceIndex];
 	selectedSerial	= serialString [deviceIndex];
 
-	deviceLabel -> setText (selectedString);
-	serialNumber -> setText (selectedSerial);
+	deviceLabel	-> setText (selectedString);
+	serialNumber	-> setText (selectedSerial);
 
 	antennaSelector -> hide ();
 	gainSelector_0  -> hide ();
@@ -298,6 +298,8 @@ void	soapyHandler::stopReader () {
 }
 
 int32_t	soapyHandler::getVFOFrequency	() {
+	if (m_device == nullptr)
+	   return 0;
 	return (int32_t)(m_device -> getFrequency (SOAPY_SDR_RX, 0));
 }
 
