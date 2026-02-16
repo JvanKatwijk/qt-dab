@@ -216,6 +216,14 @@ std::stringstream ss;
 #endif
             this, &soapyHandler::handle_DCModeIndicator);
 	}
+
+	ppmIndicator	-> hide ();
+	if (m_device -> hasFrequencyCorrection (SOAPY_SDR_RX, 0)) {
+	   ppmIndicator		-> show ();
+	   connect (ppmIndicator, &QDoubleSpinBox::valueChanged,
+	            this, &soapyHandler::handle_ppmIndicator);
+	}
+
 //	frequencies
 	SoapySDR::RangeList freqList =
 	            m_device -> getFrequencyRange (SOAPY_SDR_RX, 0);
@@ -251,6 +259,7 @@ std::stringstream ss;
 	            m_device -> getBandwidthRange (SOAPY_SDR_RX, 0);
 	if (!bandwidthList. empty ())
 	   selectedWidth = findDesiredBandwidth (bandwidthList);
+
 	if (selectedWidth > 0) {
     	   bandwidthLabel -> setText (QString::number (selectedWidth));
 	   m_device  -> setBandwidth (SOAPY_SDR_RX, 0, selectedWidth);
@@ -396,7 +405,7 @@ void	soapyHandler::workerthread () {
 int32_t flag = 0;
 long long timeNS;
 std::complex<float> buffer[4096];
-void * const buffs[] = {buffer};
+void * const buffs [] = {buffer};
 
 	m_running. store (true);
 
@@ -438,6 +447,12 @@ void	soapyHandler::handle_DCModeIndicator	(int b) {
 	                                 DCModeIndicator -> isChecked ());
 }
 
+void	soapyHandler::handle_ppmIndicator	(double v) {
+	if (m_device == nullptr)
+	   return;
+	m_device -> setFrequencyCorrection (SOAPY_SDR_RX, 0, v);
+}
+
 void    soapyHandler::reportStatus      (const QString &s) {
         statusLabel     -> setText (s);
 }
@@ -448,7 +463,7 @@ QString channel		= value_s (soapySettings, DAB_GENERAL,
 	try {
 	   xmlWriter	= new xml_fileWriter (soapySettings,
 	                                      channel,
-	                                      32,
+	                                      sizeof (float) * 8,
 	                                      "float32",
 	                                      selectedRate,
 	                                      m_freq,
@@ -460,6 +475,7 @@ QString channel		= value_s (soapySettings, DAB_GENERAL,
 	} catch (...) {
 	   return false;
 	}
+
 	dumpButton	-> setText ("writing");
 	m_dumping. store (true);
 	return true;
@@ -484,4 +500,4 @@ void	soapyHandler::handle_xmlDump () {
            close_xmlDump ();
         }  
 }
- 
+
