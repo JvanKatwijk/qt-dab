@@ -167,7 +167,7 @@ std::stringstream ss;
 	   gainLabel_0	-> setText (QString::fromStdString (gainsList [0]));
 	   gainSelector_0 -> show ();
 	   gainLabel_0 -> show();
-	   connect (gainSelector_1, qOverload<int>(&QSpinBox::valueChanged),
+	   connect (gainSelector_0, qOverload<int>(&QSpinBox::valueChanged),
 	            this, &soapyHandler::setGain_0);
 	}
 

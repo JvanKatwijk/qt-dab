@@ -51,9 +51,9 @@ public:
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;
 	soapyConverter  theConverter;
-	QSettings       *soapySettings;
-	SoapySDR::Device *m_device;
-	SoapySDR::Stream *m_stream;
+	QSettings		*soapySettings;
+	SoapySDR::Device	*m_device;
+	SoapySDR::Stream	*m_stream;
 	std::vector<std::string> gainsList;
 	std::string		streamFormat;
 	std::atomic<bool>	m_running;

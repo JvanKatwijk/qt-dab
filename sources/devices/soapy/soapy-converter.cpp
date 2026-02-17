@@ -83,12 +83,12 @@ void	soapyConverter::reset () {
 	if (converter != nullptr) {
 	   src_reset (converter);
 	}
-	inp = 0;
-	src_data. input_frames = 0;
+	inp			= 0;
+	src_data. input_frames	= 0;
 	src_data. output_frames = 0;
 	src_data. input_frames_used = 0;
 	src_data. output_frames_gen = 0;
-	src_data. end_of_input = 0;
+	src_data. end_of_input	= 0;
 }
 
 void	soapyConverter::add	(std::complex<float> *inBuf,
@@ -108,26 +108,19 @@ void	soapyConverter::add	(std::complex<float> *inBuf,
 	}
 }
 
-//	Direct pass-through - check buffer space first
+//	Direct pass-through - check the amount of written samples
 void	soapyConverter::copyDirect (std::complex<float> *inBuf, int nSamples) {
 static int dropCount = 0;
-	uint32_t available = outBuffer -> GetRingBufferWriteAvailable();
-	if (available < (uint32_t)nSamples) {
-// Buffer is getting full - drop samples to prevent blocking
-	   if ((++dropCount % 100) == 0) {
-	      int32_t dropped = nSamples - available;
-	      QString report = QString ("Buffer overload, dropped %1").
-	                                        arg (QString::number (dropped));
-	      reportStatus (report);
-	   }
-// Write what we can
-	   if (available > 0) {
-	      outBuffer -> putDataIntoBuffer (inBuf, available);
-	   }
+	int realWritten	= outBuffer -> putDataIntoBuffer (inBuf, nSamples);
+	if (realWritten == nSamples) 
 	   return;
+
+	if ((++dropCount % 100) == 0) {
+	   int32_t dropped = nSamples - realWritten;
+	   QString report = QString ("Buffer overload, dropped %1").
+	                                        arg (QString::number (dropped));
+	   reportStatus (report);
 	}
-//	enough space
-	outBuffer -> putDataIntoBuffer (inBuf, nSamples);
 }
 
 //
@@ -143,25 +136,20 @@ static int dropCount = 0;
 	   reportStatus (report);
 	   return;
 	}
+
 	uint32_t framesOut       = src_data. output_frames_gen;
-//	Check buffer space before writing converted samples
+//	check the amount of real written samples
 	for (int i = 0; i < framesOut; i ++)
 	   temp [i] = std::complex<float> (4 * uitBuffer [2 * i],
 	                                   4 * uitBuffer [2 * i + 1]);
-	uint32_t available = outBuffer -> GetRingBufferWriteAvailable ();
-	if (available >= framesOut) {
-	   outBuffer -> putDataIntoBuffer (temp, framesOut);
+	int realWritten = outBuffer -> putDataIntoBuffer (temp, framesOut);
+	if (realWritten == framesOut)	
 	   return;
-	}
-//
-//	limited space in the output buffer
+
 	if ((++dropCount % 100) == 0) {
-	   int32_t dropped = framesOut - available;
+	   int32_t dropped = framesOut - realWritten;
 	   QString report = QString ("Buffer overload, dropped %1").
 	                                     arg (QString::number (dropped));
 	   reportStatus (report);
-	}
-	if (available > 0) {
-	   outBuffer -> putDataIntoBuffer (temp, available);
         }
 }
