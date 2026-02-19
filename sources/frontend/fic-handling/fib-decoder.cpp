@@ -294,7 +294,7 @@ const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
-	while (used < Length - 1)
+	while (used <= Length)
 	   used = HandleFIG0Extension1 (d, used, CN_bit, OE_bit, PD_bit);
 }
 //
@@ -366,7 +366,7 @@ const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
-	while (used < Length) {
+	while (used <= Length) {
 	   used = HandleFIG0Extension2 (d, used, CN_bit, OE_bit, PD_bit);
 	}
 }
@@ -445,7 +445,7 @@ const uint8_t CN_bit  = getBits_1 (d, 8 + 0);
 const uint8_t OE_bit  = getBits_1 (d, 8 + 1);
 const uint8_t PD_bit  = getBits_1 (d, 8 + 2);
 
-	while (used < Length)
+	while (used <= Length)
 	   used = HandleFIG0Extension3 (d, used, CN_bit, OE_bit, PD_bit);
 }
 //
@@ -494,7 +494,7 @@ const uint8_t CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
 
-	while (used < Length) {
+	while (used <= Length) {
 	   used = HandleFIG0Extension5 (d, used,  CN_bit, OE_bit, PD_bit);
 	}
 }
@@ -570,7 +570,7 @@ const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
-	while (used < Length) {
+	while (used <= Length) {
 	   used = HandleFIG0Extension8 (d, used, CN_bit, OE_bit, PD_bit);
 	}
 }
@@ -755,7 +755,7 @@ const uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 
-	while (used < length) 
+	while (used <= length) 
 	   used = HandleFIG0Extension13 (d, used, CN_bit, OE_bit, PD_bit);
 }
 //
@@ -951,7 +951,7 @@ const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 	}
 #endif
 	return;
-	while (used < Length) 
+	while (used <= Length) 
 	   used = HandleFIG0Extension21 (d, used, CN_bit, OE_bit, PD_bit);
 }
 
@@ -998,7 +998,7 @@ const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
-	while (used < Length) 
+	while (used <= Length) 
 	   used = HandleFIG0Extension21 (d, used, CN_bit, OE_bit, PD_bit);
 }
 
