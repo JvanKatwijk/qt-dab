@@ -1,0 +1,15 @@
+
+PKGCONFIG	+= portaudio-2.0
+PKGCONFIG	+= zlib
+#PKGCONFIG	+= sndfile
+#PKGCONFIG	+= samplerate
+INCLUDEPATH	+= /usr/local/include
+INCLUDEPATH     += /usr/local/qwt-6.3.0/include
+#correct this for the correct path to the qwt6 library on your system
+LIBS            += -L/home/jan/qwt-6.3.0/lib
+LIBS           += -lqwt
+equals (QT_MAJOR_VERSION, 6) {
+#	 LIBS		+= -lqwt-qt6
+	}else{  LIBS += -lqwt-qt5
+	}
+

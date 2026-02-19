@@ -198,6 +198,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   fprintf (stderr, "packet udlen %d is larger than max payload %d\n",
 	               udlen, Length - 5);
 	   assembling = false;
+	   return;
 	}
 
 	switch (flflg) {
@@ -226,7 +227,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	            tracer. push_back (t);
 	         }
 	         int currentLength = series. size ();
-	         if (currentLength + udlen * 8 > 8 * 8192) {
+	         if (currentLength + udlen * 8 > 8 * 8220) {
 	            if (traceFlag) {
 	               fprintf (stderr, "%d elements, size %d\n",
 	                        (int)(tracer. size ()),
@@ -284,18 +285,14 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	      return;
 
 	      case 3: { // Single packet, mostly padding
-	         if (assembling) {
-	            if (Length > 3 * 8 + udlen * 8) {
-	               series. resize (udlen * 8);
-	               for (uint8_t i = 0; i < udlen * 8; i ++)
-	                  series [i] = vec [3 * 8 + i];
-	               if (series. size () > 0)
-	                  my_dataHandler -> add_mscDatagroup (series);
-	            }
-                 }
+	         series. resize (udlen * 8);
+	         for (uint8_t i = 0; i < udlen * 8; i ++)
+	            series [i] = vec [3 * 8 + i];
+	         if (series. size () > 0)
+	            my_dataHandler -> add_mscDatagroup (series);
+	         series. resize (0);
+	         assembling = false;
 	      }
-	      series. resize (0);
-	      assembling = false;
 	      return;
 
 	      default:	// cannot happen
