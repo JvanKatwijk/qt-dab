@@ -228,7 +228,10 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-	if ((name == "") &!dirElement)
+	fprintf (stderr, "handle complete with %s %X\n",
+	                                    name. toLatin1 (). data (),
+	                                    transportId);
+	if ((name == "") && !dirElement)
 	   name = QString::number (transportId, 16);
 	if (name != "")
 	   handle_motObject (result, name, (int)contentType, dirElement, SId);

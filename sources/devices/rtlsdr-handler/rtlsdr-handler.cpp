@@ -30,7 +30,7 @@
 #include	"dab-constants.h"
 #include	"rtlsdr-handler.h"
 #include	"position-handler.h"
-#include	"rtl-dongleselect.h"
+#include	"selector.h"
 #include	"rtl-sdr.h"
 #include	"device-exceptions.h"
 #include	"errorlog.h"
@@ -138,10 +138,10 @@ char	manufac [256], product [256], serial [256];
 
 	deviceIndex = 0;	// default
 	if (deviceCount > 1) {
-	   rtl_dongleSelect dongleSelector;
+	   selector dongleSelector ("RTLSDR");
 	   for (deviceIndex = 0; deviceIndex < deviceCount; deviceIndex ++) {
 	      dongleSelector.
-	           addtoDongleList (rtlsdr_get_device_name (deviceIndex));
+	           addtoList (QString (rtlsdr_get_device_name (deviceIndex)));
 	   }
 	   deviceIndex = dongleSelector. QDialog::exec();
 	}

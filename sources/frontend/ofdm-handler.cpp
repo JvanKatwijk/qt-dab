@@ -344,10 +344,6 @@ int	snrCount	= 0;
   */
 	      sampleCount	+= T_u;
 	      (void) theOfdmDecoder. processBlock_0 (ofdmBuffer);
-#ifdef	__MSC_THREAD__
-	      if (!scanMode)
-	         theMscHandler.  processBlock_0 (ofdmBuffer. data());
-#endif
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
@@ -432,9 +428,6 @@ int	snrCount	= 0;
 	         }
 	         if (scanMode)
 	            continue;
-#ifdef	__MSC_THREAD__
-	         theMscHandler. processMsc (ofdmBuffer, 0,  ofdmSymbolCount);
-#else
 	         if (ofdmSymbolCount >= 4) {
 	            theOfdmDecoder.
 	                    decode (ofdmBuffer, ofdmSymbolCount,
@@ -442,7 +435,6 @@ int	snrCount	= 0;
 	            theMscHandler.
 	                    processMscBlock (softbits, ofdmSymbolCount);
 	         }
-#endif
 	      }
 /**
   *	OK,  here we are at the end of the frame

@@ -30,7 +30,7 @@
 //	NOT in the Qt5 version
 //
 //	Create a "device"
-Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
+	Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	                        QObject* parent):
 	                                 QIODevice (parent),
 	                                 Buffer (32 * 32768) {
@@ -50,21 +50,17 @@ Qt_AudioDevice::Qt_AudioDevice (RadioInterface *mr,
 	start ();
 }
 
-Qt_AudioDevice::~Qt_AudioDevice () {
-//	fprintf (stderr, "Closing QIODevice\n");
+	Qt_AudioDevice::~Qt_AudioDevice () {
 	if (running)
 	   close ();
 }
 
 void	Qt_AudioDevice::start () {
-//	fprintf (stderr, "restarting QIODevice with buffer %d\n",
-//	                               Buffer. GetRingBufferReadAvailable ());
 	(void)open (QIODevice::ReadOnly);
 	running	= true;
 }
 
 void	Qt_AudioDevice::stop () {
-	fprintf (stderr, "Closing QIODevice\n");
 	Buffer. FlushRingBuffer();
 	close ();
 	running = false;

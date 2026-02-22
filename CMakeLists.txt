@@ -300,6 +300,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/super-frame.h 
 	   ./sources/support/gui-elements/verysmallpushbutton.h 
 	   ./sources/support/gui-elements/qwt-2.h 
+	   ./sources/devices/selector.h 
 	   ./sources/devices/riff-writer.h 
 	   ./sources/devices/device-handler.h 
 	   ./sources/devices/device-chooser.h 
@@ -436,6 +437,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/super-frame.cpp 
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp 
 	   ./sources/devices/riff-writer.cpp 
+	   ./sources/devices/selector.cpp 
 	   ./sources/devices/device-handler.cpp 
 	   ./sources/devices/device-chooser.cpp 
 	   ./sources/devices/xml-filewriter.cpp 
@@ -523,20 +525,21 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/epg/xml-extractor.h
 	     ./sources/output/audio-player.h
 	     ./sources/output/converter_48000.h
-	   ./sources/devices/riff-writer.h 
-	   ./sources/devices/device-handler.h 
-	   ./sources/devices/device-chooser.h 
-	   ./sources/devices/device-exceptions.h 
-	   ./sources/devices/xml-filewriter.h 
-	   ./sources/devices/filereaders/new-reader/newfiles.h 
-	   ./sources/devices/filereaders/new-reader/new-reader.h 
-	   ./sources/devices/filereaders/new-reader/riff-reader.h 
-	   ./sources/devices/filereaders/rawfiles-new/rawfiles.h 
-	   ./sources/devices/filereaders/rawfiles-new/raw-reader.h 
-	   ./sources/devices/filereaders/xml-filereader/element-reader.h 
-	   ./sources/devices/filereaders/xml-filereader/xml-filereader.h 
-	   ./sources/devices/filereaders/xml-filereader/xml-reader.h 
-	   ./sources/devices/filereaders/xml-filereader/xml-descriptor.h 
+	    ./sources/devices/riff-writer.h 
+	    ./sources/devices/selector.h 
+	    ./sources/devices/device-handler.h 
+	    ./sources/devices/device-chooser.h 
+	    ./sources/devices/device-exceptions.h 
+	    ./sources/devices/xml-filewriter.h 
+	    ./sources/devices/filereaders/new-reader/newfiles.h 
+	    ./sources/devices/filereaders/new-reader/new-reader.h 
+	    ./sources/devices/filereaders/new-reader/riff-reader.h 
+	    ./sources/devices/filereaders/rawfiles-new/rawfiles.h 
+	    ./sources/devices/filereaders/rawfiles-new/raw-reader.h 
+	    ./sources/devices/filereaders/xml-filereader/element-reader.h 
+	    ./sources/devices/filereaders/xml-filereader/xml-filereader.h 
+	    ./sources/devices/filereaders/xml-filereader/xml-reader.h 
+	    ./sources/devices/filereaders/xml-filereader/xml-descriptor.h 
 	)
 
 	set (${objectName}_UIS
@@ -553,7 +556,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 ##########################################################################
 #devices
-
+##########################################################################
 
 	if (SDRPLAY_V2)
 	   set (${objectName}_UIS
@@ -564,7 +567,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./sources/devices/drplay-handler-v2/sdrplay-handler-v2.h
-	        ./sources/devices/sdrplay-handler-v2/sdrplayselect.h
 	   )
 
 	   include_directories (
@@ -574,14 +576,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.h
-	        ./sources/devices/sdrplay-handler-v2/sdrplayselect.h
 	        ./sources/devices/sdrplay-handler-v2/mirsdrapi-rsp.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp
-	        ./sources/devices/sdrplay-handler-v2/sdrplayselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_SDRPLAY_V2)
@@ -597,7 +597,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ${${objectName}_MOCS}
 	        ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ./sources/devices/sdrplay-handler-v3/sdrplay-commands.h 
-	        ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.h 
 	        ./sources/devices/sdrplay-handler-v3/Rsp-device.h 
 	        ./sources/devices/sdrplay-handler-v3/RspI-handler.h 
 	        ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.h 
@@ -615,7 +614,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ${${objectName}_HDRS}
 	        ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ./sources/devices/sdrplay-handler-v3/sdrplay-commands.h
-	        ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.h
 	        ./sources/devices/sdrplay-handler-v3/include/sdrplay_api.h
 	        ./sources/devices/sdrplay-handler-v3/Rsp-device.h 
 	        ./sources/devices/sdrplay-handler-v3/RspI-handler.h 
@@ -628,7 +626,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
-	        ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.cpp
                 ./sources/devices/sdrplay-handler-v3/Rsp-device.cpp 
 	        ./sources/devices/sdrplay-handler-v3/RspI-handler.cpp 
 	        ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.cpp 
@@ -655,7 +652,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./sources/devices/airspy-handler/airspy-handler.h
-	        ./sources/devices/airspy-handler/airspyselect.h
 	   )
 
 	   include_directories (
@@ -666,14 +662,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./sources/devices/airspy-handler/airspy-handler.h
-	        ./sources/devices/airspy-handler/airspyselect.h
 	        ./sources/devices/airspy-handler/libairspy/airspy.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./sources/devices/airspy-handler/airspy-handler.cpp
-	        ./sources/devices/airspy-handler/airspyselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY)
@@ -841,7 +835,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ${${objectName}_MOCS}
 	        ./sources/devices/soapy/soapy-handler.h
 	        ./sources/devices/soapy/soapy-converter.h
-	        ./sources/devices//soapy/soapy-select.h
 	   )
 
 	   include_directories (
@@ -852,14 +845,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ${${objectName}_HDRS}
 	        ./sources/devices/soapy/soapy-handler.h
 	        ./sources/devices/soapy/soapy-converter.h
-	        ./sources/devices/soapy/soapy-select.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./sources/devices/soapy/soapy-handler.cpp
 	        ./sources/devices/soapy/soapy-converter.cpp
-	        ./sources/devices/soapy/soapy-select.cpp
 	   )
 
 	   set (LIBSOAPY "-lSoapySDR -lsamplerate -lm")

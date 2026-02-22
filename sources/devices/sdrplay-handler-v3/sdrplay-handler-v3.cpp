@@ -30,7 +30,7 @@
 #include	"sdrplay-commands.h"
 #include	"xml-filewriter.h"
 
-#include	"sdrplayselect-v3.h"
+#include	"selector.h"
 #include	"errorlog.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
@@ -676,9 +676,9 @@ int	deviceIndex	= 0;
 
 	deviceIndex	= 0;
 	if (ndev > 1) {
-	   sdrplaySelect_v3 sdrplaySelector;
+	   selector sdrplaySelector ("SDRplay V3");
 	   for (deviceIndex = 0; deviceIndex < (int)ndev; deviceIndex ++) {
-	      sdrplaySelector. addtoList (devs [deviceIndex]. SerNo);
+	      sdrplaySelector. addtoList (QString (devs [deviceIndex]. SerNo));
 	   }
 	   deviceIndex = sdrplaySelector. QDialog::exec ();
 	}

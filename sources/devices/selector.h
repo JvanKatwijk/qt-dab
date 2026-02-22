@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -20,32 +20,32 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
-#ifndef	__AIRSPY_SELECT__
-#define	__AIRSPY_SELECT__
-#
-#include	<QDialog>
-#include	<QLabel>
-#include	<QListView>
-#include	<QStringListModel>
-#include	<QStringList>
-#include	<cstdint>
 
-class	airspySelect: public QDialog {
+#pragma once
+
+#include <QDialog>
+#include <QLabel>
+#include <QListView>
+#include <QStringListModel>
+#include <QStringList>
+#include <cstdint>
+
+//
+//	In some cases we can handle the selection of a device
+//	if more than one of the same type is connected
+class   selector: public QDialog {
 Q_OBJECT
 public:
-			airspySelect	();
-			~airspySelect	();
+			selector	(const QString &);
+			~selector	();
 	void		addtoList	(const QString &);
 private:
 	QLabel		*toptext;
-	QListView	*selectorDisplay;
+	QListView 	*selectorDisplay;
 	QStringListModel deviceList;
-	QStringList	Devices;
+	QStringList 	Devices;
 	int16_t		selectedItem;
 private slots:
-void	select_airspy	(QModelIndex);
+	void		select_device	(QModelIndex);
 };
-
-#endif
 

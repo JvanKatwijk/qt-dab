@@ -31,7 +31,8 @@
 #include	"dab-constants.h"
 #include	"sdrplay-handler-v2.h"
 #include	"position-handler.h"
-#include	"sdrplayselect-v2.h"
+//#include	"sdrplayselect-v2.h"
+#include	"selector.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 #include	"errorlog.h"
@@ -155,15 +156,10 @@ mir_sdr_ErrT res;
 	}
 
 	if (numofDevs > 1) {
-           sdrplaySelect_v2 sdrplaySelector;
+           selector sdrplaySelector ("SDRplay v2");
            for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
-//#ifndef	__MINGW32__
-//	      sdrplaySelector.
-//	             addtoList (devDesc [deviceIndex]. DevNm);
-//#else
 	       sdrplaySelector.
-	             addtoList (devDesc [deviceIndex]. SerNo);
-//#endif
+	             addtoList (QString (devDesc [deviceIndex]. SerNo));
            }
            deviceIndex = sdrplaySelector. QDialog::exec();
         }

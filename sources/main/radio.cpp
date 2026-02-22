@@ -937,7 +937,7 @@ QString	dir = s;
 	return dir;
 }
 //
-//	to avoid confusions, each mot object arriving here carrier
+//	to avoid confusions, each MOT object arriving here carries
 //	the SId of the service it belongs to.
 //	Data for background services other than the SPI servides,
 //	is basically ignored.
@@ -1314,6 +1314,8 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	                                          bool ps, bool sbr) {
 	if (!running. load ())
+	   return;
+	if (!channel. audioActive)
 	   return;
 
 	audioTeller ++;
@@ -2185,7 +2187,7 @@ void	RadioInterface::handle_presetSelect (const QString &channelParam,
 //	selecting from the scan list, which is essential
 //	the same as handling form the preset list
 void	RadioInterface::handleScanListSelect (const QString &s) {
-	if (!theDeviceHandler -> isFileInput ()) {
+	if (theDeviceHandler -> isFileInput ()) {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Selection not possible"));
 	   return;

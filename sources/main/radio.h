@@ -630,7 +630,6 @@ public slots:
 	void			scheduler_timeOut	(const QString &);
 
 //	Local signals
-
 	
 	void			no_signal_found		();
 	void			closeEvent		(QCloseEvent *event);

@@ -49,11 +49,11 @@ public:
 	qint64	bytesAvailable	() const;
 	qint64	size		() const;
 	bool	isRunning	();
+	void	start		();
+	void	stop		();
 
 private:
 	RingBuffer<char> Buffer;
-	void	start		();
-	void	stop		();
 	int	totalBytes_l;
 	int	missedBytes_l;
 	std::atomic<bool> running;

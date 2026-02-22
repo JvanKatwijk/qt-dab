@@ -38,7 +38,7 @@
 #include	"raw-reader.h"
 #include	"position-handler.h"
 #include	"settingNames.h"
-#define	INPUT_FRAMEBUFFERSIZE	8 * 32768
+#define	INPUT_FRAMEBUFFERSIZE	32 * 32768
 //
 //
 	rawFiles::rawFiles (QSettings *s,

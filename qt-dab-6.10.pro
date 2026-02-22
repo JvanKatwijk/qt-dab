@@ -21,12 +21,12 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 #QMAKE_CFLAGS	+=  -pg 
 #QMAKE_CXXFLAGS	+=  -pg 
 #QMAKE_LFLAGS	+=  -pg 
@@ -64,7 +64,6 @@ DEPENDPATH += . \
 	      ./sources/output \
 	      ./sources/output/portaudio \
 	      ./sources/protection \
-	      ./sources/devices \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
 	      ./sources/devices \
@@ -93,8 +92,6 @@ INCLUDEPATH += . \
 	      ./sources/output \
 	      ./sources/output/portaudio \
 	      ./sources/protection \
-	      ./sources/devices \
-#	      ./sources/scopes-qwt6 \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
 	      ./sources/devices \
@@ -235,6 +232,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
 	   ./sources/support/gui-elements/qwt-2.h \
+	   ./sources/devices/selector.h \
 	   ./sources/devices/riff-writer.h \
 	   ./sources/devices/device-handler.h \
 	   ./sources/devices/device-chooser.h \
@@ -378,6 +376,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
 	   ./sources/devices/riff-writer.cpp \
+	   ./sources/devices/selector.cpp \
 	   ./sources/devices/device-handler.cpp \
 	   ./sources/devices/device-chooser.cpp \
 	   ./sources/devices/xml-filewriter.cpp \
@@ -449,6 +448,7 @@ CONFIG		+= single
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= sdrplay-duo
+CONFIG		+= sdrconnect
 CONFIG		+= dabstick
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
@@ -556,10 +556,8 @@ dabstick {
 	DEFINES		+= HAVE_RTLSDR_V4
 	DEPENDPATH	+= ./sources/devices/rtlsdr-handler
 	INCLUDEPATH	+= ./sources/devices/rtlsdr-handler
-	HEADERS		+= ./sources/devices/rtlsdr-handler/rtlsdr-handler.h \
-	                   ./sources/devices/rtlsdr-handler/rtl-dongleselect.h
-	SOURCES		+= ./sources/devices/rtlsdr-handler/rtlsdr-handler.cpp \
-	                   ./sources/devices/rtlsdr-handler/rtl-dongleselect.cpp
+	HEADERS		+= ./sources/devices/rtlsdr-handler/rtlsdr-handler.h 
+	SOURCES		+= ./sources/devices/rtlsdr-handler/rtlsdr-handler.cpp 
 	FORMS		+= ./sources/devices/rtlsdr-handler/rtlsdr-widget.ui
 }
 
@@ -570,10 +568,8 @@ sdrplay-v2 {
 	DEFINES		+= HAVE_SDRPLAY_V2
 	DEPENDPATH	+= ./sources/devices/sdrplay-handler-v2
 	INCLUDEPATH	+= ./sources/devices/sdrplay-handler-v2
-	HEADERS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.h \ 
-	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect-v2.h 
-	SOURCES		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \ 
-	                   ./sources/devices/sdrplay-handler-v2/sdrplayselect-v2.cpp 
+	HEADERS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.h 
+	SOURCES		+= ./sources/devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp  
 	FORMS		+= ./sources/devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }
 #
@@ -586,7 +582,6 @@ sdrplay-v3 {
 	                   ./sources/devices/sdrplay-handler-v3/include
         HEADERS         += ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
                            ./sources/devices/sdrplay-handler-v3/sdrplay-commands.h \
-	                   ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.h \ 
 	                   ./sources/devices/sdrplay-handler-v3/Rsp-device.h \
 	                   ./sources/devices/sdrplay-handler-v3/RspI-handler.h \
 	                   ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.h \
@@ -595,8 +590,7 @@ sdrplay-v3 {
 	                   ./sources/devices/sdrplay-handler-v3/RspDx-handler.h
         SOURCES         += ./sources/devices/sdrplay-handler-v3/Rsp-device.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
-	                   ./sources/devices/sdrplay-handler-v3/sdrplayselect-v3.cpp \ 
-	                   ./sources/devices/sdrplay-handler-v3/RspI-handler.cpp \
+		           ./sources/devices/sdrplay-handler-v3/RspI-handler.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/RspII-handler.cpp \
 	                   ./sources/devices/sdrplay-handler-v3/RspDuo-handler.cpp \
@@ -649,10 +643,8 @@ airspy {
 	INCLUDEPATH	+= ./sources/devices/airspy-handler \
 	                   ./sources/devices/airspy-handler/libairspy
 	HEADERS		+= ./sources/devices/airspy-handler/airspy-handler.h \
-	                   ./sources/devices/airspy-handler/airspyselect.h \
 	                   ./sources/devices/airspy-handler/libairspy/airspy.h
-	SOURCES		+= ./sources/devices/airspy-handler/airspy-handler.cpp \
-	                   ./sources/devices/airspy-handler/airspyselect.cpp
+	SOURCES		+= ./sources/devices/airspy-handler/airspy-handler.cpp 
 	FORMS		+= ./sources/devices/airspy-handler/airspy-widget.ui
 }
 
@@ -671,11 +663,9 @@ soapy {
 	DEPENDPATH	+= ./sources/devices/soapy
 	INCLUDEPATH     += ./sources/devices/soapy
         HEADERS         += ./sources/devices/soapy/soapy-handler.h \
-	                   ./sources/devices/soapy/soapy-converter.h \
-	                   ./sources/devices/soapy/soapy-select.h
+	                   ./sources/devices/soapy/soapy-converter.h 
         SOURCES         += ./sources/devices/soapy/soapy-handler.cpp \
-	                   ./sources/devices/soapy/soapy-converter.cpp \
-	                   ./sources/devices/soapy/soapy-select.cpp
+	                   ./sources/devices/soapy/soapy-converter.cpp 
         FORMS           += ./sources/devices/soapy/soapy-widget.ui
 	LIBS		+= -lsamplerate
 	LIBS		+= -lSoapySDR -lm
@@ -707,19 +697,6 @@ pluto	{
 	FORMS		+= ./sources/devices/pluto-handler/pluto-widget.ui
 }
 
-elad-device	{
-	DEFINES		+= HAVE_ELAD
-	DEPENDPATH	+= ./sources/devices/elad-s1-handler
-	INCLUDEPATH	+= ./sources/devices/elad-s1-handler
-	HEADERS		+= ./sources/devices/elad-s1-handler/elad-handler.h
-	HEADERS		+= ./sources/devices/elad-s1-handler/elad-loader.h
-	HEADERS		+= ./sources/devices/elad-s1-handler/elad-worker.h
-	SOURCES		+= ./sources/devices/elad-s1-handler/elad-handler.cpp
-	SOURCES		+= ./sources/devices/elad-s1-handler/elad-loader.cpp
-	SOURCES		+= ./sources/devices/elad-s1-handler/elad-worker.cpp
-	FORMS		+= ./sources/devices/elad-s1-handler/elad-widget.ui
-}
-
 spyServer-8  {
 	DEFINES		+= HAVE_SPYSERVER_8
 	DEPENDPATH	+= ./sources/devices/spy-server-8
@@ -747,7 +724,21 @@ spyServer-16  {
 	SOURCES		+= ./sources/devices/spy-server-16/spyserver-client.cpp 
 	FORMS		+= ./sources/devices/spy-server-16/spyserver-widget.ui
 }
-	
+
+sdrconnect {
+	DEFINES		+= HAVE_SDRCONNECT
+	DEPENDPATH	+= ./sources/devices/sdrconnect
+	INCLUDEPATH	+= ./sources/devices/sdrconnect
+	HEADERS		+= ./sources/devices/sdrconnect/socket-handler.h \
+	                   ./sources/devices/sdrconnect/message-handler.h \
+                           ./sources/devices/sdrconnect/sdrconnect-handler.h
+	SOURCES		+= ./sources/devices/sdrconnect/socket-handler.cpp \
+	                   ./sources/devices/sdrconnect/message-handler.cpp \
+	                   ./sources/devices/sdrconnect/sdrconnect-handler.cpp
+	FORMS		+= ./sources/devices/sdrconnect/sdrconnect-widget.ui
+	QT		+= network websockets
+}
+
 uhd	{
 	DEFINES		+= HAVE_UHD
 	DEPENDPATH	+= ./sources/devices/uhd
@@ -758,18 +749,6 @@ uhd	{
 	LIBS		+= -luhd
 }
 
-colibri	{
-	DEFINES		+= HAVE_COLIBRI
-	DEPENDPATH	+= ./sources/devices/colibri-handler
-	INCLUDEPATH	+= ./sources/devices/colibri-handler
-	HEADERS		+= ./sources/devices/colibri-handler/common.h
-	HEADERS		+= ./sources/devices/colibri-handler/LibLoader.h
-	HEADERS		+= ./sources/devices/colibri-handler/colibri-handler.h
-	SOURCES		+= ./sources/devices/colibri-handler/LibLoader.cpp
-	SOURCES		+= ./sources/devices/colibri-handler/colibri-handler.cpp
-	FORMS		+= ./sources/devices/colibri-handler/colibri-widget.ui
-}
-	
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network

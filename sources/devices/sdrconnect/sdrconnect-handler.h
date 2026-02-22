@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2024
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,39 +21,41 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#pragma once
-
-#include	<QThread>
-#include	"dab-constants.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	<atomic>
-class	rawFiles;
+#include	"message-handler.h"
+#include	"ui_sdrconnect-widget.h"
+//
+//	Implements the basic functions of "deviceHandler"
 
-#define RAW_BUFFERSIZE      32768
-
-class	rawReader:public QThread {
+class	sdrConnectHandler: public deviceHandler,
+	                              Ui_sdrconnectWidget {
 Q_OBJECT
 public:
-			rawReader	(rawFiles *,
-	                                 FILE *,
-	                                 RingBuffer<std::complex<float>> *); 
-			~rawReader	();
-	void		startReader	();
-	void		stopReader	();
-	void		handle_progressSlider	(int);
+		sdrConnectHandler	();
+		~sdrConnectHandler	();
+	bool	restartReader		(int32_t freq, int skipped);
+	void	stopReader		();
+	int32_t	getSamples		(std::complex<float> *b, int32_t size);
+	int32_t	Samples			();
+	void	resetBuffer		();
+	int16_t	bitDepth		();
+	QString	deviceName		();
+	bool	isFileInput		();
+	int32_t	getVFOFrequency		();
 private:
-virtual void		run		();
-	RingBuffer<std::complex<float>>	*_I_Buffer;
-	uint64_t	period;
-	std::atomic<bool>	running;
-	std::atomic<int>	newPosition;
-	uint8_t		rawDataBuffer [RAW_BUFFERSIZE];;
-	rawFiles	*parent;
-	int64_t		fileLength;
-	float		mapTable [256];
-	
-	FILE		*filePointer;
-signals:
-	void		setProgress	(int, float);
+	RingBuffer<std::complex<float>> _O_Buffer;
+	messageHandler	*theMessager;
+	bool	OK_to_run;
+	int32_t	currentFrequency;
+public slots:
+	void	handle_hostName		();
+	void	connection_failed	();
+	void	signalPower		(double v);
+	void	dataAvailable		(int);
+	void	rateOK			();
+	void	rateError		();
 };
+
+
 

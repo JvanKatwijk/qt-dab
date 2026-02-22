@@ -92,7 +92,6 @@ void	Qt_Audio::stop	() {
 	if (theIODevice != nullptr)
 	   delete theIODevice;
 	theIODevice	= nullptr;
-//	m_audioSink. reset ();
 	disconnect (m_audioSink. get (), &QAudioSink::stateChanged,
                     this, &Qt_Audio::state_changed);
 	m_audioSink. reset ();
@@ -125,11 +124,15 @@ void	Qt_Audio::restart	() {
 //	fprintf (stderr, "Errorcode for new audiosink start %d\n", (int)(err));
 }
 
+qreal	Volume;
+
 void	Qt_Audio::suspend	() {
 	if (m_audioSink == nullptr)
 	   return;
 	if (m_audioSink -> state () == QAudio::ActiveState) {
-           m_audioSink -> suspend ();
+	   Volume	= m_audioSink -> volume ();
+	   m_audioSink	-> setVolume (0);
+	   m_audioSink -> suspend ();
 	   theIODevice	-> suspend ();
 	}
 }
@@ -138,8 +141,9 @@ void	Qt_Audio::resume	() {
 	if (m_audioSink == nullptr)
 	   return;
 	if ((m_audioSink -> state () == QAudio::SuspendedState) ||
-            (m_audioSink -> state () == QAudio::StoppedState))  {
-           m_audioSink -> resume ();
+	    (m_audioSink -> state () == QAudio::StoppedState))  {
+	   m_audioSink -> resume ();
+	   m_audioSink	-> setVolume (Volume);
 	   theIODevice -> resume ();
 	}
 }
@@ -148,6 +152,8 @@ void	Qt_Audio::resume	() {
 void    Qt_Audio::audioOutput (float *fragment, uint32_t size) {
 	if (m_audioSink. isNull ())
 	   return;
+//	if (suspended)
+//	   return;
 	if (theIODevice != nullptr)
 	   theIODevice -> putData (fragment, size);
 }
@@ -155,10 +161,8 @@ void    Qt_Audio::audioOutput (float *fragment, uint32_t size) {
 void	Qt_Audio::state_changed (const QAudio::State newState) {
 	switch (newState) {
 	   case QAudio::ActiveState:
-//	      fprintf (stderr, "State: active\n");
 	      break;
 	   case QAudio::IdleState:
-//	      fprintf (stderr, "State: Idle\n");
 	      if (m_audioSink -> error () != QAudio::NoError)
 	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
 	      break;

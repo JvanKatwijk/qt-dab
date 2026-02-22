@@ -143,6 +143,7 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 void	dataProcessor::handlePacket (const uint8_t *vec) {
 	if (traceFlag)
 	   teller ++;
+
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
 	   if (traceFlag) {
@@ -179,7 +180,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	if (paddr != packetAddress) 	// wrong address
 	   return;
 
-	if (cntIdx == last_cntIdx)	// just wait for the next one
+// just wait for the next one
+	if ((cntIdx == last_cntIdx) && (flflg != 2))
 	   return;
 
 	if (cntIdx != (last_cntIdx + 1) % 4) {
@@ -218,8 +220,9 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	      return;
 
 	   case 0:    // Intermediate data group packet
-	      if (assembling) {
-	         if (traceFlag) {
+	      if (!assembling) 
+	         return;
+	      {  if (traceFlag) {
 	            traceElement t;
 	            t. packetNumber = teller;
 	            t. key = 0;
@@ -257,7 +260,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	            tracer. push_back (t);
 	         }
 	         int currentLength = series. size ();
-	         if (currentLength + udlen * 8  >= 8 * 8192) {
+	         if (currentLength + udlen * 8  >= 8 * 8220) {
 	            if (traceFlag) {
 	               fprintf (stderr, "%d elements, size %d\n",
 	                        (int)(tracer. size ()),
@@ -286,7 +289,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 
 	      case 3: { // Single packet, mostly padding
 	         series. resize (udlen * 8);
-	         for (uint8_t i = 0; i < udlen * 8; i ++)
+	         for (uint16_t i = 0; i < udlen * 8; i ++)
 	            series [i] = vec [3 * 8 + i];
 	         if (series. size () > 0)
 	            my_dataHandler -> add_mscDatagroup (series);

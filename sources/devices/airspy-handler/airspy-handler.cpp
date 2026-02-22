@@ -22,7 +22,8 @@
 #include	"dab-constants.h"
 #include	"airspy-handler.h"
 #include	"position-handler.h"
-#include	"airspyselect.h"
+//#include	"airspyselect.h"
+#include	"selector.h"
 #include	"device-exceptions.h"
 #include	"errorlog.h"
 #include	"settingNames.h"
@@ -96,7 +97,7 @@ uint32_t samplerateCount;
 	}
 
 	if (numofDevs > 1) {
-           airspySelect deviceSelector;
+           selector deviceSelector ("airspy");
            for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
               deviceSelector.
                    addtoList (QString::number (deviceList [deviceIndex]));

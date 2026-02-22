@@ -88,15 +88,10 @@
 #include	"sdrplay-handler-duo.h"
 #define	DUO_DEVICE		0216
 #endif
-//#ifdef	HAVE_COLIBRI
-//#include	"colibri-handler.h"
-//#define	COLIBRI_DEVICE		0217
-//#endif
-//#ifdef	HAVE_ELAD
-//#include	"elad-handler.h"
-//#define	ELAD_S1_DEVICE		0220
-//#endif
-
+#ifdef		HAVE_SDRCONNECT
+#include	"sdrconnect-handler.h"
+#define		SDRCONNECT_DEVICE	0217
+#endif
 #include	"xml-filereader.h"
 //	wavfiles is replaced by newfiles
 //#include	"wavfiles.h"
@@ -198,6 +193,10 @@
 	deviceList. push_back (deviceItem ("duo", DUO_DEVICE));
 	addtoList ("duo");
 #endif
+#ifdef	HAVE_SDRCONNECT
+	deviceList. push_back (deviceItem ("sdrconnect", SDRCONNECT_DEVICE));
+	addtoList ("sdrconnect");
+#endif
 }
 
 		deviceChooser::~deviceChooser	() {
@@ -248,6 +247,11 @@ int	deviceNumber	= getDeviceIndex (s);
 	   case SDRPLAY_V3_DEVICE:
 	      return new sdrplayHandler_v3 (dabSettings, version,
 	                                                     theErrorLogger);
+	      break;
+#endif
+#ifdef	HAVE_SDRCONNECT
+	   case SDRCONNECT_DEVICE:
+	      return new sdrConnectHandler ();
 	      break;
 #endif
 #ifdef	HAVE_DUO

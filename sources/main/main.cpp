@@ -184,7 +184,7 @@ QTranslator	theTranslator;
 	                                        fmFrequency
 	                                       );
 	myRadioInterface -> show ();
-	a. exec();
+	a. exec ();
 /*
  *      done:
  */
@@ -193,7 +193,11 @@ QTranslator	theTranslator;
 	fflush (stderr);
 	qDebug ("It is done\n");
 	delete myRadioInterface;
+#ifdef __MINGW32__
+	exit (1);
+#else
 	return 1;
+#endif
 }
 
 void	setTranslator (QTranslator *theTranslator, QString Language) {

@@ -22,7 +22,7 @@
 #include 	<iostream>
 #include	<QSettings>
 #include 	"soapy-handler.h"
-#include	"soapy-select.h"
+#include	"selector.h"
 #include	"settings-handler.h"
 #include	"position-handler.h"
 #include	"device-exceptions.h"
@@ -70,7 +70,7 @@ std::vector<QString> labelString;
 
 	int deviceIndex = 0;
 	if (labelString. size () > 1) {
-	   soapySelect deviceSelector;
+	   selector deviceSelector (labelString [0]);
 	   for (auto &s : labelString) 
 	      deviceSelector. addtoList (s);
 	   deviceIndex = deviceSelector.QDialog::exec();

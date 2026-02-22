@@ -82,18 +82,18 @@ void	rawReader::stopReader() {
 }
 //
 void	rawReader::run () {
-int64_t nextStop;
+uint64_t nextStop;
 int	teller	= 0;
 std::complex<float> localBuffer [RAW_BUFFERSIZE / 2];
 
 	running. store (true);
 	nextStop        = getMyTime();
 	try {
-	   while (running. load()) {
+	   while (running. load ()) {
 	      while (_I_Buffer -> WriteSpace () < RAW_BUFFERSIZE + 10) {
 	         if (!running. load())
 	            throw (32);
-	         usleep (100);
+	         usleep (10);
 	      }
 
 	      if (newPosition. load () > 0) {
@@ -129,7 +129,7 @@ std::complex<float> localBuffer [RAW_BUFFERSIZE / 2];
 	                             4 * mapTable [rawDataBuffer [2 * i + 1]]);
 	      _I_Buffer -> putDataIntoBuffer (localBuffer, 
 	                                      RAW_BUFFERSIZE / 2);
-	      if ((int)(nextStop - getMyTime()) > 0)
+	      if ((int)(nextStop - getMyTime ()) > 0)
 	         usleep (nextStop - getMyTime());
 	   }
 	} catch (int e) {}
