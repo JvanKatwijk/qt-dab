@@ -45,7 +45,8 @@ private:
 	RingBuffer<std::complex<float>> *_O_Buffer;
 	void		iqStreamEnable	(bool);
 	void		setFrequency	(int32_t);
-	void		askSamplerate	();
+	void		setProperty	(const QString, const QString);
+	void		askProperty	(const QString);
 	int		outputRate;
 	int		theSamplerate;
 	int		vfo_frequency;

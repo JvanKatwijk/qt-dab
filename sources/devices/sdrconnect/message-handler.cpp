@@ -35,15 +35,6 @@
 #include	"dab-constants.h"
 
 static
-QString setCenterFreq 	= "{ \"event_type\":\"set_property\",\"property\":\"device_center_frequency\",\"value\":\"%1\" }";
-
-static
-QString setVFOFreq	= "{ \"event_type\":\"set_property\",\"property\":\"device_vfo_frequency\",\"value\":\"%1\" }";
-
-static
-QString rateRequest	= "{ \"event_type\":\"get_property\",\"property\":\"device_sample_rate\" }";
-
-static
 QString IQstarter	= "{ \"event_type\":\"iq_stream_enable\",\"property\":\"\",\"value\":\"%1\" }";
 
 	messageHandler::messageHandler (const QString &hostAddress,
@@ -77,7 +68,7 @@ void	messageHandler::connection_set	() {
 	connect (this, &socketHandler::binDataAvailable,
                  this, &messageHandler::binDataAvailable);
 	setFrequency (vfo_frequency);
-	askSamplerate	();
+	askProperty ("device_sample_rate");
 //	emit connection_success	();
 }
 
@@ -88,20 +79,14 @@ void	messageHandler::no_connection	() {
 //	setFrequency is only used on startup,
 //	in operation, the restart/stop functions are used
 void	messageHandler::setFrequency	(int freq) {
-	sendMessage (setCenterFreq. arg (QString::number (freq)));
-	sendMessage (setVFOFreq. arg (QString::number (freq)));
-	this ->vfo_frequency	= freq;
-}
-
-void	messageHandler::askSamplerate	() {
-	sendMessage (rateRequest);
+	setProperty ("device_center_frequency", QString::number (freq));
+	setProperty ("device_vfo_frequency", QString::number (freq));
+	this -> vfo_frequency	= freq;
 }
 
 bool	messageHandler::restartReader	(int32_t freq, int skip) {
 	(void)skip;
-	sendMessage (setCenterFreq. arg (QString::number (freq)));
-	sendMessage (setVFOFreq. arg (QString::number (freq)));
-	this	-> vfo_frequency	= freq;
+	setFrequency (freq);
 	convIndex. store (0);		// reset conversionpointer
 	runMode	= true;
 	return true;
@@ -184,6 +169,7 @@ void	messageHandler::dispatchMessage	(const QString &m) {
 	         return;
 	      }
 	      else {
+	         setProperty ("filter_bandwidth", "153600");
 	         theSamplerate	= (int)rate;
 //	we process  buffers with 1 msec content
 	         convBufferSize          = theSamplerate / 1000;
@@ -228,5 +214,15 @@ void	messageHandler::dispatchMessage	(const QString &m) {
 	      emit signalPower (snr);
 	   }
 	}
+}
+
+void	messageHandler::setProperty (const QString prop, const QString val) {
+QString message = "{ \"event_type\":\"set_property\",\"property\":\"%1\",\"value\":\"%2\" }";
+	sendMessage (message. arg (prop).arg (val));
+}
+
+void	messageHandler::askProperty (const QString prop) {
+QString  message = "{ \"event_type\":\"get_property\",\"property\":\"%1\" }";
+	sendMessage (message. arg (prop));
 }
 

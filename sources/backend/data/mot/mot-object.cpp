@@ -135,7 +135,7 @@ uint16_t	rawContentType = 0;
                        uint8_t charSet = segment [pointer] >> 4;
 	               QByteArray nameText;
                        for (int i = 1; i < length; i ++) {
-	                  if (i < 32)
+	                  if (i < 64)
                              nameText. append (segment [pointer + i]);
 	               }
 	               name = toQStringUsingCharset (
@@ -228,9 +228,6 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-	fprintf (stderr, "handle complete with %s %X\n",
-	                                    name. toLatin1 (). data (),
-	                                    transportId);
 	if ((name == "") && !dirElement)
 	   name = QString::number (transportId, 16);
 	if (name != "")
