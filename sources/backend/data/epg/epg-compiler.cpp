@@ -289,27 +289,25 @@ QString res;
 	index = endPoint;
 	return t;
 }
-
+//
+//	TS 102 371 
 QDomElement	epgCompiler::process_genre (QDomDocument &doc,
 	                                   const std::vector<uint8_t> &v,
 	                                   int &index) {
 int endPoint	= setLength (v, index);
 static
 const char *genres [] = {
-"IntentionCS", "FormatCS", "CntentCS", "OriginationCS", 
+"IntentionCS", "FormatCS", "ContentCS", "OriginationCS", 
 "IntendedAudienceCS", "ContentAlertCS", "KediaTupeCS", "AtmosphereCS"};
 QDomElement t;
 	t = doc. createElement ("genre");
 QString s;
 	while (index < endPoint) {
 	   switch (v [index]) {
-	      case 0x80: {
+	      case 0x80: {	//	href attribute see TS 102 371 /5.4.5.4
 	         int localEnd = setLength (v, index);
-	         s = QString::number (v [index]);
-	         for (int i = index + 1; i < localEnd; i ++)
-	            s += "." + QString::number (v [i]);
-	         s = QString ("urn:tva:metadata:cs:") +
-	             QString (genres [v [index]]) +"2008:" + s;
+	         for (int i = index; i < localEnd; i ++)
+	         s += QChar (v [i]);
 	         t. setAttribute ("href", s);
 	         index = localEnd;
 	         break;
@@ -1546,11 +1544,7 @@ QString	twoDigits (int16_t v) {
 //
 //	ETSI TS 102 371: 4.7.4 time point
 QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
-	if ((v [index] != 0x80) && (v [index] != 0x81))
-	   return QString ("ik weet het niet");
-
-//	int	corrector	= 0;
-	int endPoint = setLength (v, index);
+int endPoint = setLength (v, index);
 	uint32_t mjd	= getBits (v, 8 * index + 1, 17);
 	uint16_t dateOut [4];
 	convertTime (mjd, dateOut);
@@ -1586,7 +1580,8 @@ QString epgCompiler::process_474 (const std::vector<uint8_t> &v, int &index) {
 }
 
 //	ETSI TS 102 371: 4.7.5 Duration type
-QString	epgCompiler::process_475	(const std::vector<uint8_t> &v, int &index) {
+QString	epgCompiler::process_475	(const std::vector<uint8_t> &v,
+	                                              int &index) {
 int endPoint	= setLength (v, index);
 
 	int duration	= (v [index] << 8) | v [index + 1];

@@ -25,7 +25,7 @@
 #pragma once
 #include	<stdint.h>
 #include	"dab-constants.h"
-//	there depend on an large table
+
 //	calc_crc computes - as the name suggests the crc value
 uint16_t calc_crc	(const uint8_t *data, int length);
 //	check_crc_bytes checks the crc assuming it is contained

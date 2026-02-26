@@ -71,14 +71,15 @@
 
 	   case 5:
 	      if (appType == 0x44a)
-//	         my_dataHandler. reset (new journaline_dataHandler ());
 	         my_dataHandler. reset (new journalineController (mr));
 	      else
 	      if (appType == 1500)
-	         my_dataHandler. reset (new adv_dataHandler (mr, dataBuffer, appType));
+	         my_dataHandler.
+	              reset (new adv_dataHandler (mr, dataBuffer, appType));
 	      else
 	      if (appType == 4)
-	         my_dataHandler. reset (new tdc_dataHandler (mr, dataBuffer, appType));
+	         my_dataHandler.
+	              reset (new tdc_dataHandler (mr, dataBuffer, appType));
 	      else {
 	         fprintf (stderr, "DSCTy 5 with appType %d not supported\n",
 	                                                           appType);
@@ -88,7 +89,6 @@
 
 	   case 44:
 	      my_dataHandler. reset (new journalineController (mr));
-//	      my_dataHandler. reset (new journaline_dataHandler ());
 	      break;
 
 	   case 59:
@@ -214,7 +214,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	         tracer. push_back (t);
 	      }
 	      series. resize (udlen * 8);
-	      for (uint16_t i = 0; i < udlen * 8; i ++)
+	      for (int i = 0; i < udlen * 8; i ++)
 	         series [i] = vec [3 * 8 + i];
 	      assembling	= true;
 	      return;
@@ -433,7 +433,7 @@ int16_t	usefulLength	= getBits_7 (data, 17);
 	   return;
 }
 //
-//	To keep things simple, we abstraxct from the rs decoding
+//	To keep things simple, we abstract from the rs decoding
 //	by providing - as separate vectors - the RSDIMS * FRAMESIZE
 //	app data values and the 9 * 22 RS data values
 //	The appData vector is overwritten with the corrected data

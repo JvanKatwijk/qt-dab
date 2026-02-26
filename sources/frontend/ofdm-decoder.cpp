@@ -532,7 +532,8 @@ DABFLOAT	sum = 0;
 	   stdDevVector [index]	=  phaseError;
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
-	   DABFLOAT scaler	=  140.0 / meanValue;
+	   DABFLOAT scaler	=  256.0 / meanValue;
+//	   DABFLOAT scaler	=  140.0 / meanValue;
 
 	   DABFLOAT leftBit	= - real (R1) * scaler;
 	   limit_symmetrically (leftBit, MAX_VITERBI);

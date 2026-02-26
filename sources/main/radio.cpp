@@ -319,11 +319,12 @@ QString h;
 	if (value_i (theQSettings, CONFIG_HANDLER, "localDB", 1) != 0) {
 	   theTIIProcessor. reload (":res/txdata.tii");
 	}
-	else
-	   theTIIProcessor. reload (tiiFile);
-	if (std::filesystem::exists (tiiFile. toLatin1 (). data ())) 
+	else 
+	if (std::filesystem::exists (tiiFile. toLatin1 (). data ())) {
 	   theConfigHandler -> enable_loadLib ();
-	else
+	   theTIIProcessor. reload (tiiFile);
+	}
+	if (!theTIIProcessor. has_tiiFile ())
 	   httpButton	-> setEnabled (false);
 
 	SystemVersion	= QString ("10");
@@ -332,6 +333,8 @@ QString h;
 #else
 	version		= "Qt5-DAB-6." + SystemVersion;
 #endif
+	if (!QString (GITHASH). contains ("----"))
+	   version = version + " (" + QString (GITHASH) + ")";
 	setWindowTitle (version);
 
 	ensembleWidget -> setWidget (theEnsembleHandler. data ());
@@ -3680,12 +3683,12 @@ bool	RadioInterface::autoStart_http () {
 
 	try {
 	   mapViewer = new httpHandler (this,
-	                                 ":res/qt-map-69.html",
-	                                 localPos,
-	                                 theConfigHandler -> localBrowserSelector_active (),
-	       	                         theConfigHandler -> get_close_mapSelector (),	
-	                                 "",
-	                                 theQSettings);
+	                                ":res/qt-map-69.html",
+	                                localPos,
+	                                theConfigHandler -> localBrowserSelector_active (),
+	       	                        theConfigHandler -> get_close_mapSelector (),	
+	                                "",
+	                                theQSettings);
 	} catch (int e) {}
 	return mapViewer != nullptr;
 }

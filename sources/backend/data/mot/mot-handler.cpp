@@ -32,7 +32,7 @@
 //	we "cache" the most recent single motSlides (not those in a directory)
 //
 
-#define TABLESIZE	128
+#define TABLESIZE	256
 struct motTable_ {
 	uint16_t	transportId;
 	int32_t		orderNumber;
@@ -84,12 +84,13 @@ uint8_t	lengthInd;
 int32_t	i;
 
 	(void)CI;
-	if (msc. size() <= 0) {
+	if (msc. size () <= 0) {
 	   return;
 	}
 
-	if (crcFlag && !check_CRC_bits (data, msc.size())) 
+	if (crcFlag && !check_CRC_bits (data, msc. size ())) {
 	   return;
+	}
 
 	if (extensionFlag)
 	   next += 16;
@@ -198,7 +199,7 @@ int32_t	i;
 	      break;
 	      
 	   default:
-//	      fprintf (stderr, "mot groupType %d\n", groupType);
+	      fprintf (stderr, "mot groupType %d\n", groupType);
 	      return;
 	}
 }

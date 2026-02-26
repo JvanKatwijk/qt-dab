@@ -472,10 +472,10 @@ CONFIG		+= fdk-aac
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-CONFIG		+= viterbi-scalar
+#CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
-#CONFIG		+= spiral-sse
+CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
@@ -513,6 +513,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto
 	CONFIG		+= hackrf
 	CONFIG		+= lime
+	CONFIG		+= sdrconnect
 	CONFIG		+= viterbi-scalar
 #	CONFIG		+= spiral-sse
 #	CONFIG		+= spiral-no-sse
