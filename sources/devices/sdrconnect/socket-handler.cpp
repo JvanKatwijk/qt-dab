@@ -30,7 +30,8 @@
 #include	<cstring>
 
 #include	"socket-handler.h"
-
+//
+//	The lowest level
 	socketHandler::
 	            socketHandler (const QString &hostAddress,
 	                          int	portNumber, 
@@ -48,6 +49,7 @@
 	connected	= false;
 	QString urlString = "ws://%1:%2";
 	socket -> open (QUrl (urlString. arg (hostAddress). arg(QString::number (portNumber))));
+	dropCount	= 0;
 }
 
 	socketHandler::~socketHandler	() {
@@ -67,7 +69,6 @@ void	socketHandler::onConnected	() {
 }
 
 void	socketHandler::onDisconnect	() {
-//	fprintf (stderr, "in onDisconnect\n");
 	if (socket != nullptr)
 	   socket	-> deleteLater ();
 	emit reportDisconnect ();
@@ -80,18 +81,23 @@ void	socketHandler::onSocketError	(QAbstractSocket::SocketError error) {
 	emit reportDisconnect ();
 }
 
-void	socketHandler::sendMessage	(const QString &m) {
-	if (connected)
-	   socket -> sendTextMessage (m);
+void	socketHandler::sendMessage	(const QJsonObject &json) {
+	if (socket == nullptr)
+	   return;
+	QJsonDocument doc (json);
+	QByteArray ba	= doc. toJson (QJsonDocument::Compact);
+	socket -> sendTextMessage (QString (ba));
 }
 
 void	socketHandler::binaryMessageReceived	(const QByteArray &m) {
 int16_t *p	= (int16_t *)(m. data ());
 	if (p [0] != 2)
 	   return;
-	if (_I_Buffer -> GetRingBufferWriteAvailable () < m. size () / 4)
-	   return;
-	_I_Buffer -> putDataIntoBuffer (&(p [1]), m. size () / 4 - 1);
+	int written = _I_Buffer -> putDataIntoBuffer (&(p [1]), (m. size () - 1)/ 4);
+	if ((++dropCount % 100) == 0) {
+	   int dropped = (m. size () - 1) / 4 - written;
+           reportStatus (dropped);
+	}
 	emit binDataAvailable ();
 }
 

@@ -161,7 +161,6 @@ uint32_t samplerateCount;
         }
         convIndex       = 0;
         convBuffer. resize (convBufferSize + 1);
-
 //
 	restore_gainSettings (tab);
 	connect (linearitySlider, &QSlider::valueChanged,
@@ -225,7 +224,7 @@ uint32_t samplerateCount;
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
-	my_airspy_exit();
+	my_airspy_exit ();
 	theFilter. reset ();
 	if (!xmlWriter. isNull ())
 	   xmlWriter. reset ();

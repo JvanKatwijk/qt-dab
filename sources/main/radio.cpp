@@ -314,15 +314,15 @@ QString h;
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
 //
-//	Seen at DABstar, having a preloaded database seems nice
-//	although it may not be up to date
-	if (value_i (theQSettings, CONFIG_HANDLER, "localDB", 1) != 0) {
-	   theTIIProcessor. reload (":res/txdata.tii");
-	}
-	else 
+//	we try to load the db from the user's home dir
 	if (std::filesystem::exists (tiiFile. toLatin1 (). data ())) {
 	   theConfigHandler -> enable_loadLib ();
 	   theTIIProcessor. reload (tiiFile);
+	}
+//
+//	the default case is to load the "on board" file
+	if (!theTIIProcessor. has_tiiFile ()) {
+	   theTIIProcessor. reload (":res/txdata.tii");
 	}
 	if (!theTIIProcessor. has_tiiFile ())
 	   httpButton	-> setEnabled (false);
@@ -413,8 +413,8 @@ QString h;
 	QStringList streams;
 	QString	temp;
 //
-	QString sound = value_s (theQSettings, SOUND_HANDLING, SOUND_HANDLER,
-	                                                   S_PORT_AUDIO);
+	QString sound = value_s (theQSettings, SOUND_HANDLING,
+	                                       SOUND_HANDLER, S_QT_AUDIO);
 //	
 	if (sound != S_PORT_AUDIO) {	// try Qt_Audio
 	   try {

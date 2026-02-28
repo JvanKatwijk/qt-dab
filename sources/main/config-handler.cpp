@@ -165,7 +165,7 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
 	this	-> audioServices_only -> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 9) != 0;
+	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 0) != 0;
 	this	-> auto_http -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,

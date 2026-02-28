@@ -132,10 +132,6 @@
 	deviceList. push_back (deviceItem ("sdrplay", SDRPLAY_V3_DEVICE));
 	addtoList ("sdrplay");
 #endif
-#ifdef	HAVE_SDRPLAY_V2
-	deviceList. push_back (deviceItem ("sdrplay-v2", SDRPLAY_V2_DEVICE));
-	addtoList ("sdrplay-v2");
-#endif
 //
 //	RTLSDR  handlers for windows differ from the one for Linux
 #ifdef	HAVE_RTLSDR
@@ -173,13 +169,6 @@
 	deviceList. push_back (deviceItem ("soapy", SOAPY_DEVICE));
 	addtoList ("soapy");
 #endif
-#ifdef  HAVE_EXTIO
-	deviceList. push_back (deviceItem ("extio", EXTIO_DEVICE));
-#endif
-#ifdef	HAVE_UHD
-	deviceList. push_back (deviceItem ("uhd", USRP_DEVICE));
-	addtoList ("uhd");
-#endif
 #ifdef	HAVE_SPYSERVER_16
 	deviceList. push_back (deviceItem ("spyServer-16",
 	                                           SPYSERVER_DEVICE_16));
@@ -196,6 +185,14 @@
 #ifdef	HAVE_SDRCONNECT
 	deviceList. push_back (deviceItem ("sdrconnect", SDRCONNECT_DEVICE));
 	addtoList ("sdrconnect");
+#endif
+#ifdef	HAVE_UHD
+	deviceList. push_back (deviceItem ("uhd", USRP_DEVICE));
+	addtoList ("uhd");
+#endif
+#ifdef	HAVE_SDRPLAY_V2
+	deviceList. push_back (deviceItem ("sdrplay-v2", SDRPLAY_V2_DEVICE));
+	addtoList ("sdrplay-v2");
 #endif
 }
 
@@ -237,12 +234,6 @@ int	deviceNumber	= getDeviceIndex (s);
 	   return nullptr;
 
 	switch (deviceNumber) {
-#ifdef	HAVE_SDRPLAY_V2
-	   case SDRPLAY_V2_DEVICE:
-	      return new sdrplayHandler_v2 (dabSettings, version,
-	                                                     theErrorLogger);
-	      break;
-#endif
 #ifdef	HAVE_SDRPLAY_V3
 	   case SDRPLAY_V3_DEVICE:
 	      return new sdrplayHandler_v3 (dabSettings, version,
@@ -315,11 +306,6 @@ int	deviceNumber	= getDeviceIndex (s);
 	   case RTL_TCP_DEVICE:
 	      return new rtl_tcp_client (dabSettings, version, theErrorLogger);
 #endif
-#ifdef HAVE_EXTIO
-	   case EXTIO_DEVICE:
-	      return new extioHandler (dabSettings);
-	      break;
-#endif
 #ifdef	HAVE_SOAPY
 	   case SOAPY_DEVICE:
 	      return new soapyHandler (dabSettings);
@@ -340,6 +326,12 @@ int	deviceNumber	= getDeviceIndex (s);
 	   case SPYSERVER_DEVICE_8:
 	      return new spyServer_client_8 (dabSettings, version,
 	                                                   theErrorLogger);
+	      break;
+#endif
+#ifdef	HAVE_SDRPLAY_V2
+	   case SDRPLAY_V2_DEVICE:
+	      return new sdrplayHandler_v2 (dabSettings, version,
+	                                                     theErrorLogger);
 	      break;
 #endif
 	   case FILE_INPUT:

@@ -21,7 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 //
-//	the start up sequence consists of two parts,
+//	The start up sequence consists of two parts,
 //	* establishing the connection,
 //	* verifying that the samplerate is usable (i.e. convertable to 2048000)
 //	if completed we send a signal to the parent with the result
@@ -34,8 +34,14 @@
 #include	"message-handler.h"
 #include	"dab-constants.h"
 
-static
-QString IQstarter	= "{ \"event_type\":\"iq_stream_enable\",\"property\":\"\",\"value\":\"%1\" }";
+//
+//	The string is slightly different from the strings for the
+//	"get" and "set" properties, ....
+//
+//	the messageHandler presets the sample read with the
+//	correct samplerate.
+//	Since the current version of SDRconnect passes 2M samples
+//	and we need 2048000, we do a simple linear rate conversion
 
 	messageHandler::messageHandler (const QString &hostAddress,
 	                                int	portNumber,
@@ -50,6 +56,9 @@ QString IQstarter	= "{ \"event_type\":\"iq_stream_enable\",\"property\":\"\",\"v
 	         this, &messageHandler::connection_set);
 	connect (this, &socketHandler::reportDisconnect,
 	         this, &messageHandler::no_connection);
+	connect (this, &socketHandler::reportStatus,
+	         this, &messageHandler::eval_status);
+
 	this	-> vfo_frequency	= startFreq;
 	runMode				= false;
 	theSamplerate			= 2000000;	// default
@@ -87,7 +96,7 @@ void	messageHandler::setFrequency	(int freq) {
 bool	messageHandler::restartReader	(int32_t freq, int skip) {
 	(void)skip;
 	setFrequency (freq);
-	convIndex. store (0);		// reset conversionpointer
+	convIndex. store (0);		// reset conversion pointer
 	runMode	= true;
 	return true;
 }
@@ -97,7 +106,11 @@ void	messageHandler::stopReader	() {
 }
 
 void	messageHandler::iqStreamEnable	(bool b) {
-	sendMessage (IQstarter. arg (b ? "true" : "false"));
+QJsonObject theMessage;
+	theMessage ["event_type"]	= QString ("iq_stream_enable");
+	theMessage ["property"]		= QString ("");
+	theMessage ["value"]		= QString (b ? "true" : "false");
+	sendMessage (theMessage);
 }
 
 int32_t	messageHandler::getVFOFrequency	() {
@@ -170,8 +183,8 @@ void	messageHandler::dispatchMessage	(const QString &m) {
 	      }
 	      else {
 	         setProperty ("filter_bandwidth", "153600");
-	         theSamplerate	= (int)rate;
-//	we process  buffers with 1 msec content
+	         theSamplerate	= (int)rate;	
+//	we process buffers with 1 msec content
 	         convBufferSize          = theSamplerate / 1000;
 	         float samplesPerMsec    = SAMPLERATE / 1000.0;
 	         for (int i = 0; i < SAMPLERATE / 1000; i ++) {
@@ -185,7 +198,7 @@ void	messageHandler::dispatchMessage	(const QString &m) {
 	         convBuffer. resize (convBufferSize + 1);
 	      }
 	      emit rateOK ();
-	      iqStreamEnable (true);
+	      iqStreamEnable (true);  // here it really starts
 	   }
 	}
 	if (eventType == "property_changed") {
@@ -217,12 +230,21 @@ void	messageHandler::dispatchMessage	(const QString &m) {
 }
 
 void	messageHandler::setProperty (const QString prop, const QString val) {
-QString message = "{ \"event_type\":\"set_property\",\"property\":\"%1\",\"value\":\"%2\" }";
-	sendMessage (message. arg (prop).arg (val));
+QJsonObject theMessage;
+	theMessage ["event_type"]	= QString ("set_property");
+	theMessage ["property"]		= prop;
+	theMessage ["value"]		= val;
+	sendMessage (theMessage);
 }
 
 void	messageHandler::askProperty (const QString prop) {
-QString  message = "{ \"event_type\":\"get_property\",\"property\":\"%1\" }";
-	sendMessage (message. arg (prop));
+QJsonObject theMessage;
+	theMessage ["event_type"]	= QString ("get_property");
+	theMessage ["property"]		= prop;
+	sendMessage (theMessage);
+}
+
+void	messageHandler::eval_status	( int status) {
+	send_status (status);
 }
 

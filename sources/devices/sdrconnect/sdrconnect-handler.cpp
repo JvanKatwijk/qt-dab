@@ -20,7 +20,9 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+//
+//	handler for connecting to the SDRconnect program.
+//	
 #include	"sdrconnect-handler.h"
 
 	sdrConnectHandler::sdrConnectHandler	():
@@ -56,6 +58,8 @@ int	portNumber	= portLabel	-> value ();
 	         this, &sdrConnectHandler::rateOK);
 	connect (theMessager, &messageHandler::rateError,
 	         this, &sdrConnectHandler::rateError);
+	connect (theMessager, &messageHandler::send_status,
+	         this, &sdrConnectHandler::show_dropCount);
 }
 
 	sdrConnectHandler::~sdrConnectHandler		() {
@@ -130,5 +134,13 @@ void	sdrConnectHandler::rateOK		() {
 
 void	sdrConnectHandler::rateError		() {
 	statusLabel	-> setText ("Alas, this does not work");
+}
+
+void	sdrConnectHandler::show_dropCount	(int n) {
+	if (n == 0)
+	   overflowLabel	-> setStyleSheet ("QLabel {color : green}");
+	else
+	   overflowLabel	-> setStyleSheet ("QLabel {color : red}");
+	overflowLabel	-> setText ("   ");
 }
 

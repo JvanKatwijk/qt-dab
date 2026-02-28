@@ -28,14 +28,10 @@
 #include	<QDesktopServices>
 #include	<QMessageBox>
 #include	<QDateTime>
-
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<unistd.h>
-#include	<sys/types.h>
-#include	"distances.h"
-#include	<cstring>
-
+#include	<QString>
+#include	<QJsonArray>
+#include	<QJsonDocument>
+#include	<QJsonObject>
 #include	"settings-handler.h"
 #include	"settingNames.h"
 #include	"device-exceptions.h"
@@ -162,22 +158,22 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	if (list. size () < 2) 
 	   return;
 	QString askingFor	= list [1];
-	QString content;
+//	QString content;
+	QByteArray theContents;
 	QString ctype;
 	if (askingFor == "/data.json") {
+	   if (transmitterList. size () > 0)
 	   locker. lock ();
 	   if (transmitterList. size () > 0) { 
 	      transmitter t	= transmitterList [0];
-	      content		= transmitterToJsonObject (t);
+	      theContents	= transmitterToJsonObject (t);
 	      transmitterList. erase (transmitterList. begin ());
 	      if (t. type == MAP_CLOSE) {
 	         closingInProgress. store (true);
 	      }
 	   }
 	   locker. unlock ();
-	   if (content != "") {
-	      ctype       = "application/json;charset=utf-8";
-	   }
+	   ctype       = "application/json;charset=utf-8";
 	}
 	else	
 	if (askingFor. startsWith ("/channelSelector::")) {
@@ -186,11 +182,10 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
               setChannel (s [1]);
         }
         else {
-           content	= theMap (nameOfMap, homeAddress);
+           QString ss	= theMap (nameOfMap, homeAddress);
            ctype	= "text/html;charset=utf-8";
+	   theContents	= ss. toUtf8 ();
         }
-	QByteArray theContents = content. toUtf8 ();
-
 //	Create the header
 	char hdr [2048];
 	sprintf (hdr,
@@ -291,8 +286,20 @@ int params	= 0;
 	return res;
 }
 
+//static
+//std::string dotNumber (float f) {
+//char temp [256];
+//std::string s = std::to_string (f);
+//	for (int i = 0; i < (int)(s. size ()); i ++)
+//	   if (s. c_str () [i] == ',')
+//	      temp [i] = '.';
+//	   else
+//	      temp [i] = s. c_str () [i];
+//	temp [s. size ()] = 0;
+//	return std::string (temp);
+//}
 static
-std::string dotNumber (float f) {
+QString dotNumber (float f) {
 char temp [256];
 std::string s = std::to_string (f);
 	for (int i = 0; i < (int)(s. size ()); i ++)
@@ -301,43 +308,33 @@ std::string s = std::to_string (f);
 	   else
 	      temp [i] = s. c_str () [i];
 	temp [s. size ()] = 0;
-	return std::string (temp);
+	return QString (temp);
 }
 //
-QString httpHandler::transmitterToJsonObject (transmitter &t) { 
-char buf [512];
-QString Jsontxt;
 
-	Jsontxt += "[\n";
-	QString direction	= t. direction;
-	if (direction. size () < 3)
-	   direction = "??";
-	QString polarization	= t. polarization;
-	if (polarization. size () == 0)
-	   polarization = "??";
-//	the Target
-	snprintf (buf, 512,
-	      "{\"type\":%d, \"ensemble\":\"%s\", \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"tiiValue\":%d, \"snr\":%f,  \"dist\":%d, \"azimuth\":%d, \"power\":%d,\"altitude\":%d, \"height\":%d, \"direction\":\"%s\", \"polarisation\":\"%s\"}",
-	       t. type,
-	       t. ensemble. toUtf8 (). data (),
-	       dotNumber (t. latitude). c_str (),
-	       dotNumber (t. longitude). c_str (),
-	       t. transmitterName. toUtf8 (). data (),
-	       t. channel. toUtf8 (). data (),
-	       t. dateTime. toUtf8 (). data (),
-	       (t. mainId << 8) | (t. subId),
-	       10 * log10 (t. strength + 0.01),
-	       (int)(t. distance),
-	       (int)(t. azimuth),
-	       (int)(t. power * 100),
-	       (int)(t. altitude),
-	       (int)(t. height),
-	       direction. toUtf8 (). data (),
-	       polarization. toUtf8 (). data ());
+QByteArray httpHandler::transmitterToJsonObject (transmitter &t) {
+QJsonArray theMessage;
+QJsonObject theObject;
 
-	Jsontxt += QString (buf);
-	Jsontxt += "\n]\n";
-	return Jsontxt;
+	theObject ["type"]	= t.type;
+	theObject ["ensemble"]	= t. ensemble;
+	theObject ["lat"]	= dotNumber (t. latitude);
+	theObject ["lon"]	= dotNumber (t.longitude);
+	theObject ["name"]	= t. transmitterName;
+	theObject ["channel"]	= t. channel;
+	theObject ["dateTime"]	= t. dateTime;
+	theObject ["tiiValue"]	= (t. mainId << 8) | (t. subId);
+	theObject ["strength"]	= 10 * log10 (t. strength + 0.01);
+	theObject ["dist"]	= (int)t.distance;
+	theObject ["azimuth"]	= (int)t.azimuth;
+	theObject ["power"]	= (int)(t.power * 100);
+	theObject ["altitude"]	= (int)t.altitude;
+	theObject ["height"]	= (int) t.height;
+	theObject ["direction"]	= t.direction;
+	theObject ["polarixation"] = t.polarization;
+	theMessage. append (theObject);
+	const QJsonDocument doc(theMessage);
+	return doc.toJson(QJsonDocument::Compact);
 }
 //
 //	For "special" keys we use 

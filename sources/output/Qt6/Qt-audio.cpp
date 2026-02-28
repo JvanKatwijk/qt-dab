@@ -164,7 +164,7 @@ void	Qt_Audio::state_changed (const QAudio::State newState) {
 	      break;
 	   case QAudio::IdleState:
 	      if (m_audioSink -> error () != QAudio::NoError)
-	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
+//	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
 	      break;
 	   case QAudio::StoppedState:
 //	      fprintf (stderr, "State: Stopped\n");

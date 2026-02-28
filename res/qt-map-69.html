@@ -154,7 +154,7 @@
 	                       "height " + target. height + ' m' + '<br>' +
 	                       target. name + ' (' +
 	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
-	                       'signalLevel ' + target. snr. toFixed (2) + ' dB ' +
+	                       'signalLevel ' + (target. strength / 1). toFixed (2) + ' dB ' +
 	                       (target. direction == '??' ? ' ':
 	                               ('dir :' +  target. direction + ' ')) +
 	                       (target. polarisation == '??' ? ' ':

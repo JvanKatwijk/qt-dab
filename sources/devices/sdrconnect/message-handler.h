@@ -61,6 +61,7 @@ private slots:
 	void	no_connection		();
 	void	binDataAvailable	();
 	void	dispatchMessage		(const QString &);
+	void	eval_status		(int);	
 signals:
 	void	connection_success	();
 	void	connection_failed	();
@@ -69,5 +70,6 @@ signals:
 	void	dataAvailable		(int);
 	void	rateOK			();	
 	void	rateError		();
+	void	send_status		(int);
 };
 

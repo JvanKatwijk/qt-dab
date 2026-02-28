@@ -32,6 +32,7 @@ static int qualityTable [] = {
 	                        (RingBuffer<std::complex<float>> *outBuffer){
 	this	-> outBuffer	= outBuffer;
 	converter		= nullptr;
+	dropCount		= 0;
 }
 
 	soapyConverter::~soapyConverter	() {
@@ -43,7 +44,7 @@ void	soapyConverter::setup (int inputRate, int targetRate) {
 	this	-> inputRate	= inputRate;
 	this	-> targetRate	= targetRate;
 	double ratio            = (double)targetRate / inputRate;
-        inputLimit		= 1024;
+        inputLimit		= 2048;	
         outputLimit             = (int)(inputLimit * ratio) + 10;
         int err;
 	converter               = src_new (SRC_LINEAR, 2, &err);
@@ -83,12 +84,12 @@ void	soapyConverter::reset () {
 	if (converter != nullptr) {
 	   src_reset (converter);
 	}
-	inp			= 0;
-	src_data. input_frames	= 0;
-	src_data. output_frames = 0;
-	src_data. input_frames_used = 0;
-	src_data. output_frames_gen = 0;
-	src_data. end_of_input	= 0;
+	inp				= 0;
+	src_data. input_frames		= 0;
+	src_data. output_frames 	= 0;
+	src_data. input_frames_used 	= 0;
+	src_data. output_frames_gen 	= 0;
+	src_data. end_of_input		= 0;
 }
 
 void	soapyConverter::add	(std::complex<float> *inBuf,
@@ -97,6 +98,7 @@ void	soapyConverter::add	(std::complex<float> *inBuf,
 	   copyDirect (inBuf, nSamples);
 	   return;
 	}
+
 	for (uint32_t i = 0; i < nSamples; i ++) {
 	   inBuffer [2 * inp]		= real (inBuf [i]);
 	   inBuffer [2 * inp + 1]	= imag (inBuf [i]);
@@ -110,7 +112,6 @@ void	soapyConverter::add	(std::complex<float> *inBuf,
 
 //	Direct pass-through - check the amount of written samples
 void	soapyConverter::copyDirect (std::complex<float> *inBuf, int nSamples) {
-static int dropCount = 0;
 	int realWritten	= outBuffer -> putDataIntoBuffer (inBuf, nSamples);
 	if (realWritten == nSamples) 
 	   return;
@@ -126,7 +127,6 @@ static int dropCount = 0;
 //
 void	soapyConverter::convert () {
 std::complex<float> *temp  = dynVec (std::complex<float>, outputLimit);
-static int dropCount = 0;
 	src_data.       input_frames    = inputLimit;
 	src_data.       output_frames   = outputLimit;
 	int res   = src_process (converter, &src_data);

@@ -55,6 +55,7 @@ public slots:
 	void	dataAvailable		(int);
 	void	rateOK			();
 	void	rateError		();
+	void	show_dropCount		(int);
 };
 
 

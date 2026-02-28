@@ -50,20 +50,17 @@ std::vector<QString> labelString;
 	   throw device_exception ("No devices found\n");
 
 	for (size_t i = 0; i < length; i++) {
-	   bool isAudio = false;
 	   for (const auto &it : results [i]) {
 	      if (it. first ==  std::string ("driver")) {
 	         QString second = QString::fromStdString (it. second);
-	         if (second == "audio")
-	            isAudio = true;
-	         else 
-	            deviceString . push_back (second);
-	      }
-	      if (!isAudio) {
-	         if (it. first ==  std::string ("serial"))
-	            serialString. push_back (QString::fromStdString (it. second));
-	         if (it. first == std::string ("label"))
-	            labelString . push_back (QString::fromStdString (it. second));
+	         if (second != "audio") {
+	            if (it. first ==  std::string ("serial"))
+	               serialString.
+	                   push_back (QString::fromStdString (it. second));
+	            if (it. first == std::string ("label"))
+	               labelString.
+	                   push_back (QString::fromStdString (it. second));
+	         }
 	      }
 	   }
 	}

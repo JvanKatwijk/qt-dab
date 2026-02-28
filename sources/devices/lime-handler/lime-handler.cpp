@@ -444,7 +444,6 @@ int	amountRead	= 0;
 }
 
 bool	limeHandler::load_limeFunctions() {
-
 	this	-> LMS_GetDeviceList = (pfn_LMS_GetDeviceList)
 	                    library_p -> resolve ("LMS_GetDeviceList");
 	if (this -> LMS_GetDeviceList == nullptr) {

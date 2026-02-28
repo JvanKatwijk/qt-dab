@@ -24,21 +24,26 @@
 #pragma once
 
 #include	<QObject>
+#include	<QString>
+#include	<QSettings>
+#include	<QTimer>
+#include	<QTcpSocket>
+#include	<QTcpServer>
+#include	<QAbstractSocket>
+#include	<QDomDocument>
+#include	<QFile>
 #include	<atomic>
 #include	<string>
 #include	<vector>
 #include	<complex>
 #include	<mutex>
-#include	<QString>
-#include	<QSettings>
-#include	<QTimer>
-#include	<QDomDocument>
-#include	<QFile>
 #include	"tii-mapper.h"
 #include	"db-element.h"
-#include	<QTcpSocket>
-#include	<QTcpServer>
-#include	<QAbstractSocket>
+#include	<stdio.h>
+#include	<stdlib.h>
+#include	<unistd.h>
+#include	<sys/types.h>
+
 class	RadioInterface;
 //
 
@@ -68,7 +73,7 @@ private:
 	bool			close_map_on_exit;
 	QString			theMap		(const QString &fileName,
 	                                         position address);
-	QString			transmitterToJsonObject (transmitter &t);
+	QByteArray		transmitterToJsonObject (transmitter &t);
 	std::vector<transmitter> transmitterList;
 	std::mutex		locker;
 	bool			connection_stopped;

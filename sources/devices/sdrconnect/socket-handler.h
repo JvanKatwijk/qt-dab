@@ -30,6 +30,7 @@
 #include	<QAbstractSocket>
 #include	<QString>
 #include	<QSettings>
+#include	<QJsonObject>
 #include	<atomic>
 #include	<string>
 #include	<vector>
@@ -47,13 +48,14 @@ public:
 	                         RingBuffer<std::complex<int16_t>> *);
 		~socketHandler	();
 
-	void		sendMessage	(const QString &);
+	void		sendMessage	(const QJsonObject &);
 private:
 	QString		hostAddress;
 	int		portNumber;
 	QWebSocket	*socket;
 	bool		connected;
 	RingBuffer<std::complex<int16_t>> *_I_Buffer;
+	int		dropCount;
 public slots:
 	void		onConnected		();	
 	void		onDisconnect		();
@@ -65,4 +67,5 @@ signals:
 	void		binDataAvailable	();
 	void		reportConnect		();
 	void		reportDisconnect	();
+	void		reportStatus		(int);
 };

@@ -46,6 +46,7 @@ private:
 	uint32_t	inp;
 	void		copyDirect	(std::complex<float> *, int);
 	void		convert		();
+	int		dropCount;
         std::vector<float> inBuffer;
         std::vector<float> uitBuffer;
 	RingBuffer<std::complex<float>> *outBuffer;

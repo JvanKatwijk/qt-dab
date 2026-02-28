@@ -25,7 +25,7 @@
 //
 	deviceHandler::deviceHandler	():
 	                        myFrame (nullptr) {
-	lastFrequency	= 100000;
+	lastFrequency	= 10000000;
 	theGain		= 50;
 	connect (&myFrame, &superFrame::frameClosed,
                  this, &deviceHandler::frameClosed); 
@@ -40,14 +40,13 @@ bool	deviceHandler::restartReader	(int32_t freq, int samplesSkipped) {
 	return true;
 }
 
-void	deviceHandler::stopReader	() {
-}
+void	deviceHandler::stopReader	() { }
 
 int32_t	deviceHandler::getSamples	(std::complex<float> *v,
 	                                             int32_t amount) {
 	(void)v; 
 	(void)amount; 
-	return amount;
+	return 0;
 }
 
 int32_t	deviceHandler::Samples		() {

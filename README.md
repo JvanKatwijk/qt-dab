@@ -291,6 +291,7 @@ some network input, and file input:
   * DABsticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick in the precompiled Windows versions;
   *  **All** SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library. **New** is extended support for the SDRPlay RspDuo. Tuner selection (and tuner 2 is connected to a port with biasT support) is now operational;
   * a special entry exists for the **SDRplay RSPDuo**, one for running both tuners simultaneously;
+  * a **special** entry exists for connecting - using Websockets - to SDRconnect, **THE** platform for SDRplay devices;
   * HACKRF One; 
   * Airspy, including Airspy mini (be aware that AirspyHF is **not** able to provide the samplerate required for DAB);
   * LimeSDR; 

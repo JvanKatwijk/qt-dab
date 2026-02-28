@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>220</width>
-    <height>202</height>
+    <width>209</width>
+    <height>205</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,13 @@
     <widget class="QLabel" name="statusLabel">
      <property name="text">
       <string>status</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="overflowLabel">
+     <property name="text">
+      <string>overflow</string>
      </property>
     </widget>
    </item>

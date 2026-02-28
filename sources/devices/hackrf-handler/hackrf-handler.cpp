@@ -72,7 +72,7 @@ hackrf_error errorCode;
 
 	if (!load_hackrfFunctions ()) {
 	   delete library_p;
-	   throw (device_exception ("could not find one or more library functions"));
+	   throw (device_exception ("functions missing in linrary"));
 	}
 //
 //	From here we have a library available
@@ -492,7 +492,6 @@ QString	hackrfHandler::deviceName	() {
 }
 
 bool	hackrfHandler::load_hackrfFunctions () {
-//
 //	link the required procedures
 	this -> hackrf_init	=
 	                (pfn_hackrf_init) library_p -> resolve ("hackrf_init");
