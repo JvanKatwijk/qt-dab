@@ -296,9 +296,9 @@ QDomElement	epgCompiler::process_genre (QDomDocument &doc,
 	                                   int &index) {
 int endPoint	= setLength (v, index);
 static
-const char *genres [] = {
-"IntentionCS", "FormatCS", "ContentCS", "OriginationCS", 
-"IntendedAudienceCS", "ContentAlertCS", "KediaTupeCS", "AtmosphereCS"};
+//const char *genres [] = {
+//"IntentionCS", "FormatCS", "ContentCS", "OriginationCS", 
+//"IntendedAudienceCS", "ContentAlertCS", "KediaTupeCS", "AtmosphereCS"};
 QDomElement t;
 	t = doc. createElement ("genre");
 QString s;

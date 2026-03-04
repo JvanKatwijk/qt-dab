@@ -25,9 +25,11 @@
 //	
 #include	"sdrconnect-handler.h"
 
-	sdrConnectHandler::sdrConnectHandler	():
+	sdrConnectHandler::sdrConnectHandler	(QSettings *s,
+	                                         const QString &recorder):
 	                       _O_Buffer (16 * 32768) {
-
+	settings	= s;
+	recorderVersion	= recorder;
 	OK_to_run	= false;
 	theMessager	= nullptr;
 	setupUi (&myFrame);
@@ -46,8 +48,10 @@ QString	hostName	= hostnameLabel -> text ();
 int	portNumber	= portLabel	-> value ();
 	if (theMessager != nullptr)
 	   return;
-	theMessager	= new messageHandler (hostName, portNumber,
-	                                           KHz (227360), &_O_Buffer);
+	theMessager	= new messageHandler (settings,
+	                                      recorderVersion,
+	                                      hostName, portNumber,
+	                                      KHz (227360), &_O_Buffer);
 	connect (theMessager, &messageHandler::connection_failed,
 	         this, &sdrConnectHandler::connection_failed);
 	connect (theMessager, &messageHandler::signalPower,
@@ -60,6 +64,8 @@ int	portNumber	= portLabel	-> value ();
 	         this, &sdrConnectHandler::rateError);
 	connect (theMessager, &messageHandler::send_status,
 	         this, &sdrConnectHandler::show_dropCount);
+	connect (dumpButton, &QPushButton::clicked,
+	         this, &sdrConnectHandler::handle_dumpButton);
 }
 
 	sdrConnectHandler::~sdrConnectHandler		() {
@@ -144,3 +150,14 @@ void	sdrConnectHandler::show_dropCount	(int n) {
 	overflowLabel	-> setText ("   ");
 }
 
+void	sdrConnectHandler::handle_dumpButton	() {
+	if (theMessager -> isDumping ()) {
+	   theMessager -> close_xmlDump ();
+	   dumpButton -> setText ("dump");
+	   return;
+	}
+	theMessager -> setup_xmlDump ();
+	dumpButton -> setText ("dumping");
+}
+
+	

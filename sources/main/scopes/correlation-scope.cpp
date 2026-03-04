@@ -106,7 +106,7 @@ floatQwt *Y_value = dynVec (floatQwt, amount);
 floatQwt Max	= -200;
 floatQwt Min	= 1000;
 int	teller	= 0;
-int	input	= v. size ();
+//int	input	= v. size ();
 
 	if (v. size () < amount)
 	   amount = v. size ();
@@ -114,7 +114,7 @@ int	input	= v. size ();
 	   amount = v. size () - (T_g - 154);
 	for (uint32_t i = T_g - 154; i < T_g - 154 + amount; i ++) {
 	   X_axis [teller] = i;
-	   int index = i - (T_g - 100);
+//	   int index = i - (T_g - 100);
 	   Y_value [teller] = get_db (v [i]);
 	   if (Y_value [teller] > Max)
 	      Max = Y_value [teller];

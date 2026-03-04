@@ -36,6 +36,7 @@
 	                         bool	biasT,
 	                         double ppmValue) {
 sdrplay_api_ErrT        err;
+	(void)tuner;
 	this	-> parent	= parent;
 	this	-> chosenDevice	=  chosenDevice;
 	this	-> freq		= startFreq;

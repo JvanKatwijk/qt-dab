@@ -242,7 +242,7 @@ int	deviceNumber	= getDeviceIndex (s);
 #endif
 #ifdef	HAVE_SDRCONNECT
 	   case SDRCONNECT_DEVICE:
-	      return new sdrConnectHandler ();
+	      return new sdrConnectHandler (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_DUO

@@ -33,24 +33,23 @@
 #include	<QJsonObject>
 #include	"message-handler.h"
 #include	"dab-constants.h"
-
+#include	"settings-handler.h"
 //
-//	The string is slightly different from the strings for the
-//	"get" and "set" properties, ....
-//
-//	the messageHandler presets the sample read with the
+//	the messageHandler checks that the samples are read with the
 //	correct samplerate.
 //	Since the current version of SDRconnect passes 2M samples
 //	and we need 2048000, we do a simple linear rate conversion
 
-	messageHandler::messageHandler (const QString &hostAddress,
+	messageHandler::messageHandler (QSettings	*s,
+	                                const QString &recorderVersion,
+	                                const QString &hostAddress,
 	                                int	portNumber,
 	                                int	startFreq,
 	                                RingBuffer<std::complex<float>> *b):
-	                                    _I_Buffer (32 * 32768),
 	                                    socketHandler (hostAddress,
-	                                                   portNumber,
-	                                                   &_I_Buffer) {
+	                                                   portNumber) {
+	this	-> settings	= s;
+	this	-> recorder	= recorderVersion;
 	_O_Buffer		= b;
 	connect (this, &socketHandler::reportConnect,
 	         this, &messageHandler::connection_set);
@@ -60,6 +59,7 @@
 	         this, &messageHandler::eval_status);
 
 	this	-> vfo_frequency	= startFreq;
+	xml_dumping. store	(false);
 	runMode				= false;
 	theSamplerate			= 2000000;	// default
 }
@@ -67,6 +67,9 @@
 	messageHandler::~messageHandler	() {
 	if (runMode)
 	   iqStreamEnable (false);
+	if (xml_dumping. load () && (xmlWriter != nullptr)) {
+	   close_xmlDump ();
+	}
 }
 
 void	messageHandler::connection_set	() {
@@ -102,7 +105,8 @@ bool	messageHandler::restartReader	(int32_t freq, int skip) {
 }
 
 void	messageHandler::stopReader	() {
-	runMode = false;
+	runMode = false;	
+	close_xmlDump ();
 }
 
 void	messageHandler::iqStreamEnable	(bool b) {
@@ -128,6 +132,8 @@ void	messageHandler::binDataAvailable () {
 	   _I_Buffer. getDataFromBuffer (inBuffer, theSamplerate / 1000);
 	   if (!runMode)	// only deal with data when processing is on
 	      continue;
+	   if (xml_dumping. load ())
+	      xmlWriter	-> add (inBuffer, theSamplerate / 1000);
 	   if (theSamplerate == SAMPLERATE) {
 	      for (int i = 0; i < SAMPLERATE / 1000; i ++)
 	         outBuffer [i] =
@@ -148,7 +154,7 @@ void	messageHandler::binDataAvailable () {
                     outBuffer [j]    = convBuffer [inpBase + 1] * inpRatio +
                                        convBuffer [inpBase] * (1 - inpRatio);
 	         }
-                 _O_Buffer ->  putDataIntoBuffer (outBuffer,SAMPLERATE / 1000);
+                 _O_Buffer ->  putDataIntoBuffer (outBuffer, SAMPLERATE / 1000);
                  convBuffer [0] = convBuffer [convBufferSize];
                  convIndex. store (1);
               }
@@ -229,7 +235,8 @@ void	messageHandler::dispatchMessage	(const QString &m) {
 	}
 }
 
-void	messageHandler::setProperty (const QString prop, const QString val) {
+void	messageHandler::setProperty	(const QString prop,
+	                                        const QString val) {
 QJsonObject theMessage;
 	theMessage ["event_type"]	= QString ("set_property");
 	theMessage ["property"]		= prop;
@@ -244,7 +251,44 @@ QJsonObject theMessage;
 	sendMessage (theMessage);
 }
 
-void	messageHandler::eval_status	( int status) {
+void	messageHandler::eval_status	(int status) {
 	send_status (status);
+}
+
+bool	messageHandler::setup_xmlDump () {
+QString channel		= value_s (settings, "dab-general", "channel", "xx");
+	if (xmlWriter != nullptr)
+	   return false;
+	try {
+	   xmlWriter	= new xml_fileWriter (settings,
+	                                      channel,
+	                                      16,
+	                                      "int16",
+	                                      theSamplerate,
+	                                      vfo_frequency,
+	                                      -1,
+	                                      "SDRconnect",
+	                                      "unknown",
+	                                      recorder,
+	                                      false);
+	} catch (...) {
+	   return false;
+	}
+	xml_dumping. store (true);
+	return true;
+}
+	
+void	messageHandler::close_xmlDump () {
+	if (xmlWriter == nullptr)
+	   return;
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	xmlWriter	= nullptr;
+	xml_dumping. store (false);
+}
+
+bool	messageHandler::isDumping	() {
+	return xml_dumping. load ();
 }
 

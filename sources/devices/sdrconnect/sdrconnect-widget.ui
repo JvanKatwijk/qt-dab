@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>209</width>
-    <height>205</height>
+    <width>214</width>
+    <height>263</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,6 +44,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="dumpButton">
+     <property name="text">
+      <string>dump</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="statusLabel">

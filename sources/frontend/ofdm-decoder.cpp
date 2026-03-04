@@ -505,6 +505,7 @@ DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT	sum = 0;
 
+	(void)snr;
 	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
@@ -527,7 +528,7 @@ DABFLOAT	sum = 0;
 	   fftBin		= fftBin * makeComplex (-phaseError);
 	   stdDevVector [index]	= phaseError;
 	   conjVector [index]	= fftBin;
-	   Complex fftBin_at_1	= toQ1 (fftBin);
+//	   Complex fftBin_at_1	= toQ1 (fftBin);
 
 	   stdDevVector [index]	=  phaseError;
 //
@@ -551,7 +552,7 @@ DABFLOAT ofdmDecoder::decoder_4 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
 	                        DABFLOAT	snr) {
 DABFLOAT sum	= 0;
-
+	(void)snr;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 

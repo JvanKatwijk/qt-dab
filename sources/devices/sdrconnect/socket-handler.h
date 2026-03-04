@@ -44,17 +44,17 @@ class	socketHandler: public QObject {
 Q_OBJECT
 public:
 		socketHandler	(const QString &hostAddress,
-	                         int		portNumber,
-	                         RingBuffer<std::complex<int16_t>> *);
+	                         int		portNumber);
 		~socketHandler	();
 
 	void		sendMessage	(const QJsonObject &);
+protected:
+	RingBuffer<std::complex<int16_t>> _I_Buffer;
 private:
 	QString		hostAddress;
 	int		portNumber;
 	QWebSocket	*socket;
 	bool		connected;
-	RingBuffer<std::complex<int16_t>> *_I_Buffer;
 	int		dropCount;
 public slots:
 	void		onConnected		();	

@@ -141,6 +141,7 @@ QString XXX	= QString::number (SId, 16). toUpper ();
 
 
 void	timeTableControl::selectService (int row, int column) {
+	(void)column;
 	QString service	= contentWidget	-> item (row, 1) -> text ();
 	bool b;
 	int SId		= service. toInt (&b, 16);

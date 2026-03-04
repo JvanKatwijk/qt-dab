@@ -396,7 +396,7 @@ void	displayWidget::showChannel	(const std::vector<Complex> Values) {
 floatQwt	amplitudeValues	[NR_TAPS];
 floatQwt	phaseValues	[NR_TAPS];
 floatQwt	X_axis		[NR_TAPS];
-floatQwt	waterfall_X	[512];
+//floatQwt	waterfall_X	[512];
 floatQwt	waterfall_Y	[512];
 
 int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;

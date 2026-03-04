@@ -41,6 +41,7 @@
 	timeTableHandler::timeTableHandler (const QString &path,
 	                                    QSettings *dabSettings_p):
 	                                          superFrame (nullptr) {
+	(void)dabSettings_p;
 
 	path_for_files	= path;
 	QHBoxLayout *lo	= new QHBoxLayout;
@@ -91,6 +92,7 @@
 
 QString timeTableHandler::find_xmlFile (QDate& theDate,
 	                                uint32_t Eid, uint32_t Sid) {
+	(void)Eid;
 	char temp [40];
 	const char * formatString;
 	formatString = "%4d%02d%02d_%4X_SI.xml";

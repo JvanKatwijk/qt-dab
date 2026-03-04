@@ -104,7 +104,7 @@ void	tiiReader::processBuffer (std::vector<dbElement> &res,
 	                              char *buffer, int cnt) {
 dbElement ed;
 std::vector<QString> columnVector;
-
+	(void)cnt;
 	columnVector. resize (0);
 	int columns = readColumns (columnVector, buffer, NR_COLUMNS);
 	if (columns < NR_COLUMNS)

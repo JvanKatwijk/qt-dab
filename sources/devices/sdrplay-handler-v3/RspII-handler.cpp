@@ -43,7 +43,7 @@
 	                                          1,
 	                                          biasT,
 	                                          ppmValue) {
-//	setAntenna (antennaValue);
+	(void)antennaValue;
 	theErrorLogger			= theLogger;
 	this	-> deviceModel		= "RSP-II";
 	this	-> nrBits		= 14;

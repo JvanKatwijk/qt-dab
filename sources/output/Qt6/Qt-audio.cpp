@@ -107,6 +107,7 @@ void	Qt_Audio::restart	() {
 	currentDevice = outputDevices. at (newDeviceIndex);
 	m_audioSink. reset (new QAudioSink (currentDevice, m_settings));
 	QtAudio::Error err = m_audioSink -> error ();
+	(void)err;
 //	fprintf (stderr, "Errorcode for new audiosink %d\n", (int)(err));
 	connect (m_audioSink. get (), &QAudioSink::stateChanged,
                  this, &Qt_Audio::state_changed);

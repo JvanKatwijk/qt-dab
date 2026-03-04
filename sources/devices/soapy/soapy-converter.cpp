@@ -47,7 +47,7 @@ void	soapyConverter::setup (int inputRate, int targetRate) {
         inputLimit		= 2048;	
         outputLimit             = (int)(inputLimit * ratio) + 10;
         int err;
-	converter               = src_new (SRC_LINEAR, 2, &err);
+	converter               = src_new (qualityTable [4], 2, &err);
 //	converter               = src_new (SRC_SINC_FASTEST, 2, &err);
 
         inBuffer. resize (2 * inputLimit + 20);
@@ -139,10 +139,10 @@ std::complex<float> *temp  = dynVec (std::complex<float>, outputLimit);
 
 	uint32_t framesOut       = src_data. output_frames_gen;
 //	check the amount of real written samples
-	for (int i = 0; i < framesOut; i ++)
+	for (uint32_t i = 0; i < framesOut; i ++)
 	   temp [i] = std::complex<float> (4 * uitBuffer [2 * i],
 	                                   4 * uitBuffer [2 * i + 1]);
-	int realWritten = outBuffer -> putDataIntoBuffer (temp, framesOut);
+	uint32_t realWritten = outBuffer -> putDataIntoBuffer (temp, framesOut);
 	if (realWritten == framesOut)	
 	   return;
 

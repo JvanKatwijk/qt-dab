@@ -78,6 +78,7 @@ static int cifTable [] = {18, 72, 0, 36};
 //	Input is put into a buffer, a the code in a separate thread
 //	will handle the data from the buffer
 void	mscHandler::processBlock_0 (Complex *b) {
+	(void)b;
 	fprintf (stderr, "Why am I called?\n");
 }
 

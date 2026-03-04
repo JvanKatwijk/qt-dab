@@ -262,6 +262,7 @@ void	techWindow::showFm		(std::vector<int> &v) {
 void	techWindow::audioDataAvailable	(int amount, int rate) {
 std::complex<int16_t> buffer [1024];
 
+	(void)amount;
 	if (isHidden ()) {
 	   audioData -> FlushRingBuffer ();
 	   return;

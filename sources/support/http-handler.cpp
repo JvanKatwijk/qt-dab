@@ -51,8 +51,8 @@
 	this	-> saveName	= saveName;
 	this	-> dabSettings	= settings;
 	int  mapPort		=
-	            value_i (settings, MAP_HANDLING, MAP_PORT_SETTING,
-                                                                  8080);
+	            value_i (settings, MAP_HANDLING,
+	                                  MAP_PORT_SETTING, 8080);
 	QString address		= 
 	            value_s (settings, MAP_HANDLING, BROWSER_ADDRESS,
 	                                                "http://localhost");
@@ -173,7 +173,8 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
 	      }
 	   }
 	   locker. unlock ();
-	   ctype       = "application/json;charset=utf-8";
+	   if (theContents. size () > 0)
+	      ctype       = "application/json;charset=utf-8";
 	}
 	else	
 	if (askingFor. startsWith ("/channelSelector::")) {
@@ -182,9 +183,9 @@ QTcpSocket *worker = qobject_cast<QTcpSocket *> (sender ());
               setChannel (s [1]);
         }
         else {
-           QString ss	= theMap (nameOfMap, homeAddress);
+           QString map	= theMap (nameOfMap, homeAddress);
            ctype	= "text/html;charset=utf-8";
-	   theContents	= ss. toUtf8 ();
+	   theContents	= map. toUtf8 ();
         }
 //	Create the header
 	char hdr [2048];
@@ -330,8 +331,9 @@ QJsonObject theObject;
 	theObject ["power"]	= (int)(t.power * 100);
 	theObject ["altitude"]	= (int)t.altitude;
 	theObject ["height"]	= (int) t.height;
-	theObject ["direction"]	= t.direction;
-	theObject ["polarixation"] = t.polarization;
+	theObject ["direction"]	= t. direction == QString ("") ? "??" :
+	                                             t. direction;
+	theObject ["polarization"] = t. polarization;
 	theMessage. append (theObject);
 	const QJsonDocument doc(theMessage);
 	return doc.toJson(QJsonDocument::Compact);
@@ -363,7 +365,6 @@ void	httpHandler::putData	(uint8_t	type,
 	      locker. unlock ();
 	      return;
 	   }
-
 	theTr. type		= type;
 	QDateTime theTime	= utc ?  QDateTime::currentDateTimeUtc () :
                                              QDateTime::currentDateTime ();

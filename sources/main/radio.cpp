@@ -2362,9 +2362,9 @@ QString serviceName	= s. serviceName;
 //	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	      serviceLabel	-> setText (serviceName);
 	      QPixmap p;
-	      bool hasIcon = false;
+//	      bool hasIcon = false;
 	      if (get_serviceLogo (p, channel. currentService. SId)) {
-	         hasIcon = true;
+//	         hasIcon = true;
 	         int height = 60;
 	         int width = static_cast<float>(p. width ()) / p. height () * height;
 	         iconLabel ->
@@ -3683,7 +3683,7 @@ bool	RadioInterface::autoStart_http () {
 
 	try {
 	   mapViewer = new httpHandler (this,
-	                                ":res/qt-map-69.html",
+	                                ":res/qt-map.html",
 	                                localPos,
 	                                theConfigHandler -> localBrowserSelector_active (),
 	       	                        theConfigHandler -> get_close_mapSelector (),	
@@ -3728,7 +3728,7 @@ void	RadioInterface::handle_httpButton	() {
 	               theFilenameFinder.
 	                   find_mapdumpName (theDeviceHandler -> deviceName ());
 	      mapViewer = new httpHandler (this,
-	                                    ":res/qt-map-69.html",
+	                                    ":res/qt-map.html",
 	                                    localPos,
 	                                    theConfigHandler -> localBrowserSelector_active (),
 	       	                            theConfigHandler -> get_close_mapSelector (),
@@ -4197,7 +4197,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   uint8_t key = theConfigHandler -> showAll_Selector_active () ?
 	                                      SHOW_ALL: SHOW_SINGLE;
 	   
-	   bool utc		= theConfigHandler -> utcSelector_active ();
+	   bool utc	= theConfigHandler -> utcSelector_active ();
 	   mapHandler_locker. lock ();
 	   if (mapViewer != nullptr)
 	      mapViewer -> putData (key, theTr, utc);

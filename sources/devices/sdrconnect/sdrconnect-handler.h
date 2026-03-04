@@ -21,6 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include	<QSettings>
+#include	<QString>
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"message-handler.h"
@@ -32,7 +34,7 @@ class	sdrConnectHandler: public deviceHandler,
 	                              Ui_sdrconnectWidget {
 Q_OBJECT
 public:
-		sdrConnectHandler	();
+		sdrConnectHandler	(QSettings *, const QString &);
 		~sdrConnectHandler	();
 	bool	restartReader		(int32_t freq, int skipped);
 	void	stopReader		();
@@ -44,6 +46,8 @@ public:
 	bool	isFileInput		();
 	int32_t	getVFOFrequency		();
 private:
+	QSettings	*settings;
+	QString		recorderVersion;
 	RingBuffer<std::complex<float>> _O_Buffer;
 	messageHandler	*theMessager;
 	bool	OK_to_run;
@@ -56,6 +60,8 @@ public slots:
 	void	rateOK			();
 	void	rateError		();
 	void	show_dropCount		(int);
+
+	void	handle_dumpButton	();
 };
 
 

@@ -87,7 +87,8 @@ QString	colorString	= "black";
 void	devScope::display	(const std::vector<float> &V) {
 float	max	= -100;
 float	min	= 1000;
-int index_min; int index_max;
+int index_min;
+int index_max;
 floatQwt X_axis [1536];
 floatQwt Y_values [1536];
 //	we assume that V. size = 1536

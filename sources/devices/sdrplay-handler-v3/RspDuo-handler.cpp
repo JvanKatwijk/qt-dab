@@ -70,6 +70,7 @@
 	                          chosenDevice ->  dev,
 	                          &chosenDevice -> tuner, 
 	                          sdrplay_api_RspDuo_AMPORT_2);
+	   (void)err;
 	   chParams	= deviceParams -> rxChannelB;
 	   restart (freq);
 	}

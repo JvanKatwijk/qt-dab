@@ -74,10 +74,10 @@ public:
 	   longitude		= 0;
 	   altitude		= 0;
 	   height		= 0;
-	   polarization		= "";
+	   polarization		= "??";
 	   frequency		= 0;
 	   power		= 0;
-	   direction		= "";
+	   direction		= "??";
 	}
 	~dbElement	()	{}
 };

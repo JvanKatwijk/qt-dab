@@ -23,25 +23,34 @@
 #pragma once
 
 #include	<QString>
+#include	<QSettings>
 #include	<complex>
 #include	<atomic>
 #include	"ringbuffer.h"
 #include	"socket-handler.h"
 #include	"dab-constants.h"
 
+#include	"xml-filewriter.h"
+
 class messageHandler: public socketHandler {
 Q_OBJECT
 public:
-		messageHandler (const QString &hostAddress,
+		messageHandler (QSettings *,
+	                        const QString &,
+	                        const QString &hostAddress,
 	                        int	portNumber,
 	                        int	startFreq,
 	                        RingBuffer<std::complex<float>> *);
 		~messageHandler	();
-	bool	restartReader	(int32_t, int);
-	void	stopReader	();
-	int32_t	getVFOFrequency	();
+	bool		restartReader	(int32_t, int);
+	void		stopReader	();
+	int32_t		getVFOFrequency	();
+        bool		setup_xmlDump	();
+        void		close_xmlDump	();
+	bool		isDumping	();
 private:
-	RingBuffer<std::complex<int16_t>> _I_Buffer;
+	QSettings	*settings;
+	QString		recorder;
 	RingBuffer<std::complex<float>> *_O_Buffer;
 	void		iqStreamEnable	(bool);
 	void		setFrequency	(int32_t);
@@ -56,6 +65,9 @@ private:
         std::vector <std::complex<float> >      convBuffer;
         int16_t         mapTable_int   [SAMPLERATE / 1000];
         float           mapTable_float [SAMPLERATE / 1000];
+	xml_fileWriter  *xmlWriter;
+        std::atomic<bool> xml_dumping;
+
 private slots:
 	void	connection_set		();
 	void	no_connection		();

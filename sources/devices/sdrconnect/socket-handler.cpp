@@ -28,17 +28,18 @@
 #include	<unistd.h>
 #include	<sys/types.h>
 #include	<cstring>
+#include        <QJsonDocument>
+#include        <QJsonObject>
 
 #include	"socket-handler.h"
 //
 //	The lowest level
 	socketHandler::
 	            socketHandler (const QString &hostAddress,
-	                          int	portNumber, 
-	                          RingBuffer<std::complex<int16_t>> *b) {
+	                          int	portNumber):
+	                            _I_Buffer (32 * 32768) {
 	this	-> hostAddress	= hostAddress;
 	this	-> portNumber	= portNumber;
-	this	-> _I_Buffer	= b;
 	this	-> socket	= new QWebSocket;
 	connect (socket, &QWebSocket::connected,
 	        this, &socketHandler::onConnected);
@@ -93,7 +94,7 @@ void	socketHandler::binaryMessageReceived	(const QByteArray &m) {
 int16_t *p	= (int16_t *)(m. data ());
 	if (p [0] != 2)
 	   return;
-	int written = _I_Buffer -> putDataIntoBuffer (&(p [1]), (m. size () - 1)/ 4);
+	int written = _I_Buffer. putDataIntoBuffer (&(p [1]), (m. size () - 1)/ 4);
 	if ((++dropCount % 100) == 0) {
 	   int dropped = (m. size () - 1) / 4 - written;
            reportStatus (dropped);

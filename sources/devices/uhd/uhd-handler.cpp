@@ -180,6 +180,7 @@ int32_t freq = m_usrp -> get_rx_freq ();
 }
 
 bool	uhdHandler::restartReader	(int32_t freq, int32_t skipped) {
+	(void) skipped;
 	if (m_workerHandle != 0)
 	   return true;
 

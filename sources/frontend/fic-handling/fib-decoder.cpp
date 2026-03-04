@@ -93,7 +93,7 @@ uint8_t	*d		= p;
 	   uint8_t FIGtype	= getBits_3 (d, 0);
 	   uint8_t FIGlength	= getBits_5 (d, 3);
 	   if ((FIGlength >= availableBytes) ||
-	       (FIGtype == 0x07) && (FIGlength == 0x3F)) {
+	       ((FIGtype == 0x07) && (FIGlength == 0x3F))) {
 	      fibLocker. unlock ();
 	      return;
 	   }
@@ -923,7 +923,7 @@ int16_t	bitOffset	= used * 8;
 	   uint8_t Rfa		= getBits (d, bitOffset, 1);
 	   (void)Rfa;
 	   bitOffset		+= 1;
-	   uint8_t subChId	= getBits (d, bitOffset, 6);
+//	   uint8_t subChId	= getBits (d, bitOffset, 6);
 	   bitOffset		+= 6;
 //	   fprintf (stderr, "%d %d %d -> %d\n",
 //	                 clusterId, AswFlags, newFlag, subChId);

@@ -20,7 +20,7 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
 unix {
-#QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
+QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
@@ -459,7 +459,7 @@ CONFIG		+= soapy
 CONFIG		+= pluto
 CONFIG		+= spyServer-16
 CONFIG		+= spyServer-8
-CONFIG		+= uhd
+#CONFIG		+= uhd		#untested
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -740,7 +740,7 @@ sdrconnect {
 	QT		+= network websockets
 }
 
-uhd	{
+uhd	{		#untested
 	DEFINES		+= HAVE_UHD
 	DEPENDPATH	+= ./sources/devices/uhd
 	INCLUDEPATH	+= ./sources/devices/uhd
