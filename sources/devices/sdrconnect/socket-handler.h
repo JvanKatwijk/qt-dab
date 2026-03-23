@@ -56,6 +56,7 @@ private:
 	QWebSocket	*socket;
 	bool		connected;
 	int		dropCount;
+	int		dropped;
 public slots:
 	void		onConnected		();	
 	void		onDisconnect		();

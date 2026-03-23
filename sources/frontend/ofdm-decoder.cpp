@@ -120,9 +120,7 @@ Complex makeComplex (DABFLOAT phase) {
 	                                    conjVector	(params. get_T_u ()),
 	                                    fft_buffer	(params. get_T_u ()),
 	                                    sigmaSQ_Vector (params. get_T_u ()),
-	                                    meanLevelVector (params. get_T_u ()),
-	                                    stdDevVector (params. get_T_u ()),
-	                                    angleVector (params. get_T_u ()) {
+	                                    meanLevelVector (params. get_T_u ()){
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
@@ -164,8 +162,6 @@ void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
 	   sigmaSQ_Vector [i]	= 0;
 	   meanLevelVector [i]	= 0;
-	   stdDevVector [i]	= 0;
-	   angleVector [i]	= M_PI_4;
 	}
 	meanValue	= 1.0f;
 	avgBit		= 10.0f;
@@ -304,9 +300,8 @@ DABFLOAT sum	= 0;
 	      if (devBuffer != nullptr) {
 	         float *tempVector = dynVec (float, carriers);
 	         for (int i = 0; i < carriers; i ++) {
-	            tempVector [i] =
-	                  stdDevVector [(T_u - carriers / 2 + i) % T_u];
-	            tempVector [i] = tempVector [i] /  M_PI * 180.0;
+	            tempVector [i] = 
+	                  softbits [T_u / 2 - carriers / 2 + i];
 	         }
 
 	         devBuffer -> putDataIntoBuffer (tempVector, carriers);
@@ -423,11 +418,12 @@ DABFLOAT ofdmDecoder::decoder_12 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT sum	= 0;
 DABFLOAT corrFact	= (decType == 1) ? 1.5 : 1.0;
-DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
+DABFLOAT levelFact	= (decType == 1) ? 100.0 : 60.0;
+//DABFLOAT levelFact	= (decType == 1) ? 160.0 : 100.0;
 
 //
 //	Note for the reader
-//	Some cheap datsticks show a - sometime pretty large - clock offset.
+//	Some cheap dabsticks show a - sometime pretty large - clock offset.
 //	indicating that the samplerate is slightly off.
 //	We show the samplerate offset already for a long time,
 //	old-dab suggested - in a version derived from Qt-DAB - to compensate
@@ -438,11 +434,10 @@ DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
 //	frequencies, so old-dab had a scheme where, depending the
 //	relative frequency of the bin, the correction was stronger
 
-	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
 	   int16_t	carriers_2	= carriers / 2;
-	   int16_t	index	= myMapper.  mapIn (i);
+	   int16_t	index		= myMapper.  mapIn (i);
 	   int16_t	binIndex	= index;
 	   if (index < 0) {
 	      index += T_u;
@@ -451,8 +446,6 @@ DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
 	   else
 	      binIndex	+= carriers_2 - 1;
 
-	   float phaseCorrector	= (carriers_2 - binIndex) / float (carriers_2);
-	   float phaseError	= phaseBase * phaseCorrector;
 	   Complex current	= fft_buffer [index];
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
@@ -460,8 +453,6 @@ DABFLOAT levelFact	= (decType == 1) ? 140.0 : 100.0;
 //	correction on the fftBin value using the approach from
 //	old-dab, see text above
 
-	   fftBin		= fftBin * makeComplex (-phaseError);
-	   stdDevVector [index]	= phaseError;
 	   conjVector [index]	= fftBin;
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
 //	updates
@@ -505,12 +496,11 @@ DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT	sum = 0;
 
-	(void)snr;
 	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
 	   int16_t	carriers_2	= carriers / 2;
-	   int16_t	index	= myMapper.  mapIn (i);
+	   int16_t	index		= myMapper.  mapIn (i);
 	   int16_t	binIndex	= index;
 	   if (index < 0) {
 	      index += T_u;
@@ -519,22 +509,15 @@ DABFLOAT	sum = 0;
 	   else
 	      binIndex	+= carriers_2 - 1;
 
-	   float phaseCorrector	= (carriers_2 - binIndex) / float (carriers_2);
-	   float phaseError	= phaseBase * phaseCorrector;
-
 	   Complex current	= fft_buffer [index];
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
-	   fftBin		= fftBin * makeComplex (-phaseError);
-	   stdDevVector [index]	= phaseError;
 	   conjVector [index]	= fftBin;
-//	   Complex fftBin_at_1	= toQ1 (fftBin);
+	   Complex fftBin_at_1	= toQ1 (fftBin);
 
-	   stdDevVector [index]	=  phaseError;
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
-	   DABFLOAT scaler	=  256.0 / meanValue;
-//	   DABFLOAT scaler	=  140.0 / meanValue;
+	   DABFLOAT scaler	=  140.0 / meanValue;
 
 	   DABFLOAT leftBit	= - real (R1) * scaler;
 	   limit_symmetrically (leftBit, MAX_VITERBI);
@@ -552,7 +535,7 @@ DABFLOAT ofdmDecoder::decoder_4 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
 	                        DABFLOAT	snr) {
 DABFLOAT sum	= 0;
-	(void)snr;
+
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -567,13 +550,6 @@ DABFLOAT sum	= 0;
 	   
 	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
 	                                   abs (imag (fftBin)));
-
-	   DABFLOAT angle	= arg (fftBin_at_1) - angleVector [index];
-	   angleVector [index]	=
-	                 compute_avg (angleVector [index], angle, ALPHA);
-	   stdDevVector [index]	= 
-	                 compute_avg (stdDevVector [index],
-	                                         angle * angle, ALPHA);
 
 	   meanLevelVector [index] =
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
@@ -614,7 +590,7 @@ DABFLOAT sum	= 0;
 	      b1 = 0;
 	   if (std::isnan (b2))
 	      b2 = 0;
-	   DABFLOAT scaler   =  140.0 / meanValue;
+	   DABFLOAT scaler   =  100.0 / meanValue;
 
 	   DABFLOAT leftBit	=  - b1 * scaler;
 	   limit_symmetrically (leftBit, MAX_VITERBI);

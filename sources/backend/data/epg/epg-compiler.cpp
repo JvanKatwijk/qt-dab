@@ -296,9 +296,9 @@ QDomElement	epgCompiler::process_genre (QDomDocument &doc,
 	                                   int &index) {
 int endPoint	= setLength (v, index);
 static
-//const char *genres [] = {
-//"IntentionCS", "FormatCS", "ContentCS", "OriginationCS", 
-//"IntendedAudienceCS", "ContentAlertCS", "KediaTupeCS", "AtmosphereCS"};
+const char *genres [] = {
+"IntentionCS", "FormatCS", "ContentCS", "OriginationCS", 
+"IntendedAudienceCS", "ContentAlertCS", "KediaTupeCS", "AtmosphereCS"};
 QDomElement t;
 	t = doc. createElement ("genre");
 QString s;
@@ -306,8 +306,12 @@ QString s;
 	   switch (v [index]) {
 	      case 0x80: {	//	href attribute see TS 102 371 /5.4.5.4
 	         int localEnd = setLength (v, index);
-	         for (int i = index; i < localEnd; i ++)
-	         s += QChar (v [i]);
+	         for (int i = index; i < localEnd; i ++) {
+	            if (v [i] < 8)
+	               s += QString (genres [v [i]]) + ".";
+	            else
+	               s += QChar (v [i]);
+	         }
 	         t. setAttribute ("href", s);
 	         index = localEnd;
 	         break;

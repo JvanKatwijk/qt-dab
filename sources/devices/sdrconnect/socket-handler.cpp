@@ -51,6 +51,7 @@
 	QString urlString = "ws://%1:%2";
 	socket -> open (QUrl (urlString. arg (hostAddress). arg(QString::number (portNumber))));
 	dropCount	= 0;
+	dropped		= 0;
 }
 
 	socketHandler::~socketHandler	() {
@@ -95,9 +96,10 @@ int16_t *p	= (int16_t *)(m. data ());
 	if (p [0] != 2)
 	   return;
 	int written = _I_Buffer. putDataIntoBuffer (&(p [1]), (m. size () - 1)/ 4);
+	dropped	+= (m. size () - 1) / 4 - written;
 	if ((++dropCount % 100) == 0) {
-	   int dropped = (m. size () - 1) / 4 - written;
            reportStatus (dropped);
+	   dropped = 0;
 	}
 	emit binDataAvailable ();
 }
