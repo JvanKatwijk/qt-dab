@@ -60,8 +60,9 @@
 
 	this	-> vfo_frequency	= startFreq;
 	xml_dumping. store	(false);
-	runMode				= false;
-	theSamplerate			= 2000000;	// default
+	xmlWriter		= nullptr;
+	runMode			= false;
+	theSamplerate		= 2000000;	// default
 }
 
 	messageHandler::~messageHandler	() {
