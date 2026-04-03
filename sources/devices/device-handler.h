@@ -48,9 +48,10 @@ virtual		void	resetBuffer	();
 virtual		int16_t	bitDepth	() { return 10;}
 virtual		QString deviceName	();
 virtual		bool	isFileInput	();
+virtual		bool	providesDump	();
 virtual		int32_t	getVFOFrequency	();
 
-virtual		void	startDump	();
+virtual		void	startDump	(const QString &, int dumpMode);
 virtual		void	stopDump	();
 //
 //	all derived classes are subject to visibility settings

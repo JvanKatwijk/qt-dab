@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>316</height>
+    <height>313</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,7 +33,7 @@
        <item>
         <widget class="clickablelabel" name="ensembleId">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name of the ensemble in the currently selected channel. Touching the name shows a widget with a description of the ensemble content.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name of the ensemble in the currently selected channel. Use the Left mouse button to show a widget with a description of the ensemble content.&lt;/p&gt;&lt;p&gt;Use the Right hand mouse button to start or stop dumping of the raw input samples into a file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>ensemble</string>
@@ -60,7 +60,7 @@
           <x>0</x>
           <y>0</y>
           <width>239</width>
-          <height>162</height>
+          <height>159</height>
          </rect>
         </property>
        </widget>

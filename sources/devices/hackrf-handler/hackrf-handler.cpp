@@ -180,8 +180,6 @@ hackrf_error errorCode;
 	         this, &hackrfHandler::handle_ppmCorrection);
 	connect (samplerate_correction, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &hackrfHandler::handle_samplerateCorrection);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &hackrfHandler::handle_xmlDump);
 
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
@@ -683,28 +681,17 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	return true;
 }
 
-void	hackrfHandler::handle_xmlDump () {
-	if (xmlWriter == nullptr) {
-	   setup_xmlDump (false);
-	}
-	else {
-	   close_xmlDump ();
-	}
+bool	hackrfHandler::providesDump	() {
+	return true;
 }
 
-void	hackrfHandler::startDump	() {
-	setup_xmlDump (true);
-}
-
-void	hackrfHandler::stopDump		() {
-	close_xmlDump ();
-}
-
-bool	hackrfHandler::setup_xmlDump (bool direct) {
+void	hackrfHandler::startDump (const QString &dumpName, int mode) {
 QString channel		= value_s (hackrfSettings, DAB_GENERAL,
 	                                             "channel", "xx");
+	(void)mode;
 	try {
-	   xmlWriter	= new xml_fileWriter (hackrfSettings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      hackrfSettings,
 	                                      channel,
 	                                      8,
 	                                      "int8",
@@ -713,23 +700,19 @@ QString channel		= value_s (hackrfSettings, DAB_GENERAL,
 	                                      -1,
 	                                      "Hackrf",
 	                                      serialNumber,
-	                                      recorderVersion,
-	                                      direct);
+	                                      recorderVersion);
 	} catch (...) {
-	   return false;
+	   return;
 	}
-	dumpButton	-> setText ("writing");
 	dumping. store (true);
-	return true;
 }
 	
-void	hackrfHandler::close_xmlDump () {
+void	hackrfHandler::stopDump		() {
 	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	dumpButton	-> setText ("Dump");
 	delete xmlWriter;
 	xmlWriter	= nullptr;
 }

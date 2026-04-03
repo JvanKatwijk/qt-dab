@@ -37,6 +37,7 @@ public:
 	uint64_t	elementCount	();
 	QString		fileType	();
 	int		sampleSize	();
+	int		get_sampleRate	();
 	uint64_t	currentPos	();
 	void		set_newPosition	(uint64_t);
 	int		getVFOFrequency	();

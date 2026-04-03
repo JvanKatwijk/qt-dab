@@ -76,11 +76,17 @@ bool	deviceHandler::isFileInput	() {
 	return false;
 }
 
+bool	deviceHandler::providesDump	() {
+	return false;
+}
+
 int	deviceHandler::getVFOFrequency	() {
 	return lastFrequency;
 }
 
-void	deviceHandler::startDump	() {
+void	deviceHandler::startDump	(const QString & fileName,
+	                                              int dumpMode) {
+	(void)fileName; (void)dumpMode;
 }
 
 void	deviceHandler::stopDump		() {

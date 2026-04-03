@@ -214,8 +214,6 @@ char*	get_ch_name (const char* type, int id) {
 	         this, &plutoHandler::set_agcControl);
 	connect (debugButton, &QPushButton::clicked,
 	         this, &plutoHandler::toggle_debugButton);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &plutoHandler::set_xmlDump);
 	connect (filterButton, &QPushButton::clicked,
 	         this, &plutoHandler::set_filter);
 
@@ -423,7 +421,7 @@ iio_channel *gain_channel;
 void	plutoHandler::stopReader() {
 	if (!running. load())
 	   return;
-	close_xmlDump	();
+	stopDump	();
 	if (save_gainSettings)
 	   record_gainSettings (rx_cfg. lo_hz/ MHz (1));
 	running. store (false);
@@ -666,52 +664,38 @@ void	plutoHandler::toggle_debugButton	() {
 
 //
 ////////////////////dumping the stuff//////////////////////////////////
-void	plutoHandler::set_xmlDump () {
-	if (xmlWriter. isNull ()) {
-	   setup_xmlDump (false);
-	}
-	else {
-	   close_xmlDump ();
-	}
-}
 
-void	plutoHandler::startDump	() {
-	setup_xmlDump (true);
-}
-
-void	plutoHandler::stopDump	() {
-	close_xmlDump ();
-}
-
-bool	plutoHandler::setup_xmlDump (bool direct) {
-QString channel		= value_s (plutoSettings, DAB_GENERAL,
-	                                         "channel", "xx");
-	try {
-	   xmlWriter. reset (new xml_fileWriter (plutoSettings,
-	                                      channel,
-	                                      12,
-	                                      "int16",
-	                                      PLUTO_RATE,
-	                                      lastFrequency,
-	                                      gainControl -> value (),
-	                                      "Pluto",
-	                                      "adalm",
-	                                      recorderVersion,
-	                                      direct));
-	} catch (...) {
-	   return false;
-	}
-	dumpButton	-> setText ("writing");
+bool	plutoHandler::providesDump	() {
 	return true;
 }
+
+void	plutoHandler::startDump	(const QString &dumpName, int mode) {
+QString channel		= value_s (plutoSettings, DAB_GENERAL,
+	                                         "channel", "xx");
+	(void)mode;
+	try {
+	   xmlWriter. reset (new xml_fileWriter (dumpName,
+	                                         plutoSettings,
+	                                         channel,
+	                                         12,
+	                                         "int16",
+	                                         PLUTO_RATE,
+	                                         lastFrequency,
+	                                         gainControl -> value (),
+	                                         "Pluto",
+	                                         "adalm",
+	                                         recorderVersion));
+	} catch (...) {
+	   return;
+	}
+}
 	
-void	plutoHandler::close_xmlDump () {
+void	plutoHandler::stopDump	() {
 	if (xmlWriter. isNull ())	// this can happen !!
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	xmlWriter. reset ();
-	dumpButton	-> setText ("Dump");
 }
 
 void	plutoHandler::record_gainSettings (int freq) {

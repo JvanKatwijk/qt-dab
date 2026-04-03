@@ -112,11 +112,12 @@ char header [5];
         if (QString (header) == "JUNK") {
            int junkSize;
            fread (&junkSize, 1, 4, filePointer);
-           char *junkBuffer = dynVec (char, junkSize);
+	   fprintf (stderr, "junksize %d\n", junkSize);
+           char junkBuffer [junkSize];
            fread (&junkBuffer, 1, junkSize, filePointer);
            fread (header, 1, 4, filePointer);
         }
-//	fprintf (stderr, "Header %s\n", header);
+	fprintf (stderr, "Header %s\n", header);
 
 	if (QString (header) != "fmt ") {
            QString val =
@@ -128,13 +129,11 @@ char header [5];
 //	save position of the fp
 	std::fpos_t pos;
 	std::fgetpos (filePointer, &pos);
-	uint32_t samplingRate;
 	fread (&formatTag, 1, sizeof (uint16_t), filePointer);
 	fread (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	fread (&samplingRate, 1, 4, filePointer);
-//	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
-	if ((formatTag != 01) ||
-	    (nrChannels != 02) || (samplingRate != SAMPLERATE)) {
+	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
+	if ((formatTag != 01) || (nrChannels != 02)) {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
@@ -441,3 +440,8 @@ int	riffReader::sampleSize () {
 void	riffReader::set_newPosition (uint64_t v) {
 	newPosition. store (v);
 }
+
+int	riffReader::get_sampleRate () {
+	return samplingRate;
+}
+

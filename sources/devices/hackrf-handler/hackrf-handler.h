@@ -37,8 +37,6 @@
 #include	<QLibrary>
 class		errorLogger;
 
-#include	"equalizer.h"
-
 typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer *transfer);
 
 #ifdef __MINGW32__
@@ -105,8 +103,9 @@ public:
 	int16_t		bitDepth		() override;
 	QString		deviceName		() override;
 
-	void		startDump		();
-	void		stopDump		();
+	bool		providesDump		() override;
+	void		startDump		(const QString &, int) override;
+	void		stopDump		() override;
 
 	void		showStatus		(const QString);
 //	The buffer should be visible by the callback function
@@ -152,13 +151,11 @@ private:
 	QLibrary*		library_p;
 	QString			serialNumber;
 
+
+	bool			load_hackrfFunctions	();
 	xml_fileWriter		*xmlWriter;
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;
-
-	bool			load_hackrfFunctions	();
-        bool			setup_xmlDump		(bool);
-        void			close_xmlDump           ();
 	void			record_gainSettings	(int);
 	void			update_gainSettings	(int);
 signals:
@@ -175,6 +172,6 @@ private slots:
 	void			handle_ppmCorrection	(int);
 	void			handle_samplerateCorrection	(int);
 // Fine aggiunta
-	void			handle_xmlDump	();
+//	void			handle_xmlDump	();
 };
 

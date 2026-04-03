@@ -42,10 +42,10 @@ QString	colorString	= "black";
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, "snrViewer");
 	dabSettings	-> beginGroup ("snrViewer");
-	plotLength	= dabSettings -> value ("snrLength", 312). toInt ();
-	plotHeight	= dabSettings -> value ("snrHeight", 15). toInt ();
+	plotLength	= dabSettings	-> value ("snrLength", 312). toInt ();
+	plotHeight	= dabSettings	-> value ("snrHeight", 15). toInt ();
 	delayCount	= dabSettings	-> value ("snrDelay", 5). toInt ();
-	colorString	= dabSettings -> value ("displayColor", "black").
+	colorString	= dabSettings	-> value ("displayColor", "black").
 	                                                       toString ();
 	displayColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("gridColor",

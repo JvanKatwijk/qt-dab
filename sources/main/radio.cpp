@@ -67,6 +67,7 @@
 #include	"settingNames.h"
 #include	"uploader.h"
 
+#include	"dump-display.h"
 #include	<QScreen>
 #include	<QDomElement>
 
@@ -275,10 +276,10 @@ QString h;
 
 	runtimeDisplay	-> hide ();
 //
-	connect (folder_shower, &clickablelabel::clicked,
+	connect (folder_shower, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_folderButton);
 	dxMode     = value_i (theQSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
-	connect (distanceLabel, &clickablelabel::clicked,
+	connect (distanceLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_distanceLabel);
 
 //	put the widgets in the right place and create the workers
@@ -493,7 +494,7 @@ QString h;
 	p. setColor (QPalette::Highlight, Qt::green);
 //
 	audioDumping		= false;
-	sourceDumping		= false;
+	dumpDisplay_p		= nullptr;
       
 	previous_idle_time	= 0;
 	previous_total_time	= 0; 
@@ -525,17 +526,17 @@ QString h;
 	deviceSelectorLabel	-> setPixmap (devSL. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
 	deviceSelectorLabel	-> setToolTip ("this icon controls the visbility of the device selection list");
-	connect (deviceSelectorLabel, &clickablelabel::clicked,
+	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
 
 	aboutLabel -> setText (" © V6.10");
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
-	connect (aboutLabel, &clickablelabel::clicked,
+	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
 
-	connect (soundLabel, &clickablelabel::clicked,
+	connect (soundLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_muteButton);
-	connect (snrLabel, &clickablelabel::clicked,
+	connect (snrLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_snrLabel);
 
 	channel. etiActive	= false;
@@ -544,7 +545,7 @@ QString h;
 	epgLabel	-> setPixmap (epgP. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
 	epgLabel	-> setToolTip ("this icon is visible when the EPG processor is active,  the service will always run in the background");
-	connect (epgLabel, &clickablelabel::clicked,
+	connect (epgLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_startTimeTable);
 	epgLabel	-> hide ();
 	show_pauzeSlide ();
@@ -578,6 +579,7 @@ QString h;
 	           value_s (theQSettings, DAB_GENERAL, 
 	                                      SELECTED_DEVICE, "no device");
 
+	fprintf (stderr, "old device %s\n", h . toLatin1 (). data ());
 	if (theDeviceChooser. getDeviceIndex (h) >= 0)
 	   theDeviceHandler	= createDevice (h, &theLogger);
 //
@@ -867,9 +869,9 @@ QString s;
 	      channelTimer. stop ();
 	      int switchStay		= 
 	              theSCANHandler. switchStayValue ();
-	      if (theSCANHandler. dumpInFile ()) {
-	         theDeviceHandler	-> startDump	();
-	      }
+//	      if (theSCANHandler. dumpInFile ()) {
+//	         theDeviceHandler	-> startDump	();
+//	      }
 	      channelTimer. start (switchStay);
 	   }
 	}
@@ -878,8 +880,10 @@ QString s;
 	   read_pictureMappings (static_cast<uint32_t>(id));
 //	... and is we are not scanning, clicking the ensembleName
 //	has effect
-	   connect (ensembleId, &clickablelabel::clicked,
+	   connect (ensembleId, &clickablelabel::clicked_left,
 	            this, &RadioInterface::handle_contentButton);
+	   connect (ensembleId, &clickablelabel::clicked_right,
+	            this, &RadioInterface::handle_dump);
 	}
 }
 //
@@ -1575,6 +1579,7 @@ deviceHandler	*inputDevice = theDeviceChooser.
 //	with the selector
 void	RadioInterface::newDevice (const QString &deviceName) {
 //	Part I : stopping all activities
+	fprintf (stderr, "new device %s\n", deviceName. toLatin1 (). data ());
 	running. store (false);
 	stopScanning	();
 	stopChannel	();
@@ -1755,6 +1760,15 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	
 	if (running. load()) {
 	   dynamicLabel	-> setStyleSheet (labelStyle);
+	   int index = s. indexOf ("www.");
+	   int index_2	= 0;
+	   if (index > 0) {
+	      index_2 = s. indexOf (" ", index);
+	      QString res;
+	      for (int i = index; i < index_2; i ++)
+	         res. push_back (s. at (i));
+	      fprintf (stderr, "%s\n", res. toUtf8 (). data ());
+	   }
 	   dynamicLabel	-> setText (s);
 	}
 
@@ -2009,9 +2023,9 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_nextServiceButton);
 
 //	channelButton handled elsewhere
-	connect	(prevChannelButton, &clickablelabel::clicked,
+	connect	(prevChannelButton, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_prevChannelButton);
-	connect (nextChannelButton, &clickablelabel::clicked,
+	connect (nextChannelButton, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_nextChannelButton);
 
 	connect (scanListButton, &QPushButton::clicked,
@@ -2022,9 +2036,9 @@ void	RadioInterface::connectGUI	() {
 
 	connect (spectrumButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_spectrumButton);
-	connect (serviceLabel, &clickablelabel::clicked,
+	connect (serviceLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_labelColor);
-	connect (serviceButton, &clickablelabel::clicked,
+	connect (serviceButton, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_detailButton);
 //
 	connect (httpButton, &QPushButton::clicked,
@@ -2667,7 +2681,7 @@ void	RadioInterface::stopChannel	() {
 
 	theDeviceHandler		-> stopReader	();
 	theDeviceHandler		-> stopDump	();
-	disconnect (ensembleId, &clickablelabel::clicked,
+	disconnect (ensembleId, &clickablelabel::clicked_left,
 	            this, &RadioInterface::handle_contentButton);
 	ensembleId	-> setText ("");
 	stopSourceDumping	();
@@ -3568,6 +3582,7 @@ void	RadioInterface::handle_snrButton	() {
 	   theSNRViewer. show ();
 	else
 	   theSNRViewer. hide ();
+	
 	store (theQSettings, DAB_GENERAL, SNR_WIDGET_VISIBLE,
 	                          theSNRViewer. isHidden () ? 0 : 1);
 }
@@ -3591,45 +3606,66 @@ QString home	= QDir::homePath ();
 	home	= QDir::fromNativeSeparators (home);
 	theTIIProcessor. reload (home);
 }
-
-void	RadioInterface::stopSourceDumping	() {
-	if (!sourceDumping)
-	   return;
-	theLogger. log (logger::LOG_SOURCEDUMP_STOPS);
-	theOfdmHandler	-> stopDumping();
-	sourceDumping	= false;
-	theConfigHandler	-> mark_dumpButton (false);
-}
-
+//
+//	on sourcedumping
 void	RadioInterface::startSourceDumping () {
-QString deviceName	= theDeviceHandler -> deviceName	();
+QString deviceName	= theDeviceHandler	-> deviceName	();
 int	bitDepth	= theDeviceHandler	-> bitDepth	();
 QString channelName	= channel. channelName;
+QString	dumpName;
+
 	if (theSCANHandler. active ())
 	   return;
 
-	QString rawDumpName	=
-	         theFilenameFinder. findRawDump_fileName (deviceName, channelName);
-	if (rawDumpName == "")
+	if (theDeviceHandler	-> isFileInput ())
 	   return;
 
+	if (!theConfigHandler -> dumpmode_set () ||
+	          !theDeviceHandler	-> providesDump ()) {
+	   dumpName	=
+	         theFilenameFinder. findRawDump_fileName (deviceName, channelName);
+	   if (dumpName == "")
+	      return;
+	   theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
+	                                     deviceName, channelName);
+
+	   theOfdmHandler -> startDumping (dumpName,
+                                           channel. tunedFrequency,
+                                           bitDepth,
+                                           deviceName);
+	   dumpDisplay_p	= new dumpDisplay ("dumping in a \"wav\" file",
+	                                                    dumpName);
+	   return;
+	}
+
+	if (!theDeviceHandler -> providesDump ()) 
+	   return;
+
+	try {
+	   dumpName     =
+                  theFilenameFinder.
+	              find_xmlName (deviceName,  channelName, false);
+	} catch (...) {
+	   return;
+	}
 	theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
 	                                     deviceName, channelName);
-	theConfigHandler	-> mark_dumpButton (true);
-	theOfdmHandler -> startDumping (rawDumpName,
-	                                channel. tunedFrequency, 
-	                                bitDepth,
-	                                theDeviceHandler -> deviceName ());
-	sourceDumping = true;
+	theDeviceHandler -> startDump (dumpName, 0);
+	dumpDisplay_p	=
+	             new dumpDisplay ("dumping in an \"uff\" (i.e. xml) file",
+	                                                  dumpName);
 }
 
-void	RadioInterface::handle_sourcedumpButton () {
-	if (!running. load () || theSCANHandler. active ())
+void	RadioInterface::stopSourceDumping	() {
+	if (dumpDisplay_p == nullptr)
 	   return;
-	if (sourceDumping)
-	   stopSourceDumping ();
+	delete dumpDisplay_p;
+	dumpDisplay_p	= nullptr;
+	theLogger. log (logger::LOG_SOURCEDUMP_STOPS);
+	if (!theDeviceHandler	-> providesDump ())
+	   theOfdmHandler	-> stopDumping ();
 	else
-	   startSourceDumping ();
+	   theDeviceHandler	-> stopDump ();
 }
 
 void	RadioInterface::handle_LoggerButton (int s) {
@@ -4939,5 +4975,12 @@ void	RadioInterface::timeTableFrame_closed	(){
 	   delete theControl;
 	   theControl	= nullptr;
 	}
+}
+
+void	RadioInterface::handle_dump () {
+	if (dumpDisplay_p == nullptr)
+	   startSourceDumping ();
+	else
+	   stopSourceDumping ();
 }
 

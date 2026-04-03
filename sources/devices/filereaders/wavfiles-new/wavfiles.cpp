@@ -33,7 +33,7 @@
 #define	__BUFFERSIZE__	8 * 32768
 
 	wavFiles::wavFiles (const QString &fileName):
-	            _I_Buffer (__BUFFERSIZE__) {
+	                            _I_Buffer (__BUFFERSIZE__) {
 SF_INFO sf_info;
 
 	setupUi (&myFrame);
@@ -47,17 +47,25 @@ SF_INFO sf_info;
 	           QString ("File '%1' is no valid sound file").arg(fileName);
 	   throw device_exception (val. toStdString ());
 	}
-	if ((sf_info. samplerate != INPUT_RATE) ||
-	                                (sf_info. channels != 2)) {
+	if (sf_info. channels != 2) {
 	   sf_close (filePointer);
-	   QString val = QString("Sample rate or channel number does not fit");
+	   QString val = QString(" channel number does not fit");
 	   throw device_exception (val. toStdString ());
 	}
+
+	if ((sf_info. samplerate < INPUT_RATE - 500000) ||
+	    (sf_info. samplerate > INPUT_RATE + 500000))
+	   sf_close (filePointer);
+	   QString val = QString ("samplerate incompatible");
+	   throw device_exception (val. toStdString ());
+	}
+
+	sampleRate		= sf_info. samplerate;
 	nameofFile		-> setText (fileName);
 	fileProgress		-> setValue (0);
 	currentTime		-> display (0);
 	int64_t fileLength	= sf_seek (filePointer, 0, SEEK_END);
-	totalTime	-> display ((float)fileLength / INPUT_RATE);
+	totalTime	-> display ((float)fileLength / sampleRate);
 	running. store (false);
 }
 //
@@ -78,7 +86,8 @@ bool	wavFiles::restartReader		(int32_t freq) {
 	(void)freq;
 	if (running. load())
            return true;
-        readerTask      = new wavReader (this, filePointer, &_I_Buffer);
+        readerTask      = new wavReader (this, filePointer,
+	                                    samplerate, &_I_Buffer);
         running. store (true);
         return true;
 }
@@ -100,7 +109,7 @@ int32_t	amount;
 	if (filePointer == nullptr)
 	   return 0;
 
-	while (_I_Buffer. GetRingBufferReadAvailable() < size)
+	while (_I_Buffer. GetRingBufferReadAvailable () < size)
 	      usleep (100);
 
 	amount = _I_Buffer. getDataFromBuffer (V, size);

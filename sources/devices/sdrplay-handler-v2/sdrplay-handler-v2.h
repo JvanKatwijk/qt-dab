@@ -125,18 +125,21 @@ public:
 			sdrplayHandler_v2	(QSettings *,
 	                                         const QString &,
 	                                         errorLogger *);
-			~sdrplayHandler_v2	();
+			~sdrplayHandler_v2	() override;
 
-	bool		restartReader		(int32_t, int skipped = 0);
-	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *, int32_t);
-	int32_t		Samples			();
-	void		resetBuffer		();
-	int16_t		bitDepth		();
-	QString		deviceName		();
-	
-	void		startDump		();	
-	void		stopDump		();
+	bool		restartReader		(int32_t,
+	                                           int skipped = 0) override;
+	void		stopReader		() override;
+	int32_t		getSamples		(std::complex<float> *,
+	                                              int32_t) override;
+	int32_t		Samples			() override;
+	void		resetBuffer		() override;
+	int16_t		bitDepth		() override;
+	QString		deviceName		() override;
+
+	bool		providesDump		() override;
+	void		startDump		(const QString &, int) override;
+	void		stopDump		() override;
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
@@ -207,7 +210,7 @@ private:
 
 	int		lnaMax;
 	xml_fileWriter	*xmlWriter;
-        bool		setup_xmlDump		(bool);
+        bool		setup_xmlDump		(const QString &, bool);
         void		close_xmlDump		();
 	std::atomic<bool> dumping;
 //	experimental
@@ -226,7 +229,6 @@ private slots:
 	void		handle_ppmControl	(int);
 	void		handle_antennaSelect	(const QString &);
 	void		handle_tunerSelect	(const QString &);
-	void		handle_xmlDump		();
 	void		handle_voidSignal	(int);
 	void		handle_biasT_selector	(int);
 };

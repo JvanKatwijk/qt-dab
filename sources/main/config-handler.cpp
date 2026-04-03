@@ -50,7 +50,7 @@
 #define SET_COORDINATES_BUTTON  QString ("set_coordinatesButton")
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
 #define SKIN_BUTTON             QString ("skinButton")
-#define DUMP_BUTTON             QString ("dumpButton")
+//#define DUMP_BUTTON             QString ("dumpButton")
 
 #define	PATH_BUTTON		QString ("pathButton")
 
@@ -105,9 +105,6 @@ int	index_for_key (int key) {
 	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING,
 	                               DEFAULT_SWITCHVALUE);
 	this -> switchDelaySetting -> setValue (x);
-
-	x = value_i (dabSettings, CONFIG_HANDLER, "localDB", 1);
-	this	-> localDB_selector	-> setChecked (x);
 
 	x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
 	                               ALPHA_BASED);
@@ -175,6 +172,9 @@ int	index_for_key (int key) {
 	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollision", 0);
 	this	-> tiiCollisions -> setValue (c);
 
+	b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 0) != 0;
+	this	-> dumpmodeSelector	-> setChecked (b);
+
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
@@ -224,7 +224,7 @@ int	index_for_key (int key) {
 	connect (allTIISelector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_allTIISelector);
-	connect (activeServices, &clickablelabel::clicked,
+	connect (activeServices, &clickablelabel::clicked_left,
 	         myRadioInterface, &RadioInterface::handle_activeServices);
 	connect (this, &configHandler::set_dcRemoval,
 	         myRadioInterface, &RadioInterface::handle_dcRemoval);
@@ -281,8 +281,8 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_set_coordinatesButton);
 	connect (loadTableButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_loadTableButton);
-	connect (dumpButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_sourcedumpButton);
+//	connect (dumpButton, &smallPushButton::rightClicked,
+//	         this, &configHandler::color_sourcedumpButton);
 	connect (pathButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_pathButton);
 	connect (skinButton, &smallPushButton::rightClicked,
@@ -331,8 +331,8 @@ void	configHandler::set_connections () {
 	loadTableButton	-> setText ("refresh table");
 //	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
-	connect (dumpButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_sourcedumpButton);
+//	connect (dumpButton, &QPushButton::clicked,
+//	         myRadioInterface, &RadioInterface::handle_sourcedumpButton);
 	connect (skinButton, &QPushButton::clicked,
 	         this, &configHandler::handle_skinSelector);
 //
@@ -388,12 +388,6 @@ void	configHandler::set_connections () {
 //
 //	fourthline
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (localDB_selector, &QCheckBox::checkStateChanged,
-#else
-	connect (localDB_selector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_localDB_Selector);
 	connect (localBrowserSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	             &QCheckBox::checkStateChanged,
@@ -530,12 +524,12 @@ QString loadTableButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                               LOAD_TABLE_BUTTON + "_font", WHITE);
 
-QString dumpButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               DUMP_BUTTON + "_color", YELLOW);
-QString dumpButton_font =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               DUMP_BUTTON + "_font", BLACK);
+//QString dumpButton_color =
+//	   value_s (dabSettings, COLOR_SETTINGS,
+//	                               DUMP_BUTTON + "_color", YELLOW);
+//QString dumpButton_font =
+//	   value_s (dabSettings, COLOR_SETTINGS,
+//	                               DUMP_BUTTON + "_font", BLACK);
 
 QString pathButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
@@ -596,9 +590,9 @@ QString	skinButton_color =
 	this -> loadTableButton ->
 	              setStyleSheet (temp. arg (loadTableButton_color,
 	                                        loadTableButton_font));
-	this -> dumpButton ->
-	              setStyleSheet (temp. arg (dumpButton_color,
-	                                        dumpButton_font));
+//	this -> dumpButton ->
+//	              setStyleSheet (temp. arg (dumpButton_color,
+//	                                        dumpButton_font));
 	this	-> pathButton ->
 	              setStyleSheet (temp. arg (pathButton_color,
 	                                        pathButton_font));
@@ -653,9 +647,9 @@ void	configHandler::color_loadTableButton	() 	{
 	set_buttonColors (this ->  loadTableButton, LOAD_TABLE_BUTTON);
 }
 
-void	configHandler::color_sourcedumpButton	()	{
-	set_buttonColors (this ->  dumpButton, DUMP_BUTTON);
-}
+//void	configHandler::color_sourcedumpButton	()	{
+//	set_buttonColors (this ->  dumpButton, DUMP_BUTTON);
+//}
 
 void	configHandler::color_pathButton		()	{
 	set_buttonColors (this ->  pathButton, PATH_BUTTON);
@@ -739,12 +733,6 @@ bool onTop = false;
 	if (this ->  onTop -> isChecked ())
 	   onTop = true;
 	store (dabSettings, CONFIG_HANDLER, ON_TOP_SETTING, onTop ? 1 : 0);
-}
-
-void	configHandler::handle_localDB_Selector	(int x) {
-	(void)x;
-	store (dabSettings, CONFIG_HANDLER, "localDB", 
-	                         localDB_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_localBrowser	(int d) {
@@ -838,12 +826,12 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 	b		-> update ();
 }
 
-void	configHandler::mark_dumpButton (bool b) {
-	if (b)
-	   setButtonFont (dumpButton, "writing", 12);
-	else
-	   setButtonFont (dumpButton, "Raw dump", 10);
-}
+//void	configHandler::mark_dumpButton (bool b) {
+//	if (b)
+//	   setButtonFont (dumpButton, "writing", 12);
+//	else
+//	   setButtonFont (dumpButton, "Raw dump", 10);
+//}
 
 void	configHandler::mark_dlTextButton (bool b) {
 	if (b)
@@ -1021,5 +1009,9 @@ void	configHandler::handle_mapViewSelector	(int k) {
 	(void)k;
 	bool b = this ->  mapViewSelector -> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, "DAVE_HTTP", b ? 1 : 0);
+}
+
+bool	configHandler::dumpmode_set	() {
+	return dumpmodeSelector	-> isChecked ();
 }
 

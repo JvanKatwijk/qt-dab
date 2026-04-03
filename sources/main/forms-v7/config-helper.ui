@@ -51,16 +51,6 @@
          </attribute>
         </widget>
        </item>
-       <item>
-        <widget class="QCheckBox" name="mapViewSelector">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB provides the possibility of storing a representation of the map elements into a file, and showing the map off-line.&lt;/p&gt;&lt;p&gt;Having set this selector, instructs Qt-DAB to store a representation of the elements on the map into a file.&lt;/p&gt;&lt;p&gt;Name of the file is XXXYYY.xml, where XXX tells the name of the device used, and YYY tells the time and date of the &amp;quot;recording&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>mapview</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>
@@ -340,16 +330,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="5">
-      <widget class="smallPushButton" name="scheduleButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>schedule</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="smallPushButton" name="snrButton">
        <property name="sizePolicy">
@@ -409,31 +389,30 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="4">
-      <widget class="smallPushButton" name="dumpButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Raw dump</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="5">
       <widget class="smallPushButton" name="tracerButton">
        <property name="text">
         <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="4">
+      <widget class="smallPushButton" name="scheduleButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>schedule</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QCheckBox" name="localBrowserSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string> browser manually</string>
        </property>
       </widget>
      </item>
@@ -489,12 +468,12 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QCheckBox" name="localDB_selector">
+      <widget class="QCheckBox" name="mapViewSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG processor when an EPG service is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>local DB</string>
+        <string>mapview</string>
        </property>
       </widget>
      </item>
@@ -630,12 +609,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="localBrowserSelector">
+      <widget class="QCheckBox" name="dumpmodeSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The dump facility is changed. Dumping the input samples is now centralized (use the right hand mouse button on the ensemblename left top of the main widget).&lt;/p&gt;&lt;p&gt;If selected the dump will be in xml format (but of course only if the device supports that)&lt;/p&gt;&lt;p&gt;otherwise an &amp;quot;wav&amp;quot; file will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string> browser manually</string>
+        <string>dump xml</string>
        </property>
       </widget>
      </item>

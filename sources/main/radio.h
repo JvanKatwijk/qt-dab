@@ -84,6 +84,7 @@ typedef struct {
 	std::vector<multimediaElement> elements;
 } mmDescriptor;
 
+class	dumpDisplay;
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
@@ -440,7 +441,7 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	bool			sourceDumping;
+	dumpDisplay		*dumpDisplay_p;
 	bool			audioDumping;
 
 	QTimer			displayTimer;
@@ -496,7 +497,7 @@ public slots:
 	void			handle_snrButton	();
 	void			handle_set_coordinatesButton	();
 	void			handle_loadTable		();
-	void			handle_sourcedumpButton	();
+//	void			handle_sourcedumpButton	();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
 	void			handle_eti_activeSelector	(int);
@@ -667,6 +668,7 @@ private slots:
 	void			handle_folderButton	();
 	void			devSL_visibility	();
 
+	void			handle_dump		();
 	void			handle_channelSelector	(const QString &);
 	void			setVolume		(int);
 	void			handle_snrLabel		();

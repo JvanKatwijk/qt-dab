@@ -15,7 +15,8 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
- *    You should have received a copy of the GNU General Public License
+
+
  *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
@@ -166,8 +167,6 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_v3::setAgcControl);
 	connect (ppmControl, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::setPpmControl);
-	connect (dumpButton, &QPushButton::clicked,
-                 this, &sdrplayHandler_v3::setXmlDump);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
 	connect (biasT_selector, &QCheckBox::checkStateChanged,	
 #else
@@ -405,23 +404,6 @@ void    sdrplayHandler_v3::showLnaGain (int g) {
         lnaGRdBDisplay  -> display (g);
 }
 
-void	sdrplayHandler_v3::setXmlDump () {
-	if (xmlWriter == nullptr) {
-	   setupXmlDump (false);
-	}
-	else {
-	   closeXmlDump ();
-	}
-}
-
-void	sdrplayHandler_v3::startDump	() {
-	setupXmlDump (true);
-}
-
-void	sdrplayHandler_v3::stopDump	() {
-	closeXmlDump ();
-}
-
 //
 ////////////////////////////////////////////////////////////////////////
 //	showing data
@@ -470,13 +452,23 @@ int	ind	= -1;
 	return ind;
 }
 
-bool	sdrplayHandler_v3::setupXmlDump (bool direct) {
+void	sdrplayHandler_v3::startDump	(const QString &name, int mode) {
+	(void)mode;
+	setupXmlDump (name, true);
+}
+
+void	sdrplayHandler_v3::stopDump	() {
+	closeXmlDump ();
+}
+
+bool	sdrplayHandler_v3::setupXmlDump (const QString &dumpName,
+	                                                bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                               "channel", "xx");
-	fprintf (stderr, "Direct = %d\n", direct);
 	xmlWriter	= nullptr;
 	try {
-	   xmlWriter	= new xml_fileWriter (sdrplaySettings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      sdrplaySettings,
 	                                      channel,
 	                                      nrBits,
 	                                      "int16",
@@ -485,14 +477,12 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      theGain,
 	                                      "SDRplay",
 	                                      deviceModel,
-	                                      recorderVersion,
-	                                      direct);
+	                                      recorderVersion);
 	} catch (...) {
 	   theErrorLogger -> add (recorderVersion, "Setup_xml handler failed");
 	   return false;
 	}
 	dumping. store (true);
-	dumpButton	-> setText ("writing");
 	return true;
 }
 	
@@ -504,7 +494,6 @@ void	sdrplayHandler_v3::closeXmlDump () {
 	delete xmlWriter;
 	xmlWriter	= nullptr;
 	dumping. store (false);
-	dumpButton	-> setText ("Dump");
 }
 //
 ///////////////////////////////////////////////////////////////////////
@@ -1235,3 +1224,8 @@ void	sdrplayHandler_v3::enableBiasT (bool b) {
 	else
 	  biasT_selector -> hide ();
 }
+
+bool	sdrplayHandler_v3::providesDump	() {
+	return true;
+}
+

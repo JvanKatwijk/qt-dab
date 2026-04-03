@@ -330,13 +330,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="dumpButton">
-       <property name="text">
-        <string>dump </string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>

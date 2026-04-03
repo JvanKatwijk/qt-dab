@@ -133,13 +133,6 @@ filter is disabled, but will be enabled by touching the button.</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QPushButton" name="dumpButton">
-       <property name="text">
-        <string>dump</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>

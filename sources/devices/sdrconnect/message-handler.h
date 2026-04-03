@@ -45,8 +45,8 @@ public:
 	bool		restartReader	(int32_t, int);
 	void		stopReader	();
 	int32_t		getVFOFrequency	();
-        bool		setup_xmlDump	();
-        void		close_xmlDump	();
+        bool		startDump	(const QString &);
+        void		stopDump	();
 	bool		isDumping	();
 private:
 	QSettings	*settings;

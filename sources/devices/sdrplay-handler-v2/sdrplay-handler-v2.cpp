@@ -270,8 +270,6 @@ mir_sdr_ErrT res;
 	         this, &sdrplayHandler_v2::handle_debugControl);
 	connect (ppmControl, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v2::handle_ppmControl);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &sdrplayHandler_v2::handle_xmlDump);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasT_selector, &QCheckBox::checkStateChanged,
 #else
@@ -982,17 +980,8 @@ QString	sdrplayHandler_v2::errorCodes (mir_sdr_ErrT err) {
 	}
 }
 
-void	sdrplayHandler_v2::handle_xmlDump () {
-	if (xmlWriter == nullptr) {
-	   setup_xmlDump (false);
-	}
-	else {
-	   close_xmlDump ();
-	}
-}
-
-void	sdrplayHandler_v2::startDump	() {
-	setup_xmlDump (true);
+void	sdrplayHandler_v2::startDump	(const QString &name, int mode) {
+	setup_xmlDump (name, true);
 }
 
 void	sdrplayHandler_v2::stopDump	() {
@@ -1004,7 +993,8 @@ bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-');
 }
 
-bool	sdrplayHandler_v2::setup_xmlDump (bool direct) {
+bool	sdrplayHandler_v2::setup_xmlDump (const QString &dumpName,
+	                                                 bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                                  "channel", "xx");
 	xmlWriter	= nullptr;
@@ -1012,7 +1002,8 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
         my_mir_sdr_GetCurrentGain (&theGains);
 
 	try {
-	   xmlWriter	= new xml_fileWriter (sdrplaySettings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      sdrplaySettings,
 	                                      channel,
 	                                      nrBits,
 	                                      "int16",
@@ -1021,13 +1012,11 @@ QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                      (int)(theGains. curr),
 	                                      "SDRplay",
 	                                      deviceModel,
-	                                      recorderVersion,
-	                                      direct);
+	                                      recorderVersion);
 	} catch (...) {
 	   return false;
 	}
 	dumping. store (true);
-	dumpButton	-> setText ("writing");
 	return true;
 }
 	
@@ -1037,9 +1026,12 @@ void	sdrplayHandler_v2::close_xmlDump () {
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
-	dumpButton	-> setText ("Dump");
 	delete xmlWriter;
 	xmlWriter	= nullptr;
+}
+
+bool    sdrplayHandler_v2::providesDump () {
+        return true;
 }
 
 /////////////////////////////////////////////////////////////////////////

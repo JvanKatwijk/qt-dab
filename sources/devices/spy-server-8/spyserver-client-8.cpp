@@ -95,10 +95,7 @@
                  this, &spyServer_client_8::setGain);
         connect (portNumber, qOverload<int>(&QSpinBox::valueChanged),
                  this, &spyServer_client_8::set_portNumber);
-	connect (xml_dumpButton, &QPushButton::clicked,
-	         this, &spyServer_client_8::set_xmlDump);
 	theState	-> setText ("waiting to start");
-	xml_dumpButton	-> setText ("Dump to xml");
 
 	xmlWriter	= nullptr;
 	xml_dumping. store (false);
@@ -470,26 +467,32 @@ void    spyServer_client_8::set_portNumber        (int v) {
                                  "spyServer-port", v);
 }
 
-void	spyServer_client_8::set_xmlDump () {
-	if (!xml_dumping. load ()) {
-	   setup_xmlDump ();
-	}
-	else {
-	   close_xmlDump ();
-	}
+bool	spyServer_client_8::providesDump	() {
+	return true;
 }
 
-bool	spyServer_client_8::setup_xmlDump () {
+void	spyServer_client_8::startDump		(const QString &name,
+	                                             int mode)  {
+	setup_xmlDump (name, mode);
+}
+
+void	spyServer_client_8::stopDump		() {
+	close_xmlDump ();
+}
+
+bool	spyServer_client_8::setup_xmlDump	(const QString &dumpName,
+	                                                    int mode) {
 QString channel		= spyServer_settings -> value ("channel", "xx").
 	                                                      toString ();
-
+	(void)mode;
 	xmlWriter	= nullptr;
 	try {
-	   xmlWriter	= new xml_fileWriter (spyServer_settings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      spyServer_settings,
 	                                      channel,
 	                                      8,
 	                                      "uint8",
-	                                      2048000,
+	                                      SAMPLERATE,
 	                                      lastFrequency,
 	                                      settings. gain,
 	                                      "RTLSDR",
@@ -499,7 +502,6 @@ QString channel		= spyServer_settings -> value ("channel", "xx").
 	   return false;
 	}
 	xml_dumping. store (true);
-	xml_dumpButton	-> setText ("writing xml file");
 	return true;
 }
 	
@@ -511,6 +513,5 @@ void	spyServer_client_8::close_xmlDump () {
 	delete xmlWriter;
 	xmlWriter	= nullptr;
 	xml_dumping. store (false);
-	xml_dumpButton	-> setText ("Dump to xml");
 }
 

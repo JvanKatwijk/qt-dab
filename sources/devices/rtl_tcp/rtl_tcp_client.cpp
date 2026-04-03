@@ -106,8 +106,6 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         this, &rtl_tcp_client::setDisconnect);
 	connect (ppmSelector, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &rtl_tcp_client::set_fCorrection);
-	connect (xml_dumpButton, &QPushButton::clicked,
-	         this, &rtl_tcp_client::set_xmlDump);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (biasTSelector, &QCheckBox::checkStateChanged,
 #else
@@ -129,7 +127,6 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 
 	xml_dumping. store (false);
 	theState	-> setText("waiting to start");
-	xml_dumpButton	-> setText ("Dump to xml");
 	xmlWriter	= nullptr;
 }
 
@@ -405,21 +402,26 @@ QString rtl_tcp_client::deviceName	() {
 	return "RtlTcp";
 }
 
-void	rtl_tcp_client::set_xmlDump () {
-	if (!xml_dumping. load ()) {
-	   setup_xmlDump (); 
-	}
-	else {
-	   close_xmlDump ();
-	}
+bool	rtl_tcp_client::providesDump	() {
+	return true;
 }
 
-bool	rtl_tcp_client::setup_xmlDump () {
+void	rtl_tcp_client::startDump	(const QString &name, int mode) {
+	setup_xmlDump (name, mode);
+}
+
+void	rtl_tcp_client::stopDump	() {
+	close_xmlDump ();
+}
+
+bool	rtl_tcp_client::setup_xmlDump (const QString &dumpName, int mode) {
 QString channel		= remoteSettings -> value ("channel", "xx").
 	                                                      toString ();
+	(void)mode;
 	xmlWriter	= nullptr;
 	try {
-	   xmlWriter	= new xml_fileWriter (remoteSettings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      remoteSettings,
 	                                      channel,
 	                                      8,
 	                                      "uint8",
@@ -433,7 +435,6 @@ QString channel		= remoteSettings -> value ("channel", "xx").
 	   return false;
 	}
 	xml_dumping. store (true);
-	xml_dumpButton	-> setText ("writing xml file");
 	return true;
 }
 	
@@ -445,6 +446,5 @@ void	rtl_tcp_client::close_xmlDump () {
 	delete xmlWriter;
 	xmlWriter	= nullptr;
 	xml_dumping. store (false);
-	xml_dumpButton	-> setText ("Dump to xml");
 }
 

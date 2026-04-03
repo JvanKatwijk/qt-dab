@@ -222,8 +222,8 @@ lms_info_str_t limedevices [10];
 	setGain (k);
 	connect (gainSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &limeHandler::setGain);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &limeHandler::set_xmlDump);
+//	connect (dumpButton, &QPushButton::clicked,
+//	         this, &limeHandler::set_xmlDump);
 	connect (this, &limeHandler::new_gainValue,
 	         gainSelector, &QSpinBox::setValue);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
@@ -338,7 +338,7 @@ int	errorCode;
 	
 void	limeHandler::stopReader	() {
 int errorCode;
-	close_xmlDump ();
+	stopDump ();
 	if (!isRunning())
 	   return;
 	if (save_gainSettings)
@@ -658,22 +658,20 @@ bool	limeHandler::load_limeFunctions() {
 	return true;
 }
 
-void	limeHandler::set_xmlDump () {
-	if (xmlWriter == nullptr) {
-	   setup_xmlDump ();
-	}
-	else {
-	   close_xmlDump ();
-	}
+bool	limeHandler::providesDump	() {
+	return true;
 }
 
-bool	limeHandler::setup_xmlDump () {
+void	limeHandler::startDump  (const QString &dumpName, int mode) {
 QString channel		= value_s (limeSettings, DAB_GENERAL,
 	                                       "channel", "xx");
-	xmlWriter	= nullptr;
+	(void)mode;
+	if (xmlWriter != nullptr)
+	   return;
 	try {
 	   int gaindB	=  value_i (limeSettings, LIME_SETTINGS, "gain", 50);
-	   xmlWriter	= new xml_fileWriter (limeSettings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      limeSettings,
 	                                      channel,
 	                                      bitDepth (),
 	                                      "int16",
@@ -684,21 +682,20 @@ QString channel		= value_s (limeSettings, DAB_GENERAL,
 	                                      "???",
 	                                      recorderVersion);
 	} catch (...) {
-	   return false;
+	   return;
 	}
-	dumpButton	-> setText ("writing");
+//	dumpButton	-> setText ("writing");
 	dumping. store (true);
-	return true;
 }
 	
-void	limeHandler::close_xmlDump () {
+void	limeHandler::stopDump () {
 	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
 	dumping. store (false);
-	dumpButton	-> setText ("Dump");
+//	dumpButton	-> setText ("Dump");
 	xmlWriter	= nullptr;
 }
 

@@ -36,15 +36,29 @@ struct timeval  tv;
 
 	wavReader::wavReader	(wavFiles	*mr,
 	                         SNDFILE	*filePointer,
+	                         int32_t	samplerate,
 	                         RingBuffer<std::complex<float> > *theBuffer) {
 	this	-> parent	= mr;
 	this	-> filePointer	= filePointer;
+	this	-> sampleRate	= samplerate;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= sf_seek (filePointer, 0, SEEK_END);
 	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
 	sf_seek (filePointer, 0, SEEK_SET);
 	period          = (32768 * 1000) / (2048);  // full IQś read
 	fprintf (stderr, "Period = %ld\n", period);
+	if (sampleRate != INPUT_RATE) {
+//  	set up for interpolator
+	   convBuffer. resize (sampleRate / 1000 + 1);
+           float denominator	= float (INPUT_RATE) / DIVIDER;
+           float inVal		= float (sampleRate) / DIVIDER;
+           for (int i = 0; i < INPUT_RATE / DIVIDER; i ++) {
+              mapTable_int [i]     = int (floor (i * (inVal / denominator)));
+              mapTable_float [i] =
+                             i * (inVal / denominator) - mapTable_int [i];
+           } 
+	}
+        convIndex       = 0;
 	running. store (false);
 	start();
 }
@@ -76,7 +90,7 @@ std::complex<float> bi [bufferSize];
 	nextStop	= getMyTime();
 	try {
 	   while (running. load()) {
-	      while (theBuffer -> WriteSpace() < bufferSize) {
+	      while (theBuffer -> WriteSpace () < bufferSize) {
 	         if (!running. load())
 	            throw (33);
 	         usleep (100);
@@ -97,7 +111,28 @@ std::complex<float> bi [bufferSize];
 	         for (int i = n; i < bufferSize; i ++)
 	            bi [i] = std::complex <float> (0, 0);
 	      }
-	      theBuffer -> putDataIntoBuffer (bi, bufferSize);
+	      if (sampleRate == INPUT_RATE)
+	         theBuffer -> putDataIntoBuffer (bi, bufferSize);
+	      else {
+	         std::complex<float> localBuf [SAMPLERATE / DIVIDER];
+	         for (int i = 0; i < bufferSize; i ++) {
+	            convBuffer [convIndex ++] = bi [i];
+	            if (convIndex > (sampleRate / DIVIDER + 1)) {
+	              for (int j = 0; j < INPUT_RATE / DIVIDER; j ++) {
+	                  int16_t inpBase     = mapTable_int [j];
+	                  float   inpRatio    = mapTable_float [j];
+	                   localBuf [j]        = 
+                                     convBuffer [inpBase + 1] * inpRatio +
+                                     convBuffer [inpBase] * (1 - inpRatio);
+	               
+	               }
+	               _I_Buffer. putDataIntoBuffer (localBuf,
+                                                  INPUT_RATE / DIVIDER);
+	               convBuffer [0] = convBuffer [CONV_SIZE];
+	               convIndex = 1;
+	            }
+	         }
+	      }
 	      if (nextStop - getMyTime() > 0)
 	         usleep (nextStop - getMyTime());
 	   }

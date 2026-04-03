@@ -4,6 +4,27 @@
 
 ![6.10](/res/read_me/qt-dab-logo.png?raw=true)
 
+
+--------------------------------------------------------------------------
+		What is new
+--------------------------------------------------------------------------
+
+I had an unexpected problem, I started a dump (".wav"), clicked away the
+configuration and control window and forgot that I was dumping.
+Few (??) minutes later I looked and had a file over over 30 Gb, while all
+what I wanted was a sample of the ensemble for some test purposes.
+
+Having a "dump" dutton on anything else than the main window seems terribly
+wrong. So, three things changed
+ * the "dump" button was removed, and now **clicking with the right hand 
+mouse button controls dumping**.
+ * this alternative **dump control** holds for both the dumps in ".wav"
+or ".uff" format (the configuration and control window now has a selector
+for choosing dumping in either ".wav" or ".uff" format).
+ * when dumping a small separate window will tell you that dumping does on
+
+![6.10](/res/read_me/dumping.png?raw=true)
+
 --------------------------------------------------------------------------
 About Qt-DAB
 -------------------------------------------------------------------------

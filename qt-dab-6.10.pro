@@ -175,6 +175,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/epg/xml-extractor.h \
 	   ./sources/output/converter_48000.h \
 	   ./sources/output/audio-player.h \
+	   ./sources/support/dump-display.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
 	   ./sources/support/audiosystem-selector.h \
@@ -327,6 +328,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
 	   ./sources/output/converter_48000.cpp \
 	   ./sources/output/audio-player.cpp \
+	   ./sources/support/dump-display.cpp \
 	   ./sources/support/audiosystem-selector.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \

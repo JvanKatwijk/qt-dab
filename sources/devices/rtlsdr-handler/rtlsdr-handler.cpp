@@ -270,10 +270,6 @@ char	manufac [256], product [256], serial [256];
                  this, &rtlsdrHandler::set_sw_agc);
         connect (agc_off, &QRadioButton::toggled,
                  this, &rtlsdrHandler::set_off_agc);
-	connect (xml_dumpButton, &QPushButton::clicked,
-	         this, &rtlsdrHandler::set_xmlDump);
-	connect (iq_dumpButton, &QPushButton::clicked,
-	         this, &rtlsdrHandler::set_iqDump);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (biasControl, &QCheckBox::checkStateChanged,
 #else
@@ -657,30 +653,30 @@ QString	rtlsdrHandler::deviceName	() {
 	return deviceModel;
 }
 
-void	rtlsdrHandler::set_iqDump	() {
-	if (xmlWriter != nullptr)
-	   return;
-	if (iqDumper == nullptr) {
-	   if (setup_iqDump ()) {
-	      xml_dumpButton	-> hide ();
-	   }
-	}
-	else {
-	   close_iqDump ();
-	   xml_dumpButton	-> show ();
-	}
+bool	rtlsdrHandler::providesDump	() {
+	return true;
 }
 
-bool	rtlsdrHandler::setup_iqDump () {
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         QDir::homePath (),
-	                                         "raw (*.raw)");
-	fileName        = QDir::toNativeSeparators (fileName);
-	iqDumper	= fopen (fileName. toUtf8 (). data (), "wb");
+void	rtlsdrHandler::startDump	(const QString &name, int mode) {
+	if (mode == 0)
+	   setup_xmlDump (name, true);
+	else
+	   setup_iqDump (name);
+}
+
+void	rtlsdrHandler::stopDump		() {
+	if (xmlWriter != nullptr)
+	   close_xmlDump	();
+	else
+	if (iqDumper != nullptr)
+	   close_iqDump ();
+}
+
+bool	rtlsdrHandler::setup_iqDump (const QString &fileName) {
+QString theName        = QDir::toNativeSeparators (fileName);
+	iqDumper	= fopen (theName. toUtf8 (). data (), "wb");
 	if (iqDumper == nullptr)
 	   return false;
-	iq_dumpButton	-> setText ("writing raw file");
 	iq_dumping. store (true);
 	return true;
 }
@@ -690,41 +686,18 @@ void	rtlsdrHandler::close_iqDump () {
 	   return;
 	iq_dumping. store (false);
 	fclose (iqDumper);
-	iq_dumpButton	-> setText ("Dump to raw");
 	iqDumper	= nullptr;
 }
 	   
-void	rtlsdrHandler::set_xmlDump () {
-	if (iqDumper != nullptr)
-	   return;
-	if (!xml_dumping. load ()) {
-	   if (setup_xmlDump (false)) 
-	      iq_dumpButton	-> hide	();
-	}
-	else {
-	   close_xmlDump ();
-	   iq_dumpButton	-> show	();
-	}
-}
-
-void	rtlsdrHandler::startDump	() {
-	setup_xmlDump (true);
-	iq_dumpButton	-> hide ();
-}
-
-void	rtlsdrHandler::stopDump		() {
-	close_xmlDump	();
-	iq_dumpButton	-> show ();
-}
-
-bool	rtlsdrHandler::setup_xmlDump (bool direct) {
+bool	rtlsdrHandler::setup_xmlDump (const QString &name, bool direct) {
 QString channel		= value_s (rtlsdrSettings, "dab-general",
 	                                   "channel", "xx");
 
 	if (xmlWriter != nullptr)
 	   return false;
 	try {
-	   xmlWriter	= new xml_fileWriter (rtlsdrSettings,
+	   xmlWriter	= new xml_fileWriter (name,
+	                                      rtlsdrSettings,
 	                                      channel,
 	                                      8,
 	                                      "uint8",
@@ -733,12 +706,10 @@ QString channel		= value_s (rtlsdrSettings, "dab-general",
 	                                      rtlsdr_get_tuner_gain (theDevice),
 	                                      "RTLSDR",
 	                                      deviceModel,
-	                                      recorderVersion,
-	                                      direct);
+	                                      recorderVersion);
 	} catch (...) {
 	   return false;
 	}
-	xml_dumpButton	-> setText ("writing xml file");
 	xml_dumping. store (true);
 	return true;
 }
@@ -750,7 +721,7 @@ void	rtlsdrHandler::close_xmlDump () {
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
 	xmlWriter	= nullptr;
-	xml_dumpButton	-> setText ("Dump to xml");
+//	xml_dumpButton	-> setText ("Dump to xml");
 	xml_dumping. store (false);
 }
 

@@ -55,6 +55,7 @@
 #define	SAVE_SLIDES_SETTING		"saveSlides"
 #define	TRANSMITTER_NAMES_SETTING	"transmitterNames"
 
+#define	DUMPMODE_SET		"dumpmode"
 #define	COLOR_SETTINGS		"colorSettings"
 #define	SKIN_SETTING		"skin"
 #define	SAVE_SERVICE_SETTING	"saveService"

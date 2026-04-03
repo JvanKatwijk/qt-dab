@@ -26,27 +26,39 @@
 #include	<QThread>
 #include	<sndfile.h>
 #include	"dab-constants.h"
+#include	<vector>
+#include	<complex>
 #include	"ringbuffer.h"
 #include	<atomic>
 class	wavFiles;
 
+#define	DIVIDER	1000
 class	wavReader:public QThread {
 Q_OBJECT
 public:
 			wavReader	(wavFiles *,
 	                                 SNDFILE *,
+	                                 int32_t,
 	                                 RingBuffer<std::complex<float>> *); 
-			~wavReader();
-	void		startReader();
-	void		stopReader();
+			~wavReader	();
+	void		startReader	();
+	void		stopReader	();
 private:
 virtual void		run		();
 	SNDFILE		*filePointer;
+	int32_t		sampleRate;
 	RingBuffer<std::complex<float> >	*theBuffer;
+
 	uint64_t	period;
 	std::atomic<bool>	running;
 	wavFiles	*parent;
 	int64_t		fileLength;
+
+	std::vector<std::complex<float>> convBuffer;
+        int		convIndex;
+        int16_t		mapTable_int    [INPUT_RATE / DIVIDER];
+        float		mapTable_float  [INPUT_RATE / DIVIDER];
+
 signals:
 	void		setProgress	(int, float);
 };

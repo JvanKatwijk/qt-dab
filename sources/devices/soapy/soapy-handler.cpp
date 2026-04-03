@@ -94,15 +94,12 @@ std::vector<QString> labelString;
 	m_dumping. store (false);
 	toSkip. store (0);
 	xmlWriter	= nullptr;
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &soapyHandler::handle_xmlDump);
-
 	m_freq		= 220000000;
 	createDevice (selectedString, selectedSerial);
 }
 
 	soapyHandler::~soapyHandler () {
-	close_xmlDump ();
+	stopDump ();
 	m_running. store (false);
 	if (m_thread. joinable ())
 	   m_thread. join ();
@@ -365,6 +362,10 @@ bool	soapyHandler::isFileInput () {
 	return false;
 }
 
+bool	soapyHandler::providesDump	() {
+	return true;
+}
+
 int32_t soapyHandler::findDesiredSamplerate (const SoapySDR::RangeList &range) {
 
 	for (size_t i = 0; i < range. size (); i++) {
@@ -456,11 +457,13 @@ void    soapyHandler::reportStatus      (const QString &s) {
         statusLabel     -> setText (s);
 }
 
-bool	soapyHandler::setup_xmlDump (bool direct) {
+void	soapyHandler::startDump	(const QString &dumpName, int mode) {
 QString channel		= value_s (soapySettings, DAB_GENERAL,
 	                                             "channel", "xx");
+	(void)mode;
 	try {
-	   xmlWriter	= new xml_fileWriter (soapySettings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      soapySettings,
 	                                      channel,
 	                                      sizeof (float) * 8,
 	                                      "float32",
@@ -469,18 +472,15 @@ QString channel		= value_s (soapySettings, DAB_GENERAL,
 	                                      -1,
 	                                      selectedString,
 	                                      selectedSerial,
-	                                      "qt-dab",
-	                                      direct);
+	                                      "qt-dab");
 	} catch (...) {
-	   return false;
+	   return;
 	}
 
-	dumpButton	-> setText ("writing");
 	m_dumping. store (true);
-	return true;
 }
 	
-void	soapyHandler::close_xmlDump () {
+void	soapyHandler::stopDump () {
 	if (xmlWriter == nullptr)	// this can happen !!
 	   return;
 	m_dumping. store (false);
@@ -489,14 +489,5 @@ void	soapyHandler::close_xmlDump () {
 	dumpButton	-> setText ("Dump");
 	delete xmlWriter;
 	xmlWriter	= nullptr;
-}
-
-void	soapyHandler::handle_xmlDump () {
-        if (xmlWriter == nullptr) {
-           setup_xmlDump (false);
-        }
-        else {
-           close_xmlDump ();
-        }  
 }
 

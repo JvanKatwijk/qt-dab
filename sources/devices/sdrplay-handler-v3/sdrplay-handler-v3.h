@@ -68,8 +68,9 @@ public:
 	int16_t		bitDepth		() override;
 	QString		deviceName		() override;
 
-	void		startDump		();
-	void		stopDump		();
+	bool		providesDump		() override;
+	void		startDump		(const QString &, int) override;
+	void		stopDump		() override;
 
 	void            updatePowerOverload (
 	                                 sdrplay_api_EventParamsT *params);
@@ -126,7 +127,7 @@ public:
 	double			ppmValue;
 	bool			biasT;
 	xml_fileWriter		*xmlWriter;
-	bool			setupXmlDump		(bool);
+	bool			setupXmlDump		(const QString &, bool);
 	void			closeXmlDump		();
 	std::atomic<bool>	dumping;
 	std::queue<generalCommand *>	serverQueue;
@@ -159,7 +160,6 @@ public slots:
 	void			setLnaBounds		(int, int);
 	void			setSerial		(const QString &);
 	void			setApiVersion		(float);
-	void			setXmlDump		();
 	void			showLnaGain		(int);
 	void			showState		(const QString &);
 //

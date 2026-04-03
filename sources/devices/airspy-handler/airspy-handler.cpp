@@ -22,7 +22,6 @@
 #include	"dab-constants.h"
 #include	"airspy-handler.h"
 #include	"position-handler.h"
-//#include	"airspyselect.h"
 #include	"selector.h"
 #include	"device-exceptions.h"
 #include	"errorlog.h"
@@ -193,8 +192,6 @@ uint32_t samplerateCount;
 	         this, &airspyHandler::set_rf_bias);
 	connect (tabWidget, &QTabWidget::currentChanged,
 	         this, &airspyHandler::switch_tab);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &airspyHandler::set_xmlDump);
 	connect (this, &airspyHandler::new_tabSetting,
 	         tabWidget, &QTabWidget::setCurrentIndex);
 //
@@ -605,43 +602,34 @@ QString	airspyHandler::deviceName	() {
 	return QString ("AIRspy :") + QString (getSerial ());
 }
 
-void	airspyHandler::set_xmlDump () {
-	if (xmlWriter. isNull ()) {
-	   setup_xmlDump (false);
-	}
-	else {
-	   close_xmlDump ();
-	}
-}
-
-void	airspyHandler::startDump	() {
-	setup_xmlDump (true);
+void	airspyHandler::startDump	(const QString &dumpName, int mode) {
+	(void)mode;
+	setup_xmlDump (dumpName, true);
 }
 
 void	airspyHandler::stopDump	() {
 	close_xmlDump	();
 }
 
-bool	airspyHandler::setup_xmlDump (bool direct) {
+bool	airspyHandler::setup_xmlDump (const QString &dumpName, bool direct) {
 QString channel		= value_s (airspySettings, DAB_GENERAL,
 	                                            "channel", "xx");
 	try {
-	   xmlWriter. reset (new xml_fileWriter (airspySettings,
-	                                      channel,
-	                                      12,
-	                                      "int16",
-	                                      selectedRate,
-	                                      lastFrequency,
-	                                      -1,
-	                                      "Airspy",
-	                                      getSerial (),
-	                                      recorderVersion,
-	                                      direct));
+	   xmlWriter. reset (new xml_fileWriter (dumpName,
+	                                         airspySettings,
+	                                         channel,
+	                                         12,
+	                                         "int16",
+	                                         selectedRate,
+	                                         lastFrequency,
+	                                         -1,
+	                                         "Airspy",
+	                                         getSerial (),
+	                                         recorderVersion));
 	} catch (...) {
 	   return false;
 	}
 	dumping. store (true);
-	dumpButton	-> setText ("writing");
 	return true;
 }
 
@@ -652,7 +640,6 @@ void	airspyHandler::close_xmlDump () {
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	dumping. store (false);
-	dumpButton	-> setText ("Dump");
 	xmlWriter. reset ();
 }
 //
@@ -964,5 +951,9 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 void	airspyHandler::showStatus	(const QString s) {
 	statusLabel -> setText (s);
+}
+
+bool	airspyHandler::providesDump	() {
+	return true;
 }
 

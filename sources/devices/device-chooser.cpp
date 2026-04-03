@@ -370,6 +370,7 @@ QString	 deviceChooser::getFileName	(uint8_t &fileType) {
 QString TYPE_UFF	= "uff-xml (*.uff)";
 QString TYPE_XML	= "uff-xml (*.xml)";
 QString TYPE_SDR	= "sdr-wav (*.sdr)";
+QString TYPE_WAV	= "sdr-wav (*.wav)";
 QString TYPE_RAW	= "raw (*.raw)";
 QString TYPE_IQ		= "IQ-RAW (*.iq)";
 
@@ -387,6 +388,7 @@ QString fileName =
                                              TYPE_UFF + ";;" +
                                              TYPE_XML + ";;" +
 	                                     TYPE_SDR + ";;" +
+	                                     TYPE_WAV + ";;" +
 	                                     TYPE_RAW + ";;" +
 	                                     TYPE_IQ,
                                              &selectedType,
@@ -405,7 +407,7 @@ QString fileName =
 	if ((selectedType == TYPE_XML) || (selectedType == TYPE_UFF))
 	  fileType	= XML_FILE;
 	else
-	if (selectedType == TYPE_SDR)
+	if ((selectedType == TYPE_SDR) || (selectedType == TYPE_WAV))
 	   fileType	= WAV_FILE;
 	else
 	if (selectedType == TYPE_RAW)

@@ -225,7 +225,6 @@ int	snrCount	= 0;
 	   for (int i = 0; i < T_F / tempSize; i ++) {
 	      theReader. getSamples (temp, 0, tempSize, 0, true);
 	   }
-
 	   while (true) {
 	      if (!inSync) {
 	         totalFrames ++;

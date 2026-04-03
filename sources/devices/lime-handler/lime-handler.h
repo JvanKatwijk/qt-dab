@@ -123,6 +123,10 @@ public:
         void            resetBuffer		() override;
         int16_t         bitDepth		() override;
 	QString		deviceName		() override;
+
+	bool		providesDump		() override;
+	void		startDump		(const QString &, int) override;
+	void		stopDump		();
 private:
 	RingBuffer<std::complex<int16_t>> _I_Buffer;
 	QString		recorderVersion;
@@ -140,7 +144,6 @@ private:
         void		run			();
 
         xml_fileWriter  *xmlWriter;
-        bool            setup_xmlDump           ();
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
 
@@ -188,7 +191,7 @@ signals:
 private slots:
 	void		setGain		(int);
 	void		setAntenna	(int);
-	void		set_xmlDump	();
+//	void		set_xmlDump	();
 	void		set_filter	(int);
 public slots:
 	void		showErrors	(int, int);

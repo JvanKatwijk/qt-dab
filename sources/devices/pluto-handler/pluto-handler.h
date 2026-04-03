@@ -129,17 +129,21 @@ public:
 	                                         const QString &,
 	                                         const QString &,
 	                                         errorLogger *);
-            		~plutoHandler		();
-	bool		restartReader		(int32_t, int skipped = 0);
+            		~plutoHandler		() override;
+	bool		restartReader		(int32_t,
+	                                            int skipped = 0) override;
 	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *, int32_t);
-	int32_t		Samples			();
-	void		resetBuffer		();
-	int16_t		bitDepth		();
-	QString		deviceName		();
+	int32_t		getSamples		(std::complex<float> *,
+	                                            int32_t) override;
+	int32_t		Samples			() override;
+	void		resetBuffer		() override;
+	int16_t		bitDepth		() override;
+	QString		deviceName		() override;
 
-	void		startDump		();
-	void		stopDump		();
+	bool		providesDump		() override;
+	void		startDump		(const QString &,
+	                                               int) override;
+	void		stopDump		() override;
 private:
 	bool			load_iioFunctions	();
 	QLibrary		*pHandle;
@@ -148,8 +152,6 @@ private:
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
 	QScopedPointer<xml_fileWriter>	xmlWriter;
-	bool			setup_xmlDump	(bool);
-	void			close_xmlDump	();
 	bool			filterOn;
 	void			run		();
 	int32_t			inputRate;
@@ -268,6 +270,6 @@ private slots:
 	void		set_agcControl		(int);
 	void		toggle_debugButton	();
 	void		set_filter		();
-	void		set_xmlDump		();
+//	void		set_xmlDump		();
 };
 

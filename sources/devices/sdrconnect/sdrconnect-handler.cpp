@@ -64,13 +64,14 @@ int	portNumber	= portLabel	-> value ();
 	         this, &sdrConnectHandler::rateError);
 	connect (theMessager, &messageHandler::send_status,
 	         this, &sdrConnectHandler::show_dropCount);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &sdrConnectHandler::handle_dumpButton);
 }
 
 	sdrConnectHandler::~sdrConnectHandler		() {
 	OK_to_run	= false;
-	delete theMessager;
+	if (theMessager != nullptr) {
+	   stopDump ();
+	   delete theMessager;
+	}
 }
 
 bool	sdrConnectHandler::restartReader	(int32_t freq, int skipped) {
@@ -150,14 +151,23 @@ void	sdrConnectHandler::show_dropCount	(int n) {
 	overflowLabel	-> setText ("   ");
 }
 
-void	sdrConnectHandler::handle_dumpButton	() {
-	if (theMessager -> isDumping ()) {
-	   theMessager -> close_xmlDump ();
-	   dumpButton -> setText ("dump");
+bool	sdrConnectHandler::providesDump	() {
+	return true;
+}
+
+void	sdrConnectHandler::startDump	(const QString &dumpName, int mode) {
+	(void)mode;
+	if (theMessager == nullptr)
 	   return;
+	theMessager -> startDump (dumpName);
+}
+
+void	sdrConnectHandler::stopDump	() {
+	if (theMessager == nullptr)
+	   return;
+	if (theMessager -> isDumping ()) {
+	   theMessager -> stopDump ();
 	}
-	theMessager -> setup_xmlDump ();
-	dumpButton -> setText ("dumping");
 }
 
 	

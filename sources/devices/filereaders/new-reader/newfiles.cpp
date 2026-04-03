@@ -39,6 +39,7 @@
 	                               theReader (fileName) {
 	newFilesSettings	= s;
 	setupUi (&myFrame);
+
 	setPositionAndSize (s, &myFrame, WAVSETTINGS);
 	myFrame. setWindowTitle ("BW64/RIFF reader");
 	myFrame. show	();
@@ -54,8 +55,12 @@
                  this, &newFiles::handle_sliderReleased);
 
 	currentTime		-> display (0);
-//
+	
 //	The reader knows it all
+	this	-> sampleRate	= theReader. get_sampleRate ();
+	if ((sampleRate < SAMPLERATE - 500000) ||
+	    (sampleRate > SAMPLERATE + 500000))
+	   throw (24);
 	int64_t fileLength	= theReader. elementCount ();
 	QString	fileType	= theReader. fileType ();
 	QString deviceName	= theReader. getDevice ();
@@ -87,7 +92,8 @@
 bool	newFiles::restartReader		(int32_t freq, int skipped) {
 	(void)freq;
 	(void)skipped;
-        readerTask. reset (new newReader (this, &theReader, &_I_Buffer));
+        readerTask. reset (new newReader (this, &theReader,
+	                                      sampleRate, &_I_Buffer));
         return true;
 }
 

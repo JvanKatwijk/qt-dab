@@ -44,7 +44,8 @@ public:
 
 class xml_fileWriter {
 public:
-		xml_fileWriter	(QSettings	*,
+		xml_fileWriter	(const QString &,
+	                         QSettings	*,
 	                         const QString &,
 	                         int,
 	                         const QString &,
@@ -53,8 +54,7 @@ public:
 	                         int,
 	                         const QString &,
 	                         const QString &,
-	                         const QString &,
-	                         bool direct	= false);
+	                         const QString &);
 			~xml_fileWriter		();
 	void		add			(std::complex<int16_t> *, int);
 	void		add			(std::complex<uint8_t> *, int);

@@ -104,8 +104,10 @@ public:
 	int16_t		bitDepth		() override;
 	QString		deviceName		() override;
 
-	void		startDump		();
-	void		stopDump		();
+	bool		providesDump		() override;
+	void		startDump		(const QString &name,
+	                                             int dumpMode) override;
+	void		stopDump		() override;
 	int16_t		currentTab;
 private:
 	RingBuffer<std::complex<float>> _I_Buffer;
@@ -113,7 +115,7 @@ private:
 	QString		recorderVersion;
 	void		check_error		(bool, const std::string);
         QScopedPointer<xml_fileWriter>	xmlWriter;
-        bool            setup_xmlDump		(bool);
+        bool            setup_xmlDump		(const QString &, bool);
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
 	void		record_gainSettings	(int, int);
@@ -133,7 +135,7 @@ private slots:
 	void		set_mixer_agc		(int);
 	void		set_rf_bias		(int);
 	void		switch_tab		(int);
-	void		set_xmlDump		();
+//	void		set_xmlDump		();
 signals:
 	void		new_tabSetting		(int);
 private:

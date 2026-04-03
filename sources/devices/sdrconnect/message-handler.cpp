@@ -60,16 +60,16 @@
 
 	this	-> vfo_frequency	= startFreq;
 	xml_dumping. store	(false);
-	xmlWriter		= nullptr;
-	runMode			= false;
-	theSamplerate		= 2000000;	// default
+	xmlWriter			= nullptr;
+	runMode				= false;
+	theSamplerate			= 2000000;	// default
 }
 
 	messageHandler::~messageHandler	() {
 	if (runMode)
 	   iqStreamEnable (false);
 	if (xml_dumping. load () && (xmlWriter != nullptr)) {
-	   close_xmlDump ();
+	   stopDump ();
 	}
 }
 
@@ -107,7 +107,7 @@ bool	messageHandler::restartReader	(int32_t freq, int skip) {
 
 void	messageHandler::stopReader	() {
 	runMode = false;	
-	close_xmlDump ();
+	stopDump ();
 }
 
 void	messageHandler::iqStreamEnable	(bool b) {
@@ -256,12 +256,13 @@ void	messageHandler::eval_status	(int status) {
 	send_status (status);
 }
 
-bool	messageHandler::setup_xmlDump () {
+bool	messageHandler::startDump (const QString &dumpName) {
 QString channel		= value_s (settings, "dab-general", "channel", "xx");
 	if (xmlWriter != nullptr)
 	   return false;
 	try {
-	   xmlWriter	= new xml_fileWriter (settings,
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      settings,
 	                                      channel,
 	                                      16,
 	                                      "int16",
@@ -270,8 +271,7 @@ QString channel		= value_s (settings, "dab-general", "channel", "xx");
 	                                      -1,
 	                                      "SDRconnect",
 	                                      "unknown",
-	                                      recorder,
-	                                      false);
+	                                      recorder);
 	} catch (...) {
 	   return false;
 	}
@@ -279,7 +279,7 @@ QString channel		= value_s (settings, "dab-general", "channel", "xx");
 	return true;
 }
 	
-void	messageHandler::close_xmlDump () {
+void	messageHandler::stopDump () {
 	if (xmlWriter == nullptr)
 	   return;
 	usleep (1000);

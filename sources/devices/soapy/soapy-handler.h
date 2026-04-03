@@ -38,15 +38,18 @@ class soapyHandler: public deviceHandler, public Ui_soapyWidget {
 Q_OBJECT
 public:
 		soapyHandler	(QSettings *);
-		~soapyHandler	();
-	bool	restartReader	(int, int skipped = 0);
-	void	stopReader	();
-	void	reset		();
-	int	getSamples	(std::complex<float> *, int);
-	int	Samples		();
-	int16_t	bitDepth	();
-	bool	isFileInput	();
+		~soapyHandler	() override;
+	bool	restartReader	(int, int skipped = 0) override;
+	void	stopReader	() override;
+	int	getSamples	(std::complex<float> *, int) override;
+	int	Samples		() override;
+	int16_t	bitDepth	() override;
+	bool	isFileInput	() override;
+	bool	providesDump	() override;
+	void	startDump	(const QString &, int) override;
+	void	stopDump	() override;
 	int32_t	getVFOFrequency	();
+	void	reset		();
 
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;
@@ -74,8 +77,6 @@ private:
 	                                       SoapySDR::RangeList &theRanges);
 
 	xml_fileWriter		*xmlWriter;
-	bool			setup_xmlDump	(bool);
-	void			close_xmlDump	();
 	void			setGain		(uint8_t, int32_t);
 private slots:
 	void			setGain_0	(int);
@@ -86,7 +87,6 @@ private slots:
 	void			handle_balanceIndicator (int b);
 	void			handle_DCModeIndicator	(int b);
 	void			handle_ppmIndicator	(double);
-	void			handle_xmlDump	();
 
 public slots:
 	void			reportStatus	(const QString &);

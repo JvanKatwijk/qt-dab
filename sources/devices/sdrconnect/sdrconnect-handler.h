@@ -35,16 +35,20 @@ class	sdrConnectHandler: public deviceHandler,
 Q_OBJECT
 public:
 		sdrConnectHandler	(QSettings *, const QString &);
-		~sdrConnectHandler	();
-	bool	restartReader		(int32_t freq, int skipped);
-	void	stopReader		();
-	int32_t	getSamples		(std::complex<float> *b, int32_t size);
-	int32_t	Samples			();
-	void	resetBuffer		();
-	int16_t	bitDepth		();
-	QString	deviceName		();
-	bool	isFileInput		();
-	int32_t	getVFOFrequency		();
+		~sdrConnectHandler	() override;
+	bool	restartReader		(int32_t freq, int skipped) override;
+	void	stopReader		() override;
+	int32_t	getSamples		(std::complex<float> *b,
+	                                        int32_t size) override;
+	int32_t	Samples			() override;
+	void	resetBuffer		() override;
+	int16_t	bitDepth		() override;
+	QString	deviceName		() override;
+	bool	isFileInput		() override;
+	void	startDump		(const QString &, int) override;
+	void	stopDump		() override;
+	int32_t	getVFOFrequency		() override;
+	bool	providesDump		() override;
 private:
 	QSettings	*settings;
 	QString		recorderVersion;
@@ -60,8 +64,6 @@ public slots:
 	void	rateOK			();
 	void	rateError		();
 	void	show_dropCount		(int);
-
-	void	handle_dumpButton	();
 };
 
 

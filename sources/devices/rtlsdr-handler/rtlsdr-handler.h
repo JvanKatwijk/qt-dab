@@ -90,18 +90,21 @@ public:
 	                                 const QString, int,
 	                             	 const QString &,
 	                               	 errorLogger *);
-			~rtlsdrHandler	();
-	bool		restartReader	(int32_t, int skipped = 0);
-	void		stopReader	();
-	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples		();
-	void		resetBuffer	();
+			~rtlsdrHandler	() override;
+	bool		restartReader	(int32_t,
+	                                    int skipped = 0) override;
+	void		stopReader	() override;
+	int32_t		getSamples	(std::complex<float> *,
+	                                    int32_t) override;
+	int32_t		Samples		() override;
+	void		resetBuffer	() override;
 	int16_t		maxGain		();
 	int16_t		bitDepth	();
-	QString		deviceName	();
+	QString		deviceName	() override;
 
-	void		startDump	();
-	void		stopDump	();
+	bool		providesDump	() override;
+	void		startDump	(const QString &, int) override;
+	void		stopDump	() override;
 
 //	These need to be visible for the separate usb handling thread
 	pfnrtlsdr_read_async	rtlsdr_read_async;
@@ -123,11 +126,11 @@ private:
 	QString		deviceModel;
 	QString		recorderVersion;
         xml_fileWriter	*xmlWriter;
-        bool            setup_xmlDump		(bool);
+        bool            setup_xmlDump		(const QString &, bool);
         void            close_xmlDump		();
         std::atomic<bool> xml_dumping;
 	FILE		*iqDumper;
-        bool            setup_iqDump		();
+        bool            setup_iqDump		(const QString &);
         void            close_iqDump		();
         std::atomic<bool> iq_dumping;
 	void		record_gainSettings	(int);
@@ -188,8 +191,8 @@ private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(int);
 	void		set_ppmCorrection	(double);
-	void		set_xmlDump		();
-	void		set_iqDump		();
+//	void		set_xmlDump		();
+//	void		set_iqDump		();
 	void		set_biasControl		(int);
 	void		set_bandWidth		(int);
 };

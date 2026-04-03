@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
+    <width>359</width>
     <height>279</height>
    </rect>
   </property>
@@ -30,19 +30,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="dumpButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the SDRplay into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a 'Save as ...' dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>dump</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -61,7 +51,7 @@
         <number>0</number>
        </property>
        <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
+        <enum>QLCDNumber::SegmentStyle::Flat</enum>
        </property>
       </widget>
      </item>
@@ -104,7 +94,7 @@
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -139,7 +129,6 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -159,7 +148,7 @@
      <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -174,7 +163,6 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -195,7 +183,6 @@
          <property name="font">
           <font>
            <family>DejaVu Sans Mono</family>
-           <weight>75</weight>
            <italic>true</italic>
            <bold>true</bold>
           </font>
@@ -211,7 +198,7 @@
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -256,7 +243,7 @@
             <number>3</number>
            </property>
            <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
+            <enum>QLCDNumber::SegmentStyle::Flat</enum>
            </property>
           </widget>
          </item>
@@ -267,7 +254,6 @@
          <property name="font">
           <font>
            <family>DejaVu Sans Mono</family>
-           <weight>75</weight>
            <italic>true</italic>
            <bold>true</bold>
           </font>
@@ -294,7 +280,6 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -317,7 +302,7 @@
      <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -338,7 +323,6 @@
        <property name="font">
         <font>
          <family>DejaVu Sans Mono</family>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>

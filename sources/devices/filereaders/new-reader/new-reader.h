@@ -30,10 +30,13 @@
 #include	<atomic>
 class	newFiles;
 
+#define	DIVIDER	1000
 class	newReader:public QThread {
 Q_OBJECT
 public:
-			newReader	(newFiles *, riffReader *,
+			newReader	(newFiles *,
+	                                 riffReader *,
+	                                 int32_t,
 	                                 RingBuffer<std::complex<float>> *); 
 			~newReader	();
 	void		startReader	();
@@ -42,12 +45,19 @@ public:
 private:
 virtual void		run		();
 	riffReader	*theReader;
+	int32_t		sampleRate;
 	RingBuffer<std::complex<float> >	*theBuffer;
 	uint64_t	period;
 	std::atomic<bool>	running;
 	newFiles	*parent;
 	uint64_t	fileLength;
 	std::atomic<int> newPosition;
+
+        std::vector<std::complex<float>> convBuffer;
+        int             convIndex;
+        int16_t         mapTable_int    [SAMPLERATE / DIVIDER];
+        float           mapTable_float  [SAMPLERATE / DIVIDER];
+
 signals:
 	void		setProgress	(int, float);
 };

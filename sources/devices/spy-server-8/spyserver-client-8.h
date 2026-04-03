@@ -51,13 +51,18 @@ public:
 			spyServer_client_8	(QSettings *,
 	                                         const QString &,
 	                                         errorLogger *);
-			~spyServer_client_8	();
+			~spyServer_client_8	() override;
 	int32_t		getRate		();
-	bool		restartReader	(int32_t, int skipped = 0);
-	void		stopReader	();
-	int32_t		getSamples	(std::complex<float> *V, int32_t size);
-	int32_t		Samples		();
-	int16_t		bitDepth	();
+	bool		restartReader	(int32_t,
+	                                     int skipped = 0) override;
+	void		stopReader	() override;
+	int32_t		getSamples	(std::complex<float> *,
+	                                     int32_t) override;
+	int32_t		Samples		() override;
+	int16_t		bitDepth	() override;
+	bool		providesDump	() override;
+	void		startDump	(const QString &, int) override;
+	void		stopDump	() override;
 	void		connect_on	();
 struct {
 	int		gain;
@@ -79,8 +84,6 @@ private slots:
 	void		handle_autogain (int);
         void            handle_checkTimer       ();
         void            set_portNumber  (int);
-
-	void		set_xmlDump	();
 
 public slots:
 	void		data_ready	();
@@ -113,8 +116,8 @@ private:
 
 	QString		recorderVersion;
 	xml_fileWriter  *xmlWriter;
-        bool            setup_xmlDump           ();
-        void            close_xmlDump           ();
+        bool            setup_xmlDump	(const QString &, int);
+        void            close_xmlDump	();
         std::atomic<bool> xml_dumping;
 };
 

@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C)  2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,28 +17,28 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with dab-scanner; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#pragma once
 
-#include <QLabel>
-#include <QWidget>
-#include <Qt>
 
-class clickablelabel : public QLabel { 
-Q_OBJECT 
+#include	<QFrame>
+#include	<QString>
+#include	<QLabel>
+#include	<QTimer>
 
+class dumpDisplay : public QFrame {
+Q_OBJECT
 public:
-	explicit clickablelabel(QWidget* parent = Q_NULLPTR,
-	                            Qt::WindowFlags f = Qt::WindowFlags());
-	~clickablelabel	();
-
-signals:
-	void clicked_left ();
-	void clicked_right ();
-
-protected:
-	void mousePressEvent(QMouseEvent* event);
-
+		dumpDisplay	(QString type, const QString &name);
+		~dumpDisplay	();
+private:
+	QTimer	theClock;
+	QLabel	*dumpName;
+	QLabel	*typeName;
+	QLabel	*durationLabel;
+	int	duration;
+public slots:
+	void	handle_timer	();
+	
 };

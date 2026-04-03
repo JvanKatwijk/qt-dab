@@ -21,6 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "clickable-label.h"
+#include	<QMouseEvent>
 
 	clickablelabel::clickablelabel (QWidget* parent,
 	                                Qt::WindowFlags f): QLabel(parent) {
@@ -30,6 +31,8 @@
 	clickablelabel::~clickablelabel () {}
 
 void	clickablelabel::mousePressEvent(QMouseEvent* event) {
-	(void)event;
-	emit clicked ();
+	if (event -> buttons () & Qt::RightButton) 
+	   emit clicked_right ();
+	else
+	   emit clicked_left ();
 }

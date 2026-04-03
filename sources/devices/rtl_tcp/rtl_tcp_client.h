@@ -48,16 +48,21 @@ public:
 			rtl_tcp_client	(QSettings *,
 	                                 const QString &,
 	                                 errorLogger *);
-			~rtl_tcp_client	();
+			~rtl_tcp_client	() override;
 	int32_t		getRate		();
-	bool		restartReader	(int32_t, int skipped = 0);
-	void		stopReader	();
-	int32_t		getSamples	(std::complex<float> *V, int32_t size);
-	int32_t 	Samples		();
-	int16_t 	bitDepth	();
-	void		resetBuffer	();
-	QString		deviceName	();
-	bool		isFileInput	();
+	bool		restartReader	(int32_t,
+	                                      int skipped = 0) override;
+	void		stopReader	() override;
+	int32_t		getSamples	(std::complex<float> *,
+	                                      int32_t) override;
+	int32_t 	Samples		() override;
+	int16_t 	bitDepth	() override;
+	void		resetBuffer	() override;
+	QString		deviceName	() override;
+	bool		isFileInput	() override;
+	bool		providesDump	() override;
+	void		startDump	(const QString &, int) override;
+	void		stopDump	() override;
 
 	QString		tunerText;
 	bool		dongleInfoIn;
@@ -85,7 +90,7 @@ private:
 
 	QString		recorderVersion;
 	xml_fileWriter	*xmlWriter;
- 	bool            setup_xmlDump           ();
+ 	bool            setup_xmlDump           (const QString &, int);
         void            close_xmlDump           ();
         std::atomic<bool> xml_dumping;
 
@@ -104,6 +109,5 @@ private slots:
 	void		set_agc_hw	();
 	void		set_agc_sw	();
 
-	void		set_xmlDump	();
 };
 

@@ -62,10 +62,11 @@ public:
 	bool	logger_active		();
 	bool	showAll_Selector_active	();
 	bool	localBrowserSelector_active	();
+	bool	dumpmode_set		();
 //
 //	a few others
 	void	showLoad		(float);
-	void	mark_dumpButton		(bool);
+//	void	mark_dumpButton		(bool);
 	void	mark_dlTextButton	(bool);
 	void	set_closeDirect		(bool);
 	void	show_streamSelector	(bool);
@@ -107,7 +108,7 @@ private slots:
 	void	color_snrButton		();
 	void	color_set_coordinatesButton	();
 	void	color_loadTableButton	();
-	void	color_sourcedumpButton	();
+//	void	color_sourcedumpButton	();
 	void	color_skinButton	();
 	void	color_pathButton	();
 //
@@ -131,7 +132,6 @@ private slots:
 	void	handle_auto_http		(int);
 //	void	handle_clear_on_exit		(int);
 
-	void	handle_localDB_Selector		(int);
 	void	handle_localBrowser		(int);
 	void	handle_onTop			(int);
 	void	handle_close_mapSelector	(int);

@@ -37,14 +37,29 @@ struct timeval  tv;
 
 	newReader::newReader	(newFiles	*mr,
 	                         riffReader	*theReader,
+	                         int32_t	sampleRate,
 	                         RingBuffer<std::complex<float> > *theBuffer) {
 	this	-> parent	= mr;
 	this	-> theReader	= theReader;
+	this	-> sampleRate	= sampleRate;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= theReader -> elementCount ();
 	theReader	-> reset ();
 	period          = (BUFFERSIZE * 1000) / (SAMPLERATE / 1000);// full IQś read
 	newPosition. store (0);
+	if (sampleRate != SAMPLERATE) {
+//      set up for interpolator
+           convBuffer. resize (sampleRate / 1000 + 1);
+           float denominator    = float (SAMPLERATE) / DIVIDER;
+           float inVal          = float (sampleRate) / DIVIDER;
+           for (int i = 0; i < SAMPLERATE / DIVIDER; i ++) {
+              mapTable_int [i]     = int (floor (i * (inVal / denominator)));
+              mapTable_float [i] =
+                             i * (inVal / denominator) - mapTable_int [i];
+           }
+        }
+        convIndex       = 0;
+
 	running. store (false);
 	start ();
 }
@@ -102,7 +117,28 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	         for (int i = n; i < BUFFERSIZE; i ++)
 	            inputBuffer [i] = std::complex <float> (0, 0);
 	      }
-	      theBuffer -> putDataIntoBuffer (inputBuffer, BUFFERSIZE);
+	      if (sampleRate == SAMPLERATE)
+	         theBuffer -> putDataIntoBuffer (inputBuffer, BUFFERSIZE);
+	      else {
+	         std::complex<float> localBuf [SAMPLERATE / DIVIDER];
+	         for (int i = 0; i < BUFFERSIZE; i ++) {
+	            convBuffer [convIndex ++] = inputBuffer [i];
+	            if (convIndex >= (sampleRate / DIVIDER + 1)) {
+	              for (int j = 0; j < SAMPLERATE / DIVIDER; j ++) {
+	                  int16_t inpBase     = mapTable_int [j];
+	                  float   inpRatio    = mapTable_float [j];
+	                   localBuf [j]        = 
+                                     convBuffer [inpBase + 1] * inpRatio +
+                                     convBuffer [inpBase] * (1 - inpRatio);
+	               
+	               }
+	               theBuffer -> putDataIntoBuffer (localBuf,
+                                                  SAMPLERATE / DIVIDER);
+	               convBuffer [0] = convBuffer [sampleRate / DIVIDER];
+	               convIndex = 1;
+	            }
+	         }
+	      }
 	      if (nextStop - getMyTime() > 0)
 	         usleep (nextStop - getMyTime());
 	   }

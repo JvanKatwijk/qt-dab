@@ -53,6 +53,7 @@ private:
 	riffReader	theReader;
 	QSettings	*newFilesSettings;
 	QString		fileName;
+	int32_t		sampleRate;
 	int32_t		bufferSize;
 	QScopedPointer<newReader> readerTask;
 	std::atomic<bool>	sliderFree;
