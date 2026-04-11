@@ -625,6 +625,11 @@ QString h;
 	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   theTechWindow -> show ();
 
+	QFont dynLabFont	= dynamicLabel -> font ();
+        dynLabFont. setPointSize (12);
+        dynLabFont. setBold (true);
+        dynamicLabel	-> setFont (dynLabFont);
+	dynamicLabel	-> setAlignment(Qt::AlignCenter);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("<font color=\"black\">The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 //
@@ -1758,7 +1763,7 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	   theDabStreamer -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
 	
-	if (running. load()) {
+	if (running. load ()) {
 	   dynamicLabel	-> setStyleSheet (labelStyle);
 	   int index = s. indexOf ("www.");
 	   int index_2	= 0;
@@ -2038,6 +2043,8 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_spectrumButton);
 	connect (serviceLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_labelColor);
+	connect (serviceLabel, &clickablelabel::clicked_right,
+	         this, &RadioInterface::handle_detailButton);
 	connect (serviceButton, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_detailButton);
 //
