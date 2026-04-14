@@ -43,7 +43,7 @@
 #define DEVICEWIDGET_BUTTON     QString ("devicewidgetButton")
 #define PORT_SELECTOR           QString ("portSelector")
 #define	DLTEXT_BUTTON		QString ("dlTextButton")
-#define RESET_BUTTON            QString ("resetButton")
+//#define RESET_BUTTON            QString ("resetButton")
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
 
 #define SNR_BUTTON              QString ("snrButton")
@@ -116,7 +116,10 @@ int	index_for_key (int key) {
 	else
 	   this -> ordersubChannelIds -> setChecked (true);
 	serviceOrder	= x;
-//
+
+	x = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 1);
+	if (x != 0)
+	   this -> updateSelector	-> setChecked (true);
 //	first row of checkboxes
 //	unused element
 	x =  value_i (dabSettings, CONFIG_HANDLER, LOG_MODE, 1);
@@ -236,8 +239,14 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_close_mapSelector);
 //
 //	Tracer special
-	connect	(tracerButton, &QPushButton::clicked,
-	         this, &configHandler::handle_tracerButton);
+//	connect	(tracerButton, &QPushButton::clicked,
+//	         this, &configHandler::handle_tracerButton);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (updateSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (updateSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_updateSelector);
 	traceOn	= false;
 	set_Colors ();
 }
@@ -271,8 +280,8 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_portSelector);
 	connect (dlTextButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_dlTextButton);
-	connect (resetButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_resetButton);
+//	connect (resetButton, &smallPushButton::rightClicked,
+//	         this, &configHandler::color_resetButton);
 	connect (scheduleButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_scheduleButton);
 	connect (snrButton, &smallPushButton::rightClicked,
@@ -318,8 +327,8 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_portSelector);
 	connect (dlTextButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_dlTextButton);
-	connect (resetButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_resetButton);
+//	connect (resetButton, &QPushButton::clicked,
+//	         myRadioInterface, &RadioInterface::handle_resetButton);
 //
 //	second row
 	connect (snrButton, &QPushButton::clicked,
@@ -489,12 +498,12 @@ QString dlTextButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              DLTEXT_BUTTON + "_font", BLACK);
 
-QString resetButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              RESET_BUTTON + "_color", RED);
-QString resetButton_font =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              RESET_BUTTON + "_font", WHITE);
+//QString resetButton_color =
+//	   value_s (dabSettings, COLOR_SETTINGS,
+//	                              RESET_BUTTON + "_color", RED);
+//QString resetButton_font =
+//	   value_s (dabSettings, COLOR_SETTINGS,
+//	                              RESET_BUTTON + "_font", WHITE);
 
 QString	scheduleButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
@@ -571,9 +580,9 @@ QString	skinButton_color =
 	              setStyleSheet (temp. arg (dlTextButton_color,
 	                                        dlTextButton_font));
 
-	this ->  resetButton ->
-	              setStyleSheet (temp. arg (resetButton_color,	
-	                                        resetButton_font));
+//	this ->  resetButton ->
+//	              setStyleSheet (temp. arg (resetButton_color,	
+//	                                        resetButton_font));
 
 	this -> scheduleButton ->
 	              setStyleSheet (temp. arg (scheduleButton_color,
@@ -626,9 +635,9 @@ void	configHandler::color_dlTextButton	()	{
 	set_buttonColors (this ->  dlTextButton, DLTEXT_BUTTON);
 }
 
-void	configHandler::color_resetButton	() {
-	set_buttonColors (this ->  resetButton, RESET_BUTTON);
-}
+//void	configHandler::color_resetButton	() {
+//	set_buttonColors (this ->  resetButton, RESET_BUTTON);
+//}
 
 void	configHandler::color_scheduleButton	() 	{
 	set_buttonColors (this ->  scheduleButton, SCHEDULE_BUTTON);
@@ -997,21 +1006,26 @@ bool	configHandler::get_clearScanList       () {
 }
 //
 void	configHandler::handle_tracerButton	() {
-	traceOn	= !traceOn;
-	if  (traceOn)
-	   tracerButton	-> setText ("trace on");
-	else
-	   tracerButton	-> setText ("");
-	emit signal_dataTracer	(traceOn);
+//	traceOn	= !traceOn;
+//	if  (traceOn)
+//	   tracerButton	-> setText ("trace on");
+//	else
+//	   tracerButton	-> setText ("");
+//	emit signal_dataTracer	(traceOn);
 }
 
 void	configHandler::handle_mapViewSelector	(int k) {
 	(void)k;
 	bool b = this ->  mapViewSelector -> isChecked ();
-	store (dabSettings, CONFIG_HANDLER, "DAVE_HTTP", b ? 1 : 0);
+	store (dabSettings, CONFIG_HANDLER, SAVE_HTTP, b ? 1 : 0);
 }
 
 bool	configHandler::dumpmode_set	() {
 	return dumpmodeSelector	-> isChecked ();
 }
 
+void	configHandler::handle_updateSelector	(int k) {
+	(void)k;
+	bool b	= this -> updateSelector	-> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
+}

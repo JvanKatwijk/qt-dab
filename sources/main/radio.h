@@ -434,6 +434,7 @@ private:
 	QTimer			pauzeTimer;
 	QTimer			theTimer;
 	QTimer			startTimer;
+	QTimer			updateCheck_timer;
 	bool			stillWaiting;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
@@ -595,9 +596,9 @@ public slots:
 //	signals from padHandler
 	void			showLabel		(const QString &, int);
 	void			show_mothandling	(bool);
-	void			show_dl2			(uint8_t,
-	                                                         uint8_t,
-	                                                         const QString &);
+	void			show_dl2		(uint8_t,
+	                                                 uint8_t,
+	                                                 const QString &);
 
 //	signals from MOTObject
 	void			handle_motObject	(QByteArray,
@@ -629,7 +630,9 @@ public slots:
 
 //	signals	from scheduler
 	void			scheduler_timeOut	(const QString &);
-
+//
+//	for the UpdateChecker
+	void			process_updateCheck	(bool);
 //	Local signals
 	
 	void			no_signal_found		();
@@ -647,6 +650,7 @@ public slots:
 	void			newDevice		(const QString &);
 	void			show_changeLabel (const QStringList notInOld,
                                           	  const QStringList notInNew);
+	void			check_newVersion	();
 //
 private slots:
 //	button and selectorhandlers

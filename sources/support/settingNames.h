@@ -35,6 +35,7 @@
 #define	AUDIOSERVICES_ONLY	"audioServices_only"
 #define	AUTO_HTTP		"auto_http"
 #define	SAVE_HTTP		"save_http"
+#define	DO_UPDATECHECK		"do_updateCheck"
 #define	MAP_HANDLING		"MAP_HANDLING"
 #define	TII_THRESHOLD		"tiiThreshold"
 #define	TII_FILTER		"tiiFilter"

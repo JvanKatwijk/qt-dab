@@ -19,6 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
+DEFINES         += VERSION=\\\"6.11\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 #QMAKE_CXXFLAGS	+=  -ffast-math -flto 
@@ -59,6 +60,7 @@ DEPENDPATH += . \
 	      ./sources/main \
 	      ./sources/main/forms-v7 \
 	      ./sources/main/snr-viewer \
+	      ./sources/main/viewer \
 	      ./sources/frontend \
 	      ./sources/frontend/fic-handling \
 	      ./sources/output \
@@ -70,7 +72,8 @@ DEPENDPATH += . \
 	      ./sources/devices/filereaders/ \
 	      ./sources/devices/filereaders/new-reader \
 	      ./sources/devices/filereaders/rawfiles-new \
-	      ./sources/devices/filereaders/xml-filereader 
+	      ./sources/devices/filereaders/xml-filereader \
+	      ./sources/update
 	
 
 INCLUDEPATH += . \
@@ -87,6 +90,7 @@ INCLUDEPATH += . \
 	      ./sources/main/forms-v7 \
 	      ./sources/main/scopes \
 	      ./sources/main/snr-viewer \
+	      ./sources/main/viewer \
 	      ./sources/frontend \
 	      ./sources/frontend/fic-handling \
 	      ./sources/output \
@@ -98,7 +102,8 @@ INCLUDEPATH += . \
 	      ./sources/devices/filereaders/ \
 	      ./sources/devices/filereaders/new-reader \
 	      ./sources/devices/filereaders/rawfiles-new \
-	      ./sources/devices/filereaders/xml-filereader 
+	      ./sources/devices/filereaders/xml-filereader \
+	      ./sources/update
 	
 
 # Input
@@ -119,6 +124,10 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/tech-window.h \
 	   ./sources/main/copyrightLabel.h \
 	   ./sources/main/dxDisplay.h \
+	   ./sources/main/viewer/service-descriptor.h \
+           ./sources/main/viewer/channel-descriptor.h \
+           ./sources/main/viewer/database.h \
+           ./sources/main/viewer/view-handler.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
 	   ./sources/frontend/timesyncer.h \
@@ -216,6 +225,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/tii-reader.h \
 	   ./sources/support/uploader.h \
 	   ./sources/support/basic-print.h \
+	   ./sources/support/dc-filter.h \
 	   ./sources/support/gui-elements/position-handler.h \
 	   ./sources/support/gui-elements/settings-handler.h \
 	   ./sources/support/gui-elements/presetcombobox.h \
@@ -233,6 +243,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
 	   ./sources/support/gui-elements/qwt-2.h \
+	   ./sources/update/updatechecker.h \
+	   ./sources/update/appversion.h \
 	   ./sources/devices/selector.h \
 	   ./sources/devices/riff-writer.h \
 	   ./sources/devices/device-handler.h \
@@ -252,9 +264,8 @@ HEADERS += ./sources/main/radio.h \
 FORMS	+= ./sources/main/forms-v7/technical_data.ui
 FORMS	+= ./sources/main/forms-v7/dabradio-6.ui 
 FORMS	+= ./sources/main/forms-v7/config-helper.ui 
-#FORMS	+= ./sources/main/forms-v7/audio-description.ui
-#FORMS	+= ./sources/main/forms-v7/data-description.ui
 FORMS	+= ./sources/main/forms-v7/scopewidget.ui
+FORMS	+= ./sources/main/viewer/viewarea.ui
 FORMS	+= ./sources/main/snr-viewer/snr-widget.ui
 #FORMS	+= ./sources/devices/filereaders/filereader-widget.ui 
 FORMS	+= ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
@@ -277,6 +288,9 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/tech-window.cpp \
 	   ./sources/main/config-handler.cpp \
 	   ./sources/main/dxDisplay.cpp \
+	   ./sources/main/viewer/channel-descriptor.cpp \
+           ./sources/main/viewer/database.cpp \
+           ./sources/main/viewer/view-handler.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
 	   ./sources/frontend/timesyncer.cpp \
@@ -332,6 +346,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/audiosystem-selector.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \
+	   ./sources/support/dc-filter.cpp \
 	   ./sources/support/charsets.cpp \
 	   ./sources/support/content-table.cpp \
 	   ./sources/support/coordinates.cpp \
@@ -377,6 +392,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/smallspinbox.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
+	   ./sources/update/updatechecker.cpp \
 	   ./sources/devices/riff-writer.cpp \
 	   ./sources/devices/selector.cpp \
 	   ./sources/devices/device-handler.cpp \
@@ -431,10 +447,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-6.10
+   TARGET               = qt-dab-qt5-6.11
 }
 else {
-   TARGET               = qt-dab-qt6-6.10
+   TARGET               = qt-dab-qt6-6.11
 }
 
 #mac {

@@ -103,7 +103,7 @@ private slots:
 	void	color_devicewidgetButton	();
 	void	color_portSelector	();
 	void	color_dlTextButton	();
-	void	color_resetButton	();
+//	void	color_resetButton	();
 	void	color_scheduleButton	();
 	void	color_snrButton		();
 	void	color_set_coordinatesButton	();
@@ -113,6 +113,7 @@ private slots:
 	void	color_pathButton	();
 //
 	void	handle_mapViewSelector		(int);
+	void	handle_updateSelector		(int);
 //	and the handlers:
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);

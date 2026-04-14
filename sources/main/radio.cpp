@@ -67,6 +67,8 @@
 #include	"settingNames.h"
 #include	"uploader.h"
 
+#include	"updatechecker.h"
+#include	"appversion.h"
 #include	"dump-display.h"
 #include	<QScreen>
 #include	<QDomElement>
@@ -208,6 +210,7 @@ QString h;
 	theScanTable			= nullptr;
 	mapViewer			= nullptr;
 	theDXDisplay. hide ();
+
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
 	globals. spectrumBuffer	= &theSpectrumBuffer;
@@ -265,11 +268,11 @@ QString h;
 	   if (p. load (":res/radio-pictures/down-arrow.png", "png"))
 	      nextChannelButton -> setPixmap (p. scaled (30, 30,
 	                                                Qt::KeepAspectRatio));
-	   if (p. load (":res/radio-pictures/details24.png", "png"))
-	      serviceButton -> setPixmap (p. scaled (30, 30,
-	                                                Qt::KeepAspectRatio));
-	   else 
-	      theErrorLogger. add ("main", "Loading details button failed");
+//	   if (p. load (":res/radio-pictures/details24.png", "png"))
+//	      serviceButton -> setPixmap (p. scaled (30, 30,
+//	                                                Qt::KeepAspectRatio));
+//	   else 
+//	      theErrorLogger. add ("main", "Loading details button failed");
 	   if (p. load (":res/radio-pictures/folder_button.png", "png"))
 	      folder_shower -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	}
@@ -321,18 +324,18 @@ QString h;
 	   theTIIProcessor. reload (tiiFile);
 	}
 //
-//	the default case is to load the "on board" file
+//	If no database in the homedirectory can be found,
+//	we load the "default" version
 	if (!theTIIProcessor. has_tiiFile ()) {
 	   theTIIProcessor. reload (":res/txdata.tii");
 	}
-	if (!theTIIProcessor. has_tiiFile ())
+	if (!theTIIProcessor. has_tiiFile ())	// should not happen
 	   httpButton	-> setEnabled (false);
 
-	SystemVersion	= QString ("10");
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
-	version		= "Qt6-DAB-6." + SystemVersion ;
+	version		= QString ("Qt6-DAB-") + VERSION ;
 #else
-	version		= "Qt5-DAB-6." + SystemVersion;
+	version		= QString ("Qt5-DAB-") + VERSION;
 #endif
 	if (!QString (GITHASH). contains ("----"))
 	   version = version + " (" + QString (GITHASH) + ")";
@@ -355,12 +358,11 @@ QString h;
 	else
 	   theNewDisplay. hide ();
 
-	theControl	= nullptr;
-
-	journalineHandler = nullptr;
-	peakLeftDamped	= 0;
-	peakRightDamped = 0;
-	audioTeller	= 0;	// counting audio frames
+	theControl		= nullptr;
+	journalineHandler 	= nullptr;
+	peakLeftDamped		= 0;
+	peakRightDamped 	= 0;
+	audioTeller		= 0;	// counting audio frames
 	pauzeSlideTeller	= 0; // counting pause slides
 	labelStyle	= value_s (theQSettings, DAB_GENERAL, LABEL_COLOR,
 	                                                     LABEL_STYLE);
@@ -525,11 +527,17 @@ QString h;
 	devSL. load (":res/radio-pictures/deviceSelection.png", "png");
 	deviceSelectorLabel	-> setPixmap (devSL. scaled (30, 30,
 	                                         Qt::KeepAspectRatio));
-	deviceSelectorLabel	-> setToolTip ("this icon controls the visbility of the device selection list");
+	deviceSelectorLabel	-> setToolTip ("this icon controls the visibility of the device selection list");
 	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
+	devSL. load (":res/radio-pictures/resetButton.png", "png");
+	resetSelectorLabel	-> setPixmap (devSL. scaled (30, 30,
+	                                         Qt::KeepAspectRatio));
+	resetSelectorLabel	-> setToolTip ("touching this will reset the system");
+	connect (resetSelectorLabel, &clickablelabel::clicked_left,
+	         this, &RadioInterface::handle_resetButton);
 
-	aboutLabel -> setText (" © V6.10");
+	aboutLabel -> setText (QString (" © ") + VERSION);
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
@@ -565,6 +573,7 @@ QString h;
 	connect (&channelTimer, &QTimer::timeout,
 	         this, &RadioInterface::channel_timeOut);
 //
+
 //	presetTimer
 	presetTimer. setSingleShot (true);
 	connect (&presetTimer, &QTimer::timeout,
@@ -625,10 +634,7 @@ QString h;
 	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   theTechWindow -> show ();
 
-	QFont dynLabFont	= dynamicLabel -> font ();
-        dynLabFont. setPointSize (12);
-        dynLabFont. setBold (true);
-        dynamicLabel	-> setFont (dynLabFont);
+	dynamicLabel	-> setFont (QFont ("Times", 14, -1, false));
 	dynamicLabel	-> setAlignment(Qt::AlignCenter);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("<font color=\"black\">The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
@@ -767,6 +773,16 @@ void	RadioInterface::startDirect	() {
 	   if (succ)
 	      httpButton	-> setText ("http-on");
 	}
+
+	bool do_updateCheck	=
+	       value_i (theQSettings, CONFIG_HANDLER, DO_UPDATECHECK, 1) != 0;
+	if (do_updateCheck) {
+//	   updateCheck_timer. setSingleShot (true);
+//	   connect (&updateCheck_timer, &QTimer::timeout,
+//                 this, &RadioInterface::check_newVersion);
+//	   updateCheck_timer. start (10000);
+	}
+
 	running. store (true);
 }
 
@@ -1411,6 +1427,7 @@ void	RadioInterface::TerminateProcess () {
 	presetTimer.	stop	();
 	pauzeTimer.	stop	();
 	muteTimer.	stop	();
+	updateCheck_timer. stop (); 
 //	stop activity using a timer
 	stopScanning ();
 	while (theSCANHandler. active ())
@@ -1763,8 +1780,10 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	   theDabStreamer -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
 	
-	if (running. load ()) {
-	   dynamicLabel	-> setStyleSheet (labelStyle);
+	if (running. load()) {
+//	   dynamicLabel	-> setStyleSheet (labelStyle);
+//	   dynamicLabel -> setFont (QFont ("Times", 13, -1, false));
+
 	   int index = s. indexOf ("www.");
 	   int index_2	= 0;
 	   if (index > 0) {
@@ -2045,8 +2064,8 @@ void	RadioInterface::connectGUI	() {
 	         this, &RadioInterface::handle_labelColor);
 	connect (serviceLabel, &clickablelabel::clicked_right,
 	         this, &RadioInterface::handle_detailButton);
-	connect (serviceButton, &clickablelabel::clicked_left,
-	         this, &RadioInterface::handle_detailButton);
+//	connect (serviceButton, &clickablelabel::clicked_left,
+//	         this, &RadioInterface::handle_detailButton);
 //
 	connect (httpButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_httpButton);
@@ -3655,6 +3674,8 @@ QString	dumpName;
 	} catch (...) {
 	   return;
 	}
+	if (dumpName == "")
+	   return;
 	theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
 	                                     deviceName, channelName);
 	theDeviceHandler -> startDump (dumpName, 0);
@@ -4389,7 +4410,7 @@ QPixmap p;
 	
 void	RadioInterface::handle_copyrightLabel   () { 
 	if (thecopyrightLabel == nullptr) {
-	   thecopyrightLabel	= new copyrightText (this, ".10");
+	   thecopyrightLabel	= new copyrightText (this, VERSION);
 	   thecopyrightLabel -> show ();
 	   return;
 	}
@@ -4989,5 +5010,39 @@ void	RadioInterface::handle_dump () {
 	   startSourceDumping ();
 	else
 	   stopSourceDumping ();
+}
+const char *theUrl ="https://api.github.com/repos/jvankatwijk/Qt-DAB/releases/latest";
+
+UpdateChecker *updateChecker = nullptr;
+void	RadioInterface::check_newVersion	() {
+	connect (&updateCheck_timer, &QTimer::timeout,
+                 this, &RadioInterface::check_newVersion);
+	fprintf (stderr, "going to check for a new update\n");
+	updateChecker = new UpdateChecker (theUrl);
+	connect (updateChecker, &UpdateChecker::done,
+	         this, &RadioInterface::process_updateCheck);
+	updateChecker -> check ();
+}
+
+void	RadioInterface::process_updateCheck (bool res) {
+	if (!res) {
+	   delete updateChecker;
+	   updateChecker	= nullptr;
+	   return;
+	}
+	const versionNumber theNewOne (updateChecker -> version ());
+	const versionNumber theCurrentOne (VERSION);
+
+	if (!(theNewOne. isValid () && theCurrentOne. isValid ()))
+	   return;
+
+	if (theNewOne. value () > theCurrentOne. value ())  {
+	   QString message = "Version " + updateChecker -> version () +
+	                                               "is now available";
+	   QMessageBox::warning (this, tr ("Warning"), message);
+	}
+
+	delete updateChecker;
+	updateChecker	= nullptr;
 }
 
