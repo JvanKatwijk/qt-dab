@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-6.8</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_12">
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -50,91 +50,14 @@
       </layout>
      </item>
      <item>
-      <widget class="QScrollArea" name="ensembleWidget">
-       <property name="widgetResizable">
-        <bool>true</bool>
+      <widget class="QFrame" name="the_newFrame">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
        </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>239</width>
-          <height>159</height>
-         </rect>
-        </property>
-       </widget>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
       </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="smallPushButton" name="prevServiceButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
-&lt;p&gt;Select the previous service on the list of services&lt;br /&gt;(the previous one of the first element is the last element of the list).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>-</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="smallPushButton" name="nextServiceButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the next service on the current ensemble.&lt;br/&gt;(the next of the last element is the first element).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>+</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_8">
-       <item>
-        <widget class="clickablelabel" name="prevChannelButton">
-         <property name="text">
-          <string>prevLabel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="smallComboBox" name="channelSelector"/>
-       </item>
-       <item>
-        <widget class="clickablelabel" name="nextChannelButton">
-         <property name="text">
-          <string>nextLabel</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="newPushButton" name="scanListButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Result of a (single) scan is stored in the list. Left mouse click on an element will select the service, named by the element. Right mouse click causes the service name to be added to the preset list.&lt;/p&gt;&lt;p&gt;If clearScan is selected (the default), the list is cleared when scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>scanlist</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="newPushButton" name="presetButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch between the &lt;span style=&quot; font-style:italic;&quot;&gt;ensemble view&lt;/span&gt; and the &lt;span style=&quot; font-style:italic;&quot;&gt;favorites view.&lt;/span&gt; The ensemble view shows the list of services in the currently active ensemble. The favorites view shows the list of services selected as favorite. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>favorites</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </item>
     </layout>
    </item>
@@ -176,16 +99,6 @@
          </property>
          <property name="text">
           <string>local</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="runtimeDisplay">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The run time is what the name suggests, the time the current instance of the software is running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>runtime</string>
          </property>
         </widget>
        </item>
@@ -551,16 +464,6 @@
    <class>smallPushButton</class>
    <extends>QPushButton</extends>
    <header>smallpushbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>smallComboBox</class>
-   <extends>QComboBox</extends>
-   <header>smallcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>newPushButton</class>
-   <extends>QPushButton</extends>
-   <header location="global">newpushbutton.h</header>
   </customwidget>
   <customwidget>
    <class>clickablelabel</class>

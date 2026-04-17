@@ -28,10 +28,10 @@
 #include	<service-descriptor.h>
 
 
-class	channelDescriptor {
+class	theChannel {
 public:
-		channelDescriptor	();
-		~channelDescriptor	();
+		theChannel	();
+		~theChannel	();
 	void	setName			(const QString &);
 	void	add			(serviceDescriptor);
 	void	update			(const serviceDescriptor &, bool);

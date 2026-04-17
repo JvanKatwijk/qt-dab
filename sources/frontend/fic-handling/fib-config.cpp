@@ -143,8 +143,11 @@ int	fibConfig::getNrComps			(const uint32_t SId) {
 
 int	fibConfig::getServiceComp	(const QString &service) {
 //	first we check to see if the service is a primary one
+	QString fibName	= service;
+	for (int i = fibName. length (); i < 16; i ++)
+	   fibName. push_back (' ');
 	for (auto &serv : theEnsemble -> primaries) {
-	   if (serv. name != service)
+	   if (serv. name != fibName)
 	      continue;
 	   for (auto & SId_element: SId_table) {
 	      if (SId_element. SId == serv. SId)

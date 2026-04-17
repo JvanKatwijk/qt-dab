@@ -41,10 +41,25 @@ void	serviceBase::add		(const serviceDescriptor &sd) {
 	      return;
 	   }
 	}
-	channelDescriptor channel;
+	theChannel channel;
 	channel. setName (sd. channelName);
 	channel. add (sd);
 	theData. push_back (channel);
+}
+
+void	serviceBase::remove		(const QString &channel,
+	                                            const QString &service) {
+	for (auto &ch : theData) {
+	   if (ch. channelName != channel)
+	      continue;
+	   for (uint16_t i = 0; i < ch. channelData. size (); i ++) {
+	      if (ch. channelData [i]. serviceName == service) {
+	         ch. channelData. erase (ch. channelData. begin () + i);
+	         return;
+	      }
+	   }
+	   return;
+	}
 }
 
 void	serviceBase::update		(const serviceDescriptor &sd, bool f) {
@@ -75,29 +90,31 @@ QDomDocument xmlBOM;
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly)) 
 	   return;
-
 	xmlBOM. setContent (&f);
 	f. close ();
 	QDomElement root	= xmlBOM. documentElement ();
 	QDomElement component	= root. firstChild (). toElement ();
-	
+
 	while (!component. isNull ()) {
 	   if (component. tagName () == "channel") {
 	      QString channelName =
 	                component. attribute ("channelName", "???");
-	      channelDescriptor channel;
+	      theChannel channel;
 	      channel. setName (channelName);
 	      QDomElement subComp = component. firstChild (). toElement ();
 	      while (!subComp. isNull ()) {
+	         if (subComp. tagName () != "serviceDesc")
+	            continue;
 	         serviceDescriptor sd;
 	         sd. channelName = channel. channelName;
-	         sd. serviceName = component. attribute ("serviceName", "??");
-	         QString tt = component. attribute ("SID", "0");
+	         sd. serviceName = subComp. attribute ("serviceName", "??");
+	         QString tt	= subComp. attribute ("SID", "0");
 	         bool b;
 	         sd. SID = tt. toInt (&b, 16);
-	         tt  = component. attribute ("subChId", "0");
+	         tt  = subComp. attribute ("subChId", "0");
 	         sd. subChId = tt. toInt (&b);
-	         sd. isFavorite = component. attribute ("isFavorite", "0") == "1";
+	         QString fav = subComp. attribute ("isFavorite", "??");
+	         sd. isFavorite = fav == "1";
 	         channel. add (sd);
 	         subComp = subComp. nextSibling (). toElement ();
 	      }
@@ -106,7 +123,6 @@ QDomDocument xmlBOM;
 	   component = component. nextSibling (). toElement ();
 	}
 }
-
 
 void	serviceBase::store	(const QString &fileName) {
 QDomDocument serviceDB;

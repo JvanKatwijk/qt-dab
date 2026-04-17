@@ -46,7 +46,7 @@
 ////////////////////////////////////////////////////////////////////////////
 //	version and build info
 	versionLabel	= new QLabel;
-	versionLabel	-> setText (QString("Current Version-6.%1").arg (version));
+	versionLabel	-> setText (QString("Current Version-%1").arg (version));
 //
 	qtVersionLabel	= new QLabel;
 	qtVersionLabel	-> setText (QString(tr("Qt-DAB uses Qt %1 and Qwt %2")).arg(QT_VERSION_STR). arg (QWT_VERSION_STR));

@@ -38,5 +38,11 @@ public:
 	uint32_t	SID;
 	uint16_t	subChId;
 	bool		isFavorite;
+	serviceDescriptor () {
+	   SID		= 0;
+	   subChId	= 0;
+	   isFavorite	= false;
+	}
+	~serviceDescriptor () {}
 };
 

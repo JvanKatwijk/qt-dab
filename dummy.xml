@@ -1,0 +1,69 @@
+<serviceList>
+ <channel channelName="5B">
+  <serviceDesc SID="841a" isFavorite="1" serviceName="Radio Rijnmond  " subChId="4"/>
+  <serviceDesc SID="845a" isFavorite="0" serviceName="Amor FM         " subChId="8"/>
+  <serviceDesc SID="8419" isFavorite="0" serviceName="Omroep West     " subChId="7"/>
+  <serviceDesc SID="8e02" isFavorite="1" serviceName="Hofstad Radio   " subChId="9"/>
+  <serviceDesc SID="8998" isFavorite="0" serviceName="Grand Prix Radio" subChId="0"/>
+  <serviceDesc SID="8daf" isFavorite="0" serviceName="Sunrise FM      " subChId="16"/>
+  <serviceDesc SID="8dad" isFavorite="0" serviceName="GLXY.RADIO      " subChId="12"/>
+  <serviceDesc SID="8dfd" isFavorite="0" serviceName="GirlPower       " subChId="14"/>
+  <serviceDesc SID="840d" isFavorite="0" serviceName="KISS FM         " subChId="13"/>
+  <serviceDesc SID="84ae" isFavorite="0" serviceName="THE GROOVE      " subChId="15"/>
+  <serviceDesc SID="8ab1" isFavorite="0" serviceName="ARROW BLUESBOX  " subChId="2"/>
+  <serviceDesc SID="8457" isFavorite="0" serviceName="Tukker FM       " subChId="11"/>
+  <serviceDesc SID="841b" isFavorite="0" serviceName="Omroep Zeeland  " subChId="1"/>
+  <serviceDesc SID="8421" isFavorite="0" serviceName="RADIONL         " subChId="6"/>
+ </channel>
+ <channel channelName="6D">
+  <serviceDesc SID="8e03" isFavorite="0" serviceName="972             " subChId="1"/>
+  <serviceDesc SID="8d05" isFavorite="0" serviceName="ZOSradio - SDAM " subChId="2"/>
+  <serviceDesc SID="800b" isFavorite="0" serviceName="60s&amp;70sFeelGood " subChId="3"/>
+  <serviceDesc SID="8d89" isFavorite="0" serviceName="2TheBeat Premium" subChId="4"/>
+ </channel>
+ <channel channelName="7D">
+  <serviceDesc SID="82ff" isFavorite="0" serviceName="UJALA RADIO     " subChId="15"/>
+  <serviceDesc SID="8dad" isFavorite="0" serviceName="GLXY.RADIO      " subChId="1"/>
+  <serviceDesc SID="6335" isFavorite="0" serviceName="BBC WORLDSERVICE" subChId="2"/>
+  <serviceDesc SID="83f3" isFavorite="0" serviceName="Vibe Radio      " subChId="3"/>
+  <serviceDesc SID="83f6" isFavorite="0" serviceName="Magic FM        " subChId="4"/>
+  <serviceDesc SID="8120" isFavorite="0" serviceName="538 TOMORROWLAND" subChId="5"/>
+  <serviceDesc SID="88e1" isFavorite="1" serviceName="Veronica NSTP   " subChId="6"/>
+  <serviceDesc SID="83b6" isFavorite="1" serviceName="KINK DISTORTION " subChId="7"/>
+  <serviceDesc SID="83a4" isFavorite="0" serviceName="4EVER49 Radio   " subChId="8"/>
+  <serviceDesc SID="83a5" isFavorite="0" serviceName="GOD Radio       " subChId="9"/>
+  <serviceDesc SID="8962" isFavorite="0" serviceName="GNR-Non-Stop    " subChId="10"/>
+  <serviceDesc SID="8809" isFavorite="1" serviceName="Sky 00s&amp;10s     " subChId="12"/>
+  <serviceDesc SID="8331" isFavorite="0" serviceName="CONTINU         " subChId="13"/>
+  <serviceDesc SID="88d3" isFavorite="0" serviceName="Radio 10 NonStop" subChId="11"/>
+  <serviceDesc SID="80d9" isFavorite="0" serviceName="ArrowClassicRock" subChId="14"/>
+ </channel>
+ <channel channelName="12C">
+  <serviceDesc SID="8212" isFavorite="0" serviceName="NPO SterrenNL   " subChId="8"/>
+  <serviceDesc SID="8206" isFavorite="0" serviceName="NPO Soul &amp; Jazz " subChId="5"/>
+  <serviceDesc SID="8214" isFavorite="0" serviceName="NPO Campus Radio" subChId="9"/>
+  <serviceDesc SID="8209" isFavorite="0" serviceName="NPO FunX        " subChId="6"/>
+  <serviceDesc SID="8205" isFavorite="1" serviceName="NPO Radio 5     " subChId="4"/>
+  <serviceDesc SID="8215" isFavorite="0" serviceName="NPO BLEND       " subChId="10"/>
+  <serviceDesc SID="8201" isFavorite="0" serviceName="NPO Radio 1     " subChId="0"/>
+  <serviceDesc SID="8203" isFavorite="0" serviceName="NPO 3FM         " subChId="2"/>
+  <serviceDesc SID="8202" isFavorite="1" serviceName="NPO Radio 2     " subChId="1"/>
+  <serviceDesc SID="8204" isFavorite="1" serviceName="NPO Klassiek    " subChId="3"/>
+ </channel>
+ <channel channelName="12D">
+  <serviceDesc SID="8eef" isFavorite="0" serviceName="LOK Impact      " subChId="2"/>
+  <serviceDesc SID="8dfc" isFavorite="1" serviceName="Feel Good Radio " subChId="3"/>
+  <serviceDesc SID="8123" isFavorite="0" serviceName="Streekomroep    " subChId="4"/>
+  <serviceDesc SID="8dfe" isFavorite="0" serviceName="Lansingerland FM" subChId="5"/>
+  <serviceDesc SID="8d09" isFavorite="0" serviceName="Radio Excellent " subChId="6"/>
+  <serviceDesc SID="8d89" isFavorite="0" serviceName="2TheBeat        " subChId="7"/>
+  <serviceDesc SID="5e07" isFavorite="0" serviceName="R Krimpenerwaard" subChId="8"/>
+  <serviceDesc SID="9f11" isFavorite="0" serviceName="Radio Capelle   " subChId="9"/>
+  <serviceDesc SID="8e03" isFavorite="0" serviceName="972             " subChId="11"/>
+  <serviceDesc SID="800b" isFavorite="1" serviceName="60s&amp;70s FeelGood" subChId="12"/>
+  <serviceDesc SID="84b5" isFavorite="0" serviceName="Radio Fomix     " subChId="13"/>
+  <serviceDesc SID="8036" isFavorite="0" serviceName="Radio SBS       " subChId="14"/>
+  <serviceDesc SID="8fff" isFavorite="0" serviceName="testkanaal      " subChId="15"/>
+  <serviceDesc SID="8dfa" isFavorite="0" serviceName="ZFM Zoetermeer  " subChId="1"/>
+ </channel>
+</serviceList>

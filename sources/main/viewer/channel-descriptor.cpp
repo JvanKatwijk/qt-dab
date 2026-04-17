@@ -24,25 +24,25 @@
 #include	"channel-descriptor.h"
 
 
-		channelDescriptor::channelDescriptor	() {}
+		theChannel::theChannel	() {}
 	
-		channelDescriptor::~channelDescriptor	() {}
+		theChannel::~theChannel	() {}
 
-void	channelDescriptor::setName	(const QString &name) {
+void	theChannel::setName	(const QString &name) {
 	this	-> channelName	= name;
 }
 
-void	channelDescriptor::add	(serviceDescriptor sd) {
+void	theChannel::add	(serviceDescriptor sd) {
 	for (auto &ssd : channelData) 
 	   if ((ssd. serviceName == sd. serviceName) &&
 	       (ssd. SID == sd. SID))
 	      return;
 	sd. channelName	= this -> channelName;
-	sd. isFavorite	= false;
+//	sd. isFavorite	= false;
 	channelData. push_back (sd);
 }
 
-void	channelDescriptor::update	(const serviceDescriptor &sd, bool f) {
+void	theChannel::update	(const serviceDescriptor &sd, bool f) {
 	for (auto &ssd : channelData) {
 	   if (ssd. serviceName == sd. serviceName) {
 	      ssd. isFavorite = f;
@@ -52,10 +52,11 @@ void	channelDescriptor::update	(const serviceDescriptor &sd, bool f) {
 }
 
 std::vector<serviceDescriptor>
-	channelDescriptor::getData	(int Mode) {
+	theChannel::getData	(int Mode) {
 	std::vector<serviceDescriptor> res;
 	for (auto &sd: channelData) {
-	   if (((Mode == FAVORITEVIEW) && sd. isFavorite) || (Mode == ENSEMBLEVIEW))
+	   if (((Mode == FAVORITEVIEW) && sd. isFavorite) ||
+	                                      (Mode == ENSEMBLEVIEW))
 	      res. push_back (sd);
 	}
 	return res;

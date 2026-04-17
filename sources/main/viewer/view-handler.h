@@ -36,25 +36,37 @@
 #include	"database.h"
 #include	"service-descriptor.h"
 
+#define	PREV_SERVICE		QString ("prevService")
+#define NEXT_SERVICE		QString ("nextService")
+
+class	RadioInterface;
+
 class serviceViewer : public QObject, public Ui_viewArea {
 Q_OBJECT
 public:
-
 	serviceViewer	(const QString &fileName,
+	                 RadioInterface	*theRadio,
 	                 const QStringList &channels,
 	                 QSettings	*serviceSettings,
 	                 QFrame *theFrame);
-	~serviceViewer	();
-void	startMode	(int);
-QString	currentChannel	();
-void	addService	(serviceDescriptor);
-void	setupService	(const QString &);
-void	setupService	(const QString &, const QString &);
+	~serviceViewer		();
+void	startMode		(int);
+QString	currentChannel		();
+int	getMode			();
+void	set_channelIndex	(const QString &);
+void	addService		(serviceDescriptor);
+void	remove			(const QString &, const QString &);
+void	reportService		(const QString &);
+void	reportService		(const QString &, const QString &);
+QString	extractName		(uint32_t);
+void	clearAll		();
+QStringList	getSelectables	();
+
+QTableWidget	*theTable;
 private:	
-	int		getMode			();
-	void		insert   (const serviceDescriptor &sd);
-
-
+	RadioInterface	*theRadio;
+	void		insert			(const serviceDescriptor &sd);
+	void		set_channelIndex	(int);
 public slots:
 	void		clickOnService		(int, int);
 	void		handle_channelSelector	(const QString &);
@@ -74,14 +86,13 @@ signals:
 	void		setChannel		(const QString &channel);
 	void		selectService		(const QString &,
 	                                         const QString &);
-	void		selectService		(const QString &);
 	void		start_background_task	(const QString &);	// dummy
+	void		reduceButtons		(bool);
 private:
 	serviceBase	theDataBase;
 	std::vector<serviceDescriptor> displayList;
 	void		clearTable		();
 	QSettings	*viewSettings;
-	QTableWidget	*theTable;
 	QString		fileName;
 	QSettings	*serviceSettings;
 	QFrame		*theFrame;
@@ -96,5 +107,12 @@ private:
         QFont		channelFont;
 	void		mark		(int);
 	void		unmark		(int);
+
+      
+	void	color_prevService	();
+	void	color_nextService	();
+	void	setButtonColors		(QPushButton *b,
+                                         const QString &buttonName);
+
 };
 

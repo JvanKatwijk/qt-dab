@@ -486,13 +486,13 @@ QString	scanHandler::getFirstChannel	() {
 QString	scanHandler::getNextChannel	() {
 	currentChannel ++;
 	while ((selectedBand [currentChannel]. fKHz != 0) &&
-                         (!selectedBand [currentChannel]. scan )) {
+	       (!selectedBand [currentChannel]. scan )) {
 	   fprintf (stderr, "Skipping channel %d\n", currentChannel);
            currentChannel ++;
 	}
-//
+	
 //	are we at the end of the list?
-	if (selectedBand [currentChannel]. fKHz == 0) {
+	if (selectedBand [currentChannel]. fKHz == 0) {	
 	   if (scanMode == SCAN_SINGLE)
 	      throw (21);
 	   else 

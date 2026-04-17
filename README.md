@@ -1,4 +1,4 @@
-# Qt-DAB-6.10
+# Qt-DAB-7.0
 
 -------------------------------------------------------------------
 
@@ -6,22 +6,45 @@
 
 
 --------------------------------------------------------------------------
-		What is new
+		7.0, some important changes
 --------------------------------------------------------------------------
 
-I had an unexpected problem, I started a dump (".wav"), clicked away the
-configuration and control window and forgot that I was dumping.
-Few (??) minutes later I looked and had a file over over 30 Gb, while all
-what I wanted was a sample of the ensemble for some test purposes.
+Since the fourth quarter of 2023 the major version number was "6", the
+GUI had changed a lot, and the basic idea was to increment major version
+numbers when significant GUI changes were implemented.
 
-Having a "dump" dutton on anything else than the main window seems terribly
-wrong. So, three things changed
- * the "dump" button was removed, and now **clicking with the right hand 
-mouse button controls dumping**.
- * this alternative **dump control** holds for both the dumps in ".wav"
-or ".uff" format (the configuration and control window now has a selector
-for choosing dumping in either ".wav" or ".uff" format).
- * when dumping a small separate window will tell you that dumping does on
+At first sight, the GUI of Qt-DAB-7.0 did not change that much with
+the GUI of version 6.
+There are however.
+
+While in version 6 a separate "scanlist" was maintained, containing
+the name (and channel) of all services encountered, in version 7
+no such list exist separately, the service list on the main windiw now
+shows all encountered services.
+
+This display is still in two modes
+ * ensemble mode, where all services are shown, and
+ * favorite mode, where only the favorites are shown.
+
+In **favorite mode** channel selection and scanning are disabled.
+
+A second set of differences is that some buttons on the configuration
+window arereplaced by actions on the min window.
+
+As said earlier. having the control for an operation act as dumping
+the input on the configuration window leads - in my case - to
+unwanted large files by forgetting that the dump is on.
+
+Another **operational** button was the **reset** button, if I want to
+reset, I do not want to have to make the configuration window visible
+first, before touching the reset button.
+
+The **reset** button is therefore added to the main window.
+
+In line with the altered way to start and stop dumping, i.e. clicking
+with the right hand mouse button, the visibility of the **Technical Window**
+is now controlled by clicking with the right hand mouse button on the
+service name of the selected service on the right half of the main window.
 
 ![6.10](/res/read_me/dumping.png?raw=true)
 

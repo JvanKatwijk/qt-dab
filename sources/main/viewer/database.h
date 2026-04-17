@@ -36,12 +36,13 @@ public:
 		~serviceBase	();
 	void	store		(const QString &fileName);
 	void	add		(const serviceDescriptor &);
+	void	remove		(const QString &, const QString &);
 std::vector<serviceDescriptor> 
 		getData		(int);	// the Mode
 	void	update		(const serviceDescriptor &, bool);
-private:
-	std::vector<channelDescriptor> theData;
-	void	load		(const QString &fileName);
 	void	clearTable	();
+private:
+	std::vector<theChannel> theData;
+	void	load		(const QString &fileName);
 };
 

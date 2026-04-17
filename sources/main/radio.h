@@ -67,7 +67,6 @@
 #include	"http-handler.h"
 #include	"tii-mapper.h"
 
-#include	"ensemble-handler.h"
 #include	"config-handler.h"
 #include	"logger.h"
 #include	"errorlog.h"
@@ -77,6 +76,7 @@
 #include	<QScopedPointer>
 #include	"journaline-datahandler.h"
 
+class	serviceViewer;
 class	copyrightText;
 
 typedef struct {
@@ -110,10 +110,6 @@ class	configHandler;
 
 #define SCAN_BUTTON		QString ("scanButton")
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
-#define	SCANLIST_BUTTON		QString ("scanListButton")
-#define PRESET_BUTTON           QString ("presetButton")
-#define PREVSERVICE_BUTTON	QString ("prevServiceButton")
-#define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
 /*
@@ -182,6 +178,7 @@ public:
 	bool		hasEcc;
 	uint8_t		eccByte;
 	int		lto;
+
 //	info on the transmitters seen
 	int		nrTransmitters;
 	std::vector<transmitter>	transmitters;
@@ -230,7 +227,7 @@ Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
 	                                 const QString	&,	//scanlist
-	                                 const QString	&,	//presets
+	                                 const QString	&,	//db
 	                                 const QString	&,	//freqExt
 	                                 const QString	&,	//schedule
 	                                 const QString	&,	//tiiFile
@@ -268,7 +265,7 @@ private:
 	RingBuffer<std::complex<int16_t>>	theTechData;
 	converter_48000		theAudioConverter;
 
-	scanListHandler		theScanlistHandler;
+//	scanListHandler		theScanlistHandler;
 	errorLogger		theErrorLogger;
 	deviceChooser		theDeviceChooser;
 	dxDisplay		theDXDisplay;
@@ -279,7 +276,7 @@ private:
 	epgCompiler		theEpgCompiler;
 //	end of variables that are initalized
 
-	QScopedPointer<ensembleHandler> theEnsembleHandler;
+	serviceViewer			*newServices;
 	configHandler			*theConfigHandler;
 	techWindow			*theTechWindow;
 	ofdmHandler			*theOfdmHandler;
@@ -304,9 +301,7 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 	void			cleanScreen		();
-	void			hideButtons		();
-	void			showButtons		();
-	void			setChannelButton	(int);
+//	void			setChannelButton	(int);
 	void			set_Colors		();
 	void			setButtonColors		(QPushButton *,
 	                                                 const QString &);
@@ -474,39 +469,34 @@ private:
 	void			localSelect_SS		(const QString &,
 	                                                 const QString &);
 //
-signals:
-	void			select_ensemble_font		();
-	void			select_ensemble_fontSize	();
-	void			select_ensemble_fontColor	();
-	void			call_scanButton		();
-
 public slots:
 //	signals from the configuration window
 	void			startDirect		();
-
 	void			copyrightText_closed		();
-	void			handle_tiiThreshold	(int);
+	void			handle_tiiThreshold		(int);
 	void			handle_tiiCollisions		(int);
 	void			handle_activeServices		();
 	void			handle_dcRemoval		(bool);
 	void			selectDecoder			(int);
 	void			set_transmitters_local		(bool);
-	void			handle_scheduleButton	();
+	void			handle_scheduleButton		();
 	void			handle_devicewidgetButton	();
 	void			handle_dlTextButton		();
-	void			handle_resetButton	();
-	void			handle_snrButton	();
+	void			handle_snrButton		();
 	void			handle_set_coordinatesButton	();
 	void			handle_loadTable		();
-//	void			handle_sourcedumpButton	();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
 	void			handle_eti_activeSelector	(int);
 	void			set_streamSelector		(int);
+
+	void			handleFontSizeSelect		(int);
+	void			handleFontSelect		();
+	void			handleFontColorSelect		();
 //	connected in the Radio, coming from the config handler
 	void			handle_configFrame_closed	();
-	void			signal_dataTracer       (bool);
-	void			timeTableFrame_closed	();
+	void			signal_dataTracer		(bool);
+	void			timeTableFrame_closed		();
 
 //	signals from ensemblehandler
 	void			localSelect		(const QString &c,
@@ -626,7 +616,7 @@ public slots:
 	void			stopScanning		();
 
 //	signals from scanListHandler
-	void			handleScanListSelect	(const QString &);
+//	void			handleScanListSelect	(const QString &);
 
 //	signals	from scheduler
 	void			scheduler_timeOut	(const QString &);
@@ -638,10 +628,6 @@ public slots:
 	void			no_signal_found		();
 	void			closeEvent		(QCloseEvent *event);
 
-	void			handle_presetSelect	(const QString &,
-	                                                 const QString &);
-	
-
 	void			showPeakLevel		(float, float);
 
 	void			handle_deviceFrame_closed	();
@@ -652,6 +638,9 @@ public slots:
                                           	  const QStringList notInNew);
 	void			check_newVersion	();
 //
+//	signals from the viewhandler
+	void			handle_channelSelector	(const QString &);
+	void			reduceButtons		(bool);
 private slots:
 //	button and selectorhandlers
 	void			handle_configButton	();
@@ -662,18 +651,12 @@ private slots:
 	void			handle_scanButton	();
 	void			handle_etiHandler	();
 	void			handle_spectrumButton	();
-	void			handle_scanListButton	();
-	void			handle_presetButton	();
-	void			handle_prevServiceButton        ();
-	void			handle_nextServiceButton        ();
-	void			handle_nextChannelButton	();
-	void			handle_prevChannelButton	();
 	void			handle_muteButton	();
 	void			handle_folderButton	();
 	void			devSL_visibility	();
+	void			handle_resetButton		();
 
 	void			handle_dump		();
-	void			handle_channelSelector	(const QString &);
 	void			setVolume		(int);
 	void			handle_snrLabel		();
 	void			handle_distanceLabel	();
@@ -692,11 +675,7 @@ private slots:
 //	color handlers
 	void			handle_labelColor	();
 	void			color_scanButton	();
-	void			color_presetButton	();
 	void			color_spectrumButton	();
-	void			color_scanListButton	();
-	void			color_prevServiceButton ();     
-	void			color_nextServiceButton ();
 	void			color_configButton	();
 	void			color_httpButton	();
 
