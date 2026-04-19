@@ -46,59 +46,64 @@ increment major version numbers when significant GUI changes were implemented.
 
 At first sight, the GUI of Qt-DAB-7.0 did not change that much with
 the GUI of version 6.
-There are however a few fundamental changes to the main window, leading to some changes to the configuration and control window
-
-* While in previous versions a separate **scanlist** was maintained, containing
+There are however a few fundamental changes to the main window, leading to some changes to the configuration and control window.  While in previous versions a separate **scanlist** was maintained, containing
 the name (and channel) of all services encountered, in version 7, all services are shown on the main window now.
 
-![7.0](/res/read_me/Qt_DAB-7.0.png)
+![7.0](/res/read_me/qt-dab-7.0.png)
 
 This display is still in one of a three modes:
- *  **ensemble** mode, where all services are shown, 
+ * **ensemble** mode, where all services are shown, 
  * **favorite** mode, where only the favorites are shown, and
  * **file** mode, where the services from reading a file are shown.
 
 ![7.0](/res/read_me/ensemble-mode.png)
 
-In **ensemble mode ** - the most common mode - all services encountered in the
+In **ensemble mode** - the most common mode - all services encountered in the
 various channels that were exercised are shown. In the picture it shows that
-with my limited antenna equipment the number is nearly 50.
+with my limited antenna equipment the number is well over 50.
  
-On program termination, the list is stored in either a default file ".qt-scanList.mxl" in the user's home location.
+On *program termination*, the list is stored in a file with the
+name ".qt-scanList.mxl", stored in the user's home directory
+On program startup, the list is read-in again.
+.
 Alternatively, the **configuration and control** window contains an entry that - when set - invokes upon program termination a file dialog for selecting a
 file where the list can be stored.
-Of course the **configuration and control** window has a selector that - when set - allows the user to load such a file rather thn the default one.
+Of course the **configuration and control** window also has a selector that - when set - allows the user to load such a file rather than the default one.
 
 Clicking on a service name obviously will select the service, which might take a few seconds if another channel has to be started.
 Clicking on the small entry left of the service name controls the **status**
-of the entry, i.e. a **favorite** or not.
+of the entry, i.e. a **favorite** or not. If set as **favorite** a small "*"
+appears left of the name in the list.
 
 The window contains at the bottow - below the channel selector - a button
 with which a switch can be made between **ensemble** mode and **favorite** mode.
 
 ![7.0](/res/read_me/favorite-mode.png)
 
-In **favorite** mode, the list of favorites is shown. In Qt-DAB-7.0 having selected this mode makes channel selection (and scanning)  blocked.
+In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection (and scanning)  rather useless and in Qt-DAB-7.0 channel selection and scanning is blocked in this mode.
 
 ![7.0](/res/read_me/file-mode.png)
 
 In **file** mode, i.e. after reading a file, the services are shown, and
 - obviously - may be selected.
 Adding an element to the **favorites** is not very usefule, as is
-channel selection, scanning and switching the mode.
+channel selection, scanning and switching the mode. So, these functions
+are blocked in this mode. Furthermore, switching from this mode to either
+**ensemble mode** or **favorite mode** is meaningless, so the mode
+selecting button is hidden.
 
 On starting the program with a **device** the **ensemble** mode is
-set, when starting with a file as input, the mode is set to **file**mode.
+set, when starting with a file as input, the mode is set to **file** mode.
 
 -------------------------------------------------------------------------
 
-In Qt-DAB-7.0 a choice was makde to add a few **operational** selectors to
+In Qt-DAB-7.0 a choice was made to add a few **operational** selectors to
 the main window, rather than having them on the **configuration and control**
 window.
 
-In the latest releases of 6.10 the **dump** button as already moved from the configuration window to the main window (the **button** implemented by a click
+In the latest releases of 6.10 the **dump** button was already moved from the configuration window to the main window (the **button** implemented by a click
 on the **right hand button** on the mouse on the ensemblename). Furthermore,
-when dumpimg a small window shows that dumping is going on.
+when dumpimg,  a small window is shown that remminds the user that dumping is going on.
 
 ![7.0](/res/read_me/dumping.png?raw=true)
 
@@ -106,12 +111,16 @@ In Qt-DAB-7.0 the **reset** button also moved to the main window (it was felt ra
 
 ![7.0](/res/read_me/resetbutton.png?raw=true)
 
-The reset button is located in the top line of the right half of the main window, in order to make some space for this (small) window, the icon for controlling the visibility of the **Technical window** was removed.
+The reset button is located in the top line of the right half
+of the main window, in order to make some space for this (small) window,
+the icon for controlling the visibility of the **Technical window** was removed.
 The functionality of the latter "button" is obtained by - again - clicking with the **right hand mouse button** on the label where the servicename is shown.
 
 The other icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.
 
+As in previous versions, if the ensemble in the **currently selected channel**
+carries an EPG/SPI service, a small icon is shown.
 
 The technical widget is not modified
 
@@ -214,6 +223,8 @@ If the **save on exit** selexctor is set, on program termination the user is ask
 If the **load selection** checkbox is set, on program startup the user is
 asked for a filename to load a selection, if loading that fails, the default
 is loaded.
+
+Also new is a checkbox, bottom line right end, that - when set - instructs the software to checkon program startup on the availability of a new version of Qt-DAB.
 
 Devices and device support
 ======================================================================
