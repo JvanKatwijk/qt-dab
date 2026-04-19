@@ -32,8 +32,9 @@
 class	serviceBase: public QObject {
 Q_OBJECT
 public:
-		serviceBase	(const QString &fileName);
+		serviceBase	();
 		~serviceBase	();
+	void	load		(const QString &fileName);
 	void	store		(const QString &fileName);
 	void	add		(const serviceDescriptor &);
 	void	remove		(const QString &, const QString &);
@@ -43,6 +44,5 @@ std::vector<serviceDescriptor>
 	void	clearTable	();
 private:
 	std::vector<theChannel> theData;
-	void	load		(const QString &fileName);
 };
 

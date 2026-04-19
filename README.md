@@ -5,52 +5,8 @@
 ![6.10](/res/read_me/qt-dab-logo.png?raw=true)
 
 
---------------------------------------------------------------------------
-		7.0, some important changes
---------------------------------------------------------------------------
-
-Since the fourth quarter of 2023 the major version number was "6", the
-GUI had changed a lot, and the basic idea was to increment major version
-numbers when significant GUI changes were implemented.
-
-At first sight, the GUI of Qt-DAB-7.0 did not change that much with
-the GUI of version 6.
-There are however.
-
-While in version 6 a separate "scanlist" was maintained, containing
-the name (and channel) of all services encountered, in version 7
-no such list exist separately, the service list on the main windiw now
-shows all encountered services.
-
-This display is still in two modes
- * ensemble mode, where all services are shown, and
- * favorite mode, where only the favorites are shown.
-
-In **favorite mode** channel selection and scanning are disabled.
-
-A second set of differences is that some buttons on the configuration
-window arereplaced by actions on the min window.
-
-As said earlier. having the control for an operation act as dumping
-the input on the configuration window leads - in my case - to
-unwanted large files by forgetting that the dump is on.
-
-Another **operational** button was the **reset** button, if I want to
-reset, I do not want to have to make the configuration window visible
-first, before touching the reset button.
-
-The **reset** button is therefore added to the main window.
-
-In line with the altered way to start and stop dumping, i.e. clicking
-with the right hand mouse button, the visibility of the **Technical Window**
-is now controlled by clicking with the right hand mouse button on the
-service name of the selected service on the right half of the main window.
-
-![6.10](/res/read_me/dumping.png?raw=true)
-
---------------------------------------------------------------------------
 About Qt-DAB
--------------------------------------------------------------------------
+======================================================================
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
@@ -66,155 +22,105 @@ an installer - are available.
 Table of Contents
 =================================================================
 
-* [Introduction](#introduction)
+* [What is new in Qt-DAB-7.0](#What-is-new-in-Qt-DAB-7.0)
 * [Features](#features)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
-* [Scan control](#scan-control)
-* [Displaying TII data](#displaying-TII-data)
+* [Scan control](#scan-cntrol)
+* [Displaying TII data](#displaying-tii-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
 * [Journaline data](#journaline-data)
-* [Logging errors](#logging-errors)
-* [Documentation](#documentation)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
-* [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
-* [Using user specified bands](#using-user-specified-bands)
+* [Software for device support](#softare-for-device-support)
+* [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-Introduction
-=================================================================
+-------------------------------------------------------------------------
+What is new in Qt-DAB-7.0
+------------------------------------------------------------------------
 
-*Qt-DAB* is designed to be used with a variety of SDR devices, it
-defines a simple interface for connecting a device.
-The precompiled versions for Windows and Linux (x64) support
-most devices for which Qt-DAB provides support (see below).
-Qt-DAB can be compiled on an RPI4 or up, and
-thanks to Richard Huber, *Qt-DAB* can be compiled on the Mac as well, though it is most likely not a trivial exercise.
+Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
+the GUI had changed a lot since the "5" version, and the basic idea was to
+increment major version numbers when significant GUI changes were implemented.
 
-Features
-=================================================================
-  
-  * Qt-DAB supports most common SDR devices directly (see below). The device interface is quite simple and in a different document it is explained in detail how to use the interface  to implement control for other devices;
-  * Qt-DAB supports so-called **favorites** (i.e. channel, service pairs) for easy switching between services in different ensembles (see below),
-  * Qt-DAB recognizes and interprets **TII** (Transmitter Identification Information) data of - if the received signal is from multiple transmitters - *all* detectable transmitters, can be made visible simultaneously, and Qt-DAB displays the transmitters on a map in a browser. A separate tool is available to download a database, the precompiled versions contain a copy of the database;
-  * Qt-DAB offers different views on the input data, see below,
-  * Qt-DAB offers the possibility of **scanning** through all - or a selected subset - channels of the band,
-  * Qt-DAB starts **EPG/SPI** services automatically as **background task** and provides means to show resulting time tables;
-  * Qt-DAB allows running an arbitrary amount of audio services from the current ensemble as **background service**, with the output sent to a file,
-  * Qt-DAB supports a **scanList**, i.e. a list with channel/service pairs encountered. Obviously, selecting a service from this list is possible;
-  * Qt-DAB supports **journaline**, often transmitted as subservice, if a journaline (sub)service is detected, auto starts a small journaline window;
-  * Qt-DAB offers the possibility of generating an **ETI file** from the ensemble in the currently selected channel,
-  * Qt-DAB offers options to select other bands, i.e. the L-Band, or channel descriptions from a user provided file and it supports obsolete modes (Mode II and Mode IV),
-  * and much more ...
+At first sight, the GUI of Qt-DAB-7.0 did not change that much with
+the GUI of version 6.
+There are however a few fundamental changes to the main window, leading to some changes to the configuration and control window
 
-Widgets and scopes
-=======================================================================
+* While in previous versions a separate **scanlist** was maintained, containing
+the name (and channel) of all services encountered, in version 7, all services are shown on the main window now.
 
-![6.10](/res/read_me/Qt_DAB-6.10.png)
+![7.0](/res/read_me/Qt_DAB-7.0.png)
 
-The **main window** (see picture) of Qt-DAB (always visible), contains selectors for controlling the visibility of other windows.
-The other windows (see the picture on top) are
- * a window with lots of controls;
- * a window with half a dozen views on the signal;
- * a window showing all kinds of data of the currently selected audio channel.
+This display is still in one of a three modes:
+ *  **ensemble** mode, where all services are shown, 
+ * **favorite** mode, where only the favorites are shown, and
+ * **file** mode, where the services from reading a file are shown.
 
-The main window shows - left half - a list of services (either from the currently selected channel or from the list of **favourites**).
-Selecting a service is just by clicking on the name.
-The right half of the window shows the dynamic label, and the slides - if transmitted as part of the service - or a series of default slides.
+![7.0](/res/read_me/ensemble-mode.png)
 
-![6.10](/res/read_me/topline.png)
+In **ensemble mode ** - the most common mode - all services encountered in the
+various channels that were exercised are shown. In the picture it shows that
+with my limited antenna equipment the number is nearly 50.
+ 
+On program termination, the list is stored in either a default file ".qt-scanList.mxl" in the user's home location.
+Alternatively, the **configuration and control** window contains an entry that - when set - invokes upon program termination a file dialog for selecting a
+file where the list can be stored.
+Of course the **configuration and control** window has a selector that - when set - allows the user to load such a file rather thn the default one.
 
-The picture above shows the topline of the right half of the main window.
+Clicking on a service name obviously will select the service, which might take a few seconds if another channel has to be started.
+Clicking on the small entry left of the service name controls the **status**
+of the entry, i.e. a **favorite** or not.
 
- * touching the small icon left on the top of the right half will show (or hide) the **technical window**, a window showing technical details, some strength (quality) indicators and a spectrum of the audio of the selected service;
- * touching the small icon to the right next, the **folder/directory** in which Qt-DAB stores data, such as slides, the tii log and the log file are written is shown;
- * touching the small **blue** icon controls visibility of the device selector.  (After selecting a device, the device list will be hidden automatically).
+The window contains at the bottow - below the channel selector - a button
+with which a switch can be made between **ensemble** mode and **favorite** mode.
 
-![6.10](/res/read_me/devicelist.png)
+![7.0](/res/read_me/favorite-mode.png)
 
- * touching the icon showing a **speaker** controls **muting** the signal and shows whether or not a signal should be audible.
- * touching the **copyright symbol** shows (or, if visible, hides) a small **about** window with acknowledgements for using external libraries;
+In **favorite** mode, the list of favorites is shown. In Qt-DAB-7.0 having selected this mode makes channel selection (and scanning)  blocked.
 
-![6.10](/res/read_me/content-table.png)
+![7.0](/res/read_me/file-mode.png)
 
-  * touching the **ensemble name** (NPO (8001) in the picture seen top left) makes the **content table**, i.e. an overview of the content of the ensemble, visible. The data shown can be stored in a file in ".csv" format. If the content table is visible. Touching the ensemble name again will hide it;
+In **file** mode, i.e. after reading a file, the services are shown, and
+- obviously - may be selected.
+Adding an element to the **favorites** is not very usefule, as is
+channel selection, scanning and switching the mode.
 
-![6.10](/res/read_me/mainwindow-buttons.png)
+On starting the program with a **device** the **ensemble** mode is
+set, when starting with a file as input, the mode is set to **file**mode.
 
-At the bottom of the right half of the window, one sees the buttons shown above,
-from right to left:
+-------------------------------------------------------------------------
 
- * the button labeled **scan** controls the visibility of a the scan handler window;
- * the button labeled **http* controls the **http handler** with which a browser is started that shows a map (with the transmitters displayed on their location);
- * the button labeled **spectrum** controls the visibility of the spectrum window, a window with options to select among different views on and information of the DAB signal itself;
- * the button labeled **controls** controls the visibility of the so-called **configuration and control window**, a window that provides numerous settings for this software;
+In Qt-DAB-7.0 a choice was makde to add a few **operational** selectors to
+the main window, rather than having them on the **configuration and control**
+window.
 
-The bottom line in the picture above shows the transmitter name from the transmitter with the  strongest data, and - in this case - that the **avx2** instruction extension is used for some computations. (Qt-DAB can be configures with or wirhout the use of avx2 instructions ro spoeed up some computations). **Clicking** on that bottom line controls the visibility of the  **dxDisplay** (see below).
+In the latest releases of 6.10 the **dump** button as already moved from the configuration window to the main window (the **button** implemented by a click
+on the **right hand button** on the mouse on the ensemblename). Furthermore,
+when dumpimg a small window shows that dumping is going on.
 
-The picture below shows (part of) the left half of the main window. It shows a
-list of services, and - at the bottom - a few buttons and selectors.
+![7.0](/res/read_me/dumping.png?raw=true)
 
-![6.10](/res/read_me/services.png)
+In Qt-DAB-7.0 the **reset** button also moved to the main window (it was felt rather clumsy to first have to activate the **configuration and control** window before being able to press the **reset** button).
 
- * the buttons labeled "+" and "-" can be used to scan through the list of services;
- * the up- and down arrow can be used to scan through the channels, a channel can be selected by touching an element of the combobox;
- * the button labeled **favourites** controls whether the list of services
-from the currently selected channel or the list of favourites is shown,
- * the button labeled **scanlist** controls the visibility
-of the scan list, i.e  *the list of all services seen*, shown below.
+![7.0](/res/read_me/resetbutton.png?raw=true)
 
-![6.10](/res/read_me/scanList.png)
+The reset button is located in the top line of the right half of the main window, in order to make some space for this (small) window, the icon for controlling the visibility of the **Technical window** was removed.
+The functionality of the latter "button" is obtained by - again - clicking with the **right hand mouse button** on the label where the servicename is shown.
 
-(Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user, just click with the right hand mouse button on a button).
+The other icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
+small blue one controls the visibility of the device list.
 
-As mentioned, Qt-DAB supports **favorites**,
-i.e. a list of (channel, service pairs). The list is maintained between program invocations. 
-The **services widget** on the main window is shown in one of two modes, selectable by the button (in the picture labeled) **favourites**.
-In **ensemble view** mode, the services in the current ensemble are shown, in the **favourites view** mode, the favourites are shown.
 
-In both views, **selecting a service** is just by clicking on the service name.
-Of course, when selecting a service in the list of favourites, it might take a few seconds before the software has switched over to the appropriate channel, and has
-received sufficient information on the new ensemble carried in that channel before being able to select the service in that channel.
-
-**Adding** a service to the favourites is by clicking on the field in the right hand column, shown in the services list.
-If - in **ensemble mode** view - a service is also part of the favourites, the
-field in the right hand column shows a mark. Clicking on such a mark **removes** the service from the list, as does clicking on the field in the *favourites view**.
+The technical widget is not modified
 
 ![6.10](/res/read_me/technical-widget.png)
 
 The technical window shows - as the name suggests - technical details of
 the  selected audio service.
 
-The buttons at the top of the window control **dumping** the audio
-(".wav" file) resp. the AAC or MP2 frames into a file. AAC amd MP2 encoded files can be processed by e.g. VLC.
-
-The **timeTable** button has only effect if on this channel (ensemble) an EPG 
-service is or was active. Data from the EPG service is stored, and the
-timetable is an interpretation of that data.
-
-Below the **timeTable** button the static (meta)data of the selected audioservice is shown.
-
-If the audiois also transmitted over FM, an indication of the relevant FM
-frequencies is shown.
-
-The three progress bars (quality indicators) for DAB+ give success rates of
-resp. detecting a DAB+ frame, the RS error repair and the AAC decoding.
-(For "old" DAB transmissions only a single quality indicator appears).
-
-Below the progress bars the **rsCorrections/100** indicator shows how the amount of corrections that was made by the Reed-Solomon detector in the last 100 AAC frames (only used for DAB+ services).
-Of course, the parity bits used by the RS decoding may contain bit errors themselves, which likely leads to CRC errors, the second indicator shows the amount of CRC errors detected  **after** the correction by the RS decoding.
-
-The third indicator tells the percentage of the AAC (or MP2) data that was
-found to be OK.
-
-The audio related data is shown above the spectrum,
-the **scope** at the bottom shows the spectrum of the audio.
-
-As mentioned above, a **spectrum window** can be made visible by clicking
-on a button on the main window.
-That window is equipped with a tab for selecting one of 6 views on the input
-signal.
+The spectrum widget is not modfied
 
 ![6.10](/res/read_me/spectrum-scope.png)
 
@@ -296,36 +202,18 @@ The Y-axis is in Hz.
 
 ![6.10](/res/read_me/configuration-and-control.png)
 
-The **configuration and control** window contains checkboxes, spinboxes and
-buttons with which the configuration of the decoding process can be
-influenced.
+The **configuration and control window was modified.
 
-**New** is a selector on the top line labeled **mapview**. When set, the
-transmitter information that is sent to a map (see later on) is stored
-into a file for off-line use.
+In the previous version, a selector **mapview** was added, that selector 
+is now placed on the second line of the checkboxes.
+Since the software - on startup - always loads a database, i.e. 
+if one can be found in the user's how directory that one, otherwise a default version, there was no need for  selector for loading a database.
 
-**New** is that if no database can be found in the user's home directory, Qt-DAB loads a version that is incorporated in the executable. The "local DB" selector is void.
-
-Finally, also **new** is the selector **map close**.
-If set, on switching the http handler off, an attempt is made to close
-the map, and - if the map is closed - an attempt is made to switch off
-the http handler.
-
-![6.10](/res/read_me/service-and-titles.png)
-
-Slightly experimental is the possibility to save **titles** (parts
-of the dynamic labels) of (mostly) songs that are transmitted.
-**This is by interpreting the so-called DL2 data, note that not all 
-ensembles send DL2 data**.
-The selector labeled **save titles** controls this, the titles - see picture
-above - are stored in a file **DL2_titles.csv** in the Qt-DAB-files directory.
-
-Just as a gadget, the window contains an indicator for the CPU load.
-This load is the overall CPU load, not only the load from running
-Qt-DAB.
-Furthermore, the indicator, left of the CPU load text, here with value 1, tells how many backends are active simultaneously.
-
-For a detailed description of all selectors, see the manual (or read the tooltips).
+New are selectors labeled **save on exit** and **load selection**.
+If the **save on exit** selexctor is set, on program termination the user is asked for a filename to store a servicelist.
+If the **load selection** checkbox is set, on program startup the user is
+asked for a filename to load a selection, if loading that fails, the default
+is loaded.
 
 Devices and device support
 ======================================================================
@@ -547,40 +435,6 @@ Qt-DAB uses the *NewsService Journaline (R) Decoder* software from Fraunhofer II
 ![6.10](/res/read_me/journaline-2.png?raw=true)
 
 (Categorie names with an asterisks attatched show that new data is available)
-
-Logging errors
-=================================================================
-
-Reporting of errors is now done in a (more or less) systematic way.
-Especially errors with devices (I often get error messages when
-setting gain values in my SDRplay equipment), such as a device that
-does not start properly.
-
-While Linux is essentially command line based and error messages
-are - usually -printed on the command window, the command window in
-the precompiled Windows versions is always switched off and
-error messages are "lost".
-
-A class was added to save error messages. These messages are written
-into a file with the name *errorlog.txt*,  in the
-directory (folder if you wish) *Qt-DAB-files*, in the user's home
-directory.
-
-Error messages take the form 
-
-  * dabstick at 2025-09-01T13:35:00 -> No rtlsdr device found 
-
-i.e, an entity (usually a device name) in which the error occurred, the
-date and the error message itself.
-
-Documentation
-=================================================================
-
-Most selectors on the various windows have a **tool-tip** that explains
-theur function.
-
-An introductory text, covering the regular use
-is available and includes in the latest **release**.
 
 Installation on Windows
 =================================================================

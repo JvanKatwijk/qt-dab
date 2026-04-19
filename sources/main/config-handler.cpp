@@ -169,8 +169,8 @@ int	index_for_key (int key) {
 	this	-> auto_http -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          "dcRemoval", 1) == 1;
-	this -> dcRemoval -> setChecked (b);
+	                          "LOAD_SELECTION", 0) == 1;
+	this -> loadSelection_selector -> setChecked (b);
 
 	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollision", 0);
 	this	-> tiiCollisions -> setValue (c);
@@ -229,14 +229,18 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_allTIISelector);
 	connect (activeServices, &clickablelabel::clicked_left,
 	         myRadioInterface, &RadioInterface::handle_activeServices);
-	connect (this, &configHandler::set_dcRemoval,
-	         myRadioInterface, &RadioInterface::handle_dcRemoval);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (close_mapSelector, &QCheckBox::checkStateChanged,
 #else
 	connect (close_mapSelector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_close_mapSelector);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (loadSelection_selector, &QCheckBox::checkStateChanged,
+#else
+	connect (kiadSelection_selector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_loadSelection_selector);
 //
 //	Tracer special
 //	connect	(tracerButton, &QPushButton::clicked,
@@ -429,12 +433,6 @@ void	configHandler::set_connections () {
 
 
 //	sixth ine
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (dcRemoval, &QCheckBox::checkStateChanged,
-#else
-	connect (dcRemoval, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_dcRemoval);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (saveTitlesSelector, &QCheckBox::checkStateChanged,
@@ -787,6 +785,10 @@ int	configHandler::get_serviceOrder	() {
 	return serviceOrder;
 }
 
+bool	configHandler::get_loadSelection	() {
+	return loadSelection_selector	-> isChecked ();
+}
+
 bool	configHandler::upload_selector_active	() {
 	return upload_selector -> isChecked ();
 }
@@ -982,17 +984,6 @@ bool	configHandler::get_close_mapSelector	() {
 	return close_mapSelector	-> isChecked ();
 }
 
-void	configHandler::handle_dcRemoval		(int h) {
-	(void)h;
-	bool b = this ->  dcRemoval -> isChecked ();
-	store (dabSettings, CONFIG_HANDLER, "dcRemoval", b ? 1 : 0);
-	emit set_dcRemoval (b);
-}
-
-bool	configHandler::get_dcRemoval		() {
-	return dcRemoval -> isChecked ();
-}
-
 void	configHandler::handle_saveTitles	(int h) {
 	(void)h;
 }
@@ -1001,8 +992,8 @@ bool	configHandler::get_saveTitles		() {
 	return saveTitlesSelector -> isChecked ();
 }
 
-bool	configHandler::get_clearScanList       () {
-	return clearScanList_selector	-> isChecked ();
+bool	configHandler::get_saveSelection	() {
+	return saveSelection -> isChecked ();
 }
 //
 void	configHandler::handle_tracerButton	() {
@@ -1029,3 +1020,10 @@ void	configHandler::handle_updateSelector	(int k) {
 	bool b	= this -> updateSelector	-> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
 }
+
+void	configHandler::handle_loadSelection_selector (int k) {
+	(void)k;
+	bool b = this -> loadSelection_selector -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, "LOAD_SELECTION", b);
+}
+

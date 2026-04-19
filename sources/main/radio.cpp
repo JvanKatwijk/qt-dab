@@ -145,6 +145,7 @@ QString idsToString (int mainId, int subId) {
 
 static inline
 QStringList splitter (const QString &s) {
+	fprintf (stderr, "Going to split %s\n", s. toLatin1 (). data ());
 #if QT_VERSION > QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
@@ -673,14 +674,28 @@ void	RadioInterface::startDirect	() {
 	   abort ();
 	}
 
-	theOfdmHandler	-> set_dcRemoval (theConfigHandler -> get_dcRemoval ());
-	theNewDisplay. set_dcRemoval (theConfigHandler -> get_dcRemoval ());
+	theOfdmHandler	-> set_dcRemoval (true);
+	theNewDisplay. set_dcRemoval (true);
 	channel. cleanChannel ();
 //
 	if (theDeviceHandler -> isFileInput ())
 	   newServices	-> startMode (FILEINPUT);
-	else
-	   newServices	-> startMode (ENSEMBLEVIEW);
+	else {
+	   QString selectionName;
+	      if (theConfigHandler -> get_loadSelection ()) {
+	      QString fileName =            
+	                QFileDialog::getOpenFileName (nullptr,
+                                                      "Open file ...",
+	                                              path_for_files,
+	                                              "*.xml");
+	      if (selectionName != "") 
+	         newServices -> startMode (ENSEMBLEVIEW, selectionName);
+	      else
+	         newServices -> startMode (ENSEMBLEVIEW);
+	   }
+	   else
+	      newServices -> startMode (ENSEMBLEVIEW);
+	}
 
 	startChannel (newServices -> currentChannel ());
 	int auto_http	= value_i (theQSettings, CONFIG_HANDLER, AUTO_HTTP, 0);
@@ -1313,6 +1328,15 @@ void	RadioInterface::TerminateProcess () {
 	updateCheck_timer. stop (); 
 //	stop activity using a timer
 	stopScanning ();
+	if ((theDeviceHandler != nullptr) &&
+	    (!theDeviceHandler -> isFileInput ()) &&
+	    (newServices != nullptr)) {
+	   if (theConfigHandler -> get_saveSelection ()) {
+	      QString saveFileName = 
+	            theFilenameFinder. findsaveSelection_fileName ();
+              newServices -> saveName (saveFileName);
+	   }
+	}
 	while (theSCANHandler. active ())
 	   usleep (1000);
 	mapHandler_locker. lock ();
@@ -1320,11 +1344,8 @@ void	RadioInterface::TerminateProcess () {
 	   delete mapViewer;
 	   mapViewer = nullptr;
 	}
-	if (newServices != nullptr) {
-           if (theConfigHandler -> get_clearScanList ())
-              newServices -> clearAll ();
+	if (newServices != nullptr)
 	   delete newServices;
-	}
 
 	if (theControl != nullptr)
 	   delete theControl;
@@ -1358,10 +1379,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete mapViewer;
 	}
 
-//	handling the scanlist
-	if (theConfigHandler -> get_clearScanList ())
-	   newServices -> clearAll ();
-//
 //	should be hidden  to ensure the parent can be killed
 	theSNRViewer.	hide ();	
 	theScheduler.	hide ();
@@ -2090,7 +2107,7 @@ QStringList list	= splitter (s);
 	if (list. length () != 2)
 	   return;
 	presetTimer. stop ();
-	newServices	-> reportService (list. at (1), list. at (2));
+	newServices	-> reportService (list. at (0), list. at (1));
 	localSelect_SS (list. at (1), list. at (0));
 }
 //
@@ -2101,10 +2118,10 @@ QString serviceName	= service;
 	stopService (channel. currentService);
 	for (int i = service. size (); i < 16; i ++)
 	   serviceName. push_back (' ');
-//
+
 //	if not local, first stop channel
 	if (!theDeviceHandler -> isFileInput () && 
-	    (theChannel != channel. channelName)) {
+	    (theChannel  != channel. channelName)) {
 	   stopChannel ();
 	   startChannel  (theChannel, serviceName);
 	   return;
@@ -2269,6 +2286,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	s. fd		= nullptr;
 	s. runsBackground	= false;
 	channel. runningTasks. push_back (s);
+
+	store (theQSettings, "channelPresets", s. channel, s. serviceName);
 //
 //	check the other components for this service (if any)
 	if (theOfdmHandler -> isPrimary (ad. serviceName)) {
@@ -2394,11 +2413,11 @@ void	RadioInterface::setPresetService () {
 	   dynamicLabel -> setText ("ensemblename not yet found\n");
 	   return;
 	}
-
 	if (newServices != nullptr)
 	   newServices -> reportService (channel. channelName, 
 	                                   nextService. serviceName);
 	QString presetName	= nextService. serviceName;
+
 	dabService s = nextService;
 	int index = theOfdmHandler	-> getServiceComp (presetName);
 	if (index < 0) {
@@ -2462,12 +2481,11 @@ int	tunedFrequency	=
 	if (mapViewer != nullptr) 
 	   mapViewer -> putData (MAP_FRAME);
 	mapHandler_locker. unlock ();
-
 	if (theSCANHandler. active ()) {
 	   theOfdmHandler	-> start ();
 	   return;
 	}
-//
+
 //	If we are scanning, we do not do delayed service start
 	int switchDelay		=
 	             theConfigHandler -> switchDelayValue ();
@@ -2487,9 +2505,9 @@ int	tunedFrequency	=
 	      nextService. channel	= theChannel;
 	      nextService. serviceName	= firstService;
 	      nextService. SId		= 0;
-	      presetTimer. setSingleShot (true);
 	      presetTimer. setInterval	(switchDelay);
 	      presetTimer. start	(switchDelay);
+	      fprintf (stderr, "presettimer gestart\n");
 	   }
 	}
 //	all set, go for it

@@ -86,6 +86,10 @@ QString fileName	= outputDialog (basicPath (), channel, ".sdr", false);
 	return fileName;
 }
 
+QString	findfileNames::findsaveSelection_fileName	() {
+	return outputDialog (basicPath (), "selection", ".xml", true);
+}
+
 FILE	*findfileNames::findContentDump_fileName (const QString &channel) {
 QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 

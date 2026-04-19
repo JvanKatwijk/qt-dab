@@ -85,7 +85,8 @@ public:
 	bool	get_saveTitles		();
 
 	bool	check_correctPhase	();
-	bool	get_clearScanList	();
+	bool	get_saveSelection	();
+	bool	get_loadSelection	();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -131,7 +132,6 @@ private slots:
 //	void	handle_upload_selector		(int);
 	void	handle_utc_selector		(int);
 	void	handle_auto_http		(int);
-//	void	handle_clear_on_exit		(int);
 
 	void	handle_localBrowser		(int);
 	void	handle_onTop			(int);
@@ -145,12 +145,12 @@ private slots:
 	void	handle_showAll_Selector		(int);
 	void	handle_saveSlides		(int);
 	void	handle_audioServices_only	(int);
-	void	handle_dcRemoval		(int);
 
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_tiiCollisions		(int);
 	void	handle_mouseClicked		();
-//
+
+	void	handle_loadSelection_selector	(int);
 //	for the tracer
 	void	handle_tracerButton		();
 signals:

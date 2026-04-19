@@ -181,8 +181,8 @@ void	ofdmHandler::start () {
 void	ofdmHandler::stop	() {
 	theReader. setRunning (false);
 	while (isRunning ())
-	   wait ();
-	usleep (10000);
+//	   wait ();
+	   usleep (10000);
 	theFicHandler. stop ();
 }
 /***

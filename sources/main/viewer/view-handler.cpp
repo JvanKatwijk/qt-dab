@@ -29,10 +29,10 @@
 #include        <QFontDialog>
 #include        <QHeaderView>
 #include	<QHBoxLayout>
+#include	<QScrollBar>
 #include	<QVBoxLayout>
 #include        "settingNames.h"
 #include        "settings-handler.h"
-#include	"settings-handler.h"
 #include	"view-handler.h"
 #include	"radio.h"
 
@@ -42,7 +42,7 @@
 	                              const QStringList &channels,
 	                              QSettings	*serviceSettings,
 	                              QFrame *theFrame): 
-	                                        theDataBase (fileName),
+	                                        theDataBase (),
 	                                        normalFont ("Times", 10, 
                                                               -1, false),
                                                 markedFont ("Times", 12,
@@ -59,7 +59,7 @@
 	theTable	= new QTableWidget (0, 3);
 	theTable	 -> setSelectionBehavior (QAbstractItemView::SelectRows);
 	theTable	-> setColumnWidth	(0, 3);
-	theTable	-> setColumnWidth	(2, 15);
+	theTable	-> setColumnWidth	(2, 10);
 	theTable	-> setHorizontalHeaderLabels (
 	                             QStringList () << tr ("") <<
 	                                               tr ("service") <<
@@ -69,14 +69,11 @@
 	theWidget	-> setWidget (theTable);
 	theWidget	-> show ();
 
-	{  QPixmap p;
-           if (p. load (":res/radio-pictures/up-arrow.png", "png"))
-              prevChannel -> setPixmap (p. scaled (30, 30,
-                                                        Qt::KeepAspectRatio));
-           if (p. load (":res/radio-pictures/down-arrow.png", "png"))
-              nextChannel -> setPixmap (p. scaled (30, 30,
-                                                        Qt::KeepAspectRatio));
-        }
+	QPixmap p;
+        if (p. load (":res/radio-pictures/up-arrow.png", "png"))
+           prevChannel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+        if (p. load (":res/radio-pictures/down-arrow.png", "png"))
+           nextChannel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 
 	theMode		= ENSEMBLEVIEW;
 	for (auto &s: channels)
@@ -101,6 +98,7 @@
 	         this, &serviceViewer::color_prevService);
 	connect	(nextService, &smallPushButton::rightClicked,
 	         this, &serviceViewer::color_nextService);
+
 	channelSelector	-> setEnabled (false);
 	prevChannel	-> setEnabled (false);
 	nextChannel	-> setEnabled (false);
@@ -126,14 +124,27 @@ void	serviceViewer::clearAll		() {
 	theDataBase. clearTable ();
 }
 
+//
+//	While in most cases the startMode function operates with
+//	the default filename, there are situations that
+//	a user selectable filename is used
+void	serviceViewer::startMode	(int Mode, const QString &fileName) {
+	this	-> fileName	= fileName;
+	startMode (Mode);
+}
+
 void	serviceViewer::startMode	(int Mode) {
-	clearTable ();
-	displayList. resize (0);
+	clearAll ();
+	theDataBase. load (fileName);
 	theMode		= Mode;
-	currentService	= 0;
+	currentService	= -1;
 	switch (Mode) {
 	   case ENSEMBLEVIEW:
 //	      extract from the database een displayview en show
+	      channelSelector	-> show ();
+	      prevChannel	-> show ();
+	      nextChannel	-> show ();
+	      viewSelector	-> show ();
 	      channelSelector	-> setEnabled (true);
 	      prevChannel	-> setEnabled (true);
 	      nextChannel	-> setEnabled (true);
@@ -146,8 +157,12 @@ void	serviceViewer::startMode	(int Mode) {
 	      channelSelector	-> setEnabled (false);
 	      prevChannel	-> setEnabled (false);
 	      nextChannel	-> setEnabled (false);
-              displayList	= theDataBase. getData (theMode);
 	      viewSelector	-> setEnabled (false);
+	      channelSelector	-> hide ();
+	      prevChannel	-> hide ();
+	      nextChannel	-> hide ();
+	      viewSelector	-> show ();
+              displayList	= theDataBase. getData (theMode);
               show_displayList ();
 	      break;
 	   case FILEINPUT:
@@ -155,6 +170,11 @@ void	serviceViewer::startMode	(int Mode) {
 	      prevChannel	-> setEnabled (false);
 	      nextChannel	-> setEnabled (false);
 	      viewSelector	-> setEnabled (false);
+	      channelSelector	-> hide ();
+	      prevChannel	-> hide ();
+	      nextChannel	-> hide ();
+	      viewSelector	-> hide ();
+              show_displayList ();
 	      break;
 	   default:	// cannot happen
 	      break;
@@ -166,6 +186,7 @@ QString	serviceViewer::currentChannel	() {
 	return channelSelector	-> currentText ();
 }
 
+//	maps the SId to the servicename
 QString	serviceViewer::extractName	(uint32_t SId) {
 	for (auto &sd: displayList) 
 	   if (sd. SID == SId)
@@ -213,7 +234,6 @@ void	serviceViewer::remove	(const QString &channel,
 	}
 	theDataBase. remove (channel, service);
 }
-	      
 //
 //
 //	It is verified that the service does not exist yet in the view
@@ -223,18 +243,18 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
 	theTable     -> insertRow (row);     // 
         QTableWidgetItem *item0 = new QTableWidgetItem;
-        item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
-        theTable     -> setItem (row, 0, item0);
+	item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
+	theTable     -> setItem (row, 0, item0);
 
 	QTableWidgetItem *item1 = new QTableWidgetItem; // serviceName
-        item1           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        theTable	-> setItem (row, 1, item1);
+	item1           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	theTable	-> setItem (row, 1, item1);
 	theTable 	-> item (row, 1) -> setFont (normalFont);
 	theTable 	-> item (row, 1) -> setForeground (QColor(fontColor));
 
         QTableWidgetItem *item2 = new QTableWidgetItem; // channel
-        item2           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        theTable     -> setItem (row, 2, item2);
+	item2           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	theTable	-> setItem (row, 2, item2);
 	theTable 	-> item (row, 2) -> setFont (normalFont);
 	theTable 	-> item (row, 2) -> setForeground (QColor(fontColor));
 
@@ -250,6 +270,7 @@ void	serviceViewer::setServiceOrder	(int order) {
 void	serviceViewer::mark (int index) {
 	theTable -> item (index, 1) -> setFont (markedFont);
 	theTable -> item (index, 2) -> setFont (markedFont);
+	theTable -> setCurrentItem (theTable -> item (index, 2));
 }
 
 void	serviceViewer::unmark (int index) {
@@ -269,7 +290,6 @@ void	serviceViewer::reportService	(const QString &serviceName) {
 	            unmark (currentService);
 	         currentService = i;
 	         mark (currentService);
-//	         emit selectService ("", serviceName);
 	         return;
 	      }
 	   }
@@ -277,6 +297,7 @@ void	serviceViewer::reportService	(const QString &serviceName) {
 	else
 	   reportService (channelSelector -> currentText (), serviceName);
 }
+
 //	from e.g. the scheduler a service might be selected
 void	serviceViewer::reportService (const QString &channel,
 	                                       const QString &serviceName) {
@@ -284,15 +305,13 @@ void	serviceViewer::reportService (const QString &channel,
 	   fprintf (stderr, "should not happen\n");
 	   return;
 	}
-
 	for (int i = 0; i < (int)displayList. size (); i ++) {
 	   if ((displayList [i]. serviceName == serviceName) &&
 	       (displayList [i]. channelName == channel)) {
 	         if (currentService >= 0)
 	            unmark (currentService);
 	         currentService = i;
-	         mark (currentService);
-//	         emit selectService (channel, serviceName);
+	         mark (currentService);	
 	         return;
 	   }
 	}
@@ -332,12 +351,12 @@ void	serviceViewer::clickOnService	(int row, int column) {
 	         emit (selectService (displayList [row]. serviceName,
 	                              displayList [row]. channelName));
 	         set_channelIndex (displayList [row]. channelName);
-	      
 	         break;
+
 	      case FILEINPUT:
 	         emit selectService (displayList [row]. serviceName, "");
-
 	         break;
+
 	      default:		// cannot happen
 	         break;
 	   }
@@ -368,7 +387,6 @@ void	serviceViewer::handle_prevService	() {
 
 //
 //	Only active when in mode ENSEMBLEVIEW
-
 void	serviceViewer::handle_channelSelector	(const QString &channel) {
 	emit setChannel (channel);
 }
@@ -405,7 +423,6 @@ void	serviceViewer::set_channelIndex (int channelIndex) {
 	channelSelector		-> setCurrentIndex (channelIndex);
 	if (isEnabled)
 	   channelSelector	-> setEnabled (true);
-//	emit setChannel (channelSelector -> currentText ());
 }
 	
 void	serviceViewer::handle_modeSwitcher	() {
@@ -420,6 +437,10 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      prevChannel	-> setEnabled (true);
 	      nextChannel	-> setEnabled (true);
 	      viewSelector	-> setEnabled (true);
+	      channelSelector	-> show ();
+	      prevChannel	-> show ();
+	      nextChannel	-> show ();
+	      viewSelector	-> show ();
 	      viewSelector	-> setText ("Favorites");
 	      break;
 	   case ENSEMBLEVIEW:
@@ -428,6 +449,10 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      prevChannel	-> setEnabled (false);
 	      nextChannel	-> setEnabled (false);
 	      viewSelector	-> setEnabled (true);
+	      channelSelector	-> hide ();
+	      prevChannel	-> hide ();
+	      nextChannel	-> hide ();
+	      viewSelector	-> show ();
 	      viewSelector	-> setText ("EnsembleView");
 	      break;
 	   default:;
@@ -435,7 +460,7 @@ void	serviceViewer::handle_modeSwitcher	() {
 	}
 	displayList	= theDataBase. getData (theMode);
 	show_displayList ();
-	currentService	= 0;
+	currentService	= -1;
 	emit (reduceButtons (theMode == FAVORITEVIEW));
 }
 
@@ -467,7 +492,7 @@ QString	theFont;
 
 void	serviceViewer::handleFontColorSelect () {
 QColor	color;
-
+//
 	color	= QColorDialog::getColor (color, nullptr, "fontColor");
 	if (!color. isValid ())
 	   return;
@@ -488,7 +513,6 @@ QString	theFont	= viewSettings -> value ("theFont", "Times"). toString ();
 }
 
 void	serviceViewer::updateFonts	() {
-
 QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
 	for (int i = 0; i < theTable -> rowCount (); i ++) {
@@ -513,13 +537,13 @@ void	serviceViewer::clearTable	() {
 	      theTable -> item (i, j) -> setText (" ");
 	
 	while (theTable -> rowCount () > 0)
-           theTable -> removeRow (0);
+	   theTable -> removeRow (0);
 }
 
 void	serviceViewer::show_displayList	() {
 //	assert that the table is empty
-	QString fontColor = value_s (viewSettings, ENSEMBLE,
-	                                     "fontColor", fontColor);
+QString fontColor = value_s (viewSettings, ENSEMBLE,
+	                                     "fontColor", "white");
 	if (theTable -> rowCount () > 1) 
 	   return;
 
@@ -538,18 +562,19 @@ void	serviceViewer::show_displayList	() {
 	   QTableWidgetItem *item_1 = new QTableWidgetItem;
 	   item_1	-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
 	   theTable -> setItem (row, 1, item_1);
-           theTable -> item (row, 1) -> setText (serviceName);
-           theTable -> item (row, 1) -> setFont (normalFont);
+	   theTable -> item (row, 1) -> setText (serviceName);
+	   theTable -> item (row, 1) -> setFont (normalFont);
 	   theTable -> item (row, 1) -> setForeground (QColor(fontColor));
 	
 	   QTableWidgetItem *item_2 = new QTableWidgetItem;
 	   item_2	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
 	   theTable -> setItem (row, 2, item_2);
-           theTable -> item (row, 2) -> setText (channel);
-           theTable -> item (row, 2) -> setFont (normalFont);
+	   theTable -> item (row, 2) -> setText (channel);
+	   theTable -> item (row, 2) -> setFont (normalFont);
 	   theTable -> item (row, 2) -> setForeground (QColor(fontColor));
 	}
 }
+
 //
 //	to be handled later on
 void	serviceViewer::handleRightMouseClick	(const QString &text) {
@@ -566,6 +591,10 @@ QStringList res;
 	   }
 	}
 	return res;
+}
+
+void	serviceViewer::saveName		(const QString &fileName) {
+	this -> fileName	= fileName;
 }
 
 void	serviceViewer::color_prevService	() 	{

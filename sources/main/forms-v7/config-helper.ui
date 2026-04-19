@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>576</width>
-    <height>379</height>
+    <height>381</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -417,12 +417,12 @@
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QCheckBox" name="clearScanList_selector">
+      <widget class="QCheckBox" name="saveSelection">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting this selector instructs the software to clean at program termination the scanlist. Normally it will be kept between program invocations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, the list of services is stored in a user defined file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>clear on exit</string>
+        <string>save on exit</string>
        </property>
       </widget>
      </item>
@@ -537,12 +537,12 @@
       </widget>
      </item>
      <item row="4" column="3">
-      <widget class="QCheckBox" name="dcRemoval">
+      <widget class="QCheckBox" name="loadSelection_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Having this selector set instructs the software to apply a DC elimination algorith to the input&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, the list of services is loaded from a user defined file. If loading from such a file fails, the software will load the list from the default file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>dc removal</string>
+        <string>load selection</string>
        </property>
       </widget>
      </item>

@@ -28,6 +28,7 @@
 #include	<QFile>
 #include	<QDataStream>
 #include	<QSettings>
+#include	<QTimer>
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"dab-constants.h"
@@ -50,6 +51,7 @@ public:
 	                 QSettings	*serviceSettings,
 	                 QFrame *theFrame);
 	~serviceViewer		();
+void	startMode		(int, const QString &);
 void	startMode		(int);
 QString	currentChannel		();
 int	getMode			();
@@ -60,6 +62,7 @@ void	reportService		(const QString &);
 void	reportService		(const QString &, const QString &);
 QString	extractName		(uint32_t);
 void	clearAll		();
+void	saveName		(const QString &);
 QStringList	getSelectables	();
 
 QTableWidget	*theTable;
@@ -81,7 +84,6 @@ public slots:
 	void		handleFontSizeSelect	(int);
 	void		handleRightMouseClick	(const QString &);
 	void		setServiceOrder		(int);	// dummy
-
 signals:
 	void		setChannel		(const QString &channel);
 	void		selectService		(const QString &,
@@ -99,7 +101,7 @@ private:
 	int		serviceOrder;
 	int		theMode;
 	int		currentService;
-
+	int		scrollPos;
 	void		show_displayList	();
 	void		updateFonts	();
 	QFont		normalFont;
@@ -107,6 +109,8 @@ private:
         QFont		channelFont;
 	void		mark		(int);
 	void		unmark		(int);
+
+	QTimer		updateTimer;
 
       
 	void	color_prevService	();

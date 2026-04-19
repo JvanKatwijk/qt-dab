@@ -27,8 +27,7 @@
 
 #include	"database.h"
 
-	serviceBase::serviceBase	(const QString &fileName) {
-	load (fileName);
+	serviceBase::serviceBase	() {
 }
 
 	serviceBase::~serviceBase	() {
@@ -128,6 +127,7 @@ void	serviceBase::store	(const QString &fileName) {
 QDomDocument serviceDB;
 QDomElement root = serviceDB. createElement ("serviceList");
 
+	fprintf (stderr, "storing the list in %s\n", fileName. toLatin1 (). data ());
         serviceDB. appendChild (root);
 
         for (auto &channel : theData) { 

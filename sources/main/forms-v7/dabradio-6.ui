@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
-    <height>313</height>
+    <width>553</width>
+    <height>309</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -87,6 +87,9 @@
        </item>
        <item>
         <widget class="clickablelabel" name="deviceSelectorLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon - i.e. a clickable label - controls the visibility of the device list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>dev</string>
          </property>
@@ -104,6 +107,9 @@
        </item>
        <item>
         <widget class="clickablelabel" name="resetSelectorLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clikcing on this reset button will - as the name suggests - reset the software&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>resetButton</string>
          </property>
@@ -125,6 +131,9 @@
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="clickablelabel" name="epgLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG label is shown only if in the ensemble of the currently selected channel an EPG/SPI service is detected. Clicking on the label controls the visibility of the time table handler.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -133,7 +142,7 @@
        <item>
         <widget class="clickablelabel" name="serviceLabel">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clicing with the left mouse button lets you choose the color used for the display of the service name. Clicking with the right hand mouse button controls the visibility of the technical window.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>service</string>
