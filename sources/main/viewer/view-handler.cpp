@@ -43,7 +43,7 @@
 	                              QSettings	*serviceSettings,
 	                              QFrame *theFrame): 
 	                                        theDataBase (),
-	                                        normalFont ("Times", 10, 
+	                                        normalFont ("Times", 11, 
                                                               -1, false),
                                                 markedFont ("Times", 12,
                                                               -1, true),
@@ -58,12 +58,12 @@
 	theFrame	-> show ();
 	theTable	= new QTableWidget (0, 3);
 	theTable	 -> setSelectionBehavior (QAbstractItemView::SelectRows);
-	theTable	-> setColumnWidth	(0, 3);
-	theTable	-> setColumnWidth	(2, 10);
+	theTable	-> setColumnWidth	(0, 2);
+	theTable	-> setColumnWidth	(2, 8);
 	theTable	-> setHorizontalHeaderLabels (
 	                             QStringList () << tr ("") <<
 	                                               tr ("service") <<
-	                                               tr ("channel"));
+	                                               tr ("chan"));
 	connect (theTable, &QTableWidget::cellClicked,
 	         this, &serviceViewer::clickOnService);
 	theWidget	-> setWidget (theTable);
@@ -129,6 +129,10 @@ void	serviceViewer::clearAll		() {
 //	the default filename, there are situations that
 //	a user selectable filename is used
 void	serviceViewer::startMode	(int Mode, const QString &fileName) {
+FILE *f	= fopen (fileName. toLatin1 (). data (), "r");
+	if (f == nullptr)
+	   f == fopen (fileName. toLatin1 (). data (), "w");
+	fclose (f);
 	this	-> fileName	= fileName;
 	startMode (Mode);
 }
@@ -224,7 +228,7 @@ QString channel	= channelSelector -> currentText ();
 
 void	serviceViewer::remove	(const QString &channel,
 	                            const QString &service) {
-	for (int i = 0; i < displayList. size (); i ++) {
+	for (uint16_t i = 0; i < displayList. size (); i ++) {
 	   auto &sd = displayList [i];
 	   if ((sd. serviceName == service) &&
 	       (sd. channelName == channel)) {
@@ -428,11 +432,12 @@ void	serviceViewer::set_channelIndex (int channelIndex) {
 void	serviceViewer::handle_modeSwitcher	() {
 	if (theMode == FILEINPUT)
 	   return;
-	clearTable ();
-	displayList. resize (0);
 	switch (theMode) {
-	   case FAVORITEVIEW:
+	   case FAVORITEVIEW: {
+	      serviceDescriptor oldService;
 	      theMode		= ENSEMBLEVIEW;
+	      if (currentService != -1) 
+	         oldService = displayList [currentService];
 	      channelSelector	-> setEnabled (true);
 	      prevChannel	-> setEnabled (true);
 	      nextChannel	-> setEnabled (true);
@@ -442,8 +447,24 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      nextChannel	-> show ();
 	      viewSelector	-> show ();
 	      viewSelector	-> setText ("Favorites");
-	      break;
-	   case ENSEMBLEVIEW:
+	      clearTable ();
+	      displayList. resize (0);
+	      displayList	= theDataBase. getData (theMode);
+	      show_displayList ();
+	      if (currentService != -1) {
+	         currentService = locate (oldService);
+	         if (currentService != -1)
+	            mark (currentService);
+	      }
+	   }
+	   break;
+	   case ENSEMBLEVIEW: {
+	      serviceDescriptor oldService;
+	      if ((currentService != -1) &&
+	         displayList [currentService]. isFavorite)
+	         oldService = displayList [currentService];
+	      else
+	         oldService. isFavorite = false;
 	      theMode		= FAVORITEVIEW;
 	      channelSelector	-> setEnabled (false);
 	      prevChannel	-> setEnabled (false);
@@ -453,14 +474,22 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      prevChannel	-> hide ();
 	      nextChannel	-> hide ();
 	      viewSelector	-> show ();
+	      clearTable ();
+	      displayList. resize (0);
 	      viewSelector	-> setText ("EnsembleView");
-	      break;
+	      displayList	= theDataBase. getData (theMode);
+	      show_displayList ();
+	      currentService	= -1;
+	      if (oldService. isFavorite) {
+	         currentService = locate (oldService);
+	         if (currentService != -1)
+	            mark (currentService);
+	      }
+	   }
+	   break;
 	   default:;
 	      // cannot happen
 	}
-	displayList	= theDataBase. getData (theMode);
-	show_displayList ();
-	currentService	= -1;
 	emit (reduceButtons (theMode == FAVORITEVIEW));
 }
 
@@ -544,6 +573,7 @@ void	serviceViewer::show_displayList	() {
 //	assert that the table is empty
 QString fontColor = value_s (viewSettings, ENSEMBLE,
 	                                     "fontColor", "white");
+int	fontSize = value_i (viewSettings, ENSEMBLE, "fontSize", 11);
 	if (theTable -> rowCount () > 1) 
 	   return;
 
@@ -593,10 +623,6 @@ QStringList res;
 	return res;
 }
 
-void	serviceViewer::saveName		(const QString &fileName) {
-	this -> fileName	= fileName;
-}
-
 void	serviceViewer::color_prevService	() 	{
 	setButtonColors (prevService, PREV_SERVICE);
 }
@@ -627,5 +653,13 @@ QColor	baseColor, textColor;
 	QString textColor_name	= textColor. name ();
 	store (viewSettings, COLOR_SETTINGS, buttonColor, baseColor_name);
 	store (viewSettings, COLOR_SETTINGS, buttonFont, textColor_name);
+}
+
+int	serviceViewer::locate	(serviceDescriptor &sd) {
+	for (uint16_t i = 0; i < displayList. size (); i ++)
+	   if ((displayList [i]. serviceName == sd. serviceName) &&
+	       (displayList [i]. channelName == sd. channelName))
+	   return i;
+	return -1;
 }
 

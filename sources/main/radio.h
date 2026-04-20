@@ -265,7 +265,6 @@ private:
 	RingBuffer<std::complex<int16_t>>	theTechData;
 	converter_48000		theAudioConverter;
 
-//	scanListHandler		theScanlistHandler;
 	errorLogger		theErrorLogger;
 	deviceChooser		theDeviceChooser;
 	dxDisplay		theDXDisplay;

@@ -118,6 +118,7 @@
 	setWindowTitle	(tr("device select"));
 	setLayout (layOut);
 
+	fprintf (stderr, "We are in dev chooser\n");
 	Devices = QStringList();
         theDevices. setStringList (Devices);
         selectorDisplay -> setModel (&theDevices);

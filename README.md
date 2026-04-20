@@ -112,15 +112,14 @@ In Qt-DAB-7.0 the **reset** button also moved to the main window (it was felt ra
 ![7.0](/res/read_me/resetbutton.png?raw=true)
 
 The reset button is located in the top line of the right half
-of the main window, in order to make some space for this (small) window,
-the icon for controlling the visibility of the **Technical window** was removed.
-The functionality of the latter "button" is obtained by - again - clicking with the **right hand mouse button** on the label where the servicename is shown.
+of the main window.
 
 The other icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.
 
 As in previous versions, if the ensemble in the **currently selected channel**
-carries an EPG/SPI service, a small icon is shown.
+carries an EPG/SPI service, a small icon is shown, the service name otself 
+is not showed in the list of services.
 
 The technical widget is not modified
 
@@ -131,7 +130,7 @@ the  selected audio service.
 
 The spectrum widget is not modfied
 
-![6.10](/res/read_me/spectrum-scope.png)
+![7.0](/res/read_me/spectrum-scope.png)
 
 In the view shown in the picture above, the spectrum of the incoming
  DAB signal is shown. To the right of this spectrum, one sees the
@@ -218,11 +217,12 @@ is now placed on the second line of the checkboxes.
 Since the software - on startup - always loads a database, i.e. 
 if one can be found in the user's how directory that one, otherwise a default version, there was no need for  selector for loading a database.
 
-New are selectors labeled **save on exit** and **load selection**.
-If the **save on exit** selexctor is set, on program termination the user is asked for a filename to store a servicelist.
-If the **load selection** checkbox is set, on program startup the user is
-asked for a filename to load a selection, if loading that fails, the default
-is loaded.
+New are selectors labeled  **load selection** and **update check**.
+If the **load selection**  selector is set, on program startup 
+the user is asked for a filename to load a selection. If
+  * no name is specified, the default is loaded,
+  * a name is given and a file with that name exists, its content is loaded,
+  * a name is given and no file with that name exists (yet), an empty file with that name is created.
 
 Also new is a checkbox, bottom line right end, that - when set - instructs the software to checkon program startup on the availability of a new version of Qt-DAB.
 

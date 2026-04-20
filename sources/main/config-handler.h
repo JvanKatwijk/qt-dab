@@ -114,7 +114,7 @@ private slots:
 	void	color_pathButton	();
 //
 	void	handle_mapViewSelector		(int);
-	void	handle_updateSelector		(int);
+	void	handle_updateChecker		(int);
 //	and the handlers:
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);

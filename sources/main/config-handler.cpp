@@ -117,9 +117,6 @@ int	index_for_key (int key) {
 	   this -> ordersubChannelIds -> setChecked (true);
 	serviceOrder	= x;
 
-	x = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 1);
-	if (x != 0)
-	   this -> updateSelector	-> setChecked (true);
 //	first row of checkboxes
 //	unused element
 	x =  value_i (dabSettings, CONFIG_HANDLER, LOG_MODE, 1);
@@ -209,8 +206,8 @@ int	index_for_key (int key) {
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 
-	connect (this, &configHandler::process_tiiCollisions,
-	         myRadioInterface, &RadioInterface::handle_tiiCollisions);
+//	connect (this, &configHandler::process_tiiCollisions,
+//	         myRadioInterface, &RadioInterface::handle_tiiCollisions);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -241,16 +238,16 @@ int	index_for_key (int key) {
 	connect (kiadSelection_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_loadSelection_selector);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (updateChecker, &QCheckBox::checkStateChanged,
+#else
+	connect (updateChecker, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_updateChecker);
 //
 //	Tracer special
 //	connect	(tracerButton, &QPushButton::clicked,
 //	         this, &configHandler::handle_tracerButton);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (updateSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (updateSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_updateSelector);
 	traceOn	= false;
 	set_Colors ();
 }
@@ -267,10 +264,10 @@ void	configHandler::storePosition () {
 void	configHandler::set_connections () {
 	connect (audioSelectButton, &smallPushButton::clicked,
 	         this, &configHandler::handle_audioSelectButton);
-	connect (this, &configHandler::selectDecoder,
-	         myRadioInterface, &RadioInterface::selectDecoder);
-	connect (this, &configHandler::set_transmitters_local,
-	         myRadioInterface, &RadioInterface::set_transmitters_local);
+//	connect (this, &configHandler::selectDecoder,
+//	         myRadioInterface, &RadioInterface::selectDecoder);
+//	connect (this, &configHandler::set_transmitters_local,
+//	         myRadioInterface, &RadioInterface::set_transmitters_local);
 
 	connect (audioSelectButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_audioSelectButton);
@@ -992,9 +989,6 @@ bool	configHandler::get_saveTitles		() {
 	return saveTitlesSelector -> isChecked ();
 }
 
-bool	configHandler::get_saveSelection	() {
-	return saveSelection -> isChecked ();
-}
 //
 void	configHandler::handle_tracerButton	() {
 //	traceOn	= !traceOn;
@@ -1015,15 +1009,15 @@ bool	configHandler::dumpmode_set	() {
 	return dumpmodeSelector	-> isChecked ();
 }
 
-void	configHandler::handle_updateSelector	(int k) {
-	(void)k;
-	bool b	= this -> updateSelector	-> isChecked ();
-	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
-}
-
 void	configHandler::handle_loadSelection_selector (int k) {
 	(void)k;
 	bool b = this -> loadSelection_selector -> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, "LOAD_SELECTION", b);
+}
+
+void	configHandler::handle_updateChecker	(int k) {
+	(void)k;
+	bool b = this -> updateChecker -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
 }
 

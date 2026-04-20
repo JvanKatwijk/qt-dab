@@ -145,7 +145,6 @@ QString idsToString (int mainId, int subId) {
 
 static inline
 QStringList splitter (const QString &s) {
-	fprintf (stderr, "Going to split %s\n", s. toLatin1 (). data ());
 #if QT_VERSION > QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
@@ -168,33 +167,33 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                int32_t		clockPort,
 	                                int		fmFreq,
 	                                QWidget		*parent):
-	                                        QWidget (parent),
-	                                        theSpectrumBuffer (16 * 32768),
-	                                        theIQBuffer (2 * 1536),
-	                                        theTIIBuffer (32768),
-	                                        theNULLBuffer (32768),
-	                                        theChannelBuffer (4096),
-	                                        theSNRBuffer (512),
-	                                        theResponseBuffer (32768),
-	                                        theFrameBuffer (2 * 32768),
-		                                theDataBuffer (32768),
-	                                        theAudioBuffer (8 * 32768),
-	                                        stdDevBuffer (2 * 1536),
-	                                        theNewDisplay (this, Si),
-	                                        theSNRViewer (this, Si),
-	                                        theDLCache (10),
-	                                        theFilenameFinder (Si),
-	                                        theScheduler (this, schedule),
-	                                        theTechData (16 * 32768),
-	                                        theAudioConverter (this),
-	                                        theErrorLogger (Si),
-	                                        theDeviceChooser (&theErrorLogger, Si),
-	                                        theDXDisplay (this, Si),
-	                                        theLogger	(Si),
-	                                        theSCANHandler (this, Si,
-	                                                        freqExtension),
-	                                        theTIIProcessor (),
-	                                        theEpgCompiler (&theErrorLogger) {
+	                                      QWidget (parent),
+	                                      theSpectrumBuffer (16 * 32768),
+	                                      theIQBuffer (2 * 1536),
+	                                      theTIIBuffer (32768),
+	                                      theNULLBuffer (32768),
+	                                      theChannelBuffer (4096),
+	                                      theSNRBuffer (512),
+	                                      theResponseBuffer (32768),
+	                                      theFrameBuffer (2 * 32768),
+		                              theDataBuffer (32768),
+	                                      theAudioBuffer (8 * 32768),
+	                                      stdDevBuffer (2 * 1536),
+	                                      theNewDisplay (this, Si),
+	                                      theSNRViewer (this, Si),
+	                                      theDLCache (10),
+	                                      theFilenameFinder (Si),
+	                                      theScheduler (this, schedule),
+	                                      theTechData (16 * 32768),
+	                                      theAudioConverter (this),
+	                                      theErrorLogger (Si),
+	                                      theDeviceChooser (&theErrorLogger, Si),
+	                                      theDXDisplay (this, Si),
+	                                      theLogger	(Si),
+	                                      theSCANHandler (this, Si,
+	                                                      freqExtension),
+	                                      theTIIProcessor (),
+	                                      theEpgCompiler (&theErrorLogger) {
 int16_t k;
 QString h;
 
@@ -247,7 +246,6 @@ QString h;
 	if (value_i (theQSettings, DAB_GENERAL, "onTop", 0) == 1) 
 	   setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
 //
-
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 
@@ -266,6 +264,10 @@ QString h;
 	                                         Qt::KeepAspectRatio));
 	   resetSelectorLabel	-> setToolTip ("touching this will reset the system");
 	}
+	if (p. load (":res/radio-pictures/details24.png", "png")) 
+	   serviceButton -> setPixmap (p. scaled (30, 30,
+	                                       Qt::KeepAspectRatio));
+
 	if (p. load (":res/radio-pictures/folder_button.png", "png")) 
 	   folder_shower -> setPixmap (p. scaled (30,
 	                                         30, Qt::KeepAspectRatio));
@@ -300,8 +302,11 @@ QString h;
 
 	programTypeLabel	-> setStyleSheet (labelStyle);
 	font			= ensembleId -> font ();
-	font. setPointSize (14);
+	font. setPointSize (11);
 	ensembleId		-> setFont (font);
+	font			= transmitter_country	-> font ();
+	font. setPointSize (11);
+	transmitter_country	-> setFont (font);
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
 	pauzeSlideTeller	= 0; // counting pause slides
@@ -311,7 +316,7 @@ QString h;
 	connect (resetSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_resetButton);
 
-	aboutLabel -> setText (QString (" © ") + VERSION);
+	aboutLabel -> setText (QString (" © V") + VERSION);
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
@@ -331,7 +336,6 @@ QString h;
 	if (!QString (GITHASH). contains ("----"))
 	   version = version + " (" + QString (GITHASH) + ")";
 	setWindowTitle (version);
-
 //	put the widgets in the right place and create the workers
 	setPositionAndSize	(theQSettings, this, S_MAIN_WIDGET);
 
@@ -350,8 +354,6 @@ QString h;
 	         this, &RadioInterface::handleFontSizeSelect);
 	connect (theConfigHandler, &configHandler::handle_fontColorSelect,
 	         this, &RadioInterface::handleFontColorSelect);
-	connect (theConfigHandler, &configHandler::set_serviceOrder,
-	         newServices, &serviceViewer::setServiceOrder);
 	connect (theConfigHandler, &configHandler::signal_dataTracer,
 	         this, &RadioInterface::signal_dataTracer);
 
@@ -486,6 +488,8 @@ QString h;
 	this -> newServices	= new serviceViewer (dbFile, this,
 	                                             res, theQSettings,
 	                                                the_newFrame);
+	connect (theConfigHandler, &configHandler::set_serviceOrder,
+	         newServices, &serviceViewer::setServiceOrder);
 	theDeviceHandler	= nullptr;
 	audioDumping		= false;
 	theControl		= nullptr;
@@ -503,6 +507,8 @@ QString h;
 	         this, &RadioInterface::color_configButton);
 	connect (spectrumButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_spectrumButton);
+	connect (serviceButton, &clickablelabel::clicked_left,
+	         this, &RadioInterface::handle_detailButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
 	connect	(scanButton, &smallPushButton::rightClicked,
@@ -585,7 +591,7 @@ QString h;
 	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
 	   theTechWindow -> show ();
 
-	dynamicLabel	-> setFont (QFont ("Times", 14, -1, false));
+	dynamicLabel	-> setFont (QFont ("Times", 12, -1, false));
 	dynamicLabel	-> setAlignment(Qt::AlignCenter);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("<font color=\"black\">The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
@@ -755,10 +761,14 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	}
 //
 //	adding the service to the list (or not)
+//	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) ||
+//	    (!theConfigHandler -> get_audioServices_only ()) ||
+//	      ((static_cast<uint32_t>(SId) & 0xFFFF0000) &&
+//	             theOfdmHandler -> is_SPI (static_cast<uint32_t>(SId)))) {
+//	newServices	-> addService (sd);
+//	}
 	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) ||
-	    (!theConfigHandler -> get_audioServices_only ()) ||
-	      ((static_cast<uint32_t>(SId) & 0xFFFF0000) &&
-	             theOfdmHandler -> is_SPI (static_cast<uint32_t>(SId)))) {
+	    (!theConfigHandler -> get_audioServices_only ())) {
 	newServices	-> addService (sd);
 	}
 
@@ -1328,15 +1338,6 @@ void	RadioInterface::TerminateProcess () {
 	updateCheck_timer. stop (); 
 //	stop activity using a timer
 	stopScanning ();
-	if ((theDeviceHandler != nullptr) &&
-	    (!theDeviceHandler -> isFileInput ()) &&
-	    (newServices != nullptr)) {
-	   if (theConfigHandler -> get_saveSelection ()) {
-	      QString saveFileName = 
-	            theFilenameFinder. findsaveSelection_fileName ();
-              newServices -> saveName (saveFileName);
-	   }
-	}
 	while (theSCANHandler. active ())
 	   usleep (1000);
 	mapHandler_locker. lock ();
@@ -2286,8 +2287,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	s. fd		= nullptr;
 	s. runsBackground	= false;
 	channel. runningTasks. push_back (s);
-
-	store (theQSettings, "channelPresets", s. channel, s. serviceName);
+	if (!theDeviceHandler -> isFileInput ())
+	   store (theQSettings, "channelPresets", s. channel, s. serviceName);
 //
 //	check the other components for this service (if any)
 	if (theOfdmHandler -> isPrimary (ad. serviceName)) {

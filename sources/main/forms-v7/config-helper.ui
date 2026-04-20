@@ -417,12 +417,12 @@
       </widget>
      </item>
      <item row="1" column="3">
-      <widget class="QCheckBox" name="saveSelection">
+      <widget class="QCheckBox" name="updateChecker">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, the list of services is stored in a user defined file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>save on exit</string>
+        <string>check updates</string>
        </property>
       </widget>
      </item>
@@ -580,16 +580,6 @@
        </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the audio channel, depends on the OS you are running on&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="updateSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Having this selector set, tells the software to check on program start up for newer versions of the software&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>check updates</string>
        </property>
       </widget>
      </item>
