@@ -640,12 +640,13 @@ public slots:
 //	signals from the viewhandler
 	void			handle_channelSelector	(const QString &);
 	void			reduceButtons		(bool);
+	void			handle_contentButton	();
+	void			handle_dump		();
 private slots:
 //	button and selectorhandlers
 	void			handle_configButton	();
 	void			handle_httpButton	();
 	void			handle_copyrightLabel	();
-	void			handle_contentButton	();
 	void			handle_detailButton	();
 	void			handle_scanButton	();
 	void			handle_etiHandler	();
@@ -655,7 +656,6 @@ private slots:
 	void			devSL_visibility	();
 	void			handle_resetButton		();
 
-	void			handle_dump		();
 	void			setVolume		(int);
 	void			handle_snrLabel		();
 	void			handle_distanceLabel	();

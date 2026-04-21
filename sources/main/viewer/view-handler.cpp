@@ -102,7 +102,7 @@
 	channelSelector	-> setEnabled (false);
 	prevChannel	-> setEnabled (false);
 	nextChannel	-> setEnabled (false);
-	currentService	= 0;
+	currentService	= -1;
 	QString startingChannel = 
               value_s (viewSettings, DAB_GENERAL, CHANNEL_NAME, "5A");
         int k = channelSelector -> findText (startingChannel);
@@ -112,6 +112,13 @@
 	         theRadio, &RadioInterface::handle_channelSelector);
 	connect (this, &serviceViewer::selectService,
 	         theRadio, &RadioInterface::localSelect);
+
+	QFont font		= ensembleId -> font ();
+        font. setPointSize (12);
+        ensembleId              -> setFont (font);
+        font			= countryName   -> font ();
+        font. setPointSize (11); 
+        countryName		-> setFont (font);
 }
 
 	serviceViewer::~serviceViewer	() {
@@ -158,15 +165,15 @@ void	serviceViewer::startMode	(int Mode) {
               show_displayList ();
 	      break;
 	   case FAVORITEVIEW:		// cannot happen
-	      channelSelector	-> setEnabled (false);
-	      prevChannel	-> setEnabled (false);
-	      nextChannel	-> setEnabled (false);
-	      viewSelector	-> setEnabled (false);
 	      channelSelector	-> hide ();
 	      prevChannel	-> hide ();
 	      nextChannel	-> hide ();
 	      viewSelector	-> show ();
+	      channelSelector	-> setEnabled (false);
+	      prevChannel	-> setEnabled (false);
+	      nextChannel	-> setEnabled (false);
               displayList	= theDataBase. getData (theMode);
+	      viewSelector	-> setEnabled (true);
               show_displayList ();
 	      break;
 	   case FILEINPUT:
@@ -197,9 +204,8 @@ QString	serviceViewer::extractName	(uint32_t SId) {
 	      return sd. serviceName;
 	return "";
 }
-
 //
-//	In ensembleview mode, services mght be added
+//	In ensembleview mode, services might be added
 void	serviceViewer::addService	(serviceDescriptor sd) {
 QString channel	= channelSelector -> currentText ();
 	for (auto &ssd: displayList) 
@@ -320,7 +326,6 @@ void	serviceViewer::reportService (const QString &channel,
 	   }
 	}
 }
-
 //
 //	the displayList and theTable are synced
 void	serviceViewer::clickOnService	(int row, int column) {
@@ -337,36 +342,34 @@ void	serviceViewer::clickOnService	(int row, int column) {
 	            theTable -> item (row, 0) -> setText ("*");
 	         else
 	            theTable -> item (row, 0) -> setText ("");
-	         break;		// cannot happen
+	         return;
 	      case FAVORITEVIEW:
 	      case FILEINPUT:
-	         break;		// no semantics
+	         return;	// no semantics
 	      default:		// cannot happen
-	         break;
+	         return;
 	   }
 	}
-	else {
-	   if (currentService != -1) {
-	      unmark (currentService);
-	   }
-	   switch (theMode) {
-	      case ENSEMBLEVIEW:	
-	      case FAVORITEVIEW:
-	         emit (selectService (displayList [row]. serviceName,
-	                              displayList [row]. channelName));
-	         set_channelIndex (displayList [row]. channelName);
-	         break;
+	if (currentService != -1) 
+	   unmark (currentService);
 
-	      case FILEINPUT:
-	         emit selectService (displayList [row]. serviceName, "");
-	         break;
+	switch (theMode) {
+	   case ENSEMBLEVIEW:	
+	   case FAVORITEVIEW:
+	      emit (selectService (displayList [row]. serviceName,
+	                            displayList [row]. channelName));
+	      set_channelIndex (displayList [row]. channelName);
+	      break;
 
-	      default:		// cannot happen
-	         break;
-	   }
-	   currentService = row;
-	   mark (currentService);
+	   case FILEINPUT:
+	      emit selectService (displayList [row]. serviceName, "");
+	      break;
+
+	   default:		// cannot happen
+	      break;
 	}
+	currentService = row;
+	mark (currentService);
 }
 
 void	serviceViewer::handle_nextService	() {
@@ -388,7 +391,6 @@ void	serviceViewer::handle_prevService	() {
 	emit (selectService (displayList [currentService]. serviceName,
 	                     displayList [currentService]. channelName));
 }
-
 //
 //	Only active when in mode ENSEMBLEVIEW
 void	serviceViewer::handle_channelSelector	(const QString &channel) {
@@ -661,5 +663,40 @@ int	serviceViewer::locate	(serviceDescriptor &sd) {
 	       (displayList [i]. channelName == sd. channelName))
 	   return i;
 	return -1;
+}
+static
+QString hextoString (uint32_t v) {
+QString res;
+        for (int i = 0; i < 4; i ++) {
+           const uint8_t t = (v & 0xF000) >> 12;
+           QChar c = t <= 9 ? static_cast<char> ('0' + t) :
+                              static_cast<char> ('A' + t - 10);
+           res. append (c);
+           v <<= 4;
+        }        
+        return res;
+}
+
+void	serviceViewer::set_ensembleId	(const QString &name, int id) {
+	ensembleId      -> setText (name + QString ("(") +
+                  hextoString (static_cast<uint32_t>(id))+ QString (")"));
+	connect (ensembleId, &clickablelabel::clicked_left,
+	         theRadio, &RadioInterface::handle_contentButton);
+	if (theMode == ENSEMBLEVIEW)
+	   connect (ensembleId, &clickablelabel::clicked_right,
+	            theRadio, &RadioInterface::handle_dump);
+}
+
+void	serviceViewer::set_countryName	(const QString &name) {
+	countryName	-> setText (name);
+}
+
+void	serviceViewer::clear_ensembleId	() {
+	ensembleId	-> setText ("");
+	countryName	-> setText ("");
+	disconnect (ensembleId, &clickablelabel::clicked_left,
+	            theRadio, &RadioInterface::handle_contentButton);
+	disconnect (ensembleId, &clickablelabel::clicked_right,
+	            theRadio, &RadioInterface::handle_dump);
 }
 

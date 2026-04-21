@@ -15,6 +15,27 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="clickablelabel" name="ensembleId">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name of the ensemble. &lt;/p&gt;&lt;p&gt;Clicking with the left mouse button on the name controls the visibility of the so-called content table, a table showing details of the data in the current ensemble/&lt;/p&gt;&lt;p&gt;Clicking with the right mouse button on the name starts (or stops( dumping the raw input stream. The configuration and control window contains a selector, labeled &amp;quot;xml dump&amp;quot; that tells whether the dump should be in &amp;quot;.wav&amp;quot; or in &amp;quot;.uff&amp;quot; (xml) format. Both modes allow dumps larger than 4 Gb&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>ensembleId</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="countryName">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QScrollArea" name="theWidget">
      <property name="widgetResizable">
       <bool>true</bool>
@@ -25,7 +46,7 @@
         <x>0</x>
         <y>0</y>
         <width>238</width>
-        <height>172</height>
+        <height>145</height>
        </rect>
       </property>
      </widget>
@@ -35,6 +56,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="smallPushButton" name="prevService">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selects the previous service in the list.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>-</string>
        </property>
@@ -42,6 +66,9 @@
      </item>
      <item>
       <widget class="smallPushButton" name="nextService">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;selects the next service in the list.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>+</string>
        </property>
@@ -53,16 +80,26 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="clickablelabel" name="prevChannel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set the channel selector one step back&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>TextLabel</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="channelSelector"/>
+      <widget class="QComboBox" name="channelSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Channel selector. With this selector one of the channels can be set. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="clickablelabel" name="nextChannel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;set one channel upwards.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>TextLabel</string>
        </property>
@@ -72,8 +109,11 @@
    </item>
    <item>
     <widget class="QPushButton" name="viewSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mode selector&lt;/p&gt;&lt;p&gt;Select between &amp;quot;ensemble view&amp;quot; and &amp;quot;fvorite view&amp;quot;&lt;/p&gt;&lt;p&gt;Not visible when reading from a file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
-      <string>ensembkeView</string>
+      <string>ensembleview</string>
      </property>
     </widget>
    </item>

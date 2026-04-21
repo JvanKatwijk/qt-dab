@@ -301,12 +301,6 @@ QString h;
 	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
 
 	programTypeLabel	-> setStyleSheet (labelStyle);
-	font			= ensembleId -> font ();
-	font. setPointSize (11);
-	ensembleId		-> setFont (font);
-	font			= transmitter_country	-> font ();
-	font. setPointSize (11);
-	transmitter_country	-> setFont (font);
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
 	pauzeSlideTeller	= 0; // counting pause slides
@@ -784,30 +778,13 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 void	RadioInterface::nrServices	(int n) {
 	channel. serviceCount = n;
 }
-//	The ensembleId is written as hexadecimal, however, the 
-//	number display of Qt is only 7 segments ...
-static
-QString hextoString (uint32_t v) {
-QString res;
-	for (int i = 0; i < 4; i ++) {
-	   const uint8_t t = (v & 0xF000) >> 12;
-	   QChar c = t <= 9 ? static_cast<char> ('0' + t) :
-	                      static_cast<char> ('A' + t - 10);
-	   res. append (c);
-	   v <<= 4;
-	}
-	return res;
-}
 //	a slot, called by the fib processor
 //	on recognition of an ensemblename
 void	RadioInterface::ensembleName (int id, const QString &v) {
 QString s;
 	if (!running. load())
 	   return;
-
-	ensembleId	-> setText (v + QString ("(") +
-	          hextoString (static_cast<uint32_t>(id))+ QString (")"));
-
+	newServices	-> set_ensembleId (v, id);
 	channel. ensembleName	= v;
 	channel. Eid		= static_cast<uint32_t>(id);
 	dynamicLabel		-> setText ("");
@@ -827,16 +804,6 @@ QString s;
 	              theSCANHandler. switchStayValue ();
 	      channelTimer. start (switchStay);
 	   }
-	}
-	else
-	if (!theSCANHandler. active ()) {
-	   read_pictureMappings (static_cast<uint32_t>(id));
-//	... and is we are not scanning, clicking the ensembleName
-//	has effect
-	   connect (ensembleId, &clickablelabel::clicked_left,
-	            this, &RadioInterface::handle_contentButton);
-	   connect (ensembleId, &clickablelabel::clicked_right,
-	            this, &RadioInterface::handle_dump);
 	}
 }
 //
@@ -2390,7 +2357,7 @@ void	RadioInterface::cleanScreen	() {
 	theTechWindow			-> cleanUp ();
 	motLabel			-> setStyleSheet ("QLabel {color : red}");
 	distanceLabel			-> setText ("");
-	transmitter_country		-> setText ("");
+	newServices			-> set_countryName ("");
 	theNewDisplay. ficError_display	-> setValue (0);
 }
 
@@ -2449,7 +2416,6 @@ int	tunedFrequency	=
 	channel. cleanChannel	();
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;
-	channel. countryName	= "";
 	theLogger. log (logger::LOG_NEW_CHANNEL, theChannel, channel. snr);
 	channel. realChannel	= !theDeviceHandler -> isFileInput ();
 	if (channel. realChannel) {
@@ -2527,14 +2493,11 @@ void	RadioInterface::stopChannel	() {
 
 	theDeviceHandler		-> stopReader	();
 	theDeviceHandler		-> stopDump	();
-	disconnect (ensembleId, &clickablelabel::clicked_left,
-	            this, &RadioInterface::handle_contentButton);
-	ensembleId	-> setText ("");
+	newServices			-> clear_ensembleId ();
 	stopSourceDumping	();
 	if (channel. etiActive)
 	   stop_etiHandler	();	// 
 	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
-	transmitter_country	-> setText	("");
 	theNewDisplay. setSilent	();
 //
 	for (auto &serv : channel. runningTasks) {
@@ -2901,7 +2864,7 @@ QString	theHeight;
 	QString headLine = channel. ensembleName + ";" +
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
-	                      hextoString (channel. Eid) + ";" +
+	                      QString::number (channel. Eid, 16) + ";" +
 	                      tii + ";" +
 	                      utcTime + ";" +
 	                      SNR + ";" +
@@ -2923,7 +2886,7 @@ QString	theName;
 	QString headLine = channel. ensembleName + ";" +
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
-	                      hextoString (channel. Eid) + ";" +
+	                      QString::number (channel. Eid, 16) + ";" +
 	                      utcTime + ";" +
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) +";"  +
@@ -3877,7 +3840,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	                                         (channel. Eid >> 12) &0xF);
 	   channel. countryName	= country;
 	   channel. strongestTransmitter = "";
-	   transmitter_country	-> setText (country);
+	   newServices		-> set_countryName (country);
 	}
 
 //	The data in the vector is sorted on signal strength
@@ -4446,7 +4409,6 @@ void	RadioInterface::setFreqList	() {
 	channel. currentService. fmFrequencies = freqList;
 	theTechWindow	-> updateFM (freqList);
 }
-
 //
 //	Experimental code for handling DL2 data
 
@@ -4574,6 +4536,7 @@ void	RadioInterface::signal_dataTracer	(bool b) {
 	   theOfdmHandler -> set_dataTracer (b);
 }
 
+//////////////////////////////////////////////////////////////////////////
 void	RadioInterface::handle_startTimeTable	() {
 	if (theControl != nullptr) {
 	   delete theControl;

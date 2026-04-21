@@ -64,7 +64,9 @@ QString	extractName		(uint32_t);
 void	clearAll		();
 void	saveName		(const QString &);
 QStringList	getSelectables	();
-
+void	set_ensembleId		(const QString &, int);
+void	set_countryName		(const QString &);
+void	clear_ensembleId	();
 QTableWidget	*theTable;
 private:	
 	RadioInterface	*theRadio;
