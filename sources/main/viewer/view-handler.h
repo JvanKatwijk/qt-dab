@@ -51,8 +51,8 @@ public:
 	                 QSettings	*serviceSettings,
 	                 QFrame *theFrame);
 	~serviceViewer		();
-void	startMode		(int, const QString &);
-void	startMode		(int);
+void	startMode		(int, const QString &, int);
+void	startMode		(int, int);
 QString	currentChannel		();
 int	getMode			();
 void	set_channelIndex	(const QString &);
@@ -70,6 +70,7 @@ void	clear_ensembleId	();
 QTableWidget	*theTable;
 private:	
 	RadioInterface	*theRadio;
+	void		startSession		(int, int);
 	void		insert			(const serviceDescriptor &sd);
 	void		set_channelIndex	(int);
 public slots:
@@ -98,6 +99,7 @@ private:
 	void		clearTable		();
 	QSettings	*viewSettings;
 	QString		fileName;
+	QString		defaultName;
 	QSettings	*serviceSettings;
 	QFrame		*theFrame;
 	int		serviceOrder;

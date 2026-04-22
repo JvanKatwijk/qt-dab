@@ -1,7 +1,6 @@
-
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -26,7 +25,7 @@
 
 #include	<QString>
 #include	<service-descriptor.h>
-
+#include	"dab-constants.h"
 
 class	theChannel {
 public:
@@ -35,8 +34,9 @@ public:
 	void	setName			(const QString &);
 	void	add			(serviceDescriptor);
 	void	update			(const serviceDescriptor &, bool);
+	void	sort			(std::vector<serviceDescriptor> &, int);
 	std::vector<serviceDescriptor>
-		getData			(int);
+		getData			(int, int);	// mode, order
 	QString	channelName;
 	std::vector<serviceDescriptor> channelData;
 };

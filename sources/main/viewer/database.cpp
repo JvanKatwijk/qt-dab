@@ -72,10 +72,10 @@ void	serviceBase::update		(const serviceDescriptor &sd, bool f) {
 }
 
 std::vector<serviceDescriptor> 
-	serviceBase::getData (int Mode) {
+	serviceBase::getData (int Mode, int order) {
 std::vector<serviceDescriptor> res;
 	for (auto &ch: theData) {
-	   std::vector<serviceDescriptor> res_c =  ch. getData (Mode);
+	   std::vector<serviceDescriptor> res_c =  ch. getData (Mode, order);
 	   for (auto &sd : res_c) 
 	      res. push_back (sd);
 	}

@@ -116,10 +116,10 @@ of the main window.
 
 The other icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.
-
-As in previous versions, if the ensemble in the **currently selected channel**
-carries an EPG/SPI service, a small icon is shown, the service name otself 
-is not showed in the list of services.
+On the second line the "book style" icon controls the visibility of the
+technical window, and the icon with label **EPG**, is shown in case
+an EPG/SPI service is detected in the currently selected channel (Note that
+the services list does NOT contain an entry for the EPG/SPI service.)
 
 The technical widget is not modified
 

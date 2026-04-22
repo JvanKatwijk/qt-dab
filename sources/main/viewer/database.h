@@ -39,7 +39,7 @@ public:
 	void	add		(const serviceDescriptor &);
 	void	remove		(const QString &, const QString &);
 std::vector<serviceDescriptor> 
-		getData		(int);	// the Mode
+		getData		(int, int);	// the Mode, the order
 	void	update		(const serviceDescriptor &, bool);
 	void	clearTable	();
 private:

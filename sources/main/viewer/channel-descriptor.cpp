@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -52,12 +52,65 @@ void	theChannel::update	(const serviceDescriptor &sd, bool f) {
 }
 
 std::vector<serviceDescriptor>
-	theChannel::getData	(int Mode) {
+	theChannel::getData	(int Mode, int order) {
 	std::vector<serviceDescriptor> res;
 	for (auto &sd: channelData) {
 	   if (((Mode == FAVORITEVIEW) && sd. isFavorite) ||
 	                                      (Mode == ENSEMBLEVIEW))
 	      res. push_back (sd);
 	}
+	sort (res, order);
 	return res;
 }
+static
+int	fcmp_id	(const void *a, const void *b) {
+	serviceDescriptor *el1	= (serviceDescriptor *)a;
+	serviceDescriptor *el2	= (serviceDescriptor *)b;
+	if ((uint32_t)el1 -> SID > (uint32_t)el2 -> SID)
+	   return -1;
+	if ((uint32_t)el1 -> SID < (uint32_t)el2 -> SID)
+	   return 1;
+	return 0;
+}
+
+static
+int	fcmp_subCh	(const void *a, const void *b) {
+	serviceDescriptor *el1	= (serviceDescriptor *)a;
+	serviceDescriptor *el2	= (serviceDescriptor *)b;
+	if ((uint16_t)el1 -> subChId > (uint16_t)el2 -> subChId)
+	   return -1;
+	if ((uint16_t)el1 -> SID < (uint32_t)el2 -> subChId)
+	   return 1;
+	return 0;
+}
+
+static
+int	fcmp_alpha	(const void *a, const void *b) {
+	serviceDescriptor *el1	= (serviceDescriptor *)a;
+	serviceDescriptor *el2	= (serviceDescriptor *)b;
+	if (el1 -> serviceName > el2 -> serviceName)
+	   return -1;
+	if (el1 -> serviceName < el2 -> serviceName)
+	   return 1;
+	return 0;
+}
+
+void	theChannel::sort	(std::vector<serviceDescriptor> &res, 
+	                                             int order) {
+	switch (order) {
+	   case ID_BASED:
+	      qsort (res. data (), res. size (),
+	               sizeof (serviceDescriptor), &fcmp_id);
+	      break;
+	   case SUBCH_BASED:
+	      qsort (res. data (), res. size (),
+	               sizeof (serviceDescriptor), &fcmp_subCh);
+	      break;
+	   default:		// should not happen
+	   case ALPHA_BASED:
+	      qsort (res. data (), res. size (),
+	               sizeof (serviceDescriptor), &fcmp_alpha);
+	      break;
+	}
+}
+

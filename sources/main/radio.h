@@ -97,7 +97,6 @@ class	dabStreamer;
 #endif
 
 class techWindow;
-//#include	"ui_config-helper.h"
 class	configHandler;
 
 #define DECODER_1    0100
@@ -226,7 +225,6 @@ class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 const QString	&,	//scanlist
 	                                 const QString	&,	//db
 	                                 const QString	&,	//freqExt
 	                                 const QString	&,	//schedule
@@ -240,6 +238,7 @@ public:
 
 	bool	channelOn		();
 	bool	devScopeOn		();
+	int	get_serviceOrder	();
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 	void			focusInEvent (QFocusEvent *);
@@ -613,9 +612,6 @@ public slots:
 //	signals	from scanHandler
 	void			startScanning		();
 	void			stopScanning		();
-
-//	signals from scanListHandler
-//	void			handleScanListSelect	(const QString &);
 
 //	signals	from scheduler
 	void			scheduler_timeOut	(const QString &);

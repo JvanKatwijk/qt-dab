@@ -34,7 +34,7 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-RC_ICONS	=  qt-dab-6.10.ico
+RC_ICONS	=  qt-dab-7.0.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
@@ -450,7 +450,7 @@ equals (QT_MAJOR_VERSION, 5) {
    TARGET               = qt-dab-qt5-7.0
 }
 else {
-   TARGET               = qt-dab-qt6-7.0
+   TARGET               = qt-dab-7.0
 }
 
 #mac {

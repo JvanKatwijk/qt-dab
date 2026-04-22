@@ -49,6 +49,7 @@
                                                               -1, true),
                                                 channelFont ("Times", 8) {
 
+	this	-> defaultName		= fileName;
 	this	-> fileName		= fileName;
 	this	-> theRadio		= theRadio;
 	this	-> viewSettings		= serviceSettings;
@@ -126,27 +127,40 @@
 }
 
 void	serviceViewer::clearAll		() {
+	theDataBase. clearTable ();
 	clearTable ();
 	displayList. resize (0);
-	theDataBase. clearTable ();
 }
 
 //
 //	While in most cases the startMode function operates with
 //	the default filename, there are situations that
 //	a user selectable filename is used
-void	serviceViewer::startMode	(int Mode, const QString &fileName) {
+void	serviceViewer::startMode	(int Mode,
+	                                 const QString &fileName, int order) {
 FILE *f	= fopen (fileName. toLatin1 (). data (), "r");
-	if (f == nullptr)
-	   f == fopen (fileName. toLatin1 (). data (), "w");
-	fclose (f);
-	this	-> fileName	= fileName;
-	startMode (Mode);
+	clearAll ();
+	if (fileName != "") {
+	   if (f != nullptr) {
+	      fclose (f);
+	      theDataBase. load (fileName);
+	   }
+	   this	-> fileName	= fileName;
+	}
+	else {	// fileName == "", start with empty db and default filename
+	   this -> fileName = defaultName;
+	}
+	startSession (Mode, order);
 }
 
-void	serviceViewer::startMode	(int Mode) {
+void	serviceViewer::startMode	(int Mode, int order) {
 	clearAll ();
+	this	-> fileName	= defaultName;
 	theDataBase. load (fileName);
+	startSession (Mode, order);
+}
+
+void	serviceViewer::startSession	(int Mode, int order) {
 	theMode		= Mode;
 	currentService	= -1;
 	switch (Mode) {
@@ -159,7 +173,7 @@ void	serviceViewer::startMode	(int Mode) {
 	      channelSelector	-> setEnabled (true);
 	      prevChannel	-> setEnabled (true);
 	      nextChannel	-> setEnabled (true);
-              displayList	= theDataBase. getData (theMode);
+              displayList	= theDataBase. getData (theMode, order);
 	      viewSelector	-> setEnabled (true);
 	      viewSelector	-> setText ("Favorites");
               show_displayList ();
@@ -172,7 +186,7 @@ void	serviceViewer::startMode	(int Mode) {
 	      channelSelector	-> setEnabled (false);
 	      prevChannel	-> setEnabled (false);
 	      nextChannel	-> setEnabled (false);
-              displayList	= theDataBase. getData (theMode);
+              displayList	= theDataBase. getData (theMode, order);
 	      viewSelector	-> setEnabled (true);
               show_displayList ();
 	      break;
@@ -434,6 +448,7 @@ void	serviceViewer::set_channelIndex (int channelIndex) {
 void	serviceViewer::handle_modeSwitcher	() {
 	if (theMode == FILEINPUT)
 	   return;
+	int order	= theRadio -> get_serviceOrder (); 
 	switch (theMode) {
 	   case FAVORITEVIEW: {
 	      serviceDescriptor oldService;
@@ -451,7 +466,7 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      viewSelector	-> setText ("Favorites");
 	      clearTable ();
 	      displayList. resize (0);
-	      displayList	= theDataBase. getData (theMode);
+	      displayList	= theDataBase. getData (theMode, order);
 	      show_displayList ();
 	      if (currentService != -1) {
 	         currentService = locate (oldService);
@@ -479,7 +494,7 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      clearTable ();
 	      displayList. resize (0);
 	      viewSelector	-> setText ("EnsembleView");
-	      displayList	= theDataBase. getData (theMode);
+	      displayList	= theDataBase. getData (theMode, order);
 	      show_displayList ();
 	      currentService	= -1;
 	      if (oldService. isFavorite) {

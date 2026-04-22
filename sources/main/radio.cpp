@@ -157,7 +157,6 @@ static const
 char	LABEL_STYLE [] = "color:lightgreen";
 
 	RadioInterface::RadioInterface (QSettings	*Si,
-	                                const QString	&scanListFile,
 	                                const QString	&dbFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
@@ -310,7 +309,7 @@ QString h;
 	connect (resetSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_resetButton);
 
-	aboutLabel -> setText (QString (" © V") + VERSION);
+	aboutLabel -> setText (QString ("©"));
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
@@ -366,7 +365,6 @@ QString h;
 	   theConfigHandler -> enable_loadLib ();
 	   theTIIProcessor. reload (tiiFile);
 	}
-//
 //	If no database in the homedirectory can be found,
 //	we load the "default" version
 	if (!theTIIProcessor. has_tiiFile ()) {
@@ -376,6 +374,7 @@ QString h;
 	if (!theTIIProcessor. has_tiiFile ())	// should not happen
 	   httpButton	-> setEnabled (false);
 
+///////////////////////////////////////////////////////////////////////
 	theTechWindow	= new techWindow (this, theQSettings, &theTechData);
 	connect (theTechWindow, &techWindow::frameClosed,
 	         this, &RadioInterface::handle_techFrame_closed);
@@ -473,9 +472,6 @@ QString h;
 //	some MOT, text and other data is stored in the Qt-DAB-files directory
 	path_for_files	= theFilenameFinder. basicPath ();	
 	path_for_files	= checkDir (path_for_files);
-
-//	connect (&theScanlistHandler, &scanListHandler::handleScanListSelect,
-//	         this, &RadioInterface::handleScanListSelect);
 
 //	extract the channelnames and fill the combobox
 	QStringList res		= theSCANHandler. getChannelNames ();
@@ -679,22 +675,35 @@ void	RadioInterface::startDirect	() {
 	channel. cleanChannel ();
 //
 	if (theDeviceHandler -> isFileInput ())
-	   newServices	-> startMode (FILEINPUT);
+	   newServices	-> startMode (FILEINPUT, 
+	                                   get_serviceOrder ());
 	else {
 	   QString selectionName;
-	      if (theConfigHandler -> get_loadSelection ()) {
+	   if (theConfigHandler -> get_loadSelection ()) {
 	      QString fileName =            
 	                QFileDialog::getOpenFileName (nullptr,
                                                       "Open file ...",
 	                                              path_for_files,
 	                                              "*.xml");
 	      if (selectionName != "") 
-	         newServices -> startMode (ENSEMBLEVIEW, selectionName);
-	      else
-	         newServices -> startMode (ENSEMBLEVIEW);
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                    selectionName, get_serviceOrder ());
+	      else {
+	         QMessageBox::StandardButton resultButton =
+                     QMessageBox::question (this, "dabRadio",
+                                            tr("start with empty lis?\n"),
+                                            QMessageBox::No | QMessageBox::Yes,
+                                            QMessageBox::Yes);
+                 if (resultButton == QMessageBox::Yes) 
+	            newServices -> startMode (ENSEMBLEVIEW,
+	                                      "", get_serviceOrder ());
+	         else
+	            newServices -> startMode (ENSEMBLEVIEW,
+	                                          get_serviceOrder ());
+	      }
 	   }
 	   else
-	      newServices -> startMode (ENSEMBLEVIEW);
+	      newServices -> startMode (ENSEMBLEVIEW, get_serviceOrder ());
 	}
 
 	startChannel (newServices -> currentChannel ());
@@ -717,7 +726,6 @@ void	RadioInterface::startDirect	() {
 }
 //
 //	It took a while but now we are running
-
 	RadioInterface::~RadioInterface () {
 	fprintf (stderr, "radioInterface is deleted\n");
 }
@@ -755,12 +763,6 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	}
 //
 //	adding the service to the list (or not)
-//	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) ||
-//	    (!theConfigHandler -> get_audioServices_only ()) ||
-//	      ((static_cast<uint32_t>(SId) & 0xFFFF0000) &&
-//	             theOfdmHandler -> is_SPI (static_cast<uint32_t>(SId)))) {
-//	newServices	-> addService (sd);
-//	}
 	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) ||
 	    (!theConfigHandler -> get_audioServices_only ())) {
 	newServices	-> addService (sd);
@@ -781,7 +783,7 @@ void	RadioInterface::nrServices	(int n) {
 //	a slot, called by the fib processor
 //	on recognition of an ensemblename
 void	RadioInterface::ensembleName (int id, const QString &v) {
-QString s;
+
 	if (!running. load())
 	   return;
 	newServices	-> set_ensembleId (v, id);
@@ -789,21 +791,21 @@ QString s;
 	channel. Eid		= static_cast<uint32_t>(id);
 	dynamicLabel		-> setText ("");
 //
-//	id we are scanning "to data", we reached the end
-	if (theSCANHandler. scan_to_data ()) {
-	   stopScanning ();
-	}
+        if (!theSCANHandler. active ()) 
+           read_pictureMappings (static_cast<uint32_t>(id));
 	else
 	if (theSCANHandler. active ()) {
-	   if (theSCANHandler. scan_single () ||
-	       theSCANHandler. scan_continuous ()) {
-	      theSCANHandler.
-	                 addEnsemble (newServices -> currentChannel (), v);
-	      channelTimer. stop ();
-	      int switchStay		= 
-	              theSCANHandler. switchStayValue ();
-	      channelTimer. start (switchStay);
+	   if (theSCANHandler. scan_to_data ()) {
+	   stopScanning ();
+	   return;
 	   }
+	   theSCANHandler.
+	                 addEnsemble (newServices -> currentChannel (), v);
+	   channelTimer. stop ();
+	   int switchStay		= 
+	           theSCANHandler. switchStayValue ();
+	   channelTimer. start (switchStay);
+	   return;
 	}
 }
 //
@@ -854,7 +856,7 @@ QStringList contentList	= thePrinter. print (theOfdmHandler -> contentPrint ());
 }
 
 //
-//	to avoid confusions, each MOT object arriving here carries
+//	to avoid confusion, each MOT object arriving here carries
 //	the SId of the service it belongs to.
 //	Data for background services other than the SPI servides,
 //	is basically ignored.
@@ -2474,7 +2476,6 @@ int	tunedFrequency	=
 	      nextService. SId		= 0;
 	      presetTimer. setInterval	(switchDelay);
 	      presetTimer. start	(switchDelay);
-	      fprintf (stderr, "presettimer gestart\n");
 	   }
 	}
 //	all set, go for it
@@ -2701,7 +2702,6 @@ void	RadioInterface::stopScan_single () {
 	theOfdmHandler	-> setScanMode (false);
 	channelTimer. stop ();
 
-	fprintf (stderr, "het stoppen begint\n");
 	if (theScanTable == nullptr)
 	   return;		// should not happen
 
@@ -4633,4 +4633,7 @@ void	RadioInterface::handleFontSizeSelect	(int v) {
 	   newServices -> handleFontSizeSelect (v);
 }
 
+int	RadioInterface::get_serviceOrder	() {
+	return theConfigHandler -> get_serviceOrder ();
+}
 
