@@ -54,6 +54,7 @@
 #include	"timetable-control.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
+#include	"selector.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #else
@@ -682,50 +683,20 @@ void	RadioInterface::startDirect	() {
 	if (theDeviceHandler -> isFileInput ())
 	   newServices	-> startMode (FILEINPUT, 
 	                                   get_serviceOrder ());
+	else 
+	if (!theConfigHandler -> get_loadSelection ()) 
+	   newServices -> startMode (ENSEMBLEVIEW, get_serviceOrder ());
 	else {
-	   if (theConfigHandler -> get_loadSelection ()) {
-	      QString fileName =            
-	                QFileDialog::getOpenFileName (nullptr,
-                                                      "Open file ...",
-	                                              path_for_serviceLists,
-	                                              "*.xml");
-	      if (fileName != "")
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                    fileName, get_serviceOrder ());
-	      else {
-	         QMessageBox::StandardButton resultButton =
-                     QMessageBox::question (this, "dabRadio",
-                                            tr("create new list file?\n"),
-                                            QMessageBox::No | QMessageBox::Yes,
-                                            QMessageBox::Yes);
-                 if (resultButton == QMessageBox::Yes) {
-	            QString newName =
-	                QFileDialog::getSaveFileName (nullptr,
-                                                      "Open file ...",
-	                                              path_for_serviceLists,
-	                                              "*.xml");
-	            if (newName != "") 
-	               newServices -> startMode (ENSEMBLEVIEW,
-	                                         newName, get_serviceOrder ());
-	            else {
-	               QMessageBox::StandardButton resultButton =
-                           QMessageBox::question (this, "dabRadio",
-                                            tr("start with empty lis?\n"),
-                                            QMessageBox::No | QMessageBox::Yes,
-                                            QMessageBox::Yes);
-                       if (resultButton == QMessageBox::Yes) 
-	                  newServices -> startMode (ENSEMBLEVIEW,
-	                                      "", get_serviceOrder ());
-	               else
-	                  newServices -> startMode (ENSEMBLEVIEW,
-	                                          get_serviceOrder ());
-	            }
-	         }
-	      }
-	   }
-	   else
-	      newServices -> startMode (ENSEMBLEVIEW, get_serviceOrder ());
+	   bool resetFlag = false;
+	   startList	(resetFlag);	// he does the querying
+	   if (resetFlag)
+	      theConfigHandler -> reset_loadSelection ();
 	}
+//	Basically, the choices here are
+//	1. open an existing file and use that'
+//	2. create a new file and name it;
+//	3. start with a fresh default input file
+//	4. this was a mistake, just start with the default file
 
 	startChannel (newServices -> currentChannel ());
 	int auto_http	= value_i (theQSettings, CONFIG_HANDLER, AUTO_HTTP, 0);
@@ -4681,4 +4652,58 @@ void	RadioInterface::crc_error (bool b) {
 	else
 	   crcLabel	-> setStyleSheet ("color : red");
 }
+//
+//	This function is called in the set up whenever the
+//	getLoadSelection selector is set
 
+void	RadioInterface::startList (bool &resetFlag) {
+QString fileName;
+selector ListSelector ("select option");
+	ListSelector. addtoList ("openn existing file");
+	ListSelector. addtoList ("create new servicelist");
+	ListSelector. addtoList ("clear default servicelist");
+	ListSelector. addtoList ("forget it");
+	int option = ListSelector. QDialog::exec ();
+	       
+	switch (option) {
+	   case 0: {	// open existing file
+	      fileName =            
+	             QFileDialog::getOpenFileName (nullptr,
+                                                   "Open file ...",
+	                                           path_for_serviceLists,
+	                                           "*.xml");
+	      if (fileName != "")
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                 fileName, get_serviceOrder ());
+	      else
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                         get_serviceOrder ());
+	      break;
+	   }
+	   case 1: {	// create a new file
+	      fileName =
+	             QFileDialog::getSaveFileName (nullptr,
+                                                   "Open file ...",
+	                                           path_for_serviceLists,
+	                                           "*.xml");
+	      if (fileName != "") 
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                      fileName,
+	                                         get_serviceOrder ());
+	      else
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                               get_serviceOrder ());
+	      break;
+	   }
+	   case 2:	// empty current default
+	      newServices -> startMode (ENSEMBLEVIEW, 
+	                                      "", get_serviceOrder ());
+	      resetFlag	= true;
+	      break;
+	   default:
+	   case 3:	// selecting this was a mostake
+	      newServices -> startMode (ENSEMBLEVIEW,
+	                                             get_serviceOrder ());
+	      resetFlag	= true;
+	}
+}

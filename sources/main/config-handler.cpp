@@ -786,6 +786,15 @@ bool	configHandler::get_loadSelection	() {
 	return loadSelection_selector	-> isChecked ();
 }
 
+void	configHandler::reset_loadSelection	() {
+	if (!loadSelection_selector	-> isChecked ())
+	   return;
+	loadSelection_selector	-> setEnabled (false);
+	loadSelection_selector	-> setChecked (false);
+	loadSelection_selector	-> setEnabled (true);
+	store (dabSettings, CONFIG_HANDLER, "LOAD_SELECTION", false);
+}
+
 bool	configHandler::upload_selector_active	() {
 	return upload_selector -> isChecked ();
 }

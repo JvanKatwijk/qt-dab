@@ -138,18 +138,20 @@ void	serviceViewer::clearAll		() {
 //	a user selectable filename is used
 void	serviceViewer::startMode	(int Mode,
 	                                 const QString &fileName, int order) {
-FILE *f	= fopen (fileName. toLatin1 (). data (), "r");
+	if (fileName == "") {
+	   this -> fileName	= defaultName;
+	   startSession (Mode, order);
+	   return;
+	}
+	FILE *f	= fopen (fileName. toLatin1 (). data (), "r");
 	clearAll ();
-	if (fileName != "") {
-	   if (f != nullptr) {
-	      fclose (f);
-	      theDataBase. load (fileName);
-	   }
-	   this	-> fileName	= fileName;
+	if (f == nullptr) {
+	   fclose (f);
+	   startMode (Mode, order);
+	   return;
 	}
-	else {	// fileName == "", start with empty db and default filename
-	   this -> fileName = defaultName;
-	}
+	theDataBase. load (fileName);
+	this	-> fileName	= fileName;
 	startSession (Mode, order);
 }
 

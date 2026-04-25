@@ -87,6 +87,8 @@ public:
 	bool	check_correctPhase	();
 	bool	get_saveSelection	();
 	bool	get_loadSelection	();
+
+	void	reset_loadSelection	();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;

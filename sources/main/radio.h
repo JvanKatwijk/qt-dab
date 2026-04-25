@@ -297,6 +297,7 @@ private:
 	tcpServer			*theClockStreamer;
 #endif
 //
+	void			startList		(bool &);
 	void			connectGUI		();
 	void			disconnectGUI		();
 	void			cleanScreen		();
