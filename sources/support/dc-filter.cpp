@@ -47,7 +47,7 @@
 
 Complex	dcFilter::filter (Complex v) {
 	Complex res = v - filterSum;
-	filterSum += res * (float)(1.0f - ALPHA);
+	filterSum += res * (DABFLOAT)(1.0f - ALPHA);
 	return res;
 }
 	

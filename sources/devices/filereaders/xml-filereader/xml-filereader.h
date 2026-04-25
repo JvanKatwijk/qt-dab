@@ -72,5 +72,6 @@ public slots:
 	void			handle_sliderPressed	();
 	void			handle_sliderMoved	(int);
 	void			handle_sliderReleased	();
+	void			handle_pauseButton	();
 };
 

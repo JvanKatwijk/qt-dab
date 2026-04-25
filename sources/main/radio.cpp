@@ -44,9 +44,8 @@
 #include	"ofdm-handler.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
-#include	"dab-tables.h"
 #include	"dab-params.h"
-#include	"ITU_Region_1.h"
+#include	"ITU_tables.h"
 #include	"coordinates.h"
 #include	"mapport.h"
 #include	"tech-window.h"
@@ -62,7 +61,6 @@
 #include	"audiosink.h"
 #endif
 
-#include	"dab-tables.h"
 #include	"device-exceptions.h"
 #include	"settingNames.h"
 #include	"uploader.h"
@@ -472,7 +470,13 @@ QString h;
 //	some MOT, text and other data is stored in the Qt-DAB-files directory
 	path_for_files	= theFilenameFinder. basicPath ();	
 	path_for_files	= checkDir (path_for_files);
-
+	path_for_files	= QDir::toNativeSeparators (path_for_files);
+	path_for_serviceLists = path_for_files + "/serviceLists/";
+	path_for_serviceLists = checkDir (path_for_serviceLists);
+	path_for_serviceLists = QDir::toNativeSeparators (path_for_serviceLists);
+	path_for_epg	= path_for_files + "EpgData/";
+	path_for_epg	= checkDir (path_for_epg);
+	path_for_epg	= QDir::toNativeSeparators (path_for_epg);
 //	extract the channelnames and fill the combobox
 	QStringList res		= theSCANHandler. getChannelNames ();
 	this -> newServices	= new serviceViewer (dbFile, this,
@@ -491,6 +495,7 @@ QString h;
 	previous_idle_time	= 0;
 	previous_total_time	= 0; 
 	numberofSeconds		= 0;
+	crcLabel	-> setStyleSheet ("color : green");
 
 //	Connect the buttons for the color_settings
 	connect (configButton, &smallPushButton::rightClicked,
@@ -678,28 +683,44 @@ void	RadioInterface::startDirect	() {
 	   newServices	-> startMode (FILEINPUT, 
 	                                   get_serviceOrder ());
 	else {
-	   QString selectionName;
 	   if (theConfigHandler -> get_loadSelection ()) {
 	      QString fileName =            
 	                QFileDialog::getOpenFileName (nullptr,
                                                       "Open file ...",
-	                                              path_for_files,
+	                                              path_for_serviceLists,
 	                                              "*.xml");
-	      if (selectionName != "") 
+	      if (fileName != "")
 	         newServices -> startMode (ENSEMBLEVIEW,
-	                                    selectionName, get_serviceOrder ());
+	                                    fileName, get_serviceOrder ());
 	      else {
 	         QMessageBox::StandardButton resultButton =
                      QMessageBox::question (this, "dabRadio",
+                                            tr("create new list file?\n"),
+                                            QMessageBox::No | QMessageBox::Yes,
+                                            QMessageBox::Yes);
+                 if (resultButton == QMessageBox::Yes) {
+	            QString newName =
+	                QFileDialog::getSaveFileName (nullptr,
+                                                      "Open file ...",
+	                                              path_for_serviceLists,
+	                                              "*.xml");
+	            if (newName != "") 
+	               newServices -> startMode (ENSEMBLEVIEW,
+	                                         newName, get_serviceOrder ());
+	            else {
+	               QMessageBox::StandardButton resultButton =
+                           QMessageBox::question (this, "dabRadio",
                                             tr("start with empty lis?\n"),
                                             QMessageBox::No | QMessageBox::Yes,
                                             QMessageBox::Yes);
-                 if (resultButton == QMessageBox::Yes) 
-	            newServices -> startMode (ENSEMBLEVIEW,
+                       if (resultButton == QMessageBox::Yes) 
+	                  newServices -> startMode (ENSEMBLEVIEW,
 	                                      "", get_serviceOrder ());
-	         else
-	            newServices -> startMode (ENSEMBLEVIEW,
+	               else
+	                  newServices -> startMode (ENSEMBLEVIEW,
 	                                          get_serviceOrder ());
+	            }
+	         }
 	      }
 	   }
 	   else
@@ -812,8 +833,9 @@ void	RadioInterface::ensembleName (int id, const QString &v) {
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-basicPrint thePrinter;
-QStringList contentList	= thePrinter. print (theOfdmHandler -> contentPrint ());
+basicPrint thePrinter (channel. internatTable);
+QStringList contentList	=
+	     thePrinter. print (theOfdmHandler -> contentPrint ());
 
 	if (theContentTable != nullptr) {
 	   theContentTable -> hide ();
@@ -928,7 +950,7 @@ QDomDocument epgDocument;
 	if (theName == "") 
 	   return;
 	
-	QString temp = path_for_files +
+	QString temp = path_for_epg +
 	                   QString::number (channel. Eid, 16). toUpper () + "/";
 	temp = QDir::toNativeSeparators (temp);
 	theName  = temp + theName;
@@ -995,7 +1017,7 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 	                              int contentType,
 	                              const QString &name) {
 	(void)contentType;
-	QString path = path_for_files +
+	QString path = path_for_epg +
 	                        QString::number (channel. Eid, 16). toUpper ();
 	path	+= "/";
 	path	= QDir::toNativeSeparators (path);
@@ -1113,7 +1135,7 @@ QString thePath;
 	QString theEId = QString::number (channel. Eid, 16). toUpper ();
 	
 	if (kort)
-	   thePath = path_for_files + theEId + "/";
+	   thePath = path_for_epg + theEId + "/";
 	else {
 	   thePath = path_for_files + "slides-" +"(" + theEId + ")" +  "/";
 	   thePath +=  channel. currentService. serviceName. trimmed () + "/";
@@ -1734,7 +1756,7 @@ void	RadioInterface::startAudioDumping () {
 
 	QString audioDumpName	=
 	      theFilenameFinder.
-	           findAudioDump_fileName  (channel. currentService. serviceName, true);
+	           find_audioDump_fileName  (channel. currentService. serviceName, true);
 	if (audioDumpName == "")
 	   return;
 
@@ -1753,7 +1775,7 @@ void	RadioInterface::scheduledAudioDumping () {
 
 	QString audioDumpName	=
 	      theFilenameFinder.
-	            findAudioDump_fileName  (serviceLabel -> text (), false);
+	            find_audioDump_fileName  (serviceLabel -> text (), false);
 	if (audioDumpName == "")
 	   return;
 
@@ -1787,7 +1809,7 @@ void	RadioInterface::startFrameDumping () {
 	   return;
 	channel. currentService. frameDumper	=
 	     theFilenameFinder.
-	      findFrameDump_fileName (channel. currentService. serviceName,
+	      find_frameDump_fileName (channel. currentService. serviceName,
 	                              channel. currentService. ASCTy, true);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
@@ -1816,7 +1838,7 @@ void	RadioInterface::scheduled_frameDumping (const QString &s) {
 	   return;
 	
 	channel. currentService. frameDumper	=
-	     theFilenameFinder. findFrameDump_fileName (s, ad. ASCTy, false);
+	     theFilenameFinder. find_frameDump_fileName (s, ad. ASCTy, false);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 	theTechWindow ->  framedumpButton_text ("recording", 12);
@@ -1860,7 +1882,7 @@ QString	dumpName;
 	if (!theConfigHandler -> dumpmode_set () ||
 	          !theDeviceHandler	-> providesDump ()) {
 	   dumpName	=
-	         theFilenameFinder. findRawDump_fileName (deviceName, channelName);
+	         theFilenameFinder. find_rawDump_fileName (deviceName, channelName);
 	   if (dumpName == "")
 	      return;
 	   theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
@@ -2200,6 +2222,15 @@ QString serviceName	= s. serviceName;
 	      channel. currentService. ASCTy	= ad. ASCTy;
 	      channel. currentService. subChId	= ad. subchId;
 	      startAudioservice (ad);
+
+	      QString country      = getCountry (channel. internatTable,
+	                                         ad. ecc != 0 ? ad. ecc :
+	                                            channel. eccByte,
+                                                 (ad. SId >> 12) &0xF);
+	      fprintf (stderr, " service %s, country = %s\n",
+	                             s. serviceName.  toLatin1 (). data (),
+	                             country. toLatin1 (). data ());
+
 //	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	      serviceLabel	-> setText (serviceName);
 	      QPixmap p;
@@ -2281,12 +2312,13 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	theAudioPlayer		-> resume ();
 	channel. audioActive	= true;
 	setSoundLabel (true);
-	programTypeLabel	-> setText (getProgramType (ad. programType));
+	programTypeLabel	-> setText (getProgramType (channel. internatTable, ad. programType));
 	rateLabel		-> setStyleSheet ("color:magenta");
 	rateLabel		-> setText (QString::number (ad. bitRate) +
 	                                                        "kbit");
-	QString protL	= getProtectionLevel (ad. shortForm, ad. protLevel);
-	QString crL	= getCodeRate (ad. shortForm, ad. protLevel);
+	QString protL		= getProtectionLevel (ad. shortForm,
+	                                                    ad. protLevel);
+	QString crL		= getCodeRate (ad. shortForm, ad. protLevel);
 	protectionLabel		-> setStyleSheet ("color:red");
 	QFont font		= protectionLabel -> font ();
 	font. setPointSize (9);
@@ -2294,7 +2326,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	protectionLabel		-> setText (protL+ " " + crL);
 
 //	show service related data
-	theTechWindow	-> showServiceData 	(&ad);
+	theTechWindow	-> showServiceData 	(channel. internatTable, &ad);
 }
 
 void	RadioInterface::startPacketservice (packetdata &pd) {
@@ -2607,7 +2639,7 @@ void	RadioInterface::startScan_to_data () {
 }
 
 void	RadioInterface::startScan_single () {
-basicPrint thePrinter;
+basicPrint thePrinter (channel. internatTable);
 //	theScanlistHandler. clearScanList ();
 	if (theScanTable == nullptr) 
 	   theScanTable = new contentTable (this, theQSettings, "scan", 
@@ -2638,7 +2670,7 @@ basicPrint thePrinter;
 }
 
 void	RadioInterface::startScan_continuous () {
-basicPrint thePrinter;
+basicPrint thePrinter (channel. internatTable);
 	if (theScanTable == nullptr) 
 	   theScanTable = new contentTable (this, theQSettings, "scan", 
 	                                              thePrinter.scanWidth ());
@@ -2865,6 +2897,9 @@ QString	theHeight;
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
 	                      QString::number (channel. Eid, 16) + ";" +
+	                      getCountry (channel. internatTable,
+	                                  channel. eccByte,
+                                            (channel. Eid >> 12) &0xF) + ";" +
 	                      tii + ";" +
 	                      utcTime + ";" +
 	                      SNR + ";" +
@@ -2885,6 +2920,9 @@ QString	theName;
 	int	freeSpace	= theOfdmHandler -> freeSpace ();
 	QString headLine = channel. ensembleName + ";" +
 	                      channel. channelName  + ";" +
+	                      getCountry (channel. internatTable,
+	                                  channel. eccByte,
+	                                  (channel. Eid >> 12) & 0xF) + ";" +
 	                      QString::number (channel. tunedFrequency) + ";" +
 	                      QString::number (channel. Eid, 16) + ";" +
 	                      utcTime + ";" +
@@ -2917,7 +2955,7 @@ QString	headLine = build_kop ();
 	   QString transmitterLine = build_transmitterLine (tr);
            theScanTable	-> addLine (transmitterLine);
         }
-	basicPrint thePrinter;
+	basicPrint thePrinter (channel. internatTable);
 	QStringList s = thePrinter. print (theOfdmHandler -> contentPrint ());
 	for (const auto &l : s)
 	   theScanTable -> addLine (l);
@@ -3569,6 +3607,10 @@ void	RadioInterface::start_etiHandler () {
 void	RadioInterface::handle_eti_activeSelector (int k) {
 bool setting	= theConfigHandler -> eti_active ();
 	(void)k;
+          
+        if (newServices -> getMode () == FAVORITEVIEW)
+	   return;
+
 	if (setting) {
 	   stopScanning ();
 	   disconnect (scanButton, &QPushButton::clicked,
@@ -3589,7 +3631,7 @@ bool setting	= theConfigHandler -> eti_active ();
 	connect (scanButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_scanButton);
 	scanButton      -> setText ("scan");
-	if (theDeviceHandler -> isFileInput ())	// hide the button now
+        if (newServices -> getMode () != ENSEMBLEVIEW)
 	   scanButton -> hide ();
 }
 
@@ -3836,7 +3878,8 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   return;
 //	probably yes, get the country code
 	if ((channel. countryName == "") && (channel. hasEcc)) {
-	   QString country	= find_ITU_code (channel. eccByte,
+	   QString country	= getCountry (channel. internatTable,
+	                                      channel. eccByte,
 	                                         (channel. Eid >> 12) &0xF);
 	   channel. countryName	= country;
 	   channel. strongestTransmitter = "";
@@ -4061,7 +4104,7 @@ audiodata ad;
 	   teller_3 ++;
 	}
 	uint8_t audioType	= ad. ASCTy;
-	FILE *f = theFilenameFinder. findFrameDump_fileName (service,
+	FILE *f = theFilenameFinder. find_frameDump_fileName (service,
 	                                                     audioType, true);
 	if (f == nullptr)
 	   return;
@@ -4265,7 +4308,7 @@ QDomElement root = doc. firstChildElement ("serviceInformation");
 
 void	RadioInterface::saveServiceInfo (const QDomDocument &doc,
 	                                                uint32_t Eid) {
-QString fileName = path_for_files;
+QString fileName = path_for_epg;
 	if (!fileName. endsWith ("/"))
 	   fileName =  fileName + "/";
 	fileName += QString::number (Eid, 16). toUpper () + "/list.xml";
@@ -4351,11 +4394,7 @@ bool pictureFound	= false;
 	   int sq_max		= 0;
 	   for (auto &ff: ss. elements) {
 	      QPixmap candidate;
-	      QString pict  = path_for_files + QString::number (channel. Eid, 16). toUpper ()+ "/" + ff. url;
-//	      FILE *tt = fopen (pict. toLatin1 (). data (), "r + b");
-//	      if (tt == nullptr) 
-//	         continue;
-//	      fclose (tt);
+	      QString pict  = path_for_epg +  QString::number (channel. Eid, 16). toUpper ()+ "/" + ff. url;
 	      if (!fs::exists (pict. toUtf8 (). data ()))
 	         continue;
 	      bool res = candidate. load (pict, "png");
@@ -4380,9 +4419,7 @@ bool pictureFound	= false;
 }
 //
 void	RadioInterface::read_pictureMappings (uint32_t Eid) {
-	QString fileName = path_for_files;
-	if (!fileName. endsWith ("/"))
-	   fileName += "/";
+	QString fileName = path_for_epg;
 	fileName += QString::number (Eid, 16). toUpper () + "/list.xml";
 	fprintf (stderr, "Looking for %s\n", fileName. toLatin1 (). data ());
 	QDomDocument pictureMappings;
@@ -4394,10 +4431,11 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 }
 //
 ///////////////////////////////////////////////////////////////////////
-void    RadioInterface::lto_ecc (int lto, int ecc) {
-	channel. eccByte = ecc; 
-	channel. hasEcc = true;
-	channel. lto	= lto;
+void    RadioInterface::lto_ecc (int lto, int ecc, int internatTable) {
+	channel. eccByte	= ecc; 
+	channel. hasEcc		= true;
+	channel. lto		= lto;
+	channel. internatTable = internatTable;
 }
 
 void	RadioInterface::setFreqList	() {
@@ -4528,7 +4566,7 @@ void	RadioInterface::devSL_visibility	() {
 void	RadioInterface::tell_programType	(uint32_t SId,
 	                                                int programType) {
 	if (channel. currentService. SId == SId)
-	   programTypeLabel	-> setText (getProgramType (programType));
+	   programTypeLabel	-> setText (getProgramType (channel. internatTable, programType));
 }
 
 void	RadioInterface::signal_dataTracer	(bool b) {
@@ -4635,5 +4673,12 @@ void	RadioInterface::handleFontSizeSelect	(int v) {
 
 int	RadioInterface::get_serviceOrder	() {
 	return theConfigHandler -> get_serviceOrder ();
+}
+
+void	RadioInterface::crc_error (bool b) {
+	if (!b) 
+	   crcLabel	-> setStyleSheet ("color : green");
+	else
+	   crcLabel	-> setStyleSheet ("color : red");
 }
 

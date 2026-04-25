@@ -88,13 +88,12 @@ QTableWidgetItem* theItem = contentWidget  -> item (row, 1);
 	   return;
         (void)column;
         QString theService = theItem -> text ();
-//	fprintf (stderr, "selecting %s\n", theService. toUtf8 (). data ());
 	goService (theService);
 }
 
 void	contentTable::dump_local (int row, int column) {
 findfileNames filenameFinder (dabSettings);
-FILE	*dumpFile 	= filenameFinder. findContentDump_fileName (channel);
+FILE	*dumpFile 	= filenameFinder. find_contentDump_fileName (channel);
 
 	(void)row;
 	(void)column;

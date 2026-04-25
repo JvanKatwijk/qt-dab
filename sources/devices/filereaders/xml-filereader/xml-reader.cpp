@@ -88,7 +88,7 @@ struct timeval tv;
 	connect (this, &xml_Reader::setProgress,
 	         parent, &xml_fileReader::setProgress);
 
-//	fprintf (stderr, "reader task wordt gestart\n");
+	runState	= true;
 	start ();
 }
 
@@ -162,9 +162,16 @@ int	startPoint	= filePointer;
 //
 //	the readSamples function returns 1 msec of data,
 //	we assume taking this data does not take time
+	         while (!runState && running. load ()) {
+	            nextStop = nextStop + (uint64_t)1000;
+	            if (nextStop > currentTime ())
+	               usleep (nextStop - currentTime ());
+	         }
 	         nextStop = nextStop + (uint64_t)1000;
 	         if (nextStop > currentTime ())
-	            usleep ( nextStop - currentTime ());
+	            usleep (nextStop - currentTime ());
+	         else
+	            nextStop = currentTime () + (uint64_t)1000;
 	      }
 	      setProgress (0, samplesToRead);
 	      filePointer = startPoint;
@@ -814,5 +821,10 @@ float	scaler	= float (shift (nrBits));
 
 void	xml_Reader::handle_progressSlider	(int v) {
 	newPosition. store (v);
+}
+
+bool	xml_Reader::handle_pauseButton		() {
+	runState = !runState;
+	return runState;
 }
 

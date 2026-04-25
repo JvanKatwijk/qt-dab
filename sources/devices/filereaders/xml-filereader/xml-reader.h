@@ -49,11 +49,13 @@ public:
 	void		stopReader	();
 	bool		handle_continuousButton	();
 	void		handle_progressSlider	(int);
+	bool		handle_pauseButton	();
 private:
 	union bitsToFloat {
 	   uint32_t bitValue;
 	   float    floatValue;
 	};
+	bool		runState;
 	std::atomic<bool>	continuous;
 	FILE		*file;
 	xmlDescriptor	*fd;

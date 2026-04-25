@@ -87,7 +87,7 @@ private:
 	void		FIG0Extension3		(uint8_t *);
 //	void		FIG0Extension4		(uint8_t *);
 	void		FIG0Extension5		(uint8_t *);
-//	void		FIG0Extension6		(uint8_t *);
+	void		FIG0Extension6		(uint8_t *);
 	void		FIG0Extension7		(uint8_t *);
 	void		FIG0Extension8		(uint8_t *);
 	void		FIG0Extension9		(uint8_t *);
@@ -125,6 +125,11 @@ private:
 	                                         const uint8_t,
 	                                         const uint8_t);
 	int16_t		HandleFIG0Extension5	(uint8_t *,
+	                                         uint16_t,
+	                                         const uint8_t,
+	                                         const uint8_t,
+	                                         const uint8_t);
+	int16_t		HandleFIG0Extension6	(uint8_t *,
 	                                         uint16_t,
 	                                         const uint8_t,
 	                                         const uint8_t,
@@ -176,7 +181,7 @@ signals:
 	void		changeinConfiguration	();
 	void		announcement		(int, int);
 	void		nrServices		(int);
-	void		lto_ecc			(int, int);
+	void		lto_ecc			(int, int, int);
 	void		setFreqList		();
 	void		tell_programType	(int, int);
 };

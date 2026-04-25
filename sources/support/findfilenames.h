@@ -39,15 +39,15 @@ public:
 		findfileNames			(QSettings *);
 		~findfileNames			();
 	QString	basicPath			();
-	QString findsaveSelection_fileName	();
 	QString find_mapdumpName		(const QString &deviceName);
-	FILE	*findContentDump_fileName	(const QString &channel);
-	FILE	*findFrameDump_fileName		(const QString &service,
+	FILE	*find_contentDump_fileName	(const QString &channel);
+	FILE	*find_frameDump_fileName	(const QString &service,
 	                                         uint8_t, bool);
-	QString	findAudioDump_fileName		(const QString &service, bool);
-	QString findRawDump_fileName		(const QString &deviceName,
+	QString	find_audioDump_fileName		(const QString &service, bool);
+	QString find_rawDump_fileName		(const QString &deviceName,
 	                                       	 const QString &channelName);
-	QString find_scanfile			(const QString &channel);
+	QString	find_xmlName			(const QString &,
+	                                         const QString &, bool);
 
 	FILE	*findScanDump_fileName		();
 	FILE	*findSummary_fileName		();
@@ -55,10 +55,7 @@ const	QString	findskipFile_fileName		();
 	QString	finddlText_fileName		(bool);
 	FILE	*findLogFileName		();
 	QString	find_ficDump_file		(const QString &);
-	QString findMaps_fileName		();
 	QString	find_eti_fileName		(const QString &, const QString &);
-	QString	find_xmlName			(const QString &,
-	                                         const QString &, bool);
 	QString finddxDump_fileName		(const QString &);
 private:
 	QString	outputDialog			(QString saveDir,

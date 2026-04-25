@@ -25,7 +25,7 @@
 #include	<stdio.h>
 #include	<string.h>
 #include	"ensemble.h"
-#include	"dab-tables.h"
+#include	"ITU_tables.h"
 #include	"radio.h"
 
 //	Implementation of the FIG database
@@ -211,6 +211,7 @@ serviceComp_C &comp = SC_C_table [index];
 	      ad. serviceName	= serv. name;
 	      ad. shortName	= serv. shortName;
 	      ad. SId		= serv. SId;
+	      ad. ecc		= serv. ecc;
 	      ad. programType	= serv. programType;
 	      ad. fmFrequencies	= serv. fmFrequencies;
 	      break;
@@ -306,6 +307,7 @@ QList<contentType> res;
 	         continue;
 	      theData. serviceName	= ad. serviceName;
 	      theData. shortName	= ad. shortName;
+	      theData. ecc		= ad. ecc; 
 	      theData. subChId		= ad. subchId;
 	      theData. SCIds		= ad. SCIds;
 	      theData. startAddress	= ad. startAddr;

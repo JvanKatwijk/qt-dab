@@ -53,8 +53,7 @@ QString	findfileNames::outputDialog (QString saveDir,
 QString theTime         = QDateTime::currentDateTime (). toString ();
 QString suggestedFileName;
 	
-	suggestedFileName = saveDir + "Qt-DAB-" + channel +
-	                                          "-" + theTime;
+	suggestedFileName = saveDir + channel + "-" + theTime;
 	for (int i = 4; i < suggestedFileName. length (); i ++)
 	   if (!isValid (suggestedFileName. at (i)))
 	      suggestedFileName. replace (i, 1, '-');
@@ -62,7 +61,6 @@ QString suggestedFileName;
 	suggestedFileName	+= extension;
 	suggestedFileName        = QDir::toNativeSeparators (suggestedFileName);
 
-	fprintf (stderr, "suggested filename %s\n", suggestedFileName. toLatin1 (). data ());
 	if (!flag)
 	   return suggestedFileName;
 	bool	useNativeFileDialog = true;
@@ -71,26 +69,16 @@ QString suggestedFileName;
 	                                      "Save file ...",
 	                                      suggestedFileName,
 	                                      QString ("%1 (%2)").arg (extension, extension),
-	                                      Q_NULLPTR,
-	                                      useNativeFileDialog ?
-	                                          QFileDialog::Options() :
-	                                          QFileDialog::DontUseNativeDialog);
+	                                      Q_NULLPTR);
+//	                                      useNativeFileDialog ?
+//	                                          QFileDialog::Options() :
+//	                                          QFileDialog::DontUseNativeDialog);
 	if (fileName == "")
 	   return "";
-
 	return QDir::toNativeSeparators (fileName);
 }
 
-QString	findfileNames::find_scanfile (const QString &channel) {
-QString fileName	= outputDialog (basicPath (), channel, ".sdr", false);
-	return fileName;
-}
-
-QString	findfileNames::findsaveSelection_fileName	() {
-	return outputDialog (basicPath (), "selection", ".xml", true);
-}
-
-FILE	*findfileNames::findContentDump_fileName (const QString &channel) {
+FILE	*findfileNames::find_contentDump_fileName (const QString &channel) {
 QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 
 	if (fileName == "")
@@ -107,25 +95,20 @@ QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 	return fileP;
 }
 
-QString	findfileNames::finddxDump_fileName (const QString &channel) {
-QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
-
-	if (fileName == "")
-	   return nullptr;
-	return fileName;
-}
-
 //
-FILE	*findfileNames::findFrameDump_fileName (const QString &service,
+//	framedumps and audio dump
+FILE	*findfileNames::find_frameDump_fileName (const QString &service,
 	                                        uint8_t ASCTy, bool flag) {
 	QString ending;
 	ending = ASCTy == DAB_PLUS ? ".aac" : ".mp2";
-	   
-	QString	fileName	= outputDialog (basicPath (),
-	                                service, ending, flag);
-
+	QString subName	= basicPath () +
+	                (ASCTy == DAB_PLUS ? "aacDump/" : "mp2Dump");
+	checkDir (subName);
+	QString	fileName	= outputDialog (subName, service,
+	                                                 ending, flag);
 	if (fileName == "")
 	   return nullptr;
+	
 	FILE *theFile	= fopen (fileName. toUtf8 (). data (), "w+b");
 	if (theFile == nullptr) {
 	   QString s = QString ("cannot open ") + fileName;
@@ -137,11 +120,11 @@ FILE	*findfileNames::findFrameDump_fileName (const QString &service,
 	return theFile;
 }
 
-QString	findfileNames::findAudioDump_fileName (const QString &service, 
+QString	findfileNames::find_audioDump_fileName (const QString &service, 
 	                                                      bool flag) {
-QString	saveDir		= basicPath ();
+QString	saveDir		= basicPath () + "audiodumps/";
 
-	fprintf (stderr, "savedir = %s\n", saveDir. toLatin1 (). data ());
+	checkDir (saveDir);
 	QString fileName = outputDialog (saveDir, service, ".wav", flag);
 	
 	if (fileName == "")
@@ -150,18 +133,36 @@ QString	saveDir		= basicPath ();
 	save_dirName ("saveDir_audioDump", fileName);
 	return fileName;
 }
-
-QString findfileNames::findRawDump_fileName (const QString &deviceName,
+//
+//	Filename for an ".sdr dump"
+QString findfileNames::find_rawDump_fileName (const QString &deviceName,
 	                                       const QString &channelName) {
-QString	saveDir		= basicPath ();
+QString	saveDir		= basicPath () + "rawdump/";
+	checkDir (saveDir);
 	QString fileName =
 	              outputDialog (saveDir, 
 	                            QString (deviceName + "-" + channelName),
 	                            ".sdr", true);
 	if (fileName == "")
 	   return nullptr;
-
 	save_dirName ("saveDir_rawDump", fileName);
+	return fileName;
+}
+//
+//	filename for an xml dump
+QString	findfileNames::find_xmlName	(const QString &deviceName,
+	                                 const QString &channelName,
+	                                 bool direct) {
+QString	saveDir	=  basicPath () + "xmlDump/";
+	checkDir (saveDir);
+	QString fileName =
+	              outputDialog (saveDir, 
+	                            QString (deviceName + "-" + channelName),
+	                            ".xml", direct);
+	if (fileName == "")
+	   return nullptr;
+
+	save_dirName ("saveDir_xmlDump", fileName);
 	return fileName;
 }
 
@@ -192,9 +193,6 @@ QString   saveDir =  basicPath ();
 const
 QString	findfileNames::findskipFile_fileName	() {
 QString   saveDir = basicPath ();
-
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
 
 	QString suggestedFileName =
 	                  saveDir + "Qt-DAB-skipFile" + ".xml";
@@ -243,61 +241,33 @@ QString	saveDir = basicPath ();
 	return fileName;
 }
 
-QString	findfileNames::findMaps_fileName () {
-QString	saveDir	= basicPath ();
-
-	return outputDialog (saveDir, "Qt_DAB-transmitters", ".csv", true);
-}
-
 QString	findfileNames::find_eti_fileName (const QString &ensemble,
-	                                  const QString &channelName) {
+	                                  const QString &channel) {
 QString	saveDir	 = basicPath ();
-
 QString theTime         = QDateTime::currentDateTime (). toString ();
-QString suggestedFileName;
+QString suggestedFileName =
+	           basicPath () + theTime + ensemble + "-" + channel + ".eti";
 
-	return outputDialog (saveDir,
-	                     QString (ensemble + "-" + channelName),
-	                     ".eti", true);
+	return outputDialog (saveDir, suggestedFileName, ".eti", true);
 }
 
-QString	findfileNames::find_xmlName	(const QString &deviceName,
-	                                 const QString &channel,
-	                                 bool direct) {
-QString	saveDir	=  basicPath ();
+QString	findfileNames::find_mapdumpName	(const QString &deviceName) {
+QString result	= basicPath () + "mapdumps/";
 QDate	theDate;
 QTime	theTime;
-
-	if (direct) {
-	   saveDir = 
-	          value_s (dabSettings, DAB_GENERAL, S_SCANFILE_PATH, saveDir);
-	   if (!saveDir. endsWith ("/"))
-	      saveDir += "/";
-	}
 	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
-	QString suggestedFilename	= 
-	                     saveDir + deviceName + "-" + channel + "-" + timeString;
-//	In Windows, there is a problem with C: or D:
-	for (int i = 4; i < suggestedFilename. length (); i ++)
-	   if (!isValid (suggestedFilename. at (i)))
-	      suggestedFilename. replace (i, 1, "-");
-	suggestedFilename	= QDir::toNativeSeparators (suggestedFilename);
-	if (direct)
-	   return suggestedFilename + ".uff";
-	QString fileName	=
-	          QFileDialog::getSaveFileName (nullptr,
-	                                        "save file ..",
-	                                        suggestedFilename + ".uff",
-	                                        "xml (*.uff)");
-	fileName	= QDir::toNativeSeparators (fileName);
-//	if (fileName == "")
-//	   fileName = suggestedFilename;
-	return fileName;
+	checkDir (result);
+	result	+= deviceName + "-" + timeString;
+	for (int i = 4; i < result. length (); i ++)
+	   if (!isValid (result. at (i)))
+	      result. replace (i, 1, "-");
+	result	= QDir::toNativeSeparators (result + ".xml");
+	return result;
 }
 
 QString	findfileNames::basicPath	() {
 
-        QString tempPath	= QDir::homePath () + "/Qt-DAB-files/";
+        QString tempPath	= QDir::homePath () + "/Qt-DAB-files-7/";
 	tempPath		=
 	          value_s (dabSettings, "CONFIG_HANDLER", "filePath", tempPath);
 	if (!tempPath. endsWith ('/'))
@@ -305,19 +275,6 @@ QString	findfileNames::basicPath	() {
 	tempPath	= checkDir (tempPath);
 
 	return QDir::fromNativeSeparators (tempPath);
-}
-
-QString	findfileNames::find_mapdumpName	(const QString &deviceName) {
-QString result	= basicPath ();
-QDate	theDate;
-QTime	theTime;
-	QString timeString	= theDate. currentDate (). toString () + "-" +		                          theTime. currentTime (). toString ();
-	result	+= deviceName + "-" + timeString;
-	for (int i = 4; i < result. length (); i ++)
-	   if (!isValid (result. at (i)))
-	      result. replace (i, 1, "-");
-	result	= QDir::toNativeSeparators (result + ".xml");
-	return result;
 }
 
 QString	findfileNames::checkDir		(const QString &s) {

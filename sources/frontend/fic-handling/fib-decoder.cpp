@@ -16,7 +16,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
-	
+ *
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -36,7 +36,6 @@
 #include	"ensemble.h"
 #include	"fib-table.h"
 #include	<QStringList>
-#include	"dab-tables.h"
 #include	"time-converter.h"
 //
 //
@@ -157,7 +156,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 6:		// service linking information (8.1.15)
-	                        // not implemented
+	      FIG0Extension6 (d);
 	      break;
 
 	   case 7:		// configuration information (6.4.2)
@@ -406,7 +405,7 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	}
 
 	SId_element. announcing = 0;
-	SId_element. SId = SId;
+	SId_element. SId	= SId;
 	bitOffset	+= 8;
 	for (uint16_t i = 0; i < numberofComponents; i ++) {
 	   fibConfig::serviceComp_C comp;
@@ -543,6 +542,69 @@ fibConfig::SC_language comp;
 	   return bitOffset / 8;
 	}
 }
+
+// FIG0/6: Service linking information 8.1.5
+void	fibDecoder::FIG0Extension6 (uint8_t *d) {
+uint16_t used		= 2;            // offset in bytes
+const int16_t Length    = getBits_5 (d, 3);
+const uint8_t CN_bit    = getBits_1 (d, 8 + 0);
+const uint8_t OE_bit    = getBits_1 (d, 8 + 1);
+const uint8_t PD_bit    = getBits_1 (d, 8 + 2);
+
+	while (used <= Length) {
+	   used = HandleFIG0Extension6 (d, used,  CN_bit, OE_bit, PD_bit);
+	}
+}
+
+int16_t	fibDecoder::HandleFIG0Extension6 (uint8_t	*d,
+	                                  uint16_t 	offset,
+	                                  const uint8_t CN_bit,
+	                                  const uint8_t OE_bit,
+	                                  const uint8_t PD_bit) {
+int16_t	bitOffset	= offset * 8;
+uint8_t	bit0	= d [bitOffset + 0];
+uint8_t ils	= d [bitOffset + 3];
+
+	if (d [bitOffset + 0] == 0) {
+	   bitOffset += 16;
+	   return bitOffset / 8;
+	}
+	uint16_t numberOfIds	= getBits_4 (d, bitOffset + 20);
+	uint8_t idLQ		= getBits_2 (d, bitOffset + 17);
+	bitOffset += 20;
+
+	if ((PD_bit == 0) && (ils == 0)) {
+//	   fprintf (stderr, "PD_bit 0, ils 0: ");
+	   for (int i = 0; i < numberOfIds; i ++) {
+//	      fprintf (stderr, "%X ", getLBits (d, bitOffset, 16));
+	      bitOffset += 16;
+	   }
+//	   fprintf (stderr, "\n");
+	   return bitOffset / 8;
+	}
+
+	if ((PD_bit == 0) && (ils == 1))  {
+//	   fprintf (stderr, "PD_bit 0, ils 1: ");
+	   for (int i = 0; i < numberOfIds; i ++) {
+//	      if (idLQ < 2)
+//	         fprintf (stderr, "(%x %X) ", getBits_8 (d, bitOffset),
+//	                                   getLBits  (d, bitOffset + 8, 16));
+	      bitOffset += 24;
+	   }
+//	   fprintf (stderr, "\n");
+	   return bitOffset / 8;
+	}
+	if (PD_bit == 1) {
+//	   fprintf (stderr, "PD_bit 1: ");
+	   for (int i = 0; i < numberOfIds; i ++) {
+//	      fprintf (stderr, "%X ", getLBits (d, bitOffset, 32));
+	      bitOffset += 32;
+	   }
+//	   fprintf (stderr, "\n");
+	}
+	return bitOffset / 8;
+}
+
 //
 // FIG0/7: Configuration linking information 6.4.2,
 void    fibDecoder::FIG0Extension7 (uint8_t *d) {
@@ -620,12 +682,13 @@ fibConfig::serviceComp_G comp;
 
 //	FIG0/9 Country, LTO and International table, clause 8.1.3.2;
 void	fibDecoder::FIG0Extension9 (uint8_t *d) {
-int16_t	used	= 2;		// offset in bytes
-//int16_t	Length		= getBits_5 (d, 3);
+uint8_t used		= 2; 		// offset in bytes
+int16_t	Length		= getBits_5 (d, 3);
 //uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
 //uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
 //uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 //	bit 6 indicates the number of hours
+	uint8_t extFlag		= getBits_1 (d, used * 8 + 0);
         const int signbit = getBits_1 (d, used * 8 + 2);
         currentConfig -> dateTime [6] = (signbit == 1)?
                                          -1 * getBits_4 (d, used * 8 + 3):
@@ -638,9 +701,35 @@ int16_t	used	= 2;		// offset in bytes
 
 	uint8_t	LTO	= currentConfig -> dateTime [6];
 	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
-	theEnsemble.	eccByte	= ecc;
-	theEnsemble.	lto	= LTO;
-	lto_ecc (LTO, ecc);
+	uint16_t table	= getBits (d, used * 8 + 16, 8);
+
+	theEnsemble.	eccByte		= ecc;
+	theEnsemble.	lto		= LTO;
+	theEnsemble.	internatTable	= table;
+	lto_ecc (LTO, ecc, table);
+	if (!extFlag)
+	   return;
+	int bitOffset	= used * 8 + 16;
+	int interTable	= getBits_8 (d, bitOffset);
+	bitOffset += 8;
+	while (bitOffset < Length * 8) {
+	   uint16_t nrServices = getBits_2 (d, bitOffset);
+	   bitOffset += 2;
+//	Rfa2	
+	   bitOffset += 6;
+	   int service_ecc = getBits_8 (d, bitOffset);
+	   bitOffset += 8;
+	   for (int i = 0; i < nrServices; i ++) {
+	      uint16_t SId = getLBits (d, bitOffset, 16);
+	      bitOffset += 16;
+	      for (auto &serv : theEnsemble. primaries) {
+                 if ((serv. SId == SId)) {
+	            serv. ecc = service_ecc;
+	            break;
+	         }
+	      }
+	   }
+	}
 }
 
 int	monthLength [] {
@@ -1155,6 +1244,7 @@ char		label [17];
 	prim. name 		= dataName;
 	prim. shortName		= shortName;
 	prim. SId		= SId;
+	prim. ecc		= 0;
 	prim. fmFrequencies. resize (0);
 	theEnsemble. primaries. push_back (prim);
 	addToEnsemble (dataName, SId, subChId);
@@ -1435,7 +1525,6 @@ void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
 bool	fibDecoder::nonTIIFrame		() {
 	return (CIFcount_lo. load () & 0x07) >= 4;
 }
-
 //
 
 uint32_t fibDecoder::julianDate		() {

@@ -26,9 +26,17 @@
 #include	<QString>
 #include	<stdint.h>
 
+QString		getASCTy		(int16_t ASCTy);
+QString		getDSCTy		(uint16_t key);
+QString		getUserApplicationType	(int16_t appType);
+QString		getFECscheme		(int16_t FEC_scheme);
+QString		getProtectionLevel	(bool shortForm, int16_t protLevel);
+QString		getCodeRate		(bool shortForm, int16_t protLevel);
 
-QString		find_Country (uint8_t ecc, uint8_t countryId);
-QString		find_ITU_code (uint8_t ecc, uint8_t countryId);
+QString		getCountry		(int tableNo,
+	                                 uint8_t ecc, uint8_t countryId);
+QString		getLanguage		(int table, uint16_t key);
+QString		getProgramType		(int table, uint16_t key);
 
 
 

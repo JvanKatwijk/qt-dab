@@ -70,6 +70,7 @@ public:
 	void		audioData		(const int, audiodata &);
 	void		packetData		(const int, packetdata &);
 
+	void		set_ecc			(const uint32_t, uint8_t);
 	uint16_t	getAnnouncing		(uint16_t);
 
 	int		nrChannels		();
@@ -82,7 +83,6 @@ public:
 	void		check_announcements	(uint8_t, uint8_t, uint8_t);
 
 	ensemble	*theEnsemble;
-	
 	void		add_to_SId_table	(const SId_struct &comp);
 	void		add_to_subChannel_table (const subChannel &comp);
 //

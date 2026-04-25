@@ -31,13 +31,14 @@
 
 class basicPrint {
 public:
-		basicPrint	();
-		~basicPrint	();
-QStringList	print		(QList<contentType>);
-int		scanWidth	();
+			basicPrint	(int);
+			~basicPrint	();
+	QStringList	print		(QList<contentType>);
+	int		scanWidth	();
 private:
-QString		audioData	(contentType &);
-QString		packetData	(contentType &);
-QString		secondaryData	(contentType &);
+	int		tableNo;
+	QString		audioData	(contentType &);
+	QString		packetData	(contentType &);
+	QString		secondaryData	(contentType &);
 };
 

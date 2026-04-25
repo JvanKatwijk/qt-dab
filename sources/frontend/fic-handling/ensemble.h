@@ -42,17 +42,18 @@ public:
 	uint8_t		eccByte;
 	uint8_t		lto;
 	uint16_t	EId;
+	uint16_t	internatTable;
 	QString		ensembleName;
 	bool		namePresent;
 	typedef struct {
 	   QString	name;
 	   QString	shortName;
 	   uint32_t	SId;
+	   uint8_t	ecc;
 	   uint8_t	programType;
 	   uint8_t	SCIds;
 	   std::vector<int>	fmFrequencies;
 	} service;
-
 
 	bool	isSynced;
 	std::vector<service> primaries;

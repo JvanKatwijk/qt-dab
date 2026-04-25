@@ -27,7 +27,7 @@
 #include	<math.h>
 #include	"dab-constants.h"
 #include	"tii-mapper.h"
-#include	"ITU_Region_1.h"
+#include	"ITU_tables.h"
 #include	"tii-reader.h"
 
 		tiiMapper::tiiMapper	() {

@@ -230,6 +230,7 @@ public:
 	int16_t	ASCTy;
 	int16_t	language;
 	int16_t	programType;
+	uint8_t	ecc;
 	int16_t	compnr;
 	std::vector<int> fmFrequencies;
 	audiodata() {
@@ -254,6 +255,7 @@ public:
 	uint8_t		isActive;
 	QString		serviceName;
 	QString		shortName;
+	uint8_t		ecc;
 	uint32_t	SId;
 	uint16_t	SCIds;
 //	the following values are subChannel values
@@ -277,6 +279,7 @@ public:
 	   FEC_scheme	= 0;
 	   packetAddress	= 0;
 	   isRunning		= false;
+	   ecc			= 0;
 	}
 	~contentType () {}
 };

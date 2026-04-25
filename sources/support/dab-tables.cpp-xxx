@@ -338,7 +338,7 @@ const char * getDSCTy (int16_t DSCTy) {
 }
 
 //	from Table 9 and 10
-const char * getLanguage (int16_t language) {
+const char * getLanguage (int tableNo, int16_t language) {
 	switch (language) {
 	   case 0x00:  return "Unknown/na";
 	   case 0x01:  return "Albanian";
@@ -464,7 +464,7 @@ const char * getLanguage (int16_t language) {
 	}
 }
 
-const char *getCountry (uint8_t ecc, uint8_t countryId) {
+const char *getCountry (int tableNo, uint8_t ecc, uint8_t countryId) {
 int16_t	i = 0;
 
 	while (countryTable [i].ecc != 0) {
@@ -479,8 +479,7 @@ int16_t	i = 0;
 
 //	from Table 12
 //
-//const char *getProgramType_Not_NorthAmerica (int16_t programType) {
-const char *getProgramType (int16_t programType) {
+const char *getProgramType (int tableNo, int16_t programType) {
 
 	switch (programType) {
 	   case 0:     return "No programme type";

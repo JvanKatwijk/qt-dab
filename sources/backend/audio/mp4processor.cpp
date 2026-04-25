@@ -74,6 +74,9 @@
 	         mr, &RadioInterface::newFrame);
 	connect (this, &mp4Processor::show_rsCorrections,
 	         mr, &RadioInterface::show_rsCorrections);
+	connect (this, &mp4Processor::crc_error,
+	         mr, &RadioInterface::crc_error);
+	crcFlag			= false;
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;
@@ -261,8 +264,16 @@ stream_parms    streamParameters;
 //	but first the crc check
 	   if (!check_crc_bytes (&outVector [au_start [i]],
 	                                aac_frame_length)) {
+	      if (!crcFlag) {
+	         crcFlag = true;
+	         emit crc_error (true);
+	      }
 	      crcErrors ++;
 	      return true;
+	   }
+	   if (crcFlag) {
+	      emit crc_error (false);
+	      crcFlag = false;
 	   }
 //
 //	It is a litle tricky, but we deal with foreground and background

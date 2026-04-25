@@ -177,6 +177,7 @@ public:
 	bool		hasEcc;
 	uint8_t		eccByte;
 	int		lto;
+	int		internatTable;
 
 //	info on the transmitters seen
 	int		nrTransmitters;
@@ -430,6 +431,8 @@ private:
 	QTimer			updateCheck_timer;
 	bool			stillWaiting;
 	QString			path_for_files;
+	QString			path_for_serviceLists;
+	QString			path_for_epg;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;
@@ -532,7 +535,7 @@ public slots:
 	                                                 int, int, int, int);
 	void			changeinConfiguration	();
 	void			nrServices		(int);
-	void			lto_ecc			(int, int);
+	void			lto_ecc			(int, int, int);
 	void			setFreqList		();
 	void			tell_programType		(uint32_t, int);
 	void			addToEnsemble		(const QString &,
@@ -570,6 +573,7 @@ public slots:
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_rsCorrections	(int, int);
+	void			crc_error		(bool);
 
 //	signals from data-processor
 

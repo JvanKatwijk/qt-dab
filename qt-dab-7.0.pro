@@ -206,7 +206,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/process-params.h \
 	   ./sources/support/ringbuffer.h \
 	   ./sources/support/dab-params.h \
-	   ./sources/support/dab-tables.h \
+#	   ./sources/support/dab-tables.h \
+	   ./sources/support/ITU_tables.h \
 #	   ./sources/support/scanlist-handler.h \
 	   ./sources/support/scheduler.h \
 	   ./sources/support/schedule-selector.h \
@@ -215,7 +216,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/findfilenames.h \
 	   ./sources/support/dl-cache.h \
 	   ./sources/support/content-table.h \
-	   ./sources/support/ITU_Region_1.h \
+#	   ./sources/support/ITU_Region_1.h \
 	   ./sources/support/coordinates.h \
 	   ./sources/support/skin-handler.h \
 	   ./sources/support/mapport.h \
@@ -352,7 +353,8 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/coordinates.cpp \
 	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/dab-params.cpp \
-	   ./sources/support/dab-tables.cpp \
+#	   ./sources/support/dab-tables.cpp \
+	   ./sources/support/ITU_tables.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/dl2-handler.cpp \
 	   ./sources/support/timetable-control.cpp \
@@ -362,7 +364,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/findfilenames.cpp \
 	   ./sources/support/fir-filters.cpp \
 	   ./sources/support/http-handler.cpp \
-	   ./sources/support/ITU_Region_1.cpp \
+#	   ./sources/support/ITU_Region_1.cpp \
 	   ./sources/support/logger.cpp \
 	   ./sources/support/mapport.cpp \
 	   ./sources/support/scan-handler.cpp \

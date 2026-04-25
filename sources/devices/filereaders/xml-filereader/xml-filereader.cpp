@@ -79,6 +79,8 @@
 	         this, &xml_fileReader::handle_sliderMoved);
 	connect (progressSlider, &QSlider::sliderReleased,
 	         this, &xml_fileReader::handle_sliderReleased);
+	connect (pauseButton, &QPushButton::clicked,
+	         this, &xml_fileReader::handle_pauseButton);
 
 	this	-> theRate	= theDescriptor -> sampleRate;
 	this	-> theFrequency	=
@@ -236,3 +238,8 @@ void	xml_fileReader::handle_sliderReleased	() {
 	sliderFree. store (true);
 }
 
+void	xml_fileReader::handle_pauseButton	() {
+bool state	= theReader	-> handle_pauseButton ();
+	
+	pauseButton -> setText (state ? "running" : "pause");
+}

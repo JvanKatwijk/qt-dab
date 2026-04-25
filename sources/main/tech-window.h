@@ -44,7 +44,7 @@ public:
 	                         RingBuffer<std::complex<int16_t>> *audioData);
 		~techWindow	();
 	void	storePosition		();
-	void	showServiceData		(audiodata *);
+	void	showServiceData		(int, audiodata *);
 	void	cleanUp			();
 	void	isDABPlus		(bool);
 	void	hideMissedLabel		();
@@ -70,7 +70,7 @@ public slots:
 	void		showSubChId		(int);
 	void		showStartAddress	(int);
 	void		showLength		(int);
-	void		showLanguage		(int);
+	void		showLanguage		(int, int);
 	void		showUep			(int, int);
 	void		showCodeRate		(int, int);
 	void		showFm			(std::vector<int> &);

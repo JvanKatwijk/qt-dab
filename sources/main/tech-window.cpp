@@ -25,7 +25,7 @@
 #include	"tech-window.h"
 #include	"radio.h"
 #include	"audio-display.h"
-#include	"dab-tables.h"
+#include	"ITU_tables.h"
 #include	<QColorDialog>
 
 #include	"settingNames.h"
@@ -126,7 +126,7 @@ void	techWindow::cleanUp	() {
 	audiorateLabel		-> setText (QString::number (0));
 }
 
-void	techWindow::showServiceData	(audiodata *ad) {
+void	techWindow::showServiceData	(int tableNo, audiodata *ad) {
 	showServiceName		(ad -> serviceName, ad -> shortName);
 	showServiceId		(ad -> SId);
 	showStartAddress	(ad -> startAddr);
@@ -134,7 +134,7 @@ void	techWindow::showServiceData	(audiodata *ad) {
 	showSubChId		(ad -> subchId);
 	showUep			(ad -> shortForm, ad -> protLevel);
 	showCodeRate		(ad -> shortForm, ad -> protLevel);
-	showLanguage		(ad -> language);
+	showLanguage		(tableNo, ad -> language);
 	showFm			(ad -> fmFrequencies);
 	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
 }
@@ -224,9 +224,9 @@ void	techWindow::showSubChId		(int subChId) {
 	subChIdDisplay		-> setText (QString::number (subChId));
 }
 
-void	techWindow::showLanguage		(int l) {
+void	techWindow::showLanguage		(int table, int l) {
 	language	-> setAlignment (Qt::AlignRight);
-	language	-> setText (getLanguage (l));
+	language	-> setText (getLanguage (table, l));
 }
 
 void	techWindow::showUep		(int shortForm, int protLevel) {

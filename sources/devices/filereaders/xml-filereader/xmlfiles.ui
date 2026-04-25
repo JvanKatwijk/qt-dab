@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>319</width>
-    <height>429</height>
+    <width>296</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,11 +35,22 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="continuousButton">
-     <property name="text">
-      <string>continuous on</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QPushButton" name="continuousButton">
+       <property name="text">
+        <string>continuous on</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pauseButton">
+       <property name="text">
+        <string>pause</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

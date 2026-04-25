@@ -106,6 +106,7 @@ private:
 	std::vector<uint8_t> frameBytes;
 	std::vector<uint8_t> outVector;
 	int16_t		RSDims;
+	bool		crcFlag;
 	int16_t		au_start	[10];
 signals:
 	void		show_frameErrors		(int);
@@ -114,5 +115,6 @@ signals:
 	void		isStereo			(bool);
 	void		newFrame			(uint32_t);
 	void		show_rsCorrections		(int, int);
+	void		crc_error			(bool);
 };
 
