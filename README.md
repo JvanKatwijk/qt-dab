@@ -70,7 +70,7 @@ to read an existing ensemble file, create a new one, clear the current
 ensemble file, or just stop with selecting.
 In the last two cases, the setting on the configuration window is "undone".
 
-![7.0](/res/read_me/ensemble-dialog-7.0.png)
+![7.0](/res/read_me/ensemble-dialog.png)
 
 Clicking on a service name obviously will select the service, which might take a few seconds if another channel has to be started.
 Clicking on the small entry left of the service name controls the **status**
