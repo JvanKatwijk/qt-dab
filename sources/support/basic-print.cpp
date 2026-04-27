@@ -61,14 +61,17 @@ QString segmentLine (const QString s) {
 	           ";" +
 	           ";";
 }
-	basicPrint::basicPrint	(int table)	{
-	this	-> tableNo = table;
+	basicPrint::basicPrint	(int table, uint32_t Eid, uint8_t ECC)	{
+	this	-> tableNo	= table;
+	this	-> Eid		= Eid;
+	this	-> ECC		= ECC;
 }
 
 	basicPrint::~basicPrint	()	{}
 
 QStringList basicPrint::print (QList<contentType> serviceData) {
 QStringList out;
+
 	bool hasContents = false;
 	for (auto &ct : serviceData) {
 	   if (ct. TMid != 0)	// no audio
@@ -78,7 +81,8 @@ QStringList out;
 	      out <<  QString (audioHeader);
 	   }
 	   hasContents = true;
-	   out << audioData (ct);
+	   QString countryName	= getCountry (tableNo, ECC, (Eid >> 12) & 0xF);
+	   out << audioData (ct, countryName);
 	}
 	hasContents	= false;
 	for (auto &ct : serviceData) {
@@ -110,7 +114,11 @@ QStringList out;
 }
 
 
-QString	basicPrint::audioData	(contentType &ct) {
+QString	basicPrint::audioData	(contentType &ct, const QString &countryName) {
+QString serviceCountry = "";
+	serviceCountry =  ct. ecc != 0 ?
+	                getCountry (tableNo, ct. ecc, (ct. SId >> 12) & 0xF):
+	                getCountry (tableNo, ECC, (ct. SId >> 12) & 0xF);
 	return QString (ct. isRunning ? "+" : "") + ";" +
 	       QString (ct. serviceName)+ ";" +
 	       QString (ct. shortName)+ ";" +
@@ -126,8 +134,8 @@ QString	basicPrint::audioData	(contentType &ct) {
 	       getProgramType (tableNo, ct. programType) + ";" +
 	       ((ct. fmFrequencies. size () > 0) ?
                    QString::number (ct. fmFrequencies [0]) : " ") + ";" +
-	       (ct. ecc == 0 ? "" : getCountry (tableNo, ct. ecc, 
-	                                            (ct. SId >> 12) & 0xF));
+	       (serviceCountry == "" ? "":
+	          serviceCountry == countryName ? "" : serviceCountry);
 }
 
 static

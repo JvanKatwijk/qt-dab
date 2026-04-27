@@ -804,7 +804,7 @@ void	RadioInterface::ensembleName (int id, const QString &v) {
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-basicPrint thePrinter (channel. internatTable);
+basicPrint thePrinter (channel. internatTable, channel. Eid, channel. eccByte);
 QStringList contentList	=
 	     thePrinter. print (theOfdmHandler -> contentPrint ());
 
@@ -2610,7 +2610,7 @@ void	RadioInterface::startScan_to_data () {
 }
 
 void	RadioInterface::startScan_single () {
-basicPrint thePrinter (channel. internatTable);
+basicPrint thePrinter (channel. internatTable, channel. Eid, channel. eccByte);
 //	theScanlistHandler. clearScanList ();
 	if (theScanTable == nullptr) 
 	   theScanTable = new contentTable (this, theQSettings, "scan", 
@@ -2641,7 +2641,7 @@ basicPrint thePrinter (channel. internatTable);
 }
 
 void	RadioInterface::startScan_continuous () {
-basicPrint thePrinter (channel. internatTable);
+basicPrint thePrinter (channel. internatTable, channel. Eid, channel. eccByte);
 	if (theScanTable == nullptr) 
 	   theScanTable = new contentTable (this, theQSettings, "scan", 
 	                                              thePrinter.scanWidth ());
@@ -2926,7 +2926,8 @@ QString	headLine = build_kop ();
 	   QString transmitterLine = build_transmitterLine (tr);
            theScanTable	-> addLine (transmitterLine);
         }
-	basicPrint thePrinter (channel. internatTable);
+	basicPrint thePrinter (channel. internatTable,
+	                       channel. Eid, channel. eccByte);
 	QStringList s = thePrinter. print (theOfdmHandler -> contentPrint ());
 	for (const auto &l : s)
 	   theScanTable -> addLine (l);
@@ -3849,8 +3850,8 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   return;
 //	probably yes, get the country code
 	if ((channel. countryName == "") && (channel. hasEcc)) {
-	   QString country	= getCountry (channel. internatTable,
-	                                      channel. eccByte,
+	   QString country	= get_ITU_Code (channel. internatTable,
+	                                         channel. eccByte,
 	                                         (channel. Eid >> 12) &0xF);
 	   channel. countryName	= country;
 	   channel. strongestTransmitter = "";
@@ -4659,10 +4660,10 @@ void	RadioInterface::crc_error (bool b) {
 void	RadioInterface::startList (bool &resetFlag) {
 QString fileName;
 selector ListSelector ("select option");
-	ListSelector. addtoList ("openn existing file");
-	ListSelector. addtoList ("create new servicelist");
-	ListSelector. addtoList ("clear default servicelist");
-	ListSelector. addtoList ("forget it");
+	ListSelector. addtoList ("Open existing file");
+	ListSelector. addtoList ("Create new servicelist");
+	ListSelector. addtoList ("Clear default servicelist");
+	ListSelector. addtoList ("Forget it");
 	int option = ListSelector. QDialog::exec ();
 	       
 	switch (option) {

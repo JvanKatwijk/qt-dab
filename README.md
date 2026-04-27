@@ -16,7 +16,7 @@ Qt-DAB  has a single *main* window that contains essentially all that is needed 
 ![6.10](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-6.10*, predefined executables - for Linux an AppImage, for Windows
+*Qt-DAB-7.0*, predefined executables - for Linux an AppImage, for Windows
 an installer - are available.
 
 Table of Contents
@@ -56,19 +56,21 @@ This display is still in one of a three modes:
  * **favorite** mode, where only the favorites are shown, and
  * **file** mode, where the services from reading a file are shown.
 
-![7.0](/res/read_me/ensemble-mode.png)
-
 In **ensemble mode** - the most common mode - all services encountered in the
-various channels that were exercised are shown. In the picture it shows that
-with my limited antenna equipment the number is well over 50.
+various channels that were exercised (e.g. by a scan) are shown.
+In the picture it shows that with my limited antenna equipment the
+number is well over 50.
  
 On *program termination*, the list is stored in a file with the
 name ".qt-scanList.mxl", stored in the user's home directory
 On program startup, the list is read-in again.
 .
-Alternatively, the **configuration and control** window contains an entry that - when set - invokes upon program termination a file dialog for selecting a
-file where the list can be stored.
-Of course the **configuration and control** window also has a selector that - when set - allows the user to load such a file rather than the default one.
+Alternatively, the **configuration and control** window contains an entry that - when set - invokes upon program termination a  dialog with options
+to read an existing ensemble file, create a new one, clear the current
+ensemble file, or just stop with selecting.
+In the last two cases, the setting on the configuration window is "undone".
+
+![7.0](/res/read_me/ensemble-dialog-7.0.png)
 
 Clicking on a service name obviously will select the service, which might take a few seconds if another channel has to be started.
 Clicking on the small entry left of the service name controls the **status**
@@ -86,9 +88,9 @@ In **favorite** mode, the list of favorites is shown. Selecting this mode makes 
 
 In **file** mode, i.e. after reading a file, the services are shown, and
 - obviously - may be selected.
-Adding an element to the **favorites** is not very usefule, as is
-channel selection, scanning and switching the mode. So, these functions
-are blocked in this mode. Furthermore, switching from this mode to either
+Adding an element to the **file mode** is not very usefule, as is
+channel selection, scanning or switching the mode. So, in **favorite mode**
+these functions are blocked. Furthermore, switching from this mode to either
 **ensemble mode** or **favorite mode** is meaningless, so the mode
 selecting button is hidden.
 

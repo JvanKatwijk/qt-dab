@@ -230,6 +230,18 @@ ITU_countryCodes ITU_table_1  [] = {
 {0, 0, "", ""}
 };
 
+QString	get_ITU_Code	   (int tableNo, uint8_t ecc, uint8_t countryId) {
+	(void)tableNo;
+	for (int i = 0; ITU_table_1 [i]. ecc != 0; i ++) {
+	   if ((ITU_table_1 [i]. ecc == ecc) &&
+	              (ITU_table_1 [i]. countryId == countryId) )
+           return ITU_table_1 [i]. ITU_Code;
+        }
+
+        return "";
+}
+
+	
 QString	getCountry (int tableNo, uint8_t ecc, uint8_t countryId) {
 	(void)tableNo;
 	for (int i = 0; ITU_table_1 [i]. ecc != 0; i ++) {
@@ -247,7 +259,8 @@ typedef struct {
 } ITU_languages;
 
 ITU_languages ITU_table_9_10 [] = {
-	   {0x00,  "Unknown/na"}, {0x01, "Albanian"}, {0x02, "Breton"},
+//	   {0x00,  "Unknown/na"},
+	   {0x01, "Albanian"}, {0x02, "Breton"},
 	   {0x03, "Catalan"}, {0x04, "Croatian"}, {0x05, "Welsh"},
 	   {0x06, "Czech"}, {0x07, "Danish"}, {0x08, "German"},
 	   {0x09, "English"}, {0x0A, "Spanish"}, {0x0B, "Esperanto"},
@@ -303,7 +316,7 @@ typedef	struct {
 
 
 ITU_progType ITU_table_12 [] = {
-	   { 0,  "No programme type"},
+//	   { 0,  "No programme type"},
 	   { 1,  "News"},
 	   { 2,  "Current Affairs"},
 	   { 3,  "Information"},
@@ -340,7 +353,7 @@ ITU_progType ITU_table_12 [] = {
 
 //	from Table 13
 ITU_progType ITU_table_13 [] = {
-	   {0 , "No programme type"},
+//	   {0 , "No programme type"},
 	   {1 , "News"},
 	   {2 , "Information"},
 	   {3 , "Sports"},
@@ -380,8 +393,9 @@ ITU_progType *theTable;
 	theTable	= tableId == 2 ? ITU_table_13 : ITU_table_12;
 
 	for (int i = 0; theTable [i]. progType != 0; i ++)
-	   if (theTable [i]. progType == programType)
+	   if (theTable [i]. progType == programType) {
 	      return theTable [i]. typeName;
+	   }
 	return "";
 }
 

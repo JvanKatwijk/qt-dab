@@ -35,6 +35,8 @@ QString		getCodeRate		(bool shortForm, int16_t protLevel);
 
 QString		getCountry		(int tableNo,
 	                                 uint8_t ecc, uint8_t countryId);
+QString		get_ITU_Code		(int tableNo,
+	                                 uint8_t ecc, uint8_t countryId);
 QString		getLanguage		(int table, uint16_t key);
 QString		getProgramType		(int table, uint16_t key);
 

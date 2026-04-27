@@ -31,13 +31,15 @@
 
 class basicPrint {
 public:
-			basicPrint	(int);
+			basicPrint	(int, uint32_t, uint8_t);
 			~basicPrint	();
 	QStringList	print		(QList<contentType>);
 	int		scanWidth	();
 private:
 	int		tableNo;
-	QString		audioData	(contentType &);
+	uint32_t	Eid;
+	uint8_t		ECC;
+	QString		audioData	(contentType &, const QString &);
 	QString		packetData	(contentType &);
 	QString		secondaryData	(contentType &);
 };
