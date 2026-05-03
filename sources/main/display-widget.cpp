@@ -224,7 +224,7 @@ static floatQwt avg [4 * 512];
 	}
 
 	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = (freq - 1536000 / 2 + i * 1536000.0 / 512) / 1000000.0;
+	   X_axis [i] = (freq - 2048000 / 2 + i * 2049000.0 / 512) / 1000000.0;
 	   Y_value [i] = 0;
 	   for (int j = 0; j < 4; j ++) 
 	      Y_value [i] +=  avg [4 * i + j];

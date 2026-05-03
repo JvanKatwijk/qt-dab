@@ -61,14 +61,14 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	bufferSize		= 32768;
 	localBuffer. resize (bufferSize);
 	localCounter		= 0;
-	currentPhase	= 0;
-	sLevel		= 0;
-	sampleCount	= 0;
-	dcRemoval	= false;
-	dcReal		= 0;
-	dcImag		= 0;
-	IQ_Real		= 0;
-	IQ_Imag		= 0;
+	currentPhase		= 0;
+	sLevel			= 0;	// average power level
+	sampleCount		= 0;
+	dcRemoval		= false;
+	dcReal			= 0;
+	dcImag			= 0;
+	IQ_Real			= 0;
+	IQ_Imag			= 0;
 
 	repetitionCounter	= 8;
 	for (int i = 0; i < SAMPLERATE; i ++)
@@ -167,8 +167,8 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	   currentPhase	= (currentPhase + SAMPLERATE) % SAMPLERATE;
 	   if (saving && (localCounter < bufferSize))
 	      localBuffer [localCounter ++]     = v;
-	   v_out  [index + i]	= Complex (real (v),
-	                                   imag (v)) * oscillatorTable [currentPhase];
+	   v_out  [index + i]	= Complex (real (v), imag (v)) *
+	                                oscillatorTable [currentPhase];
 	   sLevel = 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
 	}
 
@@ -176,7 +176,6 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 
 	if (saving && (spectrumBuffer != nullptr) &&
 	             (sampleCount > SAMPLERATE / repetitionCounter)) {
-//	   show_corrector	(corrector);
 	   sampleCount = 0;
 	   spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
 	                                                       bufferSize);

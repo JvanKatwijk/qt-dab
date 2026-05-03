@@ -29,7 +29,7 @@
      <item>
       <widget class="QLabel" name="countryName">
        <property name="text">
-        <string>TextLabel</string>
+        <string> tl</string>
        </property>
       </widget>
      </item>

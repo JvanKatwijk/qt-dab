@@ -26,7 +26,7 @@
  */
 
 //
-//	This file is art of Qt-DAB and an adapted version of the
+//	This file is part of Qt-DAB and an adapted version of the
 //	original
 #pragma once
 

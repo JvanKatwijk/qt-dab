@@ -19,6 +19,8 @@ Of course, as for previous versions, for the current version,
 *Qt-DAB-7.0*, predefined executables - for Linux an AppImage, for Windows
 an installer - are available.
 
+The current version of Qt-DAB-7.0 is Beta.
+
 Table of Contents
 =================================================================
 
@@ -42,7 +44,7 @@ What is new in Qt-DAB-7.0
 
 Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
 the GUI had changed a lot since the "5" version, and the basic idea was to
-increment major version numbers when significant GUI changes were implemented.
+increment **major** version numbers when the GUI changed significantly.
 
 At first sight, the GUI of Qt-DAB-7.0 did not change that much with
 the GUI of version 6.
@@ -58,11 +60,10 @@ This display is still in one of a three modes:
 
 In **ensemble mode** - the most common mode - all services encountered in the
 various channels that were exercised (e.g. by a scan) are shown.
-In the picture it shows that with my limited antenna equipment the
-number is well over 50.
+In the picture it shows the NPO ensemble takes positions around 30.
  
 On *program termination*, the list is stored in a file with the
-name ".qt-scanList.mxl", stored in the user's home directory
+name ".qt-dab-serviceList.mxl", stored in the user's home directory
 On program startup, the list is read-in again.
 .
 Alternatively, the **configuration and control** window contains an entry that - when set - invokes upon program termination a  dialog with options
@@ -92,7 +93,7 @@ Adding an element to the **file mode** is not very usefule, as is
 channel selection, scanning or switching the mode. So, in **favorite mode**
 these functions are blocked. Furthermore, switching from this mode to either
 **ensemble mode** or **favorite mode** is meaningless, so the mode
-selecting button is hidden.
+selecting button is hidden. 
 
 On starting the program with a **device** the **ensemble** mode is
 set, when starting with a file as input, the mode is set to **file** mode.
@@ -121,7 +122,21 @@ small blue one controls the visibility of the device list.
 On the second line the "book style" icon controls the visibility of the
 technical window, and the icon with label **EPG**, is shown in case
 an EPG/SPI service is detected in the currently selected channel (Note that
-the services list does NOT contain an entry for the EPG/SPI service.)
+the EPG/SPI service is NOT shown in the services list.)
+
+Touching the **EPG** icon make a small window visible, the **timetable list**.
+The list shows the entries in the ensemblelist, coloured **green** is
+timetable data for the service could be detected, **red** otherwide.
+
+![7.0](/res/read_me/timetable-catalog.png?raw=true)
+
+Touching in this list on a green entry, shows yest another window, with
+time table data.
+
+![7.0](/res/read_me/timetable.png?raw=true)
+
+(Note: our NPO is not that advanced that it provides EPG/SPI data, so the
+development and testing uses file input).
 
 The technical widget is not modified
 
@@ -140,8 +155,8 @@ In the view shown in the picture above, the spectrum of the incoming
 onto their real and imaginary components. If the selector labeled
 "ncp" is set, the centerpoints of the 4 lobs is shown. 
 
-Below this constellation widget,  some **quality indicators** of the DAB signal
-are shown.
+Below this **constellation widget**, 
+some **quality indicators** of the DAB signal are shown.
 From top to bottom
  * the channel and the frequency of the channel
  * the **computed** correction on the frequency of the incoming signal, applied to the signal;
@@ -204,11 +219,8 @@ The picture clearly shows two larger and a few smaller peaks.
 
 ![6.10](/res/read_me/qt-dab-stddev.png)
 
-The **deviation scope** shows the mean deviation of the carriers
-in the decoded signal, ideally their phase is (a multiple of) 90
-degrees. The phases are mapped upon (soft) bits, the larger the deviations,
-the less reliable these bits are.
-The Y-axis is in Hz.
+The last scope shows some of the output of the ofdm decoding process, the
+resulting bits have values between -127 to 127.
 
 ![6.10](/res/read_me/configuration-and-control.png)
 

@@ -39,7 +39,7 @@ struct phasetableElement {
 class phaseTable {
 public:
 		phaseTable 	(int16_t);
-		~phaseTable();
+		~phaseTable	();
 	std::vector<std::complex<float>>	refTable;
 	float	get_Phi		(int32_t);
 private:

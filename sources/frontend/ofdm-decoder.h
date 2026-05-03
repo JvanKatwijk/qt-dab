@@ -106,6 +106,7 @@ private:
 	std::vector<Complex>	fft_buffer;
 	std::vector<DABFLOAT>	sigmaSQ_Vector;
 	std::vector<DABFLOAT>	meanLevelVector;
+	std::vector<DABFLOAT>	meanPowerVector;
 
 	float		meanValue;
 	float		avgBit;

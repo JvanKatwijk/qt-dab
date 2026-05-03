@@ -308,14 +308,15 @@ QString h;
 	connect (resetSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_resetButton);
 
-	aboutLabel -> setText (QString ("©"));
+	aboutLabel -> setText (QString ("©") + VERSION);
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
+
 	pauzeTimer. setSingleShot (true);
 	connect (&pauzeTimer, &QTimer::timeout,
 	         this, &RadioInterface::show_pauzeSlide);
-	channel. etiActive	= false;
+
 	QPixmap epgP;
 	connect (epgLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_startTimeTable);
@@ -384,6 +385,7 @@ QString h;
 	else
 	   theNewDisplay. hide ();
 
+	channel. etiActive	= false;
 	channel. cleanChannel ();
 	localPos. latitude 		=
 	             value_f (theQSettings, MAP_HANDLING, HOME_LATITUDE, 0.0);
@@ -461,6 +463,7 @@ QString h;
 	   delete theAudioPlayer;
 	   theAudioPlayer = new audioPlayer ();
 	}
+
 	if (!theAudioPlayer -> hasMissed ())
 	   theTechWindow -> hideMissed ();
 #else
@@ -478,14 +481,16 @@ QString h;
 	path_for_epg	= path_for_files + "EpgData/";
 	path_for_epg	= checkDir (path_for_epg);
 	path_for_epg	= QDir::toNativeSeparators (path_for_epg);
+
 //	extract the channelnames and fill the combobox
-	QStringList res		= theSCANHandler. getChannelNames ();
+	QStringList channelNames	= theSCANHandler. getChannelNames ();
 	this -> newServices	= new serviceViewer (dbFile, this,
-	                                             res, theQSettings,
+	                                             channelNames,
+	                                             theQSettings,
 	                                                the_newFrame);
 	connect (theConfigHandler, &configHandler::set_serviceOrder,
 	         newServices, &serviceViewer::setServiceOrder);
-	theDeviceHandler	= nullptr;
+
 	audioDumping		= false;
 	theControl		= nullptr;
 	journalineHandler 	= nullptr;
@@ -540,14 +545,6 @@ QString h;
 	muteTimer. setSingleShot (true);
 	set_Colors ();
 //
-//	do we have a known device from previous invocations?
-	h               =
-	           value_s (theQSettings, DAB_GENERAL, 
-	                                      SELECTED_DEVICE, "no device");
-
-	if (theDeviceChooser. getDeviceIndex (h) >= 0)
-	   theDeviceHandler	= createDevice (h, &theLogger);
-	
 	leftAudio	-> setBorderWidth	(0);
 	leftAudio	-> setScalePosition	(QwtThermo::NoScale);
 	rightAudio	-> setBorderWidth	(0);
@@ -618,6 +615,15 @@ QString h;
 	                               tr ("The ini file is new and no home location is known yet"));
 	}
 
+	theDeviceHandler	= nullptr;
+//	do we have a known device from previous invocations?
+	h               =
+	           value_s (theQSettings, DAB_GENERAL, 
+	                                      SELECTED_DEVICE, "no device");
+
+	if (theDeviceChooser. getDeviceIndex (h) >= 0)
+	   theDeviceHandler	= createDevice (h, &theLogger);
+	
 	if (theDeviceHandler != nullptr) {
 	   connect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	            this, &RadioInterface::newDevice);
@@ -626,6 +632,7 @@ QString h;
 	   qApp	-> installEventFilter (this);
 	   return;
 	}
+
 //	What we want here is that we start up after a device
 //	is selected
 	connect (&theDeviceChooser, &deviceChooser::deviceSelected,
@@ -645,6 +652,7 @@ void	RadioInterface::doStart (const QString &dev) {
 	if (theDeviceHandler == nullptr) {
 	   return;
 	}
+
 	disconnect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	            this, &RadioInterface::doStart);
 	connect (&theDeviceChooser, &deviceChooser::deviceSelected,
@@ -656,15 +664,8 @@ void	RadioInterface::doStart (const QString &dev) {
 //	we (re)start a device, if it happens to be a regular
 ////	device, check for a preset name
 void	RadioInterface::startDirect	() {
-#ifdef  __ARCH_X86__
-	if (cpuSupport & AVX_SUPPORT)
-	   cpuLabel -> setText ("avx2");
-	else
-	if (cpuSupport & SSE_SUPPORT)
-	   cpuLabel -> setText ("sse4.1");
-	else
-#endif
-	   cpuLabel -> setText ("scalar");
+
+	cpuLabel -> setText (VITERBI);
 
 	theOfdmHandler	= new ofdmHandler  (this,
 	                                    theDeviceHandler,
@@ -688,16 +689,16 @@ void	RadioInterface::startDirect	() {
 	   newServices -> startMode (ENSEMBLEVIEW, get_serviceOrder ());
 	else {
 	   bool resetFlag = false;
-	   startList	(resetFlag);	// he does the querying
-	   if (resetFlag)
-	      theConfigHandler -> reset_loadSelection ();
-	}
 //	Basically, the choices here are
 //	1. open an existing file and use that'
 //	2. create a new file and name it;
 //	3. start with a fresh default input file
 //	4. this was a mistake, just start with the default file
-
+	   startList	(resetFlag);	// he does the querying
+	   if (resetFlag)
+	      theConfigHandler -> reset_loadSelection ();
+	}
+//
 	startChannel (newServices -> currentChannel ());
 	int auto_http	= value_i (theQSettings, CONFIG_HANDLER, AUTO_HTTP, 0);
 	if ((auto_http != 0) && (localPos. latitude != 0)) {
@@ -740,7 +741,6 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 	sd. subChId	= subChId;
 	sd. channelName	= channel. channelName;
 	sd. isFavorite	= false;
-
 	
 	if (!theSCANHandler. active () &&
 	               theOfdmHandler -> is_SPI (static_cast<uint32_t>(SId))) {
@@ -757,7 +757,7 @@ void	RadioInterface::addToEnsemble (const QString &serviceName,
 //	adding the service to the list (or not)
 	if (((static_cast<uint32_t>(SId) & 0xFFFF0000) == 0) ||
 	    (!theConfigHandler -> get_audioServices_only ())) {
-	newServices	-> addService (sd);
+	   newServices	-> addService (sd);
 	}
 
 	channel. nrServices ++;
@@ -804,9 +804,6 @@ void	RadioInterface::ensembleName (int id, const QString &v) {
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-basicPrint thePrinter (channel. internatTable, channel. Eid, channel. eccByte);
-QStringList contentList	=
-	     thePrinter. print (theOfdmHandler -> contentPrint ());
 
 	if (theContentTable != nullptr) {
 	   theContentTable -> hide ();
@@ -815,6 +812,10 @@ QStringList contentList	=
 	   return;
 	}
 
+	basicPrint thePrinter (channel. internatTable,
+	                                 channel. Eid, channel. eccByte);
+	QStringList contentList	=
+	            thePrinter. print (theOfdmHandler -> contentPrint ());
 	QString headLine	= build_kop ();
 	theContentTable		= new contentTable (this, theQSettings,
 	                                            channel. channelName,
@@ -858,6 +859,7 @@ void	RadioInterface::handle_motObject (QByteArray	result,
 	                                  int		contentType,
 	                                  bool		dirElement,
 	                                  uint32_t	SId) {
+
 	if (!theOfdmHandler	-> is_SPI (SId) &&
 	   (channel. currentService. SId != SId))
 	   return;
@@ -907,7 +909,7 @@ void	RadioInterface::process_epgData (const QString &objectName,
 	                                 const QByteArray &result) {
 std::vector<uint8_t> epgData (result. begin(), result. end());
 QDomDocument epgDocument;
-	uint8_t docType	= theEpgCompiler. process_epg (epgDocument,
+uint8_t docType	= theEpgCompiler. process_epg (epgDocument,
 	                                        epgData, channel.lto);
 	if (docType == noType)		// should not happen
 	   return;
@@ -1412,10 +1414,12 @@ void	RadioInterface::updateTimeDisplay() {
 	}
 //
 //	The timer runs autonomously, so it might happen
+//	that it rings when there is no processor running
 	if (!running. load ())
 	   return;
-//	that it rings when there is no processor running
-	if (!theTechWindow -> isHidden () && theAudioPlayer -> hasMissed ())  {
+
+	if (!theTechWindow -> isHidden () &&
+	                          theAudioPlayer -> hasMissed ())  {
 	   int totalSamples	= 0;
 	   int totalMissed	= 0;
 	   theAudioPlayer -> samplesMissed (totalSamples, totalMissed);
@@ -1467,7 +1471,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 
 	theDeviceHandler =  createDevice (deviceName, &theLogger);
 	if (theDeviceHandler == nullptr) {
-	   theDeviceHandler = new deviceHandler ();
+	   theDeviceHandler	= new deviceHandler ();	// the dummy one
 	   return;		// nothing will happen
 	}
 
@@ -1619,7 +1623,18 @@ static bool old_mot = false;
 void	RadioInterface::set_synced	(bool b) {
 	theNewDisplay. setSyncLabel (b);
 }
-//
+
+static inline
+bool	isDigit (QChar x) {
+	return ('0' <= x) && (x <= '9');
+}
+
+static inline
+bool	isLetter (QChar x) {
+	return (('a' <= x) && (x <= 'z')) ||
+	       (('A' <= x) && (x <= 'Z'));
+}
+
 //	called from the PAD handler
 void	RadioInterface::showLabel	(const QString &s, int charset) {
 	(void)charset;
@@ -1630,13 +1645,13 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	
 	if (running. load()) {
 	   int index = s. indexOf ("www.");
-	   int index_2	= 0;
-	   if (index > 0) {
-	      index_2 = s. indexOf (" ", index);
+	   if (index >= 0) {
 	      QString res;
-	      for (int i = index; i < index_2; i ++)
-	         res. push_back (s. at (i));
-	      fprintf (stderr, "%s\n", res. toUtf8 (). data ());
+	      for (int i = index; i < s. size (); i ++) {
+	         if (isDigit (s [i]) || isLetter (s [i]) || (s [i] == "."))
+	            res. push_back (s [i]);
+//	         fprintf (stderr, "%s\n", res. toUtf8 (). data ());
+	      }
 	   }
 	   dynamicLabel	-> setText (s);
 	}
@@ -1833,13 +1848,14 @@ uint8_t	*buffer = dynVec (uint8_t, amount);
 	}
 }
 
+//	on sourcedumping
 void	RadioInterface::handle_dump () {
 	if (dumpDisplay_p == nullptr)
 	   startSourceDumping ();
 	else
 	   stopSourceDumping ();
 }
-//	on sourcedumping
+
 void	RadioInterface::startSourceDumping () {
 QString deviceName	= theDeviceHandler	-> deviceName	();
 int	bitDepth	= theDeviceHandler	-> bitDepth	();
@@ -1970,7 +1986,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      if (ev -> buttons () & Qt::RightButton) {
 	         QTableWidgetItem *x =
 	              newServices -> theTable -> itemAt (ev -> pos ());
-	         fprintf (stderr, "we hebben er een\n");
 //	         if (x != nullptr)
 //	            newServices -> handleRightMouseClick (x -> text ());
 	         return true;
@@ -2193,14 +2208,6 @@ QString serviceName	= s. serviceName;
 	      channel. currentService. ASCTy	= ad. ASCTy;
 	      channel. currentService. subChId	= ad. subchId;
 	      startAudioservice (ad);
-
-	      QString country      = getCountry (channel. internatTable,
-	                                         ad. ecc != 0 ? ad. ecc :
-	                                            channel. eccByte,
-                                                 (ad. SId >> 12) &0xF);
-	      fprintf (stderr, " service %s, country = %s\n",
-	                             s. serviceName.  toLatin1 (). data (),
-	                             country. toLatin1 (). data ());
 
 //	   serviceLabel	-> setText (serviceName + "(" + ad. shortName + ")");
 	      serviceLabel	-> setText (serviceName);
@@ -2431,7 +2438,7 @@ int	tunedFrequency	=
 //	the channel frequency in their data
 	if (theDeviceHandler -> isFileInput ()) {
 	   int freq		= theDeviceHandler -> getVFOFrequency ();
-	   QString realChannel = theSCANHandler. getChannel (freq);
+	   QString realChannel	= theSCANHandler. getChannel (freq);
 	   if (realChannel != "") {
 	      newServices	-> set_channelIndex (realChannel);
 	      channel. channelName	= realChannel;
@@ -2917,7 +2924,6 @@ QString res	= "";
 	return res;
 }
 
-
 void	RadioInterface::show_for_single_scan () {
 QString	headLine = build_kop ();
 	theScanTable -> addLine (headLine);
@@ -3230,6 +3236,7 @@ void	RadioInterface::scheduledDLTextDumping () {
 	theConfigHandler -> mark_dlTextButton (true);
 }
 //
+//////////////////////////////////////////////////////////////////////////
 //
 void	RadioInterface::handle_configButton	() {
 	if (!theConfigHandler -> isHidden ()) {
@@ -3267,7 +3274,6 @@ void	RadioInterface::handle_dlTextButton	() {
 	theConfigHandler	-> mark_dlTextButton (true);
 }
 //
-//	called from the config handler
 void	RadioInterface::handle_resetButton	() {
 	if (!running. load())
 	   return;
@@ -3348,6 +3354,8 @@ void	RadioInterface:: set_streamSelector (int k) {
 //
 //////////////////////////////////////////////////////////////////////////
 //
+//	http handling
+//
 bool	RadioInterface::autoStart_http () {
 	if (localPos. latitude == 0) 	// cannot happen
 	   return false;
@@ -3365,7 +3373,6 @@ bool	RadioInterface::autoStart_http () {
 	} catch (int e) {}
 	return mapViewer != nullptr;
 }
-//
 //
 //	handling the httpButton has some interesting aspects
 //	while it is obvious to start not only a server, but also
@@ -3771,7 +3778,9 @@ bool	RadioInterface::devScopeOn () {
 void	RadioInterface::handle_iqSelector () {
 	theOfdmHandler -> handleIQSelector ();
 }
-
+//
+////////////////////////////////////////////////////////////////////////////
+//
 void	RadioInterface::setSoundLabel  (bool f) {
 QPixmap p;
 	if (f) 
@@ -3797,6 +3806,8 @@ void	RadioInterface::copyrightText_closed	() {
 	delete thecopyrightLabel;
 	thecopyrightLabel	= nullptr;
 }
+///////////////////////////////////////////////////////////////////////
+//
 void	RadioInterface::show_dcOffset (float dcOffset) {
 	theNewDisplay. showDCOffset (dcOffset);
 }
@@ -4035,10 +4046,10 @@ QString	RadioInterface::createTIILabel	(const transmitter &theTransmitter) {
 //	int	theHeight	= theTransmitter. height;
 //	float	thePower	= theTransmitter. power;
 
-QString labelText = "(" + QString::number (mainId) + ","
-	               + QString::number (subId) + ") ";
-	labelText += theTransmitterName;
-	labelText += QString ("  ")
+	QString labelText = "(" + QString::number (mainId) + ","
+	                               + QString::number (subId) + ") ";
+	labelText		+= theTransmitterName;
+	labelText		+= QString ("  ")
 	             + "(" + direction + ") "
 	             + QString::number (theDistance, 'f', 1) + " km " 
 	             + QString::number (theAzimuth, 'f', 1)
@@ -4556,6 +4567,7 @@ void	RadioInterface::handle_startTimeTable	() {
 	   
 	std::vector<basicService> theServices = 
 	             theOfdmHandler	-> getServices ();
+	fprintf (stderr, "New timetable\n");
 	theControl = new timeTableControl (channel. ensembleName,
 	                                   channel. Eid,
 	                                   theServices,
@@ -4648,13 +4660,10 @@ int	RadioInterface::get_serviceOrder	() {
 }
 
 void	RadioInterface::crc_error (bool b) {
-	if (!b) 
-	   crcLabel	-> setStyleSheet ("color : green");
-	else
-	   crcLabel	-> setStyleSheet ("color : red");
+	crcLabel	-> setStyleSheet (b ? "color : red" :  "color : green");
 }
 //
-//	This function is called in the set up whenever the
+//	This function is called in the set-up whenever the
 //	getLoadSelection selector is set
 
 void	RadioInterface::startList (bool &resetFlag) {
@@ -4708,3 +4717,4 @@ selector ListSelector ("select option");
 	      resetFlag	= true;
 	}
 }
+

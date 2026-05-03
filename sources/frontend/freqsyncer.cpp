@@ -30,7 +30,8 @@
 	                                processParams	*p,
 	                                phaseTable	*theTable):
 	                                     params (p -> dabMode),
-	                                     fft_forward (params. get_T_u (), false),
+	                                     fft_forward (params. get_T_u (),
+	                                                                false),
 	                                     go_forward (TEST_SIZE, false),
 	                                     go_backwards (TEST_SIZE, true) {
 	(void)mr;
@@ -43,7 +44,6 @@
 	for (int i = -TEST_SIZE / 2; i < TEST_SIZE / 2; i ++) {
 	   t1 [TEST_SIZE / 2 + i] = theTable -> refTable [(T_u + i) % T_u] *
 	                 conj (theTable -> refTable [(T_u + i + 1) % T_u]);
-//	   t1 [TEST_SIZE / 2 + i] = Complex (arg (t1 [i]), 0);
 	}
 	go_forward. fft (t1);
 }
@@ -67,7 +67,6 @@ int16_t	freqSyncer::
 	for (int i = -TEST_SIZE / 2; i < TEST_SIZE / 2; i ++) {
 	   t2 [TEST_SIZE / 2 + i] = v [(T_u + i) % T_u] *
 	                    conj (v [(T_u + i + 1) % T_u]);
-//	   t2 [TEST_SIZE / 2 +i] = Complex (arg (t2 [i]), 0);
 	}
 //	apply the FFT
 	go_forward. fft (t2);

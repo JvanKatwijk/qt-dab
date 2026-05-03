@@ -41,8 +41,6 @@
 	                             fft_backwards (params. get_T_u (), true),
 	                             response (p -> responseBuffer) {
 	                    
-//float	Phi_k;
-
 	this	-> theTable	= theTable;
 	this	-> depth	= p -> echo_depth;
 	this	-> T_u		= params. get_T_u();

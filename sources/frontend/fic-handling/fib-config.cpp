@@ -366,12 +366,21 @@ void	fibConfig::set_FECscheme	(const int subChId, int FEC_scheme) {
 }
 
 void	fibConfig::check_announcements (uint8_t clusterId, 
-	                                uint8_t AswFlags, uint8_t newFlag) {
+	                                uint8_t AswFlags,
+	                                uint8_t newFlag, uint16_t subChId) {
 	for (auto &ac : announcement_table) {
 	   if ((ac. clusterId == clusterId) && newFlag) {
 	      uint16_t flags = (ac. asuFlags & AswFlags);
+	      uint16_t theSId = 0;
+	      for (auto & comp : SC_C_table) {
+	         if (comp. subChId == subChId) {
+	            theSId = comp. SId;
+	            break;
+	         }
+	      }
 	      for (auto &serv : SId_table) {
 	         if ((serv. SId == ac. SId) &&
+	             (serv. SId == theSId) &&
 	                      (serv. announcing != flags)) {
 	            emit announcement (ac. SId, flags);
 	            serv. announcing = flags;

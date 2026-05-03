@@ -16,7 +16,6 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
- *
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -101,8 +100,8 @@ uint8_t	*d		= p;
 	      case 0:
 	         if (availableBytes >= 2)
 	            process_FIG0 (d);	
-	         else
-	            fprintf (stderr, "x");
+//	         else
+//	            fprintf (stderr, "x");
 	         break;
 
 	      case 1:			
@@ -268,7 +267,8 @@ static	uint8_t prevChangeFlag	= 0;
 	CIFcount_hi. store (highpart);
 	CIFcount_lo. store (lowpart);
 
-
+	if (prevChangeFlag != 0)
+	   fprintf (stderr, "%d %d\n", changeFlag, prevChangeFlag);
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
 	   fibConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
@@ -684,9 +684,15 @@ fibConfig::serviceComp_G comp;
 void	fibDecoder::FIG0Extension9 (uint8_t *d) {
 uint8_t used		= 2; 		// offset in bytes
 int16_t	Length		= getBits_5 (d, 3);
-//uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-//uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-//uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+
+	if ((PD_bit != 0) || (OE_bit != 0))
+	   return;
+	if (CN_bit != 0)
+	   return;
+	
 //	bit 6 indicates the number of hours
 	uint8_t extFlag		= getBits_1 (d, used * 8 + 0);
         const int signbit = getBits_1 (d, used * 8 + 2);
@@ -897,7 +903,8 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	}
 }
 //
-//	
+//
+//	ETSI TS 104 089	
 void	fibDecoder::FIG0Extension15 (uint8_t *d) {
 //int16_t Length          = getBits_5 (d, 3);     // in Bytes
 const uint8_t   CN_bit  = getBits_1 (d, 8 + 0);
@@ -1012,11 +1019,10 @@ int16_t	bitOffset	= used * 8;
 	   uint8_t Rfa		= getBits (d, bitOffset, 1);
 	   (void)Rfa;
 	   bitOffset		+= 1;
-//	   uint8_t subChId	= getBits (d, bitOffset, 6);
+	   uint8_t subChId	= getBits (d, bitOffset, 6);
 	   bitOffset		+= 6;
-//	   fprintf (stderr, "%d %d %d -> %d\n",
-//	                 clusterId, AswFlags, newFlag, subChId);
-	   currentConfig -> check_announcements (clusterId, AswFlags, newFlag);
+	   currentConfig -> check_announcements (clusterId,
+	                                         AswFlags, newFlag, subChId);
 	}
 }
 //

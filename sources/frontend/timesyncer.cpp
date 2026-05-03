@@ -81,3 +81,4 @@ int	syncBufferMask	= syncBufferSize - 1;
 
 	return TIMESYNC_ESTABLISHED;
 }
+

@@ -73,6 +73,7 @@ findfileNames theFilenameFinder (dabSettings);
 	path_for_files               = checkDir (path_for_files);
 	if (path_for_files == "")
 	   return;
+	path_for_files += "EpgData/";
 	path_for_files +=
                       QString::number (EId, 16). toUpper () + "/";
         path_for_files = QDir::toNativeSeparators (path_for_files); 
@@ -133,12 +134,12 @@ int16_t row     = contentWidget -> rowCount ();
 
 bool	timeTableControl::checkFor (const QStringList &files, int32_t SId) {
 QString XXX	= QString::number (SId, 16). toUpper ();
-	for (auto &ss : files)
+	for (auto &ss : files) {
 	  if (ss. contains (XXX))
 	     return true;
+	}
 	return false;
 }
-
 
 void	timeTableControl::selectService (int row, int column) {
 	(void)column;

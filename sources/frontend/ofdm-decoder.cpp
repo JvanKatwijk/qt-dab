@@ -51,7 +51,8 @@ DABFLOAT length	= jan_abs (V);
 //
 //	The bessel function is under windows too slow too work with
 //	that is why we created a table that is filled on startup
-DABFLOAT besselTable [2048];
+#define	BESSEL_SIZE	4096
+DABFLOAT besselTable [BESSEL_SIZE];
 static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
@@ -60,7 +61,8 @@ DABFLOAT IO_Bessel	(DABFLOAT x) {
 // and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
-	return besselTable [((int)(x * 32)) % 2048];
+//	return besselTable [((int)(x * 32)) % 2048];
+	return besselTable [((int)(x * 64)) % 4096];
 }
 
 static inline
@@ -120,7 +122,8 @@ Complex makeComplex (DABFLOAT phase) {
 	                                    conjVector	(params. get_T_u ()),
 	                                    fft_buffer	(params. get_T_u ()),
 	                                    sigmaSQ_Vector (params. get_T_u ()),
-	                                    meanLevelVector (params. get_T_u ()){
+	                                    meanLevelVector (params. get_T_u ()),
+	                                    meanPowerVector (params. get_T_u ()){
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
@@ -139,13 +142,14 @@ Complex makeComplex (DABFLOAT phase) {
 	reset ();
 	iqSelector		= SHOW_DECODED;
 //	iqSelector		= SHOW_RAW;
-	decoder			= DECODER_1;
+	decoder			= DECODER_3;
 
 	sqrt_2			= sqrt (2);
 //
 //	Prefil some tables for faster access
-	for (int i = 0; i < 2048; i ++) {
-	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
+	for (int i = 0; i < BESSEL_SIZE; i ++) {
+//	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
+	   besselTable [i] = IO_Bessel (((float)i) / 64.0);
 	}
 
 	for (int i = 0; i < 8; i ++)
@@ -162,6 +166,7 @@ void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
 	   sigmaSQ_Vector [i]	= 0;
 	   meanLevelVector [i]	= 0;
+	   meanPowerVector [i]	= 0;
 	}
 	meanValue	= 1.0f;
 	avgBit		= 10.0f;
@@ -237,12 +242,10 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t	blkno,
 	                     std::vector<int16_t> &softbits,
 	                     DABFLOAT	snr, float clockError) {
-
 DABFLOAT sum	= 0;
-//DABFLOAT bitSum	= 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
-	                               T_u * sizeof (Complex));
+	                                       T_u * sizeof (Complex));
 //	first step: do the FFT
 	fft. fft (fft_buffer. data ());
 //
@@ -295,8 +298,9 @@ DABFLOAT sum	= 0;
 
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
-	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
-	                                              phaseReference. data ());
+	      float freqOffset	=
+	                    compute_frequencyOffset (fft_buffer. data (),
+	                                             phaseReference. data ());
 	      if (devBuffer != nullptr) {
 	         float *tempVector = dynVec (float, carriers);
 	         for (int i = 0; i < carriers; i ++) {
@@ -415,12 +419,8 @@ DABFLOAT ofdmDecoder::decoder_12 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
 	                        DABFLOAT	snr,
 	                        int		decType,
-	                        float		clockError) {
+	                        float		clockErr) {
 DABFLOAT sum	= 0;
-DABFLOAT corrFact	= (decType == 1) ? 1.5 : 1.0;
-DABFLOAT levelFact	= (decType == 1) ? 100.0 : 60.0;
-//DABFLOAT levelFact	= (decType == 1) ? 160.0 : 100.0;
-
 //
 //	Note for the reader
 //	Some cheap dabsticks show a - sometime pretty large - clock offset.
@@ -428,7 +428,7 @@ DABFLOAT levelFact	= (decType == 1) ? 100.0 : 60.0;
 //	We show the samplerate offset already for a long time,
 //	old-dab suggested - in a version derived from Qt-DAB - to compensate
 //	for the error
-//	If the clockerror is N, then the relatieve error increase between
+//	If the clockerror is N, then the relative error increase between
 //	two successive block is app N / 750, the phase of that error
 //	is computed. Of course higher frequencies suffer more than lower
 //	frequencies, so old-dab had a scheme where, depending the
@@ -440,8 +440,8 @@ DABFLOAT levelFact	= (decType == 1) ? 100.0 : 60.0;
 	   int16_t	index		= myMapper.  mapIn (i);
 	   int16_t	binIndex	= index;
 	   if (index < 0) {
-	      index += T_u;
 	      binIndex	+= carriers_2;
+	      index	+= T_u;
 	   }
 	   else
 	      binIndex	+= carriers_2 - 1;
@@ -453,15 +453,24 @@ DABFLOAT levelFact	= (decType == 1) ? 100.0 : 60.0;
 //	correction on the fftBin value using the approach from
 //	old-dab, see text above
 
+	   DABFLOAT phaseError	= clockErr / (DABFLOAT)carriers_2 * M_PI * 
+	                          (carriers_2 - binIndex) / (carriers_2);
+	   fftBin		*= makeComplex (-phaseError);
+
 	   conjVector [index]	= fftBin;
-	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
+
 //	updates
+	   DABFLOAT fftBinPower	= std::norm (fftBin);
+	   meanPowerVector [index] =
+	        compute_avg (meanPowerVector [index],
+	                                     fftBinPower, ALPHA);
+
+	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
+	   meanLevelVector [index] =
+	        compute_avg (meanLevelVector [index],
+	                                     binAbsLevel, ALPHA);
 
 	   Complex fftBin_at_1	= toQ1 (fftBin);
-
-	   meanLevelVector [index] =
-	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
-
 	   DABFLOAT d_x		=  real (fftBin_at_1) -
 	                                  meanLevelVector [index] / sqrt_2;
 	   DABFLOAT d_y		=  imag (fftBin_at_1) -
@@ -470,25 +479,31 @@ DABFLOAT levelFact	= (decType == 1) ? 100.0 : 60.0;
 	   sigmaSQ_Vector [index] =
 	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
 //
-	   DABFLOAT corrector	=
-	         corrFact *  meanLevelVector [index] / sigmaSQ_Vector [index];
-	   corrector		/= (1 / snr + 2);
-	   Complex R1	= corrector * normalize (fftBin) * 
-	                     (DABFLOAT)(sqrt (binAbsLevel * jan_abs (prevS)));
-	   DABFLOAT scaler	=  levelFact / meanValue;
+	   DABFLOAT	preWeight	= sqrt (abs (fftBin) * abs (prevS));
+	   if (decType == 1) 
+	      preWeight *= meanPowerVector [index];
+	   else
+	   if (decType == 2)
+	      preWeight *= meanLevelVector [index];
 
-	   DABFLOAT leftBit	= - real (R1) * scaler;
+	   preWeight		/= sigmaSQ_Vector [index];
+	   preWeight		/= 1.0 / (snr + (decType == 1 ? 3 : 1));
+	   Complex R1		= normalize (fftBin) * preWeight;
+
+	   DABFLOAT W2		= -100 / meanValue;
+
+	   DABFLOAT leftBit	= real (R1) * W2;
 	   limit_symmetrically (leftBit, MAX_VITERBI);
 	   softbits [i]		= (int16_t)leftBit;
 
-	   DABFLOAT rightBit	= - imag (R1) * scaler;
+	   DABFLOAT rightBit	= imag (R1) * W2;
 	   limit_symmetrically (rightBit, MAX_VITERBI);
 	   softbits [i + carriers]	= (int16_t)rightBit;
+
 	   sum			+= jan_abs (R1);
 	}
 	return sum;
 }
-
 
 DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
@@ -496,7 +511,6 @@ DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT	sum = 0;
 
-	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
 	   int16_t	carriers_2	= carriers / 2;
@@ -514,7 +528,6 @@ DABFLOAT	sum = 0;
 	   Complex fftBin	= current * normalize (conj (prevS));
 	   conjVector [index]	= fftBin;
 	   Complex fftBin_at_1	= toQ1 (fftBin);
-
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	   DABFLOAT scaler	=  140.0 / meanValue;
@@ -548,12 +561,11 @@ DABFLOAT sum	= 0;
 //
 //	updates
 	   
-	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
-	                                   abs (imag (fftBin)));
-
 	   meanLevelVector [index] =
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
 
+	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
+	                                   abs (imag (fftBin)));
 	   DABFLOAT d_x		=  abs (real (fftBin_at_1)) -
 	                                  meanLevelVector [index] / sqrt_2;
 	   DABFLOAT d_y		=  abs (imag (fftBin_at_1)) -

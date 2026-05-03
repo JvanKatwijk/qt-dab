@@ -64,26 +64,31 @@ int		output_size	= 8 * 2048;
 	if (!working)
 	   return -1;
 
-	if ((packet [0] != 0x56)  || ((packet [1] >> 5) != 7)) 
+	if ((packet [0] != 0x56)  || ((packet [1] >> 5) != 7)) {
 	   return -1;
+	}
 
 	packet_size  = (((packet [1] & 0x1F) << 8) | packet [2]) + 3;
-	if (packet_size != (uint32_t)packetLength)
+	if (packet_size != (uint32_t)packetLength) {
 	   return -1;
+	}
 
 	uint32_t	valid_size = packet_size;
 	err = aacDecoder_Fill (handle, &ptr, &packet_size, &valid_size);
-	if (err != AAC_DEC_OK) 
+	if (err != AAC_DEC_OK) {
 	   return -1;
+	}
 
 	err = aacDecoder_DecodeFrame (handle,
 	                              bufp,
 		                      output_size, 0);
-	if (err == AAC_DEC_NOT_ENOUGH_BITS)
+	if (err == AAC_DEC_NOT_ENOUGH_BITS) {
 	   return -1;
+	}
 
-	if (err != AAC_DEC_OK) 
+	if (err != AAC_DEC_OK)  {
 	   return -1;
+	}
 
 	CStreamInfo *info = aacDecoder_GetStreamInfo (handle);
 	if (!info || info -> sampleRate <= 0) 

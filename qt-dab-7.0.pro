@@ -460,8 +460,8 @@ else {
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-#CONFIG		+= double
-CONFIG		+= single
+CONFIG		+= double
+#CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -492,10 +492,10 @@ CONFIG		+= fdk-aac
 #otherwise, if you want to use the default, uncomment
 CONFIG		+= local-audio
 
-CONFIG		+= viterbi-scalar
+#CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
-#CONFIG		+= spiral-sse
+CONFIG		+= spiral-sse
 #CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
@@ -823,6 +823,7 @@ viterbi-scalar {
 	INCLUDEPATH	+= ./sources/support/viterbi
 	HEADERS		+= ./sources/support/viterbi/viterbi.h 
 	SOURCES		+= ./sources/support/viterbi/viterbi.cpp 
+	DEFINES		+= VITERBI=\\\"scalar\\\"
 }
 
 viterbi-sse {
@@ -838,6 +839,7 @@ viterbi-sse {
 	INCLUDEPATH	+= ./sources/support/viterbi
 	HEADERS		+= ./sources/support/viterbi/viterbi.h 
 	SOURCES		+= ./sources/support/viterbi/viterbi.cpp 
+	DEFINES		+= VITERBI=\\\"sse\\\"
 }
 
 viterbi-avx2 {
@@ -851,6 +853,7 @@ viterbi-avx2 {
 	INCLUDEPATH	+= ./sources/support/viterbi
 	HEADERS		+= ./sources/support/viterbi/viterbi.h 
 	SOURCES		+= ./sources/support/viterbi/viterbi.cpp 
+	DEFINES		+= VITERBI=\\\"avx2\\\"
 }
 
 spiral-sse	{
@@ -861,6 +864,7 @@ spiral-sse	{
 	SOURCES		+= ./sources/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ./sources/support/viterbi-spiral/spiral-sse.h
 	SOURCES		+= ./sources/support/viterbi-spiral/spiral-sse.c
+	DEFINES		+= VITERBI=\\\"spiral-sse\\\"
 }
 
 spiral-no-sse	{
@@ -871,6 +875,7 @@ spiral-no-sse	{
 	SOURCES		+= ./sources/support/viterbi-spiral/viterbi.cpp 
 	HEADERS		+= ./sources/support/viterbi-spiral/spiral-no-sse.h
 	SOURCES		+= ./sources/support/viterbi-spiral/spiral-no-sse.c
+	DEFINES		+= VITERBI=\\\"spiral-scalar\\\"
 }
 
 faad	{

@@ -80,7 +80,8 @@ public:
 
 	void		set_FECscheme		(const int, int);
 
-	void		check_announcements	(uint8_t, uint8_t, uint8_t);
+	void		check_announcements	(uint8_t, uint8_t,
+	                                         uint8_t, uint16_t);
 
 	ensemble	*theEnsemble;
 	void		add_to_SId_table	(const SId_struct &comp);
