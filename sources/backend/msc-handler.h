@@ -59,10 +59,10 @@ public:
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);
-	void		stopBackend		(const QString &, int, int);
+	void		stopBackend		(uint32_t, uint8_t);
 	void		resetChannel		();
 	void		resetBuffers		();
-	bool		serviceRuns		(uint32_t SId, uint16_t subChId);
+	bool		serviceRuns		(uint32_t SId, uint8_t SCIds);
 	void		set_dataTracer		(bool);
 private:
 

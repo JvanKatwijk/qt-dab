@@ -36,6 +36,8 @@
 #include	"view-handler.h"
 #include	"radio.h"
 
+#define BLACK   "#000000"
+#define GREEN   "#8ff0a4"
 //
 	serviceViewer::serviceViewer (const QString &fileName,
 	                              RadioInterface	*theRadio,
@@ -76,6 +78,7 @@
         if (p. load (":res/radio-pictures/down-arrow.png", "png"))
            nextChannel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 
+	set_Colors ();	// the buttons
 	theMode		= ENSEMBLEVIEW;
 	for (auto &s: channels)
 	   channelSelector -> addItem (s);
@@ -222,12 +225,20 @@ QString	serviceViewer::extractName	(uint32_t SId) {
 }
 //
 //	In ensembleview mode, services might be added
-void	serviceViewer::addService	(serviceDescriptor sd) {
+void	serviceViewer::addService	(const descriptorType & ad) {
 QString channel	= channelSelector -> currentText ();
+	
 	for (auto &ssd: displayList) 
-	   if ((ssd. serviceName == sd. serviceName) &&
-	       (ssd. channelName == sd. channelName))
+	   if ((ssd. serviceName == ad. serviceName) &&
+	       (ssd. channelName == ad. channel))
 	      return;
+
+	serviceDescriptor sd;
+	sd.	channelName	= ad. channel;
+	sd.	serviceName	= ad. serviceName;
+	sd.	SID		= ad. SId;
+	sd.	subChId		= ad. subchId;
+	sd.	SCIds		= ad. SCIds;
 
 	switch (theMode) {
 	   case ENSEMBLEVIEW:
@@ -592,7 +603,6 @@ void	serviceViewer::show_displayList	() {
 //	assert that the table is empty
 QString fontColor = value_s (viewSettings, ENSEMBLE,
 	                                     "fontColor", "white");
-int	fontSize = value_i (viewSettings, ENSEMBLE, "fontSize", 11);
 	if (theTable -> rowCount () > 1) 
 	   return;
 
@@ -640,6 +650,30 @@ QStringList res;
 	   }
 	}
 	return res;
+}
+
+void	serviceViewer::set_Colors () {
+QString prevService_color =
+	   value_s (viewSettings, COLOR_SETTINGS, PREV_SERVICE + "_color",
+	                                             GREEN);
+QString prevService_font =
+	   value_s (viewSettings, COLOR_SETTINGS, PREV_SERVICE + "_font",
+	                                              BLACK);
+
+QString nextService_color =
+	   value_s (viewSettings, COLOR_SETTINGS, NEXT_SERVICE + "_color",
+	                                              GREEN);
+QString nextService_font =
+	   value_s (viewSettings, COLOR_SETTINGS, NEXT_SERVICE + "_font",
+	                                              BLACK);
+
+	QString temp = "QPushButton {background-color: %1; color: %2}";
+	prevService ->
+	              setStyleSheet (temp. arg (prevService_color,
+	                                        prevService_font));
+	nextService	->
+	              setStyleSheet (temp. arg (nextService_color,
+	                                        nextService_font));
 }
 
 void	serviceViewer::color_prevService	() 	{

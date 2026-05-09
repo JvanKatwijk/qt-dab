@@ -87,20 +87,20 @@ QString	colorString	= "black";
 void	devScope::display	(const std::vector<float> &V) {
 float	max	= -100;
 float	min	= 1000;
-int index_min; int index_max;
+//int index_min; int index_max;
 floatQwt X_axis [V. size () / 2];
 floatQwt Y_values [V. size () / 2];
 //	we assume that V. size = 1536
-	for (int32_t i = 0; i < V. size () / 2; i ++) {
+	for (uint16_t i = 0; i < V. size () / 2; i ++) {
 	   X_axis [i] = -1536 / 4 + i;
 	   Y_values [i] = V [i];
 	   if (V [i] > max) {
 	      max = V [i];
-	      index_max = i;
+//	      index_max = i;
 	   }
 	   if (V [i] < min) {
 	      min = V [i];
-	     index_min = i;
+//	     index_min = i;
 	   }
 	}
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,

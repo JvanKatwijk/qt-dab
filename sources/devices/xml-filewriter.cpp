@@ -49,6 +49,8 @@ struct langwoord {
                                          const QString  &recorderVersion):
 	                                        filenameFinder (settings) {
 uint8_t t	= 0;
+
+	(void)channel;
 	xmlFile		= fopen (fileName. toUtf8 (). data (), "w+b");
 	if (xmlFile == nullptr)
 	   throw (21);

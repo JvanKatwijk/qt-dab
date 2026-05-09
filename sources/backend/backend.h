@@ -59,7 +59,8 @@ public:
 	void	set_dataTracer	(bool);
 //	we need sometimes to access the key parameters for decoding
 	int		backendType;
-	int		serviceId;
+	int		SId;
+	int		SCIds;
 	int		startAddr;
 	int		Length;
 	bool		shortForm;

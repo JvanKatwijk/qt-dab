@@ -62,7 +62,7 @@ void	my_callBack (const DAB_DATAGROUP_DECODER_msc_datagroup_header_t *header,
 	running = true;
 }
 
-	journaline_dataHandler::~journaline_dataHandler() {
+	journaline_dataHandler::~journaline_dataHandler () {
 	theScreen. hide ();
 	if (!running)
 	   return;

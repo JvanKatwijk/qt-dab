@@ -48,7 +48,7 @@ public:
 	void	cleanUp			();
 	void	isDABPlus		(bool);
 	void	hideMissedLabel		();
-	void	updateFM		(std::vector<int> &);
+	void	updateFM		(const std::vector<uint32_t> &);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
@@ -73,7 +73,7 @@ public slots:
 	void		showLanguage		(int, int);
 	void		showUep			(int, int);
 	void		showCodeRate		(int, int);
-	void		showFm			(std::vector<int> &);
+	void		showFm			(const std::vector<uint32_t> &);
 	void		showRate		(int, bool, bool);
 	void		showStereo		(bool);
 

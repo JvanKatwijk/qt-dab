@@ -116,11 +116,15 @@ class	configHandler;
  *	QWidget and the generated form
  */
 
+//
+//	A dabService is a desxcription of a running service,
+//	either primary or secondary
 class dabService {
 public:
 	QString		channel;
 	QString		serviceName;
 	uint32_t	SId;
+	uint8_t		SCIds;
 	int		subChId;
 	bool		isValid;
 	bool		isAudio;
@@ -128,7 +132,7 @@ public:
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
-	std::vector<int>	fmFrequencies;
+	std::vector<uint32_t>	fmFrequencies;
 	dabService () {
 	   channel	= "";
 	   serviceName	= "";
@@ -172,7 +176,6 @@ public:
 	QString		countryName;
 	int		tunedFrequency;
 	int		nrServices;	// measured
-	int		serviceCount;	// from FIC or nothing
 	bool		realChannel;	// false if file input
 	bool		hasEcc;
 	uint8_t		eccByte;
@@ -202,7 +205,6 @@ public:
 	   servicePictures. resize (0);
 	   runningTasks. resize (0);
 	   realChannel		= true;
-	   serviceCount		= -1;
 	   nrServices		= 0;
 	   tunedFrequency	= -1;
 	   ensembleName		=  "";
@@ -334,7 +336,7 @@ private:
 	                                                 const QString firstService = "");
 	void			stopChannel		();
 	void			stopService		(dabService &);
-	void			startService		(dabService &, int);
+	void			startService		(const QString &s);
 	void			start_epgService	(packetdata &);
 	void			scheduleSelect		(const QString &s);
 
@@ -391,6 +393,8 @@ private:
 	int			processService		(const QDomElement &);
 
 	void			read_pictureMappings	(uint32_t);
+	QString			findPicture		(uint32_t SId,
+	                                                 const QString &url);
 	bool			get_serviceLogo		(QPixmap &, uint32_t);
 
 	QString			extractName		(const QString &);
@@ -522,25 +526,30 @@ public slots:
 	void			show_quality		(float, float, float);
 	void			show_stdDev		(uint32_t);
 //
-//	signals from fib-config
-	void			announcement		(int, int);
 
 //	signals from fic-handler
 	void			show_ficQuality		(int, int);
 	void			show_ficBER		(float);
 
 //	signals from fib-decoder
-	void			ensembleName		(int, const QString &);
-	void			clockTime		(int, int, int,
+	void			handle_FIG00		();
+	void			handle_FIG09		(int, uint8_t, uint8_t);
+	void			handle_FIG010		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			changeinConfiguration	();
-	void			nrServices		(int);
-	void			lto_ecc			(int, int, int);
-	void			setFreqList		();
-	void			tell_programType		(uint32_t, int);
-	void			addToEnsemble		(const QString &,
-	                                                          int, int);
+	void			handle_FIG019		(uint16_t, int);
+	void			handle_FIG021		(uint16_t, uint32_t);
+	void			handle_FIG10		(const QString &,
+	                                                            uint16_t);
+	void			handle_FIG11		(const QString &,
+	                                                     uint32_t);
+	void			handle_FIG14		(const QString &,
+	                                                     uint32_t, uint8_t);
+	void			handle_FIG15		(const QString &, 
+	                                                     uint32_t);
+	                                                 
+//	void			setFreqList		();
+	void			tell_programType	(uint32_t, int);
 
 //	signals from the techWindow
 	void			handleAudiodumpButton 	();

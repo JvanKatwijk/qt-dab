@@ -50,12 +50,13 @@
 	this	-> DSCTy		= pd -> DSCTy;
 	this	-> appType		= pd -> appType;
 	this	-> packetAddress	= pd -> packetAddress;
-	this	-> DGflag		= pd -> DGflag;
+	this	-> DG_flag		= pd -> DG_flag;
 	this	-> FEC_scheme		= pd -> FEC_scheme;
 	this	-> dataBuffer		= dataBuffer;
 	this	-> traceFlag		= false;
 	teller				= 0;
 	fouten				= 0;
+
 	tracer. resize (0);
 	AppVector. resize (RSDIMS * FRAMESIZE + 48);
 	FECVector. resize (9 * 22);
@@ -112,7 +113,7 @@ void	dataProcessor::addtoFrame (const std::vector<uint8_t>  &outV) {
 //	when the DG flag is on and there are no datagroups for DSCTy5
 std::vector<uint8_t> VV = outV;
 	if ((this -> DSCTy == 5) &&
-	    (this -> DGflag))	// no datagroups
+	    (this -> DG_flag))	// no datagroups
 	      handleTDCAsyncstream (VV. data (), 24 * bitRate);
 	   else
 	      handlePackets (VV. data (), 24 * bitRate);
@@ -309,7 +310,7 @@ void	dataProcessor::handleRSPacket (const uint8_t  *vec) {
 int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
 
-//	fprintf (stderr, "handling RS\n");
+	//fprintf (stderr, "handling RS\n");
 //	we differentiate between the "data" packets and the "RS" packets
 //
 //	the "order" is first RSDIMS * FRAMESIZE packet elements

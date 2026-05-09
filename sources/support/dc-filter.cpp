@@ -29,7 +29,7 @@
 	ip		= 0;
 	filterSize	= n;
 	filterData. resize (n);
-	for (int i = 0; i < filterData. size (); i++)
+	for (uint16_t i = 0; i < filterData. size (); i++)
 	   filterData [i] = Complex (0, 0);
 	filterSum	= Complex (0, 0);
 }

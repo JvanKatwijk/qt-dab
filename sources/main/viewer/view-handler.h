@@ -56,7 +56,7 @@ void	startMode		(int, int);
 QString	currentChannel		();
 int	getMode			();
 void	set_channelIndex	(const QString &);
-void	addService		(serviceDescriptor);
+void	addService		(const descriptorType &);
 void	remove			(const QString &, const QString &);
 void	reportService		(const QString &);
 void	reportService		(const QString &, const QString &);
@@ -73,6 +73,8 @@ private:
 	void		startSession		(int, int);
 	void		insert			(const serviceDescriptor &sd);
 	void		set_channelIndex	(int);
+	void		set_Colors		();
+//	void		addService		(const serviceDescriptor &);
 public slots:
 	void		clickOnService		(int, int);
 	void		handle_channelSelector	(const QString &);

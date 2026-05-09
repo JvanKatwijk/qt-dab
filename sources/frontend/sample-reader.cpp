@@ -56,8 +56,8 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	                            deviceHandler	*theRig_i,
 	                            RingBuffer<Complex> *spectrumBuffer_i):
 	                               theRig (theRig_i),
-	                               spectrumBuffer (spectrumBuffer_i),
-	                               dcRemover (41) {
+	                               dcRemover (41),
+	                               spectrumBuffer (spectrumBuffer_i) {
 	bufferSize		= 32768;
 	localBuffer. resize (bufferSize);
 	localCounter		= 0;

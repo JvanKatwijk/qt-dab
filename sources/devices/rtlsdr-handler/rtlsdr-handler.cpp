@@ -693,6 +693,7 @@ bool	rtlsdrHandler::setup_xmlDump (const QString &name, bool direct) {
 QString channel		= value_s (rtlsdrSettings, "dab-general",
 	                                   "channel", "xx");
 
+	(void)direct;
 	if (xmlWriter != nullptr)
 	   return false;
 	try {

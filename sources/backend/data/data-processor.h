@@ -61,7 +61,7 @@ private:
 	uint8_t		DSCTy;
 	int16_t		appType;
 	int16_t		packetAddress;
-	uint8_t		DGflag;
+	uint8_t		DG_flag;
 	int16_t		FEC_scheme;
 	RingBuffer<uint8_t>* dataBuffer;
 	int16_t		last_cntIdx;

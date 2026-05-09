@@ -511,6 +511,7 @@ DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT	sum = 0;
 
+	(void)snr; (void)clockError;
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
 	   int16_t	carriers_2	= carriers / 2;
@@ -527,7 +528,7 @@ DABFLOAT	sum = 0;
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
 	   conjVector [index]	= fftBin;
-	   Complex fftBin_at_1	= toQ1 (fftBin);
+//	   Complex fftBin_at_1	= toQ1 (fftBin);
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	   DABFLOAT scaler	=  140.0 / meanValue;
@@ -549,6 +550,7 @@ DABFLOAT ofdmDecoder::decoder_4 (const std::vector<Complex> &fft_buffer,
 	                        DABFLOAT	snr) {
 DABFLOAT sum	= 0;
 
+	(void)snr;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 

@@ -981,6 +981,7 @@ QString	sdrplayHandler_v2::errorCodes (mir_sdr_ErrT err) {
 }
 
 void	sdrplayHandler_v2::startDump	(const QString &name, int mode) {
+	(void)mode;
 	setup_xmlDump (name, true);
 }
 
@@ -997,6 +998,7 @@ bool	sdrplayHandler_v2::setup_xmlDump (const QString &dumpName,
 	                                                 bool direct) {
 QString channel		= value_s (sdrplaySettings, DAB_GENERAL,
 	                                                  "channel", "xx");
+	(void)direct;
 	xmlWriter	= nullptr;
 	mir_sdr_GainValuesT theGains;
         my_mir_sdr_GetCurrentGain (&theGains);

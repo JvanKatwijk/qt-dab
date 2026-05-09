@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2025
+ *    Copyright (C) 2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -30,9 +30,8 @@
 #include	"msc-handler.h"
 #include	<QMutex>
 
-#include	"ensemble.h"
-class	RadioInterface;
-class	fibConfig;
+#include	"fib-dbtypes.h"
+#include	"fib-config.h"
 
 class	fibDecoder: public QObject {
 Q_OBJECT
@@ -41,43 +40,51 @@ public:
 			~fibDecoder		();
 
 	void		clearEnsemble		();
+	void		reset			();
 	void		connectChannel		();
 	void		disconnectChannel	();
 	bool		syncReached		();
 //
-//	The real interface 
-	uint32_t	getSId			(int);
-	uint8_t		serviceType		(int);
-	int		getNrComps		(const uint32_t);
-//
-//	not well chosen name, "subChannels" are meant
+//	for eti
 	int		nrChannels		();
-	int		getServiceComp		(const QString &);
-	int		getServiceComp		(const uint32_t, const int);
-	int		getServiceComp_SCIds	(const uint32_t, const int);
-	bool		isPrimary		(const QString &);
-	void		audioData		(const int, audiodata &);
-	void		packetData		(const int, packetdata &);
-	uint16_t	getAnnouncing		(uint16_t);
-	std::vector<int>	getFrequency	(const QString &);
 	void		getChannelInfo		(channel_data *, const int);
-	bool		nonTIIFrame		();	
+//
+//	For the timetable handling
+	std::vector<basicService> getServices   ();
+//
+//	for content printing and scan results
+	QList<contentType> contentPrint		();
+
+	bool		isPrimaryService	(uint32_t, uint8_t);
+	bool		isAudioService		(uint32_t, uint8_t);
+	bool		is_SPI			(uint32_t);
+	std::vector<uint8_t>
+                get_secondaryServices		(uint32_t SId);
+
+	int		FIG07_value		();
+	void		getFreqs		(uint32_t,
+	                                            std::vector<uint32_t> &);
+	void		audioData		(uint32_t,
+	                                               uint8_t,  audiodata &);
+	void		packetData		(uint32_t,
+	                                               uint8_t, packetdata &);
+
+	void		getServiceName		(QString &, QString &,
+	                                         uint32_t, uint8_t);
+	void		mapNameToId		(const QString &,
+	                                            uint32_t &, uint8_t &);
+//	uint16_t	getAnnouncing		(uint16_t);
+//	std::vector<int>	getFrequency	(const QString &);
+//	bool		nonTIIFrame		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	int		freeSpace		();
-	QList<contentType> contentPrint		();
-	bool		is_SPI			(const uint32_t);
-	std::vector<basicService> getServices	();
+//	QList<contentType> contentPrint		();
+//	std::vector<basicService> getServices	();
 protected:
 	void		processFIB		(uint8_t *, uint16_t);
 private:
-	std::vector<serviceId> insert (std::vector<serviceId> &l,
-                                          serviceId n, int order);
 	RadioInterface	*myRadioInterface;
-	ensemble	theEnsemble;
-	fibConfig	*currentConfig;
-	fibConfig	*nextConfig;
-	void		adjustTime		(int32_t *dateTime);
 
 	void		process_FIG0		(uint8_t *);
 	void		process_FIG1		(uint8_t *);
@@ -173,17 +180,50 @@ private:
 	                                         uint16_t flags,
 	                                         uint8_t SubChId);
 
+	
 signals:
-	void		addToEnsemble		(const QString &, int, int);
-	void		ensembleName		(int, const QString &);
-	void		clockTime		(int, int, int, int, int,
-	                                                 int, int, int, int);
-	void		changeinConfiguration	();
-	void		announcement		(int, int);
-	void		nrServices		(int);
-	void		lto_ecc			(int, int, int);
-	void		setFreqList		();
-	void		tell_programType	(int, int);
+	void	signal_FIG00	();	// change in confug
+	void	signal_FIG010	(int, int, int, int, int, int, int, int, int);
+	void	signal_FIG019	(uint16_t, int);
+	void	signal_FIG021	(uint16_t, uint32_t);
+	void	signal_FIG09	(int, uint8_t, uint8_t);
+	void	signal_FIG10	(const QString &, uint16_t);
+	void	signal_FIG11	(const QString &, uint32_t);
+	void	signal_FIG14	(const QString &, uint32_t, uint8_t);
+	void	signal_FIG15	(const QString &, uint32_t);
+//	signal	FIG019	// 	service specific announcement change
+//	void	signal_FIG019	(de boodschap)
+
+private:
+	
+	fibConfig	*currentConfig;
+	fibConfig	*nextConfig;
+	FIG00		FIG00_value;
+	bool    in_FIG05_stack  (const FIG05 &);
+	std::vector<FIG05>      FIG05_stack;
+
+	FIG09		FIG09_value;
+	FIG010		FIG010_value;
+	std::vector<FIG017>     FIG017_stack;
+	bool    in_FIG017_stack (const FIG017 &);
+	std::vector<FIG018>     FIG018_stack;
+	bool    in_FIG018_stack (const FIG018 &);
+	std::vector<FIG021>     FIG021_stack;
+	bool    in_FIG021_stack (const FIG021 &);
+
+	FIG10		FIG10_value;
+        std::vector<FIG11>      FIG11_stack;
+        std::vector<FIG14>      FIG14_stack;
+        std::vector<FIG15>      FIG15_stack;
+        std::vector<FIG16>      FIG16_stack;
+	int	dateTime [8];
+
+	void		adjustTime		(int32_t *dateTime);
+	uint16_t	get_subChId		(uint32_t, uint8_t);
+	void		check_announcements (uint8_t clusterId,
+                                        uint8_t AswFlags,
+                                        uint8_t newFlag, uint16_t subChId);
+
 };
 
 

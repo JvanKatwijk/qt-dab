@@ -25,6 +25,7 @@
  *	from which calls are coming on selecting a program
  *	Somehe
  */
+#include	<QStringList>
 #include	"fib-decoder.h"
 #include	<cstring>
 #include	<vector>
@@ -32,9 +33,8 @@
 #include	"charsets.h"
 #include	"bit-extractors.h"
 #include	"fib-config.h"
-#include	"ensemble.h"
 #include	"fib-table.h"
-#include	<QStringList>
+#include	"ITU_tables.h"
 #include	"time-converter.h"
 //
 //
@@ -51,27 +51,30 @@
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
 
-	connect (this, &fibDecoder::ensembleName,
-	         myRadioInterface, &RadioInterface::ensembleName);
-	connect (this, &fibDecoder::clockTime,
-	         myRadioInterface, &RadioInterface::clockTime);
-	connect (this, &fibDecoder::changeinConfiguration,
-	         myRadioInterface, &RadioInterface::changeinConfiguration);
-	connect (this, &fibDecoder::announcement,
-	         myRadioInterface, &RadioInterface::announcement);
-	connect (this, &fibDecoder::nrServices,
-	         myRadioInterface, &RadioInterface::nrServices);
-	connect (this, &fibDecoder::lto_ecc,
-	         myRadioInterface, &RadioInterface::lto_ecc);
-	connect (this, &fibDecoder::setFreqList,
-	         myRadioInterface, &RadioInterface::setFreqList);
-	connect (this, &fibDecoder::tell_programType,
-	         myRadioInterface, &RadioInterface::tell_programType);
 //
 //	Note that they may change "roles", 
-	currentConfig	= new fibConfig	(&theEnsemble, myRadioInterface);
-	nextConfig	= new fibConfig (&theEnsemble, myRadioInterface);
+	currentConfig	= new fibConfig	(myRadioInterface);
+	nextConfig	= new fibConfig (myRadioInterface);
 	mjd		= 0;
+
+	connect (this, &fibDecoder::signal_FIG00,
+	         myRadioInterface, &RadioInterface::handle_FIG00);
+	connect (this, &fibDecoder::signal_FIG09,
+	         myRadioInterface, &RadioInterface::handle_FIG09);
+	connect (this, &fibDecoder::signal_FIG010,
+	         myRadioInterface, &RadioInterface::handle_FIG010);
+	connect (this, &fibDecoder::signal_FIG019,
+	         myRadioInterface, &RadioInterface::handle_FIG019);
+	connect (this, &fibDecoder::signal_FIG021,
+	         myRadioInterface, &RadioInterface::handle_FIG021);
+	connect (this, &fibDecoder::signal_FIG10,
+	         myRadioInterface, &RadioInterface::handle_FIG10);
+	connect (this, &fibDecoder::signal_FIG11,
+	         myRadioInterface, &RadioInterface::handle_FIG11);
+	connect (this, &fibDecoder::signal_FIG14,
+	         myRadioInterface, &RadioInterface::handle_FIG14);
+	connect (this, &fibDecoder::signal_FIG15,
+	         myRadioInterface, &RadioInterface::handle_FIG15);
 }
 	
 	fibDecoder::~fibDecoder () {
@@ -100,13 +103,12 @@ uint8_t	*d		= p;
 	      case 0:
 	         if (availableBytes >= 2)
 	            process_FIG0 (d);	
-//	         else
-//	            fprintf (stderr, "x");
 	         break;
 
 	      case 1:			
-	         if (availableBytes >= 2)
+	         if (availableBytes >= 2) 
 	            process_FIG1 (d);
+	     
 	         break;
 
 	      case 2:		// not yet implemented
@@ -246,38 +248,23 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 //	FIG0/0 indicated a change in channel organization
 //	The info is MCI
 void	fibDecoder::FIG0Extension0 (uint8_t *d) {
-const uint8_t CN_bit	= getBits_1 (d, 8 + 0);
-uint16_t        EId;
-uint8_t         changeFlag;
-uint16_t        highpart, lowpart;
-int16_t         occurrenceChange;
-uint8_t		alarmFlag;
-static	uint8_t prevChangeFlag	= 0;
 
-	(void)CN_bit;
-	EId                     = getBits   (d, 16, 16);
-	(void)EId;
-	changeFlag              = getBits_2 (d, 16 + 16);
-	alarmFlag		= getBits_1 (d, 16 + 16 + 2);
-	highpart                = getBits_5 (d, 16 + 19);
-	lowpart                 = getBits_8 (d, 16 + 24);
-	(void)alarmFlag;
-	occurrenceChange        = getBits_8 (d, 16 + 32);
-	(void)occurrenceChange;
-	CIFcount_hi. store (highpart);
-	CIFcount_lo. store (lowpart);
-
-	if (prevChangeFlag != 0)
-	   fprintf (stderr, "%d %d\n", changeFlag, prevChangeFlag);
-	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
+	FIG00_value. EId	=  getBits   (d, 16, 16);
+	FIG00_value. changeFlag = getBits_2 (d, 16 + 16);
+	FIG00_value. alarmFlag	= getBits_1 (d, 16 + 16 + 2);
+	FIG00_value. CIF_major = getBits_5 (d, 16 + 19);
+	FIG00_value. CIF_minor = getBits_8 (d, 16 + 24);
+	FIG00_value. occurrenceChange =
+	                                          getBits_8 (d, 16 + 32);
+	if ((FIG00_value. changeFlag == 0) &&
+	     (FIG00_value. prevChangeFlag == 3)) {
 	   fibConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;
 	   nextConfig		->  reset ();
-//	   cleanupServiceList ();
-	   emit changeinConfiguration ();
+	   emit signal_FIG00 ();
 	}
-	prevChangeFlag	= changeFlag;
+	FIG00_value. prevChangeFlag	= FIG00_value. changeFlag;
 //	if (alarmFlag)
 //	   fprintf (stderr, "serious problem\n");
 }
@@ -304,30 +291,29 @@ int16_t	fibDecoder::HandleFIG0Extension1 (uint8_t *d, int16_t offset,
 	                                  const uint8_t PD_bit) {
 int16_t	bitOffset	= offset * 8;
 const int16_t subChId	= getBits_6 (d, bitOffset);
-const int16_t startAdr	= getBits (d, bitOffset + 6, 10);
+const int16_t startAddr	= getBits (d, bitOffset + 6, 10);
 int16_t	tabelIndex;
 int16_t	option, protLevel, chanSize;
-fibConfig::subChannel	channel;
+FIG01 channel;
 fibConfig *localBase = CN_bit == 0 ? currentConfig : nextConfig;
 static	int table_1 [] = {12, 8, 6, 4};
 static	int table_2 [] = {27, 21, 18, 15};
 
 	(void)OE_bit; (void)PD_bit;
 	channel. subChId	= subChId;
-	channel. startAddr	= startAdr;
+	channel. startAddr	= startAddr;
 	channel. Length		= 0;	// will change
-	channel. FEC_scheme	= 0;	// corrected later on
 
 	if (getBits_1 (d, bitOffset + 16) == 0) {	// short form
 	   tabelIndex		= getBits_6 (d, bitOffset + 18);
 	   channel. Length	= ProtLevel [tabelIndex][0];
-	   channel. shortForm	= true;		// short form
+	   channel. shortForm	= 1;		// short form
 	   channel. protLevel	= ProtLevel [tabelIndex][1];
 	   channel. bitRate	= ProtLevel [tabelIndex][2];
 	   bitOffset += 24;
 	}
 	else { 	// EEP long form
-	   channel. shortForm	= false;
+	   channel. shortForm	= 0;
 	   option = getBits_3 (d, bitOffset + 17);
 	   if (option == 0) { 		// A Level protection
 	      protLevel		= getBits (d, bitOffset + 20, 2);
@@ -349,10 +335,9 @@ static	int table_2 [] = {27, 21, 18, 15};
 //
 //	in case the subchannel data was already computed
 //	we merely compute the offset
-	if (localBase -> subChId_exists (subChId))
-	   return bitOffset / 8;
+	if (!localBase -> in_FIG01_stack (channel)) 
+	   localBase -> FIG01_stack. push_back (channel);
 //
-	localBase -> add_to_subChannel_table (channel);
 	return bitOffset / 8;	// we return bytes
 }
 //
@@ -362,78 +347,56 @@ void	fibDecoder::FIG0Extension2 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
 const int16_t	Length	= getBits_5 (d, 3);
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
-const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
+//const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
 const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 
-	while (used <= Length) {
-	   used = HandleFIG0Extension2 (d, used, CN_bit, OE_bit, PD_bit);
-	}
-}
-//
-//
-int16_t	fibDecoder::HandleFIG0Extension2 (uint8_t *d,
-	                                  int16_t offset,
-	                                  const uint8_t CN_bit,
-	                                  const uint8_t OE_bit,
-	                                  const uint8_t PD_bit) {
-int16_t		bitOffset	= 8 * offset;
-uint8_t		ecc = 0;
-uint8_t		cId;
+int16_t		bitOffset	= 8 * used;
 uint32_t	SId;
-int16_t		numberofComponents;
-fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
-	
-	(void)OE_bit;
-	if (PD_bit == 1) {		// long Sid, data
-	   ecc	= getBits_8 (d, bitOffset);	(void)ecc;
-	   cId	= getBits_4 (d, bitOffset + 4);
-	   SId	= getLBits  (d, bitOffset, 32);
-	   bitOffset	+= 32;
-	}
-	else {
-	   cId	= getBits_4 (d, bitOffset);	(void)cId;
-	   SId	= getBits   (d, bitOffset, 16);
-	   bitOffset	+= 16;
-	}
-	
-	numberofComponents	= getBits_4 (d, bitOffset + 4);
+fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
-	fibConfig::SId_struct SId_element;
-	if (localBase -> SId_exists (SId)) {
-	   bitOffset += numberofComponents * 16 + 8;
-	   return bitOffset / 8;
-	}
+	while (bitOffset < Length * 8) {
+	   if (PD_bit == 1) {		// long Sid, data
+	      SId	= getLBits  (d, bitOffset, 32);
+	      bitOffset	+= 32;
+	   }
+	   else {
+	      SId	= getBits   (d, bitOffset, 16);
+	      bitOffset	+= 16;
+	   }
 
-	SId_element. announcing = 0;
-	SId_element. SId	= SId;
-	bitOffset	+= 8;
-	for (uint16_t i = 0; i < numberofComponents; i ++) {
-	   fibConfig::serviceComp_C comp;
-	   comp. SId	= SId;
-	   comp. compNr	= i;
-	   
-	   const uint8_t TMid	= getBits_2 (d, bitOffset);
-	   comp. TMid = TMid;
-	   if (TMid == 00)  {	// Audio
-	      comp. 	ASCTy	= getBits_6 (d, bitOffset + 2);
-	      comp.	subChId	= getBits_6 (d, bitOffset + 8);
-	      comp.	PS_flag	= getBits_1 (d, bitOffset + 14);
+	   for (auto &f02 : localBase -> FIG02_stack) 
+	      if (f02. SId == SId)
+	         return;
+
+	   FIG02 element;
+	   element. SId		= SId;
+	   element. PD_bit	= PD_bit;
+	   element. nrComps	=  getBits_4 (d, bitOffset + 4);
+	   bitOffset	+= 8;
+
+	   for (uint16_t i = 0; i < element. nrComps; i ++) {
+	      FIG02_comp comp;
+	      comp. compNr	= i;
+	      comp.SCIds	= 0;	// default
+	      const uint8_t TMid	= getBits_2 (d, bitOffset);
+	      comp. TMid	= TMid;
+	      if (TMid == 00)  {	// Audio
+	         comp. ASCTy	= getBits_6 (d, bitOffset + 2);
+	         comp. subChId	= getBits_6 (d, bitOffset + 8);
+	         comp. PS_flag	= getBits_1 (d, bitOffset + 14);
+	      }
+	      else
+	      if (TMid == 3) { // MSC packet data
+	         comp. SCId	= getBits   (d, bitOffset + 2, 12);
+	         comp. PS_flag	= getBits_1 (d, bitOffset + 14);
+	      }
+	      else 
+	         {;}
+	      bitOffset += 16;
+	      element. components. push_back (comp);
 	   }
-	   else
-	   if (TMid == 3) { // MSC packet data
-	      comp. SCId	= getBits   (d, bitOffset + 2, 12);
-	      comp. PS_flag	= getBits_1 (d, bitOffset + 14);
-	   }
-	   else 
-	      {;}
-	   bitOffset += 16;
-	   if (!localBase -> compIsKnown (comp)) {	
-	      int index =  localBase -> add_to_SC_C_table (comp);
-	      SId_element. comps. push_back (index);
-	   }
+	   localBase -> FIG02_stack. push_back (element);
 	}
-	localBase -> add_to_SId_table (SId_element);
-	return bitOffset / 8;		// in Bytes
 }
 
 //	Service component in packet mode 6.3.2
@@ -473,15 +436,14 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	(void)CAOrg;
 	used += 40 / 8;
 
-	if (localBase -> SCId_exists (SCId))
-	   return used;
-	fibConfig::serviceComp_P element;
+	FIG03 element;
 	element. SCId  		= SCId;
 	element. subChId  	= SubChId;
 	element. DSCTy		= DSCTy;
 	element. DG_flag	= DGflag;
 	element. packetAddress	= packetAddress;
-	localBase -> add_to_SC_P_table (element);
+	if (!localBase -> in_FIG03_stack (element))
+	   localBase -> FIG03_stack . push_back (element);
 	return used;
 }
 
@@ -505,122 +467,56 @@ int16_t	fibDecoder::HandleFIG0Extension5 (uint8_t	*d,
 	                                  const uint8_t PD_bit) {
 int16_t	bitOffset	= offset * 8;
 const uint8_t	LS_flag	= getBits_1 (d, bitOffset);
-fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-fibConfig::SC_language comp;
+FIG05 comp;
 
-	(void)OE_bit; (void)PD_bit;
+	(void)CN_bit;(void)OE_bit; (void)PD_bit;
 
-	comp. LS_flag = LS_flag;
 	if (LS_flag == 0) {
 	   comp. subChId = getBits (d, bitOffset + 2, 6);
-	   comp. SCId	= 255;
-	   uint8_t language = getBits (d, bitOffset + 8, 8);
-	   if (localBase -> subChId_exists (comp. subChId)) 
-	      comp. language = language;
+	   comp. language = getBits (d, bitOffset + 8, 8);
 	   bitOffset += 16;
-	   if (localBase -> language_comp_exists (comp. subChId))
+	   if (in_FIG05_stack (comp))
 	      return bitOffset / 8;
 
-	   localBase -> add_to_language_table (comp);
+	   FIG05_stack. push_back (comp);
 	   return bitOffset / 8;
 	}
 	else {
-	   comp. SCId = getBits (d, bitOffset + 4, 12);
-	   comp. subChId = 255;
-	   comp. language = 0;
-	   uint8_t language = getBits (d, bitOffset + 16, 8);
-	   bitOffset += 24;
-
-	   int res = localBase -> subChId_in_SCId (comp. SCId);
-	   if (res < 0) 	// not found yet
-	      return bitOffset / 8;
-	   comp. language = language;
-	   if (localBase -> language_comp_exists (comp. SCId))
-	      return bitOffset / 8;
-
-	   localBase -> add_to_language_table (comp);
+	   uint16_t SCId	= getBits (d, bitOffset + 4, 12);
+	   for (auto &f: currentConfig ->  FIG03_stack) {
+	      if (f. SCId == SCId) {
+	         comp. subChId	= f. subChId;
+	         comp. language	= getBits (d, bitOffset + 16, 8);
+	         if (!in_FIG05_stack (comp))
+	            FIG05_stack. push_back (comp);
+	         bitOffset += 24;
+	         return bitOffset / 8;
+	      }
+	      bitOffset += 24;
+	   }
 	   return bitOffset / 8;
 	}
 }
 
 // FIG0/6: Service linking information 8.1.5
-void	fibDecoder::FIG0Extension6 (uint8_t *d) {
-uint16_t used		= 2;            // offset in bytes
-const int16_t Length    = getBits_5 (d, 3);
-const uint8_t CN_bit    = getBits_1 (d, 8 + 0);
-const uint8_t OE_bit    = getBits_1 (d, 8 + 1);
-const uint8_t PD_bit    = getBits_1 (d, 8 + 2);
 
-	while (used <= Length) {
-	   used = HandleFIG0Extension6 (d, used,  CN_bit, OE_bit, PD_bit);
-	}
-}
-
-int16_t	fibDecoder::HandleFIG0Extension6 (uint8_t	*d,
-	                                  uint16_t 	offset,
-	                                  const uint8_t CN_bit,
-	                                  const uint8_t OE_bit,
-	                                  const uint8_t PD_bit) {
-int16_t	bitOffset	= offset * 8;
-uint8_t	bit0	= d [bitOffset + 0];
-uint8_t ils	= d [bitOffset + 3];
-
-	if (d [bitOffset + 0] == 0) {
-	   bitOffset += 16;
-	   return bitOffset / 8;
-	}
-	uint16_t numberOfIds	= getBits_4 (d, bitOffset + 20);
-	uint8_t idLQ		= getBits_2 (d, bitOffset + 17);
-	bitOffset += 20;
-
-	if ((PD_bit == 0) && (ils == 0)) {
-//	   fprintf (stderr, "PD_bit 0, ils 0: ");
-	   for (int i = 0; i < numberOfIds; i ++) {
-//	      fprintf (stderr, "%X ", getLBits (d, bitOffset, 16));
-	      bitOffset += 16;
-	   }
-//	   fprintf (stderr, "\n");
-	   return bitOffset / 8;
-	}
-
-	if ((PD_bit == 0) && (ils == 1))  {
-//	   fprintf (stderr, "PD_bit 0, ils 1: ");
-	   for (int i = 0; i < numberOfIds; i ++) {
-//	      if (idLQ < 2)
-//	         fprintf (stderr, "(%x %X) ", getBits_8 (d, bitOffset),
-//	                                   getLBits  (d, bitOffset + 8, 16));
-	      bitOffset += 24;
-	   }
-//	   fprintf (stderr, "\n");
-	   return bitOffset / 8;
-	}
-	if (PD_bit == 1) {
-//	   fprintf (stderr, "PD_bit 1: ");
-	   for (int i = 0; i < numberOfIds; i ++) {
-//	      fprintf (stderr, "%X ", getLBits (d, bitOffset, 32));
-	      bitOffset += 32;
-	   }
-//	   fprintf (stderr, "\n");
-	}
-	return bitOffset / 8;
+void    fibDecoder::FIG0Extension6 (uint8_t *d) {
+	(void)d;
 }
 
 //
 // FIG0/7: Configuration linking information 6.4.2,
 void    fibDecoder::FIG0Extension7 (uint8_t *d) {
 int16_t used		= 2;            // offset in bytes
-const int16_t Length	= getBits_5 (d, 3);
+//const int16_t Length	= getBits_5 (d, 3);
 const uint8_t CN_bit	= getBits_1 (d, 8 + 0);
-const uint8_t OE_bit	= getBits_1 (d, 8 + 1);
-const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
-
+//const uint8_t OE_bit	= getBits_1 (d, 8 + 1);
+//const uint8_t PD_bit	= getBits_1 (d, 8 + 2);
 const int serviceCount	= getBits_6 (d, used * 8);
 int     counter		= getBits   (d, used * 8 + 6, 10);
+fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 
-	(void)Length; (void)OE_bit; (void)PD_bit;
-
-	if (CN_bit == 0)	// only current configuration for now
-	   nrServices (serviceCount);
+	localBase	-> FIG07_value	= serviceCount;
 	(void)counter;
 }
 
@@ -647,7 +543,7 @@ const uint32_t	SId	= getLBits (d, bitOffset, PD_bit == 1 ? 32 : 16);
 uint8_t		LS_flag;
 uint8_t		extensionFlag;
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-fibConfig::serviceComp_G comp;
+FIG08 comp;
 
 	(void)OE_bit;
 
@@ -658,6 +554,8 @@ fibConfig::serviceComp_G comp;
 	bitOffset	+= 8;
 	LS_flag		= getBits_1 (d, bitOffset);
 
+	comp. subChId	= 0;
+	comp. SId	= 0;
 	comp. SId	= SId;
 	comp. SCIds	= SCIds;
 	comp. LS_flag	= LS_flag;
@@ -670,13 +568,42 @@ fibConfig::serviceComp_G comp;
 	   comp. SCId	= getBits (d, bitOffset + 4, 12);
 	   bitOffset += 16;
 	}
+
 	if (extensionFlag)
 	   bitOffset += 8;	// skip Rfa
 
-	if (localBase -> SC_G_element_exists (comp.SId, comp. SCIds))
+	if (comp. SCIds	== 0)	// not secondary
 	   return bitOffset / 8;
 
-	localBase -> add_to_SC_G_table (comp);
+	if (localBase -> in_FIG08_stack (comp))
+	   return bitOffset / 8;
+
+	for (auto &g :  localBase -> FIG02_stack) {
+	   if (g. SId != SId) 
+	      continue;
+
+	   if (LS_flag == 0) {	// short form
+	      for (auto &h : g. components) {
+	         if (h. TMid != 0)
+	            continue;
+	         if (h. subChId != comp. subChId)
+	            continue;
+	         h. SCIds =  comp. SCIds;
+	         break;
+	      }
+	   }
+	   else {	// long form
+	      for (auto &h : g. components) {
+	         if (h. TMid != 3)
+	            continue;
+	         if (h. SCId != comp. SCId)
+	            continue;
+	         h. SCIds = comp.  SCIds;
+	         break;
+	      }
+	   }	// loop in components
+	}	// loop in FIG02 stack
+	localBase -> FIG08_stack. push_back (comp);
 	return bitOffset / 8;
 }
 
@@ -684,39 +611,28 @@ fibConfig::serviceComp_G comp;
 void	fibDecoder::FIG0Extension9 (uint8_t *d) {
 uint8_t used		= 2; 		// offset in bytes
 int16_t	Length		= getBits_5 (d, 3);
-uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
-uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
-uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
-
-	if ((PD_bit != 0) || (OE_bit != 0))
-	   return;
-	if (CN_bit != 0)
-	   return;
 	
 //	bit 6 indicates the number of hours
 	uint8_t extFlag		= getBits_1 (d, used * 8 + 0);
         const int signbit = getBits_1 (d, used * 8 + 2);
-        currentConfig -> dateTime [6] = (signbit == 1)?
-                                         -1 * getBits_4 (d, used * 8 + 3):
+        dateTime [6] = (signbit == 1)?  -1 * getBits_4 (d, used * 8 + 3):
                                          getBits_4 (d, used * 8 + 3);
 //	bit 7 indicates a possible remaining half our
-        currentConfig -> dateTime [7] =
-	                   (getBits_1 (d, used * 8 + 7) == 1) ? 30 : 0;
+        dateTime [7] = (getBits_1 (d, used * 8 + 7) == 1) ? 30 : 0;
         if (signbit != 0)
-           currentConfig -> dateTime [7] = - currentConfig -> dateTime [7];
+           dateTime [7] = - dateTime [7];
 
-	uint8_t	LTO	= currentConfig -> dateTime [6];
+	uint8_t	LTO	= dateTime [6];
 	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
 	uint16_t table	= getBits (d, used * 8 + 16, 8);
 
-	theEnsemble.	eccByte		= ecc;
-	theEnsemble.	lto		= LTO;
-	theEnsemble.	internatTable	= table;
-	lto_ecc (LTO, ecc, table);
+	FIG09_value.	ECC		= ecc;
+	FIG09_value.	LTO		= LTO;
+	FIG09_value.	tableId		= table;
+	signal_FIG09 (LTO, ecc, table);
 	if (!extFlag)
 	   return;
 	int bitOffset	= used * 8 + 16;
-	int interTable	= getBits_8 (d, bitOffset);
 	bitOffset += 8;
 	while (bitOffset < Length * 8) {
 	   uint16_t nrServices = getBits_2 (d, bitOffset);
@@ -727,13 +643,19 @@ uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 	   bitOffset += 8;
 	   for (int i = 0; i < nrServices; i ++) {
 	      uint16_t SId = getLBits (d, bitOffset, 16);
-	      bitOffset += 16;
-	      for (auto &serv : theEnsemble. primaries) {
-                 if ((serv. SId == SId)) {
-	            serv. ecc = service_ecc;
+	      struct local_ecc ecc;
+	      ecc. SId		= SId;
+	      ecc. service_ecc	= service_ecc;
+	      bool flag		= false;
+	      for (auto &se : FIG09_value. ecc_local) {
+	         if ((se. SId == SId) && (se. service_ecc == service_ecc)) {
+	            flag = true;
 	            break;
 	         }
 	      }
+	      if (!flag)
+	         FIG09_value. ecc_local. push_back (ecc);
+	      bitOffset += 16;
 	   }
 	}
 }
@@ -746,53 +668,51 @@ int	monthLength [] {
 void	fibDecoder::adjustTime (int32_t *dateTime) {
 //	first adjust the half hour  in the amount of minutes
 	(void)dateTime;
-	currentConfig -> dateTime [4] += 
-	            (currentConfig -> dateTime [7] == 1) ? 30 : 0;
-	if (currentConfig -> dateTime [4] >= 60) {
-	    currentConfig -> dateTime [4] -= 60;
-	    currentConfig -> dateTime [3] ++;
+	dateTime [4] += 
+	            (dateTime [7] == 1) ? 30 : 0;
+	if (dateTime [4] >= 60) {
+	    dateTime [4] -= 60;
+	    dateTime [3] ++;
 	}
 
-	if (currentConfig -> dateTime [4] < 0) {
-	    currentConfig -> dateTime [4] += 60;
-	    currentConfig -> dateTime [3] --;
+	if (dateTime [4] < 0) {
+	    dateTime [4] += 60;
+	    dateTime [3] --;
 	}
 
-	currentConfig -> dateTime [3] += currentConfig -> dateTime [6];
-	if ((0 <= currentConfig ->  dateTime [3]) && 
-	    (currentConfig -> dateTime [3] <= 23))
+	dateTime [3] += dateTime [6];
+	if ((0 <= dateTime [3]) && (dateTime [3] <= 23))
 	   return;
 
-	if (currentConfig -> dateTime [3] > 23) {
-	   currentConfig -> dateTime [3] -= 24;
-	   currentConfig -> dateTime [2] ++;
+	if (dateTime [3] > 23) {
+	   dateTime [3] -= 24;
+	   dateTime [2] ++;
 	}
 
-	if (currentConfig -> dateTime [3] < 0) {
-	   currentConfig -> dateTime [3] += 24;
-	   currentConfig -> dateTime [2] --;
+	if (dateTime [3] < 0) {
+	   dateTime [3] += 24;
+	   dateTime [2] --;
 	}
 
-	if (currentConfig -> dateTime [2] >
-	             monthLength [currentConfig -> dateTime [1] - 1]) {
-	   currentConfig -> dateTime [2] = 1;
-	   currentConfig -> dateTime [1] ++;
-	   if (currentConfig -> dateTime [1] > 12) {
-	      currentConfig -> dateTime [1] = 1;
-	      currentConfig -> dateTime [0] ++;
+	if (dateTime [2] > monthLength [dateTime [1] - 1]) {
+	   dateTime [2] = 1;
+	   dateTime [1] ++;
+	   if (dateTime [1] > 12) {
+	      dateTime [1] = 1;
+	      dateTime [0] ++;
 	   }
 	}
 
-	if (currentConfig -> dateTime [2] < 0) {
-	   if (currentConfig -> dateTime [1] > 1) {
-	      currentConfig -> dateTime [2] =
-	                  monthLength [currentConfig -> dateTime [1] - 1 - 1];
-	      currentConfig -> dateTime [1] --;
+	if (dateTime [2] < 0) {
+	   if (dateTime [1] > 1) {
+	      dateTime [2] =
+	                  monthLength [dateTime [1] - 1 - 1];
+	      dateTime [1] --;
 	   }
 	   else {
-	      currentConfig -> dateTime [2] = monthLength [11];
-	      currentConfig -> dateTime [1] = 12;
-	      currentConfig -> dateTime [0] --;
+	      dateTime [2] = monthLength [11];
+	      dateTime [1] = 12;
+	      dateTime [0] --;
 	   }
 	}
 }
@@ -810,7 +730,7 @@ uint16_t	theTime	[6];
 	theTime [3] = getBits_5 (dd, offset + 21); // Hours
 	theTime [4] = getBits_6 (dd, offset + 26); // Minutes
 
-	if (getBits_6 (dd, offset + 26) != currentConfig -> dateTime [4]) 
+	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
 	   theTime [5] =  0;	// Seconds
 
 	if (dd [offset + 20] == 1)
@@ -819,26 +739,26 @@ uint16_t	theTime	[6];
 //	take care of different time zones
 	bool	change = false;
 	for (int i = 0; i < 6; i ++) {
-	   if (theTime [i] != currentConfig -> dateTime [i])
+	   if (theTime [i] != dateTime [i])
 	      change = true;
-	   currentConfig -> dateTime [i] = theTime [i];
+	   dateTime [i] = theTime [i];
 	}
 
 #ifdef	CLOCK_STREAMER
 	change = true;
 #endif
 	if (change) {
-	   int utc_day		= currentConfig -> dateTime [2];
-	   int utc_hour		= currentConfig -> dateTime [3];
-	   int utc_minute 	= currentConfig -> dateTime [4];
-	   int utc_seconds	= currentConfig -> dateTime [5];
-	   adjustTime (currentConfig -> dateTime);
-	   emit  clockTime (currentConfig -> dateTime [0],
-	                    currentConfig -> dateTime [1],
-	                    currentConfig -> dateTime [2],
-	                    currentConfig -> dateTime [3],
-	                    currentConfig -> dateTime [4],
-	                    utc_day, utc_hour, utc_minute, utc_seconds);
+	   int utc_day		= dateTime [2];
+	   int utc_hour		= dateTime [3];
+	   int utc_minute 	= dateTime [4];
+	   int utc_seconds	= dateTime [5];
+	   adjustTime (dateTime);
+	   emit  signal_FIG010 (dateTime [0],
+	                        dateTime [1],
+	                        dateTime [2],
+	                        dateTime [3],
+	                        dateTime [4],
+	                        utc_day, utc_hour, utc_minute, utc_seconds);
 	}
 }
 //
@@ -864,7 +784,7 @@ int16_t	bitOffset	= used * 8;
 uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
 int16_t		appType;
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-fibConfig::AppType element;
+FIG013 element;
 
 	(void)OE_bit;
 	bitOffset		+= pdBit == 1 ? 32 : 16;
@@ -879,9 +799,9 @@ fibConfig::AppType element;
 	   element. Apptype	= appType;
 	   bitOffset 		+= (11 + 5 + 8 * length);
 	}
-	if (localBase -> findIndexApptype_table (SId, SCIds) != -1)
+	if (localBase -> in_FIG013_stack (element))
 	   return bitOffset / 8;
-	localBase -> add_to_apptype_table (element);
+	localBase -> FIG013_stack. push_back (element);
 	return bitOffset / 8;
 }
 
@@ -889,86 +809,49 @@ fibConfig::AppType element;
 void	fibDecoder::FIG0Extension14 (uint8_t *d) {
 int16_t	Length		= getBits_5 (d, 3);	// in Bytes
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
-const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
-const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
+//const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
+//const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 int16_t	used	= 2;			// in Bytes
 fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
+FIG014 element;
 
-	(void)OE_bit; (void)PD_bit;
 	while (used <= Length) {
-	   int16_t subChId	= getBits_6 (d, used * 8);
-	   uint8_t FEC_scheme	= getBits_2 (d, used * 8 + 6);
+	   element. subChId	= getBits_6 (d, used * 8);
+	   element. FEC_scheme	= getBits_2 (d, used * 8 + 6);
 	   used = used + 1;
-	   localBase	-> set_FECscheme (subChId, FEC_scheme);
+	   if (!localBase -> in_FIG014_stack (element))
+	      localBase -> FIG014_stack. push_back (element);
 	}
 }
 //
 //
 //	ETSI TS 104 089	
 void	fibDecoder::FIG0Extension15 (uint8_t *d) {
-//int16_t Length          = getBits_5 (d, 3);     // in Bytes
-const uint8_t   CN_bit  = getBits_1 (d, 8 + 0);
-const uint8_t   OE_bit  = getBits_1 (d, 8 + 1);
-const uint8_t   PD_bit  = getBits_1 (d, 8 + 2);
-int16_t used    = 2;                    // in Bytes
-int16_t bitOffset               = used * 8;
-uint8_t secondsCount		= 0;
-
-	if (CN_bit == 1)	// Next config, not implemented yet
-	   return;
-	if (PD_bit == 1)	// discard
-	   return;
-	if (OE_bit == 1)	// other ensemble, not implemented
-	   return;
-//
-//	Handling the Id field
-	uint8_t phase		= getBits_2 (d, bitOffset);
-	uint8_t subChId		= getBits_6 (d, bitOffset + 2);
-	bitOffset		+= 8;
-	if (phase == 00) {
-	   secondsCount		= getBits_6 (d, bitOffset + 2);
-	   bitOffset		+= 8;
-	}
-	(void)secondsCount;
-	(void)phase;
-	(void)subChId;
-//	Handling the Statusfield
-	bitOffset += 8;
-//	Handling the location codes
+	(void)d;
 //	to be researched
 }
 //
-//	program type 8.1.5
+//	program type 8.1.5 only current config
 void	fibDecoder::FIG0Extension17 (uint8_t *d) {
 int16_t	length	= getBits_5 (d, 3);
 int16_t	offset	= 16;
 
 	while (offset < length * 8) {
-	   uint16_t	SId	= getBits (d, offset, 16);
-	   uint8_t typeCode	= getBits_5 (d, offset + 27);
-	   for (uint16_t i = 0; i < theEnsemble. primaries. size (); i ++) {
-	      if (theEnsemble. primaries [i]. SId == SId) {
-	         if (theEnsemble. primaries [i]. programType == 0)
-	            tell_programType (SId, typeCode);
-	         theEnsemble. primaries [i]. programType = typeCode;
-	         break;
-	      }
-	   }
+	   FIG017 element;
+	   element. SId		= getBits	(d, offset, 16);
+	   element. SD_flag	= getBits_1	(d, offset);
+	   element. typecode	= getBits_5	(d, offset + 27);
+	   if (!in_FIG017_stack (element))
+	      FIG017_stack. push_back (element);
 	   offset += 32;
 	}
 }
 //
-//	Announcement support 8.1.6.1
+//	Announcement support 8.1.6.1 only current config
 void	fibDecoder::FIG0Extension18 (uint8_t *d) {
 int16_t	Length		= getBits_5 (d, 3);	// in Bytes
-const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
-const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
-const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 int16_t	used		= 2;			// in Bytes
 int16_t	bitOffset	= used * 8;
-fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	(void)OE_bit; (void)PD_bit;
 
 	while (bitOffset < Length * 8) {
 	   uint16_t SId		= getBits (d, bitOffset, 16);
@@ -983,31 +866,22 @@ fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	      uint8_t clusterId = getBits (d, bitOffset + 8 * i, 8);
 	      if (clusterId == 0)
 	         continue;
-	      if (!localBase -> announcement_exists (SId, clusterId)) {
-	         fibConfig::FIG18_cluster aC;
-	         aC. SId = SId;
-	         aC. asuFlags = asuFlags;
-	         aC. clusterId = clusterId;
-	         localBase -> add_to_announcement_table (aC);
-	      }
+	      FIG018 aC;
+	      aC. SId = SId;
+	      aC. ASUFlags = asuFlags;
+	      aC. clusterIds. push_back (clusterId);
+	      if (!in_FIG018_stack (aC))
+	         FIG018_stack. push_back (aC);
 	   }
 	   bitOffset	+= nrClusters * 8;
 	}
 }
 
-//	Announcement switching 8.1.6.2
+//	Announcement switching 8.1.6.2 only current config
 void	fibDecoder::FIG0Extension19 (uint8_t *d) {
 int16_t	Length		= getBits_5 (d, 3);	// in Bytes
-const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
-const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
-const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
 int16_t	used		= 2;			// in Bytes
 int16_t	bitOffset	= used * 8;
-//fibConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
-
-	if (CN_bit != 0)	// next config
-	   return;
-	(void)OE_bit; (void)PD_bit;
 	
 	while (bitOffset < Length * 8) {
 	   uint8_t clusterId	= getBits (d, bitOffset, 8);
@@ -1021,70 +895,15 @@ int16_t	bitOffset	= used * 8;
 	   bitOffset		+= 1;
 	   uint8_t subChId	= getBits (d, bitOffset, 6);
 	   bitOffset		+= 6;
-	   currentConfig -> check_announcements (clusterId,
-	                                         AswFlags, newFlag, subChId);
+	   check_announcements (clusterId, AswFlags, newFlag, subChId);
 	}
-}
-//
-//	Service Component Information
-//	Not encountered yet
-void	fibDecoder::FIG0Extension20 (uint8_t *d) {
-int16_t	used		= 2;		// offset in bytes
-const int16_t	Length	= getBits_5 (d, 3);
-const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
-const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
-const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
-#ifndef	__MINGW32__
-	static bool shown = false;
-	if (!shown) {
-	   if (theEnsemble. namePresent) {
-	      fprintf (stderr, "FIG0/20 appears in %s\n",
-	                           theEnsemble. ensembleName.
-	                                     toLatin1 (). data ());
-	      shown = true;
-	   }
-	}
-#endif
-	return;
-	while (used <= Length) 
-	   used = HandleFIG0Extension21 (d, used, CN_bit, OE_bit, PD_bit);
 }
 
-int16_t	fibDecoder::HandleFIG0Extension20 (uint8_t	*d,
-	                                   uint16_t	offset,
-	                                   const uint8_t CN_bit,
-	                                   const uint8_t OE_bit,
-	                                   const uint8_t PD_bit) {
-	(void)CN_bit; (void)OE_bit;
-	uint32_t SId		= PD_bit? getLBits (d, offset, 32) :
-	                                  getLBits (d, offset, 16);
-	offset += PD_bit ? 32 : 16;
-	uint8_t SCIds		= getBits_4 (d, offset); offset += 4;
-	uint8_t ChangeFlags	= getBits_2 (d, offset); offset += 2;
-	uint8_t PT_flag		= getBits_1 (d, offset); offset += 1;
-	uint8_t SC_flag		= getBits_1 (d, offset); offset += 1;
-	uint8_t AD_flag		= getBits_1 (d, offset + 1); offset += 2;
-	uint8_t SCTy		= getBits_6 (d, offset); offset += 6;
-	uint8_t Date		= getBits_5 (d, offset); offset += 5;
-	uint8_t Hour		= getBits_5 (d, offset); offset += 5;
-	uint8_t Minutes		= getBits_6 (d, offset); offset += 6;
-	uint8_t Seconds		= getBits_6 (d, offset); offset += 6;
-	uint8_t SId_flag	= getBits_1 (d, offset); offset += 1;
-	uint8_t Eid_flag	= getBits_1 (d, offset); offset += 1;
-	uint32_t Transfer_Id	= PD_bit ? getLBits (d, offset, 32) :
-	                                   getLBits (d, offset, 16);
-	offset += PD_bit ? 32 : 16;
-	uint16_t Transfer_EId	= Eid_flag ? getLBits (d, offset, 16) : 0;
-	offset += Eid_flag ? 16 : 0;
-//	fprintf (stderr, "%X (%d) is in fig 20\n", SId, SCIds); 
-	(void)SId; (void)SCIds;
-	(void)ChangeFlags; (void)PT_flag; (void) SC_flag; 
-	(void)AD_flag; (void)SCTy; (void)Date; (void)Hour;
-	(void)Minutes; (void)Seconds; (void)SId_flag;
-	(void)Transfer_Id; (void)Transfer_EId;
-	return offset;
+void	fibDecoder::FIG0Extension20 (uint8_t *d) {
+	(void)d;
 }
-	   
+
+//
 //	Frequency information (FI) 8.1.8
 void	fibDecoder::FIG0Extension21 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes
@@ -1107,11 +926,10 @@ int16_t	l	= getBits_5 (d, l_offset + 11);
 int16_t		upperLimit	= l_offset + 16 + l * 8;
 int16_t		base		= l_offset + 16;
 
-	(void)CN_bit; (void)OE_bit, (void)PD_bit;
-	if (OE_bit == 1)	// this ios not for use
+	(void)CN_bit; (void)PD_bit;
+	if (OE_bit == 1)	// this is not for us
 	   return upperLimit / 8;
 
-	bool newData = false;
 	while (base < upperLimit) {
 	   uint16_t idField	= getBits (d, base, 16);
 	   uint8_t  RandM	= getBits_4 (d, base + 16);
@@ -1120,28 +938,34 @@ int16_t		base		= l_offset + 16;
 	   uint8_t  length	= getBits_3 (d, base + 21);
 	   if (RandM == 0x08) {
 	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
-	      int32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
-	      for (auto &serv : theEnsemble. primaries) {
-	         if ((serv. SId == idField)) {
-	            bool alreadyIn = false;
-	            for (auto freq : serv. fmFrequencies) {
-	               if (fmFrequency == freq) {
-	                  alreadyIn = true;
-	                  break;
-	               }
+	      uint32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
+	      bool alreadyIn = false;
+	      for (auto &f : FIG021_stack) {
+	         if ((f. SId != idField))
+	            continue;
+	         for (auto freq : f. freqList) {
+	            if (fmFrequency == freq) {
+	               alreadyIn = true;
+	               break;
 	            }
 	            if (!alreadyIn) {
-	               serv. fmFrequencies. push_back (fmFrequency);
-	               newData = true;
+	               f. freqList. push_back (fmFrequency);
+	               signal_FIG021 (idField, fmFrequency);
+	               alreadyIn = true;
 	            }
 	         }
+	         break;
+	      }
+	      if (!alreadyIn) {
+	         FIG021 f21;
+	         f21. SId	= idField;
+	         f21. freqList. push_back (fmFrequency);
+	         FIG021_stack. push_back (f21);
+	         signal_FIG021 (idField, fmFrequency);
 	      }
 	   }
 	   base += 24 + length * 8;
 	}
-	if (newData)
-	   emit setFreqList ();
-	         
 	return upperLimit / 8;
 }
 //
@@ -1187,7 +1011,6 @@ void	fibDecoder::FIG1Extension0 (uint8_t *d) {
 int16_t		offset	= 0;
 char		label [17];
 
-//      from byte 1 we deduce:
 	const uint8_t charSet	= getBits_4 (d, 8);
 //	charSet 0 .. 15, 4 bits, checks are superfluous
 	const uint8_t Rfu	= getBits_1 (d, 8 + 4);
@@ -1199,17 +1022,15 @@ char		label [17];
 	for (int i = 0; i < 16; i ++) {
 	   label [i] = getBits_8 (d, offset + 8 * i);
 	}
-	const QString name = toQStringUsingCharset (
-	                                     (const char *) label,
-	                                     (CharacterSet) charSet);
-	QString realName = name;
-	if (!theEnsemble. namePresent) {
-	   theEnsemble. ensembleName	= realName;
-	   theEnsemble. EId		= EId;
-	   theEnsemble. namePresent	= true;
-	   ensembleName (EId, name);
+	QString name = toQStringUsingCharset (
+                                       (const char *) label,
+                                       (CharacterSet) charSet);
+	if (FIG10_value. EId == 0) {
+	   FIG10_value. ensembleLabel	= name;
+	   FIG10_value. EId		= EId;
+	   FIG10_value. isSynced	= true;
+	   emit  signal_FIG10 (name, EId);
 	}
-	theEnsemble. isSynced = true;
 }
 //
 //	Name of service
@@ -1218,44 +1039,39 @@ int16_t		offset	= 32;
 char		label [17];
 
 //      from byte 1 we deduce:
-	const uint8_t charSet	= getBits_4 (d, 8);
-	const uint8_t Rfu	= getBits_1 (d, 8 + 4);
-	const uint8_t extension	= getBits_3 (d, 8 + 5);
-	const uint32_t SId	= getBits (d, 16, 16);
+	const uint8_t charSet	= getBits_4	(d, 8);
+	const uint8_t Rfu	= getBits_1	(d, 8 + 4);
+	const uint8_t extension	= getBits_3	(d, 8 + 5);
+	const uint32_t SId	= getBits	(d, 16, 16);
 	label [16]      = 0x00;
 	(void)Rfu; (void)extension;
-	for (auto &serv : theEnsemble. primaries) {
+	for (auto &serv : FIG11_stack) {
 	   if (SId == serv. SId) 
 	      return;
 	}
-//
-//	if no subchannel is found for the service, we do not record it yet
-	int subChId	= currentConfig -> subChId_for_SId (0, SId);
-	if (subChId < 0)
-	   return;
+// assume we are defined
+	uint16_t subChId = get_subChId (SId, 0);
+	if (subChId > 64)
+	   return;		// wait for a next occurrence
 
-	for (int i = 0; i < 16; i ++) 
-	   label [i] = getBits_8 (d, offset + 8 * i);
-	QString dataName = toQStringUsingCharset (
-	                                  (const char *) label,
-	                                  (CharacterSet) charSet);
-
+	QString serviceName;
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
-	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
-	      shortName. append (dataName. at (i));
+	   label [i] = getBits_8 (d, offset + 8 * i);
+	serviceName = toQStringUsingCharset (
+	                               (const char *) label,
+	                               (CharacterSet) charSet);
 
-	ensemble::service prim;
-	prim. programType	= 0;
-	prim. name 		= dataName;
-	prim. shortName		= shortName;
-	prim. SId		= SId;
-	prim. ecc		= 0;
-	prim. fmFrequencies. resize (0);
-	theEnsemble. primaries. push_back (prim);
-	addToEnsemble (dataName, SId, subChId);
-	if (theEnsemble. primaries. size () >= 2)
-	   theEnsemble. isSynced = true;
+	for (int i = 0; i < 16; i ++) 
+	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
+	      shortName. append (serviceName. at (i));
+
+	signal_FIG11 (serviceName, SId);
+	FIG11 f;
+	f. serviceName	= serviceName;
+	f. shortName	= shortName;
+	f. SId		= SId;
+	FIG11_stack. push_back (f);
 }
 
 //	service component label - 32 bits 8.1.14.3
@@ -1269,7 +1085,7 @@ uint32_t	SId;
 	const uint8_t Rfu	= getBits_1 (d, 8 + 4);
 	const uint8_t extension	= getBits_3 (d, 8 + 5);
 	const uint8_t PD_flag	= getBits_1 (d, bitOffset);
-	const uint8_t SCIds	= getBits   (d, bitOffset + 4, 4);
+	const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
 	if (PD_flag) {
 	   SId	= getLBits  (d, bitOffset + 8, 32);
 	   bitOffset += 32 + 8;
@@ -1278,50 +1094,36 @@ uint32_t	SId;
 	   SId = getLBits (d, bitOffset + 8, 16);
 	   bitOffset += 16 + 8;
 	}
-//
-//	just a check if we already have the servicename
-	for (auto &serv : theEnsemble. secondaries)
-	   if (serv. SId == SId)
-	      return;
-	for (auto &serv :theEnsemble. primaries)
-	   if (serv. SId == SId)
-	     return;
-//
-//	If no subch is know (yet), we do not record the service component
-	int subChId	= currentConfig -> subChId_for_SId (SCIds, SId);
-	if (subChId < 0)
+	if (SCIds == 0)
 	   return;
-
-	if (currentConfig -> findIndexApptype_table (SId, 0) < 0)
-	   return;	// we want the apptype to be available
-
+//	just a check if we already have the servicename
+	for (auto &serv : FIG14_stack)
+	   if ((serv. SId == SId) && (serv. SCIds == SCIds))
+	      return;
+	uint16_t subChId = get_subChId (SId, SCIds);
+	if (subChId > 64)
+	   return;
+//
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
 	for (int i = 0; i < 16; i ++) 
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);
-	QString dataName = toQStringUsingCharset (
+	QString serviceName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
-	      shortName. append (dataName. at (i));
+	      shortName. append (serviceName. at (i));
 
-	ensemble::service seco;
-	seco. name 	= dataName;
-	seco. shortName	= shortName;
-	seco. SId	= SId;
-	seco. SCIds	= SCIds;
-	
-	theEnsemble. secondaries. push_back (seco);
-//
-//	if a secondary service has the name of an existing primary one,
-//	we do not want it in the list
-	for (auto &prim : theEnsemble. primaries)
-	   if (prim. name == seco. name)
-	      return;
-	addToEnsemble (dataName, SId, -1);
+	signal_FIG14 (serviceName, SId, SCIds);
+	FIG14 f;
+	f. serviceName	= serviceName;
+	f. shortName	= shortName;
+	f. SId		= SId;
+	f. SCIds	= SCIds; 
+	FIG14_stack. push_back (f);
 }
 
 //	Data service label - 32 bits 8.1.14.2
@@ -1338,39 +1140,45 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	label [16]      = 0x00;
 	(void)Rfu; (void)extension;
 
-	for (auto &serv : theEnsemble. primaries) {
+	for (auto &serv : FIG15_stack) {
 	   if (SId == serv. SId) 
 	      return;
 	}
 //
-//	if no subch is known (yet) we do not record the service yet
-	int subChId	= currentConfig -> subChId_for_SId (0, SId);
-	if (subChId < 0)
+//	if no subch is not known (yet) we do not record the service yet
+	uint16_t subChId = get_subChId (SId, 0);
+	if (subChId > 64)
 	   return;
-	if (currentConfig -> findIndexApptype_table (SId, 0) < 0)
-	   return;	// we want the apptype to be available
-//
+
+//	we alsowant the apptype to be defined
+	bool haveAppType	= false;
+	for (auto &f : currentConfig -> FIG013_stack) {
+           if (f. SId == SId) {
+	      haveAppType = true;
+	      break;
+	   }
+	}
+	if (!haveAppType)
+	   return;
+
 //	It seems the service is (more or less) complete
 	for (int i = 0; i < 16; i ++) {
 	   label [i] = getBits_8 (d, bitOffset + 8 * i);
 	}
-	QString dataName = toQStringUsingCharset (
+	QString serviceName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
-	if (dataName. size () < 16)
-	   fprintf (stderr, "a");
 	QString shortName;		
 	for (int i = 0; i < 16; i ++)  
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
-	      shortName. append (dataName. at (i));
+	      shortName. append (serviceName. at (i));
 
-	ensemble::service prim;
-	prim. programType	= 0;
-	prim. name 	= dataName;
-	prim. shortName = shortName;
-	prim. SId	= SId;
-	theEnsemble. primaries. push_back (prim);
-	addToEnsemble (dataName, SId, -1);
+	signal_FIG15 (serviceName, SId);
+	FIG15 f;
+	f. serviceName	= serviceName;
+	f. shortName	= shortName;
+	f. SId		= SId;
+	FIG15_stack. push_back (f);
 }
 //
 //////////////////////end of FIG1 ///////////////////////////////////////////
@@ -1379,185 +1187,456 @@ void	fibDecoder::connectChannel () {
 	fibLocker. lock();
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
-	theEnsemble.	reset ();
-	connect (this, &fibDecoder::addToEnsemble,
-	         myRadioInterface, &RadioInterface::addToEnsemble);
+	reset ();
 	fibLocker. unlock();
 }
 
 void	fibDecoder::disconnectChannel () {
 	fibLocker. lock ();
-	disconnect (this, &fibDecoder::addToEnsemble,
-	            myRadioInterface, &RadioInterface::addToEnsemble);
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
-	theEnsemble.	reset ();
+	reset ();
 	fibLocker. unlock();
 }
+
+void	fibDecoder::reset	() {
+
+	FIG00_value. 	prevChangeFlag	= 0;
+	FIG05_stack.	resize (0);
+	FIG09_value.	extFlag	= 0;
+	FIG09_value.	LTO	= 0;
+	FIG09_value.	ECC	= 0;
+	FIG09_value.	tableId	= 0;
+	FIG09_value.	ecc_local. resize (0);
+	FIG010_value.	MJD	= 0;
+	FIG010_value.	LSI	= 0;
+	FIG010_value.	UTC_flg	= 0;
+	FIG017_stack.	resize (0);
+	FIG018_stack.	resize (0);
+	FIG021_stack.	resize (0);
+
+	FIG10_value. EId	= 0;
+	FIG11_stack.	resize (0);
+	FIG14_stack.	resize (0);
+	FIG15_stack.	resize (0);
+	FIG16_stack.	resize (0);
+}
+
 //
 //	ofdmHandler asks for syncReached
 bool	fibDecoder::syncReached() {
-	return  theEnsemble. isSynced;
-}
-///////////////////user functions//////////////////////////////////////
-//
-//	The GUI (and others) ask for on data  that is  (at least
-//	superficially) based on the servicename
-//	We focus on the components, so (almost)
-//	all enquiries take an component (or index to the
-//	component table) as parameter
-//
-//	for primary services we return the index of the first
-//	component, the secondary services, the index of the
-//	component with the matching SCIds
-//	Note that components here are identified by an integer number,
-//	a key to the database;
-//	Notice further that the actual extraction and interpretation
-//	of the database contents is done in "fibConfig",
-//	here we provide the interface with locking
-//	
-int	fibDecoder::getServiceComp		(const QString &service) {
-int res;
-	fibLocker. lock ();
-	res = currentConfig -> getServiceComp (service);
-	fibLocker. unlock ();
-	return res;
+	return  FIG10_value. isSynced;
 }
 //
-//	Find the component with the indicated number
-int	fibDecoder::getServiceComp		(const uint32_t SId,
-	                                                const int compnr) {
-int res;
-	fibLocker. lock ();
-	res = currentConfig -> getServiceComp (SId, compnr);
-	fibLocker. unlock ();
-	return res;
-}
+////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
-//	Find the component with the indicated SCIds
-int	fibDecoder::getServiceComp_SCIds	(const uint32_t SId,
-	                                         const int SCIds) {
-int res;
-	fibLocker. lock ();
-	res = currentConfig ->  getServiceComp_SCIds (SId, SCIds);
-	fibLocker. unlock ();
-	return res;
-}
-
-uint32_t fibDecoder::getSId	(const int index) {
-uint32_t	res;
-	fibLocker. lock ();
-	res = currentConfig -> getSId (index);
-	fibLocker. unlock ();
-	return res;
-}
-
-uint8_t	fibDecoder::serviceType (const int index) {
-uint8_t res;
-	fibLocker. lock ();
-	res = currentConfig -> serviceType (index);
-	fibLocker. unlock ();
-	return res;
-}
-
-int	fibDecoder::getNrComps			(const uint32_t SId) {
-int	res;
-	fibLocker. lock ();
-	res =  currentConfig -> getNrComps (SId);
-	fibLocker. unlock ();
-	return res;
-}
-//
-//		
-bool	fibDecoder::isPrimary	(const QString &s) {
-	for (auto &serv : theEnsemble. primaries) {
-	   if (s == serv. name)
-	      return true;
+bool	fibDecoder::isPrimaryService	(uint32_t SId, uint8_t SCIds) {
+QString serviceName;
+QString shortName;
+	getServiceName (serviceName, shortName, SId, SCIds);
+	for (auto &f : currentConfig -> FIG02_stack) {
+	   if (f. SId != SId) 
+	      continue;
+	   for (auto &g : f. components) 
+	      if ((g. SCIds == SCIds) && (g. PS_flag == 1)) {
+	         return true;
+	      }
 	}
 	return false;
 }
-	
-void	fibDecoder::audioData	(const int index, audiodata &ad) {
-	fibLocker. lock ();
-	currentConfig -> audioData (index, ad);
-	fibLocker. unlock ();
+
+bool	fibDecoder::isAudioService	(uint32_t SId, uint8_t SCIds) {
+	for (auto &f : currentConfig -> FIG02_stack) {
+	   if (f. SId != SId)
+	      continue;
+	   for (auto &g : f. components) {
+	      if (g. SCIds == SCIds) {
+	         return g. TMid == 0;
+	      }
+	   }
+	}
+	return false;
 }
 
-void	fibDecoder::packetData		(const int index, packetdata &pd) {
-	fibLocker. lock ();
-	currentConfig -> packetData (index, pd);
-	fibLocker. unlock ();
+bool	fibDecoder::is_SPI		(uint32_t SId) {
+	for (auto &f : currentConfig -> FIG013_stack)
+	   if (f. SId == SId)
+	      return f. Apptype == 7;
+	return false;
 }
 
-uint16_t fibDecoder::getAnnouncing	(uint16_t SId) {
-uint8_t res;
-	fibLocker. lock ();
-	res = currentConfig -> getAnnouncing (SId);
-	fibLocker. unlock ();
+std::vector<uint8_t>
+	fibDecoder::get_secondaryServices (uint32_t SId) {
+std::vector<uint8_t> res;
+	for (auto &g : FIG14_stack)
+	      if (g. SId == SId)
+	         res. push_back (g. SCIds);
 	return res;
 }
 
-std::vector<int> fibDecoder::getFrequency	(const QString &s) {
-std::vector<int> res;
-	for (auto &serv : theEnsemble. primaries) {
-	   if (serv. name == s)
-	      return serv. fmFrequencies;
-	}
-	return  res;
+int	fibDecoder::FIG07_value		() {
+	return currentConfig	-> FIG07_value;
+}
+
+void	fibDecoder::getFreqs		(uint32_t SId,
+	                                      std::vector<uint32_t> &freqList) {
+	for (auto &f21: FIG021_stack) 
+	   if (f21. SId == SId) {
+	      fprintf (stderr, "for %X we have entries :", SId);
+	      for (uint32_t i = 0; i < f21. freqList. size (); i ++)
+	            fprintf (stderr, "%d ", f21. freqList [i]);
+	      fprintf (stderr, "\n");
+	      freqList = f21. freqList;
+	      return;
+	   }
 }
 	   
-//
-//	needed for generating eti files
-//	required for ETI generation
-void	fibDecoder::getCIFcount		(int16_t &high, int16_t &low) {
-	high	= CIFcount_hi. load ();
-	low	= CIFcount_lo. load ();
+void	fibDecoder::getServiceName	(QString &serviceName,
+	                                 QString &shortName,
+	                                 uint32_t SId, uint8_t SCIds) {
+
+	serviceName	= "";
+	shortName	= "";
+	if (SCIds != 0) {
+	   for (auto &f :  FIG14_stack) {
+	      if ((f. SId == SId) && (f. SCIds == SCIds)) {
+	         serviceName	= f. serviceName;
+	         shortName	= f. shortName;
+	         return;
+	      }
+	   }
+	   return;
+	}
+	for (auto &f : FIG11_stack) {
+	   if (f. SId == SId) {
+	      serviceName	= f. serviceName;
+	      shortName		= f. shortName;
+	      return;
+	   }
+	}
+	for (auto &f : FIG15_stack) {
+	   if (f. SId == SId) {
+              serviceName       = f. serviceName;
+              shortName         = f. shortName;
+              return;
+           }
+        }
 }
 
-int	fibDecoder::nrChannels	() {
-int res;
+void	fibDecoder::mapNameToId (const QString &s,
+	                                uint32_t &SId, uint8_t &SCIds) {
+	for (auto &f : FIG11_stack) {
+	   if (f. serviceName == s) {
+	      SId	= f. SId;
+	      SCIds	= 0;
+	      return;
+	   }
+	}
+	for (auto &f : FIG15_stack) {
+	   if (f. serviceName == s) {
+	      SId	= f. SId;
+	      SCIds	= 0;
+	      return;
+	   }
+	}
+
+	for (auto &f : FIG14_stack) {
+	   if (f. serviceName == s) {
+	      SId	= f. SId;
+	      SCIds	= f. SCIds;
+	      return;
+	   }
+	}
+	SId	= 0;
+	SCIds	= 0;
+}
+
+//
+void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
+	ad. defined = false;
+	for (auto &f: currentConfig -> FIG02_stack) {
+	   if (f. SId != SId)
+	      continue;
+	   for (auto &g: f. components) {
+	      if ((g. SCIds != SCIds) || (g. TMid != 0))
+	        continue;
+	      QString serviceName;
+	      QString shortName;
+	      getServiceName (serviceName, shortName, SId, SCIds);
+	      if (serviceName == "")
+	         return;
+	      ad. serviceName	= serviceName;
+	      ad. shortName	= shortName;
+	      ad. SId		= SId;
+	      ad. SCIds		= SCIds;
+	      ad. subchId	= g. subChId;
+	      ad. ASCTy		= g. ASCTy;
+	      for (auto &h : currentConfig -> FIG01_stack) {
+	         if (h. subChId == g. subChId) {
+	            ad. startAddr	= h. startAddr;
+	            ad. shortForm	= h. shortForm;
+	            ad. protLevel	= h. protLevel;
+	            ad. length		= h. Length;
+	            ad. bitRate		= h. bitRate;
+	            ad. defined		= true;
+	            break;
+	         }
+	      }
+	      ad. language = 0;		// default
+	      for (auto &h : FIG05_stack) {
+	         if (h. subChId == ad. subchId) {
+	            ad. language = h. language;
+	            break;
+	         }
+	      }
+	      ad. programType = 0;	// default
+	      for (auto &h : FIG017_stack) {
+	         if (h. SId == ad. SId) {
+	            ad. programType = h. typecode;
+	            break;
+	         }
+	      }
+	      ad. ecc	= 0;		// default;
+	      for (auto &h : FIG09_value. ecc_local) {
+	         if (h. SId ==  (uint32_t)ad. SId) {
+	            ad. ecc = h. service_ecc;
+	            break;
+	         }
+	      }
+	   }
+	}
+}
+
+void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
+	pd. defined = false;
+	for (auto &f:  currentConfig -> FIG02_stack) {
+	   if (f. SId != SId)
+	      continue;
+	   for (auto &g : f. components) {
+	      if ((g. TMid != 3) || (g. SCIds != SCIds))
+	         continue;
+	      QString serviceName;
+	      QString shortName;
+	      getServiceName (serviceName, shortName, SId, SCIds);
+	      pd. serviceName	= serviceName;
+	      pd. shortName	= shortName;
+	      pd. SId		= SId;
+	      pd. SCIds		= SCIds;
+	      pd. subchId	= 100;
+	      for (auto &h :  currentConfig -> FIG03_stack) {
+	         if (h. SCId == g. SCId) {
+	            pd. DG_flag		= h. DG_flag;
+	            pd. DSCTy		= h. DSCTy;
+	            pd. packetAddress	= h. packetAddress;
+	            pd. subchId		= h. subChId;
+	            break;
+	         }
+	      }
+	      if (pd. subchId == 100)
+	         return;
+	      for (auto &h :currentConfig -> FIG01_stack) {
+	         if (h. subChId == pd. subchId) {
+	            pd. startAddr	= h. startAddr;
+	            pd. shortForm	= h. shortForm;
+	            pd. protLevel	= h. protLevel;
+	            pd. length		= h. Length;
+	            pd. bitRate		= h. bitRate;
+	            pd. defined		= true;
+	         }
+	      }	
+	      pd. FEC_scheme	= 0;
+	      for (auto &h : currentConfig -> FIG014_stack) {
+	         if (h. subChId == pd. subchId) {
+	            pd. FEC_scheme	= h. FEC_scheme;
+	            break;
+	         }
+	      }
+	      pd. appType	= 0;
+	      for (auto &h : currentConfig -> FIG013_stack) {
+	         if ((h. SId == SId) && (h. SCIds == SCIds)) {
+	            pd . appType = h. Apptype;
+	            break;
+	         }
+	      }
+	   }
+	}
+}
+
+uint16_t fibDecoder::get_subChId (uint32_t SId, uint8_t SCIds) {
+	for (auto &f : currentConfig -> FIG02_stack) {
+	   if (f. SId != SId)
+	      continue;
+	   for (auto &g : f. components) {
+	      if ((g. TMid == 0) && (g. SCIds == SCIds))
+	         return g. subChId;
+	      else
+	      if (g. TMid == 3)
+	         for (auto &h : currentConfig -> FIG03_stack)
+	            if (g. SCId == h. SCId)
+	               return h. subChId;
+	   }
+	}
+	return 100;
+}
+//
+//
+void	fibDecoder::getCIFcount	(int16_t &high, int16_t &low) {
+	high	= FIG00_value. CIF_major;
+	low	= FIG00_value. CIF_minor;
+}
+
+int	fibDecoder::freeSpace	() {
+	return	currentConfig	-> freeSpace ();
+}
+//
+//	for contenttable and scan results
+QList<contentType> fibDecoder::contentPrint () {
+QList<contentType> res;
+
 	fibLocker. lock ();
-	res = currentConfig -> nrChannels ();
+	for (auto &f02 : currentConfig -> FIG02_stack) {
+	   for (auto &g : f02. components) {
+	      contentType theData;
+	      theData. isActive	= false;
+	      theData. SId	= f02. SId;
+	      theData. TMid	= g. TMid;
+	      theData. PS_flag	= g. PS_flag;
+	      if (g. TMid == 0) {	// audio data
+	         audiodata ad;
+	         audioData (f02. SId, g. SCIds, ad);
+	         if (!ad. defined)		// should not happen
+	            continue;
+	         theData. serviceName	= ad. serviceName;
+	         theData. shortName	= ad. shortName;
+	         theData. subChId	= ad. subchId;
+	         theData. SCIds		= ad. SCIds;
+	         theData. startAddress	= ad. startAddr;
+	         theData. length	= ad. length;
+	         theData. codeRate	= getCodeRate (ad. shortForm,
+	                                               ad. protLevel);
+	         theData. protLevel	= getProtectionLevel (ad. shortForm,
+	                                                      ad. protLevel);
+	         theData. bitRate	= ad. bitRate;
+	         theData. language	= ad. language;
+	         theData. FEC_scheme	= 0;
+	         theData. packetAddress	= 0;
+	         theData. ASCTy_DSCTy	= ad. ASCTy;
+	         theData. programType	= ad. programType;
+	         if (ad. SCIds == 0)
+	            getFreqs (ad. SId, theData. fmFrequencies);
+	         res. push_back (theData);
+	      }
+	      else
+	      if (g. TMid == 3) {	// packet 
+	         packetdata pd;
+	         packetData (f02. SId, g. SCIds, pd);
+	         if (!pd. defined)		// should not happen
+	            continue;
+	         theData. serviceName	= pd. serviceName;
+	         theData. shortName	= pd. shortName;
+	         theData. subChId	= pd. subchId;
+	         theData. SCIds		= pd. SCIds;
+	         theData. startAddress	= pd. startAddr;
+	         theData. length	= pd. length;
+	         theData. codeRate	= getCodeRate (pd. shortForm,
+	                                               pd. protLevel);
+	         theData. protLevel	= getProtectionLevel (pd. shortForm,
+	                                                      pd. protLevel);
+	         theData. bitRate	= pd. bitRate;
+	         theData. FEC_scheme	= pd. FEC_scheme;
+	         theData. packetAddress	= pd. packetAddress;
+	         theData. ASCTy_DSCTy	= pd. DSCTy;
+	         theData. appType	= pd. appType;
+	         theData. language	= 0;
+	         theData. programType	= 0;
+	         res. push_back (theData);
+	      }
+	   }
+	}
 	fibLocker. unlock ();
+        return res;
+}  
+//
+//	Needed for the timetables
+std::vector<basicService>
+	fibDecoder::getServices   () {
+std::vector<basicService> res;
+	for (auto &serv : FIG11_stack) {
+	   basicService b;
+	   b. serviceName	= serv. serviceName;
+	   b. SId		= serv. SId;
+	   res. push_back (b);
+	}
 	return res;
+}
+
+//
+//	For ETI handling
+int	fibDecoder::nrChannels	() {
+	return currentConfig -> FIG01_stack. size ();
 }
 
 void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
-	fibLocker. lock ();
-	currentConfig -> getChannelInfo (d, n);
-	fibLocker. unlock ();
+FIG01 *selected = &currentConfig -> FIG01_stack [n];
+        d       -> in_use       = true; 
+        d       -> id           = selected ->  subChId;
+        d       -> start_cu     = selected ->  startAddr;
+        d       -> protlev      = selected ->  protLevel;
+        d       -> size         = selected ->  Length;
+        d       -> bitrate      = selected ->  bitRate;
+        d       -> uepFlag      = selected ->  shortForm;
 }
 
-bool	fibDecoder::nonTIIFrame		() {
-	return (CIFcount_lo. load () & 0x07) >= 4;
-}
+void	fibDecoder::check_announcements (uint8_t clusterId, 
+	                                 uint8_t AswFlags,
+	                                 uint8_t newFlag, uint16_t subChId) {
+	for (auto &ac : FIG018_stack) {
+	   for (auto &cli : ac. clusterIds) {
+	      if ((cli == clusterId) && newFlag) {
+	         uint16_t flags = (ac. ASUFlags & AswFlags);
+	         uint16_t theSId = 0;
 //
-
-uint32_t fibDecoder::julianDate		() {
-	return mjd;
-}
-//
-int	fibDecoder::freeSpace		() {
-	return currentConfig -> freeSpace ();
-}
-//
-QList<contentType> fibDecoder::contentPrint () {
-QList<contentType> res;
-	fibLocker. lock ();
-	res = currentConfig -> contentPrint ();
-	fibLocker. unlock ();
-	return res;
+//	we know that signalling is only for audio services
+	         for (auto & comp : currentConfig -> FIG02_stack) {
+	             for (auto &g : comp. components) {
+	               if (g. subChId == subChId) {
+	                  theSId = comp. SId;
+	                  signal_FIG019 (theSId, flags);
+	                  return;
+	               }
+	            }
+	         }
+	      }
+	   }
+	}
 }
 
-bool	fibDecoder::is_SPI	(const uint32_t SId) {
-bool res;
-	fibLocker. lock ();
-	res = currentConfig -> is_SPI (SId);
-	fibLocker. unlock ();
-return res;
+bool    fibDecoder::in_FIG05_stack (const FIG05 &el) {
+        for (auto &f: FIG05_stack)
+           if (f. subChId == el. subChId)
+              return true;
+        return false; 
 }
 
-std::vector<basicService> fibDecoder::getServices	() {
-	return theEnsemble. getServices ();
+bool    fibDecoder::in_FIG017_stack (const FIG017 &el) {
+        for (auto &f : FIG017_stack)
+           if (f. SId == el. SId)
+              return true;
+        return false; 
+}
+ 
+bool    fibDecoder::in_FIG018_stack (const FIG018 &el) {
+        for (auto &f: FIG018_stack)
+           if (f. SId == el. SId) 
+              return true;
+        return false;
+}
+
+bool    fibDecoder::in_FIG021_stack (const FIG021 &el) {
+        for (auto &f : FIG021_stack)
+           if (f. SId == el. SId)
+              return true;
+        return false;
 }
 

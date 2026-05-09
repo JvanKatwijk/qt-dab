@@ -60,12 +60,11 @@ public:
 	      void	stopDumping	();
 	      void	set_dcRemoval	(bool);
 private:
-	      riffWriter	sourceDumper;
-	      equalizer		theEqualizer;
-	      dcFilter		dcRemover;
-	      RadioInterface	*myRadioInterface;
 	      deviceHandler	*theRig;
+	      dcFilter		dcRemover;
 	      RingBuffer<Complex> *spectrumBuffer;
+	      riffWriter	sourceDumper;
+	      RadioInterface	*myRadioInterface;
 	      std::vector<Complex> localBuffer;
 	      int32_t		localCounter;
 	      int32_t		bufferSize;

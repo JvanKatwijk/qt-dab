@@ -175,7 +175,7 @@ void	techWindow::showRsCorrections	(int c, int ec) {
 	ecCorrections -> display (ec);
 }
 
-void	techWindow::updateFM		(std::vector<int> &fmFrequencies) {
+void	techWindow::updateFM		(const std::vector<uint32_t> &fmFrequencies) {
 	if (fmFrequencies. size () == 0)
 	   return;
 	showFm		(fmFrequencies);
@@ -238,7 +238,7 @@ void	techWindow::showCodeRate		(int shortForm, int protLevel) {
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 
-void	techWindow::showFm		(std::vector<int> &v) {
+void	techWindow::showFm		(const std::vector<uint32_t> &v) {
 	if (v. size () == 0) {
 	   fmFrequency	-> hide ();
 	   fmLabel	-> hide ();
@@ -250,7 +250,7 @@ void	techWindow::showFm		(std::vector<int> &v) {
 	   int teller	= 0;
 //	for now there is room for up to 2 freqyencies
 	   for (auto freq: v) {
-	      if (++teller > 2)
+	      if (++teller > 3)
 	         break;			// for now
               f. append (QString::number (freq) + " ");
 	   }

@@ -36,6 +36,7 @@ public:
 	QString	channelName;
 	QString	serviceName;
 	uint32_t	SID;
+	uint8_t		SCIds;
 	uint16_t	subChId;
 	bool		isFavorite;
 	serviceDescriptor () {

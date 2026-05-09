@@ -140,7 +140,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/freq-interleaver.h \
 	   ./sources/frontend/tii-detector-1.h \
 	   ./sources/frontend/fic-handling/fic-handler.h \
-	   ./sources/frontend/fic-handling/ensemble.h  \
 	   ./sources/frontend/fic-handling/fib-dbtypes.h  \
 	   ./sources/frontend/fic-handling/fib-config.h  \
 	   ./sources/frontend/fic-handling/fib-decoder.h  \
@@ -285,7 +284,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/scopes/spectrogramdata.cpp \
 	   ./sources/main/snr-viewer/snr-viewer.cpp \
 	   ./sources/main/copyrightLabel.cpp \
-#	   ./sources/main/ensemble-handler.cpp \
 	   ./sources/main/tech-window.cpp \
 	   ./sources/main/config-handler.cpp \
 	   ./sources/main/dxDisplay.cpp \
@@ -304,7 +302,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/frontend/freq-interleaver.cpp \
 	   ./sources/frontend/tii-detector-1.cpp \
 	   ./sources/frontend/fic-handling/fic-handler.cpp \
-	   ./sources/frontend/fic-handling/ensemble.cpp  \
 	   ./sources/frontend/fic-handling/fib-config.cpp  \
 	   ./sources/frontend/fic-handling/fib-decoder.cpp  \
 	   ./sources/protection/protTables.cpp \
