@@ -588,7 +588,7 @@ void	ofdmHandler::packetData			(uint32_t SId, uint8_t SCIds,
 QList<contentType> ofdmHandler::contentPrint	() {
 	QList<contentType> res = theFicHandler. contentPrint ();
 	for (auto &ct : res) 
-	   ct. isRunning = serviceRuns (ct. SId, ct. subChId);
+	   ct. isRunning = serviceRuns (ct. SId, ct. SCIds);
 	return res;
 }
 
@@ -686,8 +686,8 @@ void	ofdmHandler::setFreqCorrelator	(uint8_t corr) {
 	store (settings_p, CONFIG_HANDLER, "SELECT_CORR", corr);
 }
 
-bool	ofdmHandler::serviceRuns	(uint32_t SId, uint16_t subChId) {
-	return theMscHandler. serviceRuns (SId, subChId);
+bool	ofdmHandler::serviceRuns	(uint32_t SId, uint16_t SCIds) {
+	return theMscHandler. serviceRuns (SId, SCIds);
 }
 
 void	ofdmHandler::generate_CI (const std::vector<Complex> &rawBuffer,

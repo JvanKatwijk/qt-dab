@@ -1,4 +1,28 @@
-
+#
+/*
+ *    Copyright (C) 2018 .. 2025
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of the Qt-DAB program
+ *
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *	fib-db types. In this implementation we have chosen to
+ *	use a separate entry (stack or value) for each type of FIG data
+ */
 #pragma once
 
 #include	<stdint.h>
@@ -25,7 +49,9 @@ typedef struct {
 	uint8_t		protLevel;
 	uint8_t		bitRate;
 } FIG01;
-
+//
+//	while not in FIG0/2, we added the result of FIG0/8
+//	i.e. the SCIds, to this struct
 typedef struct {
 	uint8_t		compNr;
 	uint8_t		SCIds;		// later added
@@ -107,6 +133,10 @@ typedef struct {
 	uint8_t		seconds;
 	uint16_t	milliseconds;
 } FIG010;
+//
+//	FIG0/11	is obsolete
+
+//	FIG012 is obsolete
 
 //	FIG0/13 is defined in 6.3.6
 typedef struct {
@@ -120,6 +150,10 @@ typedef struct {
 	uint8_t 	subChId;
 	uint8_t		FEC_scheme;
 } FIG014;
+
+//	FIG0/15 is being defined, but not yet implemented
+
+//	FIG0/16 is not defined
 
 //	FIG0/17	is defined in 8.1.5, 
 typedef	struct {
@@ -153,6 +187,8 @@ typedef	struct {
 	std::vector<uint32_t> freqList;
 } FIG021;
 
+//	FIG0/22 is obsolete
+//	FIG0/23 is obsolete
 //	FIG0/24 is defined in 8.1.10
 //	FIG0/24	is not implemented
 

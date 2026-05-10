@@ -650,6 +650,11 @@ public slots:
 //	signals from the viewhandler
 	void			handle_channelSelector	(const QString &);
 	void			reduceButtons		(bool);
+
+
+	bool			isActive		(const uint32_t &SId,
+                                                         const uint8_t SCIds);
+
 	void			handle_contentButton	();
 	void			handle_dump		();
 private slots:

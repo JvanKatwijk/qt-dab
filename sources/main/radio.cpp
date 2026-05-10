@@ -840,8 +840,18 @@ void	RadioInterface::handle_FIG10 (const QString &v, uint16_t EId) {
 	   channelTimer. start (switchStay);
 	}
 }
+
 //
 ///////////////////////////////////////////////////////////////////////////
+
+bool	RadioInterface::isActive	(const uint32_t &SId,
+	                                         const uint8_t SCIds) {
+	for (auto &serv : channel. runningTasks) {
+	   if ((SId == serv. SId) && (SCIds == serv. SCIds))
+	      return true;
+	}
+	return false;
+}
 
 void	RadioInterface::handle_contentButton	() {
 
@@ -869,8 +879,9 @@ void	RadioInterface::handle_contentButton	() {
 	   theContentTable	-> addLine (transmitterLine);
 	}
   
-	for (auto &line : contentList)
+	for (auto &line : contentList) 
 	   theContentTable -> addLine (line);
+
 	theContentTable -> show ();
 
 	if (theConfigHandler -> upload_selector_active ()) {
@@ -1229,6 +1240,9 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 	   stopService (serv);
 	fprintf (stderr, "All services are halted, now start rebuilding\n");
 	theTechWindow	-> cleanUp ();
+//
+//	we have to check the details, and remove anything that
+//	does not fit
 	for (auto &serv : taskCopy) {
 	   dabService s;
 	   theOfdmHandler -> mapNameToId (serv. serviceName, s. SId, s. SCIds);
@@ -2084,13 +2098,13 @@ void	RadioInterface::stopService	(dabService &s) {
 	}
 
 //	all running backends are described in the runningtasks lit
-	   for (uint32_t i =  channel. runningTasks. size () - 1;
-	                           i > 0; i --) {
+	   for (uint32_t i = 0; i <  channel. runningTasks. size (); i ++) {
 	      dabService g = channel. runningTasks [i];
 	      if (g. SId == s. SId) {
 	         theOfdmHandler -> stopService (g. SId, g. SCIds);
 	         channel. runningTasks. erase
 	                        (channel. runningTasks. begin () + i);
+	         i --;
 	   }
 	}
 	s. isValid = false;
@@ -2107,6 +2121,7 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 	s. serviceName = pd. serviceName;
 	s. SId         = static_cast<uint32_t>(pd. SId);
 	s. subChId     = pd. subchId;
+	s. SCIds	= pd. SCIds;
 	s. fd          = nullptr;
 	s. runsBackground = true;
 	channel. runningTasks. push_back (s);
@@ -2166,6 +2181,7 @@ dabService	s;
 	   serviceLabel	-> setText (pd. serviceName);
 	   channel. currentService. isValid	= true;
 	   channel. currentService. isAudio	= false;
+	   channel. currentService. SCIds	= pd. SCIds;
 	   channel. currentService. subChId	= pd. subchId;
 	   startPacketservice (pd);
 	}
@@ -2271,6 +2287,15 @@ void	RadioInterface::startPacketservice (packetdata &pd) {
 	      showLabel (QString ("Journaline"), 1);
 	      break;
 	}
+        dabService s;
+        s. channel	= pd. channel;
+        s. serviceName	= pd. serviceName;
+        s. SId		= pd. SId;
+        s. subChId	= pd. subchId;
+        s. SCIds	= pd. SCIds;
+        s. fd		= nullptr;
+        s. runsBackground = false;
+	channel. runningTasks. push_back (s);
 }
 
 //	This function is only used in the Gui to clear
@@ -4432,16 +4457,11 @@ void	RadioInterface::nrActiveServices	(int n) {
 
 void	RadioInterface::handle_activeServices () {
 QList<contentType> serviceData = theOfdmHandler -> contentPrint ();
-bool	serviceAvailable	= false;
-	for (auto &ct : serviceData) {
-	   if (theOfdmHandler -> serviceRuns (ct. SId, ct. subChId)) {
-	      serviceAvailable = true;
-//	      fprintf (stderr, "Service %s (%X, %d) runs\n",
-//	                      ct. serviceName. toLatin1 (). data (),
-//	                      ct. SId, ct. subChId);
-	   }
+	for (auto &serv :channel. runningTasks) {	
+	   fprintf (stderr, "%s %X %d  of channel %d\n",
+	            serv. serviceName. toLatin1 (). data (),
+	            serv. SId, serv. SCIds, serv. subChId);
 	}
-	(void)serviceAvailable;
 }
 
 //////////////////////////////////////////////////////////////////
