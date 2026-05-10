@@ -332,7 +332,6 @@ int	snrCount	= 0;
 	      memmove (ofdmBuffer. data (),
 	               &((ofdmBuffer. data()) [startIndex]),
 	                  T_u * sizeof (Complex));
-
 //Block_0:
 /**
   *	Block 0 is special in that it is used for fine time synchronization,
@@ -397,7 +396,6 @@ int	snrCount	= 0;
 	         }
 	         cCount += 2 * T_g;
 //
-//
 //	If "eti_on" we process all data here
 	         if (etiOn) {
 	            theOfdmDecoder.
@@ -427,6 +425,7 @@ int	snrCount	= 0;
 	         }
 	         if (scanMode)
 	            continue;
+
 	         if (ofdmSymbolCount >= 4) {
 	            theOfdmDecoder.
 	                    decode (ofdmBuffer, ofdmSymbolCount,
@@ -535,7 +534,6 @@ void	ofdmHandler::getFrameQuality	(int	*totalFrames,
 }
 //
 //	just convenience functions
-//	ficHandler abstracts channel data
 
 bool	ofdmHandler::isPrimaryService		(uint32_t SId, uint8_t SCIds) {
 	return theFicHandler. isPrimaryService (SId, SCIds);
@@ -596,6 +594,7 @@ int	ofdmHandler::freeSpace		() {
 	return theFicHandler. freeSpace ();
 }
 
+//	controlling functions
 //
 void	ofdmHandler::stopService (uint32_t SId, uint8_t SCIds) {
 	if (!scanMode)
@@ -622,6 +621,7 @@ bool    ofdmHandler::setDataChannel (packetdata &d,
 	   return false;
 }
 
+//
 void	ofdmHandler::startDumping	(const QString &f, int freq,
 	                                 int bitDepth, const QString creator) {
 	theReader. startDumping (f, freq, bitDepth, creator);

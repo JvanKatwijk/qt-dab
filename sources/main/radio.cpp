@@ -844,15 +844,6 @@ void	RadioInterface::handle_FIG10 (const QString &v, uint16_t EId) {
 //
 ///////////////////////////////////////////////////////////////////////////
 
-bool	RadioInterface::isActive	(const uint32_t &SId,
-	                                         const uint8_t SCIds) {
-	for (auto &serv : channel. runningTasks) {
-	   if ((SId == serv. SId) && (SCIds == serv. SCIds))
-	      return true;
-	}
-	return false;
-}
-
 void	RadioInterface::handle_contentButton	() {
 
 	if (theContentTable != nullptr) {

@@ -652,9 +652,6 @@ public slots:
 	void			reduceButtons		(bool);
 
 
-	bool			isActive		(const uint32_t &SId,
-                                                         const uint8_t SCIds);
-
 	void			handle_contentButton	();
 	void			handle_dump		();
 private slots:

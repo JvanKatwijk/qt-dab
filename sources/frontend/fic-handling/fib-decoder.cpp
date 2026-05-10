@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2018 .. 2025
+ *    Copyright (C) 2018 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -20,9 +20,12 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * 	fib decoder. Functionality is shared between fic handler, i.e. the
- *	one preparing the FIC blocks for processing, and the mainthread
- *	from which calls are coming on selecting a program
+ *	To get things manageable, we just (almost) copy the values of the
+ *	FIG's in local structures (with some basic interpretation), and
+ *	extract what we need from different FIG stacks and values.
+ *	The stacks for those FIGs that have a CN_bit that is "on" are
+ *	stored in the "fib-config" file, such that we can implement
+ *	"current" and "next" properly
  *	Somehe
  */
 #include	<QStringList>
@@ -38,19 +41,9 @@
 #include	"time-converter.h"
 //
 //
-//	The fibDecoder was rewritten since the "old" one
-//	contained (a) errors and (b) was incomplete on
-//	some issues.
-//	The current one is a straight forward implementation,
-//	where the FIG's are stored in a (kind of) database
-//	maintained in a class fibConfig
-//
-//	Since the threads filling the database, and reading the
-//	database are different, a simple locking scheme is applied,
 
 	fibDecoder::fibDecoder (RadioInterface *mr) {
 	myRadioInterface	= mr;
-
 //
 //	Note that they may change "roles", 
 	currentConfig	= new fibConfig	(myRadioInterface);
@@ -111,7 +104,7 @@ uint8_t	*d		= p;
 	     
 	         break;
 
-	      case 2:		// not yet implemented
+	      case 2:		// not encountered yet
 //	         fprintf (stderr, "FIG2 label\n");
 	         break;
 
@@ -245,6 +238,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 	}
 }
+
 //	Ensemble information, 6.4.1
 //	FIG0/0 indicated a change in channel organization
 //	The info is MCI
@@ -256,12 +250,15 @@ void	fibDecoder::FIG0Extension0 (uint8_t *d) {
 	FIG00_value. CIF_major	= getBits_5 (d, 16 + 19);
 	FIG00_value. CIF_minor	= getBits_8 (d, 16 + 24);
 	FIG00_value. occurrenceChange = getBits_8 (d, 16 + 32);
+//
+//	if a switch from current to next happened:
 	if ((FIG00_value. changeFlag == 0) &&
 	     (FIG00_value. prevChangeFlag == 3)) {
 	   fibConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;
 	   nextConfig		->  reset ();
+	// we hope that the radio knows what to do
 	   emit signal_FIG00 ();
 	}
 	FIG00_value. prevChangeFlag	= FIG00_value. changeFlag;
@@ -884,6 +881,7 @@ int16_t	bitOffset	= used * 8;
 	}
 }
 
+//	FOG0/20 is not encountered yet
 void	fibDecoder::FIG0Extension20 (uint8_t *d) {
 	(void)d;
 }
@@ -958,29 +956,30 @@ void	fibDecoder::process_FIG1 (uint8_t *d) {
 uint8_t	extension	= getBits_3 (d, 8 + 5); 
 
 	switch (extension) {
-	   case 0:		// ensemble name
+	   case 0:		// ensemble name 8.1.13
 	      FIG1Extension0 (d);
 	      break;
 
-	   case 1:		// service name
+	   case 1:		// program service name 8.1.14.1
 	      FIG1Extension1 (d);
 	      break;
 
-	   case 2:		// Labels etc
+	   case 2:		// Labels etc not seen yet
 	      break;
 
 	   case 3:		// obsolete
 	      break;
 
-	   case 4:		// Service Component Label
+	   case 4:		// Service Component Label 8.1.14.3
 	      FIG1Extension4 (d);
 	      break;
 
-	   case 5:		// Data service label
+	   case 5:		// Data service label, 8.1.14.2
 	      FIG1Extension5 (d);
 	      break;
 
 	   case 6:		// XPAD label - 8.1.14.4
+	      FIG1Extension6 (d);
 	      break;
 
 	   default:
@@ -1015,7 +1014,7 @@ char		label [17];
 	}
 }
 //
-//	Name of service
+//	Name of primary service
 void	fibDecoder::FIG1Extension1 (uint8_t *d) {
 int16_t		offset	= 32;
 char		label [17];
@@ -1063,11 +1062,11 @@ int		bitOffset = 16;
 uint32_t	SId;
 
 //      from byte 1 we deduce:
+	const uint8_t PD_flag	= getBits_1 (d, bitOffset);
+	const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
 	const uint8_t charSet	= getBits_4 (d, 8);
 	const uint8_t Rfu	= getBits_1 (d, 8 + 4);
 	const uint8_t extension	= getBits_3 (d, 8 + 5);
-	const uint8_t PD_flag	= getBits_1 (d, bitOffset);
-	const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
 	if (PD_flag) {
 	   SId	= getLBits  (d, bitOffset + 8, 32);
 	   bitOffset += 32 + 8;
@@ -1162,6 +1161,29 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	f. SId		= SId;
 	FIG15_stack. push_back (f);
 }
+
+void	fibDecoder::FIG1Extension6 (uint8_t *d) {
+uint16_t	bitOffset	= 0;
+const uint8_t PD_bit	= getBits_1 (d, bitOffset);
+const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
+uint32_t SId;
+	
+	bitOffset += 8;
+
+	if (PD_bit != 0) {
+	   SId	 = getLBits (d, bitOffset, 32);
+	   bitOffset += 32;
+	}
+	else {
+	   SId	= getLBits (d, bitOffset, 16);
+	   bitOffset += 16;
+	}
+
+	uint8_t xpadType	= getBits (d, bitOffset + 3, 5);
+//	fprintf (stderr, "XPad type for %X %d is %d\m",
+//	                           SId, SCIds, xpadType);
+}
+
 //
 //////////////////////end of FIG1 ///////////////////////////////////////////
 
