@@ -43,14 +43,12 @@
 #define DEVICEWIDGET_BUTTON     QString ("devicewidgetButton")
 #define PORT_SELECTOR           QString ("portSelector")
 #define	DLTEXT_BUTTON		QString ("dlTextButton")
-//#define RESET_BUTTON            QString ("resetButton")
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
 
 #define SNR_BUTTON              QString ("snrButton")
 #define SET_COORDINATES_BUTTON  QString ("set_coordinatesButton")
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
 #define SKIN_BUTTON             QString ("skinButton")
-//#define DUMP_BUTTON             QString ("dumpButton")
 
 #define	PATH_BUTTON		QString ("pathButton")
 
@@ -169,11 +167,11 @@ int	index_for_key (int key) {
 	                          "LOAD_SELECTION", 0) == 1;
 	this -> loadSelection_selector -> setChecked (b);
 
-	int c = value_i (dabSettings, CONFIG_HANDLER, "tiiCollision", 0);
-	this	-> tiiCollisions -> setValue (c);
-
 	b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 0) != 0;
 	this	-> dumpmodeSelector	-> setChecked (b);
+
+	b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
+	this	-> updateChecker	-> setChecked (b);
 
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
@@ -206,8 +204,6 @@ int	index_for_key (int key) {
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 
-//	connect (this, &configHandler::process_tiiCollisions,
-//	         myRadioInterface, &RadioInterface::handle_tiiCollisions);
 	connect (pathButton, &QPushButton::clicked,
 	         this, &configHandler::handle_pathButton);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
