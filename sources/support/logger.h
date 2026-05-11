@@ -32,31 +32,14 @@
 
 class logger {
 public:
-	enum logType {LOG_RADIO_STARTS, LOG_RADIO_STOPS,
-	      LOG_NEWDEVICE, LOG_NEW_CHANNEL, LOG_NEW_SERVICE,
-	      LOG_CHANNEL_STOPS,
-	      LOG_SOURCEDUMP_STARTS, LOG_SOURCEDUMP_STOPS,
-	      LOG_AUDIODUMP_STARTS, LOG_AUDIODUMP_STOPS,
-	      LOG_FRAMEDUMP_STARTS, LOG_FRAMEDUMP_STOPS,
-	      LOG_HIDDEN_SERVICE_STARTS, 
-	      LOG_SCANNING_STARTS, LOG_SCANNING_STOPS,
-	      LOG_ETI_STARTS, LOG_ETI_STOPS,
-	      LOG_SERVICE_STARTS, LOG_SLIDE_WRITTEN, LOG_CONFIG_CHANGE};
 		logger	(QSettings *);
 		~logger	();
-	void	logging_starts	();
-	void	logging_stops	();
-	void	log	(logType);
-	void	log	(logType, const QString &);
-	void	log	(logType, const QString &, int);
-	void	log	(logType, const QString &, const QString &);
+	void	log	(const QString &, const QString &);
 private:
-	findfileNames	fileNameFinder;
+	findfileNames	filenameFinder;
 	QString		logFileName;
 	FILE		*logFile;
-	bool		logMode;
 	QSettings	*logSettings;
-	QMutex		locker;
 };
 
 	

@@ -39,8 +39,6 @@
 	                              FILE *dump) {
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy == DAB_OLD) {
-	      theLogger ->  log (logger::LOG_SERVICE_STARTS,
-	                               "MP2 service ", d -> bitRate);
               theProcessor. reset (new mp2Processor (mr, 
 	                                             d	-> SId,
 	                                             d	-> bitRate,
@@ -51,8 +49,6 @@
 	   }
            else
            if (((audiodata *)d) -> ASCTy == DAB_PLUS) {
-	      theLogger -> log (logger::LOG_SERVICE_STARTS,
-	                               "MP4 service ", d -> bitRate);
               theProcessor. reset (new mp4Processor (mr,
 	                                             d -> SId,
 	                                             d -> bitRate,

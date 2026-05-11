@@ -601,6 +601,7 @@ QString h;
 	connectGUI ();
 //
 	this	-> cpuSupport	= 0;
+
 #ifdef	__ARCH_X86__
 	__builtin_cpu_init ();
 	int has_avg2	=
@@ -609,6 +610,8 @@ QString h;
 	        = __builtin_cpu_supports ("sse4.1") != 0 ? SSE_SUPPORT : 0;
 	cpuSupport	= has_avg2 + has_sse4;
 #endif
+
+
 //	Just check whether the ini file is used before
 	bool iniExists	=
 	           value_i (theQSettings, DAB_GENERAL, "EXISTS", 0) != 0;
@@ -625,12 +628,13 @@ QString h;
 	                                      SELECTED_DEVICE, "no device");
 
 	if (theDeviceChooser. getDeviceIndex (h) >= 0)
-	   theDeviceHandler	= createDevice (h, &theLogger);
+	   theDeviceHandler	= createDevice (h);
 	
 	if (theDeviceHandler != nullptr) {
 	   connect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	            this, &RadioInterface::newDevice);
 	   theDeviceChooser. hide ();
+	   theLogger. log ("start radio", "with preselected device");
 	   startDirect ();
 	   qApp	-> installEventFilter (this);
 	   return;
@@ -638,6 +642,7 @@ QString h;
 
 //	What we want here is that we start up after a device
 //	is selected
+	theLogger. log ("start rado", "after selecting device");
 	connect (&theDeviceChooser, &deviceChooser::deviceSelected,
 	         this, &RadioInterface::doStart);
 	theDeviceChooser. show ();
@@ -650,9 +655,11 @@ QString h;
 void	RadioInterface::doStart (const QString &dev) {
 	if (theDeviceHandler != nullptr)
 	   delete theDeviceHandler;
-	theDeviceHandler	= createDevice	(dev, &theLogger);
+	theDeviceHandler	= createDevice	(dev);
+	theLogger. log ("creating device", dev);
 //	Some buttons should not be touched before we have a device
 	if (theDeviceHandler == nullptr) {
+	   theLogger. log ("creating device failed", dev);
 	   return;
 	}
 
@@ -1098,7 +1105,7 @@ const char *type;
 	   QString path		= slidePath (true, SId, pictureName);
 	   FILE *x = fopen (path. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
-	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pictureName);
+	      theLogger. log ("slide written", pictureName);
 	      (void)fwrite (motData. data (), 1,
 	                          static_cast<size_t>(motData.length ()), x);
 	      fclose (x);
@@ -1117,7 +1124,7 @@ const char *type;
 	   QString pict		= thePath + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x != nullptr) {
-	      theLogger. log (logger::LOG_SLIDE_WRITTEN, pict);
+	      theLogger. log ("picture written", pict);
 	      (void)fwrite (motData. data(), 1,
 	                          static_cast<size_t>(motData.length ()), x);
 	      fclose (x);
@@ -1328,6 +1335,7 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 void	RadioInterface::TerminateProcess () {
 	running. store	(false);
 	stopChannel	();
+	theLogger. log ("Terminating", "");
 	
 //	stop timers apart from scanner
 	displayTimer.	stop	();
@@ -1419,7 +1427,7 @@ void	RadioInterface::TerminateProcess () {
 	   delete journalineHandler;
 	   journalineHandler = nullptr;
 	}
-	theLogger. log (logger::LOG_RADIO_STOPS);
+	theLogger. log ("radio stops", "");
 	theQSettings	-> sync ();
 	usleep (1000);		// pending signals
 //	everything should be halted by now, start deleting
@@ -1469,14 +1477,13 @@ void	RadioInterface::updateTimeDisplay() {
 //	selecting and allocating a device
 ////////////////////////////////////////////////////////////////////////
 
-deviceHandler	*RadioInterface::createDevice (const QString &s,
-	                                        logger *theLoggerParam) {
+deviceHandler	*RadioInterface::createDevice (const QString &s) {
 deviceHandler	*inputDevice = theDeviceChooser.
 	                               createDevice  (s, version);
 	
-	(void)theLoggerParam;		// for now
-	if (inputDevice	== nullptr)
+	if (inputDevice	== nullptr) {
 	   return nullptr;
+	}
 
 	channel. realChannel	= !inputDevice -> isFileInput ();
 	scanButton	-> setEnabled (channel. realChannel);
@@ -1504,7 +1511,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   theDeviceHandler = nullptr;
 	}
 
-	theDeviceHandler =  createDevice (deviceName, &theLogger);
+	theDeviceHandler =  createDevice (deviceName);
 	if (theDeviceHandler == nullptr) {
 	   theDeviceHandler	= new deviceHandler ();	// the dummy one
 	   return;		// nothing will happen
@@ -1765,7 +1772,6 @@ void	RadioInterface::stopAudioDumping	() {
 	if (!audioDumping)
 	   return;
 
-	theLogger. log (logger::LOG_AUDIODUMP_STOPS);
 	theAudioConverter. stop_audioDump ();
 	audioDumping	= false;
 	theTechWindow	-> audiodumpButton_text ("audio dump", 10);
@@ -1829,8 +1835,6 @@ QString	dumpName;
 	         theFilenameFinder. find_rawDump_fileName (deviceName, channelName);
 	   if (dumpName == "")
 	      return;
-	   theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
-	                                     deviceName, channelName);
 
 	   theOfdmHandler -> startDumping (dumpName,
                                            channel. tunedFrequency,
@@ -1855,8 +1859,6 @@ QString	dumpName;
 	if (dumpName == "")
 	   return;
 
-	theLogger. log (logger::LOG_SOURCEDUMP_STARTS,
-	                                     deviceName, channelName);
 	theDeviceHandler -> startDump (dumpName, 0);
 	dumpDisplay_p	=
 	             new dumpDisplay ("dumping in an \"uff\" (i.e. xml) file",
@@ -1868,7 +1870,6 @@ void	RadioInterface::stopSourceDumping	() {
 	   return;
 	delete dumpDisplay_p;
 	dumpDisplay_p	= nullptr;
-	theLogger. log (logger::LOG_SOURCEDUMP_STOPS);
 	if (!theDeviceHandler	-> providesDump ())
 	   theOfdmHandler	-> stopDumping ();
 	else
@@ -2029,12 +2030,14 @@ void	RadioInterface::announcement_stop (uint16_t SId) {
 void	RadioInterface::localSelect (const QString &service,
 	                                    const QString &theChannel) {
 	localSelect_SS (service, theChannel);
+	theLogger. log ("selecting", service);
 }
 //
 //	selecting from a content description
 void	RadioInterface::handle_contentSelector (const QString &s) {
 	newServices	-> reportService (s);
 	localSelect_SS (s, channel. channelName);
+	theLogger. log ("selecting from content table", s);
 }
 //
 void	RadioInterface::scheduleSelect (const QString &s) {
@@ -2044,6 +2047,7 @@ QStringList list	= splitter (s);
 	presetTimer. stop ();
 	newServices	-> reportService (list. at (0), list. at (1));
 	localSelect_SS (list. at (1), list. at (0));
+	theLogger. log ("selecting from scheduler", s);
 }
 //
 void	RadioInterface::localSelect_SS (const QString &service,
@@ -2079,6 +2083,10 @@ void	RadioInterface::stopService	(dabService &s) {
 	setSoundLabel (false);
 	channel. audioActive	= false;
 
+	theLogger. log ("stopping service ",
+	                        s. serviceName + "=" +
+	                              QString::number (s. SId, 16) + ":" +
+	                              QString::number (s. SCIds));
 	if (s. isAudio) {
 	   theAudioPlayer -> suspend ();
 	   stopAudioDumping ();
@@ -2108,12 +2116,16 @@ void	RadioInterface::stopService	(dabService &s) {
 void	RadioInterface::start_epgService (packetdata &pd) {
 	theOfdmHandler -> setDataChannel (pd, &theDataBuffer, BACK_GROUND);
 	dabService s;
-	s. channel     = pd. channel;
-	s. serviceName = pd. serviceName;
-	s. SId         = static_cast<uint32_t>(pd. SId);
-	s. subChId     = pd. subchId;
+	s. channel	= pd. channel;
+	s. serviceName	= pd. serviceName;
+	s. SId		= static_cast<uint32_t>(pd. SId);
+	s. subChId	= pd. subchId;
 	s. SCIds	= pd. SCIds;
-	s. fd          = nullptr;
+	s. fd		= nullptr;
+	theLogger. log ("starting epg service",
+	                           s. serviceName + "=" +
+	                           QString::number (s. SId, 16) + ":" +
+	                           QString::number (s. SCIds));
 	s. runsBackground = true;
 	channel. runningTasks. push_back (s);
 	epgLabel	-> show ();
@@ -2123,6 +2135,10 @@ void	RadioInterface::startService (const QString &serviceName) {
 dabService	s;
 	s. serviceName	= serviceName;
 	theOfdmHandler -> mapNameToId (serviceName, s. SId, s. SCIds);
+	theLogger. log ("selecting service",
+	                     serviceName + "=" +
+	                             QString::number (s. SId, 16) + ":" +
+	                             QString::number (s. SCIds));
 //	if the service is already running, ignore the call
 	for (auto &serv : channel. runningTasks) {
 	   if (serv. serviceName == serviceName) {
@@ -2144,17 +2160,6 @@ dabService	s;
 	      channel. currentService. subChId	= ad. subchId;
 	      startAudioservice (ad);
 
-	      serviceLabel	-> setText (serviceName);
-	      QPixmap p;
-	      if (get_serviceLogo (p, channel. currentService. SId)) {
-	         int height = 60;
-	         int width =
-	             static_cast<float>(p. width ()) / p. height () * height;
-	         iconLabel ->
-	            setPixmap (p. scaled (width, height));
-	      }
-	      else
-	         iconLabel -> setText (ad. shortName);
 	   }
 	   theTechWindow	-> isDABPlus  (ad. ASCTy == DAB_PLUS);
 	}
@@ -2213,28 +2218,44 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	                                                BACK_GROUND);
 	      }
 	   }
-	}
+	   serviceLabel	-> setText (ad. serviceName);
+	
 //	activate sound and update the various signs
-	theAudioPlayer		-> resume ();
-	channel. audioActive	= true;
-	setSoundLabel (true);
-	programTypeLabel	-> setText (getProgramType (channel. internatTable, ad. programType));
-	rateLabel		-> setStyleSheet ("color:magenta");
-	rateLabel		-> setText (QString::number (ad. bitRate) +
+	   theAudioPlayer		-> resume ();
+	   channel. audioActive	= true;
+	   setSoundLabel (true);
+	   programTypeLabel	-> setText (getProgramType (channel. internatTable, ad. programType));
+	   rateLabel		-> setStyleSheet ("color:magenta");
+	   rateLabel		-> setText (QString::number (ad. bitRate) +
 	                                                        "kbit");
-	QString protL		= getProtectionLevel (ad. shortForm,
+	   QString protL	= getProtectionLevel (ad. shortForm,
 	                                                    ad. protLevel);
-	QString crL		= getCodeRate (ad. shortForm, ad. protLevel);
-	protectionLabel		-> setStyleSheet ("color:red");
-	QFont font		= protectionLabel -> font ();
-	font. setPointSize (9);
-	protectionLabel		-> setFont (font);
-	protectionLabel		-> setText (protL+ " " + crL);
+	   QString crL		= getCodeRate (ad. shortForm, ad. protLevel);
+	   protectionLabel	-> setStyleSheet ("color:red");
+	   QFont font		= protectionLabel -> font ();
+	   font. setPointSize (9);
+	   protectionLabel	-> setFont (font);
+	   protectionLabel	-> setText (protL+ " " + crL);
 
-	theOfdmHandler -> getFreqs (ad. SId, ad. fmFrequencies);
+	   theOfdmHandler	-> getFreqs (ad. SId, ad. fmFrequencies);
 	                                      
 //	show service related data
-	theTechWindow	-> showServiceData 	(channel. internatTable, &ad);
+	   QPixmap p;
+	   if (get_serviceLogo (p, channel. currentService. SId)) {
+	      int height = 60;
+	      int width =
+	          static_cast<float>(p. width ()) / p. height () * height;
+	      iconLabel ->
+	         setPixmap (p. scaled (width, height));
+	      theTechWindow	-> showServiceData (channel. internatTable,
+	                                            &ad, p);
+	   }
+	   else {
+	      iconLabel -> setText (ad. shortName);
+	      theTechWindow	-> showServiceData (channel. internatTable,
+	                                            &ad);
+	   }
+	}
 }
 
 void	RadioInterface::startPacketservice (packetdata &pd) {
@@ -2361,7 +2382,6 @@ int	tunedFrequency	=
 	channel. cleanChannel	();
 	channel. channelName	= theChannel;
 	channel. tunedFrequency	= tunedFrequency;
-	theLogger. log (logger::LOG_NEW_CHANNEL, theChannel, channel. snr);
 	channel. realChannel	= !theDeviceHandler -> isFileInput ();
 	if (channel. realChannel) {
 	   store (theQSettings, DAB_GENERAL, CHANNEL_NAME, theChannel);
@@ -2441,7 +2461,6 @@ void	RadioInterface::stopChannel	() {
 	stopSourceDumping	();
 	if (channel. etiActive)
 	   stop_etiHandler	();	// 
-	theLogger. log (logger::LOG_CHANNEL_STOPS, channel. channelName);
 	theNewDisplay. setSilent	();
 //
 	for (auto &serv : channel. runningTasks) {
@@ -3168,7 +3187,6 @@ void	RadioInterface::stopFrameDumping () {
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 
-	theLogger. log (logger::LOG_FRAMEDUMP_STOPS);
 	fclose (channel. currentService. frameDumper);
 	theTechWindow ->  framedumpButton_text ("save AAC/MP2", 10);
 	channel. currentService. frameDumper	= nullptr;
@@ -3183,9 +3201,6 @@ void	RadioInterface::startFrameDumping () {
 	                              channel. currentService. ASCTy, true);
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
-	theLogger. log (logger::LOG_FRAMEDUMP_STARTS, 
-	                                         channel. channelName,
-	                                         channel. currentService. serviceName);
 	QString mode = channel. currentService. ASCTy == DAB_PLUS ?
 	                                       "recording aac" : "recording mp2";
 	theTechWindow ->  framedumpButton_text (mode, 12);
@@ -3324,14 +3339,6 @@ QString home	= QDir::homePath ();
 //
 void	RadioInterface::handle_LoggerButton (int s) {
 	(void)s;
-	if (theConfigHandler -> logger_active ()) {
-	   theLogger. logging_starts ();
-	   store (theQSettings, DAB_GENERAL, LOG_MODE, 1);
-	}
-	else {
-	   theLogger. logging_stops ();
-	   store (theQSettings, DAB_GENERAL, LOG_MODE, 0);
-	}
 }
 
 void	RadioInterface::set_transmitters_local  (bool isChecked) {
@@ -3565,7 +3572,6 @@ void	RadioInterface::stop_etiHandler () {
 	if (!channel. etiActive) 
 	   return;
 
-	theLogger. log (logger::LOG_ETI_STOPS);
 	theOfdmHandler -> stopEtiGenerator ();
 	channel. etiActive = false;
 	scanButton	-> setText ("eti");
@@ -3580,9 +3586,6 @@ void	RadioInterface::start_etiHandler () {
 	if (etiFile == QString (""))
 	   return;
 
-	theLogger. log (logger::LOG_ETI_STARTS, 
-	                     theDeviceHandler -> deviceName (),
-	                     channel. channelName);
 	channel. etiActive = theOfdmHandler -> startEtiGenerator (etiFile);
 	if (channel. etiActive) 
 	   scanButton -> setText ("eti runs");
@@ -4139,7 +4142,6 @@ void	RadioInterface::handle_correlationSelector	(int d) {
 
 void	RadioInterface::show_changeLabel (const QStringList notInOld,
 	                                  const QStringList notInNew) {
-	theLogger. log (logger::LOG_CONFIG_CHANGE);
 	if (notInOld. size () > 0) {
 	   fprintf (stderr, "New service:\n");
 	   for (auto &s: notInOld) 
@@ -4577,8 +4579,8 @@ const char *theUrl ="https://api.github.com/repos/jvankatwijk/Qt-DAB/releases/la
 
 UpdateChecker *updateChecker = nullptr;
 void	RadioInterface::check_newVersion	() {
-	connect (&updateCheck_timer, &QTimer::timeout,
-                 this, &RadioInterface::check_newVersion);
+	disconnect (&updateCheck_timer, &QTimer::timeout,
+                    this, &RadioInterface::check_newVersion);
 	fprintf (stderr, "going to check for a new update\n");
 	updateChecker = new UpdateChecker (theUrl);
 	connect (updateChecker, &UpdateChecker::done,

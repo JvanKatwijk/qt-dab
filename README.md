@@ -19,13 +19,10 @@ Of course, as for previous versions, for the current version,
 *Qt-DAB-7.0*, predefined executables - for Linux an AppImage, for Windows
 an installer - are available.
 
-The current version of Qt-DAB-7.0 is Beta.
-
 Table of Contents
 =================================================================
 
 * [What is new in Qt-DAB-7.0](#What-is-new-in-Qt-DAB-7.0)
-* [Features](#features)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
 * [Scan control](#scan-cntrol)
@@ -38,9 +35,8 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
--------------------------------------------------------------------------
 What is new in Qt-DAB-7.0
-------------------------------------------------------------------------
+======================================================================
 
 Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
 the GUI had changed a lot since the "5" version, and the basic idea was to
@@ -62,18 +58,19 @@ In **ensemble mode** - the most common mode - all services encountered in the
 various channels that were exercised (e.g. by a scan) are shown.
 In the picture it shows the NPO ensemble takes positions around 30.
  
-On *program termination*, the list is stored in a file with the
+On  (normal) **program termination**, the list is stored in a file with the
 name ".qt-dab-serviceList.mxl", stored in the user's home directory
 On program startup, the list is read-in again.
-.
-Alternatively, the **configuration and control** window contains an entry that - when set - invokes upon program termination a  dialog with options
-to read an existing ensemble file, create a new one, clear the current
+
+Alternatively, the **configuration and control** window contains an
+entry that - when set - shows on program termination a  dialog with options
+to read on the NEXT program involcation either an existing ensemble file, create a new one, clear the current
 ensemble file, or just stop with selecting.
 In the last two cases, the setting on the configuration window is "undone".
 
 ![7.0](/res/read_me/ensemble-dialog.png)
 
-Clicking on a service name obviously will select the service, which might take a few seconds if another channel has to be started.
+Clicking on a service name on the servides list obviously will select the service, which might take a few seconds if another channel has to be started.
 Clicking on the small entry left of the service name controls the **status**
 of the entry, i.e. a **favorite** or not. If set as **favorite** a small "*"
 appears left of the name in the list.
@@ -90,7 +87,7 @@ In **favorite** mode, the list of favorites is shown. Selecting this mode makes 
 In **file** mode, i.e. after reading a file, the services are shown, and
 - obviously - may be selected.
 Adding an element to the **file mode** is not very usefule, as is
-channel selection, scanning or switching the mode. So, in **favorite mode**
+channel selection, scanning or switching the mode. So, in **file mode**
 these functions are blocked. Furthermore, switching from this mode to either
 **ensemble mode** or **favorite mode** is meaningless, so the mode
 selecting button is hidden. 
@@ -99,6 +96,9 @@ On starting the program with a **device** the **ensemble** mode is
 set, when starting with a file as input, the mode is set to **file** mode.
 
 -------------------------------------------------------------------------
+
+Windows and scopes
+=========================================================================
 
 In Qt-DAB-7.0 a choice was made to add a few **operational** selectors to
 the main window, rather than having them on the **configuration and control**
@@ -130,7 +130,7 @@ timetable data for the service could be detected, **red** otherwide.
 
 ![7.0](/res/read_me/timetable-catalog.png?raw=true)
 
-Touching in this list on a green entry, shows yest another window, with
+Touching in this list on a green entry, shows yet another window, with
 time table data.
 
 ![7.0](/res/read_me/timetable.png?raw=true)
@@ -138,12 +138,17 @@ time table data.
 (Note: our NPO is not that advanced that it provides EPG/SPI data, so the
 development and testing uses file input).
 
-The technical widget is not modified
+As in previous versions, touching the **ensemble name** on the top left,
+controls the visibility of the content table, i.e. a window that shows
+the details of all services in the current ensemble.
 
-![6.10](/res/read_me/technical-widget.png)
+![7.0](/res/read_me/content-table.png)
 
 The technical window shows - as the name suggests - technical details of
 the  selected audio service.
+New is that - if available - the icon of the selected service is shown.
+
+![6.10](/res/read_me/technical-widget.png)
 
 The spectrum widget is not modfied
 

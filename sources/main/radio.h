@@ -309,8 +309,7 @@ private:
 	                                                 const QString &);
 	void			displaySlide		(const QPixmap &,	
 	                                                 const QString &t = "");
-	deviceHandler		*createDevice		(const QString &,
-	                                                             logger *);
+	deviceHandler		*createDevice		(const QString &);
 
 	QString			convertTime		(int, int, int,
 	                                                      int, int);

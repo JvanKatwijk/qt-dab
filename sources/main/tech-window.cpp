@@ -112,6 +112,7 @@ void	techWindow::storePosition	() {
 void	techWindow::cleanUp	() {
 	const QString ee ("-");
 	programName		-> setText (ee);
+	shortnameLabel		-> setText (ee);
 	rsCorrections		-> display (0);
 	frameError_display	-> setValue (0);
 	rsError_display		-> setValue (0);
@@ -127,7 +128,23 @@ void	techWindow::cleanUp	() {
 }
 
 void	techWindow::showServiceData	(int tableNo, audiodata *ad) {
-	showServiceName		(ad -> serviceName, ad -> shortName);
+	programName		-> setText (ad -> serviceName);
+	shortnameLabel		-> setText (ad -> shortName);
+	showDetails (tableNo, ad);
+}
+
+void	techWindow::showServiceData	(int tableNo, audiodata *ad,
+	                                        const QPixmap &p) {
+	programName		-> setText (ad -> serviceName);
+	int height = 60; 
+	int width =
+	         static_cast<float>(p. width ()) / p. height () * height;
+	shortnameLabel		->
+	                 setPixmap (p. scaled (width, height)); 
+	showDetails (tableNo, ad);
+}
+
+void	techWindow::showDetails		(int tableNo, audiodata *ad) {
 	showServiceId		(ad -> SId);
 	showStartAddress	(ad -> startAddr);
 	showLength		(ad -> length);
@@ -186,13 +203,6 @@ void	techWindow::showFrameDumpButton	(bool b) {
 	   framedumpButton	-> show ();
 	else
 	   framedumpButton	-> hide ();
-}
-
-void	techWindow::showServiceName	(const QString &s1, const QString &s2) {
-	if ((s2 != "") && (s1 != s2)) 
-	   programName	-> setText (s1 + "(" + s2 + ")");
-	else
-	   programName -> setText (s1);
 }
 
 static

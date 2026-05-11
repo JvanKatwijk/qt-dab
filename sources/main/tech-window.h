@@ -26,6 +26,7 @@
 
 #include	<QObject>
 #include	<QFrame>
+#include	<QPixmap>
 #include	"ui_technical_data.h"
 #include	"dab-constants.h"
 #include	"audio-display.h"
@@ -45,6 +46,7 @@ public:
 		~techWindow	();
 	void	storePosition		();
 	void	showServiceData		(int, audiodata *);
+	void	showServiceData		(int, audiodata *, const QPixmap &);
 	void	cleanUp			();
 	void	isDABPlus		(bool);
 	void	hideMissedLabel		();
@@ -57,15 +59,13 @@ private:
 
 	void			setButtonColors	(QPushButton *,
 	                                            const QString &buttonName);
-
+	void			showDetails	(int, audiodata *);
 public slots:
 	void		showFrameErrors		(int);
 	void		showAacErrors		(int);
 	void		showRsErrors		(int);
 	void		showRsCorrections	(int, int);
 	void		showFrameDumpButton	(bool);
-	void		showServiceName		(const QString &,
-	                                         const QString &);
 	void		showServiceId		(int);
 	void		showSubChId		(int);
 	void		showStartAddress	(int);
