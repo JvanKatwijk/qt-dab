@@ -49,7 +49,7 @@
 	currentConfig	= new fibConfig	(myRadioInterface);
 	nextConfig	= new fibConfig (myRadioInterface);
 	mjd		= 0;
-
+	reset ();
 	connect (this, &fibDecoder::signal_FIG00,
 	         myRadioInterface, &RadioInterface::handle_FIG00);
 	connect (this, &fibDecoder::signal_FIG09,
@@ -81,31 +81,30 @@ void	fibDecoder::processFIB (uint8_t *p, uint16_t fib) {
 int8_t	availableBytes	= 30;
 uint8_t	*d		= p;
 
-	fibLocker. lock();
+//	fibLocker. lock();
 	(void)fib;
 	while (availableBytes > 0) {
 	   uint8_t FIGtype	= getBits_3 (d, 0);
 	   uint8_t FIGlength	= getBits_5 (d, 3);
 	   if ((FIGlength >= availableBytes) ||
 	       ((FIGtype == 0x07) && (FIGlength == 0x3F))) {
-	      fibLocker. unlock ();
+//	      fibLocker. unlock ();
 	      return;
 	   }
 
 	   switch (FIGtype) {
 	      case 0:
-	         if (availableBytes >= 2)
+//	         if (availableBytes >= 2)
 	            process_FIG0 (d);	
 	         break;
 
 	      case 1:			
 	         if (availableBytes >= 2) 
 	            process_FIG1 (d);
-	     
 	         break;
 
 	      case 2:		// not encountered yet
-//	         fprintf (stderr, "FIG2 label\n");
+	         fprintf (stderr, "FIG2 label\n");
 	         break;
 
 	      case 7:
@@ -118,7 +117,7 @@ uint8_t	*d		= p;
 	   availableBytes -= (FIGlength + 1);
 	   d = d + (FIGlength + 1) * 8;
 	}
-	fibLocker. unlock();
+//	fibLocker. unlock();
 }
 //
 //
@@ -250,10 +249,11 @@ void	fibDecoder::FIG0Extension0 (uint8_t *d) {
 	FIG00_value. CIF_major	= getBits_5 (d, 16 + 19);
 	FIG00_value. CIF_minor	= getBits_8 (d, 16 + 24);
 	FIG00_value. occurrenceChange = getBits_8 (d, 16 + 32);
-//
+
 //	if a switch from current to next happened:
 	if ((FIG00_value. changeFlag == 0) &&
 	     (FIG00_value. prevChangeFlag == 3)) {
+	   fprintf (stderr, "changing\n");
 	   fibConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;
@@ -456,10 +456,8 @@ FIG05 comp;
 	   comp. subChId = getBits (d, bitOffset + 2, 6);
 	   comp. language = getBits (d, bitOffset + 8, 8);
 	   bitOffset += 16;
-	   if (in_FIG05_stack (comp))
-	      return bitOffset / 8;
-
-	   FIG05_stack. push_back (comp);
+	   if (!in_FIG05_stack (comp))
+	      FIG05_stack. push_back (comp);
 	   return bitOffset / 8;
 	}
 	else {
@@ -470,11 +468,10 @@ FIG05 comp;
 	         comp. language	= getBits (d, bitOffset + 16, 8);
 	         if (!in_FIG05_stack (comp))
 	            FIG05_stack. push_back (comp);
-	         bitOffset += 24;
-	         return bitOffset / 8;
+	         break;
 	      }
-	      bitOffset += 24;
 	   }
+	   bitOffset += 24;
 	   return bitOffset / 8;
 	}
 }
@@ -1206,6 +1203,9 @@ void	fibDecoder::disconnectChannel () {
 void	fibDecoder::reset	() {
 
 	FIG00_value. 	prevChangeFlag	= 0;
+	FIG00_value.	EId		= 0;
+	FIG00_value.	changeFlag	= 0;
+	FIG00_value.	prevChangeFlag	= 0;
 	FIG05_stack.	resize (0);
 	FIG09_value.	extFlag	= 0;
 	FIG09_value.	LTO	= 0;
@@ -1214,12 +1214,15 @@ void	fibDecoder::reset	() {
 	FIG09_value.	ecc_local. resize (0);
 	FIG010_value.	MJD	= 0;
 	FIG010_value.	LSI	= 0;
+	
 	FIG010_value.	UTC_flg	= 0;
 	FIG017_stack.	resize (0);
 	FIG018_stack.	resize (0);
 	FIG021_stack.	resize (0);
 
 	FIG10_value. EId	= 0;
+	FIG10_value. isSynced	= false;
+	FIG10_value. ensembleLabel	= "";
 	FIG11_stack.	resize (0);
 	FIG14_stack.	resize (0);
 	FIG15_stack.	resize (0);
@@ -1614,6 +1617,10 @@ void	fibDecoder::check_announcements (uint8_t clusterId,
 	      }
 	   }
 	}
+}
+
+uint32_t fibDecoder::julianDate	() {
+	return mjd;
 }
 
 bool    fibDecoder::in_FIG05_stack (const FIG05 &el) {

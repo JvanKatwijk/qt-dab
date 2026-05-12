@@ -51,8 +51,7 @@ DABFLOAT length	= jan_abs (V);
 //
 //	The bessel function is under windows too slow too work with
 //	that is why we created a table that is filled on startup
-#define	BESSEL_SIZE	4096
-DABFLOAT besselTable [BESSEL_SIZE];
+DABFLOAT besselTable [2048];
 static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
@@ -61,8 +60,7 @@ DABFLOAT IO_Bessel	(DABFLOAT x) {
 // and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
-//	return besselTable [((int)(x * 32)) % 2048];
-	return besselTable [((int)(x * 64)) % 4096];
+	return besselTable [((int)(x * 32)) % 2048];
 }
 
 static inline
@@ -122,7 +120,7 @@ Complex makeComplex (DABFLOAT phase) {
 	                                    conjVector	(params. get_T_u ()),
 	                                    fft_buffer	(params. get_T_u ()),
 	                                    sigmaSQ_Vector (params. get_T_u ()),
-	                                    meanLevelVector (params. get_T_u ()),
+	                                    meanLevelVector(params. get_T_u ()),
 	                                    meanPowerVector (params. get_T_u ()){
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
@@ -142,14 +140,13 @@ Complex makeComplex (DABFLOAT phase) {
 	reset ();
 	iqSelector		= SHOW_DECODED;
 //	iqSelector		= SHOW_RAW;
-	decoder			= DECODER_3;
+	decoder			= DECODER_1;
 
 	sqrt_2			= sqrt (2);
 //
 //	Prefil some tables for faster access
-	for (int i = 0; i < BESSEL_SIZE; i ++) {
-//	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
-	   besselTable [i] = IO_Bessel (((float)i) / 64.0);
+	for (int i = 0; i < 2048; i ++) {
+	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
 	}
 
 	for (int i = 0; i < 8; i ++)
@@ -164,9 +161,9 @@ void	ofdmDecoder::stop ()	{
 //
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i < T_u; i ++) {
-	   sigmaSQ_Vector [i]	= 0;
-	   meanLevelVector [i]	= 0;
-	   meanPowerVector [i]	= 0;
+	   sigmaSQ_Vector [i]	= 1;
+	   meanLevelVector [i]	= 1;
+	   meanPowerVector [i]	= 1;
 	}
 	meanValue	= 1.0f;
 	avgBit		= 10.0f;
@@ -242,10 +239,12 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t	blkno,
 	                     std::vector<int16_t> &softbits,
 	                     DABFLOAT	snr, float clockError) {
+
 DABFLOAT sum	= 0;
+//DABFLOAT bitSum	= 0;
 
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
-	                                       T_u * sizeof (Complex));
+	                               T_u * sizeof (Complex));
 //	first step: do the FFT
 	fft. fft (fft_buffer. data ());
 //
@@ -298,9 +297,8 @@ DABFLOAT sum	= 0;
 
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
-	      float freqOffset	=
-	                    compute_frequencyOffset (fft_buffer. data (),
-	                                             phaseReference. data ());
+	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
+	                                              phaseReference. data ());
 	      if (devBuffer != nullptr) {
 	         float *tempVector = dynVec (float, carriers);
 	         for (int i = 0; i < carriers; i ++) {
@@ -415,6 +413,7 @@ Complex toQ1	(const Complex f) {
 	                imag (f) >= 0 ? imag (f) : - imag (f));
 }
 
+
 DABFLOAT ofdmDecoder::decoder_12 (const std::vector<Complex> &fft_buffer,
 	                        std::vector<int16_t> &softbits,
 	                        DABFLOAT	snr,
@@ -511,7 +510,7 @@ DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT	sum = 0;
 
-	(void)snr; (void)clockError;
+	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
 	   int16_t	carriers_2	= carriers / 2;
@@ -528,7 +527,8 @@ DABFLOAT	sum = 0;
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
 	   conjVector [index]	= fftBin;
-//	   Complex fftBin_at_1	= toQ1 (fftBin);
+	   Complex fftBin_at_1	= toQ1 (fftBin);
+
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	   DABFLOAT scaler	=  140.0 / meanValue;
@@ -550,7 +550,6 @@ DABFLOAT ofdmDecoder::decoder_4 (const std::vector<Complex> &fft_buffer,
 	                        DABFLOAT	snr) {
 DABFLOAT sum	= 0;
 
-	(void)snr;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -563,11 +562,12 @@ DABFLOAT sum	= 0;
 //
 //	updates
 	   
+	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
+	                                   abs (imag (fftBin)));
+
 	   meanLevelVector [index] =
 	        compute_avg (meanLevelVector [index], binAbsLevel, ALPHA);
 
-	   Complex fftBin_at_1	= Complex (abs (real (fftBin)),
-	                                   abs (imag (fftBin)));
 	   DABFLOAT d_x		=  abs (real (fftBin_at_1)) -
 	                                  meanLevelVector [index] / sqrt_2;
 	   DABFLOAT d_y		=  abs (imag (fftBin_at_1)) -

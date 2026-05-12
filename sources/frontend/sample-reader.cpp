@@ -158,7 +158,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	                                  ((IQ_Real + IQ_Imag) / 2));
 	      teller = 0;
 	   }
-	   if (dcRemoval) 
+//	   if (dcRemoval) 
 	      v			= dcRemover. filter (v);
 
 //	first: adjust frequency. We need Hz accuracy

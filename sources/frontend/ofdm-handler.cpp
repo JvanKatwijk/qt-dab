@@ -90,6 +90,7 @@
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
+	starter				= true;
 	this	-> tiiDelay		= p -> tii_delay;
 	this	-> tiiCounter		= 0;
 	this	-> correlationOrder	= 
@@ -251,16 +252,18 @@ int	snrCount	= 0;
 	               continue;
 	         }
 
+	         
 	         theReader. getSamples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                               correlationOrder,
 	                                               thresHold);
 
-	         if (startIndex < 0) { // no sync, try again
+	         if (starter || (startIndex < 0)) { // no sync, try again
 	            if (!correctionNeeded) {
 	               setSyncLost();
 	            }
+	            starter	= false;
 	            badFrames ++;
 	            setSynced (false);
 	            inSync	= false;
@@ -355,7 +358,7 @@ int	snrCount	= 0;
 	            else {
 //	               coarseOffset	+= 0.4 * correction * carrierDiff;
 	               coarseOffset	+=  correction * carrierDiff;
-	               tryCounter	= 5;
+//	               tryCounter	= 5;
 	            }
 	         }
 	      }
@@ -387,6 +390,7 @@ int	snrCount	= 0;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	         theReader. getSamples (ofdmBuffer, 0,
 	                                 T_s, coarseOffset + fineOffset,  true);
+//	         fprintf (stderr, "Block %d\n", ofdmSymbolCount);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
 	            FreqCorr +=

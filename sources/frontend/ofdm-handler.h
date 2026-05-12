@@ -139,6 +139,7 @@ private:
 	mscHandler		theMscHandler;
 	phaseTable		theTable;
 
+	bool			starter;
 
 	uint8_t			selectedTII;
 	DABFLOAT		snr;

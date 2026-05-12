@@ -31,7 +31,7 @@
 #include	"position-handler.h"
 #include	"settingNames.h"
 
-#define	__BUFFERSIZE__	8 * 32768
+#define	__BUFFERSIZE__	16 * 32768
 
 	newFiles::newFiles (QSettings *s,
 	                    const QString &fileName):

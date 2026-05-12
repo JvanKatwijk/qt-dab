@@ -94,7 +94,6 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	            throw (33);
 	         usleep (100);
 	      }
-
 	      if (newPosition. load () > 0) {
 	         uint64_t newPos =
 	               (uint64_t)(newPosition. load () / 100.0 * fileLength);
@@ -117,8 +116,9 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	         for (int i = n; i < BUFFERSIZE; i ++)
 	            inputBuffer [i] = std::complex <float> (0, 0);
 	      }
-	      if (sampleRate == SAMPLERATE)
+	      if (sampleRate == SAMPLERATE) {
 	         theBuffer -> putDataIntoBuffer (inputBuffer, BUFFERSIZE);
+	      }
 	      else {
 	         std::complex<float> localBuf [SAMPLERATE / DIVIDER];
 	         for (int i = 0; i < BUFFERSIZE; i ++) {
