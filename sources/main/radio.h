@@ -45,6 +45,7 @@
 #include	"dl-cache.h"
 #include	"content-table.h"
 #include	"dxDisplay.h"
+#include	"process-monitor.h"
 #include	<memory>
 #include	<mutex>
 #ifdef	DATA_STREAMER
@@ -242,6 +243,8 @@ public:
 	bool	channelOn		();
 	bool	devScopeOn		();
 	int	get_serviceOrder	();
+	void	handle_rightClick	(const QString &s);
+
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 	void			focusInEvent (QFocusEvent *);
@@ -270,6 +273,7 @@ private:
 	errorLogger		theErrorLogger;
 	deviceChooser		theDeviceChooser;
 	dxDisplay		theDXDisplay;
+	processMonitor		theProcessMonitor;
 	logger			theLogger;
 	scanHandler		theSCANHandler;
 	tiiMapper		theTIIProcessor;
@@ -398,6 +402,7 @@ private:
 
 	QString			extractName		(const QString &);
 
+	QString			background_audioName	(const QString &);
 //
 //	announcements
 	QPixmap			fetchAnnouncement 	(int id);
@@ -525,7 +530,9 @@ public slots:
 	void			show_quality		(float, float, float);
 	void			show_stdDev		(uint32_t);
 //
-
+//	signal for process monitor
+	void			handle_clickRequest	(const QString &);
+//
 //	signals from fic-handler
 	void			show_ficQuality		(int, int);
 	void			show_ficBER		(float);

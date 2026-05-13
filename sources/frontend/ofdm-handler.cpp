@@ -547,6 +547,10 @@ bool	ofdmHandler::isAudioService		(uint32_t SId, uint8_t SCIds) {
 	return theFicHandler. isAudioService (SId, SCIds);
 }
 
+bool	ofdmHandler::isPacketService		(uint32_t SId, uint8_t SCIds) {
+	return theFicHandler. isPacketService (SId, SCIds);
+}
+
 bool	ofdmHandler::is_SPI			(uint32_t SId) {
 	return theFicHandler. is_SPI (SId);
 }

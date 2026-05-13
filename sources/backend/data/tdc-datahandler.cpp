@@ -26,6 +26,7 @@
 #include	"crc-handlers.h"
 #include	"bit-extractors.h"
 
+//#define	PRINT_TDC
 	tdc_dataHandler::tdc_dataHandler (RadioInterface *mr,
 	                                  RingBuffer<uint8_t> *dataBuffer,
 	                                  int16_t appType) {
@@ -130,7 +131,7 @@ uint8_t *buffer	= (uint8_t *) alloca (length * sizeof (uint8_t));
 	   buffer [i] = getBits (data, offset + i * 8, 8);
 	if (!check_crc_bytes (buffer, length - 2))
 	   fprintf (stderr, "crc ook hier fout\n");
-#if 0
+#ifdef PRINT_TDC
 	fprintf (stderr, "nrServices %d, SID-A %d SID-B %d SID-C %d\n",
 	                  buffer [0], buffer [1], buffer [2], buffer [3]);
 #endif
@@ -145,7 +146,7 @@ int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 uint8_t	*buffer = (uint8_t *) alloca (length * sizeof (uint8_t));
 int	lOffset;
 int	llengths = length - 4;
-#if 0
+#ifdef PRINT_TDC
 	fprintf (stderr, " frametype 1  (length %d) met offset %d %d %d %d\n", length, offset,
 	                             getBits (data, offset,      8),
 	                             getBits (data, offset + 8,  8),
@@ -158,15 +159,15 @@ int	llengths = length - 4;
 	if (getBits (data, offset + 24, 8) == 0) {	// no encryption
 	   lOffset	= offset + 4 * 8;
 	   do {
-//	      int compInd	= getBits (data, lOffset, 8);	
+	      int compInd	= getBits (data, lOffset, 8);	
 	      int flength	= getBits (data, lOffset + 8, 16);
-//	      int crc		= getBits (data, lOffset + 3 * 8, 8);
-#if 0
+	      int crc		= getBits (data, lOffset + 3 * 8, 8);
+#ifdef PRINT_TDC
 	      fprintf (stderr, "segment %d, length %d\n",
 	                                 compInd, flength);
 	      for (int i = 5; i < flength; i ++)
-	         fprintf (stderr, "%c", buffer [i]);
-	      fprintf (stderr, "\n");
+	         fprintf (stderr, "%x ", buffer [i]);
+	      fprintf (stderr, "\n\n");
 #endif
 	      lOffset	+= (flength + 5) * 8;
 	      llengths -= flength + 5;

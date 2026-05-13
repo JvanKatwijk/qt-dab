@@ -119,11 +119,11 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/scopes/audio-display.h \
 	   ./sources/main//scopes/spectrogramdata.h \
 	   ./sources/main/snr-viewer/snr-viewer.h \
-#	   ./sources/main/ensemble-handler.h \
 	   ./sources/main/config-handler.h \
 	   ./sources/main/tech-window.h \
 	   ./sources/main/copyrightLabel.h \
 	   ./sources/main/dxDisplay.h \
+	   ./sources/main/process-monitor.h \
 	   ./sources/main/viewer/service-descriptor.h \
            ./sources/main/viewer/channel-descriptor.h \
            ./sources/main/viewer/database.h \
@@ -287,6 +287,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/tech-window.cpp \
 	   ./sources/main/config-handler.cpp \
 	   ./sources/main/dxDisplay.cpp \
+	   ./sources/main/process-monitor.cpp \
 	   ./sources/main/viewer/channel-descriptor.cpp \
            ./sources/main/viewer/database.cpp \
            ./sources/main/viewer/view-handler.cpp \

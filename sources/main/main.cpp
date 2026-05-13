@@ -67,7 +67,27 @@ QString fileName;
 	return fileName;
 }
 
-void    setTranslator (QTranslator *, QString Language);
+void	setTranslator (QTranslator *theTranslator, QString Language) {
+
+//	German is special (as always)
+	if ((Language == "de_AT") || (Language ==  "de_CH"))
+	   Language = "de_DE";
+//
+//	what about Dutch?
+	bool translatorLoaded =
+	             theTranslator -> load (QString(":/i18n/") + Language);
+	qDebug () << "main:" <<  "Set language" << Language;
+	QCoreApplication::installTranslator (theTranslator);
+
+	if (!translatorLoaded) {
+	   qDebug() << "main:" <<  "Error while loading language specifics" << Language << "use English \"en_GB\" instead";
+	   Language = "en_GB";
+	}
+
+	QLocale curLocale (QLocale (static_cast<const QString&>(Language)));
+	QLocale::setDefault (curLocale);
+}
+
 
 int     main (int argc, char **argv) {
 QString initFileName	= fullPathfor (QString (DEFAULT_INI), QString (".ini"));
@@ -195,26 +215,5 @@ QTranslator	theTranslator;
 #else
 	return 1;
 #endif
-}
-
-void	setTranslator (QTranslator *theTranslator, QString Language) {
-
-//	German is special (as always)
-	if ((Language == "de_AT") || (Language ==  "de_CH"))
-	   Language = "de_DE";
-//
-//	what about Dutch?
-	bool translatorLoaded =
-	             theTranslator -> load (QString(":/i18n/") + Language);
-	qDebug () << "main:" <<  "Set language" << Language;
-	QCoreApplication::installTranslator (theTranslator);
-
-	if (!translatorLoaded) {
-	   qDebug() << "main:" <<  "Error while loading language specifics" << Language << "use English \"en_GB\" instead";
-	   Language = "en_GB";
-	}
-
-	QLocale curLocale (QLocale (static_cast<const QString&>(Language)));
-	QLocale::setDefault (curLocale);
 }
 

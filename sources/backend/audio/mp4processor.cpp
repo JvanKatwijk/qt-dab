@@ -292,8 +292,10 @@ stream_parms    streamParameters;
 	                                                  segmentSize);
 	      newFrame (segmentSize);
 	   }
-	   else
+	   else {
 	      fwrite (fileBuffer. data (), 1, segmentSize, dump);
+	      continue;
+	   }
 
 //	first handle the pad data if any, but only for foreground services
 //	notice that backgroundFlag <==> (dump != nullptr)

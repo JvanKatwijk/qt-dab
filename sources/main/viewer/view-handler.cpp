@@ -361,6 +361,8 @@ void	serviceViewer::clickOnService	(int row, int column) {
 	   switch (theMode) {
 	      case ENSEMBLEVIEW: 
 //	mark or unmark the service as favorite
+	         if ((displayList [row]. SID & 0xFFFF0000) != 0)
+	            return;
 	         displayList [row]. isFavorite =	
 	                             !displayList [row]. isFavorite;
 	         theDataBase. update (displayList [row],

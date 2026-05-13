@@ -86,6 +86,7 @@ public:
 //	uint16_t	getAnnouncing		(uint16_t);
 	bool		isPrimaryService	(uint32_t, uint8_t);
 	bool		isAudioService		(uint32_t, uint8_t);
+	bool		isPacketService		(uint32_t, uint8_t);
 	bool		is_SPI			(uint32_t);
 	std::vector<uint8_t>
                  get_secondaryServices		(uint32_t SId);

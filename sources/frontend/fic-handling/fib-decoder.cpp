@@ -240,7 +240,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 
 //	Ensemble information, 6.4.1
 //	FIG0/0 indicated a change in channel organization
-//	The info is MCI
+//	The info is MCI, flags are Rfu
 void	fibDecoder::FIG0Extension0 (uint8_t *d) {
 
 	FIG00_value. EId	=  getBits   (d, 16, 16);
@@ -270,7 +270,7 @@ void	fibDecoder::FIG0Extension0 (uint8_t *d) {
 //	FIG0 extension 1 creates a mapping between the
 //	sub channel identifications and the positions in the
 //	relevant CIF.
-//	CN Yes, OE PD no
+//	CN Yes, OE PD are Rfu
 void	fibDecoder::FIG0Extension1 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes
 const int16_t	Length			= getBits_5 (d, 3);
@@ -337,7 +337,7 @@ static	int table_2 [] = {27, 21, 18, 15};
 //
 //	Service organization, 6.3.1
 //	bind channels to SIds
-//	PD and CN bit active
+//	PD and CN bit active, OE is Rfu
 void	fibDecoder::FIG0Extension2 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
 const int16_t	Length	= getBits_5 (d, 3);
@@ -394,7 +394,7 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 }
 
 //	Service component in packet mode 6.3.2
-//	CN bit active
+//	CN bit active, OE and PD Rfu
 void	fibDecoder::FIG0Extension3 (uint8_t *d) {
 int16_t used    = 2;            // offset in bytes
 const int16_t Length  = getBits_5 (d, 3);
@@ -447,6 +447,7 @@ const int16_t Length	= getBits_5 (d, 3);
 	}
 }
 
+//	CN_bit, OE_bit and PD_bit are Rfu
 int16_t	fibDecoder::HandleFIG0Extension5 (uint8_t *d, uint16_t offset) {
 int16_t	bitOffset	= offset * 8;
 const uint8_t	LS_flag	= getBits_1 (d, bitOffset);
@@ -477,14 +478,14 @@ FIG05 comp;
 }
 
 // FIG0/6: Service linking information 8.1.5
-
+//	CN_bit is SIV, OE_bit and PD_bit are Rfu
 void    fibDecoder::FIG0Extension6 (uint8_t *d) {
 	(void)d;
 }
 
 //
 // FIG0/7: Configuration linking information 6.4.2,
-//	No OE_bit, PD_bit
+//	CN_bit on, OE_bit and PD_bit are Rfu
 void    fibDecoder::FIG0Extension7 (uint8_t *d) {
 int16_t used		= 2;            // offset in bytes
 //const int16_t Length	= getBits_5 (d, 3);
@@ -498,7 +499,7 @@ fibConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 }
 
 // FIG0/8:  Service Component Global Definition (6.3.5)
-//	CN_bit active, no OR_bit and PD_bit
+//	CN_bit and PD_bit active, no OE_bit
 void	fibDecoder::FIG0Extension8 (uint8_t *d) {
 int16_t	used	= 2;		// offset in bytes
 const int16_t	Length	= getBits_5 (d, 3);
@@ -783,9 +784,8 @@ FIG013 element;
 }
 
 //	FEC sub-channel organization 6.2.2
-//	CN_bit active, OE_bit and PD_bit not
+//	CN_bit active, OE_bit and PD_bit are Rfu
 void	fibDecoder::FIG0Extension14 (uint8_t *d) {
-
 int16_t	Length		= getBits_5 (d, 3);	// in Bytes
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
 int16_t	used	= 2;			// in Bytes
@@ -802,7 +802,8 @@ FIG014 element;
 }
 //
 //
-//	ETSI TS 104 089	
+//	8.1.7
+//	CN_bit SIV, OE_bit Rfu and PD_bit special use
 void	fibDecoder::FIG0Extension15 (uint8_t *d) {
 	(void)d;
 //	to be researched
@@ -1260,6 +1261,19 @@ bool	fibDecoder::isAudioService	(uint32_t SId, uint8_t SCIds) {
 	   for (auto &g : f. components) {
 	      if (g. SCIds == SCIds) {
 	         return g. TMid == 0;
+	      }
+	   }
+	}
+	return false;
+}
+
+bool	fibDecoder::isPacketService	(uint32_t SId, uint8_t SCIds) {
+	for (auto &f : currentConfig -> FIG02_stack) {
+	   if (f. SId != SId)
+	      continue;
+	   for (auto &g : f. components) {
+	      if (g. SCIds == SCIds) {
+	         return g. TMid == 3;
 	      }
 	   }
 	}

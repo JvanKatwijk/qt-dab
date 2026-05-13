@@ -21,7 +21,7 @@ an installer - are available.
 
 Table of Contents
 =================================================================
-
+* [Handling packet services](#handling-packet-services)
 * [What is new in Qt-DAB-7.0](#What-is-new-in-Qt-DAB-7.0)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
@@ -35,7 +35,59 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.0
+Handling packet services
+========================================================================
+
+DAB (DAB+) supports next to audio services also packet services, the EPG/SPI
+service (if available) is an example.
+While the default setting in the configuration window in Qt-DAB is to show
+only audio services (and if an EPG/SPI service is available start that
+automatically as a background task), if the setting is not "audio only"
+packet services show as well in the services list.
+
+Selecting a packet service was the same as selecting an audio service,
+clicking on it and processing started.
+Running a packet service this way is rather boring, since there is notmuch to be seen or heard. Most packet services are of a type TPEG, and running them
+might or might not produce data.
+The data is usually encoded, so Qt-DAB restructs itself to compile the frames
+and send the data to a TCP port, up to the user to do further processing
+and interpretation.
+
+In Qt-DAB we have chosen for the approach to run packet services in
+the background, recall that the EPG/SPI services already ran in the background.
+
+So, **starting** a packet service is simply by clicking on the name,
+there is a restriction, the packet service will only be started 
+if the service is defined in the currently selected channel.
+Obviously, which switching to another channel, either implicitly by selecting
+a service in a channel different from the currently selected one or explicitly
+A separate facility is created to **stop** a background service.
+
+For that purpose, a small window can be made visible showing all running
+backends.
+
+![7.0](/res/read_me/process-management.png)
+
+(Note that the NPO and other dutch broadcasters do not provide EPG/SPI
+or other packet services, so the example is using a recording).
+
+The figure shows that 5 services are running, the "Mode" indicator just
+tells whether or not they are running in the background.
+The **Dlf** service (SId 210) carries a secondary service, DlfTXT,
+secondary services are also running in the background.
+
+Touching the name of the service running in the background stops
+that service.
+
+The visibility of the **process monitoring** window is controlled by the
+process counter on the configuration window.
+
+![7.0](/res/read_me/process-management-2.png)
+
+The number "5", displayed in the process counter,
+ tells that  there are 5 backends running.
+
+What is (further) new in Qt-DAB-7.0
 ======================================================================
 
 Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",

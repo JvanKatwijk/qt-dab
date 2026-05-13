@@ -187,6 +187,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                      theErrorLogger (Si),
 	                                      theDeviceChooser (&theErrorLogger, Si),
 	                                      theDXDisplay (this, Si),
+	                                      theProcessMonitor (this),
 	                                      theLogger	(Si),
 	                                      theSCANHandler (this, Si,
 	                                                      freqExtension),
@@ -791,24 +792,28 @@ void	RadioInterface::handle_FIG15 (const QString &serviceName,
 }
 //
 //	FIG1/4 is for labels for secondary components,
-//	we assume here data components
 //
 void	RadioInterface::handle_FIG14 (const QString &serviceName,
 	                                        uint32_t SId, uint8_t SCIds) {
+int servCount	= theOfdmHandler -> FIG07_value ();
 	(void)serviceName;
 	if (!running. load())
 	   return;
 
-	packetdata pd;
-	theOfdmHandler	-> packetData (SId, SCIds, pd);
-	if (!pd. defined)
-	   return;		// should not happen
-
-	if (!theConfigHandler -> get_audioServices_only ())
-	   newServices	-> addService (pd);
+	if (theOfdmHandler	-> isAudioService (SId, SCIds)) {
+	   audiodata ad;
+	   if (!ad. defined)
+	      return;
+	   newServices		-> addService (ad);
+	}
+	else {
+	   packetdata pd;
+	   theOfdmHandler	-> packetData (SId, SCIds, pd);
+	   if (!pd. defined)
+	      return;		// should not happen
+	}
 	   
 	channel. nrServices ++;
-	int servCount	= theOfdmHandler -> FIG07_value ();
 	if ((servCount > 0) && (channel. nrServices >= servCount))
 	   setPresetService ();
 }
@@ -1361,6 +1366,7 @@ void	RadioInterface::TerminateProcess () {
 	mapHandler_locker. unlock ();
 	theSCANHandler. hide ();
 	channelTimer.	stop	();
+	theProcessMonitor. hide ();
 //
 //	finish all dumping activities
 	stopFrameDumping	();
@@ -1933,7 +1939,8 @@ int x = theConfigHandler -> closeDirect_active ();
 	   event -> accept();
 	}
 }
-
+//
+//	events are handled here
 bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (!running. load ())
 	   return QWidget::eventFilter (obj, event);
@@ -1942,10 +1949,10 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	    if (event -> type () == QEvent::MouseButtonPress) {
 	      QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	      if (ev -> buttons () & Qt::RightButton) {
-//	         QTableWidgetItem *x =
-//	              newServices -> theTable -> itemAt (ev -> pos ());
-//	         if (x != nullptr)
-//	            newServices -> handleRightMouseClick (x -> text ());
+	         QTableWidgetItem *x =
+	              newServices -> theTable -> itemAt (ev -> pos ());
+	         if (x != nullptr)
+	              handle_rightClick (x -> text ());
 	         return true;
 	      }
 	      else {
@@ -1967,6 +1974,77 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	   }
 	}
 	return QWidget::eventFilter (obj, event);
+}
+//
+//
+//	Clicking with the right hand mouse button might start
+//	(or stop) a service
+void	RadioInterface::handle_rightClick	(const QString &serviceName) {
+uint32_t SId;
+uint8_t  SCIds;
+
+	theOfdmHandler -> mapNameToId (serviceName, SId, SCIds);
+	if (SId == 0)
+	   return;
+
+	if (theOfdmHandler -> isAudioService (SId, SCIds)) {
+	   for (uint16_t i = 0; i < channel. runningTasks. size (); i ++) {
+              dabService g = channel. runningTasks [i];
+              if ((g. SId == SId) && (g. SCIds == SCIds)) {
+	         if (!g. runsBackground)	//
+	            return;
+	         theProcessMonitor. removeProcess (serviceName,
+	                                           g. SId, g. SCIds);
+                 theOfdmHandler -> stopService (g. SId, g. SCIds);
+                 channel. runningTasks. erase
+                                (channel. runningTasks. begin () + i);
+                 return;
+	      }
+           }
+
+//	service is not (yet) running in the background, try to start it
+	   audiodata ad;
+	   theOfdmHandler -> audioData (SId, SCIds, ad);
+	   if (!ad. defined)
+	      return;
+           dabService s;		
+	   QString	fileName  = background_audioName (ad. serviceName);
+           s. channel		= ad. channel;
+           s. serviceName	= ad. serviceName;
+           s. SId		= ad. SId;
+           s. subChId		= ad. subchId;
+           s. SCIds		= ad. SCIds;
+           s. fd		= fopen (fileName. toLatin1 (). data (), "w");
+           s. runsBackground	= true;
+	   channel. runningTasks. push_back (s);
+	   theProcessMonitor. addProcess (s. serviceName, s. SId, 
+	                                  s. SCIds, s. subChId, true);
+	   theProcessMonitor. show ();
+	   theOfdmHandler -> setAudioChannel (ad, &theAudioBuffer,
+	                                           s. fd, BACK_GROUND);
+	   return;
+        }
+}
+//
+//	signal from the process monitor, request to stop
+//	a service
+void	RadioInterface::handle_clickRequest	(const QString &serviceName) {
+	uint32_t SId;		
+	uint8_t	SCIds;
+	theOfdmHandler -> mapNameToId (serviceName, SId, SCIds);
+	for (uint16_t i = 0; i < channel. runningTasks. size (); i ++) {
+	   dabService &serv = channel. runningTasks [i];
+	   if ((serv. SId == SId) && (serv. SCIds == SCIds)) {
+	      if (!serv. runsBackground)
+	         return;
+	      theProcessMonitor. removeProcess (serviceName,
+	                                         serv. SId, serv. SCIds);
+	      theOfdmHandler -> stopService (serv. SId, serv. SCIds);
+	      channel. runningTasks. erase
+                                (channel. runningTasks. begin () + i);
+	      return;
+	   }
+	}
 }
 //
 //	Announcements
@@ -2029,6 +2107,43 @@ void	RadioInterface::announcement_stop (uint16_t SId) {
 //	called from the viewhandler
 void	RadioInterface::localSelect (const QString &service,
 	                                    const QString &theChannel) {
+	if ((newServices -> getMode () == FILEINPUT) ||
+	    (channel. channelName == theChannel)) {
+	   uint32_t SId;
+	   uint8_t SCIds;
+	   theOfdmHandler -> mapNameToId (service, SId, SCIds);
+	   if (theOfdmHandler -> isPacketService (SId, SCIds)) {
+	      for (auto &serv : channel. runningTasks) {
+	         if ((serv. SId == SId) && (serv. SCIds == SCIds))
+	            return;
+	      }
+	      packetdata pd;
+	      theOfdmHandler -> packetData (SId, SCIds, pd);
+	      if (!pd. defined)
+	         return;
+	      pd. channel = theChannel;
+	      theOfdmHandler -> setDataChannel (pd,
+	                                        &theDataBuffer, BACK_GROUND);
+              dabService s;
+              s. channel      = pd. channel;
+              s. serviceName  = pd. serviceName;
+              s. SId          = pd. SId;
+              s. SCIds        = pd. SCIds;
+              s. subChId      = pd. subchId;
+              s. fd           = nullptr;
+              s. runsBackground = true;
+              theProcessMonitor. addProcess (s. serviceName,
+                                       s. SId, s. SCIds, s. subChId, true);
+              theLogger. log ("starting packet service",
+                                   s. serviceName + "=" +
+                                   QString::number (s. SId, 16) + ":" +
+                                   QString::number (s. SCIds));
+              channel. runningTasks. push_back (s);
+	      return;
+	   }
+//	apparently not a packet
+	}
+//	or not the same channel
 	localSelect_SS (service, theChannel);
 	theLogger. log ("selecting", service);
 }
@@ -2068,7 +2183,6 @@ QString serviceName	= service;
 //
 //	if the service is from the current channel:
 	channel. currentService. isValid = false;
-	dabService s;
 	startService (service);
 }
 
@@ -2101,6 +2215,8 @@ void	RadioInterface::stopService	(dabService &s) {
 	      dabService g = channel. runningTasks [i];
 	      if (g. SId == s. SId) {
 	         theOfdmHandler -> stopService (g. SId, g. SCIds);
+	         theProcessMonitor. removeProcess (g. serviceName,
+	                                           g. SId, g. SCIds);
 	         channel. runningTasks. erase
 	                        (channel. runningTasks. begin () + i);
 	         i --;
@@ -2122,11 +2238,13 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 	s. subChId	= pd. subchId;
 	s. SCIds	= pd. SCIds;
 	s. fd		= nullptr;
+	s. runsBackground = true;
+	theProcessMonitor. addProcess (s. serviceName,
+	                               s. SId, s. SCIds, s. subChId, true);
 	theLogger. log ("starting epg service",
 	                           s. serviceName + "=" +
 	                           QString::number (s. SId, 16) + ":" +
 	                           QString::number (s. SCIds));
-	s. runsBackground = true;
 	channel. runningTasks. push_back (s);
 	epgLabel	-> show ();
 }
@@ -2159,27 +2277,8 @@ dabService	s;
 	      channel. currentService. ASCTy	= ad. ASCTy;
 	      channel. currentService. subChId	= ad. subchId;
 	      startAudioservice (ad);
-
 	   }
 	   theTechWindow	-> isDABPlus  (ad. ASCTy == DAB_PLUS);
-	}
-	else  {
-	   packetdata pd;
-	   theOfdmHandler -> packetData (s. SId, s. SCIds, pd);
-	   if (!pd. defined) {
-	      QMessageBox::warning (this, tr ("Warning"),
- 	                           tr ("insufficient data for this program\n"));
-	      QString s2 = "";
-	      store (theQSettings, DAB_GENERAL, PRESET_NAME, s2);
-	      return;;
-	   }
-	   pd. channel = channel. channelName;
-	   serviceLabel	-> setText (pd. serviceName);
-	   channel. currentService. isValid	= true;
-	   channel. currentService. isAudio	= false;
-	   channel. currentService. SCIds	= pd. SCIds;
-	   channel. currentService. subChId	= pd. subchId;
-	   startPacketservice (pd);
 	}
 }
 //
@@ -2195,6 +2294,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	s. fd		= nullptr;
 	s. runsBackground	= false;
 	channel. runningTasks. push_back (s);
+	theProcessMonitor. addProcess (s. serviceName, s. SId,
+	                               s. SCIds, s.subChId, false);
 	if (!theDeviceHandler -> isFileInput ())
 	   store (theQSettings, "channelPresets", s. channel, s. serviceName);
 //
@@ -2214,6 +2315,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	         s2. subChId      = pd. subchId;
 	         s2. runsBackground       = true;
 	         channel. runningTasks. push_back (s2);
+	         theProcessMonitor. addProcess (s2. serviceName, s2. SId,
+	                                        s2. SCIds, s2. subChId, true);
 	         theOfdmHandler -> setDataChannel (pd, &theDataBuffer,
 	                                                BACK_GROUND);
 	      }
@@ -2306,7 +2409,10 @@ void	RadioInterface::startPacketservice (packetdata &pd) {
         s. subChId	= pd. subchId;
         s. SCIds	= pd. SCIds;
         s. fd		= nullptr;
-        s. runsBackground = false;
+        s. runsBackground = true;		
+	theProcessMonitor. addProcess (s. serviceName, s. SId, s. SCIds,
+	                                      s. subChId, true);
+	theProcessMonitor. show ();
 	channel. runningTasks. push_back (s);
 }
 
@@ -2455,9 +2561,11 @@ void	RadioInterface::stopChannel	() {
 	   delete theControl;
 	theControl = nullptr;
 
+
 	theDeviceHandler		-> stopReader	();
 	theDeviceHandler		-> stopDump	();
 	newServices			-> clear_ensembleId ();
+	theProcessMonitor. clearTable ();
 	stopSourceDumping	();
 	if (channel. etiActive)
 	   stop_etiHandler	();	// 
@@ -4449,12 +4557,10 @@ void	RadioInterface::nrActiveServices	(int n) {
 }
 
 void	RadioInterface::handle_activeServices () {
-QList<contentType> serviceData = theOfdmHandler -> contentPrint ();
-	for (auto &serv :channel. runningTasks) {	
-	   fprintf (stderr, "%s %X %d  of channel %d\n",
-	            serv. serviceName. toLatin1 (). data (),
-	            serv. SId, serv. SCIds, serv. subChId);
-	}
+	if (theProcessMonitor. isVisible ())
+	   theProcessMonitor. hide ();
+	else
+	   theProcessMonitor. show ();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -4706,3 +4812,8 @@ selector ListSelector ("select option");
 	}
 }
 
+QString	RadioInterface::background_audioName (const QString &serviceName) {
+QString fileName = serviceName. trimmed ();
+	fileName += QDateTime::currentDateTime (). toString () + ".aac";
+	return path_for_files + fileName;
+}
