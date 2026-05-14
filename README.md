@@ -39,32 +39,35 @@ Handling packet and background services
 ========================================================================
 
 DAB (DAB+) supports next to audio services also packet services, the EPG/SPI
-service (if available) is an example.
+service (if available) is an example: Qt-DAB starts a backend interpreting the
+EPG/SPI data in a separate thread as **background task**, invisible
+to the user.
+
 While the default setting in the configuration window in Qt-DAB is to show
-only audio services (and if an EPG/SPI service is available start that
-automatically as a background task), if the setting is not "audio only"
+only audio services, the "audio only" setting can be "unset", and names of
 packet services show as well in the services list.
 
 Selecting a packet service was the same as selecting an audio service,
-clicking on it and processing started.
-Running a packet service this way is rather boring,
-since there is notmuch to be seen or heard.
-Most packet services are of a type TPEG, and running them
-might or might not produce (visible) data.
-The data is usually encoded, so Qt-DAB restructs itself to compile the frames
+just clicking on it starts processing.
+However, running a packet service is  usually rather boring,
+since there is not much to be seen or heard, that is why
+Qt-DAB akways starts a packet service as background task.
+
+Most package services contain some form of TPEG data,
+which is usually encoded,  Qt-DAB restricts itself to compile the frames
 and send the data to a TCP port (default 8888, but can be set by a command line option) "-P"), up to the user to do further processing
 and interpretation.
 
-In Qt-DAB we have chosen for the approach to run packet services in
-the background, recall that the EPG/SPI services already ran in the background.
-
-So, **starting** a packet service is simply by clicking on the name,
-there is a restriction, the packet service will only be started 
-if the service is defined in the currently selected channel.
-Obviously, which switching to another channel, either implicitly by selecting
+**Starting** a packet service is simply by clicking on the name, same
+as for audio services, there is a restriction however,
+the packet service will only be started if the service is defined in
+the currently selected channel.
+Obviously, when switching to another channel, either implicitly by selecting
 a service in a channel different from the currently selected one or explicitly
-A separate facility is created to **stop** a background service.
+the service interpretation will be stopped.
 
+Manually stopping a background service is possible, 
+a separate facility was created to **stop** such a service.
 For that purpose, a small window can be made visible showing all running
 backends.
 
@@ -73,13 +76,15 @@ backends.
 (Note that the NPO and other dutch broadcasters do not provide EPG/SPI
 or other packet services, so the example is using a recording).
 
-The figure shows that 5 services are running, the "Mode" indicator just
-tells whether or not they are running in the background.
-The **Dlf** service (SId 210) carries a secondary service, DlfTXT,
-secondary services are also running in the background.
+The figure shows that 5 services are running, the "Mode" indicator set to 1
+tells the task is running in the background.
 
-Touching the name of the service running in the background stops
-that service.
+The picture shows an audio service, **Dlf** which carriers a
+secondary service, DlfTXT.
+Secondary services are also running in the background.
+
+**Touching the name of the service running in the background stops
+that service.**
 
 The visibility of the **process monitoring** window is controlled by the
 process counter on the configuration window.
@@ -90,8 +95,9 @@ The number "5", displayed in the process counter,
  tells that  there are 5 backends running.
 
 Note that it is also possible to run audio services **found in the currently
-selected channel ** in the background. The audio - for DAB mp2 format, for
-DAB+ aac format - is written into a file.
+selected channel** in the background. The audio - for DAB mp2 format, for
+DAB+ aac format - is written into a file that carriers as name the
+name of the service combined with the date.
 
 Click with the **right hand mouse button** on the name of an audio service
 in the services list, and the decoding is started.

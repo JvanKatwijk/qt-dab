@@ -2148,11 +2148,17 @@ void	RadioInterface::localSelect (const QString &service,
 	theLogger. log ("selecting", service);
 }
 //
-//	selecting from a content description
-void	RadioInterface::handle_contentSelector (const QString &s) {
-	newServices	-> reportService (s);
-	localSelect_SS (s, channel. channelName);
-	theLogger. log ("selecting from content table", s);
+//	selecting from a content description, which
+//	obviously is the "currently selected" channel.
+void	RadioInterface::handle_contentSelector (const QString &serviceName) {
+	uint32_t SId;
+	uint8_t SCIds;
+	theOfdmHandler -> mapNameToId (serviceName, SId, SCIds);
+	if (theOfdmHandler -> isPacketService (SId, SCIds))	
+	   return;
+	newServices	-> reportService (serviceName);
+	localSelect_SS (serviceName, channel. channelName);
+	theLogger. log ("selecting from content table", serviceName);
 }
 //
 void	RadioInterface::scheduleSelect (const QString &s) {
