@@ -35,7 +35,7 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-Handling packet services
+Handling packet and background services
 ========================================================================
 
 DAB (DAB+) supports next to audio services also packet services, the EPG/SPI
@@ -47,10 +47,12 @@ packet services show as well in the services list.
 
 Selecting a packet service was the same as selecting an audio service,
 clicking on it and processing started.
-Running a packet service this way is rather boring, since there is notmuch to be seen or heard. Most packet services are of a type TPEG, and running them
-might or might not produce data.
+Running a packet service this way is rather boring,
+since there is notmuch to be seen or heard.
+Most packet services are of a type TPEG, and running them
+might or might not produce (visible) data.
 The data is usually encoded, so Qt-DAB restructs itself to compile the frames
-and send the data to a TCP port, up to the user to do further processing
+and send the data to a TCP port (default 8888, but can be set by a command line option) "-P"), up to the user to do further processing
 and interpretation.
 
 In Qt-DAB we have chosen for the approach to run packet services in
@@ -86,6 +88,17 @@ process counter on the configuration window.
 
 The number "5", displayed in the process counter,
  tells that  there are 5 backends running.
+
+Note that it is also possible to run audio services **found in the currently
+selected channel ** in the background. The audio - for DAB mp2 format, for
+DAB+ aac format - is written into a file.
+
+Click with the **right hand mouse button** on the name of an audio service
+in the services list, and the decoding is started.
+
+![7.0](/res/read_me/process-management-3.png)
+
+Manually stopping the service is by clicking again on the servicename.
 
 What is (further) new in Qt-DAB-7.0
 ======================================================================

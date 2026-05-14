@@ -2008,7 +2008,7 @@ uint8_t  SCIds;
 	   if (!ad. defined)
 	      return;
            dabService s;		
-	   QString	fileName  = background_audioName (ad. serviceName);
+	   QString	fileName  = background_audioName (ad);
            s. channel		= ad. channel;
            s. serviceName	= ad. serviceName;
            s. SId		= ad. SId;
@@ -4812,8 +4812,13 @@ selector ListSelector ("select option");
 	}
 }
 
-QString	RadioInterface::background_audioName (const QString &serviceName) {
-QString fileName = serviceName. trimmed ();
-	fileName += QDateTime::currentDateTime (). toString () + ".aac";
+QString	RadioInterface::background_audioName (const audiodata &ad) {
+QString fileName = ad. serviceName. trimmed ();
+	fileName += QDateTime::currentDateTime (). toString ();
+	if (ad. ASCTy == DAB_PLUS)
+	   fileName += ".aac";
+	else
+	   fileName += ".mp2";
 	return path_for_files + fileName;
 }
+

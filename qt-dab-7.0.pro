@@ -481,7 +481,7 @@ CONFIG		+= spyServer-8
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
+CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
 

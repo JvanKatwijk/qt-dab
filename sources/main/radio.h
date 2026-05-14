@@ -402,7 +402,7 @@ private:
 
 	QString			extractName		(const QString &);
 
-	QString			background_audioName	(const QString &);
+	QString			background_audioName	(const audiodata &);
 //
 //	announcements
 	QPixmap			fetchAnnouncement 	(int id);

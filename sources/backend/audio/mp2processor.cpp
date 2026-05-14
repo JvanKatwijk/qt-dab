@@ -452,8 +452,10 @@ int32_t table_idx;
 	   frameBuffer	-> putDataIntoBuffer (frame. data (), frameSize);
 	   newFrame ((int)frameSize);
 	}
-	else 		// some background dumping in the file "dump"
+	else  { 	// some background dumping in the file "dump"
 	   fwrite (frame. data (), 1, frameSize, dump);
+	   return (int)frameSize;
+	}
 
 // prepare the quantizer table lookups
 	if (sampling_frequency & 4) {
@@ -599,22 +601,27 @@ void	mp2Processor::addtoFrame (const std::vector<uint8_t> &v) {
 int16_t	lf	= baudRate == 48000 ? MP2framesize : 2 * MP2framesize;
 int16_t	amount	= MP2framesize;
 
+	return;
+	
 	for (int i = 0; i < amount; i ++) {
 	   if (MP2Header_state == GETTING_DATA) {
 	      addbittoMP2 (MP2frame, v [i], MP2bitCount ++);
 	      if (MP2bitCount >= lf) {
-	         handle_PAD (v);
+	         if (dump == nullptr)	// only as primary service
+	            handle_PAD (v);
 	         int16_t sample_buf [KJMP2_SAMPLES_PER_FRAME * 2];
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
-	            for (int j = 0; j < KJMP2_SAMPLES_PER_FRAME; j ++) {
-	               complex16 s = complex16 (sample_buf [2 * j],
+	            if (dump == nullptr) {
+	               for (int j = 0; j < KJMP2_SAMPLES_PER_FRAME; j ++) {
+	                  complex16 s = complex16 (sample_buf [2 * j],
 	                                        sample_buf [2 * j + 1]);
-	               buffer -> putDataIntoBuffer (&s, 1);
-	            }
-	            if (buffer -> GetRingBufferReadAvailable () >
+	                  buffer -> putDataIntoBuffer (&s, 1);
+	               }
+	               if (buffer -> GetRingBufferReadAvailable () >
 	                                             (uint32_t)baudRate / 8)
-	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
+	                  newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
 	                         baudRate, false, false);
+	            }
 	         }
 
 	         MP2Header_state = NOT_SYNCED;
@@ -674,7 +681,7 @@ uint8_t *temp = dynVec (uint8_t, vLength);
         uint8_t L0     = temp [vLength - 1];
         uint8_t L1     = temp [vLength - 2];
         int16_t down   = bitRate * 1000 >= 56000 ? 4 : 2;
-        my_padhandler. processPAD (temp, vLength - 2 - down - 1, L1, L0);
+	my_padhandler. processPAD (temp, vLength - 2 - down - 1, L1, L0);
 }
 
 void	mp2Processor::stop	() {}
