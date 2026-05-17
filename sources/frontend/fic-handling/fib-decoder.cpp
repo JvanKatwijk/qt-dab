@@ -94,7 +94,7 @@ uint8_t	*d		= p;
 
 	   switch (FIGtype) {
 	      case 0:
-//	         if (availableBytes >= 2)
+	         if (availableBytes >= 2)
 	            process_FIG0 (d);	
 	         break;
 
@@ -130,15 +130,21 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 1:		// sub-channel organization (6.2.1)
+	      fibLocker. lock ();
 	      FIG0Extension1 (d);
+	      fibLocker. unlock ();
 	      break;
 
 	   case 2:		// service organization (6.3.1)
+	      fibLocker. lock ();
 	      FIG0Extension2 (d);
+	      fibLocker. unlock ();
 	      break;
 
 	   case 3:		// service component in packet mode (6.3.2)
+	      fibLocker. lock ();
 	      FIG0Extension3 (d);
+	      fibLocker. unlock ();
 	      break;
 
 	   case 4:		// service component with CA (6.3.3)
@@ -158,7 +164,9 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 8:		// service component global definition (6.3.5)
+	      fibLocker. lock ();
 	      FIG0Extension8 (d);
+	      fibLocker. unlock ();
 	      break;
 
 	   case 9:              // country, LTO & international table (8.1.3.2)
@@ -176,11 +184,15 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 13:             // user application information (6.3.6)
+	      fibLocker. lock ();
 	      FIG0Extension13 (d);
+	      fibLocker. unlock ();
 	      break;
 
 	   case 14:             // FEC subchannel organization (6.2.2)
-	      FIG0Extension14 (d);
+	      fibLocker. lock ();
+	      FIG0Extension14 (d);	
+	      fibLocker. unlock ();
 	      break;
 
 	   case 15:		// Emergency warning (ETSI TS 104 089)
@@ -275,7 +287,6 @@ void	fibDecoder::FIG0Extension1 (uint8_t *d) {
 int16_t	used		= 2;		// offset in bytes
 const int16_t	Length			= getBits_5 (d, 3);
 const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
-
 	while (used <= Length)
 	   used = HandleFIG0Extension1 (d, used, CN_bit);
 }
@@ -329,9 +340,9 @@ static	int table_2 [] = {27, 21, 18, 15};
 //
 //	in case the subchannel data was already computed
 //	we merely compute the offset
-	if (!localBase -> in_FIG01_stack (channel)) 
+	if (!localBase -> in_FIG01_stack (channel)) {
 	   localBase -> FIG01_stack. push_back (channel);
-//
+	}
 	return bitOffset / 8;	// we return bytes
 }
 //
@@ -358,9 +369,11 @@ fibConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	      bitOffset	+= 16;
 	   }
 
+
 	   for (auto &f02 : localBase -> FIG02_stack) 
-	      if (f02. SId == SId)
+	      if (f02. SId == SId) {
 	         return;
+	      }
 
 	   FIG02 element;
 	   element. SId		= SId;
@@ -554,7 +567,7 @@ FIG08 comp;
 	   return bitOffset / 8;
 
 	for (auto &g :  localBase -> FIG02_stack) {
-	   if (g. SId != SId) 
+	   if (g. SId != SId)  
 	      continue;
 
 	   if (LS_flag == 0) {	// short form
@@ -589,14 +602,9 @@ int16_t	Length		= getBits_5 (d, 3);
 	
 //	bit 6 indicates the number of hours
 	uint8_t extFlag		= getBits_1 (d, used * 8 + 0);
-        const int signbit = getBits_1 (d, used * 8 + 2);
+        const int signbit	= getBits_1 (d, used * 8 + 2);
         dateTime [6] = (signbit == 1)?  -1 * getBits_4 (d, used * 8 + 3):
                                          getBits_4 (d, used * 8 + 3);
-//	bit 7 indicates a possible remaining half our
-        dateTime [7] = (getBits_1 (d, used * 8 + 7) == 1) ? 30 : 0;
-        if (signbit != 0)
-           dateTime [7] = - dateTime [7];
-
 	uint8_t	LTO	= dateTime [6];
 	uint8_t ecc	= getBits (d, used * 8 + 8, 8);
 	uint16_t table	= getBits (d, used * 8 + 16, 8);
@@ -702,8 +710,9 @@ uint16_t	theTime	[6];
 //	theTime [0] = Y;	// Year
 //	theTime [1] = M;	// Month
 //	theTime [2] = D;	// Day
-	theTime [3] = getBits_5 (dd, offset + 21); // Hours
-	theTime [4] = getBits_6 (dd, offset + 26); // Minutes
+
+	theTime [3] = getBits_5 (dd, offset + 21) % 24; // Hours
+	theTime [4] = getBits_6 (dd, offset + 26) & 60; // Minutes
 
 	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
 	   theTime [5] =  0;	// Seconds
@@ -990,6 +999,7 @@ void	fibDecoder::FIG1Extension0 (uint8_t *d) {
 int16_t		offset	= 0;
 char		label [17];
 
+	label [16] = 0;
 	const uint8_t charSet	= getBits_4 (d, 8);
 //	charSet 0 .. 15, 4 bits, checks are superfluous
 	const uint8_t Rfu	= getBits_1 (d, 8 + 4);
@@ -1017,6 +1027,7 @@ void	fibDecoder::FIG1Extension1 (uint8_t *d) {
 int16_t		offset	= 32;
 char		label [17];
 
+	label [16] = 0;
 //      from byte 1 we deduce:
 	const uint8_t charSet	= getBits_4	(d, 8);
 	const uint8_t Rfu	= getBits_1	(d, 8 + 4);
@@ -1029,10 +1040,12 @@ char		label [17];
 	      return;
 	}
 // assume we are defined
+	fibLocker. lock ();
 	uint16_t subChId = get_subChId (SId, 0);
-	if (subChId > 64)
+	fibLocker. unlock ();
+	if (subChId > 64) {
 	   return;		// wait for a next occurrence
-
+	}
 	QString serviceName;
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
@@ -1059,6 +1072,7 @@ char		label [17];
 int		bitOffset = 16;
 uint32_t	SId;
 
+	label [16] = 0;
 //      from byte 1 we deduce:
 	const uint8_t PD_flag	= getBits_1 (d, bitOffset);
 	const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
@@ -1079,7 +1093,9 @@ uint32_t	SId;
 	for (auto &serv : FIG14_stack)
 	   if ((serv. SId == SId) && (serv. SCIds == SCIds))
 	      return;
+	fibLocker. lock ();
 	uint16_t subChId = get_subChId (SId, SCIds);
+	fibLocker. unlock ();
 	if (subChId > 64)
 	   return;
 //
@@ -1125,11 +1141,14 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	}
 //
 //	if no subch is not known (yet) we do not record the service yet
+	fibLocker. lock ();
 	uint16_t subChId = get_subChId (SId, 0);
+	fibLocker. unlock ();
 	if (subChId > 64)
 	   return;
 
 //	we alsowant the apptype to be defined
+	fibLocker. lock ();
 	bool haveAppType	= false;
 	for (auto &f : currentConfig -> FIG013_stack) {
            if (f. SId == SId) {
@@ -1137,6 +1156,7 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	      break;
 	   }
 	}
+	fibLocker. unlock ();
 	if (!haveAppType)
 	   return;
 
@@ -1376,6 +1396,7 @@ void	fibDecoder::mapNameToId (const QString &s,
 //
 void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
 	ad. defined = false;
+	fibLocker. lock ();
 	for (auto &f: currentConfig -> FIG02_stack) {
 	   if (f. SId != SId)
 	      continue;
@@ -1427,10 +1448,12 @@ void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
 	      }
 	   }
 	}
+	fibLocker. unlock ();
 }
 
 void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	pd. defined = false;
+	fibLocker. lock ();
 	for (auto &f:  currentConfig -> FIG02_stack) {
 	   if (f. SId != SId)
 	      continue;
@@ -1454,8 +1477,10 @@ void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	            break;
 	         }
 	      }
-	      if (pd. subchId == 100)
+	      if (pd. subchId == 100) {
+	         fibLocker. unlock ();
 	         return;
+	      }
 	      for (auto &h :currentConfig -> FIG01_stack) {
 	         if (h. subChId == pd. subchId) {
 	            pd. startAddr	= h. startAddr;
@@ -1464,8 +1489,9 @@ void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	            pd. length		= h. Length;
 	            pd. bitRate		= h. bitRate;
 	            pd. defined		= true;
+	            break;
 	         }
-	      }	
+	      }
 	      pd. FEC_scheme	= 0;
 	      for (auto &h : currentConfig -> FIG014_stack) {
 	         if (h. subChId == pd. subchId) {
@@ -1482,6 +1508,7 @@ void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	      }
 	   }
 	}
+	fibLocker. unlock ();
 }
 
 uint16_t fibDecoder::get_subChId (uint32_t SId, uint8_t SCIds) {
@@ -1599,7 +1626,8 @@ int	fibDecoder::nrChannels	() {
 }
 
 void	fibDecoder::getChannelInfo (channel_data *d, const int n) {
-FIG01 *selected = &currentConfig -> FIG01_stack [n];
+	fibLocker. lock ();
+	FIG01 *selected = &currentConfig -> FIG01_stack [n];
         d       -> in_use       = true; 
         d       -> id           = selected ->  subChId;
         d       -> start_cu     = selected ->  startAddr;
@@ -1607,6 +1635,7 @@ FIG01 *selected = &currentConfig -> FIG01_stack [n];
         d       -> size         = selected ->  Length;
         d       -> bitrate      = selected ->  bitRate;
         d       -> uepFlag      = selected ->  shortForm;
+	fibLocker. unlock ();
 }
 
 void	fibDecoder::check_announcements (uint8_t clusterId, 

@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2016 .. 2023
@@ -35,12 +34,12 @@ class	serviceDescriptor {
 public:
 	QString	channelName;
 	QString	serviceName;
-	uint32_t	SID;
+	uint32_t	SId;
 	uint8_t		SCIds;
 	uint16_t	subChId;
 	bool		isFavorite;
 	serviceDescriptor () {
-	   SID		= 0;
+	   SId		= 0;
 	   subChId	= 0;
 	   isFavorite	= false;
 	}

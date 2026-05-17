@@ -474,7 +474,7 @@ int	snrCount	= 0;
 	               sum += jan_abs (ofdmBuffer [i]);
 	            sum /= T_null;
 	            float snrV	=
-	                 10 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
+	                 20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
 	            this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
 	            if (this -> snrBuffer_p != nullptr) 
 	               snrBuffer_p -> putDataIntoBuffer (&snr, 1);

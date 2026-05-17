@@ -88,13 +88,10 @@ int	index_for_key (int key) {
 	hide ();
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
-
 	
 	int x =  value_i (dabSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10);
 	this	-> muteTimeSetting -> setValue (x);
 
-	x	= value_i (dabSettings, CONFIG_HANDLER, SAVE_HTTP, 0);
-	mapViewSelector		-> setChecked (x != 0);
 
         int fontSize    =  
 	         value_i (dabSettings, COLOR_SETTINGS, "fontSize", 10);
@@ -116,69 +113,66 @@ int	index_for_key (int key) {
 	serviceOrder	= x;
 
 //	first row of checkboxes
-//	unused element
-	x =  value_i (dabSettings, CONFIG_HANDLER, LOG_MODE, 1);
-	if (x != 0)
-	   this -> logger_selector -> setChecked (true);
+	bool b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 0) != 0;
+	this	-> dumpmodeSelector	-> setChecked (b);
+
+	b = value_i (dabSettings, CONFIG_HANDLER,
+	                           LOCAL_BROWSER_SETTING, 1) != 0;
+	this -> localBrowserSelector -> setChecked (b);
 //
-	bool b	= value_i (dabSettings, CONFIG_HANDLER,
+//	second row
+	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 0) != 0;
+	this	-> auto_http -> setChecked (b);
+
+	b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
+	this	-> updateChecker	-> setChecked (b);
+//
+//	third row
+//
+	b	= value_i (dabSettings, CONFIG_HANDLER,
                                         UTC_SELECTOR_SETTING, 0) == 1;
 	this -> utc_selector -> setChecked (b);
 
-	b =  value_i (dabSettings, CONFIG_HANDLER,
-	                                ON_TOP_SETTING, 0) == 1;
-	this ->  onTop -> setChecked (b);
-//
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          "close_map", 0) != 0;
-	this	-> close_mapSelector	-> setChecked (b);
 
 //	third row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                          CLOSE_DIRECT_SETTING, 0) != 0;
 	this -> closeDirect_selector -> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           LOCAL_BROWSER_SETTING, 1) != 0;
-	this -> localBrowserSelector -> setChecked (b);
+	b	= value_i (dabSettings, CONFIG_HANDLER, SAVE_HTTP, 0) != 0;
+	mapViewSelector		-> setChecked (b);
 //
-//	fifth row of checkboxes
+	b =  value_i (dabSettings, CONFIG_HANDLER, ON_TOP_SETTING, 0) != 0;;
+	this ->  onTop -> setChecked (b);
+//
 	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           SHOWALL_SETTING, 1) == 1;
-	this -> showAll_selector -> setChecked (b);
+	                          "close_map", 0) != 0;
+	this	-> close_mapSelector	-> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           SAVE_SLIDES_SETTING, 1) == 1;
-	this	-> saveSlides -> setChecked (b);
-
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           TRANSMITTER_NAMES_SETTING, 0) == 1;
+//	fourth row of checkboxes
 	b =  value_i (dabSettings, CONFIG_HANDLER,
 	                           S_CORRELATION_ORDER, 0) != 0;
 	this	-> correlationSelector -> setChecked (b);
 
+	b =  value_i (dabSettings, CONFIG_HANDLER, DC_REMOVAL, 1) != 0;
+	this -> dcRemovalSelector -> setChecked (true);
+//
+//	fifth row of checkboxes
+	b = value_i (dabSettings, CONFIG_HANDLER, SHOWALL_SETTING, 1) != 0;;
+	this -> showAll_selector -> setChecked (b);
+
+	b = value_i (dabSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 1) != 0;
+	this	-> saveSlides -> setChecked (b);
+
 	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
 	this	-> audioServices_only -> setChecked (b);
-
-	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 0) != 0;
-	this	-> auto_http -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                          "LOAD_SELECTION", 0) == 1;
 	this -> loadSelection_selector -> setChecked (b);
 
-	b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 0) != 0;
-	this	-> dumpmodeSelector	-> setChecked (b);
-
-	b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
-	this	-> updateChecker	-> setChecked (b);
-
-#ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
-#else
-	this -> decoderSelector -> setEnabled (false);
-#endif
 
 	int d	= value_i (dabSettings, CONFIG_HANDLER,
 	                                 SHOWALL_TII, 1);
@@ -262,8 +256,8 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_audioSelectButton);
 //	connect (this, &configHandler::selectDecoder,
 //	         myRadioInterface, &RadioInterface::selectDecoder);
-//	connect (this, &configHandler::set_transmitters_local,
-//	         myRadioInterface, &RadioInterface::set_transmitters_local);
+	connect (this, &configHandler::set_dcRemoval,
+	         myRadioInterface, &RadioInterface::set_dcRemoval);
 
 	connect (audioSelectButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_audioSelectButton);
@@ -277,8 +271,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_portSelector);
 	connect (dlTextButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_dlTextButton);
-//	connect (resetButton, &smallPushButton::rightClicked,
-//	         this, &configHandler::color_resetButton);
 	connect (scheduleButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_scheduleButton);
 	connect (snrButton, &smallPushButton::rightClicked,
@@ -287,8 +279,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_set_coordinatesButton);
 	connect (loadTableButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_loadTableButton);
-//	connect (dumpButton, &smallPushButton::rightClicked,
-//	         this, &configHandler::color_sourcedumpButton);
 	connect (pathButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_pathButton);
 	connect (skinButton, &smallPushButton::rightClicked,
@@ -337,8 +327,6 @@ void	configHandler::set_connections () {
 	loadTableButton	-> setText ("refresh table");
 //	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
-//	connect (dumpButton, &QPushButton::clicked,
-//	         myRadioInterface, &RadioInterface::handle_sourcedumpButton);
 	connect (skinButton, &QPushButton::clicked,
 	         this, &configHandler::handle_skinSelector);
 //
@@ -369,12 +357,6 @@ void	configHandler::set_connections () {
 	            this, &configHandler::handle_upload_selector);
 	else
 	   upload_selector -> setEnabled (false);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (logger_selector, &QCheckBox::checkStateChanged,
-#else
-	connect (logger_selector, &QCheckBox::stateChanged,
-#endif
-	         myRadioInterface, &RadioInterface::handle_LoggerButton);
 
 //	third line
 
@@ -401,6 +383,13 @@ void	configHandler::set_connections () {
 		     &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_localBrowser);
+//
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (dcRemovalSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (dcRemovalSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_dcRemovalSelector);
 //
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (etiActivated_selector, &QCheckBox::checkStateChanged,
@@ -802,11 +791,11 @@ bool	configHandler::closeDirect_active	() {
 bool	configHandler::showAll_Selector_active () {
 	return showAll_selector	-> isChecked ();
 }
-
 //
 //column 2
-bool	configHandler::logger_active	() {
-	return logger_selector	-> isChecked ();
+
+bool	configHandler::get_dcRemovalSelector	() {
+	return this -> dcRemovalSelector -> isChecked ();
 }
 
 bool	configHandler::utcSelector_active	() {
@@ -1012,6 +1001,13 @@ void	configHandler::handle_mapViewSelector	(int k) {
 
 bool	configHandler::dumpmode_set	() {
 	return dumpmodeSelector	-> isChecked ();
+}
+
+void    configHandler::handle_dcRemovalSelector (int k) {
+        (void)k;
+        bool b = this -> dcRemovalSelector -> isChecked ();
+        store (dabSettings, CONFIG_HANDLER, DC_REMOVAL, b);
+	emit set_dcRemoval	(b);
 }
 
 void	configHandler::handle_loadSelection_selector (int k) {

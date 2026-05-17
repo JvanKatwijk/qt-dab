@@ -140,7 +140,8 @@ void	serviceViewer::clearAll		() {
 //	the default filename, there are situations that
 //	a user selectable filename is used
 void	serviceViewer::startMode	(int Mode,
-	                                 const QString &fileName, int order) {
+	                                 const QString &fileName,
+	                                 int order, bool withPackets) {
 	if (fileName == "") {
 	   this -> fileName	= defaultName;
 	   startSession (Mode, order);
@@ -150,18 +151,19 @@ void	serviceViewer::startMode	(int Mode,
 	clearAll ();
 	if (f == nullptr) {
 	   fclose (f);
-	   startMode (Mode, order);
+	   startMode (Mode, order, withPackets);
 	   return;
 	}
-	theDataBase. load (fileName);
+	theDataBase. load (fileName, withPackets);
 	this	-> fileName	= fileName;
 	startSession (Mode, order);
 }
 
-void	serviceViewer::startMode	(int Mode, int order) {
+void	serviceViewer::startMode	(int Mode,
+	                                 int order, bool withPackets) {
 	clearAll ();
 	this	-> fileName	= defaultName;
-	theDataBase. load (fileName);
+	theDataBase. load (fileName, withPackets);
 	startSession (Mode, order);
 }
 
@@ -219,7 +221,7 @@ QString	serviceViewer::currentChannel	() {
 //	maps the SId to the servicename
 QString	serviceViewer::extractName	(uint32_t SId) {
 	for (auto &sd: displayList) 
-	   if (sd. SID == SId)
+	   if (sd. SId == SId)
 	      return sd. serviceName;
 	return "";
 }
@@ -236,9 +238,9 @@ QString channel	= channelSelector -> currentText ();
 	serviceDescriptor sd;
 	sd.	channelName	= ad. channel;
 	sd.	serviceName	= ad. serviceName;
-	sd.	SID		= ad. SId;
-	sd.	subChId		= ad. subchId;
+	sd.	SId		= ad. SId;
 	sd.	SCIds		= ad. SCIds;
+	sd.	subChId		= ad. subchId;
 
 	switch (theMode) {
 	   case ENSEMBLEVIEW:
@@ -278,6 +280,14 @@ void	serviceViewer::insert	(const serviceDescriptor &sd) {
 int row	= theTable -> rowCount ();
 QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
+bool	b;
+	for (int i = 0; i < theTable -> rowCount (); i ++) {
+	   if (sd. channelName < theTable -> item (i, 2) -> text ()) {
+	      row = i;
+	      break;
+	   }
+	}
+
 	theTable     -> insertRow (row);     // 
         QTableWidgetItem *item0 = new QTableWidgetItem;
 	item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
@@ -361,7 +371,7 @@ void	serviceViewer::clickOnService	(int row, int column) {
 	   switch (theMode) {
 	      case ENSEMBLEVIEW: 
 //	mark or unmark the service as favorite
-	         if ((displayList [row]. SID & 0xFFFF0000) != 0)
+	         if ((displayList [row]. SId & 0xFFFF0000) != 0)
 	            return;
 	         displayList [row]. isFavorite =	
 	                             !displayList [row]. isFavorite;

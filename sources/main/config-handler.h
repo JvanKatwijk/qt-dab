@@ -47,26 +47,25 @@ public:
 	void	set_activeServices	(int);
 //
 //	the value extractors
+//	top
+	int	get_serviceOrder	();
+	int	muteValue		();
+	int	switchDelayValue	();
+
 	bool	upload_selector_active	();
 	bool	upload_active		();
-	int	get_serviceOrder	();
-	int	switchDelayValue	();
-	int	muteValue		();
-	
 	bool	closeDirect_active	();
 	bool	utcSelector_active	();
 	bool	eti_active		();
 	bool	saveSliders_active	();
 	bool	epg2_active		();
 	bool	onTop_active		();
-	bool	logger_active		();
 	bool	showAll_Selector_active	();
 	bool	localBrowserSelector_active	();
 	bool	dumpmode_set		();
 //
 //	a few others
 	void	showLoad		(float);
-//	void	mark_dumpButton		(bool);
 	void	mark_dlTextButton	(bool);
 	void	set_closeDirect		(bool);
 	void	show_streamSelector	(bool);
@@ -81,7 +80,7 @@ public:
 	bool	get_allTIISelector	();
 
 	bool	get_close_mapSelector	();
-	bool	get_dcRemoval		();
+	bool	get_dcRemovalSelector	();
 	bool	get_saveTitles		();
 
 	bool	check_correctPhase	();
@@ -117,7 +116,7 @@ private slots:
 //
 	void	handle_mapViewSelector		(int);
 	void	handle_updateChecker		(int);
-//	and the handlers:
+
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
 	void	handle_audioSelectButton	();
@@ -131,7 +130,6 @@ private slots:
 	void	handle_portSelector		();
 	void	handle_skinSelector		();
 
-//	void	handle_upload_selector		(int);
 	void	handle_utc_selector		(int);
 	void	handle_auto_http		(int);
 
@@ -141,9 +139,9 @@ private slots:
 
 //	void	handle_firstCorrelation		(int);
 //	void	handle_etiActivated		(int);
-//	void	handle_logger			(int);
 	void	handle_saveTitles		(int);
 
+	void	handle_dcRemovalSelector	(int);
 	void	handle_showAll_Selector		(int);
 	void	handle_saveSlides		(int);
 	void	handle_audioServices_only	(int);
@@ -158,16 +156,13 @@ private slots:
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);
-//	void	set_transmitterNames	(int);
-//	void	set_tii_detectorMode	(bool);
 
+	void	set_dcRemoval		(bool);
 	void	handle_fontSelect	();
 	void	handle_fontColorSelect	();
 	void	handle_fontSizeSelect	(int);
 
 	void	set_serviceOrder	(int);
-	void	set_dcRemoval		(bool);
-
 	void	process_tiiCollisions	(int);
 	void	process_tiiFilter	(bool);
 

@@ -51,8 +51,8 @@ public:
 	                 QSettings	*serviceSettings,
 	                 QFrame *theFrame);
 	~serviceViewer		();
-void	startMode		(int, const QString &, int);
-void	startMode		(int, int);
+void	startMode		(int, const QString &,  int, bool);
+void	startMode		(int, int, bool);
 QString	currentChannel		();
 int	getMode			();
 void	set_channelIndex	(const QString &);

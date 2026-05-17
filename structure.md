@@ -75,12 +75,6 @@ The second step is implemented by
 
  * the class "ofdmDecoder" that implements the conversion from the samples in the subsequent datablocks of the DAB frame to a sequence of soft bits, soft bits are encoded in the range -127 .. 127.
 
- * and a class "ficHandler" takes its input - soft bits - from the ofdmHandler, applies deconvolution on the input and prepares segments with hard bits for
-processing by the fibDecoder.
-
- * and a class "fibDecoder" - together with the class "ensemble" and the class "fibConfig" - implements the actual processing of the FIC data (i.e. the "FIG's").  A database (the class "fibConfig" and the class "ensemble") is filled,
-the GUI controller is informed ("signalled") about the ensemble and the services  that are described in the database, and the class provides functions  to inspect and extract attribute values of the services.
-
  * The two classes "tii-detector-xx"  implement the extraction of TII data from the NULL periods starting DAB frames. They report ("signal") their findings (i.e. basically mainId and subId) to the GUI controller.
 
 The execution of the functionality is controlled by
@@ -88,6 +82,15 @@ The execution of the functionality is controlled by
  * the class "ofdmHandler", which is the controller here, it is aware of the state of the synchronization, takes action when needed, and sends the soft bits that return from the functions in the "ofdmDecoder" from the
 data blocks 2..4 for processing the FIC, i.e. the "catalog", and the
 softbits derived from the blocks 5 .. 76 to the backend.
+
+The decoding of the first three blocks, the so-called FIG/FIB decoding
+takes place in the code in the directory "fic-handler"
+
+ a class "ficHandler" takes its input - soft bits - from the ofdmHandler, applies deconvolution on the input and prepares segments with hard bits for
+processing by the fibDecoder.
+
+ * and a class "fibDecoder" - together with the class  "fibConfig" - implements the actual processing of the FIC data (i.e. the "FIG's").  A database (the class "fibConfig" and the class "ensemble") is filled,
+the GUI controller is informed ("signalled") about the ensemble and the services  that are described in the database, and the class provides functions  to inspect and extract attribute values of the services.
 
 The Backend
 --------------------------------------------------------------------------

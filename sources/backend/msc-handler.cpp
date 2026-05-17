@@ -72,21 +72,6 @@ static int cifTable [] = {18, 72, 0, 36};
 }
 
 //
-//	Input is put into a buffer, a the code in a separate thread
-//	will handle the data from the buffer
-void	mscHandler::processBlock_0 (Complex *b) {
-	(void)b;
-	fprintf (stderr, "Why am I called?\n");
-}
-
-void	mscHandler::processMsc	(std::vector<Complex> &b,
-	                                      int offset, int blkno) {
-	(void)b;
-	(void)offset;
-	(void)blkno;
-	fprintf (stderr, "I should not be called\n");
-}
-//
 //	Note, the set_Channel function is called from within a
 //	different thread than the process_mscBlock method is,
 //	so, a little bit of locking seems wise while

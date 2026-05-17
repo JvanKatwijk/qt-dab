@@ -688,16 +688,21 @@ void	RadioInterface::startDirect	() {
 	   abort ();
 	}
 
-	theOfdmHandler	-> set_dcRemoval (true);
+	theOfdmHandler	-> set_dcRemoval (theConfigHandler -> get_dcRemovalSelector ());
 	theNewDisplay. set_dcRemoval (true);
 	channel. cleanChannel ();
 //
 	if (theDeviceHandler -> isFileInput ())
 	   newServices	-> startMode (FILEINPUT, 
-	                                   get_serviceOrder ());
+	                              get_serviceOrder (), 
+	                              !theConfigHandler ->
+	                                     get_audioServices_only ());
 	else 
 	if (!theConfigHandler -> get_loadSelection ()) 
-	   newServices -> startMode (ENSEMBLEVIEW, get_serviceOrder ());
+	   newServices -> startMode (ENSEMBLEVIEW,
+	                             get_serviceOrder (),
+	                              !theConfigHandler ->
+	                                     get_audioServices_only ());
 	else {
 	   bool resetFlag = false;
 //	Basically, the choices here are
@@ -755,6 +760,7 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	if (!ad. defined)
 	   return;		// should not happen
 
+	ad. channel	= channel. channelName;
 	newServices	-> addService (ad);
 
 	if (theSCANHandler. active ())
@@ -778,6 +784,7 @@ void	RadioInterface::handle_FIG15 (const QString &serviceName,
 	if (!pd. defined)
 	   return;		// should not happen
 
+	pd. channel	= channel. channelName;
 	if (!theConfigHandler -> get_audioServices_only ())
 	   newServices	-> addService (pd);
 	   
@@ -1589,18 +1596,10 @@ void	RadioInterface::handle_FIG010 (int year, int month, int day,
 
 QString	RadioInterface::convertTime (int year, int month,
 	                             int day, int hours, int minutes) {
-char dayString [3];
-char hourString [3];
-char minuteString [3];
-	sprintf (dayString, "%.2d", day);
-	sprintf (hourString, "%.2d", hours);
-	sprintf (minuteString, "%.2d", minutes);
-	QString result = QString::number (year) + "-" +
-	                       monthTable [month - 1] + "-" +
-	                       QString (dayString) + "  " +
-	                       QString (hourString) + ":" +
-	                       QString (minuteString);
-	return result;
+	QDate	x1 = QDate (year, month, day);
+	QTime	x2 = QTime (hours, minutes);
+	QDateTime res = QDateTime (x1, x2);
+	return res. toString ();
 }
 
 QString	RadioInterface::convertTime (struct theTime &t) {
@@ -2567,10 +2566,11 @@ void	RadioInterface::stopChannel	() {
 	   delete theControl;
 	theControl = nullptr;
 
-
-	theDeviceHandler		-> stopReader	();
-	theDeviceHandler		-> stopDump	();
-	newServices			-> clear_ensembleId ();
+	if (theDeviceHandler != nullptr) {
+	   theDeviceHandler	-> stopReader	();
+	   theDeviceHandler	-> stopDump	();
+	}
+	newServices		-> clear_ensembleId ();
 	theProcessMonitor. clearTable ();
 	stopSourceDumping	();
 	if (channel. etiActive)
@@ -3929,15 +3929,17 @@ void	RadioInterface::copyrightText_closed	() {
 	thecopyrightLabel	= nullptr;
 }
 ///////////////////////////////////////////////////////////////////////
-//
+//	dc removal, selector on config window
+
+void	RadioInterface::set_dcRemoval	(bool b) {
+	theOfdmHandler	-> set_dcRemoval (b);
+	theNewDisplay. set_dcRemoval (b);
+}
+
 void	RadioInterface::show_dcOffset (float dcOffset) {
 	theNewDisplay. showDCOffset (dcOffset);
 }
 
-void	RadioInterface::handle_dcRemoval	(bool b) {
-	theOfdmHandler	-> set_dcRemoval (b);
-	theNewDisplay. set_dcRemoval (b);
-}
 ///////////////////////////////////////////////////////////////////////
 //	processing TII data
 void	RadioInterface::removeFromList (uint8_t mainId, uint8_t subId) {
@@ -4784,10 +4786,15 @@ selector ListSelector ("select option");
 	                                           "*.xml");
 	      if (fileName != "")
 	         newServices -> startMode (ENSEMBLEVIEW,
-	                                 fileName, get_serviceOrder ());
+	                                   fileName,
+	                                   get_serviceOrder (),
+	                                   !theConfigHandler ->
+	                                     get_audioServices_only ());
 	      else
 	         newServices -> startMode (ENSEMBLEVIEW,
-	                                         get_serviceOrder ());
+	                                   get_serviceOrder (),
+	                                   !theConfigHandler ->
+	                                     get_audioServices_only ());
 	      break;
 	   }
 	   case 1: {	// create a new file
@@ -4798,22 +4805,31 @@ selector ListSelector ("select option");
 	                                           "*.xml");
 	      if (fileName != "") 
 	         newServices -> startMode (ENSEMBLEVIEW,
-	                                      fileName,
-	                                         get_serviceOrder ());
+	                                   fileName,
+	                                   get_serviceOrder (),
+	                                   !theConfigHandler ->
+	                                     get_audioServices_only ());
 	      else
 	         newServices -> startMode (ENSEMBLEVIEW,
-	                                               get_serviceOrder ());
+	                                   get_serviceOrder (),
+	                                   !theConfigHandler ->
+	                                     get_audioServices_only ());
 	      break;
 	   }
 	   case 2:	// empty current default
 	      newServices -> startMode (ENSEMBLEVIEW, 
-	                                      "", get_serviceOrder ());
+	                                "",
+	                                get_serviceOrder (),
+	                                !theConfigHandler ->
+	                                     get_audioServices_only ());
 	      resetFlag	= true;
 	      break;
 	   default:
-	   case 3:	// selecting this was a mostake
+	   case 3:	// selecting this was a mistake
 	      newServices -> startMode (ENSEMBLEVIEW,
-	                                             get_serviceOrder ());
+	                                get_serviceOrder (),
+	                                !theConfigHandler ->
+	                                     get_audioServices_only ());
 	      resetFlag	= true;
 	}
 }
@@ -4827,4 +4843,3 @@ QString fileName = ad. serviceName. trimmed ();
 	   fileName += ".mp2";
 	return path_for_files + fileName;
 }
-

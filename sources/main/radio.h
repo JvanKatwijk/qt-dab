@@ -486,7 +486,7 @@ public slots:
 	void			handle_tiiThreshold		(int);
 	void			handle_tiiCollisions		(int);
 	void			handle_activeServices		();
-	void			handle_dcRemoval		(bool);
+	void			set_dcRemoval			(bool);
 	void			selectDecoder			(int);
 	void			set_transmitters_local		(bool);
 	void			handle_scheduleButton		();

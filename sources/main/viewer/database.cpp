@@ -82,7 +82,7 @@ std::vector<serviceDescriptor> res;
 	return res;
 }
 
-void	serviceBase::load	(const QString &fileName) {
+void	serviceBase::load	(const QString &fileName, bool withPackets) {
 QDomDocument xmlBOM;
 
 	clearTable ();
@@ -109,12 +109,17 @@ QDomDocument xmlBOM;
 	         sd. serviceName = subComp. attribute ("serviceName", "??");
 	         QString tt	= subComp. attribute ("SID", "0");
 	         bool b;
-	         sd. SID = tt. toInt (&b, 16);
+	         sd. SId = tt. toInt (&b, 16);
+	         tt  = subComp. attribute ("SCIds", "0");
+	         sd. SCIds = tt. toInt (&b);
 	         tt  = subComp. attribute ("subChId", "0");
 	         sd. subChId = tt. toInt (&b);
 	         QString fav = subComp. attribute ("isFavorite", "??");
 	         sd. isFavorite = fav == "1";
-	         channel. add (sd);
+	         if (!withPackets && ((sd. SId & 0xFFF0000) != 0))
+	           ;	// skip
+	         else
+	            channel. add (sd);
 	         subComp = subComp. nextSibling (). toElement ();
 	      }
 	      theData. push_back (channel);
@@ -137,7 +142,7 @@ QDomElement root = serviceDB. createElement ("serviceList");
 	   for (auto &sd : channel. channelData) {
 	      QDomElement serv = serviceDB. createElement ("serviceDesc");
 	      serv. setAttribute ("serviceName", sd. serviceName);
-	      serv. setAttribute ("SID", QString::number (sd. SID, 16));
+	      serv. setAttribute ("SID", QString::number (sd. SId, 16));
 	      serv. setAttribute ("subChId", QString::number (sd. subChId));
 	      serv. setAttribute ("isFavorite", sd. isFavorite ? "1" : "0");
 	      channelElement. appendChild (serv);

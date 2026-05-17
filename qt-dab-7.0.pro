@@ -25,12 +25,12 @@ unix {
 #QMAKE_CXXFLAGS	+=  -ffast-math -flto 
 #QMAKE_CFLAGS	+=  -ffast-math -flto
 #QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
-QMAKE_CFLAGS	+=  -g 
-QMAKE_CXXFLAGS	+=  -g 
-QMAKE_LFLAGS	+=  -g 
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -g 
+#QMAKE_CXXFLAGS	+=  -g 
+#QMAKE_LFLAGS	+=  -g 
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
@@ -493,8 +493,8 @@ CONFIG		+= local-audio
 #CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
-CONFIG		+= spiral-sse
-#CONFIG		+= spiral-no-sse
+#CONFIG		+= spiral-sse
+CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only

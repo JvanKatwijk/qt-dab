@@ -34,8 +34,8 @@ void	theChannel::setName	(const QString &name) {
 
 void	theChannel::add	(serviceDescriptor sd) {
 	for (auto &ssd : channelData) 
-	   if ((ssd. serviceName == sd. serviceName) &&
-	       (ssd. SID == sd. SID))
+	   if ((ssd. SId == sd. SId) &&
+	       (ssd. SCIds == sd. SCIds))
 	      return;
 	sd. channelName	= this -> channelName;
 //	sd. isFavorite	= false;
@@ -44,7 +44,7 @@ void	theChannel::add	(serviceDescriptor sd) {
 
 void	theChannel::update	(const serviceDescriptor &sd, bool f) {
 	for (auto &ssd : channelData) {
-	   if (ssd. serviceName == sd. serviceName) {
+	   if ((ssd. SId == sd. SId) && (ssd. SCIds == sd. SCIds)) {
 	      ssd. isFavorite = f;
 	      return;
 	   }
@@ -66,9 +66,9 @@ static
 int	fcmp_id	(const void *a, const void *b) {
 	serviceDescriptor *el1	= (serviceDescriptor *)a;
 	serviceDescriptor *el2	= (serviceDescriptor *)b;
-	if ((uint32_t)el1 -> SID > (uint32_t)el2 -> SID)
+	if ((uint32_t)el1 -> SId > (uint32_t)el2 -> SId)
 	   return -1;
-	if ((uint32_t)el1 -> SID < (uint32_t)el2 -> SID)
+	if ((uint32_t)el1 -> SId < (uint32_t)el2 -> SId)
 	   return 1;
 	return 0;
 }
@@ -79,7 +79,7 @@ int	fcmp_subCh	(const void *a, const void *b) {
 	serviceDescriptor *el2	= (serviceDescriptor *)b;
 	if ((uint16_t)el1 -> subChId > (uint16_t)el2 -> subChId)
 	   return -1;
-	if ((uint16_t)el1 -> SID < (uint32_t)el2 -> subChId)
+	if ((uint16_t)el1 -> subChId < (uint32_t)el2 -> subChId)
 	   return 1;
 	return 0;
 }

@@ -50,9 +50,7 @@ public:
 	                                         logger		*,
 	                                         uint8_t);
 			~mscHandler		();
-	void		processBlock_0		(Complex *);
-	void		processMsc		(std::vector<Complex> &,
-	                                                  int, int);
+
 	void		processMscBlock		(std::vector<int16_t> &,
 	                                                  int16_t);
 	bool		startBackend		(descriptorType &,

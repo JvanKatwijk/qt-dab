@@ -487,12 +487,12 @@
       </widget>
      </item>
      <item row="3" column="2">
-      <widget class="QCheckBox" name="logger_selector">
+      <widget class="QCheckBox" name="dcRemovalSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, a log file is maintained (as usual for windows in the folder in the home folder and for Linux in the directory /tmp in a folder/directory Qt-DAB-files) in a txt file :logFile.txt, in which activities such as selecting a device, channel, service, dump are written, preceded by the time of the activity.&lt;/p&gt;&lt;p&gt;The setting of the selector is maintained between program invocations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>  logger</string>
+        <string>dc removal</string>
        </property>
       </widget>
      </item>

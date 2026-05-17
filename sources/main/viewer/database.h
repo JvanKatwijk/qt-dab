@@ -34,7 +34,7 @@ Q_OBJECT
 public:
 		serviceBase	();
 		~serviceBase	();
-	void	load		(const QString &fileName);
+	void	load		(const QString &fileName, bool withPackets);
 	void	store		(const QString &fileName);
 	void	add		(const serviceDescriptor &);
 	void	remove		(const QString &, const QString &);
