@@ -154,8 +154,8 @@ int	index_for_key (int key) {
 	                           S_CORRELATION_ORDER, 0) != 0;
 	this	-> correlationSelector -> setChecked (b);
 
-	b =  value_i (dabSettings, CONFIG_HANDLER, DC_REMOVAL, 1) != 0;
-	this -> dcRemovalSelector -> setChecked (true);
+	b =  value_i (dabSettings, CONFIG_HANDLER, DC_REMOVAL, 0) != 0;
+	this -> dcRemovalSelector -> setChecked (b);
 //
 //	fifth row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER, SHOWALL_SETTING, 1) != 0;;
@@ -1006,7 +1006,7 @@ bool	configHandler::dumpmode_set	() {
 void    configHandler::handle_dcRemovalSelector (int k) {
         (void)k;
         bool b = this -> dcRemovalSelector -> isChecked ();
-        store (dabSettings, CONFIG_HANDLER, DC_REMOVAL, b);
+        store (dabSettings, CONFIG_HANDLER, DC_REMOVAL, b ? 1 : 0);
 	emit set_dcRemoval	(b);
 }
 
