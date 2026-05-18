@@ -712,7 +712,7 @@ uint16_t	theTime	[6];
 //	theTime [2] = D;	// Day
 
 	theTime [3] = getBits_5 (dd, offset + 21) % 24; // Hours
-	theTime [4] = getBits_6 (dd, offset + 26) & 60; // Minutes
+	theTime [4] = getBits_6 (dd, offset + 26) % 60; // Minutes
 
 	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
 	   theTime [5] =  0;	// Seconds
@@ -912,7 +912,7 @@ int16_t	fibDecoder::HandleFIG0Extension21 (uint8_t	*d,
 	                                   const uint8_t OE_bit) {
 int16_t	l_offset	= offset * 8;
 int16_t	l	= getBits_5 (d, l_offset + 11);
-int16_t		upperLimit	= l_offset + 16 + l * 8;
+int16_t		upperLimit	= l_offset + l * 8;
 int16_t		base		= l_offset + 16;
 //	for now
 	(void)CN_bit; (void)OE_bit;
@@ -926,24 +926,27 @@ int16_t		base		= l_offset + 16;
 	   if (RandM == 0x08) {
 	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
 	      uint32_t  fmFrequency	= 87500 + fmFrequency_key * 100;
-	      bool alreadyIn = false;
+	      bool found_in_SId		= false;
+	      bool SId_detected		= false;
 	      for (auto &f : FIG021_stack) {
 	         if ((f. SId != idField))
 	            continue;
+
+	         SId_detected	= false;
 	         for (auto freq : f. freqList) {
 	            if (fmFrequency == freq) {
-	               alreadyIn = true;
+	               found_in_SId = true;
 	               break;
 	            }
-	            if (!alreadyIn) {
-	               f. freqList. push_back (fmFrequency);
-	               signal_FIG021 (idField, fmFrequency);
-	               alreadyIn = true;
-	            }
+	         }
+	         if (!found_in_SId) {
+	            f. freqList. push_back (fmFrequency);
+	            signal_FIG021 (idField, fmFrequency);
+	            found_in_SId = true;
 	         }
 	         break;
 	      }
-	      if (!alreadyIn) {
+	      if (!SId_detected) {
 	         FIG021 f21;
 	         f21. SId	= idField;
 	         f21. freqList. push_back (fmFrequency);
@@ -1396,7 +1399,7 @@ void	fibDecoder::mapNameToId (const QString &s,
 //
 void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
 	ad. defined = false;
-	fibLocker. lock ();
+//	fibLocker. lock ();
 	for (auto &f: currentConfig -> FIG02_stack) {
 	   if (f. SId != SId)
 	      continue;
@@ -1448,12 +1451,12 @@ void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
 	      }
 	   }
 	}
-	fibLocker. unlock ();
+//	fibLocker. unlock ();
 }
 
 void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	pd. defined = false;
-	fibLocker. lock ();
+//	fibLocker. lock ();
 	for (auto &f:  currentConfig -> FIG02_stack) {
 	   if (f. SId != SId)
 	      continue;
@@ -1478,7 +1481,7 @@ void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	         }
 	      }
 	      if (pd. subchId == 100) {
-	         fibLocker. unlock ();
+//	         fibLocker. unlock ();
 	         return;
 	      }
 	      for (auto &h :currentConfig -> FIG01_stack) {
@@ -1508,7 +1511,7 @@ void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	      }
 	   }
 	}
-	fibLocker. unlock ();
+//	fibLocker. unlock ();
 }
 
 uint16_t fibDecoder::get_subChId (uint32_t SId, uint8_t SCIds) {

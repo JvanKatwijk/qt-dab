@@ -210,7 +210,7 @@ uint64_t	samplesToRead	= 0;
 }
 
 uint64_t	xml_Reader::readSamples (FILE *theFile, 
-	                         void(xml_Reader::*r)(FILE *theFile,
+	                                 void (xml_Reader::*r)(FILE *theFile,
 	                                    std::complex<float> *, int)) {
 std::complex<float> temp [SAMPLERATE / 1000];
 

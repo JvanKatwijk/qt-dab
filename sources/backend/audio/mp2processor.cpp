@@ -600,8 +600,6 @@ int32_t table_idx;
 void	mp2Processor::addtoFrame (const std::vector<uint8_t> &v) {
 int16_t	lf	= baudRate == 48000 ? MP2framesize : 2 * MP2framesize;
 int16_t	amount	= MP2framesize;
-
-	return;
 	
 	for (int i = 0; i < amount; i ++) {
 	   if (MP2Header_state == GETTING_DATA) {
@@ -618,9 +616,10 @@ int16_t	amount	= MP2framesize;
 	                  buffer -> putDataIntoBuffer (&s, 1);
 	               }
 	               if (buffer -> GetRingBufferReadAvailable () >
-	                                             (uint32_t)baudRate / 8)
+	                                             (uint32_t)baudRate / 8) {
 	                  newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
-	                         baudRate, false, false);
+	                            baudRate, false, false);
+	               }
 	            }
 	         }
 

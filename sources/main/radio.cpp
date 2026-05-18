@@ -888,7 +888,7 @@ void	RadioInterface::handle_contentButton	() {
 	   QString transmitterLine = build_transmitterLine (tr);
 	   theContentTable	-> addLine (transmitterLine);
 	}
-  
+
 	for (auto &line : contentList) 
 	   theContentTable -> addLine (line);
 
@@ -1599,7 +1599,7 @@ QString	RadioInterface::convertTime (int year, int month,
 	QDate	x1 = QDate (year, month, day);
 	QTime	x2 = QTime (hours, minutes);
 	QDateTime res = QDateTime (x1, x2);
-	return res. toString ();
+	return res. toString ("dd MMM yyyy HH:mm");
 }
 
 QString	RadioInterface::convertTime (struct theTime &t) {

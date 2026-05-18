@@ -310,7 +310,7 @@ void	dataProcessor::handleRSPacket (const uint8_t  *vec) {
 int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
 
-	//fprintf (stderr, "handling RS\n");
+//	fprintf (stderr, "handling RS\n");
 //	we differentiate between the "data" packets and the "RS" packets
 //
 //	the "order" is first RSDIMS * FRAMESIZE packet elements
@@ -366,16 +366,27 @@ int	dataProcessor::addPacket (const uint8_t *vec,
 //	of packets, first dispatch and separate the packet sequence
 //	into its elements
 //
+static
+uint8_t bitList [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+
 void	dataProcessor::handle_RSpackets (const std::vector<uint8_t> &vec) {
 	for (int baseP = 0; baseP < RSDIMS * FRAMESIZE; ) {
 	   int16_t packetLength = (((vec [baseP] & 0xc0) >> 6) + 1) * 24;
-	   handle_RSpacket (&(vec. data ()) [baseP], packetLength);
+//	   handle_RSpacket (&(vec. data ()) [baseP], packetLength);
+	   std::vector<uint8_t> bitData (packetLength * 8);
+	   for (int i = 0; i < packetLength; i ++) {
+//	      uint8_t temp = packet [i];
+	      uint8_t temp = vec [baseP + i];
+	      for (int j = 0; j < 8; j ++) {
+	         uint8_t theBit = (temp & bitList [j]) == 0 ? 0 : 1;
+	         bitData [8 * i + j] = theBit;
+	      }
+	   }
+	   handlePacket (bitData. data ());
 	   baseP += packetLength;
 	}
 }
 
-static
-uint8_t bitList [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 //
 //	The RS data is with packed bytes, while the basis infrastructure
 //	is with bit sequences, so to keep things simple, we just
