@@ -38,9 +38,6 @@
 //
 
 #include <stdio.h>
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "Python.h"
-#include "numpy/arrayobject.h"
 
 
 
@@ -64,7 +61,6 @@ private:
 	bool		serviceComponentFrameheaderCRC (uint8_t *data,
 	                                                int16_t offset,
 	                                                int16_t maxL);
-	void		to_python	(uint8_t *, int);
 
 	QTcpSocket	streamer;
 	QTimer		*connectionTimer;

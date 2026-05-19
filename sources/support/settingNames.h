@@ -32,6 +32,7 @@
 //
 //
 
+#define	BASIC_PATH		"basicPath"
 #define	AUDIOSERVICES_ONLY	"audioServices_only"
 #define	AUTO_HTTP		"auto_http"
 #define	SAVE_HTTP		"save_http"
@@ -61,8 +62,10 @@
 #define	SKIN_SETTING		"skin"
 #define	SAVE_SERVICE_SETTING	"saveService"
 
-#define	MAP_PORT_SETTING	"mapPort"
+#define	HTTP_PORT		"mapPort"
 #define	MAP_TIMEOUT		"timeOut"
+#define	TPEG_PORT		"tpegPort"
+#define	IP_ADDRESS		"ipAddress"
 
 #define	SHOWALL_SETTING		"showAll_Setting"
 #define	SHOWALL_TII		"show_all_tii"

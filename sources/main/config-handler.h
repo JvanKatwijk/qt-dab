@@ -28,6 +28,7 @@
 #include	<QString>
 #include	<QStringList>
 #include	<QPushButton>
+#include	"findfilenames.h"
 #include	"super-frame.h"
 class		RadioInterface;
 class		QSettings;
@@ -42,6 +43,7 @@ public:
 	                                 QSettings *settings);
 		~configHandler		();
 
+	findfileNames	theFilenameFinder;
 	void	storePosition		();
 	void	set_connections		();
 	void	set_activeServices	(int);
@@ -60,7 +62,6 @@ public:
 	bool	saveSliders_active	();
 	bool	epg2_active		();
 	bool	onTop_active		();
-	bool	showAll_Selector_active	();
 	bool	localBrowserSelector_active	();
 	bool	dumpmode_set		();
 //
@@ -79,7 +80,6 @@ public:
 	bool	get_audioServices_only	();
 	bool	get_allTIISelector	();
 
-	bool	get_close_mapSelector	();
 	bool	get_dcRemovalSelector	();
 	bool	get_saveTitles		();
 
@@ -88,6 +88,7 @@ public:
 	bool	get_loadSelection	();
 
 	void	reset_loadSelection	();
+
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -102,20 +103,16 @@ private slots:
 	void	color_audioSelectButton	();
 	void	color_fontButton	();
 	void	color_fontColorButton	();
-	void	color_devicewidgetButton	();
-	void	color_portSelector	();
 	void	color_dlTextButton	();
-//	void	color_resetButton	();
 	void	color_scheduleButton	();
 	void	color_snrButton		();
-	void	color_set_coordinatesButton	();
 	void	color_loadTableButton	();
-//	void	color_sourcedumpButton	();
 	void	color_skinButton	();
 	void	color_pathButton	();
 //
 	void	handle_mapViewSelector		(int);
 	void	handle_updateChecker		(int);
+	void	set_ipAddress			();
 
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
@@ -127,7 +124,6 @@ private slots:
 	void	handle_orderAlfabetical		();
 	void	handle_orderServiceIds		();
 	void	handle_ordersubChannelIds	();
-	void	handle_portSelector		();
 	void	handle_skinSelector		();
 
 	void	handle_utc_selector		(int);
@@ -135,14 +131,10 @@ private slots:
 
 	void	handle_localBrowser		(int);
 	void	handle_onTop			(int);
-	void	handle_close_mapSelector	(int);
 
-//	void	handle_firstCorrelation		(int);
-//	void	handle_etiActivated		(int);
 	void	handle_saveTitles		(int);
 
 	void	handle_dcRemovalSelector	(int);
-	void	handle_showAll_Selector		(int);
 	void	handle_saveSlides		(int);
 	void	handle_audioServices_only	(int);
 

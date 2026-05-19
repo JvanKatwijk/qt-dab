@@ -54,7 +54,6 @@ public:
 	                         const QString &fileName,
 	                         position	address,
 	                         bool		autoBrowse,
-	                         bool		map_close_on_exit,
 	                         const QString &,
 	                         QSettings	*settings);
 		~httpHandler	();

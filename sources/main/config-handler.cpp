@@ -40,13 +40,10 @@
 #define FONT_BUTTON             QString ("fontButton")
 #define FONTCOLOR_BUTTON        QString ("fontColorButton")
 
-#define DEVICEWIDGET_BUTTON     QString ("devicewidgetButton")
-#define PORT_SELECTOR           QString ("portSelector")
 #define	DLTEXT_BUTTON		QString ("dlTextButton")
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
 
 #define SNR_BUTTON              QString ("snrButton")
-#define SET_COORDINATES_BUTTON  QString ("set_coordinatesButton")
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
 #define SKIN_BUTTON             QString ("skinButton")
 
@@ -80,6 +77,7 @@ int	index_for_key (int key) {
 
 	configHandler::configHandler (RadioInterface *parent,
 	                              QSettings *settings):
+	                                     theFilenameFinder (settings),
 	                                     superFrame (nullptr) {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
@@ -111,6 +109,47 @@ int	index_for_key (int key) {
 	else
 	   this -> ordersubChannelIds -> setChecked (true);
 	serviceOrder	= x;
+
+	QString ipAddress	=
+	              value_s (dabSettings, MAP_HANDLING,
+	                                    IP_ADDRESS, "127.0.0.1");
+	hostLineEdit	-> setInputMask ("000.000.000.000");
+	hostLineEdit	-> setText (ipAddress);
+	connect (hostLineEdit, &QLineEdit::returnPressed,
+                 this, &configHandler::set_ipAddress);
+
+	uint32_t http	=
+	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
+	httpPortSelector	-> setValue (http);
+	connect (httpPortSelector, &QSpinBox::valueChanged,
+	         myRadioInterface, &RadioInterface::handle_httpPort);
+
+	float latitude	=
+	              value_f (dabSettings, MAP_HANDLING,
+	                                        HOME_LATITUDE, 52.22f);
+	float longitude =
+	              value_f (dabSettings, MAP_HANDLING,
+	                                        HOME_LONGITUDE, 4.54f);
+	this	-> latitudeSelector	-> setValue (latitude);
+	this	-> longitudeSelector	-> setValue (longitude);
+
+	connect (latitudeSelector, &QDoubleSpinBox::valueChanged,
+	         myRadioInterface, &RadioInterface::set_latitude);
+	connect (longitudeSelector, &QDoubleSpinBox::valueChanged,
+	         myRadioInterface, &RadioInterface::set_longitude);
+
+	int	tpegPort	=
+	               value_i (dabSettings, MAP_HANDLING,
+	                                         TPEG_PORT, 8888);
+	tpegPortSelector	-> setValue (tpegPort);
+
+	connect (tpegPortSelector, &QSpinBox::valueChanged,
+	         myRadioInterface, &RadioInterface::set_tpegPort);
+
+	QString path_for_files  = theFilenameFinder. basicPath ();
+        path_for_files  = value_s (dabSettings, DAB_GENERAL,
+                                                   BASIC_PATH, path_for_files);
+	pathLabel	-> setText (path_for_files);
 
 //	first row of checkboxes
 	bool b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 0) != 0;
@@ -145,10 +184,6 @@ int	index_for_key (int key) {
 	b =  value_i (dabSettings, CONFIG_HANDLER, ON_TOP_SETTING, 0) != 0;;
 	this ->  onTop -> setChecked (b);
 //
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          "close_map", 0) != 0;
-	this	-> close_mapSelector	-> setChecked (b);
-
 //	fourth row of checkboxes
 	b =  value_i (dabSettings, CONFIG_HANDLER,
 	                           S_CORRELATION_ORDER, 0) != 0;
@@ -159,7 +194,6 @@ int	index_for_key (int key) {
 //
 //	fifth row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER, SHOWALL_SETTING, 1) != 0;;
-	this -> showAll_selector -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 1) != 0;
 	this	-> saveSlides -> setChecked (b);
@@ -216,12 +250,7 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_allTIISelector);
 	connect (activeServices, &clickablelabel::clicked_left,
 	         myRadioInterface, &RadioInterface::handle_activeServices);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (close_mapSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (close_mapSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_close_mapSelector);
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (loadSelection_selector, &QCheckBox::checkStateChanged,
 #else
@@ -265,18 +294,12 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_fontButton);
 	connect (fontColorButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_fontColorButton );
-	connect (devicewidgetButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_devicewidgetButton);
-	connect (portSelector, &smallPushButton::rightClicked,
-	         this, &configHandler::color_portSelector);
 	connect (dlTextButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_dlTextButton);
 	connect (scheduleButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_scheduleButton);
 	connect (snrButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_snrButton);
-	connect (set_coordinatesButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_set_coordinatesButton);
 	connect (loadTableButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_loadTableButton);
 	connect (pathButton, &smallPushButton::rightClicked,
@@ -308,10 +331,6 @@ void	configHandler::set_connections () {
 //
 //	Now the two rows with buttons
 //
-	connect (devicewidgetButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_devicewidgetButton);
-	connect (portSelector, &QPushButton::clicked,
-	         this, &configHandler::handle_portSelector);
 	connect (dlTextButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_dlTextButton);
 //	connect (resetButton, &QPushButton::clicked,
@@ -320,8 +339,6 @@ void	configHandler::set_connections () {
 //	second row
 	connect (snrButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_snrButton);
-	connect (set_coordinatesButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_set_coordinatesButton );
 	connect (loadTableButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_loadTable);
 	loadTableButton	-> setText ("refresh table");
@@ -399,12 +416,6 @@ void	configHandler::set_connections () {
 	         myRadioInterface, &RadioInterface::handle_eti_activeSelector);
 //
 //	fifh line
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (showAll_selector, &QCheckBox::checkStateChanged,
-#else
-	connect (showAll_selector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_showAll_Selector);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (saveSlides, &QCheckBox::checkStateChanged,
@@ -457,20 +468,6 @@ QString	fontColorButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              FONTCOLOR_BUTTON + "_color", BLACK);
 
-QString devicewidgetButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              DEVICEWIDGET_BUTTON + "_color", YELLOW);
-QString devicewidgetButton_font =
-	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              DEVICEWIDGET_BUTTON + "_font", BLACK);
-
-QString portSelector_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              PORT_SELECTOR + "_font", BLACK);
-QString	portSelector_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              PORT_SELECTOR + "_color", YELLOW);
-
 QString	dlTextButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              DLTEXT_BUTTON + "_color", YELLOW);
@@ -499,13 +496,6 @@ QString snrButton_font =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              SNR_BUTTON + "_font", BLACK);
 
-QString	set_coordinatesButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SET_COORDINATES_BUTTON + "_color", BLUE);
-QString set_coordinatesButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SET_COORDINATES_BUTTON + "_font", BLACK);
-	
 QString	loadTableButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                               LOAD_TABLE_BUTTON + "_color", RED);
@@ -548,14 +538,6 @@ QString	skinButton_color =
 	              setStyleSheet (temp. arg (fontColorButton_color,
 	                                        fontColorButton_font));
 
-	this -> devicewidgetButton ->
-	              setStyleSheet (temp. arg (devicewidgetButton_color,
-	                                        devicewidgetButton_font));
-
-	this -> portSelector ->
-	              setStyleSheet (temp. arg (portSelector_color,
-	                                        portSelector_font));
-
 	this -> dlTextButton ->
 	              setStyleSheet (temp. arg (dlTextButton_color,
 	                                        dlTextButton_font));
@@ -572,15 +554,9 @@ QString	skinButton_color =
 	              setStyleSheet (temp. arg (snrButton_color,
 	                                        snrButton_font));
 
-	this -> set_coordinatesButton ->
-	              setStyleSheet (temp. arg (set_coordinatesButton_color,
-	                                        set_coordinatesButton_font));
-
 	this -> loadTableButton ->
 	              setStyleSheet (temp. arg (loadTableButton_color,
 	                                        loadTableButton_font));
-//	this -> dumpButton ->
-//	              setStyleSheet (temp. arg (dumpButton_color,
 //	                                        dumpButton_font));
 	this	-> pathButton ->
 	              setStyleSheet (temp. arg (pathButton_color,
@@ -603,14 +579,6 @@ void	configHandler::color_fontColorButton	() 	{
 	set_buttonColors (this -> fontColorButton, FONTCOLOR_BUTTON);
 }
 
-void	configHandler::color_devicewidgetButton	() {
-	set_buttonColors (this -> devicewidgetButton, DEVICEWIDGET_BUTTON);
-}
-
-void	configHandler::color_portSelector	() 	{
-	set_buttonColors (this ->  portSelector, PORT_SELECTOR);
-}
-
 void	configHandler::color_dlTextButton	()	{
 	set_buttonColors (this ->  dlTextButton, DLTEXT_BUTTON);
 }
@@ -625,11 +593,6 @@ void	configHandler::color_scheduleButton	() 	{
 
 void	configHandler::color_snrButton		() {
 	set_buttonColors (this ->  snrButton, SNR_BUTTON);
-}
-
-void	configHandler::color_set_coordinatesButton	() 	{
-	set_buttonColors (this ->  set_coordinatesButton,
-	                                          SET_COORDINATES_BUTTON);
 }
 
 void	configHandler::color_loadTableButton	() 	{
@@ -698,17 +661,6 @@ void	configHandler::handle_ordersubChannelIds	() {
 	serviceOrder	= SUBCH_BASED;
 }
 
-void	configHandler::handle_portSelector () {
-QString oldPort	= value_s (dabSettings, MAP_HANDLING,
-	                                 MAP_PORT_SETTING, "8080");
-mapPortHandler theHandler (oldPort);
-	int portNumber = theHandler. QDialog::exec ();
-	if (portNumber != 0) {
-	   QString ss = QString::number (portNumber);
-	   store (dabSettings, MAP_HANDLING, MAP_PORT_SETTING, ss);
-	}
-}
-
 void	configHandler::handle_skinSelector     () {
 skinHandler theSkins;
 	int skinIndex = theSkins. QDialog::exec ();
@@ -728,12 +680,6 @@ void	configHandler::handle_localBrowser	(int d) {
 	(void)d;
 	store (dabSettings, CONFIG_HANDLER, LOCAL_BROWSER_SETTING, 
 	               this ->  localBrowserSelector -> isChecked () ? 1 : 0);
-}
-
-void	configHandler::handle_showAll_Selector (int c) {
-	(void)c;
-	store (dabSettings,  CONFIG_HANDLER, SHOWALL_SETTING,
-	               this ->  showAll_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_saveSlides	(int x) {
@@ -788,9 +734,6 @@ bool	configHandler::closeDirect_active	() {
 	return closeDirect_selector -> isChecked ();
 }
 
-bool	configHandler::showAll_Selector_active () {
-	return showAll_selector	-> isChecked ();
-}
 //
 //column 2
 
@@ -965,16 +908,6 @@ void	configHandler::set_activeServices	(int activeS) {
 	activeServices	-> setText (QString::number (activeS));
 }
 
-void	configHandler::handle_close_mapSelector (int h) {
-	(void)h;
-	bool b = this ->  close_mapSelector -> isChecked ();
-	store (dabSettings, CONFIG_HANDLER, "close_map", b ? 1 : 0);
-}
-
-bool	configHandler::get_close_mapSelector	() {
-	return close_mapSelector	-> isChecked ();
-}
-
 void	configHandler::handle_saveTitles	(int h) {
 	(void)h;
 }
@@ -1022,3 +955,8 @@ void	configHandler::handle_updateChecker	(int k) {
 	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
 }
 
+void	configHandler::set_ipAddress		() {
+        store (dabSettings, MAP_HANDLING, IP_ADDRESS, hostLineEdit -> text ());
+}
+
+	

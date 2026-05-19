@@ -234,7 +234,6 @@ public:
 	                                 const QString	&,	//schedule
 	                                 const QString	&,	//tiiFile
 	                                 bool,			// errorreport
-	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
 	                                 int,
 	                                 QWidget	*parent = nullptr);
@@ -487,6 +486,11 @@ public slots:
 	void			handle_tiiCollisions		(int);
 	void			handle_activeServices		();
 	void			set_dcRemoval			(bool);
+	void			set_latitude			(float);
+	void			set_longitude			(float);
+	void			handle_httpPort			(int);
+	void			set_tpegPort			(int);
+
 	void			selectDecoder			(int);
 	void			set_transmitters_local		(bool);
 	void			handle_scheduleButton		();
@@ -639,7 +643,6 @@ public slots:
 //	for the UpdateChecker
 	void			process_updateCheck	(bool);
 //	Local signals
-	
 	void			no_signal_found		();
 	void			closeEvent		(QCloseEvent *event);
 

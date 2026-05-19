@@ -99,7 +99,6 @@ QString tiiFileName	= fullPathfor (QString (".txdata.tii"),
 RadioInterface	* myRadioInterface;
 
 // Default values
-int32_t		dataPort	= 8888;
 int32_t		clockPort	= 8889;
 int		opt;
 QString		freqExtension	= "";
@@ -112,7 +111,7 @@ QTranslator	theTranslator;
 	QCoreApplication::setApplicationName ("Qt-DAB");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
 	      case 'i':		// alternative for ini file
 	         initFileName = fullPathfor (QString (optarg), QString (".ini"));
@@ -120,10 +119,6 @@ QTranslator	theTranslator;
 
 	      case 't':		// alternative for unencoded tiifile
 	         tiiFileName	= fullPathfor (QString (optarg), QString (".csv"));
-	         break;
-
-	      case 'P':
-	         dataPort	= atoi (optarg);
 	         break;
 
 	      case 'C':
@@ -196,7 +191,6 @@ QTranslator	theTranslator;
 	                                        scheduleFile,
 	                                        tiiFileName,
 	                                        error_report,
-	                                        dataPort,
 	                                        clockPort,
 	                                        fmFrequency
 	                                       );

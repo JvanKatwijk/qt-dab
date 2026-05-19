@@ -42,17 +42,16 @@
 	                          const QString &fileName,
 	                          position	homeAddress,
 	                          bool		autoBrowser_on,
-	                          bool		close_map_on_exit,
 	                          const QString &saveName,
 	                          QSettings	*settings) {
 	this	-> theRadio	= theRadio;
 	this	-> nameOfMap	= fileName;
-	this	-> close_map_on_exit = close_map_on_exit;
+	this	-> close_map_on_exit = true;
 	this	-> saveName	= saveName;
 	this	-> dabSettings	= settings;
 	int  mapPort		=
 	            value_i (settings, MAP_HANDLING,
-	                                  MAP_PORT_SETTING, 8080);
+	                                  HTTP_PORT, 8080);
 	QString address		= 
 	            value_s (settings, MAP_HANDLING, BROWSER_ADDRESS,
 	                                                "http://localhost");

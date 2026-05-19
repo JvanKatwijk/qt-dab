@@ -161,7 +161,6 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                const QString	&schedule,
 	                                const QString	&tiiFile,
 	                                bool		is_error_report,
-	                                int32_t		dataPort,
 	                                int32_t		clockPort,
 	                                int		fmFreq,
 	                                QWidget		*parent):
@@ -309,6 +308,8 @@ QString h;
 
 	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
+	connect (deviceSelectorLabel, &clickablelabel::clicked_right,
+	         this, &RadioInterface::handle_devicewidgetButton);
 	connect (resetSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_resetButton);
 
@@ -391,19 +392,14 @@ QString h;
 
 	channel. etiActive	= false;
 	channel. cleanChannel ();
-	localPos. latitude 		=
-	             value_f (theQSettings, MAP_HANDLING, HOME_LATITUDE, 0.0);
-	localPos. longitude 		=
-	             value_f (theQSettings, MAP_HANDLING, HOME_LONGITUDE, 0.0);
-	if (localPos. latitude == 0)
-	   localPos. latitude = 52.22;
-	if (localPos. longitude == 0)
-	   localPos. longitude = 4.54;
-
+	localPos. latitude  =
+                      value_f (theQSettings, MAP_HANDLING,
+                                                HOME_LATITUDE, 52.22f);
+        localPos. longitude =
+                      value_f (theQSettings, MAP_HANDLING,
+                                                HOME_LONGITUDE, 4.54f);
 #ifdef	DATA_STREAMER
-	theDataStreamer		= new tcpServer (dataPort);
-#else
-	(void)dataPort;
+	theDataStreamer			= nullptr;
 #endif
 #ifdef	CLOCK_STREAMER
 	theClockStreamer		= new tcpServer (clockPort);
@@ -477,6 +473,8 @@ QString h;
 //
 //	some MOT, text and other data is stored in the Qt-DAB-files directory
 	path_for_files	= theFilenameFinder. basicPath ();	
+	path_for_files	= value_s (theQSettings, DAB_GENERAL,
+	                                           BASIC_PATH, path_for_files);
 	path_for_files	= checkDir (path_for_files);
 	path_for_files	= QDir::toNativeSeparators (path_for_files);
 	path_for_serviceLists = path_for_files + "/serviceLists/";
@@ -1417,7 +1415,8 @@ void	RadioInterface::TerminateProcess () {
 //
 #ifdef	DATA_STREAMER
 	fprintf (stderr, "going to close the dataStreamer\n");
-	delete		theDataStreamer;
+	if (theDataStreamer != nullptr)
+	   delete		theDataStreamer;
 #endif
 #ifdef	CLOCK_STREAMER
 	fprintf (stderr, "going to close the clockstreamer\n");
@@ -2123,6 +2122,15 @@ void	RadioInterface::localSelect (const QString &service,
 	      pd. channel = theChannel;
 	      theOfdmHandler -> setDataChannel (pd,
 	                                        &theDataBuffer, BACK_GROUND);
+#ifdef	DATA_STREAMER
+	      if ((pd. appType == 4) &&
+	          theDataStreamer == nullptr) {
+                 int tpeg_port       =  
+	                  value_i (theQSettings, MAP_HANDLING,
+                                                TPEG_PORT, 8888);
+	         theDataStreamer = new tcpServer (tpeg_port);
+	      }
+#endif
               dabService s;
               s. channel      = pd. channel;
               s. serviceName  = pd. serviceName;
@@ -3493,7 +3501,6 @@ bool	RadioInterface::autoStart_http () {
 	                                ":res/qt-map.html",
 	                                localPos,
 	                                theConfigHandler -> localBrowserSelector_active (),
-	       	                        theConfigHandler -> get_close_mapSelector (),	
 	                                "",
 	                                theQSettings);
 	} catch (int e) {}
@@ -3537,7 +3544,6 @@ void	RadioInterface::handle_httpButton	() {
 	                                    ":res/qt-map.html",
 	                                    localPos,
 	                                    theConfigHandler -> localBrowserSelector_active (),
-	       	                            theConfigHandler -> get_close_mapSelector (),
 	                                    saveName,
 	                                    theQSettings);
 	   } catch (int e) {}
@@ -3552,7 +3558,6 @@ void	RadioInterface::handle_httpButton	() {
 	   int auto_http   = value_i (theQSettings, CONFIG_HANDLER,
                                                AUTO_HTTP, 0);
 	   if ((auto_http != 0) ||
-	       !theConfigHandler -> get_close_mapSelector () ||
 	       !mapViewer -> isConnected ()) {
 	      cleanUp_mapHandler ();
 	      return;
@@ -3936,6 +3941,24 @@ void	RadioInterface::set_dcRemoval	(bool b) {
 	theNewDisplay. set_dcRemoval (b);
 }
 
+void	RadioInterface::set_latitude	(float lat) {
+	store (theQSettings, MAP_HANDLING, HOME_LATITUDE, lat);
+	localPos. latitude = lat;
+}          
+
+void	RadioInterface::set_longitude	(float lon) {
+	store (theQSettings, MAP_HANDLING, HOME_LONGITUDE, lon);
+	localPos. latitude = lon;
+}          
+
+void	RadioInterface::handle_httpPort (int port) {
+	store (theQSettings, MAP_HANDLING, HTTP_PORT, port);
+}
+
+void	RadioInterface::set_tpegPort	(int port) {
+	store (theQSettings, MAP_HANDLING, TPEG_PORT, port);
+}
+
 void	RadioInterface::show_dcOffset (float dcOffset) {
 	theNewDisplay. showDCOffset (dcOffset);
 }
@@ -4138,8 +4161,7 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 	   if (theTr. transmitterName == "not in database")
 	      continue;
 
-	   uint8_t key = theConfigHandler -> showAll_Selector_active () ?
-	                                      SHOW_ALL: SHOW_SINGLE;
+	   uint8_t key = SHOW_ALL;
 	   
 	   bool utc	= theConfigHandler -> utcSelector_active ();
 	   mapHandler_locker. lock ();
@@ -4843,3 +4865,4 @@ QString fileName = ad. serviceName. trimmed ();
 	   fileName += ".mp2";
 	return path_for_files + fileName;
 }
+
