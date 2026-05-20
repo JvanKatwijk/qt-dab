@@ -22,14 +22,22 @@
  *	Simple streaming server, for e.g. epg data and tpg data
  */
 
-#ifndef	__TCP_SERVER__
-#define	__TCP_SERVER__
+#pragma once
 
 #include	<stdint.h>
 #include	<ringbuffer.h>
 #include	<sys/types.h>
-#include	<sys/socket.h>
-#include	<netdb.h>
+#ifndef __MINGW32__
+#include        <sys/socket.h>
+#include        <fcntl.h>
+#include        <netinet/in.h>
+#include        <netdb.h>
+#include        <arpa/inet.h>
+#else
+#include        <winsock2.h>
+#include        <windows.h>
+#include        <ws2tcpip.h>
+#endif
 #include	<string>
 #include	<thread>
 #include	<unistd.h>
@@ -38,7 +46,7 @@
 class	tcpServer {
 public:
 		tcpServer	(int);
-		~tcpServer	(void);
+		~tcpServer	();
 	void	sendData	(uint8_t *, int32_t);
 	void	run		(int port);
 private:
@@ -48,5 +56,4 @@ private:
 	std::atomic<bool>	connected;
 	int			socketDesc;
 };
-#endif
 

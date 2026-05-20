@@ -29,14 +29,12 @@
 #include	"dab-constants.h"
 #include	"config-handler.h"
 #include	"mapport.h"
-#include	"skin-handler.h"
 #include	"radio.h"
 #include	"position-handler.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
 #include	"audiosystem-selector.h"
 
-#define AUDIOSELECT_BUTTON      QString ("audioSelectButton")
 #define FONT_BUTTON             QString ("fontButton")
 #define FONTCOLOR_BUTTON        QString ("fontColorButton")
 
@@ -45,9 +43,7 @@
 
 #define SNR_BUTTON              QString ("snrButton")
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
-#define SKIN_BUTTON             QString ("skinButton")
 
-#define	PATH_BUTTON		QString ("pathButton")
 
 #define	WHITE	"#ffffff"
 #define	BLACK	"#000000"
@@ -110,14 +106,6 @@ int	index_for_key (int key) {
 	   this -> ordersubChannelIds -> setChecked (true);
 	serviceOrder	= x;
 
-	QString ipAddress	=
-	              value_s (dabSettings, MAP_HANDLING,
-	                                    IP_ADDRESS, "127.0.0.1");
-	hostLineEdit	-> setInputMask ("000.000.000.000");
-	hostLineEdit	-> setText (ipAddress);
-	connect (hostLineEdit, &QLineEdit::returnPressed,
-                 this, &configHandler::set_ipAddress);
-
 	uint32_t http	=
 	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
 	httpPortSelector	-> setValue (http);
@@ -149,6 +137,11 @@ int	index_for_key (int key) {
 	QString path_for_files  = theFilenameFinder. basicPath ();
         path_for_files  = value_s (dabSettings, DAB_GENERAL,
                                                    BASIC_PATH, path_for_files);
+	storageLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	fontLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	cpuLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	decoderLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	nrServicesLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	pathLabel	-> setText (path_for_files);
 
 //	first row of checkboxes
@@ -232,8 +225,6 @@ int	index_for_key (int key) {
 	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
 
-	connect (pathButton, &QPushButton::clicked,
-	         this, &configHandler::handle_pathButton);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (auto_http, &QCheckBox::checkStateChanged,
 #else
@@ -281,15 +272,9 @@ void	configHandler::storePosition () {
 }
 
 void	configHandler::set_connections () {
-	connect (audioSelectButton, &smallPushButton::clicked,
-	         this, &configHandler::handle_audioSelectButton);
-//	connect (this, &configHandler::selectDecoder,
-//	         myRadioInterface, &RadioInterface::selectDecoder);
 	connect (this, &configHandler::set_dcRemoval,
 	         myRadioInterface, &RadioInterface::set_dcRemoval);
 
-	connect (audioSelectButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_audioSelectButton);
 	connect (fontButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_fontButton);
 	connect (fontColorButton, &smallPushButton::rightClicked,
@@ -302,10 +287,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_snrButton);
 	connect (loadTableButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_loadTableButton);
-	connect (pathButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_pathButton);
-	connect (skinButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_skinButton);
 
 //
 //	real handlers
@@ -344,8 +325,6 @@ void	configHandler::set_connections () {
 	loadTableButton	-> setText ("refresh table");
 //	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
-	connect (skinButton, &QPushButton::clicked,
-	         this, &configHandler::handle_skinSelector);
 //
 //	Now the checkboxes
 //	top line
@@ -447,12 +426,6 @@ void	configHandler::set_connections () {
 /////////////////////////////////////////////////////////////////////////
 //	
 void	configHandler::set_Colors () {
-QString	audioSelectButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              AUDIOSELECT_BUTTON + "_color", GREEN);
-QString audioSelectButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              AUDIOSELECT_BUTTON + "_font", BLACK);
 
 QString fontButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
@@ -503,32 +476,8 @@ QString loadTableButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                               LOAD_TABLE_BUTTON + "_font", WHITE);
 
-//QString dumpButton_color =
-//	   value_s (dabSettings, COLOR_SETTINGS,
-//	                               DUMP_BUTTON + "_color", YELLOW);
-//QString dumpButton_font =
-//	   value_s (dabSettings, COLOR_SETTINGS,
-//	                               DUMP_BUTTON + "_font", BLACK);
-
-QString pathButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               PATH_BUTTON + "_color", GREEN);
-QString pathButton_font =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               PATH_BUTTON + "_font", BLACK);
-
-QString skinButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               SKIN_BUTTON + "_font", BLACK);
-QString	skinButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               SKIN_BUTTON + "_color", YELLOW);
-
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 
-	this -> audioSelectButton ->
-	              setStyleSheet (temp. arg (audioSelectButton_color,
-	                                        audioSelectButton_font));
 
 	this -> fontButton ->
 	              setStyleSheet (temp. arg (fontButton_color,
@@ -557,18 +506,6 @@ QString	skinButton_color =
 	this -> loadTableButton ->
 	              setStyleSheet (temp. arg (loadTableButton_color,
 	                                        loadTableButton_font));
-//	                                        dumpButton_font));
-	this	-> pathButton ->
-	              setStyleSheet (temp. arg (pathButton_color,
-	                                        pathButton_font));
-	
-	this -> skinButton ->
-	              setStyleSheet (temp. arg (skinButton_color,
-	                                        skinButton_font));
-}
-
-void	configHandler::color_audioSelectButton	() {
-	set_buttonColors (this -> audioSelectButton, AUDIOSELECT_BUTTON);
 }
 
 void	configHandler::color_fontButton	() 	{
@@ -602,15 +539,6 @@ void	configHandler::color_loadTableButton	() 	{
 //void	configHandler::color_sourcedumpButton	()	{
 //	set_buttonColors (this ->  dumpButton, DUMP_BUTTON);
 //}
-
-void	configHandler::color_pathButton		()	{
-	set_buttonColors (this ->  pathButton, PATH_BUTTON);
-}
-
-void	configHandler::color_skinButton	() 	{
-	set_buttonColors (this ->  skinButton, SKIN_BUTTON);
-}
-
 
 void	configHandler::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
@@ -659,13 +587,6 @@ void	configHandler::handle_orderServiceIds		() {
 void	configHandler::handle_ordersubChannelIds	() {
 	set_serviceOrder (SUBCH_BASED);
 	serviceOrder	= SUBCH_BASED;
-}
-
-void	configHandler::handle_skinSelector     () {
-skinHandler theSkins;
-	int skinIndex = theSkins. QDialog::exec ();
-	QString skinName = theSkins. skins. at (skinIndex);
-	store (dabSettings, "SKIN_HANDLING", SKIN_SETTING, skinName); 
 }
 
 void	configHandler::handle_onTop	(int d) {
@@ -789,38 +710,6 @@ void	configHandler::set_closeDirect (bool b) {
 	closeDirect_selector	-> setChecked (b);
 }
 
-void	configHandler::show_streamSelector	(bool b) {
-	if (b)
-	   streamoutSelector -> show ();
-	else
-	   streamoutSelector -> hide ();
-}
-
-void	configHandler::fill_streamTable	(const QStringList &sl) {
-	for (int i = streamoutSelector -> count () - 1; i >= 0; i --)
-	   streamoutSelector -> removeItem (i);
-	for (auto sle : sl)
-	   streamoutSelector -> addItem (sle);
-}
-
-int	configHandler::init_streamTable	(const QString &s) {
-int k	=streamoutSelector -> findText (s);
-	if (k > 0) 
-	   streamoutSelector	-> setCurrentIndex (k);
-	return k;
-}
-
-void	configHandler::connect_streamTable	() {
-	connect (streamoutSelector, qOverload<int>(&QComboBox::activated),
-	         myRadioInterface, &RadioInterface::set_streamSelector);
-}
-
-QString	configHandler::currentStream		() {
-	if (streamoutSelector	-> count () == 0)
-	   return "";
-	return streamoutSelector	-> currentText ();
-}
-
 int	configHandler::switchDelayValue		() {
 	return switchDelaySetting	-> value () * 1000;
 }
@@ -858,17 +747,6 @@ void	configHandler::handle_allTIISelector	(int d) {
 
 void	configHandler::handle_tiiThreshold	(int t) {
 	store (dabSettings, CONFIG_HANDLER, TII_THRESHOLD, t);
-}
-
-void	configHandler::handle_pathButton	() {
-QString dir	=
-	  QFileDialog::getExistingDirectory (nullptr,
-	                                     tr("Open Directory"),
-	                                     QDir::homePath (),
-                                             QFileDialog::ShowDirsOnly
-                                             | QFileDialog::DontResolveSymlinks);
-	if (dir != "")
-	   store (dabSettings, DAB_GENERAL,  S_FILE_PATH, dir);
 }
 
 bool	configHandler::get_audioServices_only () {
@@ -955,8 +833,3 @@ void	configHandler::handle_updateChecker	(int k) {
 	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
 }
 
-void	configHandler::set_ipAddress		() {
-        store (dabSettings, MAP_HANDLING, IP_ADDRESS, hostLineEdit -> text ());
-}
-
-	

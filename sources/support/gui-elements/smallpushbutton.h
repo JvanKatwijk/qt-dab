@@ -36,5 +36,6 @@ QSize	sizeHint		()const;
 void	mousePressEvent (QMouseEvent *e);
 signals:
 void	rightClicked		();
+void	doubleClicked		();
 };
 

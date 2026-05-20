@@ -280,6 +280,7 @@ private:
 	epgCompiler		theEpgCompiler;
 //	end of variables that are initalized
 
+	QComboBox		*streamOutSelector;
 	serviceViewer			*newServices;
 	configHandler			*theConfigHandler;
 	techWindow			*theTechWindow;
@@ -673,6 +674,8 @@ private slots:
 	void			handle_etiHandler	();
 	void			handle_spectrumButton	();
 	void			handle_muteButton	();
+	void			show_streamSelector     ();
+
 	void			handle_folderButton	();
 	void			devSL_visibility	();
 	void			handle_resetButton		();

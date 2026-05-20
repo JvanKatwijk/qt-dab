@@ -20,7 +20,7 @@
  *    along with DAB-library; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *	Simple streaming server, for e.g. epg data and tpg data
+ *	Simple streaming server, for e.g. tpg data 
  */
 
 #include	<stdint.h>
@@ -35,7 +35,7 @@
 	   threadHandle	= std::thread (&tcpServer::run, this, port);
 }
 
-	tcpServer::~tcpServer (void) {
+	tcpServer::~tcpServer () {
 	if (running. load()) {
            running. store (false);
 	   if (socketDesc != -1) {
@@ -52,6 +52,7 @@ void	tcpServer::sendData (uint8_t *data, int32_t amount) {
 	if (connected)
 	   buffer -> putDataIntoBuffer (data, amount);
 }
+
 #define	BUF_SIZE	1024
 
 void	tcpServer::run (int port) {

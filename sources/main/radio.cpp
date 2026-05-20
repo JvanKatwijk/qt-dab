@@ -407,7 +407,6 @@ QString h;
 	(void)clockPort;
 #endif
 //	Where do we leave the audio out?
-	theConfigHandler	-> show_streamSelector (false);
 	int latency	= value_i (theQSettings, SOUND_HANDLING, "latency", 5);
 	theAudioPlayer		= nullptr;
 //
@@ -418,46 +417,55 @@ QString h;
 	QStringList streams;
 	QString	temp;
 //
-	QString sound = value_s (theQSettings, SOUND_HANDLING,
-	                                       SOUND_HANDLER, S_QT_AUDIO);
-	if (sound != S_PORT_AUDIO) {	// try Qt_Audio
-	   try {
-	      theAudioPlayer	= new Qt_Audio (this, theQSettings);
-	      streams		= static_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
-	      temp		=
+	try {
+	   theAudioPlayer	= new Qt_Audio (this, theQSettings);
+	   streams		= static_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
+	   temp		=
 	          value_s (theQSettings, SOUND_HANDLING,
 	                                  AUDIO_STREAM_NAME, "default");
-	      volumeSlider	-> show ();
-	      audioVolume	=
+	   volumeSlider	-> show ();
+	   audioVolume	=
 	          value_i (theQSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, 50);
-	      volumeSlider		-> setValue (audioVolume);
-	      static_cast<Qt_Audio *>(theAudioPlayer)	-> setVolume (audioVolume);
-	      connect (volumeSlider, &QSlider::valueChanged,
-	               this, &RadioInterface::setVolume);
-	   } catch (...) {
-	      theAudioPlayer = nullptr;
-	   }
+	   volumeSlider		-> setValue (audioVolume);
+	   static_cast<Qt_Audio *>(theAudioPlayer) -> setVolume (audioVolume);
+	   connect (volumeSlider, &QSlider::valueChanged,
+	            this, &RadioInterface::setVolume);
+	} catch (...) {
+	   theAudioPlayer = nullptr;
 	}
 
-//	we end up here if selection was PORT_AUDIO or using Qt_Audio failed
+//	we end up here if  Qt_Audio failed
 //	as it does on U20
 	if (theAudioPlayer == nullptr) {
 	   theAudioPlayer	= new audioSink	(latency);
-	   streams	= static_cast<audioSink *>(theAudioPlayer) -> streams ();
+	   streams		= static_cast<audioSink *>(theAudioPlayer) -> streams ();
 	   temp		=
 	          value_s (theQSettings, SOUND_HANDLING,
 	                                 AUDIO_STREAM_NAME, "default");
 	}
 
 	if (streams. size () > 0) {
-	   theConfigHandler -> fill_streamTable (streams);
-	   theConfigHandler -> show_streamSelector (true);
-	   k	= theConfigHandler -> init_streamTable (temp);
-	   if (k >= 0) {
-	      QString str = theConfigHandler -> currentStream ();
-	      theAudioPlayer -> selectDevice (k, str);
+	   QPixmap p;
+	   p. load (":res/radio-pictures/volume_on.png", "png");
+           soundLabel	-> setAlignment(Qt::AlignRight);
+           soundLabel	->  
+               setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+
+	   streamOutSelector	= new QComboBox (nullptr);
+	   for (int i = streamOutSelector -> count () - 1; i >= 0; i --)
+              streamOutSelector -> removeItem (i); 
+           for (auto sle : streams)
+              streamOutSelector -> addItem (sle);
+	   int k   = streamOutSelector -> findText (temp);
+	   if (k > 0) {
+              streamOutSelector    -> setCurrentIndex (k);
+	      theAudioPlayer -> selectDevice (k, temp);
 	   }
-	   theConfigHandler	-> connect_streamTable	();
+	   streamOutSelector	-> show ();
+	   connect (soundLabel, &clickablelabel::clicked_right,
+                    this, &RadioInterface::show_streamSelector);
+	   connect (streamOutSelector, qOverload<int>(&QComboBox::activated),
+                    this, &RadioInterface::set_streamSelector);
 	}
 	else {
 	   delete theAudioPlayer;
@@ -3481,7 +3489,7 @@ void	RadioInterface::selectDecoder (int decoder) {
 void	RadioInterface:: set_streamSelector (int k) {
 	if (!running. load ())
 	   return;
-	QString str = theConfigHandler -> currentStream ();
+	QString str = streamOutSelector	-> currentText ();
 	reinterpret_cast<audioSink *>(theAudioPlayer) -> selectDevice (k, str);
 	store (theQSettings, SOUND_HANDLING, AUDIO_STREAM_NAME, str);
 }
@@ -4364,8 +4372,8 @@ void	RadioInterface::handle_tiiCollisions     (int b) {
 void	RadioInterface::deviceListChanged	() {
 #ifndef	TCP_STREAMER
 QStringList streams	= reinterpret_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
-	theConfigHandler -> fill_streamTable (streams);
-	theConfigHandler -> show_streamSelector (true);
+//	theConfigHandler -> fill_streamTable (streams);
+//	theConfigHandler -> show_streamSelector (true);
 #endif
 }
 //
@@ -4864,5 +4872,12 @@ QString fileName = ad. serviceName. trimmed ();
 	else
 	   fileName += ".mp2";
 	return path_for_files + fileName;
+}
+
+void	RadioInterface::show_streamSelector	() {
+	if (streamOutSelector -> isVisible ())
+	   streamOutSelector -> hide ();
+	else	
+	   streamOutSelector -> show ();
 }
 

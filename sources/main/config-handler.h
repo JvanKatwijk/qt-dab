@@ -69,11 +69,6 @@ public:
 	void	showLoad		(float);
 	void	mark_dlTextButton	(bool);
 	void	set_closeDirect		(bool);
-	void	show_streamSelector	(bool);
-	void	fill_streamTable	(const QStringList &);
-	int	init_streamTable	(const QString &);
-	void	connect_streamTable	();
-	QString	currentStream		();
 
 	void	enable_loadLib		();
 	bool	get_correlationSelector	();
@@ -100,31 +95,25 @@ private:
 private slots:
 //	
 //	first the color setters
-	void	color_audioSelectButton	();
 	void	color_fontButton	();
 	void	color_fontColorButton	();
 	void	color_dlTextButton	();
 	void	color_scheduleButton	();
 	void	color_snrButton		();
 	void	color_loadTableButton	();
-	void	color_skinButton	();
-	void	color_pathButton	();
 //
 	void	handle_mapViewSelector		(int);
 	void	handle_updateChecker		(int);
-	void	set_ipAddress			();
 
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
 	void	handle_audioSelectButton	();
-	void	handle_pathButton		();
 	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
 	void	handle_orderAlfabetical		();
 	void	handle_orderServiceIds		();
 	void	handle_ordersubChannelIds	();
-	void	handle_skinSelector		();
 
 	void	handle_utc_selector		(int);
 	void	handle_auto_http		(int);

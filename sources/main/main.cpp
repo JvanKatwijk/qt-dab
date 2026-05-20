@@ -159,8 +159,8 @@ QTranslator	theTranslator;
 	QString skin    = dabSettings. value ("skin", "globstyle"). toString ();
 	dabSettings. endGroup ();
 
-	skin    = skin == "Combinear" ? ":res/skins/Combinear.qss" :
-	          skin == "globstyle" ? ":res/skins/globstyle.qss":
+	skin =    skin == "globstyle" ? ":res/skins/globstyle.qss":
+		  skin == "Combinear" ? ":res/skins/Combinear.qss" :
 	          skin == "Adaptic"   ? ":res/skins/Adaptic.qss" :
 	          skin == "Darkeum"   ? ":res/skins/Darkeum.qss" :
 	          skin == "EasyCode"  ? ":res/skins/EasyCode.qss":
