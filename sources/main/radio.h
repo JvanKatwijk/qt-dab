@@ -55,6 +55,7 @@
 #include	"epg-compiler.h"
 #include	"xml-extractor.h"
 
+#include	"audio-selector.h"
 #include	"device-chooser.h"
 #include	"device-handler.h"
 #include	"display-widget.h"
@@ -278,9 +279,9 @@ private:
 	tiiMapper		theTIIProcessor;
 	xmlExtractor		theXmlExtractor;
 	epgCompiler		theEpgCompiler;
+	audioSelector		streamOutSelector;
 //	end of variables that are initalized
 
-	QComboBox		*streamOutSelector;
 	serviceViewer			*newServices;
 	configHandler			*theConfigHandler;
 	techWindow			*theTechWindow;
@@ -416,6 +417,7 @@ private:
 
 	timeTableControl	*theControl;
 
+	bool			etiActivated;
 	std::atomic<bool>	running;
 //	Since the local position does not depend on the channel selected
 //	the local position is not stored in the channel data
@@ -502,8 +504,8 @@ public slots:
 	void			handle_loadTable		();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
-	void			handle_eti_activeSelector	(int);
-	void			set_streamSelector		(int);
+	void			handle_etiButton		();
+	void			set_streamSelector		(const QString &, int);
 
 	void			handleFontSizeSelect		(int);
 	void			handleFontSelect		();

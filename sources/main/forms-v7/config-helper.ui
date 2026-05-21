@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>528</width>
-    <height>482</height>
+    <width>510</width>
+    <height>548</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,9 +20,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
-      <widget class="QRadioButton" name="orderServiceIds">
+      <widget class="QRadioButton" name="orderAlfabetical">
        <property name="text">
-        <string>serviceIds</string>
+        <string>alphabetically</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">buttonGroup</string>
@@ -30,9 +30,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="orderAlfabetical">
+      <widget class="QRadioButton" name="orderServiceIds">
        <property name="text">
-        <string>alphabetically</string>
+        <string>serviceIds</string>
        </property>
        <attribute name="buttonGroup">
         <string notr="true">buttonGroup</string>
@@ -52,49 +52,57 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>mute time (in min)</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>mute time (in min)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallSpinBox" name="muteTimeSetting">
+         <property name="toolTip">
+          <string>Set here the mute time in minutes</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="smallSpinBox" name="muteTimeSetting">
-       <property name="toolTip">
-        <string>Set here the mute time in minutes</string>
-       </property>
-       <property name="minimum">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_2">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The switch time - expressed in seconds - is the time the processor will wait to see if there is&lt;/p&gt;&lt;p&gt;any data in a channel. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>switch time (in sec)</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="smallSpinBox" name="switchDelaySetting">
-       <property name="toolTip">
-        <string>Set here the delay, when searching for data in a channel, in seconds</string>
-       </property>
-       <property name="minimum">
-        <number>2</number>
-       </property>
-       <property name="maximum">
-        <number>99999</number>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The switch time - expressed in seconds - is the time the processor will wait to see if there is&lt;/p&gt;&lt;p&gt;any data in a channel. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>switch time (in sec)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallSpinBox" name="switchDelaySetting">
+         <property name="toolTip">
+          <string>Set here the delay, when searching for data in a channel, in seconds</string>
+         </property>
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>99999</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -139,6 +147,24 @@
        </item>
       </layout>
      </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>longitude</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="longitudeSelector">
+         <property name="maximum">
+          <double>999990.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_7">
        <item>
@@ -160,77 +186,10 @@
        </item>
       </layout>
      </item>
-     <item row="1" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>longitude</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="longitudeSelector">
-         <property name="maximum">
-          <double>999990.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_12">
-     <item>
-      <widget class="smallPushButton" name="loadTableButton">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button will instruct the software to load a fresh database. Note that this only works if either the software is precompiled or you have installed the small library as discussed in the installation instructions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>load table</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="mapViewSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG processor when an EPG service is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>mapview</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="auto_http">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the software will (try to) start the http handler on program start up&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>auto http</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="localBrowserSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string> browser manually</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_17">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label_4">
        <property name="text">
@@ -267,7 +226,7 @@
      <item>
       <widget class="QLabel" name="label_9">
        <property name="text">
-        <string>collisioms</string>
+        <string>collisions</string>
        </property>
       </widget>
      </item>
@@ -287,7 +246,56 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_17">
+     <item>
+      <widget class="QCheckBox" name="auto_http">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the software will (try to) start the http handler on program start up&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>auto http</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="mapViewSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG processor when an EPG service is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>mapview</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="localBrowserSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string> browser manually</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="loadTableButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button will instruct the software to load a fresh database. Note that this only works if either the software is precompiled or you have installed the small library as discussed in the installation instructions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>load table</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
       <widget class="QLabel" name="fontLabel">
        <property name="text">
@@ -334,7 +342,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <layout class="QHBoxLayout" name="horizontalLayout_16">
      <item>
       <widget class="QLabel" name="storageLabel">
        <property name="text">
@@ -352,38 +360,14 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_11">
-     <item>
-      <widget class="QCheckBox" name="dumpmodeSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The dump facility is changed. Dumping the input samples is now centralized (use the right hand mouse button on the ensemblename left top of the main widget).&lt;/p&gt;&lt;p&gt;If selected the dump will be in xml format (but of course only if the device supports that)&lt;/p&gt;&lt;p&gt;otherwise an &amp;quot;wav&amp;quot; file will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>dump input in xml format</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="audioServices_only">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Many ensembles contain both audio and data services (e.g. TPEG, EPG). If selected here, only audio services and  the EPG service if part of the ensemble will be shown in the services list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>show only audio services</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QCheckBox" name="onTop">
+      <widget class="QCheckBox" name="updateChecker">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration whether or not the main widget should ALWAYS be op top. Note that setting will be applied the next time the program will start.&lt;/p&gt;&lt;p&gt;Note further that in Windows a problem may occur: a warning message might be invisible, hidden by the main widget op top.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, a few seconds after program startup, the software will look for a possible later version of Qt-DAB and report if found one&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>main on top</string>
+        <string>check updates</string>
        </property>
       </widget>
      </item>
@@ -398,56 +382,16 @@
       </widget>
      </item>
      <item row="0" column="2">
-      <widget class="QCheckBox" name="closeDirect_selector">
+      <widget class="QCheckBox" name="audioServices_only">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Many ensembles contain both audio and data services (e.g. TPEG, EPG). If selected here, only audio services and  the EPG service if part of the ensemble will be shown in the services list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>close, no asking</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QCheckBox" name="updateChecker">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, the list of services is stored in a user defined file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>check updates</string>
+        <string>show only audio services</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QCheckBox" name="saveTitlesSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Having this selector set instructs the software to apply the so called DL2 rules to the dynamic label text. When DL2 is recognized in the forming of the dynamic label text, the titles of songs can be separated from the dynamic label and stored in a file in the Qt-DAB-files folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>save titles</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QCheckBox" name="saveSlides">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, slides (pictures) appearing during transmissions are being saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>save slides</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QCheckBox" name="etiActivated_selector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;eti files can be generated by Qt-DAB-5.x. Since generating an eti file from an ensemble seems incompatible with scanning, the scan button is replaced by an &amp;quot;eti&amp;quot; button when eti is activated.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Note that building up an eti file requires quite some resources.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If eti is activated, the scanButton is replaced by the etiButton. Touching that button shows a fileselection menu, after selecting a file the content of the ensemble is sent in eti format to the file. The eti session stops when (a) the eti button is touched again, (b) switching to another channel or (c) disabling eti by unchecking the checkbox.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>eti activated</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
       <widget class="QCheckBox" name="loadSelection_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If this selector is set, the list of services is loaded from a user defined file. If loading from such a file fails, the software will load the list from the default file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -457,10 +401,60 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="closeDirect_selector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>close, no asking</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="onTop">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration whether or not the main widget should ALWAYS be op top. Note that setting will be applied the next time the program will start.&lt;/p&gt;&lt;p&gt;Note further that in Windows a problem may occur: a warning message might be invisible, hidden by the main widget op top.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>main on top</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="saveSlides">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, slides (pictures) appearing during transmissions are being saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>save slides</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="saveTitlesSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Having this selector set instructs the software to apply the so called DL2 rules to the dynamic label text. When DL2 is recognized in the forming of the dynamic label text, the titles of songs can be separated from the dynamic label and stored in a file in the Qt-DAB-files folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>save titles</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QCheckBox" name="dumpmodeSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The dump facility is changed. Dumping the input samples is now centralized (use the right hand mouse button on the ensemblename left top of the main widget).&lt;/p&gt;&lt;p&gt;If selected the dump will be in xml format (but of course only if the device supports that)&lt;/p&gt;&lt;p&gt;otherwise an &amp;quot;wav&amp;quot; file will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>input dump in xml</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_14">
+    <layout class="QHBoxLayout" name="horizontalLayout_18">
      <item>
       <widget class="smallPushButton" name="scheduleButton">
        <property name="toolTip">
@@ -468,21 +462,6 @@
        </property>
        <property name="text">
         <string>schedule</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="smallPushButton" name="dlTextButton">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the lines of text that appear as dynamic label&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>dlText</string>
        </property>
       </widget>
      </item>
@@ -508,23 +487,55 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="smallPushButton" name="dlTextButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the lines of text that appear as dynamic label&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>dlText</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="etiButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt_DAB supports creating an ETI file from the input. &lt;/p&gt;&lt;p&gt;This button enables or disables ETI. Since scanning does not make much sense when creating an ETI file, the function of the scan button is - if ETI is enabled - modified to starting and stopping with the actual ETI generation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>eti disabled</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_9">
      <item>
-      <widget class="QLabel" name="decoderLabel">
-       <property name="text">
-        <string>decoder (soft bits)</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="smallComboBox" name="decoderSelector">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding DAB means interpreting the output of the DPSK on the FFT output, the latter meaning taking the phase difference between corresponding carriers in subsequent FFT symbols.&lt;/p&gt;&lt;p&gt;Ideally these phases are a multiple of 90 degrees, in reality they are less precise. The decoders here all try to map the results of the previous phase onto &amp;quot;soft bits&amp;quot;, i.e. values between -127 and 127. Each &amp;quot;dot&amp;quot; is mapped onto two bits, one depending on the X coordinate, the other on the &amp;quot;Y&amp;quot; one&lt;/p&gt;&lt;p&gt;The differences between the decoders is the way they look at the way the measured values differ from the ideal ones. In general, the most simple one, here the &amp;quot;decoder_a&amp;quot;, gives the best results.&lt;/p&gt;&lt;p&gt;The quality can be seen by looking at the fic BER value, that shows the percentage of the input soft bits in FIC processing that are wrong (and needed to be repaired by the viterbi decoder)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QLabel" name="decoderLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For &amp;quot;decoding&amp;quot;, actually mapping the value of the carriers after having done an FFT transformation on an input segment onto &amp;quot;soft bits&amp;quot;, i.e. values in the range of -127 .. 127, a few different algorihms were implemented.&lt;/p&gt;&lt;p&gt;The selector lets you choose.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>decoder (soft bits)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallComboBox" name="decoderSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding DAB means interpreting the output of the DPSK on the FFT output, the latter meaning taking the phase difference between corresponding carriers in subsequent FFT symbols.&lt;/p&gt;&lt;p&gt;Ideally these phases are a multiple of 90 degrees, in reality they are less precise. The decoders here all try to map the results of the previous phase onto &amp;quot;soft bits&amp;quot;, i.e. values between -127 and 127. Each &amp;quot;dot&amp;quot; is mapped onto two bits, one depending on the X coordinate, the other on the &amp;quot;Y&amp;quot; one&lt;/p&gt;&lt;p&gt;The differences between the decoders is the way they look at the way the measured values differ from the ideal ones. In general, the most simple one, here the &amp;quot;decoder_a&amp;quot;, gives the best results.&lt;/p&gt;&lt;p&gt;The quality can be seen by looking at the fic BER value, that shows the percentage of the input soft bits in FIC processing that are wrong (and needed to be repaired by the viterbi decoder)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QCheckBox" name="dcRemovalSelector">
@@ -549,7 +560,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_6">
+    <layout class="QHBoxLayout" name="horizontalLayout_14">
      <item>
       <widget class="QCheckBox" name="upload_selector">
        <property name="toolTip">
@@ -561,7 +572,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
        <item>
         <widget class="QLabel" name="cpuLabel">
          <property name="toolTip">
@@ -588,21 +599,28 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="nrServicesLabel">
-       <property name="text">
-        <string>number of services</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="clickablelabel" name="activeServices">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of active (sub)services. Each (sub)service runs in ots own thread.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <widget class="QLabel" name="nrServicesLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Processing DAB is in different steps, the process mapping the data for selected services onto either audio or data, takes place in the so-called backends. For each service (or subservice) a backend is instantiated and runs in a separate thread.&lt;/p&gt;&lt;p&gt;The counter tells the amount of active backends, and clicking on the number shows a small window showing the services for which backends are running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>number of services</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="clickablelabel" name="activeServices">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of active (sub)services. Each (sub)service runs in ots own thread.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

@@ -4,7 +4,8 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -19,30 +20,36 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "smallpushbutton.h"
-#include	<QMouseEvent>
 
-	smallPushButton::smallPushButton (QWidget *parent):
-	                                  QPushButton (parent) {
-}
+#pragma once
 
-	smallPushButton::~smallPushButton () {}
+#include	<QFrame>
+#include	<QLabel>
+#include <QListView>
+#include <QStringListModel>
+#include <QStringList>
+#include <cstdint>
+class	RadioInterface;
+//
+//	In some cases we can handle the selection of a device
+//	if more than one of the same type is connected
+class   audioSelector: public QFrame {
+Q_OBJECT
+public:
+			audioSelector	(RadioInterface *);
+			~audioSelector	();
+	void		addtoList	(const QString &);
+	int		set_channel	(const QString &);
 
-QSize	smallPushButton::sizeHint ()const {
-QSize	temp = QPushButton::sizeHint ();
-	return QSize (1 * temp. rwidth () / 4, temp. rheight ());
-//	return QSize (2 * temp. rwidth () / 3, 2 * temp. rheight () / 3);
-}
-
-void	smallPushButton::mousePressEvent (QMouseEvent *e) {
-	if (e -> button () == Qt::RightButton) {
-	   emit rightClicked ();
-	}
-	else
-	if (e -> type () == QEvent::MouseButtonDblClick)
-	   emit doubleClicked ();
-	else
-	   emit clicked ();
-}
-
+private:
+	QLabel		*toptext;
+	QListView 	*selectorDisplay;
+	QStringListModel channelList;
+	QStringList 	audioChannels;
+	RadioInterface	*myRadioInterface;
+private slots:
+	void		select_channel	(QModelIndex);
+signals:
+	void		selected	(const QString &, int);
+};
 

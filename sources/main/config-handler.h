@@ -58,7 +58,6 @@ public:
 	bool	upload_active		();
 	bool	closeDirect_active	();
 	bool	utcSelector_active	();
-	bool	eti_active		();
 	bool	saveSliders_active	();
 	bool	epg2_active		();
 	bool	onTop_active		();
@@ -84,6 +83,7 @@ public:
 
 	void	reset_loadSelection	();
 
+	void	set_etiButton		(bool);
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -100,6 +100,7 @@ private slots:
 	void	color_dlTextButton	();
 	void	color_scheduleButton	();
 	void	color_snrButton		();
+	void	color_etiButton		();
 	void	color_loadTableButton	();
 //
 	void	handle_mapViewSelector		(int);

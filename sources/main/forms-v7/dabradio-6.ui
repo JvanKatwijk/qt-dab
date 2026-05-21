@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>309</height>
+    <height>354</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-7.0</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -381,18 +381,18 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_10">
-       <item>
-        <widget class="smallPushButton" name="configButton">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="4">
+        <widget class="smallPushButton" name="scanButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide the scanmonitor. Scan control is completely moved to the scanmonitor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>controls</string>
+          <string>scan</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="smallPushButton" name="spectrumButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -402,23 +402,23 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="0">
+        <widget class="smallPushButton" name="configButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>controls</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="2">
         <widget class="smallPushButton" name="httpButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>http</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="smallPushButton" name="scanButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide the scanmonitor. Scan control is completely moved to the scanmonitor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>scan</string>
          </property>
         </widget>
        </item>

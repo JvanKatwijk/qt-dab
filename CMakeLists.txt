@@ -22,6 +22,8 @@ endif()
 add_definitions(-DAPP_NAME="${objectName}")
 add_definitions(-DPRJ_NAME="${PROJECT_NAME}")
 add_definitions(-DPRJ_VERS="${PROJECT_VERSION}")
+add_definitions(-DVERSION="7.0")
+add_definitions(-DVITERBI="scalar")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     # regarding using QWT < 6.2.0 (6.1.4) to avoid many deprecated massages (only suppressed on release versions)
@@ -145,6 +147,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/main/forms-v7
 	           ./sources/main/scopes
 	           ./sources/main/snr-viewer
+	           ./sources/main/viewer
 	           ./sources/eti-handler
 	           ./sources/support
 	           ./sources/support/gui-elements
@@ -166,6 +169,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/devices/filereaders/new-reader
 	           ./sources/devices/filereaders/rawfiles-new
 	           ./sources/devices/filereaders/xml-filereader
+	           ./sources/update
 	           /usr/include/
 	)
 
@@ -181,11 +185,16 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/scopes/audio-display.h 
 	   ./sources/main//scopes/spectrogramdata.h 
 	   ./sources/main/snr-viewer/snr-viewer.h 
-	   ./sources/main/ensemble-handler.h 
+	   ./sources/main/viewer/channel-descriptor.h
+	   ./sources/main/viewer/database.h
+	   ./sources/main/viewer/service-descriptor.h
+	   ./sources/main/viewer/view-handler.h
 	   ./sources/main/config-handler.h 
 	   ./sources/main/tech-window.h 
 	   ./sources/main/copyrightLabel.h 
 	   ./sources/main/dxDisplay.h 
+	   ./sources/main/process-monitor.h
+	   ./sources/main/audio-selector.h 
 	   ./sources/eti-handler/eti-generator.h 
 	   ./sources/frontend/ofdm-handler.h 
 	   ./sources/frontend/timesyncer.h 
@@ -198,7 +207,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/frontend/freq-interleaver.h 
 	   ./sources/frontend/tii-detector-1.h 
 	   ./sources/frontend/fic-handling/fic-handler.h 
-	   ./sources/frontend/fic-handling/ensemble.h  
 	   ./sources/frontend/fic-handling/fib-dbtypes.h  
 	   ./sources/frontend/fic-handling/fib-config.h  
 	   ./sources/frontend/fic-handling/fib-decoder.h  
@@ -242,6 +250,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/backend/data/epg/xml-extractor.h 
 	   ./sources/output/converter_48000.h 
 	   ./sources/output/audio-player.h 
+	   ./sources/support/dump-display.h 
 	   ./sources/support/equalizer.h 
 	   ./sources/support/scan-handler.h 
 	   ./sources/support/scantable-handler.h 
@@ -264,7 +273,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/process-params.h 
 	   ./sources/support/ringbuffer.h 
 	   ./sources/support/dab-params.h 
-	   ./sources/support/dab-tables.h 
+	   ./sources/support/ITU_tables.h 
 	   ./sources/support/scanlist-handler.h 
 	   ./sources/support/scheduler.h 
 	   ./sources/support/schedule-selector.h 
@@ -273,7 +282,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/findfilenames.h 
 	   ./sources/support/dl-cache.h 
 	   ./sources/support/content-table.h 
-	   ./sources/support/ITU_Region_1.h 
 	   ./sources/support/coordinates.h 
 	   ./sources/support/skin-handler.h 
 	   ./sources/support/mapport.h 
@@ -283,6 +291,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/tii-reader.h 
 	   ./sources/support/uploader.h 
 	   ./sources/support/basic-print.h 
+	   ./sources/support/dc-filter.h
 	   ./sources/support/gui-elements/position-handler.h 
 	   ./sources/support/gui-elements/settings-handler.h 
 	   ./sources/support/gui-elements/presetcombobox.h 
@@ -300,6 +309,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/super-frame.h 
 	   ./sources/support/gui-elements/verysmallpushbutton.h 
 	   ./sources/support/gui-elements/qwt-2.h 
+	   ./sources/update/updatechecker.h
+	   ./sources/update/appversion.h
 	   ./sources/devices/selector.h 
 	   ./sources/devices/riff-writer.h 
 	   ./sources/devices/device-handler.h 
@@ -332,11 +343,15 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/scopes/audio-display.cpp 
 	   ./sources/main/scopes/spectrogramdata.cpp 
 	   ./sources/main/snr-viewer/snr-viewer.cpp 
+	   ./sources/main/viewer/channel-descriptor.cpp
+	   ./sources/main/viewer/database.cpp
+	   ./sources/main/viewer/view-handler.cpp
 	   ./sources/main/copyrightLabel.cpp 
-	   ./sources/main/ensemble-handler.cpp 
 	   ./sources/main/tech-window.cpp 
 	   ./sources/main/config-handler.cpp 
 	   ./sources/main/dxDisplay.cpp 
+	   ./sources/main/process-monitor.cpp 
+	   ./sources/main/audio-selector.cpp 
 	   ./sources/eti-handler/eti-generator.cpp 
 	   ./sources/frontend/ofdm-handler.cpp 
 	   ./sources/frontend/timesyncer.cpp 
@@ -349,7 +364,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/frontend/freq-interleaver.cpp 
 	   ./sources/frontend/tii-detector-1.cpp 
 	   ./sources/frontend/fic-handling/fic-handler.cpp 
-	   ./sources/frontend/fic-handling/ensemble.cpp  
 	   ./sources/frontend/fic-handling/fib-config.cpp  
 	   ./sources/frontend/fic-handling/fib-decoder.cpp  
 	   ./sources/protection/protTables.cpp 
@@ -388,15 +402,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/backend/data/epg/xml-extractor.cpp 
 	   ./sources/output/converter_48000.cpp 
 	   ./sources/output/audio-player.cpp 
+	   ./sources/support/dump-display.cpp 
 	   ./sources/support/audiosystem-selector.cpp 
 	   ./sources/support/bandpass-filter.cpp 
 	   ./sources/support/basic-print.cpp 
+	   ./sources/support/dc-filter.cpp
 	   ./sources/support/charsets.cpp 
 	   ./sources/support/content-table.cpp 
 	   ./sources/support/coordinates.cpp 
 	   ./sources/support/crc-handlers.cpp 
 	   ./sources/support/dab-params.cpp 
-	   ./sources/support/dab-tables.cpp 
+	   ./sources/support/ITU_tables.cpp 
 	   ./sources/support/distances.cpp 
 	   ./sources/support/dl2-handler.cpp 
 	   ./sources/support/timetable-control.cpp 
@@ -406,7 +422,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/findfilenames.cpp 
 	   ./sources/support/fir-filters.cpp 
 	   ./sources/support/http-handler.cpp 
-	   ./sources/support/ITU_Region_1.cpp 
 	   ./sources/support/logger.cpp 
 	   ./sources/support/mapport.cpp 
 	   ./sources/support/scan-handler.cpp 
@@ -436,6 +451,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/smallspinbox.cpp 
 	   ./sources/support/gui-elements/super-frame.cpp 
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp 
+	   ./sources/update/updatechecker.cpp
 	   ./sources/devices/riff-writer.cpp 
 	   ./sources/devices/selector.cpp 
 	   ./sources/devices/device-handler.cpp 
@@ -453,7 +469,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	set (${objectName}_MOCS
 	     ./sources/main/radio.h
-	     ./sources/main/ensemble-handler.h 
 	     ./sources/main/config-handler.h 
 	     ./sources/main/tech-window.h
 	     ./sources/main/copyrightLabel.h 
@@ -468,6 +483,11 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/scopes/iqdisplay.h 
 	     ./sources/main/scopes/audio-display.h
  	     ./sources/main/snr-viewer/snr-viewer.h
+	     ./sources/main/viewer/view-handler.h
+	     ./sources/main/viewer/database.h
+	     ./sources/main/audio-selector.h
+	     ./sources/update/updatechecker.h
+	     ./sources/main/process-monitor.h
 	     ./sources/frontend/ofdm-handler.h
 	     ./sources/frontend/sample-reader.h
 	     ./sources/frontend/ofdm-decoder.h
@@ -524,6 +544,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/epg/epg-compiler.h
 	     ./sources/backend/data/epg/xml-extractor.h
 	     ./sources/output/audio-player.h
+	     ./sources/support/dump-display.h
 	     ./sources/output/converter_48000.h
 	    ./sources/devices/riff-writer.h 
 	    ./sources/devices/selector.h 
@@ -549,6 +570,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/forms-v7/config-helper.ui
 	     ./sources/main/forms-v7/scopewidget.ui
 	     ./sources/main/forms-v7/aboutdialog.ui
+	     ./sources/main/viewer/viewarea.ui
 	     ./sources/main/snr-viewer/snr-widget.ui
 	     ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
 	   )

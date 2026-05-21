@@ -191,8 +191,8 @@ char	LABEL_STYLE [] = "color:lightgreen";
 	                                      theSCANHandler (this, Si,
 	                                                      freqExtension),
 	                                      theTIIProcessor (),
-	                                      theEpgCompiler (&theErrorLogger) {
-int16_t k;
+	                                      theEpgCompiler (&theErrorLogger),
+	                                      streamOutSelector (this) {
 QString h;
 
 	theQSettings			= Si;
@@ -390,6 +390,7 @@ QString h;
 	else
 	   theNewDisplay. hide ();
 
+	etiActivated		= false;
 	channel. etiActive	= false;
 	channel. cleanChannel ();
 	localPos. latitude  =
@@ -451,20 +452,16 @@ QString h;
            soundLabel	->  
                setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 
-	   streamOutSelector	= new QComboBox (nullptr);
-	   for (int i = streamOutSelector -> count () - 1; i >= 0; i --)
-              streamOutSelector -> removeItem (i); 
-           for (auto sle : streams)
-              streamOutSelector -> addItem (sle);
-	   int k   = streamOutSelector -> findText (temp);
-	   if (k > 0) {
-              streamOutSelector    -> setCurrentIndex (k);
+	   for (auto sle : streams) 
+	      streamOutSelector. addtoList (sle);
+	   streamOutSelector. show ();
+	   int k = streamOutSelector. set_channel (temp);
+	   if (k >= 0) {
 	      theAudioPlayer -> selectDevice (k, temp);
 	   }
-	   streamOutSelector	-> show ();
-	   connect (soundLabel, &clickablelabel::clicked_right,
+	   connect (soundLabel, &clickablelabel::clicked_left,
                     this, &RadioInterface::show_streamSelector);
-	   connect (streamOutSelector, qOverload<int>(&QComboBox::activated),
+	   connect (&streamOutSelector, &audioSelector::selected,
                     this, &RadioInterface::set_streamSelector);
 	}
 	else {
@@ -525,7 +522,7 @@ QString h;
 	connect	(scanButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_scanButton);
 //	
-	connect (soundLabel, &clickablelabel::clicked_left,
+	connect (soundLabel, &clickablelabel::clicked_right,
 	         this, &RadioInterface::handle_muteButton);
 	connect (snrLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_snrLabel);
@@ -1406,6 +1403,7 @@ void	RadioInterface::TerminateProcess () {
 	   delete mapViewer;
 	}
 
+	streamOutSelector. hide ();
 //	should be hidden  to ensure the parent can be killed
 	theSNRViewer.	hide ();	
 	theScheduler.	hide ();
@@ -3486,12 +3484,11 @@ void	RadioInterface::selectDecoder (int decoder) {
 	   theOfdmHandler	-> handleDecoderSelector (decoder);
 }
 
-void	RadioInterface:: set_streamSelector (int k) {
+void	RadioInterface:: set_streamSelector (const QString &channel, int k) {
 	if (!running. load ())
 	   return;
-	QString str = streamOutSelector	-> currentText ();
-	reinterpret_cast<audioSink *>(theAudioPlayer) -> selectDevice (k, str);
-	store (theQSettings, SOUND_HANDLING, AUDIO_STREAM_NAME, str);
+	reinterpret_cast<audioSink *>(theAudioPlayer) -> selectDevice (k, channel);
+	store (theQSettings, SOUND_HANDLING, AUDIO_STREAM_NAME, channel);
 }
 //
 //////////////////////////////////////////////////////////////////////////
@@ -3718,14 +3715,10 @@ void	RadioInterface::start_etiHandler () {
 	   scanButton -> setText ("eti runs");
 }
 
-void	RadioInterface::handle_eti_activeSelector (int k) {
-bool setting	= theConfigHandler -> eti_active ();
-	(void)k;
-          
+void	RadioInterface::handle_etiButton	() {
         if (newServices -> getMode () == FAVORITEVIEW)
 	   return;
-
-	if (setting) {
+	if (!this -> etiActivated) {
 	   stopScanning ();
 	   disconnect (scanButton, &QPushButton::clicked,
 	               this, &RadioInterface::handle_scanButton);
@@ -3733,8 +3726,9 @@ bool setting	= theConfigHandler -> eti_active ();
 	            this, &RadioInterface::handle_etiHandler);
 	   scanButton -> setEnabled (true);
 	   scanButton	-> setText ("eti");
-//	   if (!theDeviceHandler -> isFileInput ())// restore the button' visibility
-	      scanButton -> show ();
+	   scanButton -> show ();
+	   this	-> etiActivated	= true;
+	   theConfigHandler	-> set_etiButton (true);
 	   return;
 	}
 //	otherwise, disconnect the eti handling and reconnect scan
@@ -3745,8 +3739,8 @@ bool setting	= theConfigHandler -> eti_active ();
 	connect (scanButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_scanButton);
 	scanButton      -> setText ("scan");
-        if (newServices -> getMode () != ENSEMBLEVIEW)
-	   scanButton -> hide ();
+	this	-> etiActivated	= false;
+	theConfigHandler	-> set_etiButton (false);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -4875,9 +4869,9 @@ QString fileName = ad. serviceName. trimmed ();
 }
 
 void	RadioInterface::show_streamSelector	() {
-	if (streamOutSelector -> isVisible ())
-	   streamOutSelector -> hide ();
+	if (streamOutSelector. isVisible ())
+	   streamOutSelector. hide ();
 	else	
-	   streamOutSelector -> show ();
+	   streamOutSelector. show ();
 }
 

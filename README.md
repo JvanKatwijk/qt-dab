@@ -21,8 +21,8 @@ an installer - are available.
 
 Table of Contents
 =================================================================
-* [Handling packet services](#handling-packet-services)
 * [What is new in Qt-DAB-7.0](#What-is-new-in-Qt-DAB-7.0)
+* [Handling packet services](#handling-packet-services)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
 * [Scan control](#scan-cntrol)
@@ -34,6 +34,82 @@ Table of Contents
 * [Software for device support](#softare-for-device-support)
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
+
+
+What is (further) new in Qt-DAB-7.0
+======================================================================
+
+Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
+the GUI had changed a lot since the "5" version, and the basic idea was to
+increment **major** version numbers when the GUI changed significantly.
+
+In Qt-DAB 7.0 there are many (mainly small) changes, both in the GUI
+and in the functionality handled by Qt-DAB.
+
+Changes in functionality show in the **ensemble display** which is
+completely redesigned, and in the way **packet** services and
+services in the background are dealt with.
+For the latter, see a next section.
+
+The major visible change in the main window has to do with the way services
+are shown.
+  *
+![7.0](/res/read_me/qt-dab-7.0.png)
+
+The ensemble display is in one of a three modes:
+ * **ensemble** mode, where all services are shown, 
+ * **favorite** mode, where only the favorites are shown, and
+ * **file** mode, where the services from reading a file are shown.
+
+In **ensemble mode** - the most common mode - all services encountered in the
+various channels that were exercised (e.g. by a scan) are shown.
+In the picture it shows the NPO ensemble takes positions around 30.
+ 
+On  (normal) **program termination**, the list is stored in a file with the
+name ".qt-dab-serviceList.mxl", stored in the user's home directory
+On program startup, the list is read-in again.
+
+Alternatively, the **configuration and control** window contains an
+entry that - when set - shows on program termination a  dialog with options
+to read on the NEXT program involcation either an existing ensemble file, create a new one, clear the current
+ensemble file, or just stop with selecting.
+In the last two cases, the setting on the configuration window is "undone".
+
+![7.0](/res/read_me/ensemble-dialog.png)
+
+Clicking on a service name on the servides list obviously will select the service, which might take a few seconds if another channel has to be started.
+Clicking on the small entry left of the service name controls the **status**
+of the entry, i.e. a **favorite** or not. If set as **favorite** a small "*"
+appears left of the name in the list.
+
+The window contains at the bottow - below the channel selector - a button
+with which a switch can be made between **ensemble** mode and **favorite** mode.
+
+![7.0](/res/read_me/favorite-mode.png)
+
+In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection (and scanning)  rather useless and in Qt-DAB-7.0 channel selection and scanning is blocked in this mode.
+
+![7.0](/res/read_me/file-mode.png)
+
+In **file** mode, i.e. after reading a file, the services are shown, and
+- obviously - may be selected.
+Adding an element to the **file mode** is not very usefule, as is
+channel selection, scanning or switching the mode. So, in **file mode**
+these functions are blocked. Furthermore, switching from this mode to either
+**ensemble mode** or **favorite mode** is meaningless, so the mode
+selecting button is hidden. 
+
+On starting the program with a **device** the **ensemble** mode is
+set, when starting with a file as input, the mode is set to **file** mode.
+
+Eliminating buttons
+=======================================================================
+
+ * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name;
+ * similarly, the button on the configuration window to control the visibility od the device control window is removed. Clicking with the (again) **right hand mouse button** on the blue icon gives the same functionality;
+ * the selector for the audio channel was removed from the configuration window.Clicking with the mouse on the **speaker symbol** shows the available channels in a small separate window.
+
+The buttons for selection between Portaudio and QtAudio as well as for "skin" selection are removed, their functionality is not considered very useful.
 
 Handling packet and background services
 ========================================================================
@@ -106,74 +182,12 @@ in the services list, and the decoding is started.
 
 Manually stopping the service is by clicking again on the servicename.
 
-What is (further) new in Qt-DAB-7.0
-======================================================================
-
-Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
-the GUI had changed a lot since the "5" version, and the basic idea was to
-increment **major** version numbers when the GUI changed significantly.
-
-At first sight, the GUI of Qt-DAB-7.0 did not change that much with
-the GUI of version 6.
-There are however a few fundamental changes to the main window, leading to some changes to the configuration and control window.  While in previous versions a separate **scanlist** was maintained, containing
-the name (and channel) of all services encountered, in version 7, all services are shown on the main window now.
-
-![7.0](/res/read_me/qt-dab-7.0.png)
-
-This display is still in one of a three modes:
- * **ensemble** mode, where all services are shown, 
- * **favorite** mode, where only the favorites are shown, and
- * **file** mode, where the services from reading a file are shown.
-
-In **ensemble mode** - the most common mode - all services encountered in the
-various channels that were exercised (e.g. by a scan) are shown.
-In the picture it shows the NPO ensemble takes positions around 30.
- 
-On  (normal) **program termination**, the list is stored in a file with the
-name ".qt-dab-serviceList.mxl", stored in the user's home directory
-On program startup, the list is read-in again.
-
-Alternatively, the **configuration and control** window contains an
-entry that - when set - shows on program termination a  dialog with options
-to read on the NEXT program involcation either an existing ensemble file, create a new one, clear the current
-ensemble file, or just stop with selecting.
-In the last two cases, the setting on the configuration window is "undone".
-
-![7.0](/res/read_me/ensemble-dialog.png)
-
-Clicking on a service name on the servides list obviously will select the service, which might take a few seconds if another channel has to be started.
-Clicking on the small entry left of the service name controls the **status**
-of the entry, i.e. a **favorite** or not. If set as **favorite** a small "*"
-appears left of the name in the list.
-
-The window contains at the bottow - below the channel selector - a button
-with which a switch can be made between **ensemble** mode and **favorite** mode.
-
-![7.0](/res/read_me/favorite-mode.png)
-
-In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection (and scanning)  rather useless and in Qt-DAB-7.0 channel selection and scanning is blocked in this mode.
-
-![7.0](/res/read_me/file-mode.png)
-
-In **file** mode, i.e. after reading a file, the services are shown, and
-- obviously - may be selected.
-Adding an element to the **file mode** is not very usefule, as is
-channel selection, scanning or switching the mode. So, in **file mode**
-these functions are blocked. Furthermore, switching from this mode to either
-**ensemble mode** or **favorite mode** is meaningless, so the mode
-selecting button is hidden. 
-
-On starting the program with a **device** the **ensemble** mode is
-set, when starting with a file as input, the mode is set to **file** mode.
 
 -------------------------------------------------------------------------
 
 Windows and scopes
 =========================================================================
 
-In Qt-DAB-7.0 a choice was made to add a few **operational** selectors to
-the main window, rather than having them on the **configuration and control**
-window.
 
 In the latest releases of 6.10 the **dump** button was already moved from the configuration window to the main window (the **button** implemented by a click
 on the **right hand button** on the mouse on the ensemblename). Furthermore,
@@ -300,7 +314,9 @@ resulting bits have values between -127 to 127.
 
 ![6.10](/res/read_me/configuration-and-control.png)
 
-The **configuration and control window was modified.
+The **configuration and control window is completely redesigned.
+Some selectors, buttons and checkboxes are removed, as mentioned the functionality is moved to (mainly using right hand mouse clicks) the main window.
+
 
 In the previous version, a selector **mapview** was added, that selector 
 is now placed on the second line of the checkboxes.
