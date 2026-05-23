@@ -36,7 +36,7 @@ Table of Contents
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
 
-What is (further) new in Qt-DAB-7.0
+What is new in Qt-DAB-7.0
 ======================================================================
 
 Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
@@ -129,10 +129,6 @@ However, running a packet service is  usually rather boring,
 since there is not much to be seen or heard, that is why
 Qt-DAB akways starts a packet service as background task.
 
-Most package services contain some form of TPEG data,
-which is usually encoded,  Qt-DAB restricts itself to compile the frames
-and send the data to a TCP port (default 8888, but can be set by a command line option) "-P"), up to the user to do further processing
-and interpretation.
 
 **Starting** a packet service is simply by clicking on the name, same
 as for audio services, there is a restriction however,
@@ -141,6 +137,18 @@ the currently selected channel.
 Obviously, when switching to another channel, either implicitly by selecting
 a service in a channel different from the currently selected one or explicitly
 the service interpretation will be stopped.
+
+Most package services contain some form of TPEG data,
+which is usually encoded.
+Qt_DAB is therefore unable to interpret these packets, there
+Qt-DAB restricts itself to compile the frames
+and send the data as udp packet (default 8888, but can be set in the
+configuration window).
+(In case more than one TPEG service is chosen, only the data of
+the **first** selected one is sent through.
+
+The sourcetree contains in the directory helpers/tdc-client a simple
+reader for udp packets.
 
 Manually stopping a background service is possible, 
 a separate facility was created to **stop** such a service.
