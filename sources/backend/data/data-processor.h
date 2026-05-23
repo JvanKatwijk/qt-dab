@@ -57,6 +57,7 @@ void	set_dataTracer	(bool b);
 private:
 	RadioInterface	*myRadioInterface;
 	uint32_t	SId;
+	uint8_t		SCIds;
 	int16_t		bitRate;
 	uint8_t		DSCTy;
 	int16_t		appType;

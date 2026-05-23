@@ -123,11 +123,15 @@ void	tcpServer::run (int port) {
 	         }
 	      }
 	   }
-	   catch (int e) {}
+	   catch (int e) {
+	      running. store (false);
+	   }
 	   connected = false;
 	}
 	// Close the socket before we finish 
-	if (socketDesc != -1)
+	if (socketDesc != -1) {
+	   shutdown (socketDesc, SHUT_RDWR);
 	   close (socketDesc);	
+	}
 	fprintf (stderr, "socket is closed now\n");
 }

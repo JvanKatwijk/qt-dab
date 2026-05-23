@@ -65,6 +65,7 @@ DEPENDPATH += . \
 	      ./sources/frontend/fic-handling \
 	      ./sources/output \
 	      ./sources/output/portaudio \
+	      ./sources/server-thread \
 	      ./sources/protection \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
@@ -96,6 +97,7 @@ INCLUDEPATH += . \
 	      ./sources/output \
 	      ./sources/output/portaudio \
 	      ./sources/protection \
+	      ./sources/server-thread \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
 	      ./sources/devices \
@@ -149,6 +151,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/protection/protection.h \
 	   ./sources/protection/eep-protection.h \
 	   ./sources/protection/uep-protection.h \
+	   ./sources/server-thread/tcp-server.h \
+	   ./sources/server-thread/udp-broadcaster.h \
 	   ./sources/backend/msc-handler.h \
 	   ./sources/backend/reed-solomon/galois.h \
 	   ./sources/backend/reed-solomon/reed-solomon.h \
@@ -311,6 +315,8 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/protection/protection.cpp \
 	   ./sources/protection/eep-protection.cpp \
 	   ./sources/protection/uep-protection.cpp \
+	   ./sources/server-thread/tcp-server.cpp \
+	   ./sources/server-thread/udp-broadcaster.cpp \
 	   ./sources/backend/msc-handler.cpp \
 	   ./sources/backend/reed-solomon/galois.cpp \
 	   ./sources/backend/reed-solomon/reed-solomon.cpp \
@@ -811,11 +817,11 @@ local-audio {
 }
 
 datastreamer	{
-	DEFINES		+= DATA_STREAMER
-	DEFINES		+= CLOCK_STREAMER
-	INCLUDEPATH	+= ./sources/server-thread
-	HEADERS		+= ./sources/server-thread/tcp-server.h
-	SOURCES		+= ./sources/server-thread/tcp-server.cpp
+#	DEFINES		+= DATA_STREAMER
+#	DEFINES		+= CLOCK_STREAMER
+#	INCLUDEPATH	+= ./sources/server-thread
+#	HEADERS		+= ./sources/server-thread/tcp-server.h
+#	SOURCES		+= ./sources/server-thread/tcp-server.cpp
 }
 
 viterbi-scalar {

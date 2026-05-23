@@ -28,14 +28,13 @@
 
 //#define	PRINT_TDC
 	tdc_dataHandler::tdc_dataHandler (RadioInterface *mr,
-	                                  RingBuffer<uint8_t> *dataBuffer,
-	                                  int16_t appType) {
-	(void)appType;
+	                                  int32_t SId, uint8_t SCIds) {
 	myRadioInterface	= mr;
-	this	-> dataBuffer	= dataBuffer;
-//	for the moment we assume appType 4
-	connect (this, &tdc_dataHandler::bytesOut,
-	         myRadioInterface, &RadioInterface::handle_tdcdata);
+	this	-> SId		= SId;
+	this	-> SCIds	= SCIds;
+//	appType = 4
+	connect (this, &tdc_dataHandler::frameOut,
+	         myRadioInterface, &RadioInterface::handle_frameOut);
 }
 
 	tdc_dataHandler::~tdc_dataHandler() {
@@ -124,26 +123,33 @@ int16_t	i;
 
 int32_t	tdc_dataHandler::handleFrame_type_0 (uint8_t *data,
 	                                     int32_t offset, int32_t length) {
-//int16_t noS	= getBits (data, offset, 8);
-uint8_t *buffer	= (uint8_t *) alloca (length * sizeof (uint8_t));
-	
+QByteArray buffer;
+	buffer. resize (8);
+	buffer [0]	= 0xFF;
+	buffer [1] 	= 0x00;
+	buffer [2]	= 0xFF;
+	buffer [3]	= 0x00; 
+	buffer [4]	= (length & 0xFF) >> 8;
+	buffer [5]	= length & 0xFF;
+	buffer [6]	= 0x00;              
+	buffer [7]	= 0;
+
 	for (uint16_t i = 0; i < length; i ++)
-	   buffer [i] = getBits (data, offset + i * 8, 8);
-	if (!check_crc_bytes (buffer, length - 2))
+	   buffer. push_back (getBits (data, offset + i * 8, 8));
+	if (!check_crc_bytes ((uint8_t *)(&buffer. data () [8]), length - 2))
 	   fprintf (stderr, "crc ook hier fout\n");
 #ifdef PRINT_TDC
 	fprintf (stderr, "nrServices %d, SID-A %d SID-B %d SID-C %d\n",
 	                  buffer [0], buffer [1], buffer [2], buffer [3]);
 #endif
-	dataBuffer -> putDataIntoBuffer (buffer, length);
-	bytesOut (0, length);
+	frameOut (0, buffer, SId, SCIds);
 	return offset + length * 8;
 }
 
 int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 	                                     int32_t offset,
 	                                     int32_t length) {
-uint8_t	*buffer = (uint8_t *) alloca (length * sizeof (uint8_t));
+//uint8_t	*buffer = (uint8_t *) alloca (length * sizeof (uint8_t));
 int	lOffset;
 int	llengths = length - 4;
 #ifdef PRINT_TDC
@@ -153,27 +159,20 @@ int	llengths = length - 4;
 	                             getBits (data, offset + 16, 8));
 	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
 #endif
+QByteArray buffer;
+	buffer. resize (8);
+	buffer [0]	= 0xFF;
+	buffer [1] 	= 0x00;
+	buffer [2]	= 0xFF;
+	buffer [3]	= 0x00; 
+	buffer [4]	= (length & 0xFF) >> 8;
+	buffer [5]	= length & 0xFF;
+	buffer [6]	= 0x00;              
+	buffer [7]	= 0xFF;
+
 	for (uint16_t i = 0; i < length; i ++)
-	   buffer [i] = getBits (data, offset + i * 8, 8);
-	dataBuffer	-> putDataIntoBuffer (buffer, length);
-	if (getBits (data, offset + 24, 8) == 0) {	// no encryption
-	   lOffset	= offset + 4 * 8;
-	   do {
-	      int compInd	= getBits (data, lOffset, 8);	
-	      int flength	= getBits (data, lOffset + 8, 16);
-	      int crc		= getBits (data, lOffset + 3 * 8, 8);
-#ifdef PRINT_TDC
-	      fprintf (stderr, "segment %d, length %d\n",
-	                                 compInd, flength);
-	      for (int i = 5; i < flength; i ++)
-	         fprintf (stderr, "%x ", buffer [i]);
-	      fprintf (stderr, "\n\n");
-#endif
-	      lOffset	+= (flength + 5) * 8;
-	      llengths -= flength + 5;
-	   } while (llengths > 10);
-	}
-	bytesOut (1, length);
+	   buffer. push_back (getBits (data, offset + i * 8, 8));
+	frameOut (1, buffer, SId, SCIds);
 	return offset + length * 8;
 }
 //	The component header CRC is two bytes long,

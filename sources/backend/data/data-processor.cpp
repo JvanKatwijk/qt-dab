@@ -46,6 +46,7 @@
 	                                     my_rsDecoder (8, 0435, 0, 1, 16) {
 	this	-> myRadioInterface	= mr;
 	this	-> SId			= pd -> SId;
+	this	-> SCIds		= pd -> SCIds;
 	this	-> bitRate		= pd -> bitRate;
 	this	-> DSCTy		= pd -> DSCTy;
 	this	-> appType		= pd -> appType;
@@ -80,7 +81,7 @@
 	      else
 	      if (appType == 4)
 	         my_dataHandler.
-	              reset (new tdc_dataHandler (mr, dataBuffer, appType));
+	              reset (new tdc_dataHandler (mr, SId, SCIds));
 	      else {
 	         fprintf (stderr, "DSCTy 5 with appType %d not supported\n",
 	                                                           appType);

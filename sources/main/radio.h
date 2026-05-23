@@ -48,9 +48,8 @@
 #include	"process-monitor.h"
 #include	<memory>
 #include	<mutex>
-#ifdef	DATA_STREAMER
-#include	"tcp-server.h"
-#endif
+#include	"udp-broadcaster.h"
+//#include	"tcp-server.h"
 #include	"scan-handler.h"
 #include	"epg-compiler.h"
 #include	"xml-extractor.h"
@@ -134,6 +133,8 @@ public:
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
+	udpBroadcaster	*dataServer;
+//	tcpServer	*dataServer;
 	std::vector<uint32_t>	fmFrequencies;
 	dabService () {
 	   channel	= "";
@@ -146,6 +147,7 @@ public:
 	   ASCTy	= 0;
 	   frameDumper	= nullptr;
 	   runsBackground	= false;
+	   dataServer	= nullptr;
 	}
 	~dabService	() {}
 };
@@ -297,12 +299,6 @@ private:
 	dabStreamer			*theDabStreamer;
 #endif
 	audioPlayer			*theAudioPlayer;
-#ifdef	DATA_STREAMER
-	tcpServer			*theDataStreamer;
-#endif
-#ifdef	CLOCK_STREAMER
-	tcpServer			*theClockStreamer;
-#endif
 //
 	void			startList		(bool &);
 	void			connectGUI		();
@@ -622,8 +618,8 @@ public slots:
 	                                                 uint32_t);
 
 //	signals from tdc-dataHandler
-	void			handle_tdcdata		(int, uint32_t);
-
+	void			handle_frameOut		(int, const QByteArray,
+	                                                 int32_t, uint8_t);
 //	signals from httpHandler
 	void			channelSignal		(const QString &);
 	void			cleanUp_mapHandler	();

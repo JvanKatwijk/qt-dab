@@ -7,12 +7,9 @@ QMAKE_CFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 QMAKE_LFLAGS	+=  -g -fsanitize=address
 
-HEADERS     = ./client.h \
-	      ./constants.h 
-
-SOURCES		=  ./client.cpp main.cpp 
+HEADERS		= ./tdc-client.h
+SOURCES		=  ./tdc-client.cpp
 TARGET		= Client
-FORMS		+= ./widget.ui
 unix{
 DESTDIR     = .
 }

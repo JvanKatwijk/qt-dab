@@ -399,14 +399,6 @@ QString h;
         localPos. longitude =
                       value_f (theQSettings, MAP_HANDLING,
                                                 HOME_LONGITUDE, 4.54f);
-#ifdef	DATA_STREAMER
-	theDataStreamer			= nullptr;
-#endif
-#ifdef	CLOCK_STREAMER
-	theClockStreamer		= new tcpServer (clockPort);
-#else
-	(void)clockPort;
-#endif
 //	Where do we leave the audio out?
 	int latency	= value_i (theQSettings, SOUND_HANDLING, "latency", 5);
 	theAudioPlayer		= nullptr;
@@ -1203,31 +1195,16 @@ uint8_t *localBuffer = dynVec (uint8_t, length);
 }
 //
 //	tdcData is triggered by the backend.
-void	RadioInterface::handle_tdcdata (int frametype, uint32_t length) {
-#ifdef DATA_STREAMER
-uint8_t *localBuffer = dynVec (uint8_t, length + 8);
-#endif
-	(void)frametype;
-	if (!running. load())
-	   return;
-	if (theDataBuffer. GetRingBufferReadAvailable() < length) {
-	   fprintf (stderr, "Something went wrong\n");
-	   return;
+void	RadioInterface::handle_frameOut	(int type, QByteArray data,
+	                                 int32_t SId, uint8_t SCIds) {
+	for (auto &serv: channel. runningTasks) {
+	   if ((serv. SId == SId) && (serv. SCIds == SCIds) &&
+	       (serv. dataServer != nullptr)) {
+	         serv. dataServer -> sendData (data);
+	   }
 	}
-#ifdef	DATA_STREAMER
-	theDataBuffer. getDataFromBuffer (&localBuffer [8], length);
-	localBuffer [0] = 0xFF;
-	localBuffer [1] = 0x00;
-	localBuffer [2] = 0xFF;
-	localBuffer [3] = 0x00;
-	localBuffer [4] = (length & 0xFF) >> 8;
-	localBuffer [5] = length & 0xFF;
-	localBuffer [6] = 0x00;
-	localBuffer [7] = frametype == 0 ? 0 : 0xFF;
-	if (running. load())
-	   theDataStreamer -> sendData (localBuffer, length + 8);
-#endif
 }
+
 /**
   *	Response to a signal, so we presume that the signaling body exists
   *	signal may be pending though
@@ -1419,15 +1396,6 @@ void	RadioInterface::TerminateProcess () {
 	theTechWindow	->	storePosition ();	
 	theTechWindow 	->	 hide ();
 //
-#ifdef	DATA_STREAMER
-	fprintf (stderr, "going to close the dataStreamer\n");
-	if (theDataStreamer != nullptr)
-	   delete		theDataStreamer;
-#endif
-#ifdef	CLOCK_STREAMER
-	fprintf (stderr, "going to close the clockstreamer\n");
-	delete	theClockStreamer;
-#endif
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
 #ifdef	HAVE_PLUTO_RXTX
@@ -2041,6 +2009,13 @@ void	RadioInterface::handle_clickRequest	(const QString &serviceName) {
 	   if ((serv. SId == SId) && (serv. SCIds == SCIds)) {
 	      if (!serv. runsBackground)
 	         return;
+	      if (serv. dataServer != nullptr)  {
+	         delete serv. dataServer;
+	         serv. dataServer = nullptr;
+	         fprintf (stderr,
+	                  "The data streamer for service %s has stopped\n",
+	                   serviceName. toLatin1 (). data ());
+	      }
 	      theProcessMonitor. removeProcess (serviceName,
 	                                         serv. SId, serv. SCIds);
 	      theOfdmHandler -> stopService (serv. SId, serv. SCIds);
@@ -2128,22 +2103,13 @@ void	RadioInterface::localSelect (const QString &service,
 	      pd. channel = theChannel;
 	      theOfdmHandler -> setDataChannel (pd,
 	                                        &theDataBuffer, BACK_GROUND);
-#ifdef	DATA_STREAMER
-	      if ((pd. appType == 4) &&
-	          theDataStreamer == nullptr) {
-                 int tpeg_port       =  
-	                  value_i (theQSettings, MAP_HANDLING,
-                                                TPEG_PORT, 8888);
-	         theDataStreamer = new tcpServer (tpeg_port);
-	      }
-#endif
               dabService s;
-              s. channel      = pd. channel;
-              s. serviceName  = pd. serviceName;
-              s. SId          = pd. SId;
-              s. SCIds        = pd. SCIds;
-              s. subChId      = pd. subchId;
-              s. fd           = nullptr;
+              s. channel	= pd. channel;
+              s. serviceName	= pd. serviceName;
+              s. SId		= pd. SId;
+              s. SCIds		= pd. SCIds;
+              s. subChId	= pd. subchId;
+              s. fd		= nullptr;
               s. runsBackground = true;
               theProcessMonitor. addProcess (s. serviceName,
                                        s. SId, s. SCIds, s. subChId, true);
@@ -2151,6 +2117,13 @@ void	RadioInterface::localSelect (const QString &service,
                                    s. serviceName + "=" +
                                    QString::number (s. SId, 16) + ":" +
                                    QString::number (s. SCIds));
+	      if ((pd. appType == 4) &&
+	          s. dataServer == nullptr) {
+                 int tpeg_port       =  
+	                  value_i (theQSettings, MAP_HANDLING,
+                                                TPEG_PORT, 8888);
+	         s. dataServer = new udpBroadcaster (tpeg_port);
+	      }
               channel. runningTasks. push_back (s);
 	      return;
 	   }
@@ -2381,80 +2354,80 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 }
 
 void	RadioInterface::startPacketservice (packetdata &pd) {
-	if ((pd.  DSCTy == 0) || (pd. bitRate == 0)) {
-	   QMessageBox::warning (this, tr ("sdr"),
- 	                         tr ("still insufficient data for this service\n"));
-	   return;
-	}
-
-	if (!theOfdmHandler -> setDataChannel (pd, &theDataBuffer,
-	                                              FORE_GROUND)) {
-	   QMessageBox::warning (this, tr ("sdr"),
- 	                         tr ("could not start this service\n"));
-	   return;
-	}
-
-	switch (pd. DSCTy) {
-	   default:
-	      showLabel (QString ("unimplemented Data"), 1);
-	      break;
-	   case 5:
-	      showLabel (QString ("Transp. Channel partially implemented"), 1);
-	      break;
-	   case 60:
-	      showLabel (QString (" processing MOT data"), 1);
-	      break;
-	   case 59: {
-#ifdef	_SEND_DATAGRAM_
-	      QString text = QString ("Embedded IP: UDP data to ");
-	      text. append (ipAddress);
-	      text. append (" ");
-	      QString n = QString::number (port);
-	      text. append (n);
-	      showLabel (text, 1);
-#else
-	      showLabel ("Embedded IP not supported ", 1);
-#endif
-	   }
-	      break;
-	   case 44:
-	      showLabel (QString ("Journaline"), 1);
-	      break;
-	}
-        dabService s;
-        s. channel	= pd. channel;
-        s. serviceName	= pd. serviceName;
-        s. SId		= pd. SId;
-        s. subChId	= pd. subchId;
-        s. SCIds	= pd. SCIds;
-        s. fd		= nullptr;
-        s. runsBackground = true;		
-	theProcessMonitor. addProcess (s. serviceName, s. SId, s. SCIds,
-	                                      s. subChId, true);
-	theProcessMonitor. show ();
-	channel. runningTasks. push_back (s);
+//	if ((pd.  DSCTy == 0) || (pd. bitRate == 0)) {
+//	   QMessageBox::warning (this, tr ("sdr"),
+// 	                         tr ("still insufficient data for this service\n"));
+//	   return;
+//	}
+//
+//	if (!theOfdmHandler -> setDataChannel (pd, &theDataBuffer,
+//	                                              FORE_GROUND)) {
+//	   QMessageBox::warning (this, tr ("sdr"),
+// 	                         tr ("could not start this service\n"));
+//	   return;
+//	}
+//
+//	switch (pd. DSCTy) {
+//	   default:
+//	      showLabel (QString ("unimplemented Data"), 1);
+//	      break;
+//	   case 5:
+//	      showLabel (QString ("Transp. Channel partially implemented"), 1);
+//	      break;
+//	   case 60:
+//	      showLabel (QString (" processing MOT data"), 1);
+//	      break;
+//	   case 59: {
+//#ifdef	_SEND_DATAGRAM_
+//	      QString text = QString ("Embedded IP: UDP data to ");
+//	      text. append (ipAddress);
+//	      text. append (" ");
+//	      QString n = QString::number (port);
+//	      text. append (n);
+//	      showLabel (text, 1);
+//#else
+//	      showLabel ("Embedded IP not supported ", 1);
+//#endif
+//	   }
+//	      break;
+//	   case 44:
+//	      showLabel (QString ("Journaline"), 1);
+//	      break;
+//	}
+//	dabService s;
+//	s. channel	= pd. channel;
+//	s. serviceName	= pd. serviceName;
+//	s. SId		= pd. SId;
+//	s. subChId	= pd. subchId;
+//	s. SCIds	= pd. SCIds;
+//	s. fd		= nullptr;
+//	s. runsBackground = true;		
+//	theProcessMonitor. addProcess (s. serviceName, s. SId, s. SCIds,
+//	                                      s. subChId, true);
+//	theProcessMonitor. show ();
+//	channel. runningTasks. push_back (s);
 }
 
 //	This function is only used in the Gui to clear
 //	the details of a selected service
 void	RadioInterface::cleanScreen	() {
-	serviceLabel			-> setText ("");
-	iconLabel			-> setPixmap (QPixmap ());
-	dynamicLabel			-> setText ("");
-	stereoLabel			-> setText ("");
-	programTypeLabel 		-> setText ("");
-	psLabel				-> setText ("");
-	sbrLabel			-> setText ("");
-	audiorateLabel			-> setText ("");
-	rateLabel			-> setText ("");
-	protectionLabel			-> setText ("");
+	serviceLabel		-> setText ("");
+	iconLabel		-> setPixmap (QPixmap ());
+	dynamicLabel		-> setText ("");
+	stereoLabel		-> setText ("");
+	programTypeLabel 	-> setText ("");
+	psLabel			-> setText ("");
+	sbrLabel		-> setText ("");
+	audiorateLabel		-> setText ("");
+	rateLabel		-> setText ("");
+	protectionLabel		-> setText ("");
 
-	stereoSetting			= false;
+	stereoSetting		= false;
 	setStereo	(false);
-	theTechWindow			-> cleanUp ();
-	motLabel			-> setStyleSheet ("QLabel {color : red}");
-	distanceLabel			-> setText ("");
-	newServices			-> set_countryName ("");
+	theTechWindow		-> cleanUp ();
+	motLabel		-> setStyleSheet ("QLabel {color : red}");
+	distanceLabel		-> setText ("");
+	newServices		-> set_countryName ("");
 	theNewDisplay. ficError_display	-> setValue (0);
 }
 

@@ -184,6 +184,7 @@ QTranslator	theTranslator;
 	qRegisterMetaType<tiiData> ("tiiData");
 	qRegisterMetaType<uint32_t> ("uint32_t");
 	qRegisterMetaType<QVector<int> >("QVector<int>");
+	qRegisterMetaType<QByteArray >("QByteArray");
 	qRegisterMetaType<QVector<tiiData> >("QVector<tiiData>");
 	myRadioInterface = new RadioInterface (&dabSettings,
 	                                        serviceListFile,
