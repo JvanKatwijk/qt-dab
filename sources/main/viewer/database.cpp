@@ -82,6 +82,19 @@ std::vector<serviceDescriptor> res;
 	return res;
 }
 
+std::vector<serviceDescriptor> 
+	serviceBase::getData (int Mode, int order, const QString &channel) {
+std::vector<serviceDescriptor> res;
+	for (auto &ch: theData) {
+	   if (ch. channelName == channel) {
+	      std::vector<serviceDescriptor> res_c =  ch. getData (Mode, order);
+	      for (auto &sd : res_c) 
+	         res. push_back (sd);
+	   }
+	}
+	return res;
+}
+
 void	serviceBase::load	(const QString &fileName, bool withPackets) {
 QDomDocument xmlBOM;
 

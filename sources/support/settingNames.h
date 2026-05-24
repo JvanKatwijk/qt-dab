@@ -32,6 +32,7 @@
 //
 //
 
+#define	ENSEMBLE_MODE		"ensembleMode"
 #define	BASIC_PATH		"basicPath"
 #define	AUDIOSERVICES_ONLY	"audioServices_only"
 #define	AUTO_HTTP		"auto_http"

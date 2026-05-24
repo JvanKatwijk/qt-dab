@@ -476,13 +476,7 @@ int	snrCount	= 0;
 	            float snrV	=
 	                 20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
 	            this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
-	            if (this -> snrBuffer_p != nullptr) 
-	               snrBuffer_p -> putDataIntoBuffer (&snr, 1);
-	            snrCount ++;
-	            if (snrCount >= 3) {
-	               snrCount = 0;
-	               showSnr (snr);
-	            }
+	            showSnr (snr);
 	         }
 	      }
 /**

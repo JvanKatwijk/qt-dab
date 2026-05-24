@@ -102,12 +102,14 @@ selecting button is hidden.
 On starting the program with a **device** the **ensemble** mode is
 set, when starting with a file as input, the mode is set to **file** mode.
 
-Eliminating buttons
+Eliminating buttons and replacing some
 =======================================================================
 
+ * selecting an audio channel was as combobox on the configuration window; since it is a real "control" item rather than a "configuration" item, its functionality is moved to the main window, and implemented by **clicking** on the speaker symbol (clicking with the right hand mouse button on the speaker now controls the muting);
  * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name;
  * similarly, the button on the configuration window to control the visibility od the device control window is removed. Clicking with the (again) **right hand mouse button** on the blue icon gives the same functionality;
  * the selector for the audio channel was removed from the configuration window.Clicking with the mouse on the **speaker symbol** shows the available channels in a small separate window.
+
 
 The buttons for selection between Portaudio and QtAudio as well as for "skin" selection are removed, their functionality is not considered very useful.
 
@@ -322,12 +324,14 @@ resulting bits have values between -127 to 127.
 
 ![6.10](/res/read_me/configuration-and-control.png)
 
-The **configuration and control window is completely redesigned.
+The **configuration and control** window is completely redesigned.
 Some selectors, buttons and checkboxes are removed, as mentioned the functionality is moved to (mainly using right hand mouse clicks) the main window.
 
+Settings for the http and tpreg port, as well as the setting for the home position can now be set on the configuration window.
 
 In the previous version, a selector **mapview** was added, that selector 
-is now placed on the second line of the checkboxes.
+is now placed in a line with other http related settings.
+
 Since the software - on startup - always loads a database, i.e. 
 if one can be found in the user's how directory that one, otherwise a default version, there was no need for  selector for loading a database.
 

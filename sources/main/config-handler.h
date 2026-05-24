@@ -108,7 +108,6 @@ private slots:
 
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
-	void	handle_audioSelectButton	();
 	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
@@ -134,6 +133,7 @@ private slots:
 
 	void	handle_loadSelection_selector	(int);
 //	for the tracer
+	void	set_channelModeSelector	(int);
 	void	handle_tracerButton		();
 signals:
 	void	selectDecoder		(int);

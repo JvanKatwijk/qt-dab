@@ -357,6 +357,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="channelModeSelector">
+       <property name="text">
+        <string>channelmode</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

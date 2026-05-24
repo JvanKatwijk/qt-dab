@@ -40,34 +40,36 @@
 #define	PREV_SERVICE		QString ("prevService")
 #define NEXT_SERVICE		QString ("nextService")
 
+#define	ALL	1
+#define	SINGLE_CHANNEL	0
 class	RadioInterface;
 
 class serviceViewer : public QObject, public Ui_viewArea {
 Q_OBJECT
 public:
-	serviceViewer	(const QString &fileName,
-	                 RadioInterface	*theRadio,
-	                 const QStringList &channels,
-	                 QSettings	*serviceSettings,
-	                 QFrame *theFrame);
-	~serviceViewer		();
-void	startMode		(int, const QString &,  int, bool);
-void	startMode		(int, int, bool);
-QString	currentChannel		();
-int	getMode			();
-void	set_channelIndex	(const QString &);
-void	addService		(const descriptorType &);
-void	remove			(const QString &, const QString &);
-void	reportService		(const QString &);
-void	reportService		(const QString &, const QString &);
-QString	extractName		(uint32_t);
-void	clearAll		();
-void	saveName		(const QString &);
-QStringList	getSelectables	();
-void	set_ensembleId		(const QString &, int);
-void	set_countryName		(const QString &);
-void	clear_ensembleId	();
-QTableWidget	*theTable;
+		serviceViewer	(const QString &fileName,
+	                         RadioInterface	*theRadio,
+	                         const QStringList &channels,
+	                         QSettings	*serviceSettings,
+	                         QFrame *theFrame);
+		~serviceViewer		();
+	void	startMode		(int, const QString &,  int, bool);
+	void	startMode		(int, int, bool);
+	QString	currentChannel		();
+	int	getMode			();
+	void	set_channelIndex	(const QString &);
+	void	addService		(const descriptorType &);
+	void	remove			(const QString &, const QString &);
+	void	reportService		(const QString &);
+	void	reportService		(const QString &, const QString &);
+	QString	extractName		(uint32_t);
+	void	clearAll		();
+	void	saveName		(const QString &);
+	QStringList			getSelectables	();
+	void	set_ensembleId		(const QString &, int);
+	void	set_countryName		(const QString &);
+	void	clear_ensembleId	();
+	QTableWidget	*theTable;
 private:	
 	RadioInterface	*theRadio;
 	void		startSession		(int, int);
@@ -89,6 +91,8 @@ public slots:
 	void		handleFontSizeSelect	(int);
 	void		handleRightMouseClick	(const QString &);
 	void		setServiceOrder		(int);	// dummy
+
+	void		startButtons		();
 signals:
 	void		setChannel		(const QString &channel);
 	void		selectService		(const QString &,
@@ -116,8 +120,9 @@ private:
 	void		mark		(int);
 	void		unmark		(int);
 
+	uint8_t		ensembleMode;
 	QTimer		updateTimer;
-
+	QTimer		timer_1;
 	int		locate		(serviceDescriptor &sd);
 
 	void	color_prevService	();

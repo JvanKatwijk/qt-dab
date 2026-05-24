@@ -265,8 +265,6 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 	      }
 	   }
 	   service = service. trimmed ();
-	   fprintf (stderr, "we starten de service %s\n",
-	                                 service. toUtf8 (). data ());
 	   emit timeOut (service);
 	   return;
 	}

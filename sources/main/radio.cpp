@@ -486,7 +486,7 @@ QString h;
 	this -> newServices	= new serviceViewer (dbFile, this,
 	                                             channelNames,
 	                                             theQSettings,
-	                                                the_newFrame);
+	                                             the_newFrame);
 	connect (theConfigHandler, &configHandler::set_serviceOrder,
 	         newServices, &serviceViewer::setServiceOrder);
 
@@ -1194,7 +1194,7 @@ uint8_t *localBuffer = dynVec (uint8_t, length);
 #endif
 }
 //
-//	tdcData is triggered by the backend.
+//	tdcData is triggered by a TPEG running backend
 void	RadioInterface::handle_frameOut	(int type, QByteArray data,
 	                                 int32_t SId, uint8_t SCIds) {
 	for (auto &serv: channel. runningTasks) {
@@ -2152,8 +2152,12 @@ QStringList list	= splitter (s);
 	if (list. length () != 2)
 	   return;
 	presetTimer. stop ();
-	newServices	-> reportService (list. at (0), list. at (1));
-	localSelect_SS (list. at (1), list. at (0));
+	QString channel	= list. at (0);
+	QString service	= list. at (1);
+	for (int i = service. size (); i < 16; i ++)
+	   service. push_back (' ');
+	newServices	-> reportService (channel, service);
+	localSelect_SS (service, channel);
 	theLogger. log ("selecting from scheduler", s);
 }
 //
@@ -2175,7 +2179,8 @@ QString serviceName	= service;
 //
 //	if the service is from the current channel:
 	channel. currentService. isValid = false;
-	startService (service);
+	
+	startService (serviceName);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2259,6 +2264,7 @@ dabService	s;
 	channel. currentService			= s;
 	channel. currentService. isValid	= false;
 	channel. currentService. frameDumper	= nullptr;
+	
 	if (theOfdmHandler -> isAudioService (s. SId, s. SCIds)) {
 	   audiodata ad;
 	   theOfdmHandler -> audioData (s. SId, s. SCIds, ad);
@@ -3574,7 +3580,6 @@ void	RadioInterface::channelSignal (const QString &channelParam) {
 void	RadioInterface::cleanUp_mapHandler () {
 	disconnect (mapViewer, &httpHandler::mapClose_processed,
 	            this, &RadioInterface::http_terminate);
-//	fprintf (stderr, "Going to delete mapserver\n");
 	locker. lock ();
 	if (mapViewer != nullptr) {
 	   mapViewer -> close ();
@@ -3818,20 +3823,11 @@ QPixmap p;
 	this -> snrLabel -> setAlignment(Qt::AlignRight);
 	this -> snrLabel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 
-	if (theSNRViewer. isHidden ()) {
-	   theSNRBuffer. FlushRingBuffer ();
-	   return;
+	if (!theSNRViewer. isHidden ()) {
+	   theSNRViewer. add_snr (snr);
+	   theSNRViewer. add_snr (snr);
+	   theSNRViewer. show_snr ();
 	}
-
-	uint32_t amount =  theSNRBuffer. GetRingBufferReadAvailable ();
-	if (amount == 0)
-	   return;
-	float *ss = dynVec (float, amount);
-	theSNRBuffer. getDataFromBuffer (ss, amount);
-	for (uint32_t i = 0; i < amount; i ++) {
-	   theSNRViewer. add_snr (ss [i]);
-	}
-	theSNRViewer. show_snr ();
 }
 
 void	RadioInterface::show_quality	(float q, 

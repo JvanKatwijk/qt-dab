@@ -80,6 +80,7 @@
 
 	set_Colors ();	// the buttons
 	theMode		= ENSEMBLEVIEW;
+	serviceOrder	= 0;
 	for (auto &s: channels)
 	   channelSelector -> addItem (s);
 	connect (prevService, &QPushButton::clicked,
@@ -106,6 +107,8 @@
 	channelSelector	-> setEnabled (false);
 	prevChannel	-> setEnabled (false);
 	nextChannel	-> setEnabled (false);
+	ensembleMode	= 
+              value_i (viewSettings, DAB_GENERAL, ENSEMBLE_MODE, ALL);
 	currentService	= -1;
 	QString startingChannel = 
               value_s (viewSettings, DAB_GENERAL, CHANNEL_NAME, "5A");
@@ -180,7 +183,11 @@ void	serviceViewer::startSession	(int Mode, int order) {
 	      channelSelector	-> setEnabled (true);
 	      prevChannel	-> setEnabled (true);
 	      nextChannel	-> setEnabled (true);
-              displayList	= theDataBase. getData (theMode, order);
+	      if (ensembleMode == ALL)
+                 displayList	= theDataBase. getData (theMode, order);
+	      else
+                 displayList	= theDataBase. getData (theMode,
+	                                            order, currentChannel ());
 	      viewSelector	-> setEnabled (true);
 	      viewSelector	-> setText ("Favorites");
               show_displayList ();
@@ -311,7 +318,7 @@ bool	b;
 }
 
 void	serviceViewer::setServiceOrder	(int order) {
-	(void)order;
+	this	-> serviceOrder = order;
 }
 
 void	serviceViewer::mark (int index) {
@@ -434,6 +441,13 @@ void	serviceViewer::handle_prevService	() {
 //	Only active when in mode ENSEMBLEVIEW
 void	serviceViewer::handle_channelSelector	(const QString &channel) {
 	emit setChannel (channel);
+	if (ensembleMode != ALL) {
+	   clearTable ();
+	   displayList. resize (0);
+	   displayList       = theDataBase. getData (theMode,
+	                                             serviceOrder, channel);
+	   show_displayList ();
+	}
 }
 
 void	serviceViewer::handle_nextChannel	() {
@@ -442,6 +456,15 @@ void	serviceViewer::handle_nextChannel	() {
 	                                  channelSelector -> count ();
 	set_channelIndex (currentChannel);
 	emit setChannel (channelSelector -> currentText ());
+
+	if (ensembleMode != ALL) {
+	   clearTable ();
+	   displayList. resize (0);
+	   displayList       =
+	              theDataBase. getData (theMode, serviceOrder, 
+	                                    channelSelector -> currentText ());
+	   show_displayList ();
+	}
 }
 
 void	serviceViewer::handle_prevChannel	() {
@@ -450,6 +473,15 @@ void	serviceViewer::handle_prevChannel	() {
 	                                  channelSelector -> count ();
 	set_channelIndex (currentChannel);
 	emit setChannel (channelSelector -> currentText ());
+
+	if (ensembleMode != ALL) {
+	   clearTable ();
+	   displayList. resize (0);
+	   displayList       =
+	             theDataBase. getData (theMode, serviceOrder, 
+	                                   channelSelector -> currentText ());
+	   show_displayList ();
+	}
 }
 
 void	serviceViewer::set_channelIndex	(const QString &channelName) {
@@ -491,7 +523,11 @@ void	serviceViewer::handle_modeSwitcher	() {
 	      viewSelector	-> setText ("Favorites");
 	      clearTable ();
 	      displayList. resize (0);
-	      displayList	= theDataBase. getData (theMode, order);
+	      if (ensembleMode == ALL)
+	         displayList	= theDataBase. getData (theMode, order);
+	      else
+	         displayList	= theDataBase. getData (theMode, order,
+	                                                 currentChannel ());
 	      show_displayList ();
 	      if (currentService != -1) {
 	         currentService = locate (oldService);
@@ -740,26 +776,38 @@ QString res;
         return res;
 }
 
+void	serviceViewer::set_countryName	(const QString &name) {
+	countryName	-> setText (name);
+}
+
 void	serviceViewer::set_ensembleId	(const QString &name, int id) {
 	ensembleId      -> setText (name + QString ("(") +
                   hextoString (static_cast<uint32_t>(id))+ QString (")"));
-	connect (ensembleId, &clickablelabel::clicked_left,
-	         theRadio, &RadioInterface::handle_contentButton);
-	if (theMode == ENSEMBLEVIEW)
-	   connect (ensembleId, &clickablelabel::clicked_right,
-	            theRadio, &RadioInterface::handle_dump);
-}
-
-void	serviceViewer::set_countryName	(const QString &name) {
-	countryName	-> setText (name);
+	connect (&timer_1, &QTimer::timeout,
+	         this, &serviceViewer::startButtons);
+	timer_1. start (1000);
 }
 
 void	serviceViewer::clear_ensembleId	() {
 	ensembleId	-> setText ("");
 	countryName	-> setText ("");
+	timer_1. stop ();
+	disconnect (&timer_1, &QTimer::timeout,
+	            this, &serviceViewer:: startButtons);
 	disconnect (ensembleId, &clickablelabel::clicked_left,
 	            theRadio, &RadioInterface::handle_contentButton);
 	disconnect (ensembleId, &clickablelabel::clicked_right,
+	            theRadio, &RadioInterface::handle_dump);
+}
+
+void	serviceViewer::startButtons () {
+	timer_1. stop ();
+	disconnect (&timer_1, &QTimer::timeout,
+	            this, &serviceViewer:: startButtons);
+	connect (ensembleId, &clickablelabel::clicked_left,
+	         theRadio, &RadioInterface::handle_contentButton);
+	if (theMode == ENSEMBLEVIEW)
+	   connect (ensembleId, &clickablelabel::clicked_right,
 	            theRadio, &RadioInterface::handle_dump);
 }
 

@@ -40,6 +40,8 @@ public:
 	void	remove		(const QString &, const QString &);
 std::vector<serviceDescriptor> 
 		getData		(int, int);	// the Mode, the order
+std::vector<serviceDescriptor> 
+		getData		(int, int, const QString &);	// the Mode, the order
 	void	update		(const serviceDescriptor &, bool);
 	void	clearTable	();
 private:
