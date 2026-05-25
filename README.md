@@ -1,4 +1,4 @@
-# Qt-DAB-7.0
+# Qt-DAB-7.1
 
 -------------------------------------------------------------------
 
@@ -10,18 +10,15 @@ About Qt-DAB
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-Qt-DAB is GUI based, for a command line version, see **dab-cmdline**.
-Qt-DAB  has a single *main* window that contains essentially all that is needed for selecting channels and services and listening to a service. Other windows, visible under user control, show a myriad of controls, and a tremendous amount of data extracted from the DAB signal and the resulting audio, 
-
 ![6.10](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-7.0*, predefined executables - for Linux an AppImage, for Windows
+*Qt-DAB-7.1*, predefined executables - for Linux an AppImage, for Windows
 an installer - are available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.0](#What-is-new-in-Qt-DAB-7.0)
+* [What is new in Qt-DAB-7.1](#What-is-new-in-Qt-DAB-7.1)
 * [Handling packet services](#handling-packet-services)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
@@ -36,15 +33,15 @@ Table of Contents
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
 
-What is new in Qt-DAB-7.0
+What is new in Qt-DAB-7.1
 ======================================================================
 
 Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
 the GUI had changed a lot since the "5" version, and the basic idea was to
 increment **major** version numbers when the GUI changed significantly.
 
-In Qt-DAB 7.0 there are many (mainly small) changes, both in the GUI
-and in the functionality handled by Qt-DAB.
+Following the Beta version of 7.0, a number of important changes was made,
+so it felt better to update to 7.1.
 
 Changes in functionality show in the **ensemble display** which is
 completely redesigned, and in the way **packet** services and
@@ -54,54 +51,51 @@ For the latter, see a next section.
 The major visible change in the main window has to do with the way services
 are shown.
   *
-![7.0](/res/read_me/qt-dab-7.0.png)
+![7.1](/res/read_me/qt-dab-7.1.png)
 
 The ensemble display is in one of a three modes:
- * **ensemble** mode, where all services are shown, 
+ * **ensemble** mode, where  services of the (current) channel(s) are shown, 
  * **favorite** mode, where only the favorites are shown, and
- * **file** mode, where the services from reading a file are shown.
+ * **file** mode, where the services from a file are shown.
 
-In **ensemble mode** - the most common mode - all services encountered in the
-various channels that were exercised (e.g. by a scan) are shown.
-In the picture it shows the NPO ensemble takes positions around 30.
+ **ensemble mode** - the most common mode - a list is compiled of
+services encountered, and - depending on the settings - the services
+of the currently selected channel. or all encountered services
+are shown.
  
 On  (normal) **program termination**, the list is stored in a file with the
 name ".qt-dab-serviceList.mxl", stored in the user's home directory
-On program startup, the list is read-in again.
+1n program startup, the list is read-in again.
 
 Alternatively, the **configuration and control** window contains an
 entry that - when set - shows on program termination a  dialog with options
-to read on the NEXT program involcation either an existing ensemble file, create a new one, clear the current
+to read on the NEXT program invocation either an existing ensemble file, create a new one, clear the current
 ensemble file, or just stop with selecting.
 In the last two cases, the setting on the configuration window is "undone".
 
-![7.0](/res/read_me/ensemble-dialog.png)
+In **ensemble** mode, a service in the list can be made **favorite**, by
+clicking on the left column.
 
-Clicking on a service name on the servides list obviously will select the service, which might take a few seconds if another channel has to be started.
-Clicking on the small entry left of the service name controls the **status**
-of the entry, i.e. a **favorite** or not. If set as **favorite** a small "*"
-appears left of the name in the list.
+![7.1](/res/read_me/ensemble-dialog.png)
 
 The window contains at the bottow - below the channel selector - a button
 with which a switch can be made between **ensemble** mode and **favorite** mode.
 
-![7.0](/res/read_me/favorite-mode.png)
+![7.1](/res/read_me/favorite-mode.png)
 
 In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection (and scanning)  rather useless and in Qt-DAB-7.0 channel selection and scanning is blocked in this mode.
 
-![7.0](/res/read_me/file-mode.png)
+![7.1](/res/read_me/file-mode.png)
 
 In **file** mode, i.e. after reading a file, the services are shown, and
 - obviously - may be selected.
-Adding an element to the **file mode** is not very usefule, as is
-channel selection, scanning or switching the mode. So, in **file mode**
-these functions are blocked. Furthermore, switching from this mode to either
-**ensemble mode** or **favorite mode** is meaningless, so the mode
-selecting button is hidden. 
 
 On starting the program with a **device** the **ensemble** mode is
 set, when starting with a file as input, the mode is set to **file** mode.
 
+The configuration window has a checkbox for choosing between **only audio services** or **all services**. If **all** services is selected, data services
+are shown as well, and only the services of the current channel are shown.
+x
 Eliminating buttons and replacing some
 =======================================================================
 
@@ -109,7 +103,6 @@ Eliminating buttons and replacing some
  * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name;
  * similarly, the button on the configuration window to control the visibility od the device control window is removed. Clicking with the (again) **right hand mouse button** on the blue icon gives the same functionality;
  * the selector for the audio channel was removed from the configuration window.Clicking with the mouse on the **speaker symbol** shows the available channels in a small separate window.
-
 
 The buttons for selection between Portaudio and QtAudio as well as for "skin" selection are removed, their functionality is not considered very useful.
 
@@ -122,15 +115,14 @@ EPG/SPI data in a separate thread as **background task**, invisible
 to the user.
 
 While the default setting in the configuration window in Qt-DAB is to show
-only audio services, the "audio only" setting can be "unset", and names of
-packet services show as well in the services list.
+only audio services, the "audio only" setting can be "unset", and 
+the audio services and - if available - the data services are shown.
 
-Selecting a packet service was the same as selecting an audio service,
+Selecting a packet service is the same as selecting an audio service,
 just clicking on it starts processing.
 However, running a packet service is  usually rather boring,
 since there is not much to be seen or heard, that is why
 Qt-DAB akways starts a packet service as background task.
-
 
 **Starting** a packet service is simply by clicking on the name, same
 as for audio services, there is a restriction however,
@@ -144,10 +136,10 @@ Most package services contain some form of TPEG data,
 which is usually encoded.
 Qt_DAB is therefore unable to interpret these packets, there
 Qt-DAB restricts itself to compile the frames
-and send the data as udp packet (default 8888, but can be set in the
+and send the data as UDP packet (default 8888, but can be set in the
 configuration window).
-(In case more than one TPEG service is chosen, only the data of
-the **first** selected one is sent through.
+(In case more than one TPEG service is chosen, the data of
+all selected services is sent through.
 
 The sourcetree contains in the directory helpers/tdc-client a simple
 reader for udp packets.
@@ -157,9 +149,9 @@ a separate facility was created to **stop** such a service.
 For that purpose, a small window can be made visible showing all running
 backends.
 
-![7.0](/res/read_me/process-management.png)
+![7.1](/res/read_me/process-management.png)
 
-(Note that the NPO and other dutch broadcasters do not provide EPG/SPI
+(Note that the NPO and other Dutch broadcasters do not provide EPG/SPI
 or other packet services, so the example is using a recording).
 
 The figure shows that 5 services are running, the "Mode" indicator set to 1
@@ -175,23 +167,22 @@ that service.**
 The visibility of the **process monitoring** window is controlled by the
 process counter on the configuration window.
 
-![7.0](/res/read_me/process-management-2.png)
+![7.1](/res/read_me/process-management-2.png)
 
 The number "5", displayed in the process counter,
  tells that  there are 5 backends running.
 
 Note that it is also possible to run audio services **found in the currently
 selected channel** in the background. The audio - for DAB mp2 format, for
-DAB+ aac format - is written into a file that carriers as name the
+DAB+ aac format - is written into a file that carries 
 name of the service combined with the date.
 
 Click with the **right hand mouse button** on the name of an audio service
 in the services list, and the decoding is started.
 
-![7.0](/res/read_me/process-management-3.png)
+![7.1](/res/read_me/process-management-3.png)
 
 Manually stopping the service is by clicking again on the servicename.
-
 
 -------------------------------------------------------------------------
 
@@ -203,14 +194,21 @@ In the latest releases of 6.10 the **dump** button was already moved from the co
 on the **right hand button** on the mouse on the ensemblename). Furthermore,
 when dumpimg,  a small window is shown that remminds the user that dumping is going on.
 
-![7.0](/res/read_me/dumping.png?raw=true)
+![7.1](/res/read_me/dumping.png?raw=true)
 
 In Qt-DAB-7.0 the **reset** button also moved to the main window (it was felt rather clumsy to first have to activate the **configuration and control** window before being able to press the **reset** button).
 
-![7.0](/res/read_me/resetbutton.png?raw=true)
+![7.1](/res/read_me/resetbutton.png?raw=true)
 
 The reset button is located in the top line of the right half
 of the main window.
+
+![7.1](/res/read_me/speakerButton.png?raw=true)
+
+The list of audio devices was traditionally shown as combobox, it was felt better to be able to access the list from the main window. Clicking with the
+mouse of the speaker symbol shows (or hides) the list, a list that appears
+in a separate window. Clicking with the right hand mouse button controls
+the muting.
 
 The other icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.

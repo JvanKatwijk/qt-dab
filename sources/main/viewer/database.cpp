@@ -46,6 +46,20 @@ void	serviceBase::add		(const serviceDescriptor &sd) {
 	theData. push_back (channel);
 }
 
+void	serviceBase::set_ensembleName	(const QString &ensembleName,
+	                                    const QString &channelName) {
+	for (auto &ch : theData) {
+	   if (ch. channelName == channelName) {
+	      ch. ensembleName = ensembleName;
+	      return;
+	   }
+	}
+	theChannel newChannel;
+	newChannel. setName (channelName);
+	newChannel. ensembleName = ensembleName;
+	theData. push_back (newChannel);
+}
+
 void	serviceBase::remove		(const QString &channel,
 	                                            const QString &service) {
 	for (auto &ch : theData) {

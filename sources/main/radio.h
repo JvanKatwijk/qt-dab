@@ -440,6 +440,7 @@ private:
 	QString			path_for_files;
 	QString			path_for_serviceLists;
 	QString			path_for_epg;
+	QString			path_for_slides;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;

@@ -38,6 +38,7 @@ public:
 	std::vector<serviceDescriptor>
 		getData			(int, int);	// mode, order
 	QString	channelName;
+	QString	ensembleName;
 	std::vector<serviceDescriptor> channelData;
 };
 

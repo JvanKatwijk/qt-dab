@@ -472,14 +472,20 @@ QString h;
 	path_for_files	= theFilenameFinder. basicPath ();	
 	path_for_files	= value_s (theQSettings, DAB_GENERAL,
 	                                           BASIC_PATH, path_for_files);
-	path_for_files	= checkDir (path_for_files);
-	path_for_files	= QDir::toNativeSeparators (path_for_files);
-	path_for_serviceLists = path_for_files + "/serviceLists/";
-	path_for_serviceLists = checkDir (path_for_serviceLists);
-	path_for_serviceLists = QDir::toNativeSeparators (path_for_serviceLists);
-	path_for_epg	= path_for_files + "EpgData/";
-	path_for_epg	= checkDir (path_for_epg);
-	path_for_epg	= QDir::toNativeSeparators (path_for_epg);
+	path_for_files		= QDir::toNativeSeparators (path_for_files);
+	path_for_files		= checkDir (path_for_files);
+
+	path_for_serviceLists	= path_for_files + "/serviceLists/";
+	path_for_serviceLists	= QDir::toNativeSeparators (path_for_serviceLists);
+	path_for_serviceLists	= checkDir (path_for_serviceLists);
+
+	path_for_epg		= path_for_files + "EpgData/";
+	path_for_epg		= QDir::toNativeSeparators (path_for_epg);
+	path_for_epg		= checkDir (path_for_epg);
+
+	path_for_slides		= path_for_files + "/slides/";
+	path_for_slides		= checkDir (path_for_slides);
+	path_for_slides		= QDir::toNativeSeparators (path_for_slides);
 
 //	extract the channelnames and fill the combobox
 	QStringList channelNames	= theSCANHandler. getChannelNames ();
@@ -687,17 +693,21 @@ void	RadioInterface::startDirect	() {
 	theNewDisplay. set_dcRemoval (true);
 	channel. cleanChannel ();
 //
-	if (theDeviceHandler -> isFileInput ())
+	if (theDeviceHandler -> isFileInput ()) {
 	   newServices	-> startMode (FILEINPUT, 
 	                              get_serviceOrder (), 
 	                              !theConfigHandler ->
 	                                     get_audioServices_only ());
+	   theConfigHandler	-> enable_scheduler (false);
+	}
 	else 
-	if (!theConfigHandler -> get_loadSelection ()) 
+	if (!theConfigHandler -> get_loadSelection ()) {
 	   newServices -> startMode (ENSEMBLEVIEW,
 	                             get_serviceOrder (),
 	                              !theConfigHandler ->
 	                                     get_audioServices_only ());
+	   theConfigHandler	-> enable_scheduler (true);
+	}
 	else {
 	   bool resetFlag = false;
 //	Basically, the choices here are
@@ -1126,7 +1136,7 @@ const char *type;
 //	handle slides for current service
 	if (dirs || ((value_i (theQSettings, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
-	                                         (path_for_files != ""))) {
+	                                         (path_for_slides != ""))) {
 	   QString thePath	= slidePath (dirs, SId, pictureName);
 	   QString pict		= thePath + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
@@ -1166,7 +1176,7 @@ QString thePath;
 	if (kort)
 	   thePath = path_for_epg + theEId + "/";
 	else {
-	   thePath = path_for_files + "slides-" +"(" + theEId + ")" +  "/";
+	   thePath = path_for_slides + "slides-" +"(" + theEId + ")" +  "/";
 	   thePath +=  channel. currentService. serviceName. trimmed () + "/";
 	}
 	thePath	= QDir::toNativeSeparators (thePath);
@@ -1200,6 +1210,7 @@ void	RadioInterface::handle_frameOut	(int type, QByteArray data,
 	for (auto &serv: channel. runningTasks) {
 	   if ((serv. SId == SId) && (serv. SCIds == SCIds) &&
 	       (serv. dataServer != nullptr)) {
+	         fprintf (stderr, "Frame transmitted\n");
 	         serv. dataServer -> sendData (data);
 	   }
 	}
@@ -2248,18 +2259,20 @@ void	RadioInterface::start_epgService (packetdata &pd) {
 //
 void	RadioInterface::startService (const QString &serviceName) {
 dabService	s;
-	s. serviceName	= serviceName;
-	theOfdmHandler -> mapNameToId (serviceName, s. SId, s. SCIds);
-	theLogger. log ("selecting service",
-	                     serviceName + "=" +
-	                             QString::number (s. SId, 16) + ":" +
-	                             QString::number (s. SCIds));
 //	if the service is already running, ignore the call
 	for (auto &serv : channel. runningTasks) {
 	   if (serv. serviceName == serviceName) {
 	      return;
 	   }
 	}
+	s. serviceName	= serviceName;
+	theOfdmHandler -> mapNameToId (serviceName, s. SId, s. SCIds);
+	if (s. SId == 0) 
+	   return;
+	theLogger. log ("selecting service",
+	                     serviceName + "=" +
+	                             QString::number (s. SId, 16) + ":" +
+	                             QString::number (s. SCIds));
 	presetTimer.	stop	();
 	channel. currentService			= s;
 	channel. currentService. isValid	= false;

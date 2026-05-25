@@ -63,6 +63,8 @@ public:
 	bool	onTop_active		();
 	bool	localBrowserSelector_active	();
 	bool	dumpmode_set		();
+
+	void	enable_scheduler	(bool);
 //
 //	a few others
 	void	showLoad		(float);
@@ -133,7 +135,6 @@ private slots:
 
 	void	handle_loadSelection_selector	(int);
 //	for the tracer
-	void	set_channelModeSelector	(int);
 	void	handle_tracerButton		();
 signals:
 	void	selectDecoder		(int);

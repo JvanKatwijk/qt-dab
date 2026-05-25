@@ -19,15 +19,15 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.0\\\"
+DEFINES         += VERSION=\\\"7.1\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 #QMAKE_CFLAGS	+=  -g 
 #QMAKE_CXXFLAGS	+=  -g 
 #QMAKE_LFLAGS	+=  -g 
@@ -151,7 +151,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/protection/protection.h \
 	   ./sources/protection/eep-protection.h \
 	   ./sources/protection/uep-protection.h \
-	   ./sources/server-thread/tcp-server.h \
 	   ./sources/server-thread/udp-broadcaster.h \
 	   ./sources/backend/msc-handler.h \
 	   ./sources/backend/reed-solomon/galois.h \
@@ -315,7 +314,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/protection/protection.cpp \
 	   ./sources/protection/eep-protection.cpp \
 	   ./sources/protection/uep-protection.cpp \
-	   ./sources/server-thread/tcp-server.cpp \
 	   ./sources/server-thread/udp-broadcaster.cpp \
 	   ./sources/backend/msc-handler.cpp \
 	   ./sources/backend/reed-solomon/galois.cpp \
@@ -455,10 +453,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.0
+   TARGET               = qt-dab-qt5-7.1
 }
 else {
-   TARGET               = qt-dab-7.0
+   TARGET               = qt-dab-7.1
 }
 
 #mac {
@@ -522,7 +520,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit, only 6.9.6
-        TARGET          = qt6-dab64-6.10
+        TARGET          = qt-dab-7.1
 	DEFINES		+= __BITS64__
 	DESTDIR		=  /d/systems/qt-dab/linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

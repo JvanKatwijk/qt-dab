@@ -1045,7 +1045,9 @@ char		label [17];
 	f. serviceName	= serviceName;
 	f. shortName	= shortName;
 	f. SId		= SId;
+	fibLocker. lock ();
 	FIG11_stack. push_back (f);
+	fibLocker. unlock ();
 }
 
 //	service component label - 32 bits 8.1.14.3
@@ -1098,7 +1100,9 @@ uint32_t	SId;
 	f. shortName	= shortName;
 	f. SId		= SId;
 	f. SCIds	= SCIds; 
+	fibLocker. lock ();
 	FIG14_stack. push_back (f);
+	fibLocker. unlock ();
 }
 
 //	Data service label - 32 bits 8.1.14.2
@@ -1153,7 +1157,9 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	f. serviceName	= serviceName;
 	f. shortName	= shortName;
 	f. SId		= SId;
+	fibLocker. lock ();
 	FIG15_stack. push_back (f);
+	fibLocker. unlock ();
 }
 
 void	fibDecoder::FIG1Extension6 (uint8_t *d) {
@@ -1339,10 +1345,12 @@ void	fibDecoder::getServiceName	(QString &serviceName,
 
 void	fibDecoder::mapNameToId (const QString &s,
 	                                uint32_t &SId, uint8_t &SCIds) {
+	fibLocker. lock ();
 	for (auto &f : FIG11_stack) {
 	   if (f. serviceName == s) {
 	      SId	= f. SId;
 	      SCIds	= 0;
+	      fibLocker. unlock ();
 	      return;
 	   }
 	}
@@ -1350,6 +1358,7 @@ void	fibDecoder::mapNameToId (const QString &s,
 	   if (f. serviceName == s) {
 	      SId	= f. SId;
 	      SCIds	= 0;
+	      fibLocker. unlock ();
 	      return;
 	   }
 	}
@@ -1358,11 +1367,13 @@ void	fibDecoder::mapNameToId (const QString &s,
 	   if (f. serviceName == s) {
 	      SId	= f. SId;
 	      SCIds	= f. SCIds;
+	      fibLocker. unlock ();
 	      return;
 	   }
 	}
 	SId	= 0;
 	SCIds	= 0;
+	fibLocker. unlock ();
 }
 
 //

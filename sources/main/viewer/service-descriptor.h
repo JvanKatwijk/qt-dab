@@ -38,10 +38,12 @@ public:
 	uint8_t		SCIds;
 	uint16_t	subChId;
 	bool		isFavorite;
+	bool		accessible;
 	serviceDescriptor () {
 	   SId		= 0;
 	   subChId	= 0;
 	   isFavorite	= false;
+	   accessible	= false;
 	}
 	~serviceDescriptor () {}
 };

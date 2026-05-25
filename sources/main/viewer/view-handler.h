@@ -29,6 +29,7 @@
 #include	<QDataStream>
 #include	<QSettings>
 #include	<QTimer>
+#include	<QMutex>
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"dab-constants.h"
@@ -72,11 +73,12 @@ public:
 	QTableWidget	*theTable;
 private:	
 	RadioInterface	*theRadio;
-	void		startSession		(int, int);
+	void		startSession		(int, int, bool);
 	void		insert			(const serviceDescriptor &sd);
 	void		set_channelIndex	(int);
 	void		set_Colors		();
 //	void		addService		(const serviceDescriptor &);
+	QMutex		viewLocker;
 public slots:
 	void		clickOnService		(int, int);
 	void		handle_channelSelector	(const QString &);

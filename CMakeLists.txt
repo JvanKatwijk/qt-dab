@@ -89,7 +89,6 @@ if (USE_LTO)
 endif ()
 
 option(FDK_AAC ON)
-option(DATA_STREAMER OFF)
 option(VITERBI_SSE OFF)
 option(VITERBI_NEON OFF)
 
@@ -99,6 +98,7 @@ option(VITERBI_NEON OFF)
 #	Since more than one backend may be active, activating this
 #	option makes that each backend runs in its own thread
 add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
+
 #
 ########################################################################
 ########################################################################
@@ -143,11 +143,15 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ${QT6Widgets_INCLUDES}
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
+	           ./helpers
+	           ./helpers/specials
+	           ./helpers/specials/fdk-aac
 	           ./sources/main
 	           ./sources/main/forms-v7
 	           ./sources/main/scopes
 	           ./sources/main/snr-viewer
 	           ./sources/main/viewer
+	           ./sources/server-thread
 	           ./sources/eti-handler
 	           ./sources/support
 	           ./sources/support/gui-elements
@@ -215,6 +219,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/protection/protection.h 
 	   ./sources/protection/eep-protection.h 
 	   ./sources/protection/uep-protection.h 
+	   ./sources/server-thread/udp-broadcaster.h 
 	   ./sources/backend/msc-handler.h 
 	   ./sources/backend/reed-solomon/galois.h 
 	   ./sources/backend/reed-solomon/reed-solomon.h 
@@ -370,6 +375,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/protection/protection.cpp 
 	   ./sources/protection/eep-protection.cpp 
 	   ./sources/protection/uep-protection.cpp 
+	   ./sources/server-thread/udp-broadcaster.cpp 
 	   ./sources/backend/msc-handler.cpp 
 	   ./sources/backend/reed-solomon/galois.cpp 
 	   ./sources/backend/reed-solomon/reed-solomon.cpp 
@@ -525,6 +531,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/skin-handler.h
 	     ./sources/support/mapport.h
 	     ./sources/support/http-handler.h
+	     ./sources/server-thread/udp-broadcaster.h 
 	     ./sources/backend/msc-handler.h
 	     ./sources/backend/backend.h
 	     ./sources/backend/audio/mp2processor.h
@@ -994,7 +1001,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   include_directories (../helpers/specials/fdk-aac)
 	   set($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./sources//backend/audio/fdk-aac.h
+	        ./sources/backend/audio/fdk-aac.h
 	   )
 
 	   set(${objectName}_SRCS
@@ -1091,23 +1098,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ./sources/output/tcp-streamer.cpp
 	   )
 	endif (TCP_STREAMER)
-
-	if (DATA_STREAMER)
-	   include_directories (
-	      ./server-thread
-	   )
-
-	   set ($(objectName)_HDRS
-	        ${${objectName}_HDRS}
-	             ./server-thread/tcp-server.h
-	   )
-
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	             ./server-thread/tcp-server.cpp
-	   )
-	   add_definitions (-DDATA_STREAMER)
-	endif (DATA_STREAMER)
 
 	if (NOT TCP_STREAMER)
 	   add_definitions (-DQT_AUDIO)

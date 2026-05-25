@@ -36,6 +36,7 @@ public:
 		~serviceBase	();
 	void	load		(const QString &fileName, bool withPackets);
 	void	store		(const QString &fileName);
+	void	set_ensembleName	(const QString &, const QString &);
 	void	add		(const serviceDescriptor &);
 	void	remove		(const QString &, const QString &);
 std::vector<serviceDescriptor> 

@@ -107,8 +107,8 @@
 	channelSelector	-> setEnabled (false);
 	prevChannel	-> setEnabled (false);
 	nextChannel	-> setEnabled (false);
-	ensembleMode	= 
-              value_i (viewSettings, DAB_GENERAL, ENSEMBLE_MODE, ALL);
+	bool b = value_i (viewSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 0);
+	ensembleMode	=  b ? ALL : SINGLE_CHANNEL;
 	currentService	= -1;
 	QString startingChannel = 
               value_s (viewSettings, DAB_GENERAL, CHANNEL_NAME, "5A");
@@ -147,7 +147,7 @@ void	serviceViewer::startMode	(int Mode,
 	                                 int order, bool withPackets) {
 	if (fileName == "") {
 	   this -> fileName	= defaultName;
-	   startSession (Mode, order);
+	   startSession (Mode, order, withPackets);
 	   return;
 	}
 	FILE *f	= fopen (fileName. toLatin1 (). data (), "r");
@@ -159,7 +159,7 @@ void	serviceViewer::startMode	(int Mode,
 	}
 	theDataBase. load (fileName, withPackets);
 	this	-> fileName	= fileName;
-	startSession (Mode, order);
+	startSession (Mode, order, withPackets);
 }
 
 void	serviceViewer::startMode	(int Mode,
@@ -167,11 +167,13 @@ void	serviceViewer::startMode	(int Mode,
 	clearAll ();
 	this	-> fileName	= defaultName;
 	theDataBase. load (fileName, withPackets);
-	startSession (Mode, order);
+	startSession (Mode, order, withPackets);
 }
 
-void	serviceViewer::startSession	(int Mode, int order) {
+void	serviceViewer::startSession	(int Mode,
+	                                 int order, bool withPackets) {
 	theMode		= Mode;
+	ensembleMode	= withPackets? SINGLE_CHANNEL : ALL;
 	currentService	= -1;
 	switch (Mode) {
 	   case ENSEMBLEVIEW:
@@ -237,10 +239,12 @@ QString	serviceViewer::extractName	(uint32_t SId) {
 void	serviceViewer::addService	(const descriptorType & ad) {
 QString channel	= channelSelector -> currentText ();
 	
-	for (auto &ssd: displayList) 
+	for (auto &ssd: displayList) {
 	   if ((ssd. serviceName == ad. serviceName) &&
-	       (ssd. channelName == ad. channel))
+	       (ssd. channelName == ad. channel)) {
 	      return;
+	   }
+	}
 
 	serviceDescriptor sd;
 	sd.	channelName	= ad. channel;
@@ -270,6 +274,7 @@ QString channel	= channelSelector -> currentText ();
 
 void	serviceViewer::remove	(const QString &channel,
 	                            const QString &service) {
+	viewLocker. lock ();
 	for (uint16_t i = 0; i < displayList. size (); i ++) {
 	   auto &sd = displayList [i];
 	   if ((sd. serviceName == service) &&
@@ -279,6 +284,7 @@ void	serviceViewer::remove	(const QString &channel,
 	   }
 	}
 	theDataBase. remove (channel, service);
+	viewLocker. unlock ();
 }
 //
 //
@@ -288,6 +294,7 @@ int row	= theTable -> rowCount ();
 QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
 bool	b;
+	viewLocker. lock ();
 	for (int i = 0; i < theTable -> rowCount (); i ++) {
 	   if (sd. channelName < theTable -> item (i, 2) -> text ()) {
 	      row = i;
@@ -315,6 +322,7 @@ bool	b;
 	theTable	-> item (row, 0) -> setText (sd. isFavorite ? "*" :"");
 	theTable	-> item (row, 1) -> setText (sd. serviceName);
 	theTable	-> item (row, 2) -> setText (sd. channelName);
+	viewLocker. unlock ();
 }
 
 void	serviceViewer::setServiceOrder	(int order) {
@@ -322,14 +330,18 @@ void	serviceViewer::setServiceOrder	(int order) {
 }
 
 void	serviceViewer::mark (int index) {
+	viewLocker. lock ();
 	theTable -> item (index, 1) -> setFont (markedFont);
 	theTable -> item (index, 2) -> setFont (markedFont);
 	theTable -> setCurrentItem (theTable -> item (index, 2));
+	viewLocker. unlock ();
 }
 
 void	serviceViewer::unmark (int index) {
+	viewLocker. lock ();
 	theTable -> item (index, 1) -> setFont (normalFont);
 	theTable -> item (index, 2) -> setFont (normalFont);
+	viewLocker. unlock ();
 }
 
 int	serviceViewer::getMode () {
@@ -444,8 +456,8 @@ void	serviceViewer::handle_channelSelector	(const QString &channel) {
 	if (ensembleMode != ALL) {
 	   clearTable ();
 	   displayList. resize (0);
-	   displayList       = theDataBase. getData (theMode,
-	                                             serviceOrder, channel);
+//	   displayList       = theDataBase. getData (theMode,
+//	                                             serviceOrder, channel);
 	   show_displayList ();
 	}
 }
@@ -460,9 +472,9 @@ void	serviceViewer::handle_nextChannel	() {
 	if (ensembleMode != ALL) {
 	   clearTable ();
 	   displayList. resize (0);
-	   displayList       =
-	              theDataBase. getData (theMode, serviceOrder, 
-	                                    channelSelector -> currentText ());
+//	   displayList       =
+//	              theDataBase. getData (theMode, serviceOrder, 
+//	                                    channelSelector -> currentText ());
 	   show_displayList ();
 	}
 }
@@ -477,9 +489,9 @@ void	serviceViewer::handle_prevChannel	() {
 	if (ensembleMode != ALL) {
 	   clearTable ();
 	   displayList. resize (0);
-	   displayList       =
-	             theDataBase. getData (theMode, serviceOrder, 
-	                                   channelSelector -> currentText ());
+//	   displayList       =
+//	             theDataBase. getData (theMode, serviceOrder, 
+//	                                   channelSelector -> currentText ());
 	   show_displayList ();
 	}
 }
@@ -622,6 +634,7 @@ QString	theFont	= viewSettings -> value ("theFont", "Times"). toString ();
 void	serviceViewer::updateFonts	() {
 QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
+	viewLocker. lock ();
 	for (int i = 0; i < theTable -> rowCount (); i ++) {
 	   if (i == currentService) {
 	      theTable -> item (i, 1) -> setFont (markedFont);
@@ -636,15 +649,18 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
 	      theTable -> item (i, 2) -> setForeground (QColor(fontColor));
 	   }
 	}
+	viewLocker. unlock ();
 }
 
 void	serviceViewer::clearTable	() {
+	viewLocker. lock ();
 	for (uint16_t i = 0; i < theTable -> rowCount (); i ++)
 	   for (uint16_t j = 0; j < theTable -> columnCount (); j ++)
 	      theTable -> item (i, j) -> setText (" ");
 	
 	while (theTable -> rowCount () > 0)
 	   theTable -> removeRow (0);
+	viewLocker. unlock ();
 }
 
 void	serviceViewer::show_displayList	() {
@@ -654,6 +670,7 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
 	if (theTable -> rowCount () > 1) 
 	   return;
 
+	viewLocker. lock ();
 	for (auto &dt: displayList) {
 	   QString serviceName	= dt. serviceName;
 	   QString channel	= dt. channelName;
@@ -680,6 +697,7 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
 	   theTable -> item (row, 2) -> setFont (normalFont);
 	   theTable -> item (row, 2) -> setForeground (QColor(fontColor));
 	}
+	viewLocker. unlock ();
 }
 
 //
@@ -783,6 +801,7 @@ void	serviceViewer::set_countryName	(const QString &name) {
 void	serviceViewer::set_ensembleId	(const QString &name, int id) {
 	ensembleId      -> setText (name + QString ("(") +
                   hextoString (static_cast<uint32_t>(id))+ QString (")"));
+	theDataBase. set_ensembleName (name, currentChannel ());
 	connect (&timer_1, &QTimer::timeout,
 	         this, &serviceViewer::startButtons);
 	timer_1. start (1000);

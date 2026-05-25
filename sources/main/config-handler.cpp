@@ -28,7 +28,6 @@
 #include	<QDir>
 #include	"dab-constants.h"
 #include	"config-handler.h"
-#include	"view-handler.h"
 #include	"mapport.h"
 #include	"radio.h"
 #include	"position-handler.h"
@@ -108,14 +107,6 @@ int	index_for_key (int key) {
 	   this -> ordersubChannelIds -> setChecked (true);
 	serviceOrder	= x;
 
-	x = value_i (dabSettings, DAB_GENERAL, ENSEMBLE_MODE, SINGLE_CHANNEL);
-	channelModeSelector	-> setChecked (x == SINGLE_CHANNEL);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-        connect (channelModeSelector, &QCheckBox::checkStateChanged,
-#else
-        connect (channelModeSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::set_channelModeSelector);
 	uint32_t http	=
 	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
 	httpPortSelector	-> setValue (http);
@@ -830,9 +821,6 @@ void	configHandler::set_etiButton		(bool b) {
 	etiButton	-> setText (b ? "eti active" : "eti disabled");
 }
 
-void	configHandler::set_channelModeSelector	(int checked) {
-	bool c = channelModeSelector -> isChecked ();
-	store (dabSettings, DAB_GENERAL, ENSEMBLE_MODE, checked ?
-	                                                SINGLE_CHANNEL : ALL);
+void	configHandler::enable_scheduler		(bool b) {
+	scheduleButton	-> setEnabled (b);
 }
-

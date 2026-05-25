@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>./i18n/de_DE.qm</file>
-        <file>./app-files/qt-dab-7.0.ico</file>
+        <file>./app-files/qt-dab-7.1.ico</file>
         <file>./AUTHORS</file>
         <file>./COPYING</file>
 	<file>./res/radio-pictures/pauze-slide-0.png</file>
@@ -36,8 +36,8 @@
         <file>./res/radio-pictures/down-arrow.png</file>
         <file>./res/radio-pictures/resetButton.png</file>
         <file>./res/radio-pictures/reset.png</file>
-	<file>./res/radio-pictures/qt-dab-7.0-128x128.png</file>
-	<file>./res/radio-pictures/qt-dab-7.0-256x256.png</file>
+	<file>./res/radio-pictures/qt-dab-7.1-128x128.png</file>
+	<file>./res/radio-pictures/qt-dab-7.1-256x256.png</file>
 	<file>./res/qt-map.html</file>
 	<file>./res/txdata.tii</file>
 	<file>./res/skins/EasyCode.qss</file>
