@@ -1024,10 +1024,8 @@ char		label [17];
 	      return;
 	}
 // assume we are defined
-	uint16_t subChId = get_subChId (SId, 0);
-	if (subChId > 64) {
+	if (!get_subChId (SId, 0))
 	   return;		// wait for a next occurrence
-	}
 	QString serviceName;
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
@@ -1077,8 +1075,7 @@ uint32_t	SId;
 	for (auto &serv : FIG14_stack)
 	   if ((serv. SId == SId) && (serv. SCIds == SCIds))
 	      return;
-	uint16_t subChId = get_subChId (SId, SCIds);
-	if (subChId > 64)
+	if (!get_subChId (SId, SCIds))
 	   return;
 //
 	label [16]      = 0x00;
@@ -1125,8 +1122,7 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	}
 
 //	if no subch is not known (yet) we do not record the service yet
-	uint16_t subChId = get_subChId (SId, 0);
-	if (subChId > 64)
+	if (!get_subChId (SId, 0))
 	   return;
 
 //	we alsowant the apptype to be defined
@@ -1489,21 +1485,28 @@ void	fibDecoder::packetData (uint32_t SId, uint8_t SCIds, packetdata &pd) {
 	}
 }
 
-uint16_t fibDecoder::get_subChId (uint32_t SId, uint8_t SCIds) {
+bool	fibDecoder::check_FIG01 (uint16_t subChId) {
+	for (auto &h : currentConfig -> FIG01_stack)
+	   if (h. subChId == subChId)
+	      return true;
+	return false;
+}
+
+bool fibDecoder::get_subChId (uint32_t SId, uint8_t SCIds) {
 	for (auto &f : currentConfig -> FIG02_stack) {
 	   if (f. SId != SId)
 	      continue;
 	   for (auto &g : f. components) {
 	      if ((g. TMid == 0) && (g. SCIds == SCIds))
-	         return g. subChId;
+	         return check_FIG01 (g. subChId);
 	      else
 	      if (g. TMid == 3)
 	         for (auto &h : currentConfig -> FIG03_stack)
 	            if (g. SCId == h. SCId)
-	               return h. subChId;
+	               return check_FIG01 (h. subChId);
 	   }
 	}
-	return 100;
+	return false;
 }
 //
 //

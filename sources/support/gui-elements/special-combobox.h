@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C)  2016, 2026
+ *    Copyright (C) 2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB 
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,33 +20,20 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 #pragma once
 
-#include	<QObject>
-#include	<QString>
-#include	<QList>
-#include	<vector>
-#include	"service-descriptor.h"
-#include	"channel-descriptor.h"
+#include	<QComboBox>
+#include	<QMouseEvent>
 
-class	serviceBase: public QObject {
+//
+class	specialComboBox : public QComboBox {
 Q_OBJECT
 public:
-		serviceBase	();
-		~serviceBase	();
-	void	load		(const QString &fileName, bool withPackets);
-	void	store		(const QString &fileName);
-	void	set_ensembleName	(const QString &, const QString &);
-	void	add		(const serviceDescriptor &);
-	void	remove		(const QString &, const QString &);
-QList <serviceDescriptor> 
-		getData		(int, int);	// the Mode, the order
-QList<serviceDescriptor> 
-		getData		(int, int, const QString &);	// the Mode, the order
-	void	update		(const serviceDescriptor &, bool);
-	void	clearTable	();
-private:
-	std::vector<theChannel> theData;
+	specialComboBox		(QWidget *parent = nullptr);
+	~specialComboBox	();
+protected:
+	void	mousePressEvent (QMouseEvent *);
+signals:
+	void	rightClicked	();
 };
 

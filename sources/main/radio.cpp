@@ -484,8 +484,12 @@ QString h;
 	path_for_epg		= checkDir (path_for_epg);
 
 	path_for_slides		= path_for_files + "/slides/";
-	path_for_slides		= checkDir (path_for_slides);
 	path_for_slides		= QDir::toNativeSeparators (path_for_slides);
+	path_for_slides		= checkDir (path_for_slides);
+
+	path_for_eti		= path_for_files + "/eti/";
+	path_for_eti		= QDir::toNativeSeparators (path_for_eti);
+	path_for_eti		= checkDir (path_for_eti);
 
 //	extract the channelnames and fill the combobox
 	QStringList channelNames	= theSCANHandler. getChannelNames ();
@@ -517,8 +521,9 @@ QString h;
 	         this, &RadioInterface::handle_detailButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
-	connect	(scanButton, &smallPushButton::rightClicked,
-	         this, &RadioInterface::color_scanButton);
+	connect	(etiButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_etiButton);
+
 //	
 	connect (soundLabel, &clickablelabel::clicked_right,
 	         this, &RadioInterface::handle_muteButton);
@@ -762,8 +767,9 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 
 	audiodata ad;
 	theOfdmHandler	-> audioData (SId, 0, ad);
-	if (!ad. defined)
+	if (!ad. defined) {
 	   return;		// should not happen
+	}
 
 	ad. channel	= channel. channelName;
 	newServices	-> addService (ad);
@@ -773,6 +779,7 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	
 	channel. nrServices ++;
 	int servCount	= theOfdmHandler -> FIG07_value ();
+	                        
 	if ((servCount > 0) && (channel. nrServices >= servCount))
 	   setPresetService ();
 }
@@ -1210,7 +1217,6 @@ void	RadioInterface::handle_frameOut	(int type, QByteArray data,
 	for (auto &serv: channel. runningTasks) {
 	   if ((serv. SId == SId) && (serv. SCIds == SCIds) &&
 	       (serv. dataServer != nullptr)) {
-	         fprintf (stderr, "Frame transmitted\n");
 	         serv. dataServer -> sendData (data);
 	   }
 	}
@@ -1483,7 +1489,6 @@ deviceHandler	*inputDevice = theDeviceChooser.
 	}
 
 	channel. realChannel	= !inputDevice -> isFileInput ();
-	scanButton	-> setEnabled (channel. realChannel);
 	connect (inputDevice, &deviceHandler::frameClosed,
 	         this, &RadioInterface::handle_deviceFrame_closed);
 	QString ss = s;
@@ -1520,13 +1525,8 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 }
 
 ///////////////////////////////////////////////////////////////////////
-//	handling time
+//	handling time, i.e. FIG0/10
 ////////////////////////////////////////////////////////////////////////
-static
-const char *monthTable [] = {
-	"jan", "feb", "mar", "apr", "may", "jun",
-	"jul", "aug", "sep", "oct", "nov", "dec"
-};
 //
 //	called from the fibDecoder
 void	RadioInterface::handle_FIG010 (int year, int month, int day,
@@ -1890,10 +1890,8 @@ void	RadioInterface::connectGUI	() {
 //
 	connect (httpButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_httpButton);
-	connect (scanButton, &QPushButton::clicked,
-	         this, &RadioInterface::handle_scanButton);
-//	connect (this, &RadioInterface::call_scanButton,
-//	         this, &RadioInterface::handle_scanButton);
+	connect (etiButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_etiButton);
 }
 
 void	RadioInterface::disconnectGUI () {
@@ -2372,61 +2370,6 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	}
 }
 
-void	RadioInterface::startPacketservice (packetdata &pd) {
-//	if ((pd.  DSCTy == 0) || (pd. bitRate == 0)) {
-//	   QMessageBox::warning (this, tr ("sdr"),
-// 	                         tr ("still insufficient data for this service\n"));
-//	   return;
-//	}
-//
-//	if (!theOfdmHandler -> setDataChannel (pd, &theDataBuffer,
-//	                                              FORE_GROUND)) {
-//	   QMessageBox::warning (this, tr ("sdr"),
-// 	                         tr ("could not start this service\n"));
-//	   return;
-//	}
-//
-//	switch (pd. DSCTy) {
-//	   default:
-//	      showLabel (QString ("unimplemented Data"), 1);
-//	      break;
-//	   case 5:
-//	      showLabel (QString ("Transp. Channel partially implemented"), 1);
-//	      break;
-//	   case 60:
-//	      showLabel (QString (" processing MOT data"), 1);
-//	      break;
-//	   case 59: {
-//#ifdef	_SEND_DATAGRAM_
-//	      QString text = QString ("Embedded IP: UDP data to ");
-//	      text. append (ipAddress);
-//	      text. append (" ");
-//	      QString n = QString::number (port);
-//	      text. append (n);
-//	      showLabel (text, 1);
-//#else
-//	      showLabel ("Embedded IP not supported ", 1);
-//#endif
-//	   }
-//	      break;
-//	   case 44:
-//	      showLabel (QString ("Journaline"), 1);
-//	      break;
-//	}
-//	dabService s;
-//	s. channel	= pd. channel;
-//	s. serviceName	= pd. serviceName;
-//	s. SId		= pd. SId;
-//	s. subChId	= pd. subchId;
-//	s. SCIds	= pd. SCIds;
-//	s. fd		= nullptr;
-//	s. runsBackground = true;		
-//	theProcessMonitor. addProcess (s. serviceName, s. SId, s. SCIds,
-//	                                      s. subChId, true);
-//	theProcessMonitor. show ();
-//	channel. runningTasks. push_back (s);
-}
-
 //	This function is only used in the Gui to clear
 //	the details of a selected service
 void	RadioInterface::cleanScreen	() {
@@ -2633,8 +2576,12 @@ void	RadioInterface::handle_channelSelector (const QString &channelParam) {
 //	scanning
 //	The scan function covers three scan strategies. In order to make things
 //	manageable, we implement the streams  in different functions and procedures
-void	RadioInterface::handle_scanButton () {
-	if (!running. load () ||  (newServices -> getMode () != ENSEMBLEVIEW))
+void	RadioInterface::handle_scanControl () {
+	if (!running. load ())
+	   return;
+ 	if (newServices -> getMode () != ENSEMBLEVIEW)
+	   return;
+	if (channel. etiActive)
 	   return;
 	
 	if (theSCANHandler. isVisible ())
@@ -3116,11 +3063,11 @@ void	RadioInterface::stopMuting		() {
 //	Lots of code, about 400 lines, just for a gadget
 //	
 void	RadioInterface::set_Colors () {
-QString scanButton_color =
-	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_color",
+QString etiButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
 	                                             GREEN);
-QString scanButton_font =
-	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_font",
+QString etiButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
 	                                              BLACK);
 
 QString spectrumButton_color =
@@ -3146,9 +3093,9 @@ QString httpButton_font	=
 	spectrumButton ->
 	              setStyleSheet (temp. arg (spectrumButton_color,
 	                                        spectrumButton_font));
-	scanButton	->
-	              setStyleSheet (temp. arg (scanButton_color,
-	                                        scanButton_font));
+	etiButton	->
+	              setStyleSheet (temp. arg (etiButton_color,
+	                                        etiButton_font));
 	configButton	->
 	              setStyleSheet (temp. arg (configButton_color,
 	                                        configButton_font));
@@ -3157,8 +3104,8 @@ QString httpButton_font	=
 	                                        httpButton_font));
 }
 
-void	RadioInterface::color_scanButton	() {
-	setButtonColors (scanButton, SCAN_BUTTON);
+void	RadioInterface::color_etiButton	() {
+	setButtonColors (etiButton, ETI_BUTTON);
 }
 
 void	RadioInterface::color_spectrumButton	()	{
@@ -3418,13 +3365,14 @@ void	RadioInterface::handle_resetButton	() {
 	if (!running. load())
 	   return;
 	QString	channelName	= channel. channelName;
-	stopScanning ();
-	stopChannel ();
+	stopScanning	();
+	stopChannel	();
+	newServices	-> clearAll ();
 	startChannel	(channelName);
 }
 //
 //	called from the config handler
-void	RadioInterface::handle_snrButton	() {
+void	RadioInterface::handle_snrLabel	() {
 	if (!running. load ())
 	   return;
 
@@ -3436,6 +3384,15 @@ void	RadioInterface::handle_snrButton	() {
 	store (theQSettings, DAB_GENERAL, SNR_WIDGET_VISIBLE,
 	                          theSNRViewer. isHidden () ? 0 : 1);
 }
+
+void	RadioInterface::handle_snrButton	() {
+	if (running. load()) {
+	   dynamicLabel	-> setStyleSheet (labelStyle);
+	   QString SNR	= "SNR " + QString::number (channel. snr);
+	   dynamicLabel	-> setText (SNR);
+	}
+}
+
 //
 //	called from the configHandler
 void	RadioInterface::handle_set_coordinatesButton	() {
@@ -3669,18 +3626,21 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 }
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti
-//	writing an eti file and scanning seems incompatible to me, so
-//	that is why I use the button, originally named "scanButton"
-//	for eti when eti is prepared.
-//	Preparing eti is with a checkbox on the configuration widget
 //
 /////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::handle_etiHandler	() {
-	if (channel. etiActive)
-	   stop_etiHandler ();
-	else
+void	RadioInterface::handle_etiButton	() {
+        if (newServices -> getMode () == FAVORITEVIEW)
+	   return;
+
+	if (!channel. etiActive) {
+	   stopScanning ();
 	   start_etiHandler ();
+	   channel. etiActive	= true;
+	   return;
+	}
+	stop_etiHandler ();		// just in case
+	channel. etiActive	= false;
 }
 
 void	RadioInterface::stop_etiHandler () {
@@ -3689,49 +3649,26 @@ void	RadioInterface::stop_etiHandler () {
 
 	theOfdmHandler -> stopEtiGenerator ();
 	channel. etiActive = false;
-	scanButton	-> setText ("eti");
+	etiButton	-> setText ("eti");
 }
 
 void	RadioInterface::start_etiHandler () {
 	if (channel. etiActive)
 	   return;
+	QString	etiFile		= path_for_eti;
+        etiFile = QDir::toNativeSeparators (etiFile);
+        if (!QDir (etiFile). exists ())
+           QDir (). mkpath (etiFile);
+	QString name	= channel. ensembleName. trimmed ();
+	QDate theDate = QDate::currentDate ();
+	etiFile += name + "-" + theDate. toString () + ".eti";
 
-	QString etiFile		=  theFilenameFinder.
-	                                find_eti_fileName (channel. ensembleName, channel. channelName);
 	if (etiFile == QString (""))
 	   return;
 
 	channel. etiActive = theOfdmHandler -> startEtiGenerator (etiFile);
 	if (channel. etiActive) 
-	   scanButton -> setText ("eti runs");
-}
-
-void	RadioInterface::handle_etiButton	() {
-        if (newServices -> getMode () == FAVORITEVIEW)
-	   return;
-	if (!this -> etiActivated) {
-	   stopScanning ();
-	   disconnect (scanButton, &QPushButton::clicked,
-	               this, &RadioInterface::handle_scanButton);
-	   connect (scanButton, &QPushButton::clicked,
-	            this, &RadioInterface::handle_etiHandler);
-	   scanButton -> setEnabled (true);
-	   scanButton	-> setText ("eti");
-	   scanButton -> show ();
-	   this	-> etiActivated	= true;
-	   theConfigHandler	-> set_etiButton (true);
-	   return;
-	}
-//	otherwise, disconnect the eti handling and reconnect scan
-//	be careful, an ETI session may be going on
-	stop_etiHandler ();		// just in case
-	disconnect (scanButton, &QPushButton::clicked,
-	            this, &RadioInterface::handle_etiHandler);
-	connect (scanButton, &QPushButton::clicked,
-	         this, &RadioInterface::handle_scanButton);
-	scanButton      -> setText ("scan");
-	this	-> etiActivated	= false;
-	theConfigHandler	-> set_etiButton (false);
+	   etiButton -> setText ("eti runs");
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -4247,14 +4184,6 @@ void	RadioInterface::setVolume	(int n) {
 	}
 }
 
-void	RadioInterface::handle_snrLabel	() {
-	if (running. load()) {
-	   dynamicLabel	-> setStyleSheet (labelStyle);
-	   QString SNR	= "SNR " + QString::number (channel. snr);
-	   dynamicLabel	-> setText (SNR);
-	}
-}
-
 void	RadioInterface::handle_correlationSelector	(int d) {
 	(void)d;
 	bool b =  theConfigHandler -> get_correlationSelector ();
@@ -4745,7 +4674,6 @@ QString	dir = s;
 }
 
 void	RadioInterface::reduceButtons	(bool flag) {
-	scanButton	-> setEnabled (!flag);
 }
 
 void	RadioInterface::handleFontSelect	() {

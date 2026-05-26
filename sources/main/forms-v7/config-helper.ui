@@ -466,28 +466,6 @@
       </widget>
      </item>
      <item>
-      <widget class="smallPushButton" name="snrButton">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font>
-         <family>Cantarell</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>snr viewer</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="smallPushButton" name="dlTextButton">
        <property name="font">
         <font>
@@ -499,16 +477,6 @@
        </property>
        <property name="text">
         <string>dlText</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="smallPushButton" name="etiButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt_DAB supports creating an ETI file from the input. &lt;/p&gt;&lt;p&gt;This button enables or disables ETI. Since scanning does not make much sense when creating an ETI file, the function of the scan button is - if ETI is enabled - modified to starting and stopping with the actual ETI generation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>eti disabled</string>
        </property>
       </widget>
      </item>

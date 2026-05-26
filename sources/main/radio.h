@@ -108,10 +108,11 @@ class	configHandler;
 #define DECODER_6    0600
 
 
-#define SCAN_BUTTON		QString ("scanButton")
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
+#define ETI_BUTTON              QString ("etiButton")   
+
 /*
  *	The main gui object. It inherits from
  *	QWidget and the generated form
@@ -321,7 +322,6 @@ private:
 	void			start_etiHandler	();
 	void			stop_etiHandler		();
 	void			startAudioservice	(audiodata &);
-	void			startPacketservice	(packetdata &);
 	void			startAudioDumping	();
 	void			stopAudioDumping	();
 	void			scheduledAudioDumping	();
@@ -441,6 +441,7 @@ private:
 	QString			path_for_serviceLists;
 	QString			path_for_epg;
 	QString			path_for_slides;
+	QString			path_for_eti;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;
@@ -663,14 +664,13 @@ public slots:
 
 	void			handle_contentButton	();
 	void			handle_dump		();
+	void			handle_scanControl	();
 private slots:
 //	button and selectorhandlers
 	void			handle_configButton	();
 	void			handle_httpButton	();
 	void			handle_copyrightLabel	();
 	void			handle_detailButton	();
-	void			handle_scanButton	();
-	void			handle_etiHandler	();
 	void			handle_spectrumButton	();
 	void			handle_muteButton	();
 	void			show_streamSelector     ();
@@ -696,9 +696,9 @@ private slots:
 //
 //	color handlers
 	void			handle_labelColor	();
-	void			color_scanButton	();
 	void			color_spectrumButton	();
 	void			color_configButton	();
 	void			color_httpButton	();
+	void			color_etiButton		();
 
 };

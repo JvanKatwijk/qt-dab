@@ -79,7 +79,7 @@
        <item>
         <widget class="clickablelabel" name="deviceSelectorLabel">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon - i.e. a clickable label - controls the visibility of the device list&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon - i.e. a clickable label - controls the visibility of the device list.&lt;/p&gt;&lt;p&gt;Clicking with the right hand mouse button controls the visibility of the device window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>dev</string>
@@ -109,7 +109,7 @@
        <item>
         <widget class="clickablelabel" name="snrLabel">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A simple &amp;quot;signal strength&amp;quot; indicator, telling in graphical terms the SNR of the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A simple &amp;quot;signal strength&amp;quot; indicator, telling in graphical terms the SNR of the signal.&lt;/p&gt;&lt;p&gt;Clicking with the mouse controls the visibility of the snrViewer window&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>TextLabel</string>
@@ -383,12 +383,12 @@
      <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="4">
-        <widget class="smallPushButton" name="scanButton">
+        <widget class="smallPushButton" name="etiButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide the scanmonitor. Scan control is completely moved to the scanmonitor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop the eti generator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>scan</string>
+          <string>eti</string>
          </property>
         </widget>
        </item>

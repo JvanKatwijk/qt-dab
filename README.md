@@ -98,6 +98,10 @@ are shown as well, and only the services of the current channel are shown.
 x
 Eliminating buttons and replacing some
 =======================================================================
+It is always nice if settings to **start** or **stop** activities related to
+the processing are "within reach", i.e. directly reachable from the main window.
+A number of such settings were put on the configuration and control window,
+for some of them the functionality is moved back to the main window
 
  * selecting an audio channel was as combobox on the configuration window; since it is a real "control" item rather than a "configuration" item, its functionality is moved to the main window, and implemented by **clicking** on the speaker symbol (clicking with the right hand mouse button on the speaker now controls the muting);
  * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name;
@@ -127,24 +131,24 @@ Qt-DAB akways starts a packet service as background task.
 **Starting** a packet service is simply by clicking on the name, same
 as for audio services, there is a restriction however,
 the packet service will only be started if the service is defined in
-the currently selected channel.
+the currently selected channel and the service is started in a thread running in the background.
+
 Obviously, when switching to another channel, either implicitly by selecting
 a service in a channel different from the currently selected one or explicitly
 the service interpretation will be stopped.
 
 Most package services contain some form of TPEG data,
-which is usually encoded.
-Qt_DAB is therefore unable to interpret these packets, there
+which is usually encoded;  Qt_DAB is  unable to interpret these packets and 
 Qt-DAB restricts itself to compile the frames
 and send the data as UDP packet (default 8888, but can be set in the
 configuration window).
-(In case more than one TPEG service is chosen, the data of
-all selected services is sent through.
+(In case more than one TPEG service is chosen, for now, the data of
+all selected services is sent through the same port.
 
 The sourcetree contains in the directory helpers/tdc-client a simple
 reader for udp packets.
 
-Manually stopping a background service is possible, 
+**Manually** stopping a background service is possible, 
 a separate facility was created to **stop** such a service.
 For that purpose, a small window can be made visible showing all running
 backends.

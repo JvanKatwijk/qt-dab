@@ -92,6 +92,8 @@
 	connect (channelSelector,
 	             qOverload<const QString &> (&QComboBox::textActivated),
 	         this, &serviceViewer::handle_channelSelector);
+	connect (channelSelector, &specialComboBox::rightClicked,
+	         theRadio, &RadioInterface::handle_scanControl);
 	connect (prevChannel, &clickablelabel::clicked_left,
 	         this, &serviceViewer::handle_prevChannel);
 	connect (nextChannel, &clickablelabel::clicked_left,
@@ -253,18 +255,20 @@ QString channel	= channelSelector -> currentText ();
 	sd.	SCIds		= ad. SCIds;
 	sd.	subChId		= ad. subchId;
 
+	int index	= -1;
 	switch (theMode) {
 	   case ENSEMBLEVIEW:
 	      sd. channelName	= channel;
-	      displayList. push_back (sd);
-	      theDataBase. add (sd);
-	      insert (sd);	// in the table
+	      index = add_to_displayList (sd);
+	      if (ensembleMode == ALL)
+	         theDataBase. add (sd);
+	      insert (sd, index);	// in the table
 	      break;
 	   case FILEINPUT:
 	      sd. channelName	= "FILE";
 	      sd. isFavorite	= false;
 	      displayList. push_back (sd);
-	      insert (sd);
+	      insert (sd, displayList. size () - 1);
 	      break;	
 	   case FAVORITEVIEW:
 	   default:		// cannot happen
@@ -289,39 +293,35 @@ void	serviceViewer::remove	(const QString &channel,
 //
 //
 //	It is verified that the service does not exist yet in the view
-void	serviceViewer::insert	(const serviceDescriptor &sd) {
-int row	= theTable -> rowCount ();
+void	serviceViewer::insert	(const serviceDescriptor &sd, int pos) {
+	if (pos > theTable -> rowCount () + 1) {
+	   fprintf (stderr, "H E L P\n");
+	   return;
+	}
 QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
 bool	b;
 	viewLocker. lock ();
-	for (int i = 0; i < theTable -> rowCount (); i ++) {
-	   if (sd. channelName < theTable -> item (i, 2) -> text ()) {
-	      row = i;
-	      break;
-	   }
-	}
-
-	theTable     -> insertRow (row);     // 
+	theTable     -> insertRow (pos);     // 
         QTableWidgetItem *item0 = new QTableWidgetItem;
 	item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
-	theTable     -> setItem (row, 0, item0);
+	theTable     -> setItem (pos, 0, item0);
 
 	QTableWidgetItem *item1 = new QTableWidgetItem; // serviceName
 	item1           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	theTable	-> setItem (row, 1, item1);
-	theTable 	-> item (row, 1) -> setFont (normalFont);
-	theTable 	-> item (row, 1) -> setForeground (QColor(fontColor));
+	theTable	-> setItem (pos, 1, item1);
+	theTable 	-> item (pos, 1) -> setFont (normalFont);
+	theTable 	-> item (pos, 1) -> setForeground (QColor(fontColor));
 
         QTableWidgetItem *item2 = new QTableWidgetItem; // channel
 	item2           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	theTable	-> setItem (row, 2, item2);
-	theTable 	-> item (row, 2) -> setFont (normalFont);
-	theTable 	-> item (row, 2) -> setForeground (QColor(fontColor));
+	theTable	-> setItem (pos, 2, item2);
+	theTable 	-> item (pos, 2) -> setFont (normalFont);
+	theTable 	-> item (pos, 2) -> setForeground (QColor(fontColor));
 
-	theTable	-> item (row, 0) -> setText (sd. isFavorite ? "*" :"");
-	theTable	-> item (row, 1) -> setText (sd. serviceName);
-	theTable	-> item (row, 2) -> setText (sd. channelName);
+	theTable	-> item (pos, 0) -> setText (sd. isFavorite ? "*" :"");
+	theTable	-> item (pos, 1) -> setText (sd. serviceName);
+	theTable	-> item (pos, 2) -> setText (sd. channelName);
 	viewLocker. unlock ();
 }
 
@@ -371,6 +371,7 @@ void	serviceViewer::reportService (const QString &channel,
 	   fprintf (stderr, "should not happen\n");
 	   return;
 	}
+	
 	for (int i = 0; i < (int)displayList. size (); i ++) {
 	   if ((displayList [i]. serviceName == serviceName) &&
 	       (displayList [i]. channelName == channel)) {
@@ -456,8 +457,6 @@ void	serviceViewer::handle_channelSelector	(const QString &channel) {
 	if (ensembleMode != ALL) {
 	   clearTable ();
 	   displayList. resize (0);
-//	   displayList       = theDataBase. getData (theMode,
-//	                                             serviceOrder, channel);
 	   show_displayList ();
 	}
 }
@@ -817,6 +816,9 @@ void	serviceViewer::clear_ensembleId	() {
 	            theRadio, &RadioInterface::handle_contentButton);
 	disconnect (ensembleId, &clickablelabel::clicked_right,
 	            theRadio, &RadioInterface::handle_dump);
+	if ((theMode == ENSEMBLEVIEW) &&
+	    (ensembleMode == SINGLE_CHANNEL))
+	   clearAll ();
 }
 
 void	serviceViewer::startButtons () {
@@ -828,5 +830,17 @@ void	serviceViewer::startButtons () {
 	if (theMode == ENSEMBLEVIEW)
 	   connect (ensembleId, &clickablelabel::clicked_right,
 	            theRadio, &RadioInterface::handle_dump);
+}
+
+int	serviceViewer::add_to_displayList (const serviceDescriptor &sd) {
+	for (int i = 0; i < displayList. size () - 1; i ++) {
+	   if ((displayList [i]. channelName <= sd. channelName) &&
+	       (displayList [i + 1]. channelName > sd. channelName)) {
+	      displayList . insert (i, sd);
+	      return i;
+	   }
+	}
+	displayList. append (sd);
+	return displayList. size () - 1;
 }
 

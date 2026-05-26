@@ -96,7 +96,7 @@ uint16_t segmentNumber	= 0;
 	}
 	//
 	//	the data can be found at next / 8 
-	//	and is still one bit per byte, ;ength
+	//	and is still one bit per byte, length
 	//	dataLength
 }
 

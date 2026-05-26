@@ -22,12 +22,12 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 DEFINES         += VERSION=\\\"7.1\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address 
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address 
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 #QMAKE_CFLAGS	+=  -g 
 #QMAKE_CXXFLAGS	+=  -g 
 #QMAKE_LFLAGS	+=  -g 
@@ -240,6 +240,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/icon-label.h \
 	   ./sources/support/gui-elements/newpushbutton.h \
 	   ./sources/support/gui-elements/normalpushbutton.h \
+	   ./sources/support/gui-elements/special-combobox.h \
 	   ./sources/support/gui-elements/smallcombobox.h \
 	   ./sources/support/gui-elements/smallpushbutton.h \
 	   ./sources/support/gui-elements/smallqlistview.h \
@@ -392,6 +393,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/icon-label.cpp \
 	   ./sources/support/gui-elements/newpushbutton.cpp \
 	   ./sources/support/gui-elements/normalpushbutton.cpp \
+	   ./sources/support/gui-elements/special-combobox.cpp \
 	   ./sources/support/gui-elements/smallcombobox.cpp \
 	   ./sources/support/gui-elements/smallpushbutton.cpp \
 	   ./sources/support/gui-elements/smallqlistview.cpp \

@@ -75,7 +75,7 @@ The second step is implemented by
 
  * the class "ofdmDecoder" that implements the conversion from the samples in the subsequent datablocks of the DAB frame to a sequence of soft bits, soft bits are encoded in the range -127 .. 127.
 
- * The two classes "tii-detector-xx"  implement the extraction of TII data from the NULL periods starting DAB frames. They report ("signal") their findings (i.e. basically mainId and subId) to the GUI controller.
+ * The class "tii-detector"  implement the extraction of TII data from the NULL periods starting DAB frames. They report ("signal") their findings (i.e. basically mainId and subId) to the GUI controller.
 
 The execution of the functionality is controlled by
 

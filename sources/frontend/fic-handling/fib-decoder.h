@@ -171,6 +171,8 @@ private:
 	fibConfig	*currentConfig;
 	fibConfig	*nextConfig;
 	FIG00		FIG00_value;
+
+	bool		check_FIG01	(uint16_t);
 	bool    in_FIG05_stack  (const FIG05 &);
 	std::vector<FIG05>      FIG05_stack;
 
@@ -191,7 +193,7 @@ private:
 	int	dateTime [8];
 
 	void		adjustTime		(int32_t *dateTime);
-	uint16_t	get_subChId		(uint32_t, uint8_t);
+	bool		get_subChId		(uint32_t, uint8_t);
 	void		check_announcements (uint8_t clusterId,
                                         uint8_t AswFlags,
                                         uint8_t newFlag, uint16_t subChId);

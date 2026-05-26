@@ -89,9 +89,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="channelSelector">
+      <widget class="specialComboBox" name="channelSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Channel selector. With this selector one of the channels can be set. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Channel selector. With this selector one of the channels can be set. &lt;/p&gt;&lt;p&gt;Clicking with the right hand mouse window controls the possibility of using the &amp;quot;eti&amp;quot; generator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
@@ -129,6 +129,11 @@
    <class>clickablelabel</class>
    <extends>QLabel</extends>
    <header>clickable-label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>specialComboBox</class>
+   <extends>QComboBox</extends>
+   <header>special-combobox.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

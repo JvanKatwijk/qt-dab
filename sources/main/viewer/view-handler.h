@@ -25,6 +25,7 @@
 #include	<QScrollArea>
 #include	<QTableWidget>
 #include	<QTableWidgetItem>
+#include	<QList>
 #include	<QFile>
 #include	<QDataStream>
 #include	<QSettings>
@@ -74,7 +75,9 @@ public:
 private:	
 	RadioInterface	*theRadio;
 	void		startSession		(int, int, bool);
-	void		insert			(const serviceDescriptor &sd);
+	void		insert			(const serviceDescriptor &sd,
+	                                                         int pos);
+	int		add_to_displayList	(const serviceDescriptor &);
 	void		set_channelIndex	(int);
 	void		set_Colors		();
 //	void		addService		(const serviceDescriptor &);
@@ -103,7 +106,7 @@ signals:
 	void		reduceButtons		(bool);
 private:
 	serviceBase	theDataBase;
-	std::vector<serviceDescriptor> displayList;
+	QList<serviceDescriptor> displayList;
 	void		clearTable		();
 	QSettings	*viewSettings;
 	QString		fileName;

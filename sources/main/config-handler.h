@@ -84,8 +84,6 @@ public:
 	bool	get_loadSelection	();
 
 	void	reset_loadSelection	();
-
-	void	set_etiButton		(bool);
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -101,8 +99,6 @@ private slots:
 	void	color_fontColorButton	();
 	void	color_dlTextButton	();
 	void	color_scheduleButton	();
-	void	color_snrButton		();
-	void	color_etiButton		();
 	void	color_loadTableButton	();
 //
 	void	handle_mapViewSelector		(int);

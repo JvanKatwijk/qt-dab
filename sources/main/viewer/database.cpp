@@ -85,25 +85,25 @@ void	serviceBase::update		(const serviceDescriptor &sd, bool f) {
 	// should not happen
 }
 
-std::vector<serviceDescriptor> 
+QList<serviceDescriptor> 
 	serviceBase::getData (int Mode, int order) {
-std::vector<serviceDescriptor> res;
+QList<serviceDescriptor> res;
 	for (auto &ch: theData) {
 	   std::vector<serviceDescriptor> res_c =  ch. getData (Mode, order);
 	   for (auto &sd : res_c) 
-	      res. push_back (sd);
+	      res. append (sd);
 	}
 	return res;
 }
 
-std::vector<serviceDescriptor> 
+QList<serviceDescriptor> 
 	serviceBase::getData (int Mode, int order, const QString &channel) {
-std::vector<serviceDescriptor> res;
+QList<serviceDescriptor> res;
 	for (auto &ch: theData) {
 	   if (ch. channelName == channel) {
 	      std::vector<serviceDescriptor> res_c =  ch. getData (Mode, order);
 	      for (auto &sd : res_c) 
-	         res. push_back (sd);
+	         res. append (sd);
 	   }
 	}
 	return res;

@@ -41,10 +41,7 @@
 #define	DLTEXT_BUTTON		QString ("dlTextButton")
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
 
-#define SNR_BUTTON              QString ("snrButton")
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
-
-#define	ETI_BUTTON		QString ("etiButton")
 
 
 #define	WHITE	"#ffffff"
@@ -284,10 +281,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_dlTextButton);
 	connect (scheduleButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_scheduleButton);
-	connect (snrButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_snrButton);
-	connect (etiButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_etiButton);
 	connect (loadTableButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_loadTableButton);
 
@@ -317,12 +310,6 @@ void	configHandler::set_connections () {
 //
 	connect (dlTextButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_dlTextButton);
-//	second row
-	connect (snrButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_snrButton);
-	connect (etiButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_etiButton);
-
 	connect (loadTableButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_loadTable);
 	loadTableButton	-> setText ("refresh table");
@@ -451,20 +438,6 @@ QString scheduleButton_font	=
 	   value_s (dabSettings, COLOR_SETTINGS, 
 	                              SCHEDULE_BUTTON + "_font", BLACK);
 
-QString snrButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              SNR_BUTTON + "_color", BLUE);
-QString snrButton_font =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SNR_BUTTON + "_font", BLACK);
-
-QString etiButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              ETI_BUTTON + "_color", BLUE);
-QString etiButton_font =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              ETI_BUTTON + "_font", WHITE);
-
 QString	loadTableButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                               LOAD_TABLE_BUTTON + "_color", RED);
@@ -492,14 +465,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (scheduleButton_color,
 	                                        scheduleButton_font));
 
-	this -> snrButton	->
-	              setStyleSheet (temp. arg (snrButton_color,
-	                                        snrButton_font));
-
-	this -> etiButton	->
-	              setStyleSheet (temp. arg (etiButton_color,
-	                                        etiButton_font));
-
 	this -> loadTableButton ->
 	              setStyleSheet (temp. arg (loadTableButton_color,
 	                                        loadTableButton_font));
@@ -521,13 +486,6 @@ void	configHandler::color_scheduleButton	() 	{
 	set_buttonColors (this ->  scheduleButton, SCHEDULE_BUTTON);
 }
 
-void	configHandler::color_snrButton		() {
-	set_buttonColors (this ->  snrButton, SNR_BUTTON);
-}
-
-void	configHandler::color_etiButton		() {
-	set_buttonColors (this -> etiButton, ETI_BUTTON);
-}
 
 void	configHandler::color_loadTableButton	() 	{
 	set_buttonColors (this ->  loadTableButton, LOAD_TABLE_BUTTON);
@@ -815,10 +773,6 @@ void	configHandler::handle_updateChecker	(int k) {
 	(void)k;
 	bool b = this -> updateChecker -> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
-}
-
-void	configHandler::set_etiButton		(bool b) {
-	etiButton	-> setText (b ? "eti active" : "eti disabled");
 }
 
 void	configHandler::enable_scheduler		(bool b) {
