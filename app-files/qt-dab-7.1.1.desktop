@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=Qt_DAB-7.1
-Exec=qt-dab-7.1
-Icon=qt-dab-7.1
+Name=Qt_DAB-7.1.1
+Exec=qt-dab-7.1.1
+Icon=qt-dab-7.1.1
 Type=Application
 Categories=AudioVideo;
 Comment=Probably the most extended DAB decoder

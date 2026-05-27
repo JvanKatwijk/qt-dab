@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.1\\\"
+DEFINES         += VERSION=\\\"7.1.1\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
@@ -34,7 +34,7 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-RC_ICONS	=  qt-dab-7.0.ico
+RC_ICONS	=  qt-dab-7.1.1.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
@@ -455,10 +455,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.1
+   TARGET               = qt-dab-qt5-7.1.1
 }
 else {
-   TARGET               = qt-dab-7.1
+   TARGET               = qt-dab-7.1.1
 }
 
 #mac {
@@ -521,8 +521,8 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-#for for 64 bit, only 6.9.6
-        TARGET          = qt-dab-7.1
+#only 64 bit
+        TARGET          = qt-dab-7.1.1
 	DEFINES		+= __BITS64__
 	DESTDIR		=  /d/systems/qt-dab/linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
