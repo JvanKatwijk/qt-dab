@@ -57,7 +57,6 @@ public:
 	bool	upload_selector_active	();
 	bool	upload_active		();
 	bool	closeDirect_active	();
-	bool	utcSelector_active	();
 	bool	saveSliders_active	();
 	bool	epg2_active		();
 	bool	onTop_active		();
@@ -113,7 +112,6 @@ private slots:
 	void	handle_orderServiceIds		();
 	void	handle_ordersubChannelIds	();
 
-	void	handle_utc_selector		(int);
 	void	handle_auto_http		(int);
 
 	void	handle_localBrowser		(int);

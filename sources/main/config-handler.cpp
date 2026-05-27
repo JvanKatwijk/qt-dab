@@ -157,14 +157,7 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
 	this	-> updateChecker	-> setChecked (b);
 //
-//	third row
-//
-	b	= value_i (dabSettings, CONFIG_HANDLER,
-                                        UTC_SELECTOR_SETTING, 0) == 1;
-	this -> utc_selector -> setChecked (b);
 
-
-//	third row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                          CLOSE_DIRECT_SETTING, 0) != 0;
 	this -> closeDirect_selector -> setChecked (b);
@@ -345,13 +338,6 @@ void	configHandler::set_connections () {
 	   upload_selector -> setEnabled (false);
 
 //	third line
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (utc_selector, &QCheckBox::checkStateChanged,
-#else
-	connect (utc_selector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_utc_selector);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (onTop, &QCheckBox::checkStateChanged,
@@ -575,12 +561,6 @@ void	configHandler::handle_upload_selector (int d) {
 	(void)d;
 }
 
-void	configHandler::handle_utc_selector	(int d) {
-	(void)d;
-	store (dabSettings, CONFIG_HANDLER, UTC_SELECTOR_SETTING, 
-	                          utc_selector -> isChecked () ? 1 : 0);
-}
-
 int	configHandler::get_serviceOrder	() {
 	return serviceOrder;
 }
@@ -611,10 +591,6 @@ bool	configHandler::closeDirect_active	() {
 
 bool	configHandler::get_dcRemovalSelector	() {
 	return this -> dcRemovalSelector -> isChecked ();
-}
-
-bool	configHandler::utcSelector_active	() {
-	return utc_selector -> isChecked ();
 }
 
 bool	configHandler::saveSliders_active	() {

@@ -46,7 +46,6 @@
 #include	"element-selector.h"
 #include	"dab-params.h"
 #include	"ITU_tables.h"
-#include	"coordinates.h"
 #include	"mapport.h"
 #include	"tech-window.h"
 #include	"db-element.h"
@@ -288,6 +287,11 @@ QString h;
 	dxMode     = value_i (theQSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 	connect (distanceLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_distanceLabel);
+	utc_on	= value_i (theQSettings, CONFIG_HANDLER,
+                                        UTC_SELECTOR_SETTING, 0) == 1;
+
+	connect (localTimeDisplay, &clickablelabel::clicked_left,
+	         this, &RadioInterface::handle_utcSwitch);
 
 	labelStyle	= value_s (theQSettings, DAB_GENERAL, LABEL_COLOR,
 	                                                     LABEL_STYLE);
@@ -1562,11 +1566,11 @@ void	RadioInterface::handle_FIG010 (int year, int month, int day,
 	this	-> UTC. hour		= h2;
 	this	-> UTC. minute		= m2;
 	QString result;
-	if (theConfigHandler -> utcSelector_active ())
-	   result	= convertTime (year, month, day, h2, m2);
+	if (utc_on)
+	   result	= convertTime (year, month, day, h2, m2) + "(utc)";
 	else
-	   result	= convertTime (year, month, day,
-	                                     hours, minutes);
+	   result	= convertTime (year, month, day, hours, minutes);
+
 	QDate theDate (year, month, day);
 	channel. theDate = theDate;
 
@@ -3392,17 +3396,6 @@ void	RadioInterface::handle_snrButton	() {
 	   dynamicLabel	-> setText (SNR);
 	}
 }
-
-//
-//	called from the configHandler
-void	RadioInterface::handle_set_coordinatesButton	() {
-coordinates theCoordinator (theQSettings);
-	(void)theCoordinator. QDialog::exec();
-	localPos. latitude		=
-	             value_f (theQSettings, MAP_HANDLING, HOME_LATITUDE, 0);
-	localPos. longitude		=
-	             value_f (theQSettings, MAP_HANDLING, HOME_LONGITUDE, 0);
-}
 //
 //	called from the configHandler
 void	RadioInterface::handle_loadTable	 () {
@@ -4084,10 +4077,9 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 
 	   uint8_t key = SHOW_ALL;
 	   
-	   bool utc	= theConfigHandler -> utcSelector_active ();
 	   mapHandler_locker. lock ();
 	   if (mapViewer != nullptr)
-	      mapViewer -> putData (key, theTr, utc);
+	      mapViewer -> putData (key, theTr, utc_on);
 	   mapHandler_locker. unlock ();
 	}
 }
@@ -4783,5 +4775,10 @@ void	RadioInterface::show_streamSelector	() {
 	   streamOutSelector. hide ();
 	else	
 	   streamOutSelector. show ();
+}
+
+void	RadioInterface::handle_utcSwitch	() {
+	utc_on = !utc_on;
+	store (theQSettings, CONFIG_HANDLER, UTC_SELECTOR_SETTING, utc_on);
 }
 

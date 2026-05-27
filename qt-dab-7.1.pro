@@ -220,7 +220,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/dl-cache.h \
 	   ./sources/support/content-table.h \
 #	   ./sources/support/ITU_Region_1.h \
-	   ./sources/support/coordinates.h \
+#	   ./sources/support/coordinates.h \
 	   ./sources/support/skin-handler.h \
 	   ./sources/support/mapport.h \
 	   ./sources/support/bandpass-filter.h \
@@ -355,7 +355,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/dc-filter.cpp \
 	   ./sources/support/charsets.cpp \
 	   ./sources/support/content-table.cpp \
-	   ./sources/support/coordinates.cpp \
+#	   ./sources/support/coordinates.cpp \
 	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/dab-params.cpp \
 #	   ./sources/support/dab-tables.cpp \

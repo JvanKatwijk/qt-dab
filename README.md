@@ -107,6 +107,7 @@ for some of them the functionality is moved back to the main window
  * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name;
  * similarly, the button on the configuration window to control the visibility od the device control window is removed. Clicking with the (again) **right hand mouse button** on the blue icon gives the same functionality;
  * the selector for the audio channel was removed from the configuration window.Clicking with the mouse on the **speaker symbol** shows the available channels in a small separate window.
+ * I wanted the button for "eti" on the main window, after all, it starts or stops an activity. To achiece that, the "scan" button functionality is now implemented by clicking with the right hand mouse button on the channel selector (The rationale being that scanning is closely related to channel selection)
 
 The buttons for selection between Portaudio and QtAudio as well as for "skin" selection are removed, their functionality is not considered very useful.
 

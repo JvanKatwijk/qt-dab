@@ -198,6 +198,7 @@ public:
 	float		distance;
 	float		azimuth;
 	int		snr;
+
 //	info on services
 	dabService	currentService;
 	bool		audioActive;
@@ -285,6 +286,7 @@ private:
 	audioSelector		streamOutSelector;
 //	end of variables that are initalized
 
+	bool			utc_on;
 	serviceViewer			*newServices;
 	configHandler			*theConfigHandler;
 	techWindow			*theTechWindow;
@@ -498,7 +500,6 @@ public slots:
 	void			handle_devicewidgetButton	();
 	void			handle_dlTextButton		();
 	void			handle_snrButton		();
-	void			handle_set_coordinatesButton	();
 	void			handle_loadTable		();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
@@ -684,6 +685,8 @@ private slots:
 	void			handle_distanceLabel	();
 
 	void			handle_startTimeTable	();
+
+	void			handle_utcSwitch	();
 //
 //
 	void			TerminateProcess	();

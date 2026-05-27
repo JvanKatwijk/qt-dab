@@ -87,7 +87,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="localTimeDisplay">
+        <widget class="clickablelabel" name="localTimeDisplay">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The local time. If you want UTC instead, set the utc selector on the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
