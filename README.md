@@ -1,4 +1,4 @@
-# Qt-DAB-7.1
+# Qt-DAB-7.1.1
 
 -------------------------------------------------------------------
 
@@ -33,7 +33,6 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-
 What is new in Qt-DAB-7.1.1
 ======================================================================
 
@@ -49,14 +48,17 @@ So, it was time to increment the major version number.
 
 The Beta version of 7.0 showed unfortunately a persistent error, fixing that required significant modifications, and, while doing that,  a number of important changes was made, so it felt better to update to 7.1.1.
 
-The major visible change in the main window has to do with the way services
+The major **visible** change in the main window is how services
 are shown.  The **ensemble display** is completely redesigned
-and now is in one of three "modes".
-Furthermore, handling of data services is changed, and when selecting a
-packet service, it will run as background task, see a next section.
+and now runs is in one of three "modes".
 
-When running one or more services in the background, it is obviously possible
-to select and run an audio service, since that runs in the foreground.
+Handling of data services is changed; when selecting a
+packet service, it will run as background task, so it is possible to
+listen to an audio service and have a couple of packet services run in the background.
+
+To control running one or more services in the background, it
+is obviously possible to select and run an audio service,
+since that runs in the foreground.
 
 ![7.1](/res/read_me/qt-dab-7.1.1.png)
 
@@ -70,12 +72,14 @@ services encountered, and - depending on the settings - the services
 of the currently selected channel - or all encountered sudio ervices
 are shown.
  
-On  (normal) **program termination**, the list is stored in a file with the
-name ".qt-dab-serviceList.mxl", stored in the user's home directory
-1n program startup, the list is read-in again.
+Ensemble mode has two submodes, one - when "audio only" is set on the configuration window - in which all audio services of all visited channels are shown and the names stored in a database, or - when "audio only" is not selected - one in which the services - both audio and data - are shown of the currently selected channel.
 
-Alternatively, the **configuration and control** window contains an
-entry labeled **load selection** that - when set - shows 
+On  (normal) **program termination**, the list ("database") is stored
+in a file with the name ".qt-dab-serviceList.mxl", stored in
+the user's home directory 1n program startup, the list is read-in again.
+
+For experimenting ith e.g. scanning, the **configuration and control**
+window contains an entry labeled **load selection** that - when set - shows 
 (on the next program invocation) a  dialog with options to read on
 the NEXT program invocation either an existing ensemble file, create a new one, clear the current
 ensemble file, or just stop with selecting.
@@ -83,8 +87,7 @@ In the last two cases, the setting on the configuration window is "undone".
 
 ![7.1](/res/read_me/ensemblelist-selector.png)
 
-In **ensemble** mode, a service in the list can be "promoted" to  **favorite**,
-by clicking on the left column.
+As in previous versions,  **ensemble** mode, a service in the list can be "promoted" to  **favorite**, by clicking on the left column.
 
 ![7.1](/res/read_me/ensemble-dialog.png)
 
@@ -104,9 +107,6 @@ some options are blocked.
 
 On starting the program with a **device** the **ensemble** mode is
 set, when starting with a file as input, the mode is set to **file** mode.
-
-The configuration window has a checkbox for choosing between **only audio services** or **all services**. If **all** services is selected, data services
-are shown as well, and only the services of the current channel are shown.
 
 Eliminating buttons and replacing some
 =======================================================================
