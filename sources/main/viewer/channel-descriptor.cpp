@@ -23,13 +23,16 @@
 //
 #include	"channel-descriptor.h"
 
-
 		theChannel::theChannel	() {}
 	
 		theChannel::~theChannel	() {}
 
 void	theChannel::setName	(const QString &name) {
+	bool b;
 	this	-> channelName	= name;
+	this	-> channel	= name. toInt (&b, 16);
+	if (!b)
+	   this	-> channel	= 90;
 }
 
 void	theChannel::add	(serviceDescriptor sd) {

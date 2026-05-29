@@ -853,9 +853,8 @@ int	serviceViewer::add_to_displayList (const serviceDescriptor &sd) {
 	}
 
 	for (int i = 0; i < displayList. size () - 1; i ++) {
-	   if ((displayList [i]. channel <= sd. channel) &&
-	       (displayList [i + 1]. channel > sd. channel)) {
-	      displayList . insert (i + 1, sd);
+	   if (displayList [i]. channel > sd. channel) {
+	      displayList . insert (i, sd);
 	      return i;
 	   }
 	}

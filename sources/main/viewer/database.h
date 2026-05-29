@@ -47,6 +47,7 @@ QList<serviceDescriptor>
 	void	update		(const serviceDescriptor &, bool);
 	void	clearTable	();
 private:
-	std::vector<theChannel> theData;
+	void	insert		(const theChannel &);
+	QList<theChannel> theData;
 };
 

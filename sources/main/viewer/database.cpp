@@ -43,7 +43,7 @@ void	serviceBase::add		(const serviceDescriptor &sd) {
 	theChannel channel;
 	channel. setName (sd. channelName);
 	channel. add (sd);
-	theData. push_back (channel);
+	insert (channel);
 }
 
 void	serviceBase::set_ensembleName	(const QString &ensembleName,
@@ -54,10 +54,14 @@ void	serviceBase::set_ensembleName	(const QString &ensembleName,
 	      return;
 	   }
 	}
+	bool b;
 	theChannel newChannel;
 	newChannel. setName (channelName);
+	newChannel. channel	= channelName. toInt (&b, 16);
+	if (!b)
+	   newChannel. channel = 0x5A;
 	newChannel. ensembleName = ensembleName;
-	theData. push_back (newChannel);
+	insert (newChannel);
 }
 
 void	serviceBase::remove		(const QString &channel,
@@ -75,6 +79,22 @@ void	serviceBase::remove		(const QString &channel,
 	}
 }
 
+void	serviceBase::insert		(const theChannel &channel) {
+	if (theData. size () == 0) {
+	   theData. insert (0, channel);
+	   fprintf (stderr, "Inserted in an empty list\n");
+	   return;
+	}
+
+	for (int i = 0; i  < theData. size (); i ++) {
+	   if (theData [i]. channel > channel. channel) {
+	      theData. insert (i, channel);
+	      return;
+	   }
+	}
+	theData. append (channel);
+}
+	
 void	serviceBase::update		(const serviceDescriptor &sd, bool f) {
 	for (auto &ch: theData) {
 	   if (ch. channelName == sd. channelName) {
@@ -89,7 +109,7 @@ QList<serviceDescriptor>
 	serviceBase::getData (int Mode, int order) {
 QList<serviceDescriptor> res;
 	for (auto &ch: theData) {
-	   std::vector<serviceDescriptor> res_c =  ch. getData (Mode, order);
+	   std::vector <serviceDescriptor> res_c =  ch. getData (Mode, order);
 	   for (auto &sd : res_c) 
 	      res. append (sd);
 	}
@@ -124,9 +144,13 @@ QDomDocument xmlBOM;
 	while (!component. isNull ()) {
 	   if (component. tagName () == "channel") {
 	      QString channelName =
-	                component. attribute ("channelName", "???");
+	                component. attribute ("channelName", "5A");
 	      theChannel channel;
+	      bool b;
 	      channel. setName (channelName);
+	      channel. channel = channelName. toInt (&b, 16);
+	      if (!b)
+	         channel. channel = 0x5A;
 	      QDomElement subComp = component. firstChild (). toElement ();
 	      while (!subComp. isNull ()) {
 	         if (subComp. tagName () != "serviceDesc")
@@ -159,7 +183,6 @@ void	serviceBase::store	(const QString &fileName) {
 QDomDocument serviceDB;
 QDomElement root = serviceDB. createElement ("serviceList");
 
-	fprintf (stderr, "storing the list in %s\n", fileName. toLatin1 (). data ());
         serviceDB. appendChild (root);
 
         for (auto &channel : theData) { 
