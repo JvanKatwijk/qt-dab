@@ -27,8 +27,8 @@
 //  to the computer, the user is asked to make a choice.
 
 	selector::selector (const QString &s) {
-	toptext		= new QLabel(this);
-	toptext ->	setText ("device select");
+	toptext		= new QLabel (this);
+	toptext ->	setText ("Select one");
 	selectorDisplay = new QListView (this);
 	QVBoxLayout *layOut = new QVBoxLayout;
 	layOut	->	addWidget (toptext);

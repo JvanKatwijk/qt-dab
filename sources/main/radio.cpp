@@ -1844,7 +1844,7 @@ QString	dumpName;
 	try {
 	   dumpName     =
                   theFilenameFinder.
-	              find_xmlName (deviceName,  channelName, false);
+	              find_xmlName (deviceName,  channelName, true);
 	} catch (...) {
 	   return;
 	}
@@ -4715,7 +4715,7 @@ selector ListSelector ("select option");
 	                                   fileName,
 	                                   get_serviceOrder (),
 	                                   !theConfigHandler ->
-	                                     get_audioServices_only ());
+	                                     get_audioServices_only (), false);
 	      else
 	         newServices -> startMode (ENSEMBLEVIEW,
 	                                   get_serviceOrder (),
@@ -4729,12 +4729,12 @@ selector ListSelector ("select option");
                                                    "Open file ...",
 	                                           path_for_serviceLists,
 	                                           "*.xml");
-	      if (fileName != "") 
+	      if (fileName != "")  
 	         newServices -> startMode (ENSEMBLEVIEW,
 	                                   fileName,
 	                                   get_serviceOrder (),
 	                                   !theConfigHandler ->
-	                                     get_audioServices_only ());
+	                                     get_audioServices_only (), true);
 	      else
 	         newServices -> startMode (ENSEMBLEVIEW,
 	                                   get_serviceOrder (),
@@ -4747,7 +4747,7 @@ selector ListSelector ("select option");
 	                                "",
 	                                get_serviceOrder (),
 	                                !theConfigHandler ->
-	                                     get_audioServices_only ());
+	                                     get_audioServices_only (), false);
 	      resetFlag	= true;
 	      break;
 	   default:

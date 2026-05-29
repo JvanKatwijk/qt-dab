@@ -13,12 +13,13 @@ About Qt-DAB
 ![6.10](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-7.1*, predefined executables - for Linux an AppImage, for Windows
-an installer - are available.
+*Qt-DAB-7.1.1*, predefined executables - for Linux an AppImage, for Windows
+an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.1](#What-is-new-in-Qt-DAB-7.1)
+* [What is new in Qt-DAB-7.1.1](#What-is-new-in-Qt-DAB-7.1.1)
+* [Eliminating buttons and replacing some](#eliminating-buttons-and-replacing-some)
 * [Handling packet services](#handling-packet-services)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
@@ -33,25 +34,31 @@ Table of Contents
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
 
-What is new in Qt-DAB-7.1
+What is new in Qt-DAB-7.1.1
 ======================================================================
 
-Since the fourth quarter of 2023 the major version number for Qt-DAB was "6",
-the GUI had changed a lot since the "5" version, and the basic idea was to
-increment **major** version numbers when the GUI changed significantly.
+In the fourth quarter of 2023 the major version number for Qt-DAB became "6",
+the GUI had undergone some major  changes since the "5" version,
+and the basic idea was to increment **major** version numbers only
+when the GUI changed significantly.
 
-Following the Beta version of 7.0, a number of important changes was made,
-so it felt better to update to 7.1.
+While on the surface the GUI in 7.1.1 does not differ that much with the
+one in 6.9.10, there are fundamental differences in the main window while
+the configuration and control window differs completely with that of 6.9.
+So, it was time to increment the major version number.
 
-Changes in functionality show in the **ensemble display** which is
-completely redesigned, and in the way **packet** services and
-services in the background are dealt with.
-For the latter, see a next section.
+The Beta version of 7.0 showed unfortunately a persistent error, fixing that required significant modifications, and, while doing that,  a number of important changes was made, so it felt better to update to 7.1.1.
 
 The major visible change in the main window has to do with the way services
-are shown.
-  *
-![7.1](/res/read_me/qt-dab-7.1.png)
+are shown.  The **ensemble display** is completely redesigned
+and now is in one of three "modes".
+Furthermore, handling of data services is changed, and when selecting a
+packet service, it will run as background task, see a next section.
+
+When running one or more services in the background, it is obviously possible
+to select and run an audio service, since that runs in the foreground.
+
+![7.1](/res/read_me/qt-dab-7.1.1.png)
 
 The ensemble display is in one of a three modes:
  * **ensemble** mode, where  services of the (current) channel(s) are shown, 
@@ -60,7 +67,7 @@ The ensemble display is in one of a three modes:
 
  **ensemble mode** - the most common mode - a list is compiled of
 services encountered, and - depending on the settings - the services
-of the currently selected channel. or all encountered services
+of the currently selected channel - or all encountered sudio ervices
 are shown.
  
 On  (normal) **program termination**, the list is stored in a file with the
@@ -68,13 +75,16 @@ name ".qt-dab-serviceList.mxl", stored in the user's home directory
 1n program startup, the list is read-in again.
 
 Alternatively, the **configuration and control** window contains an
-entry that - when set - shows on program termination a  dialog with options
-to read on the NEXT program invocation either an existing ensemble file, create a new one, clear the current
+entry labeled **load selection** that - when set - shows 
+(on the next program invocation) a  dialog with options to read on
+the NEXT program invocation either an existing ensemble file, create a new one, clear the current
 ensemble file, or just stop with selecting.
 In the last two cases, the setting on the configuration window is "undone".
 
-In **ensemble** mode, a service in the list can be made **favorite**, by
-clicking on the left column.
+![7.1](/res/read_me/ensemblelist-selector.png)
+
+In **ensemble** mode, a service in the list can be "promoted" to  **favorite**,
+by clicking on the left column.
 
 ![7.1](/res/read_me/ensemble-dialog.png)
 
@@ -83,40 +93,41 @@ with which a switch can be made between **ensemble** mode and **favorite** mode.
 
 ![7.1](/res/read_me/favorite-mode.png)
 
-In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection (and scanning)  rather useless and in Qt-DAB-7.0 channel selection and scanning is blocked in this mode.
+In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection,  scanning and eti-generation rather useless and in
+Qt-DAB-7.XX these options are then blocked.
 
 ![7.1](/res/read_me/file-mode.png)
 
 In **file** mode, i.e. after reading a file, the services are shown, and
-- obviously - may be selected.
+- obviously - may be selected. Again, scanning etc is not very usefull, so
+some options are blocked.
 
 On starting the program with a **device** the **ensemble** mode is
 set, when starting with a file as input, the mode is set to **file** mode.
 
 The configuration window has a checkbox for choosing between **only audio services** or **all services**. If **all** services is selected, data services
 are shown as well, and only the services of the current channel are shown.
-x
+
 Eliminating buttons and replacing some
 =======================================================================
+
 It is always nice if settings to **start** or **stop** activities related to
 the processing are "within reach", i.e. directly reachable from the main window.
 A number of such settings were put on the configuration and control window,
 for some of them the functionality is moved back to the main window
 
- * selecting an audio channel was as combobox on the configuration window; since it is a real "control" item rather than a "configuration" item, its functionality is moved to the main window, and implemented by **clicking** on the speaker symbol (clicking with the right hand mouse button on the speaker now controls the muting);
- * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name;
+ * selecting an audio channel in previous versions was on a combobox on the configuration window; since it is a real "control" item rather than a "configuration" item, its functionality is moved to the main window, and implemented by **clicking** on the speaker symbol (clicking with the right hand mouse button on the speaker now controls the muting);
+ * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name. Furthermore, while by default input dumping created ".uff" files, if selected (or the input device soes not support writing an ".uff" file), dumping is in ".wav" files.
  * similarly, the button on the configuration window to control the visibility od the device control window is removed. Clicking with the (again) **right hand mouse button** on the blue icon gives the same functionality;
- * the selector for the audio channel was removed from the configuration window.Clicking with the mouse on the **speaker symbol** shows the available channels in a small separate window.
- * I wanted the button for "eti" on the main window, after all, it starts or stops an activity. To achiece that, the "scan" button functionality is now implemented by clicking with the right hand mouse button on the channel selector (The rationale being that scanning is closely related to channel selection)
+ * I wanted the button for "eti" on the main window, after all,  clicking on it starts or stops an activity. The "scan" button functionality is now implemented by clicking with the right hand mouse button on the channel selector (The rationale being that scanning is closely related to channel selection), and eti control is by the button that used to be for scan control.
 
 The buttons for selection between Portaudio and QtAudio as well as for "skin" selection are removed, their functionality is not considered very useful.
 
 Handling packet and background services
 ========================================================================
 
-DAB (DAB+) supports next to audio services also packet services, the EPG/SPI
-service (if available) is an example: Qt-DAB starts a backend interpreting the
-EPG/SPI data in a separate thread as **background task**, invisible
+DAB (DAB+) supports next to audio services also packet services. The EPG/SPI
+service (if available) is an example: Qt-DAB starts automatically a backend interpreting the EPG/SPI data in a separate thread as **background task**, invisible
 to the user.
 
 While the default setting in the configuration window in Qt-DAB is to show
@@ -130,29 +141,32 @@ since there is not much to be seen or heard, that is why
 Qt-DAB akways starts a packet service as background task.
 
 **Starting** a packet service is simply by clicking on the name, same
-as for audio services, there is a restriction however,
-the packet service will only be started if the service is defined in
-the currently selected channel and the service is started in a thread running in the background.
+as for audio services.
+To avoid confusion, if the "audio only" selector is "unset", only the services of the currently selected channel are shown, including the data services.
 
-Obviously, when switching to another channel, either implicitly by selecting
-a service in a channel different from the currently selected one or explicitly
-the service interpretation will be stopped.
+Obviously, when switching to another channel, 
+the service interpretation stops.
 
 Most package services contain some form of TPEG data,
-which is usually encoded;  Qt_DAB is  unable to interpret these packets and 
-Qt-DAB restricts itself to compile the frames
-and send the data as UDP packet (default 8888, but can be set in the
-configuration window).
-(In case more than one TPEG service is chosen, for now, the data of
-all selected services is sent through the same port.
+which is usually encoded;  Qt_DAB is  unable to interpret the TPEG data
+and Qt-DAB restricts itself to compile the TPEG frames
+and send the data as UDP packet to an IP port (default 8888, but can
+be set in the configuration window).
 
 The sourcetree contains in the directory helpers/tdc-client a simple
-reader for udp packets.
+reader for just reading udp packets (with no further interpretation at all).
 
 **Manually** stopping a background service is possible, 
 a separate facility was created to **stop** such a service.
 For that purpose, a small window can be made visible showing all running
-backends.
+backends (starting an audio service in the background shows the window,
+its visibility iscontrolled by clicking on the number of services as shown
+in the configuration and control window)
+
+![7.1](/res/read_me/process-management-2.png)
+
+The number "5", displayed in the process counter,
+ tells that  there are 5 backends running.
 
 ![7.1](/res/read_me/process-management.png)
 
@@ -168,14 +182,6 @@ Secondary services are also running in the background.
 
 **Touching the name of the service running in the background stops
 that service.**
-
-The visibility of the **process monitoring** window is controlled by the
-process counter on the configuration window.
-
-![7.1](/res/read_me/process-management-2.png)
-
-The number "5", displayed in the process counter,
- tells that  there are 5 backends running.
 
 Note that it is also possible to run audio services **found in the currently
 selected channel** in the background. The audio - for DAB mp2 format, for
@@ -345,7 +351,7 @@ the user is asked for a filename to load a selection. If
   * a name is given and a file with that name exists, its content is loaded,
   * a name is given and no file with that name exists (yet), an empty file with that name is created.
 
-Also new is a checkbox, bottom line right end, that - when set - instructs the software to checkon program startup on the availability of a new version of Qt-DAB.
+Also new is a checkbox, bottom line right end, that - when set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
 
 Devices and device support
 ======================================================================

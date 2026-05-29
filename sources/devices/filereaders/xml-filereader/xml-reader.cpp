@@ -60,7 +60,7 @@ struct timeval tv;
 	this	-> parent	= mr;
 	this	-> file		= f;
 	this	-> fd		= fd;
-	this	-> filePointer	= filePointer;
+	this	-> dataStart	= filePointer;
 	sampleBuffer		= b;
 	newPosition. store (0);
 
@@ -110,10 +110,9 @@ static	int cycleCount = 0;
 void	xml_Reader::run () {
 uint64_t	samplesRead	= 0;
 uint64_t	nextStop;
-int	startPoint	= filePointer;
 
 	running. store (true);
-	fseek (file, filePointer, SEEK_SET);
+	fseek (file, dataStart, SEEK_SET);
 	nextStop = currentTime ();
 	for (int blocks = 0; blocks < fd -> nrBlocks; blocks ++) {
 	   samplesToRead	= compute_nrSamples (file, blocks);
@@ -147,8 +146,8 @@ int	startPoint	= filePointer;
 	            samplesRead =
 	                        (int) (newPosition. load () / 100.0 * samplesToRead);
 //	            fprintf (stderr, "samplesRead %ld\n", samplesRead);
-	            uint64_t filePos = startPoint + samplesRead * 
-	                                                    fd -> sampleSize ();
+	            uint64_t filePos = dataStart +
+	                                      samplesRead * fd -> sampleSize ();
 //	            fprintf (stderr, "startPoint %d, filePos %d\n",
 //	                                (int)startPoint, (int)filePos);
 	            fseek (file, filePos, SEEK_SET);
@@ -167,15 +166,17 @@ int	startPoint	= filePointer;
 	            if (nextStop > currentTime ())
 	               usleep (nextStop - currentTime ());
 	         }
+
 	         nextStop = nextStop + (uint64_t)1000;
 	         if (nextStop > currentTime ())
 	            usleep (nextStop - currentTime ());
+#ifndef	__MINGW32__
 	         else
 	            nextStop = currentTime () + (uint64_t)1000;
+#endif
 	      }
 	      setProgress (0, samplesToRead);
-	      filePointer = startPoint;
-	      fseek (file, filePointer, SEEK_SET);
+	      fseek (file, dataStart, SEEK_SET);
 	      samplesRead		= 0;
 	   } while (running. load () && continuous. load ());
 	}
@@ -213,6 +214,11 @@ uint64_t	xml_Reader::readSamples (FILE *theFile,
 	                                 void (xml_Reader::*r)(FILE *theFile,
 	                                    std::complex<float> *, int)) {
 std::complex<float> temp [SAMPLERATE / 1000];
+	if (fd -> sampleRate == SAMPLERATE) {
+	   (*this.*r) (theFile, temp, SAMPLERATE / 1000);
+	   sampleBuffer -> putDataIntoBuffer (temp, SAMPLERATE / 1000);
+	   return SAMPLERATE / 1000;
+	}
 
 	(*this.*r) (theFile, &convBuffer [1], convBufferSize);
 	for (int i = 0; i < SAMPLERATE / 1000; i ++) {

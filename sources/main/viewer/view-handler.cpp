@@ -139,23 +139,26 @@ void	serviceViewer::clearAll		() {
 	clearTable ();
 	displayList. resize (0);
 }
-
 //
 //	While in most cases the startMode function operates with
 //	the default filename, there are situations that
 //	a user selectable filename is used
 void	serviceViewer::startMode	(int Mode,
 	                                 const QString &fileName,
-	                                 int order, bool withPackets) {
+	                                 int order, bool withPackets, bool ff) {
 	if (fileName == "") {
 	   this -> fileName	= defaultName;
 	   startSession (Mode, order, withPackets);
 	   return;
 	}
-	FILE *f	= fopen (fileName. toLatin1 (). data (), "r");
+	FILE *f;
+	if (ff)
+	   f	= fopen (fileName. toLatin1 (). data (), "w");
+	else
+	   f	= fopen (fileName. toLatin1 (). data (), "r");
 	clearAll ();
 	if (f == nullptr) {
-	   fclose (f);
+//	   fclose (f);
 	   startMode (Mode, order, withPackets);
 	   return;
 	}
@@ -248,8 +251,12 @@ QString channel	= channelSelector -> currentText ();
 	   }
 	}
 
+	bool b;
 	serviceDescriptor sd;
 	sd.	channelName	= ad. channel;
+	sd.	channel		= ad. channel. toInt (&b, 16);
+	if (!b)
+	   sd. channel = 90;
 	sd.	serviceName	= ad. serviceName;
 	sd.	SId		= ad. SId;
 	sd.	SCIds		= ad. SCIds;
@@ -833,10 +840,22 @@ void	serviceViewer::startButtons () {
 }
 
 int	serviceViewer::add_to_displayList (const serviceDescriptor &sd) {
+//	if list is empty, just add,
+
+	if (displayList. size () == 0) {
+	   displayList. append (sd);
+           return displayList. size () - 1;
+	}
+//	insert at front
+	if (displayList [0]. channel > sd. channel) {
+	   displayList. insert (0, sd);
+	   return 0;
+	}
+
 	for (int i = 0; i < displayList. size () - 1; i ++) {
-	   if ((displayList [i]. channelName <= sd. channelName) &&
-	       (displayList [i + 1]. channelName > sd. channelName)) {
-	      displayList . insert (i, sd);
+	   if ((displayList [i]. channel <= sd. channel) &&
+	       (displayList [i + 1]. channel > sd. channel)) {
+	      displayList . insert (i + 1, sd);
 	      return i;
 	   }
 	}

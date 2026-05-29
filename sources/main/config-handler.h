@@ -100,17 +100,19 @@ private slots:
 	void	color_scheduleButton	();
 	void	color_loadTableButton	();
 //
+	void	handle_orderAlfabetical		();
+	void	handle_orderServiceIds		();
+	void	handle_ordersubChannelIds	();
+
 	void	handle_mapViewSelector		(int);
 	void	handle_updateChecker		(int);
 
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
-	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
-	void	handle_orderAlfabetical		();
-	void	handle_orderServiceIds		();
-	void	handle_ordersubChannelIds	();
+	void	handle_upload_selector		(int);
+	void	handle_dumpmodeSelector		(int);
 
 	void	handle_auto_http		(int);
 

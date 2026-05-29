@@ -158,7 +158,7 @@ QString	saveDir	=  basicPath () + "xmlDump/";
 	QString fileName =
 	              outputDialog (saveDir, 
 	                            QString (deviceName + "-" + channelName),
-	                            ".xml", direct);
+	                            ".uff", direct);
 	if (fileName == "")
 	   return nullptr;
 

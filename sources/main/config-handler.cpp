@@ -143,9 +143,9 @@ int	index_for_key (int key) {
 	pathLabel	-> setText (path_for_files);
 
 //	first row of checkboxes
-	bool b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 0) != 0;
+	bool b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 1) != 0;
 	this	-> dumpmodeSelector	-> setChecked (b);
-
+	
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           LOCAL_BROWSER_SETTING, 1) != 0;
 	this -> localBrowserSelector -> setChecked (b);
@@ -245,6 +245,12 @@ int	index_for_key (int key) {
 	connect (updateChecker, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_updateChecker);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (dumpmodeSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (dumpmodeSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_dumpmodeSelector);
 //
 //	Tracer special
 //	connect	(tracerButton, &QPushButton::clicked,
@@ -754,3 +760,10 @@ void	configHandler::handle_updateChecker	(int k) {
 void	configHandler::enable_scheduler		(bool b) {
 	scheduleButton	-> setEnabled (b);
 }
+
+void	configHandler::handle_dumpmodeSelector	(int k) {
+	(void)k;
+	bool b = this -> dumpmodeSelector -> isChecked ();
+	store (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, b ? 1 : 0);
+}
+	

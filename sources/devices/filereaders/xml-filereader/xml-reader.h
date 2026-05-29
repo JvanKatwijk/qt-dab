@@ -59,7 +59,7 @@ private:
 	std::atomic<bool>	continuous;
 	FILE		*file;
 	xmlDescriptor	*fd;
-	uint64_t	filePointer;
+	uint64_t	dataStart;
 	RingBuffer<std::complex<float>> *sampleBuffer;
 	xml_fileReader	*parent;
 	uint64_t	nrElements;

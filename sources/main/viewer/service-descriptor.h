@@ -33,6 +33,7 @@
 class	serviceDescriptor {
 public:
 	QString	channelName;
+	int	channel;
 	QString	serviceName;
 	uint32_t	SId;
 	uint8_t		SCIds;

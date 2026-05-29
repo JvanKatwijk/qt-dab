@@ -287,7 +287,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/findfilenames.h 
 	   ./sources/support/dl-cache.h 
 	   ./sources/support/content-table.h 
-	   ./sources/support/coordinates.h 
 	   ./sources/support/skin-handler.h 
 	   ./sources/support/mapport.h 
 	   ./sources/support/bandpass-filter.h 
@@ -308,6 +307,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/newpushbutton.h 
 	   ./sources/support/gui-elements/normalpushbutton.h 
 	   ./sources/support/gui-elements/smallcombobox.h 
+	   ./sources/support/gui-elements/special-combobox.h 
 	   ./sources/support/gui-elements/smallpushbutton.h 
 	   ./sources/support/gui-elements/smallqlistview.h 
 	   ./sources/support/gui-elements/smallspinbox.h 
@@ -415,7 +415,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/dc-filter.cpp
 	   ./sources/support/charsets.cpp 
 	   ./sources/support/content-table.cpp 
-	   ./sources/support/coordinates.cpp 
 	   ./sources/support/crc-handlers.cpp 
 	   ./sources/support/dab-params.cpp 
 	   ./sources/support/ITU_tables.cpp 
@@ -452,6 +451,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/newpushbutton.cpp 
 	   ./sources/support/gui-elements/normalpushbutton.cpp 
 	   ./sources/support/gui-elements/smallcombobox.cpp 
+	   ./sources/support/gui-elements/special-combobox.cpp 
 	   ./sources/support/gui-elements/smallpushbutton.cpp 
 	   ./sources/support/gui-elements/smallqlistview.cpp 
 	   ./sources/support/gui-elements/smallspinbox.cpp 
@@ -512,6 +512,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/gui-elements/newpushbutton.h 
 	     ./sources/support/gui-elements/normalpushbutton.h 
 	     ./sources/support/gui-elements/smallcombobox.h 
+	     ./sources/support/gui-elements/special-combobox.h 
 	     ./sources/support/gui-elements/smallpushbutton.h 
 	     ./sources/support/gui-elements/smallqlistview.h 
 	     ./sources/support/gui-elements/smallspinbox.h 
@@ -527,7 +528,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/timetable-control.h
 	     ./sources/support/time-table.h
 	     ./sources/support/content-table.h
-	     ./sources/support/coordinates.h
 	     ./sources/support/skin-handler.h
 	     ./sources/support/mapport.h
 	     ./sources/support/http-handler.h
