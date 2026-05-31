@@ -55,6 +55,7 @@ void	audioSelector::addtoList	(const QString &channel) {
 }
 
 void	audioSelector::select_channel	(QModelIndex m) {
+
 	emit selected (audioChannels. at (m. row ()), m. row ());
 }
 
@@ -65,6 +66,17 @@ int	audioSelector::set_channel	(const QString &channel) {
 	}
 	return -1;
 }
+
+void	audioSelector::clear	() {
+	audioChannels	= QStringList ();
+        channelList. setStringList (audioChannels);
+        selectorDisplay -> setModel (&channelList);
+        selectorDisplay -> adjustSize ();
+        adjustSize ();
+}
+
+
+
 
 	
 	

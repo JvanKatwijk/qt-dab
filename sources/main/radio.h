@@ -644,6 +644,7 @@ public slots:
 //
 //	for the UpdateChecker
 	void			process_updateCheck	(bool);
+//
 //	Local signals
 	void			no_signal_found		();
 	void			closeEvent		(QCloseEvent *event);

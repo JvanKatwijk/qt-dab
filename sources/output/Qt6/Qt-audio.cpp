@@ -257,6 +257,6 @@ bool currentDeviceinList = false;
 	   selectDevice (0, currentDevice. description ());
 	}
 	
-//	emit deviceListChanged ();
+	emit deviceListChanged ();
 }
 

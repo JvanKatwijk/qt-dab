@@ -4269,8 +4269,17 @@ void	RadioInterface::handle_tiiCollisions     (int b) {
 void	RadioInterface::deviceListChanged	() {
 #ifndef	TCP_STREAMER
 QStringList streams	= reinterpret_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
-//	theConfigHandler -> fill_streamTable (streams);
-//	theConfigHandler -> show_streamSelector (true);
+	QString currentOne =
+	         value_s (theQSettings, SOUND_HANDLING,
+	                              AUDIO_STREAM_NAME, "default");
+
+	streamOutSelector. clear ();
+	for (auto sle : streams)
+	   streamOutSelector. addtoList (sle);
+	streamOutSelector. show ();
+	int k = streamOutSelector. set_channel (currentOne);
+	if (k >= 0) 
+	   theAudioPlayer -> selectDevice (k, currentOne);
 #endif
 }
 //
