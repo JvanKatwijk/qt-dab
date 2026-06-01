@@ -142,16 +142,14 @@ QTranslator	theTranslator;
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 
-	dabSettings. beginGroup ("SKIN_HANDLING");
-	QString skin    = dabSettings. value ("skin", "globstyle"). toString ();
-	dabSettings. endGroup ();
 
-	skin    = skin == "Combinear" ? ":res/skins/Combinear.qss" :
-	          skin == "globstyle" ? ":res/skins/globstyle.qss":
-	          skin == "Adaptic"   ? ":res/skins/Adaptic.qss" :
-	          skin == "Darkeum"   ? ":res/skins/Darkeum.qss" :
-	          skin == "EasyCode"  ? ":res/skins/EasyCode.qss":
-	          skin == "Diffnes"   ? ":res/skins/Diffnes.qss" : "";
+	QString skin	= ":res/skins/globstyle.qss";
+//	skin    = skin == "Combinear" ? ":res/skins/Combinear.qss" :
+//	          skin == "globstyle" ? ":res/skins/globstyle.qss":
+//	          skin == "Adaptic"   ? ":res/skins/Adaptic.qss" :
+//	          skin == "Darkeum"   ? ":res/skins/Darkeum.qss" :
+//	          skin == "EasyCode"  ? ":res/skins/EasyCode.qss":
+//	          skin == "Diffnes"   ? ":res/skins/Diffnes.qss" : "";
 
 	QApplication a (argc, argv);
 	if (skin != "") {

@@ -32,7 +32,7 @@ class	tdc_dataHandler : public virtual_dataHandler {
 Q_OBJECT
 public:
 		tdc_dataHandler		(RadioInterface *,
-	                                 RingBuffer<uint8_t> *, int16_t);
+	                                 int32_t, uint8_t);
 		~tdc_dataHandler();
 	void	add_mscDatagroup	(const std::vector<uint8_t> &);
 private:
@@ -42,9 +42,11 @@ private:
                                          int32_t offset, int32_t length);
 	bool	serviceComponentFrameheaderCRC (uint8_t *, int16_t, int16_t);
 	RadioInterface	 *myRadioInterface;
-	RingBuffer<uint8_t> *dataBuffer;
+
+	int32_t		SId;
+	uint8_t		SCIds;
 signals:
-	void	bytesOut		(int, uint32_t);
+	void	frameOut		(int, QByteArray, int32_t, uint8_t);
 };
 
 

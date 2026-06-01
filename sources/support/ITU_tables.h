@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2016 .. 2025
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,33 +20,25 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+//
 #pragma once
 
-#include	<QDialog>
-#include	<QLabel>
-#include	<QLineEdit>
-#include	<QPushButton>
+#include	<QString>
+#include	<stdint.h>
 
-class	QSettings;
+QString		getASCTy		(int16_t ASCTy);
+QString		getDSCTy		(uint16_t key);
+QString		getUserApplicationType	(int16_t appType);
+QString		getFECscheme		(int16_t FEC_scheme);
+QString		getProtectionLevel	(bool shortForm, int16_t protLevel);
+QString		getCodeRate		(bool shortForm, int16_t protLevel);
 
-class	coordinates: public QDialog {
-Q_OBJECT
-public:
-		coordinates	(QSettings *);
-		~coordinates	();
-private:
-	QSettings	*dabSettings;
-	QLabel		*latitudeText;
-        QLineEdit	*latitude;
-        QLabel		*longitudeText;
-        QLineEdit	*longitude;
-	QPushButton	*acceptButton;
-	bool		latitudeValue;
-	bool		longitudeValue;
-private slots:
-	void		setLatitude 	();
-	void		setLongitude	();
-	void		handleAcceptButton () ;
-};
+QString		getCountry		(int tableNo,
+	                                 uint8_t ecc, uint8_t countryId);
+QString		get_ITU_Code		(int tableNo,
+	                                 uint8_t ecc, uint8_t countryId);
+QString		getLanguage		(int table, uint16_t key);
+QString		getProgramType		(int table, uint16_t key);
+
 
 

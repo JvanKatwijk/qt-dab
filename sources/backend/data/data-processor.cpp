@@ -46,16 +46,18 @@
 	                                     my_rsDecoder (8, 0435, 0, 1, 16) {
 	this	-> myRadioInterface	= mr;
 	this	-> SId			= pd -> SId;
+	this	-> SCIds		= pd -> SCIds;
 	this	-> bitRate		= pd -> bitRate;
 	this	-> DSCTy		= pd -> DSCTy;
 	this	-> appType		= pd -> appType;
 	this	-> packetAddress	= pd -> packetAddress;
-	this	-> DGflag		= pd -> DGflag;
+	this	-> DG_flag		= pd -> DG_flag;
 	this	-> FEC_scheme		= pd -> FEC_scheme;
 	this	-> dataBuffer		= dataBuffer;
 	this	-> traceFlag		= false;
 	teller				= 0;
 	fouten				= 0;
+
 	tracer. resize (0);
 	AppVector. resize (RSDIMS * FRAMESIZE + 48);
 	FECVector. resize (9 * 22);
@@ -79,7 +81,7 @@
 	      else
 	      if (appType == 4)
 	         my_dataHandler.
-	              reset (new tdc_dataHandler (mr, dataBuffer, appType));
+	              reset (new tdc_dataHandler (mr, SId, SCIds));
 	      else {
 	         fprintf (stderr, "DSCTy 5 with appType %d not supported\n",
 	                                                           appType);
@@ -112,7 +114,7 @@ void	dataProcessor::addtoFrame (const std::vector<uint8_t>  &outV) {
 //	when the DG flag is on and there are no datagroups for DSCTy5
 std::vector<uint8_t> VV = outV;
 	if ((this -> DSCTy == 5) &&
-	    (this -> DGflag))	// no datagroups
+	    (this -> DG_flag))	// no datagroups
 	      handleTDCAsyncstream (VV. data (), 24 * bitRate);
 	   else
 	      handlePackets (VV. data (), 24 * bitRate);
@@ -365,16 +367,27 @@ int	dataProcessor::addPacket (const uint8_t *vec,
 //	of packets, first dispatch and separate the packet sequence
 //	into its elements
 //
+static
+uint8_t bitList [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+
 void	dataProcessor::handle_RSpackets (const std::vector<uint8_t> &vec) {
 	for (int baseP = 0; baseP < RSDIMS * FRAMESIZE; ) {
 	   int16_t packetLength = (((vec [baseP] & 0xc0) >> 6) + 1) * 24;
-	   handle_RSpacket (&(vec. data ()) [baseP], packetLength);
+//	   handle_RSpacket (&(vec. data ()) [baseP], packetLength);
+	   std::vector<uint8_t> bitData (packetLength * 8);
+	   for (int i = 0; i < packetLength; i ++) {
+//	      uint8_t temp = packet [i];
+	      uint8_t temp = vec [baseP + i];
+	      for (int j = 0; j < 8; j ++) {
+	         uint8_t theBit = (temp & bitList [j]) == 0 ? 0 : 1;
+	         bitData [8 * i + j] = theBit;
+	      }
+	   }
+	   handlePacket (bitData. data ());
 	   baseP += packetLength;
 	}
 }
 
-static
-uint8_t bitList [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 //
 //	The RS data is with packed bytes, while the basis infrastructure
 //	is with bit sequences, so to keep things simple, we just

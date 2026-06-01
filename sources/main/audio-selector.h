@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2016 .. 2025
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of the Qt-DAB program
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,21 +20,37 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-//
+
 #pragma once
 
-#include <cinttypes>
+#include	<QFrame>
+#include	<QLabel>
+#include <QListView>
+#include <QStringListModel>
+#include <QStringList>
+#include <cstdint>
+class	RadioInterface;
+//
+//	In some cases we can handle the selection of a device
+//	if more than one of the same type is connected
+class   audioSelector: public QFrame {
+Q_OBJECT
+public:
+			audioSelector	(RadioInterface *);
+			~audioSelector	();
+	void		addtoList	(const QString &);
+	int		set_channel	(const QString &);
+	void		clear		();
 
-const char * getASCTy (int16_t ASCTy);
-const char * getDSCTy (int16_t DSCTy);
-const char * getLanguage (int16_t language);
-const char * getCountry	(uint8_t ecc, uint8_t countryId);
-//const char * getProgramType_Not_NorthAmerica(int16_t programType);
-const char * getProgramType (int16_t programType);
-const char * getProgramType_For_NorthAmerica(int16_t programType);
-//const char * getProgramType(bool, uint8_t interTabId, int16_t programType);
-const char * getUserApplicationType(int16_t appType);
-const char * getFECscheme(int16_t FEC_scheme);
-const char * getProtectionLevel (bool shortForm, int16_t protLevel);
-const char * getCodeRate (bool shortForm, int16_t protLevel);
+private:
+	QLabel		*toptext;
+	QListView 	*selectorDisplay;
+	QStringListModel channelList;
+	QStringList 	audioChannels;
+	RadioInterface	*myRadioInterface;
+private slots:
+	void		select_channel	(QModelIndex);
+signals:
+	void		selected	(const QString &, int);
+};
 

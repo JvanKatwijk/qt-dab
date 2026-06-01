@@ -173,6 +173,7 @@ public:
 	bool		selected;
 	QString		name;
 	uint32_t	SId;
+	uint8_t		SCIds;
 	uint16_t	subChId;
 	int		nrComps;
 	bool		isAudio;
@@ -216,7 +217,7 @@ class packetdata: public descriptorType {
 public:
 	int16_t DSCTy;
 	int16_t	FEC_scheme;
-	int16_t	DGflag;
+	int16_t	DG_flag;
 	int16_t	appType;
 	int16_t	compnr;
 	int16_t	packetAddress;
@@ -230,8 +231,9 @@ public:
 	int16_t	ASCTy;
 	int16_t	language;
 	int16_t	programType;
+	uint8_t	ecc;
 	int16_t	compnr;
-	std::vector<int> fmFrequencies;
+	std::vector<uint32_t> fmFrequencies;
 	audiodata() {
 	   type	= AUDIO_SERVICE;
 	}
@@ -254,6 +256,8 @@ public:
 	uint8_t		isActive;
 	QString		serviceName;
 	QString		shortName;
+	bool		PS_flag;
+	uint8_t		ecc;
 	uint32_t	SId;
 	uint16_t	SCIds;
 //	the following values are subChannel values
@@ -267,7 +271,7 @@ public:
 	uint16_t	language;
 //
 	uint16_t	programType;
-	std::vector<int> fmFrequencies;
+	std::vector<uint32_t> fmFrequencies;
 	uint16_t	ASCTy_DSCTy;
 	uint16_t	packetAddress;
 	uint16_t	appType;
@@ -277,6 +281,7 @@ public:
 	   FEC_scheme	= 0;
 	   packetAddress	= 0;
 	   isRunning		= false;
+	   ecc		= 0;
 	}
 	~contentType () {}
 };

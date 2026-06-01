@@ -431,17 +431,24 @@ void	ensembleHandler::add_to_favorites (const QString &s, const QString &c) {
 //	service from the favorites, so here we have to check on being
 //	selected
 
-bool	ensembleHandler::alreadyIn	(serviceId &ed) {
+bool	ensembleHandler::alreadyIn	(const descriptorType &ed) {
 	for (auto &s:ensembleList)
-	   if (s. name == ed. name)
+	   if (s. name == ed. serviceName)
 	      return true;
 	return false;
 }
 
-bool	ensembleHandler::addToEnsemble (serviceId &ed) {
-	if (alreadyIn (ed))
+bool	ensembleHandler::addToEnsemble (const descriptorType &sr) {
+	if (alreadyIn (sr))
 	   return false;
 
+	serviceId ed;
+	ed. name	= sr. serviceName;
+	ed. SId		= sr. SId;
+	ed. subChId	= sr. subchId;
+	ed. SCIds	= sr. SCIds;
+	ed. channel	= sr. channel;
+	
 	if (handlePresets) {
 	   int index = inFavorites (ed. name);
 	   ed. selected = (index >= 0) && (favorites [index]. selected);

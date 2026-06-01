@@ -26,6 +26,7 @@
 
 #include	<QObject>
 #include	<QFrame>
+#include	<QPixmap>
 #include	"ui_technical_data.h"
 #include	"dab-constants.h"
 #include	"audio-display.h"
@@ -44,11 +45,12 @@ public:
 	                         RingBuffer<std::complex<int16_t>> *audioData);
 		~techWindow	();
 	void	storePosition		();
-	void	showServiceData		(audiodata *);
+	void	showServiceData		(int, audiodata *);
+	void	showServiceData		(int, audiodata *, const QPixmap &);
 	void	cleanUp			();
 	void	isDABPlus		(bool);
 	void	hideMissedLabel		();
-	void	updateFM		(std::vector<int> &);
+	void	updateFM		(std::vector<uint32_t> &);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
@@ -57,6 +59,7 @@ private:
 
 	void			setButtonColors	(QPushButton *,
 	                                            const QString &buttonName);
+	void			showDetails     (int, audiodata *);
 
 public slots:
 	void		showFrameErrors		(int);
@@ -70,10 +73,10 @@ public slots:
 	void		showSubChId		(int);
 	void		showStartAddress	(int);
 	void		showLength		(int);
-	void		showLanguage		(int);
+	void		showLanguage		(int, int);
 	void		showUep			(int, int);
 	void		showCodeRate		(int, int);
-	void		showFm			(std::vector<int> &);
+	void		showFm			(const std::vector<uint32_t> &);
 	void		showRate		(int, bool, bool);
 	void		showStereo		(bool);
 

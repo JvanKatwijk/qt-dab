@@ -56,6 +56,7 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	                            deviceHandler	*theRig_i,
 	                            RingBuffer<Complex> *spectrumBuffer_i):
 	                               theRig (theRig_i),
+	                               dcRemover (43),
 	                               spectrumBuffer (spectrumBuffer_i) {
 	bufferSize		= 32768;
 	localBuffer. resize (bufferSize);
@@ -145,25 +146,20 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	}
 //	OK, we have samples!!
 	for (int i = 0; i < nrSamples; i ++) {
-	   float Alpha	= 1.0 / SAMPLERATE;
-	   std::complex<float> v = buffer [i];
-	   if (dcRemoval) {
-	      dcReal		= compute_avg (dcReal, real (v), Alpha);
-	      dcImag		= compute_avg (dcImag, imag (v), Alpha);
-	      v = std::complex<float> (real (v) - dcReal, imag (v) - dcImag);
-//	      v = theEqualizer. equalize (v);
-	      DABFLOAT real_V	= abs (real (v));
-	      DABFLOAT imag_V	= abs (imag (v)); 
-	      IQ_Real		= compute_avg (IQ_Real, real_V, Alpha);
-	      IQ_Imag		= compute_avg (IQ_Imag, imag_V, Alpha);
-	      static int teller = 0; 
-	      if (++teller >= SAMPLERATE) {
-	         show_dcOffset (10 * (IQ_Real - IQ_Imag) / 
-	                                     ((IQ_Real + IQ_Imag) / 2));
-	         teller = 0;
-	      }
-//	      v		= std::complex<float> (IQ_Real, IQ_Imag);
-	   }
+	   float Alpha  = 1.0 / SAMPLERATE;
+           std::complex<float> v = buffer [i];
+           DABFLOAT real_V      = abs (real (v));
+           DABFLOAT imag_V      = abs (imag (v));
+           IQ_Real              = compute_avg (IQ_Real, real_V, Alpha);
+           IQ_Imag              = compute_avg (IQ_Imag, imag_V, Alpha);
+           static int teller = 0;
+           if (++teller >= SAMPLERATE) {
+              show_dcOffset (10 * (IQ_Real - IQ_Imag) / 
+                                          ((IQ_Real + IQ_Imag) / 2));
+              teller = 0;              
+           }
+           if (dcRemoval) 
+              v                 = dcRemover. filter (v);
 
 //	first: adjust frequency. We need Hz accuracy
 //	Note that "phase" itself might be negative

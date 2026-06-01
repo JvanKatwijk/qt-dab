@@ -52,7 +52,7 @@
 	this	-> dabSettings	= settings;
 	int  mapPort		=
 	            value_i (settings, MAP_HANDLING,
-	                                  MAP_PORT_SETTING, 8080);
+	                                  HTTP_PORT, 8080);
 	QString address		= 
 	            value_s (settings, MAP_HANDLING, BROWSER_ADDRESS,
 	                                                "http://localhost");

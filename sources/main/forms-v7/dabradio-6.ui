@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>313</height>
+    <height>384</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-6.8</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_12">
+  <layout class="QHBoxLayout" name="horizontalLayout_10">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -41,7 +41,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="transmitter_country">
+        <widget class="QLabel" name="countryLabel">
          <property name="text">
           <string>country</string>
          </property>
@@ -60,7 +60,7 @@
           <x>0</x>
           <y>0</y>
           <width>239</width>
-          <height>159</height>
+          <height>230</height>
          </rect>
         </property>
        </widget>
@@ -460,8 +460,8 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_10">
-       <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
         <widget class="smallPushButton" name="configButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -471,7 +471,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="smallPushButton" name="spectrumButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -481,7 +481,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="2">
         <widget class="smallPushButton" name="httpButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -491,13 +491,53 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="3">
         <widget class="smallPushButton" name="scanButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide the scanmonitor. Scan control is completely moved to the scanmonitor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>scan</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="smallPushButton" name="resetButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset button: touching it will cause a reset, i.e back to a state where no syncing has taken place. File input - if selected - will restart from the beginning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>reset</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="smallPushButton" name="audioSelectButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audioselect button controls the visibility of the audio selector&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>audioselect</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="smallPushButton" name="etiButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching the eti button starts (or - if running - stops) the eri processor. Eti is format for encoding the DAB frames&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>eti</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="smallPushButton" name="devicewidgetButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This button controls the visibility of the device window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>device</string>
          </property>
         </widget>
        </item>

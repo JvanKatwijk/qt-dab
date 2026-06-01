@@ -537,71 +537,74 @@ void	ofdmHandler::getFrameQuality	(int	*totalFrames,
 //	just convenience functions
 //	ficHandler abstracts channel data
 
-int	ofdmHandler::getServiceComp	(const QString &s) {
-	return theFicHandler. getServiceComp (s);
+//	just convenience functions
+
+bool	ofdmHandler::isPrimaryService		(uint32_t SId, uint8_t SCIds) {
+	return theFicHandler. isPrimaryService (SId, SCIds);
 }
 
-int	ofdmHandler::getServiceComp	(uint32_t SId, int compnr) {
-	return theFicHandler. getServiceComp (SId, compnr);
+bool	ofdmHandler::isAudioService		(uint32_t SId, uint8_t SCIds) {
+	return theFicHandler. isAudioService (SId, SCIds);
 }
 
-//int	ofdmHandler::getServiceComp_SCIds	(uint32_t SId, int SCIds) {
-//	return theFicHandler. getServiceComp (SId, SCIds);
-//}
-
-bool	ofdmHandler::isPrimary (const QString &s) {
-	return theFicHandler. isPrimary (s);
+bool	ofdmHandler::isPacketService		(uint32_t SId, uint8_t SCIds) {
+	return theFicHandler. isPacketService (SId, SCIds);
 }
 
-bool	ofdmHandler::is_SPI	(const uint32_t SId) {
+bool	ofdmHandler::is_SPI			(uint32_t SId) {
 	return theFicHandler. is_SPI (SId);
 }
 
-uint16_t ofdmHandler::getAnnouncing	(uint16_t SId) {
-	return theFicHandler. getAnnouncing (SId);
+std::vector<uint8_t>
+        ofdmHandler::get_secondaryServices	(uint32_t SId) {
+	return theFicHandler. get_secondaryServices (SId);
 }
 
-int	ofdmHandler::getNrComps	(uint32_t SId) {
-	return theFicHandler. getNrComps (SId);
+int	ofdmHandler::FIG07_value		() {
+	return theFicHandler. FIG07_value ();
 }
 
-uint32_t ofdmHandler::getSId			(int index) {
-	return theFicHandler. getSId (index);
+void	ofdmHandler::getFreqs			(uint32_t SId,
+	                                           std::vector<uint32_t> &fl) {
+	theFicHandler. getFreqs (SId, fl);
 }
 
-uint8_t	ofdmHandler::serviceType		(int index) {
-	return theFicHandler. serviceType (index);
+void	ofdmHandler::getServiceName		(QString &serviceName,
+	                                         QString &shortName,
+	                                         uint32_t SId, uint8_t SCIds) {
+	theFicHandler. getServiceName (serviceName, shortName, SId, SCIds);
 }
 
-void	ofdmHandler::audioData			(int index, audiodata &d) {
-	theFicHandler. audioData (index, d);
+void	ofdmHandler::mapNameToId		(const QString &name,
+                                                    uint32_t &SId,
+	                                                  uint8_t &SCIds) {
+	theFicHandler. mapNameToId (name, SId, SCIds);
 }
 
-void	ofdmHandler::packetData			(int index, packetdata &pd) {
-	theFicHandler. packetData (index, pd);
+void	ofdmHandler::audioData			(uint32_t SId, uint8_t SCIds,
+	                                                audiodata &d) {
+	theFicHandler. audioData (SId, SCIds, d);
 }
 
-std::vector<int>	ofdmHandler::getFrequency	(const QString &s) {
-	return theFicHandler. getFrequency (s);
+void	ofdmHandler::packetData			(uint32_t SId, uint8_t SCIds,
+	                                                packetdata &pd) {
+	theFicHandler. packetData (SId, SCIds, pd);
 }
 
 QList<contentType> ofdmHandler::contentPrint	() {
 	QList<contentType> res = theFicHandler. contentPrint ();
 	for (auto &ct : res) 
-	   ct. isRunning = serviceRuns (ct. SId, ct. subChId);
+	   ct. isRunning = serviceRuns (ct. SId, ct. SCIds);
 	return res;
 }
-
 int	ofdmHandler::freeSpace		() {
 	return theFicHandler. freeSpace ();
 }
 
 //
-void	ofdmHandler::stopService (const QString &serviceName,
-	                               int subChId, int flag) {
+void	ofdmHandler::stopService (uint32_t SId, uint8_t SCIds) {
 	if (!scanMode)
-	   theMscHandler. stopBackend (serviceName,
-	                               subChId, flag);
+	   theMscHandler. stopBackend (SId, SCIds);
 }
 
 bool    ofdmHandler::setAudioChannel (audiodata &d,

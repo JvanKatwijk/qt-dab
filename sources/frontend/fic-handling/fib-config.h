@@ -31,101 +31,32 @@
 #include	<QString>
 #include	"dab-constants.h"
 
-class	ensemble;
+#include	"fib-dbtypes.h"
 class	RadioInterface;
 
 class	fibConfig: public QObject {
 Q_OBJECT
 public:
-			fibConfig	(ensemble *, RadioInterface *);
+			fibConfig	(RadioInterface *);
 			~fibConfig	();
 //
 //	The db types are included
 //	Most components are a direct translation of the
 //	FIG 
-#include	"fib-dbtypes.h"
-//	SId is a small optimization, not really needed
-//	of service components
-	void		reset			();
-	int		freeSpace		();
-	uint32_t	getSId			(const int);
-	bool		SId_exists		(const int);
-	bool		SCId_exists		(const int);
-	bool		subChId_exists		(const int);
 
-	bool		SC_G_element_exists	(const int SId,
-	                                             const int SCIds);
-	bool		announcement_exists	(const int, const int);
-	bool		language_comp_exists	(int);
-
-	bool		is_SPI			(const uint32_t);
-	uint8_t		serviceType		(const int);
-	int		getNrComps		(const uint32_t);
-	int		getServiceComp		(const QString &);
-	int		getServiceComp		(const uint32_t, const int);
-	int		getServiceComp_SCIds	(const uint32_t, const int);
-
-	int		subChId_for_SId		(const int, const uint32_t);
-	int		subChId_in_SCId		(const int);
-	void		audioData		(const int, audiodata &);
-	void		packetData		(const int, packetdata &);
-
-	uint16_t	getAnnouncing		(uint16_t);
-
-	int		nrChannels		();
-	void		getChannelInfo		(channel_data *, const int);
-	QList<contentType>
-	                contentPrint		();
-
-	void		set_FECscheme		(const int, int);
-
-	void		check_announcements	(uint8_t, uint8_t, uint8_t);
-
-	ensemble	*theEnsemble;
-	
-	void		add_to_SId_table	(const SId_struct &comp);
-	void		add_to_subChannel_table (const subChannel &comp);
-//
-//	This one returns the index
-//	many operations are based on finding the component,
-//	that is why the index is passed as result
-	int		add_to_SC_C_table	(const serviceComp_C &comp);
-	void		add_to_SC_P_table	(const serviceComp_P &comp);
-	void		add_to_SC_G_table 	(const serviceComp_G &comp);
-	void		add_to_language_table 	(const SC_language &comp);
-	void		add_to_apptype_table 	(const AppType &comp);
-	void		add_to_announcement_table (const FIG18_cluster &comp);
-
-	int32_t dateTime [8];
-	int		subChannelOf		(int index);
-	int		findIndex_subChannel_table (uint8_t subChId);
-	int		findIndexApptype_table	(uint32_t SId, uint8_t SCIds);
-	bool		compIsKnown		(serviceComp_C &newComp);
-//
-private:
-//	for each type a table
-	std::vector<SId_struct>		SId_table;		// FIG0/2
-	std::vector<subChannel>		subChannel_table;	// FIG0/1
-	std::vector<serviceComp_C>	SC_C_table;		// FIG0/2
-	std::vector<serviceComp_P>	SC_P_table;		// FIG0/3
-	std::vector<SC_language>	language_table;		// FIG0/5
-	std::vector<serviceComp_G>	SC_G_table;		// FIG0/8
-	std::vector<AppType>		AppType_table;		// FIG0/13
-	std::vector<programType> 	programType_table;	// FIG0/17
-	std::vector<FIG18_cluster>	announcement_table;	// FIG0/18
-
-	int	SCIdsOf			(int index);
-	int	dabTypeOf		(int index);
-	int	languageOf 		(int index);
-	int	appTypeOf		(int index);
-	int	FEC_schemeOf		(int index);
-	int	packetAddressOf		(int index);
-	int	DSCTy			(int index);
-	int	DG_flag			(int index);
-	int	findIndex_SC_P_Table	(uint16_t SCId);
-	int	SCIds_of		(uint32_t SId, uint16_t subCh);
-
-signals:
-	void	announcement		(int, int);
+        std::vector<FIG01>      FIG01_stack;
+	bool	in_FIG01_stack	(const FIG01 &);
+        std::vector<FIG02>      FIG02_stack;
+        std::vector<FIG03>      FIG03_stack;
+	bool	in_FIG03_stack	(const FIG03 &);
+	int32_t	FIG07_value;
+	bool	in_FIG08_stack	(const FIG08 &);
+	std::vector<FIG08>      FIG08_stack;
+        std::vector<FIG013>     FIG013_stack;
+	bool	in_FIG013_stack	(const FIG013 &);
+        std::vector<FIG014>     FIG014_stack;
+	bool	in_FIG014_stack	(const FIG014 &);
+	void		reset		();
+	int		freeSpace	();
 };
 

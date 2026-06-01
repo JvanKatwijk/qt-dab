@@ -36,6 +36,7 @@
 #define	AUTO_HTTP		"auto_http"
 #define	SAVE_HTTP		"save_http"
 #define	MAP_HANDLING		"MAP_HANDLING"
+#define	DO_UPDATECHECK		"do_updateCheck"
 #define	TII_THRESHOLD		"tiiThreshold"
 #define	TII_FILTER		"tiiFilter"
 #define	MUTE_TIME_SETTING	"muteTime"
@@ -60,8 +61,9 @@
 #define	SKIN_SETTING		"skin"
 #define	SAVE_SERVICE_SETTING	"saveService"
 
-#define	MAP_PORT_SETTING	"mapPort"
+#define	HTTP_PORT		"mapPort"
 #define	MAP_TIMEOUT		"timeOut"
+#define	TPEG_PORT		"tpregPort"
 
 #define	SHOWALL_SETTING		"showAll_Setting"
 #define	SHOWALL_TII		"show_all_tii"

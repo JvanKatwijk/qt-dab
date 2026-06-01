@@ -22,7 +22,7 @@
  */
 
 #include	"basic-print.h"
-#include	"dab-tables.h"
+#include	"ITU_tables.h"
 
 //	the fib decoder passes on the (more or less) raw data,
 //	needed to show the attributes of the different services
@@ -31,7 +31,7 @@ static
 const char *audioHeader =
 	"; serviceName; short name;  serviceId; subChannel; start address (CU's); "\
 	" length (CU's); protection; code rate; bitrate; dab type;" \
-	" language; program type; fm freq;";
+	" language; program type; fm freq; (opt. country)";
 static
 const char *packetHeader =
 	"; serviceName; short name; serviceId; subChannel; start address (CU's); "\
@@ -58,14 +58,20 @@ QString segmentLine (const QString s) {
 	           ";" +
 	           ";" +
 	           ";" +
+	           ";" +
 	           ";";
 }
-	basicPrint::basicPrint	()	{}
+	basicPrint::basicPrint	(int table, uint32_t Eid, uint8_t ECC)	{
+	this	-> tableNo	= table;
+	this	-> Eid		= Eid;
+	this	-> ECC		= ECC;
+}
 
 	basicPrint::~basicPrint	()	{}
 
 QStringList basicPrint::print (QList<contentType> serviceData) {
 QStringList out;
+
 	bool hasContents = false;
 	for (auto &ct : serviceData) {
 	   if (ct. TMid != 0)	// no audio
@@ -75,7 +81,8 @@ QStringList out;
 	      out <<  QString (audioHeader);
 	   }
 	   hasContents = true;
-	   out << audioData (ct);
+	   QString countryName	= getCountry (tableNo, ECC, (Eid >> 12) & 0xF);
+	   out << audioData (ct, countryName);
 	}
 	hasContents	= false;
 	for (auto &ct : serviceData) {
@@ -107,7 +114,11 @@ QStringList out;
 }
 
 
-QString	basicPrint::audioData	(contentType &ct) {
+QString	basicPrint::audioData	(contentType &ct, const QString &countryName) {
+QString serviceCountry = "";
+	serviceCountry =  ct. ecc != 0 ?
+	                getCountry (tableNo, ct. ecc, (ct. SId >> 12) & 0xF):
+	                getCountry (tableNo, ECC, (ct. SId >> 12) & 0xF);
 	return QString (ct. isRunning ? "+" : "") + ";" +
 	       QString (ct. serviceName)+ ";" +
 	       QString (ct. shortName)+ ";" +
@@ -119,10 +130,12 @@ QString	basicPrint::audioData	(contentType &ct) {
 	       ct. codeRate + ";" +
 	       QString::number (ct. bitRate) + ";" +
 	       (ct. ASCTy_DSCTy == DAB_PLUS ? "DAB+" : "DAB") + ";" +
-	       getLanguage (ct. language) + ";" +
-	       getProgramType (ct. programType) + ";" +
+	       getLanguage (tableNo, ct. language) + ";" +
+	       getProgramType (tableNo, ct. programType) + ";" +
 	       ((ct. fmFrequencies. size () > 0) ?
-                   QString::number (ct. fmFrequencies [0]) : " ");
+                   QString::number (ct. fmFrequencies [0]) : " ") + ";" +
+	       (serviceCountry == "" ? "":
+	          serviceCountry == countryName ? "" : serviceCountry);
 }
 
 static
@@ -212,6 +225,6 @@ QString s1	= audioHeader;
 QString s2	= packetHeader;
 QStringList l1 = s1. split (";");
 QStringList l2 = s2. split (";");
-	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
+	return l1. size () >= l2. size () ? l1. size () : l2. size ();
 }
 

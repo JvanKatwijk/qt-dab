@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2024
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,26 +21,44 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #pragma once
 
-#include	<QList>
-#include	<QString>
+#include	<QWidget>
+#include	<QObject>
+#include	<QScrollArea>
+#include	<QTableWidget>
 #include	<QStringList>
-#include	"dab-constants.h"
+#include	<QTableWidgetItem>
+#include	<QObject>
+#include	<QString>
 
-class basicPrint {
+class	RadioInterface;
+class	QSettings;
+
+class   processMonitor:public QObject {
+Q_OBJECT
+
 public:
-			basicPrint	(int, uint32_t, uint8_t);
-			~basicPrint	();
-	QStringList	print		(QList<contentType>);
-	int		scanWidth	();
+		processMonitor	(RadioInterface *);
+		~processMonitor	();
+	void	show		();
+	void	hide		();
+	bool	isVisible	();
+	void	addProcess	(const QString &, uint32_t, 
+	                         uint8_t SCIds, uint8_t subChId, int);
+	void	removeProcess	(const QString &, uint32_t, uint8_t);
+	void	clearTable	();
 private:
-	int		tableNo;
-	uint32_t	Eid;
-	uint8_t		ECC;
-	QString		audioData	(contentType &, const QString &);
-	QString		packetData	(contentType &);
-	QString		secondaryData	(contentType &);
+        QString         channel;
+
+        int             columns;
+        RadioInterface  *theRadio;
+        QScrollArea     *myWidget;
+        QTableWidget    *contentWidget;
+public slots:
+	void		process_clickRequest	(int, int);
+signals:
+	void		handle_clickRequest	(const QString &);
 };
+
 

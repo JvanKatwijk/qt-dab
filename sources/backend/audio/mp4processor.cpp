@@ -62,6 +62,7 @@
 	this	-> frameBuffer	= frameBuffer;
 	this	-> dump		= dump;
 	this	-> backgroundFlag	= backgroundFlag;
+
 	connect (this, &mp4Processor::show_frameErrors,
 	         mr, &RadioInterface::show_frameErrors);
 	connect (this, &mp4Processor::show_rsErrors,
@@ -281,8 +282,10 @@ stream_parms    streamParameters;
 	                                                  segmentSize);
 	      newFrame (segmentSize);
 	   }
-	   else
+	   else { 
 	      fwrite (fileBuffer. data (), 1, segmentSize, dump);
+	      continue;
+	   }
 
 //	first handle the pad data if any, but only for foreground services
 //	notice that backgroundFlag <==> (dump != nullptr)

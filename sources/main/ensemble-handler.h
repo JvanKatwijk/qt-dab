@@ -45,8 +45,8 @@ public:
 	                                 const QString & favoritesFile);
 		~ensembleHandler	();
 	void	reset			();
-	bool	addToEnsemble		(serviceId &);
-	bool	alreadyIn		(serviceId &);
+	bool	addToEnsemble		(const descriptorType &);
+	bool	alreadyIn		(const descriptorType &);
 	void	remove			(const QString &);
 	void	addFavoriteFromScanList	(const QString &);
 	void	reportStart		(const QString &);

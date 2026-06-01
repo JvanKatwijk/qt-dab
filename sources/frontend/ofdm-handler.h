@@ -83,20 +83,28 @@ public:
 	void		setTIIFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
-	int		getServiceComp		(const QString &);
-	int		getServiceComp		(uint32_t, int);
-//	int		getServiceComp_SCIds	(uint32_t SId, int SCIds);
-	bool		isPrimary		(const QString &);
 
-	bool		is_SPI			(const uint32_t);
-	uint16_t	getAnnouncing		(uint16_t);
-	uint32_t	getSId			(int);
-	uint8_t		serviceType		(int);
-        void		audioData		(int, audiodata &);
-        void		packetData		(int, packetdata &);
-	int		getNrComps		(uint32_t);
+//	uint16_t	getAnnouncing		(uint16_t);
+	bool		isPrimaryService	(uint32_t, uint8_t);
+	bool		isAudioService		(uint32_t, uint8_t);
+	bool		isPacketService		(uint32_t, uint8_t);
+	bool		is_SPI			(uint32_t);
+	std::vector<uint8_t>
+                 get_secondaryServices		(uint32_t SId);
+
+	int		FIG07_value		();
+	void		getFreqs		(uint32_t,
+	                                              std::vector<uint32_t> &);
+	void		getServiceName		(QString &, QString &,
+	                                         uint32_t, uint8_t);
+	void		mapNameToId		(const QString &,
+	                                               uint32_t &, uint8_t &);
+        void		audioData		(uint32_t, uint8_t,
+	                                                     audiodata &);
+        void		packetData		(uint32_t, uint8_t,
+	                                                     packetdata &);
 	uint32_t	julianDate		();
-	std::vector<int>	getFrequency	(const QString &);
+//	std::vector<int>	getFrequency	(const QString &);
 	QList<contentType>	contentPrint	();
 	int		freeSpace		();
 	void		startFicDump		(const QString &);
@@ -107,9 +115,7 @@ public:
 	void		setFreqCorrelator	(uint8_t);
 //	for the mscHandler
 //	void		resetServices		();
-//	void		stopService		(descriptorType *, int);
-	void		stopService		(const QString &,
-	                                         int, int);
+	void		stopService		(uint32_t SId, uint8_t SCIds);
 	bool		setAudioChannel		(audiodata &,
 	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         FILE *, int);

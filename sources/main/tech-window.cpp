@@ -25,7 +25,7 @@
 #include	"tech-window.h"
 #include	"radio.h"
 #include	"audio-display.h"
-#include	"dab-tables.h"
+#include	"ITU_tables.h"
 #include	<QColorDialog>
 
 #include	"settingNames.h"
@@ -126,15 +126,31 @@ void	techWindow::cleanUp	() {
 	audiorateLabel		-> setText (QString::number (0));
 }
 
-void	techWindow::showServiceData	(audiodata *ad) {
-	showServiceName		(ad -> serviceName, ad -> shortName);
+void	techWindow::showServiceData	(int tableNo, audiodata *ad) {
+	programName		-> setText (ad -> serviceName);
+	shortnameLabel		-> setText (ad -> shortName);
+	showDetails (tableNo, ad);
+}
+
+void	techWindow::showServiceData	(int tableNo, audiodata *ad,
+	                                        const QPixmap &p) {
+	programName		-> setText (ad -> serviceName);
+	int height = 60; 
+	int width =
+	         static_cast<float>(p. width ()) / p. height () * height;
+	shortnameLabel		->
+	                 setPixmap (p. scaled (width, height)); 
+	showDetails (tableNo, ad);
+}
+
+void	techWindow::showDetails		(int tableNo, audiodata *ad) {
 	showServiceId		(ad -> SId);
 	showStartAddress	(ad -> startAddr);
 	showLength		(ad -> length);
 	showSubChId		(ad -> subchId);
 	showUep			(ad -> shortForm, ad -> protLevel);
 	showCodeRate		(ad -> shortForm, ad -> protLevel);
-	showLanguage		(ad -> language);
+	showLanguage		(tableNo, ad -> language);
 	showFm			(ad -> fmFrequencies);
 	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
 }
@@ -175,7 +191,7 @@ void	techWindow::showRsCorrections	(int c, int ec) {
 	ecCorrections -> display (ec);
 }
 
-void	techWindow::updateFM		(std::vector<int> &fmFrequencies) {
+void	techWindow::updateFM		(std::vector<uint32_t> &fmFrequencies) {
 	if (fmFrequencies. size () == 0)
 	   return;
 	showFm		(fmFrequencies);
@@ -224,9 +240,9 @@ void	techWindow::showSubChId		(int subChId) {
 	subChIdDisplay		-> setText (QString::number (subChId));
 }
 
-void	techWindow::showLanguage		(int l) {
+void	techWindow::showLanguage		(int table, int l) {
 	language	-> setAlignment (Qt::AlignRight);
-	language	-> setText (getLanguage (l));
+	language	-> setText (getLanguage (table, l));
 }
 
 void	techWindow::showUep		(int shortForm, int protLevel) {
@@ -238,7 +254,7 @@ void	techWindow::showCodeRate		(int shortForm, int protLevel) {
 	codeRate -> setText (getCodeRate (shortForm, protLevel));
 }
 
-void	techWindow::showFm		(std::vector<int> &v) {
+void	techWindow::showFm		(const std::vector<uint32_t> &v) {
 	if (v. size () == 0) {
 	   fmFrequency	-> hide ();
 	   fmLabel	-> hide ();
@@ -250,7 +266,7 @@ void	techWindow::showFm		(std::vector<int> &v) {
 	   int teller	= 0;
 //	for now there is room for up to 2 freqyencies
 	   for (auto freq: v) {
-	      if (++teller > 2)
+	      if (++teller > 3)
 	         break;			// for now
               f. append (QString::number (freq) + " ");
 	   }

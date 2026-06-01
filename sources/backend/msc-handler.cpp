@@ -111,13 +111,11 @@ void	mscHandler::resetChannel () {
 	activeServices ((int)(theBackends. size ()));
 }
 
-void	mscHandler::stopBackend	(const QString &serviceName,
-	                         int subchId, int flag) {
+void	mscHandler::stopBackend	(uint32_t SId, uint8_t SCIds) {
 	locker. lock ();
 	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
-	   if ((b -> serviceName == serviceName) &&
-	                  (b -> subChId == subchId) && (b -> borf == flag)) {
+	   if ((b -> SId == SId) && (b -> SCIds == SCIds)) {
 	      b -> stopRunning ();
 	      usleep (1000);
 	      delete b;
@@ -148,9 +146,9 @@ bool	mscHandler::startBackend (descriptorType &d,
 	return true;
 }
 
-bool	mscHandler::serviceRuns	(uint32_t SId, uint16_t subChId) {
+bool	mscHandler::serviceRuns	(uint32_t SId, uint8_t SCIds) {
 	for (auto &backend : theBackends)
-	   if ((backend -> serviceId == (int) SId) && (backend -> subChId == subChId))
+	   if ((backend -> SId == SId) && (backend -> SCIds == SCIds))
 	      return true;
 	return false;
 }

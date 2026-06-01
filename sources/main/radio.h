@@ -29,9 +29,7 @@
 #include	<QScrollArea>
 #include	<QStandardItemModel>
 #include	<QDomDocument>
-#ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
-#endif
 #include	<QVector>
 #include	<QComboBox>
 #include	<QByteArray>
@@ -45,15 +43,16 @@
 #include	"dl-cache.h"
 #include	"content-table.h"
 #include	"dxDisplay.h"
+#include	"process-monitor.h"
 #include	<memory>
 #include	<mutex>
-#ifdef	DATA_STREAMER
-#include	"tcp-server.h"
-#endif
+#include	"udp-broadcaster.h"
+//#include	"tcp-server.h"
 #include	"scan-handler.h"
 #include	"epg-compiler.h"
 #include	"xml-extractor.h"
 
+#include	"audio-selector.h"
 #include	"device-chooser.h"
 #include	"device-handler.h"
 #include	"display-widget.h"
@@ -116,6 +115,11 @@ class	configHandler;
 #define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
+#define RESET_BUTTON            QString ("resetButton")
+#define ETI_BUTTON		QString ("etiButton")
+#define AUDIO_BUTTON		QString ("audioSelectButton")
+#define DEVICEWIDGET_BUTTON     QString ("devicewidgetButton")
+
 /*
  *	The main gui object. It inherits from
  *	QWidget and the generated form
@@ -126,6 +130,7 @@ public:
 	QString		channel;
 	QString		serviceName;
 	uint32_t	SId;
+	uint8_t		SCIds;
 	int		subChId;
 	bool		isValid;
 	bool		isAudio;
@@ -133,7 +138,8 @@ public:
 	FILE		*fd;
 	FILE		*frameDumper;
 	bool		runsBackground;
-	std::vector<int>	fmFrequencies;
+	udpBroadcaster	*dataServer;
+	std::vector<uint32_t>	fmFrequencies;
 	dabService () {
 	   channel	= "";
 	   serviceName	= "";
@@ -145,6 +151,7 @@ public:
 	   ASCTy	= 0;
 	   frameDumper	= nullptr;
 	   runsBackground	= false;
+	   dataServer	= nullptr;
 	}
 	~dabService	() {}
 };
@@ -182,6 +189,8 @@ public:
 	bool		hasEcc;
 	uint8_t		eccByte;
 	int		lto;
+	int		internatTable;
+
 //	info on the transmitters seen
 	int		nrTransmitters;
 	std::vector<transmitter>	transmitters;
@@ -243,6 +252,8 @@ public:
 
 	bool	channelOn		();
 	bool	devScopeOn		();
+
+	void	handle_rightClick	(const QString &);
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 	void			focusInEvent (QFocusEvent *);
@@ -272,11 +283,13 @@ private:
 	errorLogger		theErrorLogger;
 	deviceChooser		theDeviceChooser;
 	dxDisplay		theDXDisplay;
+	processMonitor		theProcessMonitor;
 	logger			theLogger;
 	scanHandler		theSCANHandler;
 	tiiMapper		theTIIProcessor;
 	xmlExtractor		theXmlExtractor;
 	epgCompiler		theEpgCompiler;
+	audioSelector		streamOutSelector;
 //	end of variables that are initalized
 
 	QScopedPointer<ensembleHandler> theEnsembleHandler;
@@ -294,9 +307,6 @@ private:
 	dabStreamer			*theDabStreamer;
 #endif
 	audioPlayer			*theAudioPlayer;
-#ifdef	DATA_STREAMER
-	tcpServer			*theDataStreamer;
-#endif
 #ifdef	CLOCK_STREAMER
 	tcpServer			*theClockStreamer;
 #endif
@@ -339,7 +349,7 @@ private:
 	                                                 const QString firstService = "");
 	void			stopChannel		();
 	void			stopService		(dabService &);
-	void			startService		(dabService &, int);
+	void			startService		(const QString &);
 	void			start_epgService	(packetdata &);
 	void			scheduleSelect		(const QString &s);
 
@@ -396,9 +406,15 @@ private:
 	int			processService		(const QDomElement &);
 
 	void			read_pictureMappings	(uint32_t);
+	QString			findPicture		(uint32_t SId,
+                                                         const QString &url);
+
 	bool			get_serviceLogo		(QPixmap &, uint32_t);
 
 	QString			extractName		(const QString &);
+
+	QString			background_audioName	(const audiodata &);
+//
 
 //
 //	announcements
@@ -434,8 +450,14 @@ private:
 	QTimer			pauzeTimer;
 	QTimer			theTimer;
 	QTimer			startTimer;
+	QTimer			updateCheck_timer;
 	bool			stillWaiting;
 	QString			path_for_files;
+	QString			path_for_serviceLists;
+        QString			path_for_epg;
+        QString			path_for_slides;
+        QString			path_for_eti;
+
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;
@@ -487,25 +509,31 @@ public slots:
 	void			handle_tiiThreshold	(int);
 	void			handle_tiiCollisions		(int);
 	void			handle_activeServices		();
-	void			handle_dcRemoval		(bool);
+	void			set_dcRemoval			(bool);
+	void			set_latitude                    (float);
+        void                    set_longitude                   (float);
+        void                    handle_httpPort                 (int);
+        void                    set_tpegPort                    (int);
+
 	void			selectDecoder			(int);
 	void			set_transmitters_local		(bool);
 	void			handle_scheduleButton	();
-	void			handle_devicewidgetButton	();
 	void			handle_dlTextButton		();
 	void			handle_resetButton	();
-	void			handle_snrButton	();
-	void			handle_set_coordinatesButton	();
+	void			handle_snrButton		();
 	void			handle_loadTable		();
-//	void			handle_sourcedumpButton	();
+	void			handle_set_coordinatesButton	();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
-	void			handle_eti_activeSelector	(int);
-	void			set_streamSelector		(int);
+	void			handle_etiButton		();
+	void			handle_devicewidgetButton	();
+	void			handle_audioSelectButton	();
+	void			set_streamSelector		(const QString &, int);
+
 //	connected in the Radio, coming from the config handler
 	void			handle_configFrame_closed	();
-	void			signal_dataTracer       (bool);
-	void			timeTableFrame_closed	();
+	void			signal_dataTracer		(bool);
+	void			timeTableFrame_closed		();
 
 //	signals from ensemblehandler
 	void			localSelect		(const QString &c,
@@ -529,25 +557,34 @@ public slots:
 	void			show_quality		(float, float, float);
 	void			show_stdDev		(uint32_t);
 //
-//	signals from fib-config
-	void			announcement		(int, int);
+//      signal for process monitor
+        void                    handle_clickRequest     (const QString &);
 
+//
 //	signals from fic-handler
 	void			show_ficQuality		(int, int);
 	void			show_ficBER		(float);
 
 //	signals from fib-decoder
-	void			ensembleName		(int, const QString &);
-	void			clockTime		(int, int, int,
+
+	void			handle_FIG00		();
+	void			handle_FIG09		(int, uint8_t, uint8_t);
+	void			handle_FIG010		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			changeinConfiguration	();
-	void			nrServices		(int);
-	void			lto_ecc			(int, int);
-	void			setFreqList		();
-	void			tell_programType		(uint32_t, int);
-	void			addToEnsemble		(const QString &,
-	                                                          int, int);
+	void			handle_FIG019		(uint16_t, int);
+	void			handle_FIG021		(uint16_t, uint32_t);
+	void			handle_FIG10		(const QString &,
+	                                                            uint16_t);
+	void			handle_FIG11		(const QString &,
+	                                                     uint32_t);
+	void			handle_FIG14		(const QString &,
+	                                                     uint32_t, uint8_t);
+	void			handle_FIG15		(const QString &, 
+	                                                     uint32_t);
+	                                                 
+//	void			setFreqList		();
+	void			tell_programType	(uint32_t, int);
 
 //	signals from the techWindow
 	void			handleAudiodumpButton 	();
@@ -606,7 +643,9 @@ public slots:
 	                                                 uint32_t);
 
 //	signals from tdc-dataHandler
-	void			handle_tdcdata		(int, uint32_t);
+	void			handle_frameOut         (int, const QByteArray,
+                                                         int32_t, uint8_t);
+
 
 //	signals from httpHandler
 	void			channelSignal		(const QString &);
@@ -629,15 +668,14 @@ public slots:
 
 //	signals	from scheduler
 	void			scheduler_timeOut	(const QString &);
-
+//
+//	for the updatechecker
+	void			process_updateCheck	(bool);
+	void			check_newVersion	();
 //	Local signals
 	
 	void			no_signal_found		();
 	void			closeEvent		(QCloseEvent *event);
-
-	void			handle_presetSelect	(const QString &,
-	                                                 const QString &);
-	
 
 	void			showPeakLevel		(float, float);
 
@@ -656,7 +694,6 @@ private slots:
 	void			handle_contentButton	();
 	void			handle_detailButton	();
 	void			handle_scanButton	();
-	void			handle_etiHandler	();
 	void			handle_spectrumButton	();
 	void			handle_scanListButton	();
 	void			handle_presetButton	();
@@ -695,5 +732,10 @@ private slots:
 	void			color_nextServiceButton ();
 	void			color_configButton	();
 	void			color_httpButton	();
+
+	void			color_resetButton	();
+	void			color_etiButton		();
+	void			color_devicewidgetButton	();
+	void			color_audioSelectButton	();
 
 };

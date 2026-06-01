@@ -28,6 +28,7 @@
 #include	<QString>
 #include	<QStringList>
 #include	<QPushButton>
+#include	"findfilenames.h"
 #include	"super-frame.h"
 class		RadioInterface;
 class		QSettings;
@@ -41,6 +42,8 @@ public:
 		configHandler		(RadioInterface *parent,
 	                                 QSettings *settings);
 		~configHandler		();
+
+	findfileNames   theFilenameFinder;
 
 	void	storePosition		();
 	void	set_connections		();
@@ -69,11 +72,6 @@ public:
 //	void	mark_dumpButton		(bool);
 	void	mark_dlTextButton	(bool);
 	void	set_closeDirect		(bool);
-	void	show_streamSelector	(bool);
-	void	fill_streamTable	(const QStringList &);
-	int	init_streamTable	(const QString &);
-	void	connect_streamTable	();
-	QString	currentStream		();
 
 	void	enable_loadLib		();
 	bool	get_correlationSelector	();
@@ -97,38 +95,28 @@ private:
 private slots:
 //	
 //	first the color setters
-	void	color_audioSelectButton	();
 	void	color_fontButton	();
 	void	color_fontColorButton	();
-	void	color_devicewidgetButton	();
-	void	color_portSelector	();
 	void	color_dlTextButton	();
-	void	color_resetButton	();
 	void	color_scheduleButton	();
 	void	color_snrButton		();
-	void	color_set_coordinatesButton	();
 	void	color_loadTableButton	();
-//	void	color_sourcedumpButton	();
-	void	color_skinButton	();
-	void	color_pathButton	();
 //
 	void	handle_mapViewSelector		(int);
 //	and the handlers:
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
-	void	handle_audioSelectButton	();
-	void	handle_pathButton		();
 	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
 	void	handle_orderAlfabetical		();
 	void	handle_orderServiceIds		();
 	void	handle_ordersubChannelIds	();
-	void	handle_portSelector		();
-	void	handle_skinSelector		();
 
 //	void	handle_upload_selector		(int);
 	void	handle_utc_selector		(int);
+	void	handle_dumpmodeSelector		(int);
+
 	void	handle_auto_http		(int);
 //	void	handle_clear_on_exit		(int);
 
@@ -136,9 +124,6 @@ private slots:
 	void	handle_onTop			(int);
 	void	handle_close_mapSelector	(int);
 
-//	void	handle_firstCorrelation		(int);
-//	void	handle_etiActivated		(int);
-//	void	handle_logger			(int);
 	void	handle_saveTitles		(int);
 
 	void	handle_showAll_Selector		(int);

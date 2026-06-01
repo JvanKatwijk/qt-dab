@@ -31,6 +31,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="shortnameLabel">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

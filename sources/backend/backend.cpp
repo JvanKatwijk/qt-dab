@@ -58,16 +58,14 @@
 	this	-> Length		= d -> length;
         this    -> fragmentSize         = d -> length * CUSize;
 	this	-> bitRate		= d -> bitRate;
-	this	-> serviceId		= d -> SId;
+	this	-> SId			= d -> SId;
+	this	-> SCIds		= d -> SCIds;
 	this	-> serviceName		= d -> serviceName;
 	this	-> shortForm		= d -> shortForm;
 	this	-> protLevel		= d -> protLevel;
 	this	-> subChId		= d -> subchId;
 	this	-> borf			= flag;
 
-//	fprintf (stderr, "starting a backend for %s (%X) %d\n",
-//	                  serviceName. toUtf8 (). data (),
-//	                                    serviceId, startAddr);
 	interleaveData. resize (16);
 	for (int i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
