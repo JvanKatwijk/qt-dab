@@ -66,5 +66,10 @@ int	audioSelector::set_channel	(const QString &channel) {
 	return -1;
 }
 
-	
-	
+void	audioSelector::clear		() {
+	audioChannels = QStringList ();
+        channelList. setStringList (audioChannels);
+        selectorDisplay -> setModel (&channelList);
+        selectorDisplay -> adjustSize ();
+        adjustSize ();
+}

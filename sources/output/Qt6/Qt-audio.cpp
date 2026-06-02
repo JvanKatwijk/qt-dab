@@ -30,7 +30,7 @@
 #include	"Qt-audiodevice.h"
 #include	<QMediaDevices>
 
-class	RadioInterface;
+#include	"radio.h"
 
 //
 //	The format is known, everything mapped onto 2 channel 48000
@@ -50,6 +50,8 @@ class	RadioInterface;
 	deviceList	= new QMediaDevices (this);
         connect (deviceList, &QMediaDevices::audioOutputsChanged,
                  this, &Qt_Audio::updateDeviceList);
+	connect (this, &Qt_Audio::deviceListChanged,
+	         mr, &RadioInterface::deviceListChanged);
 
 	const QAudioDevice &defaultDevice =
                                QMediaDevices::defaultAudioOutput ();
@@ -257,6 +259,6 @@ bool currentDeviceinList = false;
 	   selectDevice (0, currentDevice. description ());
 	}
 	
-//	emit deviceListChanged ();
+	emit deviceListChanged ();
 }
 

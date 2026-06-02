@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>354</height>
+    <height>386</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -93,16 +93,6 @@
          </property>
          <property name="text">
           <string>local</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="clickablelabel" name="resetSelectorLabel">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clikcing on this reset button will - as the name suggests - reset the software&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>resetButton</string>
          </property>
         </widget>
        </item>
@@ -382,27 +372,7 @@
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="4">
-        <widget class="smallPushButton" name="etiButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop the eti generator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>eti</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="smallPushButton" name="spectrumButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>spectrum</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
+       <item row="0" column="0" rowspan="2">
         <widget class="smallPushButton" name="configButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -412,13 +382,61 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2" colspan="2">
+       <item row="0" column="1" rowspan="2">
+        <widget class="smallPushButton" name="spectrumButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>spectrum</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" rowspan="2">
         <widget class="smallPushButton" name="httpButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>http</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="smallPushButton" name="scanButton">
+         <property name="text">
+          <string>scan</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3" rowspan="2">
+        <widget class="smallPushButton" name="devicewidgetButton">
+         <property name="text">
+          <string>device</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="smallPushButton" name="resetButton">
+         <property name="text">
+          <string>reset </string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="smallPushButton" name="etiButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop the eti generator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>eti</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="smallPushButton" name="audioSelectButton">
+         <property name="text">
+          <string>audio</string>
          </property>
         </widget>
        </item>

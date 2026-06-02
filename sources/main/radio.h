@@ -111,7 +111,11 @@ class	configHandler;
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
+#define SCAN_BUTTON		QString ("scanButton")   
+#define	RESET_BUTTON		QString ("resetButton")
+#define	AUDIOSELECT_BUTTON	QString ("audioSelectButton")
 #define ETI_BUTTON              QString ("etiButton")   
+#define DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")   
 
 /*
  *	The main gui object. It inherits from
@@ -665,7 +669,7 @@ public slots:
 
 	void			handle_contentButton	();
 	void			handle_dump		();
-	void			handle_scanControl	();
+	void			handle_scanButton	();
 private slots:
 //	button and selectorhandlers
 	void			handle_configButton	();
@@ -702,6 +706,10 @@ private slots:
 	void			color_spectrumButton	();
 	void			color_configButton	();
 	void			color_httpButton	();
+	void			color_scanButton	();
+	void			color_resetButton	();
+	void			color_audioSelectButton	();
 	void			color_etiButton		();
+	void			color_devicewidgetButton		();
 
 };

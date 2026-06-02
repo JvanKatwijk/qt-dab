@@ -92,8 +92,6 @@
 	connect (channelSelector,
 	             qOverload<const QString &> (&QComboBox::textActivated),
 	         this, &serviceViewer::handle_channelSelector);
-	connect (channelSelector, &specialComboBox::rightClicked,
-	         theRadio, &RadioInterface::handle_scanControl);
 	connect (prevChannel, &clickablelabel::clicked_left,
 	         this, &serviceViewer::handle_prevChannel);
 	connect (nextChannel, &clickablelabel::clicked_left,

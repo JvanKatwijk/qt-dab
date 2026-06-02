@@ -256,11 +256,6 @@ QString h;
 	   p. load (labelName, "png");
 	   strengthLabels. push_back (p);
 	}
-	if (p. load (":res/radio-pictures/resetButton.png", "png")) {
-	   resetSelectorLabel	-> setPixmap (p. scaled (30, 30,
-	                                         Qt::KeepAspectRatio));
-	   resetSelectorLabel	-> setToolTip ("touching this will reset the system");
-	}
 	if (p. load (":res/radio-pictures/details24.png", "png")) {
 	   serviceButton -> setPixmap (p. scaled (30, 30,
 	                                       Qt::KeepAspectRatio));
@@ -312,12 +307,14 @@ QString h;
 
 	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
-	connect (deviceSelectorLabel, &clickablelabel::clicked_right,
+	connect (devicewidgetButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_devicewidgetButton);
-	connect (resetSelectorLabel, &clickablelabel::clicked_left,
+	connect (resetButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_resetButton);
+	connect (scanButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_scanButton);
 
-	aboutLabel -> setText (QString ("©") + VERSION);
+	aboutLabel -> setText (QString ("© V") + VERSION);
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
@@ -455,7 +452,7 @@ QString h;
 	   if (k >= 0) {
 	      theAudioPlayer -> selectDevice (k, temp);
 	   }
-	   connect (soundLabel, &clickablelabel::clicked_left,
+	   connect (audioSelectButton, &QPushButton::clicked,
                     this, &RadioInterface::show_streamSelector);
 	   connect (&streamOutSelector, &audioSelector::selected,
                     this, &RadioInterface::set_streamSelector);
@@ -491,7 +488,7 @@ QString h;
 	path_for_slides		= QDir::toNativeSeparators (path_for_slides);
 	path_for_slides		= checkDir (path_for_slides);
 
-	path_for_eti		= path_for_files + "/eti/";
+	path_for_eti		= path_for_files + "eti/";
 	path_for_eti		= QDir::toNativeSeparators (path_for_eti);
 	path_for_eti		= checkDir (path_for_eti);
 
@@ -525,11 +522,19 @@ QString h;
 	         this, &RadioInterface::handle_detailButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
+	connect	(scanButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_scanButton);
+	connect	(resetButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_resetButton);
 	connect	(etiButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_etiButton);
+	connect	(audioSelectButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_audioSelectButton);
+	connect	(devicewidgetButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_devicewidgetButton);
 
 //	
-	connect (soundLabel, &clickablelabel::clicked_right,
+	connect (soundLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_muteButton);
 	connect (snrLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_snrLabel);
@@ -2580,7 +2585,7 @@ void	RadioInterface::handle_channelSelector (const QString &channelParam) {
 //	scanning
 //	The scan function covers three scan strategies. In order to make things
 //	manageable, we implement the streams  in different functions and procedures
-void	RadioInterface::handle_scanControl () {
+void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
  	if (newServices -> getMode () != ENSEMBLEVIEW)
@@ -3067,12 +3072,6 @@ void	RadioInterface::stopMuting		() {
 //	Lots of code, about 400 lines, just for a gadget
 //	
 void	RadioInterface::set_Colors () {
-QString etiButton_color =
-	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
-	                                             GREEN);
-QString etiButton_font =
-	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
-	                                              BLACK);
 
 QString spectrumButton_color =
 	   value_s (theQSettings, COLOR_SETTINGS, SPECTRUM_BUTTON + "_color",
@@ -3092,24 +3091,65 @@ QString	httpButton_color =
 QString httpButton_font	=
 	   value_s (theQSettings, COLOR_SETTINGS, HTTP_BUTTON + "_font",
 	                                              BLACK);
+QString	scanButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_color",
+	                                              GREEN);
+QString scanButton_font	=
+	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_font",
+	                                              BLACK);
+QString resetButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, RESET_BUTTON + "_color",
+	                                             RED);
+QString resetButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, RESET_BUTTON + "_font",
+	                                              WHITE);
+
+QString etiButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
+	                                             GREEN);
+QString etiButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
+	                                              BLACK);
+
+QString audioSelectButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, AUDIOSELECT_BUTTON + "_color",
+	                                             GREEN);
+QString audioSelectButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, AUDIOSELECT_BUTTON + "_font",
+	                                              BLACK);
+
+QString devicewidgetButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, DEVICEWIDGET_BUTTON + "_color",
+	                                             GREEN);
+QString devicewidgetButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, DEVICEWIDGET_BUTTON + "_font",
+	                                              BLACK);
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	spectrumButton ->
 	              setStyleSheet (temp. arg (spectrumButton_color,
 	                                        spectrumButton_font));
-	etiButton	->
-	              setStyleSheet (temp. arg (etiButton_color,
-	                                        etiButton_font));
 	configButton	->
 	              setStyleSheet (temp. arg (configButton_color,
 	                                        configButton_font));
 	httpButton	->
 	              setStyleSheet (temp. arg (httpButton_color,
 	                                        httpButton_font));
-}
-
-void	RadioInterface::color_etiButton	() {
-	setButtonColors (etiButton, ETI_BUTTON);
+	scanButton	->
+	              setStyleSheet (temp. arg (scanButton_color,
+	                                        scanButton_font));
+	resetButton	->
+	              setStyleSheet (temp. arg (resetButton_color,
+	                                        resetButton_font));
+	etiButton	->
+	              setStyleSheet (temp. arg (etiButton_color,
+	                                        etiButton_font));
+	audioSelectButton	->
+	              setStyleSheet (temp. arg (audioSelectButton_color,
+	                                        audioSelectButton_font));
+	devicewidgetButton	->
+	              setStyleSheet (temp. arg (devicewidgetButton_color,
+	                                        devicewidgetButton_font));
 }
 
 void	RadioInterface::color_spectrumButton	()	{
@@ -3122,6 +3162,26 @@ void	RadioInterface::color_configButton	() 	{
 
 void	RadioInterface::color_httpButton	() 	{
 	setButtonColors (httpButton, HTTP_BUTTON);
+}
+
+void	RadioInterface::color_scanButton	() {
+	setButtonColors (scanButton, SCAN_BUTTON);
+}
+
+void	RadioInterface::color_resetButton	() {
+	setButtonColors (resetButton, RESET_BUTTON);
+}
+
+void	RadioInterface::color_etiButton	() {
+	setButtonColors (etiButton, ETI_BUTTON);
+}
+
+void	RadioInterface::color_audioSelectButton	() {
+	setButtonColors (audioSelectButton,AUDIOSELECT_BUTTON);
+}
+
+void	RadioInterface::color_devicewidgetButton	() {
+	setButtonColors (etiButton, DEVICEWIDGET_BUTTON);
 }
 
 void	RadioInterface::setButtonColors	(QPushButton *b,
@@ -3627,11 +3687,13 @@ void	RadioInterface::handle_etiButton	() {
 	   return;
 
 	if (!channel. etiActive) {
+	   fprintf (stderr, "eti was not active, starts\n");
 	   stopScanning ();
 	   start_etiHandler ();
 	   channel. etiActive	= true;
 	   return;
 	}
+	fprintf (stderr, "eti stops\n");
 	stop_etiHandler ();		// just in case
 	channel. etiActive	= false;
 }
@@ -3652,14 +3714,20 @@ void	RadioInterface::start_etiHandler () {
         etiFile = QDir::toNativeSeparators (etiFile);
         if (!QDir (etiFile). exists ())
            QDir (). mkpath (etiFile);
-	QString name	= channel. ensembleName. trimmed ();
-	QDate theDate = QDate::currentDate ();
-	etiFile += name + "-" + theDate. toString () + ".eti";
-
+	QString name	= channel. ensembleName. trimmed () + "/";
+	etiFile += name;
+        etiFile = QDir::toNativeSeparators (etiFile);
+        if (!QDir (etiFile). exists ())
+           QDir (). mkpath (etiFile);
+	QString fname = QDate::currentDate (). toString () + ".eti";
+	fname. replace (QRegularExpression (" "), "-");
+	etiFile +=  fname;
+	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
 	if (etiFile == QString (""))
 	   return;
 
 	channel. etiActive = theOfdmHandler -> startEtiGenerator (etiFile);
+	fprintf (stderr, "etigenerator returns %d\n", channel. etiActive);
 	if (channel. etiActive) 
 	   etiButton -> setText ("eti runs");
 }
@@ -4269,8 +4337,10 @@ void	RadioInterface::handle_tiiCollisions     (int b) {
 void	RadioInterface::deviceListChanged	() {
 #ifndef	TCP_STREAMER
 QStringList streams	= reinterpret_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
-//	theConfigHandler -> fill_streamTable (streams);
-//	theConfigHandler -> show_streamSelector (true);
+	streamOutSelector. clear ();
+	for (auto sle : streams)           
+	   streamOutSelector. addtoList (sle);
+	streamOutSelector. show ();
 #endif
 }
 //
