@@ -41,7 +41,6 @@ public:
 	void		addtoList	(const QString &);
 	int		set_channel	(const QString &);
 	void		clear		();
-
 private:
 	QLabel		*toptext;
 	QListView 	*selectorDisplay;

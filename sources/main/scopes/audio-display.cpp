@@ -57,7 +57,7 @@ QString	colorString;
 	displaySize = dabSettings->value("displaySize", displaySize).toInt();
 	dabSettings	-> endGroup ();
 
-//	this	-> plotGrid	-> setCanvasBackground (displayColor);
+	this	-> plotGrid	-> setCanvasBackground (displayColor);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else

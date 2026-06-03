@@ -38,6 +38,8 @@
 
 #define BLACK   "#000000"
 #define GREEN   "#8ff0a4"
+#define BLUE    "#00ffff"
+
 //
 	serviceViewer::serviceViewer (const QString &fileName,
 	                              RadioInterface	*theRadio,
@@ -45,6 +47,7 @@
 	                              QSettings	*serviceSettings,
 	                              QFrame *theFrame): 
 	                                        theDataBase (),
+	                                        channelDisplay (&theDataBase),
 	                                        normalFont ("Times", 11, 
                                                               -1, false),
                                                 markedFont ("Times", 12,
@@ -88,12 +91,12 @@
 	connect (nextService, &QPushButton::clicked,
 	         this, &serviceViewer::handle_nextService);
 	connect (viewSelector, &QPushButton::clicked,
-	         this, &serviceViewer::handle_modeSwitcher);
+	         this, &serviceViewer::handle_viewSelector);
 	connect (channelSelector,
 	             qOverload<const QString &> (&QComboBox::textActivated),
 	         this, &serviceViewer::handle_channelSelector);
-	connect (channelSelector, &specialComboBox::rightClicked,
-	         theRadio, &RadioInterface::handle_scanControl);
+	connect (channelDisplayButton, &QPushButton::clicked,
+	         this, &serviceViewer::handle_channelDisplay);
 	connect (prevChannel, &clickablelabel::clicked_left,
 	         this, &serviceViewer::handle_prevChannel);
 	connect (nextChannel, &clickablelabel::clicked_left,
@@ -105,6 +108,10 @@
 	         this, &serviceViewer::color_prevService);
 	connect	(nextService, &smallPushButton::rightClicked,
 	         this, &serviceViewer::color_nextService);
+	connect (viewSelector, &smallPushButton::rightClicked,
+	         this, &serviceViewer::color_viewSelector);
+	connect (channelDisplayButton, &smallPushButton::rightClicked,
+	         this, &serviceViewer::color_channelDisplay);
 
 	channelSelector	-> setEnabled (false);
 	prevChannel	-> setEnabled (false);
@@ -184,10 +191,12 @@ void	serviceViewer::startSession	(int Mode,
 	   case ENSEMBLEVIEW:
 //	      extract from the database een displayview en show
 	      channelSelector	-> show ();
+	      channelDisplayButton -> show ();
 	      prevChannel	-> show ();
 	      nextChannel	-> show ();
 	      viewSelector	-> show ();
 	      channelSelector	-> setEnabled (true);
+	      channelDisplayButton -> setEnabled (true);
 	      prevChannel	-> setEnabled (true);
 	      nextChannel	-> setEnabled (true);
 	      if (ensembleMode == ALL)
@@ -201,10 +210,12 @@ void	serviceViewer::startSession	(int Mode,
 	      break;
 	   case FAVORITEVIEW:		// cannot happen
 	      channelSelector	-> hide ();
+	      channelDisplayButton -> hide ();
 	      prevChannel	-> hide ();
 	      nextChannel	-> hide ();
 	      viewSelector	-> show ();
 	      channelSelector	-> setEnabled (false);
+	      channelDisplayButton -> setEnabled (false);
 	      prevChannel	-> setEnabled (false);
 	      nextChannel	-> setEnabled (false);
               displayList	= theDataBase. getData (theMode, order);
@@ -213,10 +224,12 @@ void	serviceViewer::startSession	(int Mode,
 	      break;
 	   case FILEINPUT:
 	      channelSelector	-> setEnabled (false);
+	      channelDisplayButton	-> hide ();
 	      prevChannel	-> setEnabled (false);
 	      nextChannel	-> setEnabled (false);
 	      viewSelector	-> setEnabled (false);
 	      channelSelector	-> hide ();
+	      channelDisplayButton	-> hide ();
 	      prevChannel	-> hide ();
 	      nextChannel	-> hide ();
 	      viewSelector	-> hide ();
@@ -246,9 +259,8 @@ QString channel	= channelSelector -> currentText ();
 	
 	for (auto &ssd: displayList) {
 	   if ((ssd. serviceName == ad. serviceName) &&
-	       (ssd. channelName == ad. channel)) {
+	       (ssd. channelName == ad. channel))
 	      return;
-	   }
 	}
 
 	bool b;
@@ -520,7 +532,7 @@ void	serviceViewer::set_channelIndex (int channelIndex) {
 	   channelSelector	-> setEnabled (true);
 }
 	
-void	serviceViewer::handle_modeSwitcher	() {
+void	serviceViewer::handle_viewSelector	() {
 	if (theMode == FILEINPUT)
 	   return;
 	int order	= theRadio -> get_serviceOrder (); 
@@ -739,6 +751,20 @@ QString nextService_font =
 	   value_s (viewSettings, COLOR_SETTINGS, NEXT_SERVICE + "_font",
 	                                              BLACK);
 
+QString viewSelector_color =
+	   value_s (viewSettings, COLOR_SETTINGS, VIEW_SELECTOR + "_color",
+	                                              GREEN);
+QString viewSelector_font =
+	   value_s (viewSettings, COLOR_SETTINGS, VIEW_SELECTOR + "_font",
+	                                              BLACK);
+
+QString channelDisplay_color =
+	   value_s (viewSettings, COLOR_SETTINGS, CHANNEL_DISPLAY + "_color",
+	                                              BLUE);
+QString channelDisplay_font =
+	   value_s (viewSettings, COLOR_SETTINGS, CHANNEL_DISPLAY + "_font",
+	                                              BLACK);
+
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	prevService ->
 	              setStyleSheet (temp. arg (prevService_color,
@@ -746,6 +772,12 @@ QString nextService_font =
 	nextService	->
 	              setStyleSheet (temp. arg (nextService_color,
 	                                        nextService_font));
+	viewSelector	->
+	              setStyleSheet (temp. arg (viewSelector_color,
+	                                        viewSelector_font));
+	channelDisplayButton	->
+	              setStyleSheet (temp. arg (channelDisplay_color,
+	                                        channelDisplay_font));
 }
 
 void	serviceViewer::color_prevService	() 	{
@@ -754,6 +786,14 @@ void	serviceViewer::color_prevService	() 	{
 
 void	serviceViewer::color_nextService	() 	{
 	setButtonColors (nextService, NEXT_SERVICE);
+}
+
+void	serviceViewer::color_viewSelector	() 	{
+	setButtonColors (viewSelector, VIEW_SELECTOR);
+}
+
+void	serviceViewer::color_channelDisplay	() 	{
+	setButtonColors (channelDisplayButton, CHANNEL_DISPLAY);
 }
 
 void	serviceViewer::setButtonColors		(QPushButton *b,
@@ -802,6 +842,7 @@ QString res;
 
 void	serviceViewer::set_countryName	(const QString &name) {
 	countryName	-> setText (name);
+	theDataBase. set_countryName (name, currentChannel ());
 }
 
 void	serviceViewer::set_ensembleId	(const QString &name, int id) {
@@ -860,5 +901,15 @@ int	serviceViewer::add_to_displayList (const serviceDescriptor &sd) {
 	}
 	displayList. append (sd);
 	return displayList. size () - 1;
+}
+
+void	serviceViewer::handle_channelDisplay	() {
+	if (channelDisplay. isVisible ())
+	   channelDisplay. hide ();
+	else {
+	   channelDisplay. clear ();
+	   channelDisplay. reload ();
+	   channelDisplay. show ();
+	}
 }
 

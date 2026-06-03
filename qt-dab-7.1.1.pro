@@ -6,7 +6,7 @@
 ######################################################################
 
 TEMPLATE	= app
-QT		+= widgets xml multimedia
+QT		+= widgets xml multimedia charts
 QT		+= network
 #CONFIG		+= console
 CONFIG		-= console
@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.1.1\\\"
+DEFINES         += VERSION=\\\"7.1.2\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
@@ -130,6 +130,7 @@ HEADERS += ./sources/main/radio.h \
            ./sources/main/viewer/channel-descriptor.h \
            ./sources/main/viewer/database.h \
            ./sources/main/viewer/view-handler.h \
+	   ./sources/main/viewer/channel-viewer.h \
 	   ./sources/main/audio-selector.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
@@ -296,6 +297,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/viewer/channel-descriptor.cpp \
            ./sources/main/viewer/database.cpp \
            ./sources/main/viewer/view-handler.cpp \
+           ./sources/main/viewer/channel-viewer.cpp \
 	   ./sources/main/audio-selector.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
@@ -455,10 +457,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.1.1
+   TARGET               = qt-dab-qt5-7.1.2
 }
 else {
-   TARGET               = qt-dab-7.1.1
+   TARGET               = qt-dab-7.1.2
 }
 
 #mac {

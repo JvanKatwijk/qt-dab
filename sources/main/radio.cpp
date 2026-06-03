@@ -256,11 +256,6 @@ QString h;
 	   p. load (labelName, "png");
 	   strengthLabels. push_back (p);
 	}
-	if (p. load (":res/radio-pictures/resetButton.png", "png")) {
-	   resetSelectorLabel	-> setPixmap (p. scaled (30, 30,
-	                                         Qt::KeepAspectRatio));
-	   resetSelectorLabel	-> setToolTip ("touching this will reset the system");
-	}
 	if (p. load (":res/radio-pictures/details24.png", "png")) {
 	   serviceButton -> setPixmap (p. scaled (30, 30,
 	                                       Qt::KeepAspectRatio));
@@ -312,12 +307,14 @@ QString h;
 
 	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
-	connect (deviceSelectorLabel, &clickablelabel::clicked_right,
+	connect (devicewidgetButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_devicewidgetButton);
-	connect (resetSelectorLabel, &clickablelabel::clicked_left,
+	connect (resetButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_resetButton);
+	connect (scanButton, &QPushButton::clicked,
+	         this, &RadioInterface::handle_scanButton);
 
-	aboutLabel -> setText (QString ("©") + VERSION);
+	aboutLabel -> setText (QString ("© V") + VERSION);
 	aboutLabel -> setToolTip ("Click to see the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
@@ -455,7 +452,7 @@ QString h;
 	   if (k >= 0) {
 	      theAudioPlayer -> selectDevice (k, temp);
 	   }
-	   connect (soundLabel, &clickablelabel::clicked_left,
+	   connect (audioSelectButton, &QPushButton::clicked,
                     this, &RadioInterface::show_streamSelector);
 	   connect (&streamOutSelector, &audioSelector::selected,
                     this, &RadioInterface::set_streamSelector);
@@ -491,7 +488,7 @@ QString h;
 	path_for_slides		= QDir::toNativeSeparators (path_for_slides);
 	path_for_slides		= checkDir (path_for_slides);
 
-	path_for_eti		= path_for_files + "/eti/";
+	path_for_eti		= path_for_files + "eti/";
 	path_for_eti		= QDir::toNativeSeparators (path_for_eti);
 	path_for_eti		= checkDir (path_for_eti);
 
@@ -525,11 +522,19 @@ QString h;
 	         this, &RadioInterface::handle_detailButton);
 	connect (httpButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_httpButton);
+	connect	(scanButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_scanButton);
+	connect	(resetButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_resetButton);
 	connect	(etiButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_etiButton);
+	connect	(audioSelectButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_audioSelectButton);
+	connect	(devicewidgetButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_devicewidgetButton);
 
 //	
-	connect (soundLabel, &clickablelabel::clicked_right,
+	connect (soundLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_muteButton);
 	connect (snrLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_snrLabel);
@@ -778,10 +783,10 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	ad. channel	= channel. channelName;
 	newServices	-> addService (ad);
 
+	channel. nrServices ++;
 	if (theSCANHandler. active ())
 	   return;
 	
-	channel. nrServices ++;
 	int servCount	= theOfdmHandler -> FIG07_value ();
 	                        
 	if ((servCount > 0) && (channel. nrServices >= servCount))
@@ -804,6 +809,7 @@ void	RadioInterface::handle_FIG15 (const QString &serviceName,
 	if (!theConfigHandler -> get_audioServices_only ())
 	   newServices	-> addService (pd);
 	   
+	channel. nrServices ++;
 	if ((!theSCANHandler. active ()) &&
 	    (theOfdmHandler	-> is_SPI (SId))) 
 	   start_epgService (pd);
@@ -851,14 +857,6 @@ void	RadioInterface::handle_FIG10 (const QString &v, uint16_t EId) {
 	channel. Eid		= EId;
 	dynamicLabel		-> setText ("");
 //
-	if (channel. hasEcc) {
-	   QString country      = get_ITU_Code (channel. internatTable,
-                                                channel. eccByte,
-                                                (channel. Eid >> 12) &0xF);
-           channel. countryName = country;
-           newServices          -> set_countryName (country);
-	}
-
         if (!theSCANHandler. active ()) 
            read_pictureMappings (static_cast<uint32_t>(EId));
 	else
@@ -1281,19 +1279,19 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	}
 //
 //	processing the audio
-	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, amount);
-	while (theAudioBuffer. GetRingBufferReadAvailable () >= amount) {
-	   theAudioBuffer. getDataFromBuffer (vec, amount);
+	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, rate / 10);
+	while (theAudioBuffer. GetRingBufferReadAvailable () >= rate / 10) {
+	   theAudioBuffer. getDataFromBuffer (vec, rate / 10);
 	   if (!theTechWindow -> isHidden ()) {
-	      theTechData. putDataIntoBuffer (vec, amount);
-	      theTechWindow	-> audioDataAvailable (amount, rate);
+	      theTechData. putDataIntoBuffer (vec, rate / 10);
+	      theTechWindow	-> audioDataAvailable (rate / 10, rate);
 	   }
 #ifdef	HAVE_PLUTO_RXTX
 	   if (theDabStreamer != nullptr)
-	      theDabStreamer	-> audioOut (vec, amount, rate);
+	      theDabStreamer	-> audioOut (vec, rate / 10, rate);
 #endif
 	   std::vector<float> tmpBuffer;
-	   int size = theAudioConverter. convert (vec, amount,
+	   int size = theAudioConverter. convert (vec, rate / 10,
 	                                               rate, tmpBuffer);
 	   if (!muteTimer. isActive ())
 	      theAudioPlayer -> audioOutput (tmpBuffer. data (), size);
@@ -2580,7 +2578,7 @@ void	RadioInterface::handle_channelSelector (const QString &channelParam) {
 //	scanning
 //	The scan function covers three scan strategies. In order to make things
 //	manageable, we implement the streams  in different functions and procedures
-void	RadioInterface::handle_scanControl () {
+void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
  	if (newServices -> getMode () != ENSEMBLEVIEW)
@@ -2655,6 +2653,7 @@ basicPrint thePrinter (channel. internatTable, channel. Eid, channel. eccByte);
 	stopChannel ();		// was done already
 	theOfdmHandler		-> setScanMode (true);
 	QString fs		= theSCANHandler. getFirstChannel ();
+
 	newServices		-> set_channelIndex (fs);
 	newServices		-> clearAll ();
 	theSCANHandler. addText (" scanning channel " + fs);
@@ -2820,8 +2819,9 @@ void	RadioInterface::nextFor_scan_to_data () {
 }
 
 void	RadioInterface::nextFor_scan_single () {
-	if (channel. nrServices > 0) 
+	if (channel. nrServices > 0) {
 	   show_for_single_scan ();
+	}
 	stopChannel ();
 	QString cs;
 	try {
@@ -3067,12 +3067,6 @@ void	RadioInterface::stopMuting		() {
 //	Lots of code, about 400 lines, just for a gadget
 //	
 void	RadioInterface::set_Colors () {
-QString etiButton_color =
-	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
-	                                             GREEN);
-QString etiButton_font =
-	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
-	                                              BLACK);
 
 QString spectrumButton_color =
 	   value_s (theQSettings, COLOR_SETTINGS, SPECTRUM_BUTTON + "_color",
@@ -3092,24 +3086,65 @@ QString	httpButton_color =
 QString httpButton_font	=
 	   value_s (theQSettings, COLOR_SETTINGS, HTTP_BUTTON + "_font",
 	                                              BLACK);
+QString	scanButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_color",
+	                                              GREEN);
+QString scanButton_font	=
+	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_font",
+	                                              BLACK);
+QString resetButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, RESET_BUTTON + "_color",
+	                                             RED);
+QString resetButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, RESET_BUTTON + "_font",
+	                                              WHITE);
+
+QString etiButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
+	                                             GREEN);
+QString etiButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
+	                                              BLACK);
+
+QString audioSelectButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, AUDIOSELECT_BUTTON + "_color",
+	                                             GREEN);
+QString audioSelectButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, AUDIOSELECT_BUTTON + "_font",
+	                                              BLACK);
+
+QString devicewidgetButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, DEVICEWIDGET_BUTTON + "_color",
+	                                             GREEN);
+QString devicewidgetButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, DEVICEWIDGET_BUTTON + "_font",
+	                                              BLACK);
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	spectrumButton ->
 	              setStyleSheet (temp. arg (spectrumButton_color,
 	                                        spectrumButton_font));
-	etiButton	->
-	              setStyleSheet (temp. arg (etiButton_color,
-	                                        etiButton_font));
 	configButton	->
 	              setStyleSheet (temp. arg (configButton_color,
 	                                        configButton_font));
 	httpButton	->
 	              setStyleSheet (temp. arg (httpButton_color,
 	                                        httpButton_font));
-}
-
-void	RadioInterface::color_etiButton	() {
-	setButtonColors (etiButton, ETI_BUTTON);
+	scanButton	->
+	              setStyleSheet (temp. arg (scanButton_color,
+	                                        scanButton_font));
+	resetButton	->
+	              setStyleSheet (temp. arg (resetButton_color,
+	                                        resetButton_font));
+	etiButton	->
+	              setStyleSheet (temp. arg (etiButton_color,
+	                                        etiButton_font));
+	audioSelectButton	->
+	              setStyleSheet (temp. arg (audioSelectButton_color,
+	                                        audioSelectButton_font));
+	devicewidgetButton	->
+	              setStyleSheet (temp. arg (devicewidgetButton_color,
+	                                        devicewidgetButton_font));
 }
 
 void	RadioInterface::color_spectrumButton	()	{
@@ -3122,6 +3157,26 @@ void	RadioInterface::color_configButton	() 	{
 
 void	RadioInterface::color_httpButton	() 	{
 	setButtonColors (httpButton, HTTP_BUTTON);
+}
+
+void	RadioInterface::color_scanButton	() {
+	setButtonColors (scanButton, SCAN_BUTTON);
+}
+
+void	RadioInterface::color_resetButton	() {
+	setButtonColors (resetButton, RESET_BUTTON);
+}
+
+void	RadioInterface::color_etiButton	() {
+	setButtonColors (etiButton, ETI_BUTTON);
+}
+
+void	RadioInterface::color_audioSelectButton	() {
+	setButtonColors (audioSelectButton,AUDIOSELECT_BUTTON);
+}
+
+void	RadioInterface::color_devicewidgetButton	() {
+	setButtonColors (etiButton, DEVICEWIDGET_BUTTON);
 }
 
 void	RadioInterface::setButtonColors	(QPushButton *b,
@@ -3627,11 +3682,13 @@ void	RadioInterface::handle_etiButton	() {
 	   return;
 
 	if (!channel. etiActive) {
+	   fprintf (stderr, "eti was not active, starts\n");
 	   stopScanning ();
 	   start_etiHandler ();
 	   channel. etiActive	= true;
 	   return;
 	}
+	fprintf (stderr, "eti stops\n");
 	stop_etiHandler ();		// just in case
 	channel. etiActive	= false;
 }
@@ -3652,14 +3709,20 @@ void	RadioInterface::start_etiHandler () {
         etiFile = QDir::toNativeSeparators (etiFile);
         if (!QDir (etiFile). exists ())
            QDir (). mkpath (etiFile);
-	QString name	= channel. ensembleName. trimmed ();
-	QDate theDate = QDate::currentDate ();
-	etiFile += name + "-" + theDate. toString () + ".eti";
-
+	QString name	= channel. ensembleName. trimmed () + "/";
+	etiFile += name;
+        etiFile = QDir::toNativeSeparators (etiFile);
+        if (!QDir (etiFile). exists ())
+           QDir (). mkpath (etiFile);
+	QString fname = QDate::currentDate (). toString () + ".eti";
+	fname. replace (QRegularExpression (" "), "-");
+	etiFile +=  fname;
+	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
 	if (etiFile == QString (""))
 	   return;
 
 	channel. etiActive = theOfdmHandler -> startEtiGenerator (etiFile);
+	fprintf (stderr, "etigenerator returns %d\n", channel. etiActive);
 	if (channel. etiActive) 
 	   etiButton -> setText ("eti runs");
 }
@@ -3920,15 +3983,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 
 	if (channel. Eid == 0)
 	   return;
-//	probably yes, get the country code
-	if ((channel. countryName == "") && (channel. hasEcc)) {
-	   QString country	= get_ITU_Code (channel. internatTable,
-	                                         channel. eccByte,
-	                                         (channel. Eid >> 12) &0xF);
-	   channel. countryName	= country;
-	   channel. strongestTransmitter = "";
-	   newServices		-> set_countryName (country);
-	}
 
 //	The data in the vector is sorted on signal strength
 //	first step
@@ -4269,17 +4323,10 @@ void	RadioInterface::handle_tiiCollisions     (int b) {
 void	RadioInterface::deviceListChanged	() {
 #ifndef	TCP_STREAMER
 QStringList streams	= reinterpret_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
-	QString currentOne =
-	         value_s (theQSettings, SOUND_HANDLING,
-	                              AUDIO_STREAM_NAME, "default");
-
 	streamOutSelector. clear ();
-	for (auto sle : streams)
+	for (auto sle : streams)           
 	   streamOutSelector. addtoList (sle);
 	streamOutSelector. show ();
-	int k = streamOutSelector. set_channel (currentOne);
-	if (k >= 0) 
-	   theAudioPlayer -> selectDevice (k, currentOne);
 #endif
 }
 //
@@ -4452,6 +4499,8 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 
 void    RadioInterface::handle_FIG09 (int lto,
 	                              uint8_t ecc, uint8_t internatTable) {
+	if (channel. Eid == 0)
+	   return;
 	if (!channel. hasEcc) {
 	   channel. eccByte	= ecc; 
 	   channel. hasEcc	= true;
@@ -4460,6 +4509,7 @@ void    RadioInterface::handle_FIG09 (int lto,
 	   QString country      = get_ITU_Code (channel. internatTable,
                                                  channel. eccByte,
                                                  (channel. Eid >> 12) &0xF);
+	
            channel. countryName = country;
            channel. strongestTransmitter = "";
            newServices         -> set_countryName (country);
