@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016, 2026
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -23,31 +23,34 @@
 
 #pragma once
 
+#include	<QWidget>
+#include	<QObject>
+#include	<QScrollArea>
+#include	<QTableWidget>
+#include	<QStringList>
+#include	<QTableWidgetItem>
 #include	<QObject>
 #include	<QString>
-#include	<QList>
-#include	<vector>
-#include	"service-descriptor.h"
-#include	"channel-descriptor.h"
 
-class	serviceBase: public QObject {
+class	serviceBase;
+
+class   channelViewer:public QObject {
 Q_OBJECT
+
 public:
-		serviceBase	();
-		~serviceBase	();
-	void	load		(const QString &fileName, bool withPackets);
-	void	store		(const QString &fileName);
-	void	set_ensembleName	(const QString &, const QString &);
-	void	set_countryName	(const QString &, const QString &);
-	void	add		(const serviceDescriptor &);
-	void	remove		(const QString &, const QString &);
-QList <serviceDescriptor> 
-		getData		(int, int);	// the Mode, the order
-QList<serviceDescriptor> 
-		getData		(int, int, const QString &);	// the Mode, the order
-	void	update		(const serviceDescriptor &, bool);
-	void	clearTable	();
-	void	insert		(const theChannel &);
-	QList<theChannel> theData;
+		channelViewer	(serviceBase *);
+		~channelViewer	();
+	void	show		();
+	void	hide		();
+	bool	isVisible	();
+	void	clear		();
+	void	reload		();
+private:
+        QString         channel;
+	serviceBase	*theDataBase;
+        int             columns;
+        QScrollArea     *myWidget;
+        QTableWidget    *contentWidget;
 };
+
 

@@ -1,4 +1,4 @@
-# Qt-DAB-7.1.1
+# Qt-DAB-7.1.2
 
 -------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.1.1](#What-is-new-in-Qt-DAB-7.1.1)
+* [What is new in Qt-DAB-7.1.2](#What-is-new-in-Qt-DAB-7.1.2)
 * [Eliminating buttons and replacing some](#eliminating-buttons-and-replacing-some)
 * [Handling packet services](#handling-packet-services)
 * [Windows and scopes](#windows-and-scopes)
@@ -33,8 +33,12 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.1.1
+What is new in Qt-DAB-7.1.2
 ======================================================================
+
+It turns out that using (sometimes left, sometimes right) mouseclicks in the GUI to achieve things is not very intuitive. 
+7.1.2 basically fixes this. The main window of the GUI has some additional
+buttons.
 
 In the fourth quarter of 2023 the major version number for Qt-DAB became "6",
 the GUI had undergone some major  changes since the "5" version,
@@ -60,7 +64,7 @@ To control running one or more services in the background, it
 is obviously possible to select and run an audio service,
 since that runs in the foreground.
 
-![7.1](/res/read_me/qt-dab-7.1.1.png)
+![7.1](/res/read_me/qt-dab-7.1.2.png)
 
 The ensemble display is in one of a three modes:
  * **ensemble** mode, where  services of the (current) channel(s) are shown, 

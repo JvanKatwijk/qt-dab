@@ -783,10 +783,10 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	ad. channel	= channel. channelName;
 	newServices	-> addService (ad);
 
+	channel. nrServices ++;
 	if (theSCANHandler. active ())
 	   return;
 	
-	channel. nrServices ++;
 	int servCount	= theOfdmHandler -> FIG07_value ();
 	                        
 	if ((servCount > 0) && (channel. nrServices >= servCount))
@@ -809,6 +809,7 @@ void	RadioInterface::handle_FIG15 (const QString &serviceName,
 	if (!theConfigHandler -> get_audioServices_only ())
 	   newServices	-> addService (pd);
 	   
+	channel. nrServices ++;
 	if ((!theSCANHandler. active ()) &&
 	    (theOfdmHandler	-> is_SPI (SId))) 
 	   start_epgService (pd);
@@ -856,14 +857,6 @@ void	RadioInterface::handle_FIG10 (const QString &v, uint16_t EId) {
 	channel. Eid		= EId;
 	dynamicLabel		-> setText ("");
 //
-	if (channel. hasEcc) {
-	   QString country      = get_ITU_Code (channel. internatTable,
-                                                channel. eccByte,
-                                                (channel. Eid >> 12) &0xF);
-           channel. countryName = country;
-           newServices          -> set_countryName (country);
-	}
-
         if (!theSCANHandler. active ()) 
            read_pictureMappings (static_cast<uint32_t>(EId));
 	else
@@ -1286,19 +1279,19 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	}
 //
 //	processing the audio
-	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, amount);
-	while (theAudioBuffer. GetRingBufferReadAvailable () >= amount) {
-	   theAudioBuffer. getDataFromBuffer (vec, amount);
+	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, rate / 10);
+	while (theAudioBuffer. GetRingBufferReadAvailable () >= rate / 10) {
+	   theAudioBuffer. getDataFromBuffer (vec, rate / 10);
 	   if (!theTechWindow -> isHidden ()) {
-	      theTechData. putDataIntoBuffer (vec, amount);
-	      theTechWindow	-> audioDataAvailable (amount, rate);
+	      theTechData. putDataIntoBuffer (vec, rate / 10);
+	      theTechWindow	-> audioDataAvailable (rate / 10, rate);
 	   }
 #ifdef	HAVE_PLUTO_RXTX
 	   if (theDabStreamer != nullptr)
-	      theDabStreamer	-> audioOut (vec, amount, rate);
+	      theDabStreamer	-> audioOut (vec, rate / 10, rate);
 #endif
 	   std::vector<float> tmpBuffer;
-	   int size = theAudioConverter. convert (vec, amount,
+	   int size = theAudioConverter. convert (vec, rate / 10,
 	                                               rate, tmpBuffer);
 	   if (!muteTimer. isActive ())
 	      theAudioPlayer -> audioOutput (tmpBuffer. data (), size);
@@ -2660,6 +2653,7 @@ basicPrint thePrinter (channel. internatTable, channel. Eid, channel. eccByte);
 	stopChannel ();		// was done already
 	theOfdmHandler		-> setScanMode (true);
 	QString fs		= theSCANHandler. getFirstChannel ();
+
 	newServices		-> set_channelIndex (fs);
 	newServices		-> clearAll ();
 	theSCANHandler. addText (" scanning channel " + fs);
@@ -2825,8 +2819,9 @@ void	RadioInterface::nextFor_scan_to_data () {
 }
 
 void	RadioInterface::nextFor_scan_single () {
-	if (channel. nrServices > 0) 
+	if (channel. nrServices > 0) {
 	   show_for_single_scan ();
+	}
 	stopChannel ();
 	QString cs;
 	try {
@@ -3988,15 +3983,6 @@ void	RadioInterface::show_tiiData	(QVector<tiiData> r, int ind) {
 
 	if (channel. Eid == 0)
 	   return;
-//	probably yes, get the country code
-	if ((channel. countryName == "") && (channel. hasEcc)) {
-	   QString country	= get_ITU_Code (channel. internatTable,
-	                                         channel. eccByte,
-	                                         (channel. Eid >> 12) &0xF);
-	   channel. countryName	= country;
-	   channel. strongestTransmitter = "";
-	   newServices		-> set_countryName (country);
-	}
 
 //	The data in the vector is sorted on signal strength
 //	first step
@@ -4513,6 +4499,8 @@ void	RadioInterface::read_pictureMappings (uint32_t Eid) {
 
 void    RadioInterface::handle_FIG09 (int lto,
 	                              uint8_t ecc, uint8_t internatTable) {
+	if (channel. Eid == 0)
+	   return;
 	if (!channel. hasEcc) {
 	   channel. eccByte	= ecc; 
 	   channel. hasEcc	= true;
@@ -4521,6 +4509,7 @@ void    RadioInterface::handle_FIG09 (int lto,
 	   QString country      = get_ITU_Code (channel. internatTable,
                                                  channel. eccByte,
                                                  (channel. Eid >> 12) &0xF);
+	
            channel. countryName = country;
            channel. strongestTransmitter = "";
            newServices         -> set_countryName (country);

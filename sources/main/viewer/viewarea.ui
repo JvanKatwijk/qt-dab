@@ -46,7 +46,7 @@
         <x>0</x>
         <y>0</y>
         <width>238</width>
-        <height>145</height>
+        <height>143</height>
        </rect>
       </property>
      </widget>
@@ -108,14 +108,25 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="viewSelector">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mode selector&lt;/p&gt;&lt;p&gt;Select between &amp;quot;ensemble view&amp;quot; and &amp;quot;fvorite view&amp;quot;&lt;/p&gt;&lt;p&gt;Not visible when reading from a file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>ensembleview</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="smallPushButton" name="channelDisplayButton">
+       <property name="text">
+        <string>channelView</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="viewSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mode selector&lt;/p&gt;&lt;p&gt;Select between &amp;quot;ensemble view&amp;quot; and &amp;quot;fvorite view&amp;quot;&lt;/p&gt;&lt;p&gt;Not visible when reading from a file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>ensembleview</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

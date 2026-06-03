@@ -64,6 +64,18 @@ void	serviceBase::set_ensembleName	(const QString &ensembleName,
 	insert (newChannel);
 }
 
+void	serviceBase::set_countryName	(const QString &countryName,
+	                                    const QString &channelName) {
+	if (countryName == "")
+	   return;
+	for (auto &ch : theData) {
+	   if (ch. channelName == channelName) {
+	      ch. countryName = countryName;
+	      return;
+	   }
+	}
+}
+
 void	serviceBase::remove		(const QString &channel,
 	                                            const QString &service) {
 	for (auto &ch : theData) {
@@ -145,9 +157,15 @@ QDomDocument xmlBOM;
 	   if (component. tagName () == "channel") {
 	      QString channelName =
 	                component. attribute ("channelName", "5A");
+	      QString ensembleName =
+	                component. attribute ("ensembleName", "XXX");
+	      QString countryName =
+	                component. attribute ("countryName", "XXX");
 	      theChannel channel;
 	      bool b;
-	      channel. setName (channelName);
+	      channel. channelName	= channelName;
+	      channel. ensembleName	= ensembleName;
+	      channel. countryName	= countryName;
 	      channel. channel = channelName. toInt (&b, 16);
 	      if (!b)
 	         channel. channel = 0x5A;
@@ -189,6 +207,8 @@ QDomElement root = serviceDB. createElement ("serviceList");
 	   QDomElement channelElement = serviceDB.
 	                          createElement ("channel");
 	   channelElement. setAttribute ("channelName", channel. channelName);
+	   channelElement. setAttribute ("ensembleName", channel. ensembleName);
+	   channelElement. setAttribute ("countryName", channel. countryName);
 	   for (auto &sd : channel. channelData) {
 	      QDomElement serv = serviceDB. createElement ("serviceDesc");
 	      serv. setAttribute ("serviceName", sd. serviceName);

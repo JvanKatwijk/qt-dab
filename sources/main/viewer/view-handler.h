@@ -38,9 +38,12 @@
 #include	"channel-descriptor.h"
 #include	"database.h"
 #include	"service-descriptor.h"
+#include	"channel-viewer.h"
 
 #define	PREV_SERVICE		QString ("prevService")
 #define NEXT_SERVICE		QString ("nextService")
+#define	VIEW_SELECTOR		QString ("viewSelector")
+#define	CHANNEL_DISPLAY		QString ("channelDisplayButton")
 
 #define	ALL	1
 #define	SINGLE_CHANNEL	0
@@ -89,8 +92,9 @@ public slots:
 	void		handle_prevService	();
 	void		handle_nextChannel	();	
 	void		handle_prevChannel	();
-	void		handle_modeSwitcher	();
+	void		handle_viewSelector	();
 
+	void		handle_channelDisplay	();
 	void		handleFontSelect	();
 	void		handleFontColorSelect	();
 	void		handleFontSizeSelect	(int);
@@ -106,6 +110,7 @@ signals:
 	void		reduceButtons		(bool);
 private:
 	serviceBase	theDataBase;
+	channelViewer	channelDisplay;
 	QList<serviceDescriptor> displayList;
 	void		clearTable		();
 	QSettings	*viewSettings;
@@ -132,6 +137,9 @@ private:
 
 	void	color_prevService	();
 	void	color_nextService	();
+	void	color_viewSelector	();
+	void	color_channelDisplay	();
+
 	void	setButtonColors		(QPushButton *b,
                                          const QString &buttonName);
 

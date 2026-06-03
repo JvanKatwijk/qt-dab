@@ -6,7 +6,7 @@
 ######################################################################
 
 TEMPLATE	= app
-QT		+= widgets xml multimedia
+QT		+= widgets xml multimedia charts
 QT		+= network
 #CONFIG		+= console
 CONFIG		-= console
@@ -130,6 +130,7 @@ HEADERS += ./sources/main/radio.h \
            ./sources/main/viewer/channel-descriptor.h \
            ./sources/main/viewer/database.h \
            ./sources/main/viewer/view-handler.h \
+	   ./sources/main/viewer/channel-viewer.h \
 	   ./sources/main/audio-selector.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
@@ -296,6 +297,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/viewer/channel-descriptor.cpp \
            ./sources/main/viewer/database.cpp \
            ./sources/main/viewer/view-handler.cpp \
+           ./sources/main/viewer/channel-viewer.cpp \
 	   ./sources/main/audio-selector.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
