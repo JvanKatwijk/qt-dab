@@ -146,7 +146,8 @@ QTranslator	theTranslator;
 	}
 
 	QSettings dabSettings (initFileName, QSettings::IniFormat);
-	
+
+	qWarning () << "we gaan ervoor\n";
 /*
  *      Before we connect control to the gui, we have to
  *      instantiate

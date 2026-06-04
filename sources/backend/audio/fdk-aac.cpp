@@ -65,34 +65,36 @@ int		output_size	= 8 * 2048;
 	   return -1;
 
 	if ((packet [0] != 0x56)  || ((packet [1] >> 5) != 7)) {
-	   return -1;
+	   return -2;
 	}
 
 	packet_size  = (((packet [1] & 0x1F) << 8) | packet [2]) + 3;
 	if (packet_size != (uint32_t)packetLength) {
-	   return -1;
+	   return -3;
 	}
 
 	uint32_t	valid_size = packet_size;
 	err = aacDecoder_Fill (handle, &ptr, &packet_size, &valid_size);
 	if (err != AAC_DEC_OK) {
-	   return -1;
+	   return -4;
 	}
 
 	err = aacDecoder_DecodeFrame (handle,
 	                              bufp,
 		                      output_size, 0);
 	if (err == AAC_DEC_NOT_ENOUGH_BITS) {
-	   return -1;
+	   return -5;
 	}
 
 	if (err != AAC_DEC_OK)  {
-	   return -1;
+	   return -6;
 	}
 
 	CStreamInfo *info = aacDecoder_GetStreamInfo (handle);
-	if (!info || info -> sampleRate <= 0) 
-	   return -1;
+	if (info == nullptr)
+	   return -7;
+	if (info -> sampleRate <= 0) 
+	   return -8;
 
 	if (info -> numChannels == 2) {		// default for DAB+
 	   for (int i = 0; i < info -> frameSize; i ++) {
@@ -121,8 +123,9 @@ int		output_size	= 8 * 2048;
 	                sp   ->  psFlag, sp   ->  sbrFlag);
 
 	}
-	else
-	   fprintf (stderr, "Cannot handle these channels\n");
+	else {
+	   qWarning () << "cannor handle these channels";
+	}
 
 	return info -> numChannels; 
 }

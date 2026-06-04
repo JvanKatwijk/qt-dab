@@ -249,7 +249,11 @@ stream_parms    streamParameters;
 
 ///	sanity check 1
 	   if (au_start [i + 1] < au_start [i]) {
-//	      fprintf (stderr, "%d %d (%d)\n", au_start [i], au_start [i + 1], i);
+	      QString errorReport =
+	         QString ("size problem %1 should be larger than %2").
+	                                                arg (au_start [i + 1]).
+	                                                arg (au_start [i]);
+	      qWarning () << errorReport;
 //	should not happen, all errors were corrected
 	      return false;
 	   }
@@ -257,7 +261,8 @@ stream_parms    streamParameters;
 	   aac_frame_length = au_start [i + 1] - au_start [i] - 2;
 //	just a sanity check
 	   if ((aac_frame_length >=  960) || (aac_frame_length < 0)) {
-//	      fprintf (stderr, "aac_frame_length = %d\n", aac_frame_length);
+	      qWarning () << "invalid aac_frame_length " <<
+	                                             aac_frame_length << "\n";
 	      return false;
 	   }
 
@@ -266,6 +271,7 @@ stream_parms    streamParameters;
 	                                aac_frame_length)) {
 	      if (!crcFlag) {
 	         crcFlag = true;
+	         qWarning () << "crc error \n";
 	         emit crc_error (true);
 	      }
 	      crcErrors ++;
@@ -320,8 +326,42 @@ stream_parms    streamParameters;
 	   emit isStereo ((streamParameters. aacChannelMode == 1) ||
 	                        (streamParameters. psFlag == 1));
 
-	   if (tmp <= 0) 
+	   if (tmp <= 0) {
+#ifdef  __WITH_FDK_AAC__
+	      QString theError;
+	      switch (tmp) {
+	         case -1:
+	            theError = "fdk driver not working";
+	            break;
+	         case -2:
+	            theError = "Illegal aac packet";
+	            break;
+	         case -3:
+	            theError = "packetsize error";
+	            break;
+	         case -4:
+	            theError = "fdk buffer filling error";
+	            break;
+	         case -5:
+	            theError = "Not enough bits for fdk";
+	            break;
+	         case -6:
+	            theError = "error decoding aac";
+	            break;
+	         case -7:
+	            theError = "cannot get streaminfo";
+	            break;
+	         case -8:
+	            theError = "no valid samplerate";
+	            break;
+	         default:
+	            theError = "error in aac decoding";
+	            break;
+	      }
+	      qWarning () << theError;
+#endif
 	      aacErrors ++;
+	   }
 	   if (++aacFrames > 25) {
 	      show_aacErrors (aacErrors);
 	      aacErrors	= 0;
