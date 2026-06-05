@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2023
+ *    Copyright (C) 2016 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -22,24 +22,22 @@
  */
 #pragma once
 
-#include        "dab-constants.h"
-#include	<basic-scope.h>
+#include	<QwtPlot>
+#include	<complex>
+#include	<vector>
+#include	"waterfall-scope.h"
+#include	"fft-handler.h"
 
-class	RadioInterface;
-class	QSettings;
 
-class	nullScope: public basicScope {
-Q_OBJECT
+class spectrumWaterfall: public waterfallScope {
 public:
-		nullScope	(QwtPlot *,
-	                         int,
-	                         QSettings *);
-		~nullScope	();
-	void	display		(const Complex * , int, int);
-	void	clean		();
-
+		spectrumWaterfall	(QwtPlot *, int, int	rasterSize);
+	        ~spectrumWaterfall	();
+	void	display			(std::vector<Complex> &v,
+	                                 int low_x, int high_x,
+	                                 int sliderValue);
 private:
+	fftHandler	theFFT;
 	int		displaySize;
-	QSettings	*dabSettings;
+	std::vector<DABFLOAT> Window;
 };
-

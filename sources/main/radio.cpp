@@ -155,7 +155,6 @@ static const
 char	LABEL_STYLE [] = "color:lightgreen";
 
 	RadioInterface::RadioInterface (QSettings	*Si,
-	                                const QString	&dbFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
 	                                const QString	&tiiFile,
@@ -494,6 +493,10 @@ QString h;
 
 //	extract the channelnames and fill the combobox
 	QStringList channelNames	= theSCANHandler. getChannelNames ();
+
+	QString dbFile		= value_s (theQSettings, DAB_GENERAL,
+	                               "dbFileName", "qt-dab-serviceList.xml");
+	dbFile			= path_for_serviceLists + dbFile;
 	this -> newServices	= new serviceViewer (dbFile, this,
 	                                             channelNames,
 	                                             theQSettings,
@@ -4757,6 +4760,7 @@ void	RadioInterface::startList (bool &resetFlag) {
 QString fileName;
 selector ListSelector ("select option");
 	ListSelector. addtoList ("Open existing file");
+	ListSelector. addtoList ("Open existing file and set as default");
 	ListSelector. addtoList ("Create new servicelist");
 	ListSelector. addtoList ("Clear default servicelist");
 	ListSelector. addtoList ("Forget it");
@@ -4782,7 +4786,28 @@ selector ListSelector ("select option");
 	                                     get_audioServices_only ());
 	      break;
 	   }
-	   case 1: {	// create a new file
+	   case 1: {	// open existing file and set as default
+	      fileName =            
+	             QFileDialog::getOpenFileName (nullptr,
+                                                   "Open file ...",
+	                                           path_for_serviceLists,
+	                                           "*.xml");
+	      if (fileName != "") {
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                   fileName,
+	                                   get_serviceOrder (),
+	                                   !theConfigHandler ->
+	                                     get_audioServices_only (), false);
+	         store (theQSettings, DAB_GENERAL, "dbFileName", fileName);
+	      }
+	      else
+	         newServices -> startMode (ENSEMBLEVIEW,
+	                                   get_serviceOrder (),
+	                                   !theConfigHandler ->
+	                                     get_audioServices_only ());
+	      break;
+	   }
+	   case 2: {	// create a new file
 	      fileName =
 	             QFileDialog::getSaveFileName (nullptr,
                                                    "Open file ...",
@@ -4801,7 +4826,7 @@ selector ListSelector ("select option");
 	                                     get_audioServices_only ());
 	      break;
 	   }
-	   case 2:	// empty current default
+	   case 3:	// empty current default
 	      newServices -> startMode (ENSEMBLEVIEW, 
 	                                "",
 	                                get_serviceOrder (),
@@ -4810,7 +4835,7 @@ selector ListSelector ("select option");
 	      resetFlag	= true;
 	      break;
 	   default:
-	   case 3:	// selecting this was a mistake
+	   case 4:	// selecting this was a mistake
 	      newServices -> startMode (ENSEMBLEVIEW,
 	                                get_serviceOrder (),
 	                                !theConfigHandler ->

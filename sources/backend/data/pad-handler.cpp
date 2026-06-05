@@ -233,7 +233,7 @@ std::vector<uint8_t> data;		// for the local addition
 //	   if (mscGroupElement && (xpadLength > 0)) {
 	   if (xpadLength > 0) {
 	      if (last < xpadLength - 1) {
-//	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
+	         qWarning () << "handle_variablePAD: last < xpadLength - 1\n";
 	         return;
 	      }
 	      
@@ -302,7 +302,7 @@ std::vector<uint8_t> data;		// for the local addition
 	         return; // sorry, we do not handle this
 
 	      case 1:	//
-//	         fprintf (stderr, "Need to fix this\n");
+	         qWarning () <<  "unsupported mode in Pad\n";
 	         return;
 	      case 2:	// Dynamic label segment, start of X-PAD data group
 	      case 3:	// Dynamic label segment, continuation of X-PAD data group
@@ -322,7 +322,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   last_appType = appType;
 	   base -= length;
 	   if (base < 0 && i < CI_Index - 1) {
-//	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
+	      qWarning () << "Pad: something wrong with base " << base;
 	      return;
 	   }
 	}
@@ -357,9 +357,7 @@ int16_t  dataLength                = 0;
 	   else {
 	      int test = ((prefix >> 4) & 07) + 1;
 	      if (test != segmentno + 1) {
-#ifdef _PAD_TRACE_
-	         fprintf (stderr, "mismatch %d %d\n", test, segmentno);
-#endif
+	         qWarning () << "mismatch with pad segment numbers ", test;
 	         segmentno = -1;
 	         return;
 	      }
@@ -394,7 +392,7 @@ int16_t  dataLength                = 0;
 	            }
 	            break;
 	         default:
-//	            fprintf (stderr, "unknown command %d\n", Command);
+	            qWarning () << "unknown command  in Pad : " << Command;
 	            break;
 	      }
 	   }
@@ -464,18 +462,8 @@ int16_t  dataLength                = 0;
 //	the msc_length was given by the preceding appType "1"
 void	padHandler::new_MSC_element (const std::vector<uint8_t> &data) {
 
-//	if (mscGroupElement) { 
-////	   if (msc_dataGroupBuffer. size() < dataGroupLength)
-////	      fprintf (stderr, "short ? %d %d\n",
-////	                              msc_dataGroupBuffer. size(),
-////	                              dataGroupLength);
-//	   msc_dataGroupBuffer. clear();
-//	   build_MSC_segment (data);
-//	   mscGroupElement	= true;
-//	   show_mothandling (true);
-//	}
-
-	if (data. size() >= (uint16_t)dataGroupLength) { // msc element is single item
+	if (data. size () >= (uint16_t)dataGroupLength) {
+// msc element is single item
 	   msc_dataGroupBuffer. clear();
 	   build_MSC_segment (data);
 	   mscGroupElement = false;
@@ -518,7 +506,7 @@ int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
 	                                            dataGroupLength;
 
 	if (size < 2) {
-	   fprintf (stderr, "build_MSC_segment: data size < 2\n");
+	   qWarning () << "build_MSC_segment: data size < 2\n";
 	   return;
 	}
 	   
@@ -533,7 +521,7 @@ uint16_t	index;
 	if ((data [0] & 0x40) != 0) {
 	   bool res	= check_crc_bytes (data. data(), size - 2);
 	   if (!res) {
-//	      fprintf (stderr, "build_MSC_segment fails on crc check\n");
+	      qWarning () << "build_MSC_segment fails on crc check";
 	      return;
 	   }
 //	   else
@@ -606,8 +594,8 @@ uint16_t	index;
 	      break;
 
 	   default:		// cannot (should not) happen
-	      fprintf (stderr, "Not yet handled mot in pad %d (%X)\n",
-	                                          groupType, transportId);
+	      qWarning () << " grouptype not yet handled mot in pad" <<
+	                                          groupType;
 	      break;
 	}
 }

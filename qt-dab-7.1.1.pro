@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.1.2\\\"
+DEFINES         += VERSION=\\\"7.1.3\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
@@ -111,11 +111,15 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./sources/main/radio.h \
 	   ./sources/main/display-widget.h \
+	   ./sources/main/scopes/basic-scope.h \
 	   ./sources/main/scopes/spectrum-scope.h \
 	   ./sources/main/scopes/correlation-scope.h \
 	   ./sources/main/scopes/null-scope.h \
+	   ./sources/main/scopes/tii-scope.h \
 	   ./sources/main/scopes/channel-scope.h \
 	   ./sources/main/scopes/dev-scope.h \
+	   ./sources/main/scopes/spectrum-waterfall.h \
+	   ./sources/main/scopes/tii-waterfall.h \
 	   ./sources/main/scopes/waterfall-scope.h \
 	   ./sources/main/scopes/iqdisplay.h \
 	   ./sources/main/scopes/audio-display.h \
@@ -220,9 +224,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/findfilenames.h \
 	   ./sources/support/dl-cache.h \
 	   ./sources/support/content-table.h \
-#	   ./sources/support/ITU_Region_1.h \
-#	   ./sources/support/coordinates.h \
-	   ./sources/support/skin-handler.h \
 	   ./sources/support/mapport.h \
 	   ./sources/support/bandpass-filter.h \
 	   ./sources/support/fir-filters.h \
@@ -279,11 +280,15 @@ FORMS	+= ./sources/devices/filereaders/xml-filereader/xmlfiles.ui
 SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/radio.cpp \
 	   ./sources/main/display-widget.cpp \
+	   ./sources/main/scopes/basic-scope.cpp \
            ./sources/main/scopes/correlation-scope.cpp \
            ./sources/main/scopes/spectrum-scope.cpp \
            ./sources/main/scopes/null-scope.cpp \
+           ./sources/main/scopes/tii-scope.cpp \
            ./sources/main/scopes/channel-scope.cpp \
            ./sources/main/scopes/dev-scope.cpp \
+           ./sources/main/scopes/spectrum-waterfall.cpp \
+           ./sources/main/scopes/tii-waterfall.cpp \
            ./sources/main/scopes/waterfall-scope.cpp \
 	   ./sources/main/scopes/iqdisplay.cpp \
 	   ./sources/main/scopes/audio-display.cpp \
@@ -371,15 +376,12 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/findfilenames.cpp \
 	   ./sources/support/fir-filters.cpp \
 	   ./sources/support/http-handler.cpp \
-#	   ./sources/support/ITU_Region_1.cpp \
 	   ./sources/support/logger.cpp \
 	   ./sources/support/mapport.cpp \
 	   ./sources/support/scan-handler.cpp \
-#	   ./sources/support/scanlist-handler.cpp \
 	   ./sources/support/scantable-handler.cpp \
 	   ./sources/support/scheduler.cpp \
 	   ./sources/support/schedule-selector.cpp \
-	   ./sources/support/skin-handler.cpp \
 	   ./sources/support/tii-mapper.cpp \
 	   ./sources/support/tii-reader.cpp \
 	   ./sources/support/time-converter.cpp \
@@ -457,10 +459,10 @@ equals (QT_MAJOR_VERSION, 6) {
 	}else{  LIBS += -lqwt-qt5
 	}
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.1.2
+   TARGET               = qt-dab-qt5-7.1.3
 }
 else {
-   TARGET               = qt-dab-7.1.2
+   TARGET               = qt-dab-7.1.3
 }
 
 #mac {
@@ -524,7 +526,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.1.1
+        TARGET          = qt-dab-7.1.3
 	DEFINES		+= __BITS64__
 	DESTDIR		=  /d/systems/qt-dab/linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

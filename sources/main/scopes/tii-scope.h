@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2015 .. 2024
+ *    Copyright (C)  2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,29 +20,37 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
-#pragma once
-#
-#include	<QDialog>
-#include	<QLabel>
-#include	<QListView>
-#include	<QStringListModel>
-#include	<QStringList>
-#include	<cstdint>
 
-class	skinHandler: public QDialog {
+#pragma once
+
+#include        "dab-constants.h"
+#include	"basic-scope.h"
+#include	"fft-handler.h"
+
+class	RadioInterface;
+class	QSettings;
+
+class	tiiScope: public basicScope {
 Q_OBJECT
 public:
-			skinHandler	();
-			~skinHandler	();
-	QStringList	skins;
-private:
-	QLabel		*toptext;
-	QListView	*selectorDisplay;
-	QStringListModel skinList;
-	int16_t		selectedItem;
-private slots:
-void	select_skin	(QModelIndex);
-};
+		tiiScope	(QwtPlot *,
+	                         int,
+	                         QSettings *, const QString &);
+		~tiiScope	();
+	void	display               (std::vector<Complex> &v,
+                                         int lowFreq, int highFreq,
+                                         int Amp, int markOffset);
 
+	void	set_bitDepth	(int);
+	void	clean		();
+
+private:
+	fftHandler	theFFT;
+	QSettings	*dabSettings;
+	std::vector<floatQwt> displayBuffer;
+	int		bitDepth;
+	int		normalizer;
+	int16_t		displaySize;
+	float		get_db		(float);
+};
 

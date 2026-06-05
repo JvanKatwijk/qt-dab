@@ -25,6 +25,9 @@
 #include	<QDir>
 #include	"display-widget.h"
 #include	"spectrum-scope.h"
+#include	"spectrum-waterfall.h"
+#include	"tii-scope.h"
+#include	"tii-waterfall.h"
 #include	"null-scope.h"
 #include	"correlation-scope.h"
 #include	"channel-scope.h"
@@ -63,22 +66,29 @@
 	dcOffset_label		-> show ();
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
-	                                                512, dabSettings_p);
+	                                                 512, dabSettings_p,
+	                                                "inputSpectrum");
+	spectrumWaterfall_p	= new spectrumWaterfall	(waterfallDisplay,
+	                                                 512,
+	                                                  50);
 	nullScope_p		= new nullScope		(nullDisplay,
-	                                                512, dabSettings_p);
+	                                                 512, dabSettings_p);
 	correlationScope_p	= new correlationScope (correlationDisplay,
-	                                                256, dabSettings_p);
-	TII_Scope_p		= new spectrumScope	(tiiDisplay,
+	                                                512, dabSettings_p);
+	tiiScope_p		= new tiiScope		(tiiDisplay,
 	                                                192, dabSettings_p,
-	                                                true);
+	                                                "tiiScope");
+	tiiWaterfall_p		= new tiiWaterfall	(waterfallDisplay,
+	                                                 384,
+	                                                 50);
 	channelScope_p		= new channelScope	(channelPlot,
 	                                                 NR_TAPS,
 	                                                 dabSettings_p);
 	devScope_p		= new devScope		(devPlot,
-	                                                 512, dabSettings_p);
+	                                                 768, dabSettings_p);
 	IQDisplay_p		= new IQDisplay		(iqDisplay);
 	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
-	                                                512, 50);
+	                                                 512, 50);
 //
 //	and the settings for the sliders:
 	int sliderValue		= value_i (dabSettings_p,
@@ -150,12 +160,14 @@
 
 	displayWidget::~displayWidget () {
 	delete		spectrumScope_p;
-	delete		waterfallScope_p;
+	delete		spectrumWaterfall_p;
 	delete		nullScope_p;
 	delete		correlationScope_p;
-	delete		TII_Scope_p;
+	delete		tiiScope_p;
+	delete		tiiWaterfall_p;
 	delete		channelScope_p;
 	delete		devScope_p;
+	delete		waterfallScope_p;
 	delete		IQDisplay_p;
 }
 
@@ -205,39 +217,18 @@ void	displayWidget::showSpectrum	(std::vector<Complex> &v, int freq) {
 int	l	= v. size ();
 floatQwt  X_axis [512];
 floatQwt  Y_value [512];
-static	int lastFreq	= -1;
 static floatQwt avg [4 * 512];
 
 	if (currentTab != SHOW_SPECTRUM)
 	   return;
 
-	if (freq != lastFreq) {
-	   for (int i = 0; i < 4 * 512; i ++)
-	      avg [i] = 0;
-	   lastFreq = freq;
-	}
-
-	theFFT. fft (v);
-	for (int i = 0; i < (int)(v. size ()) / 2; i ++) {
-	   avg [i] = 0.5 * avg [i] + 0.5 * abs (v [l / 2 + i]);
-	   avg [l / 2 + i] = 0.5 * avg [l / 2 + i] + 0.5 * abs (v [i]);
-	}
-
-	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = (freq - 2048000 / 2 + i * 2049000.0 / 512) / 1000000.0;
-	   Y_value [i] = 0;
-	   for (int j = 0; j < 4; j ++) 
-	      Y_value [i] +=  avg [4 * i + j];
-	   Y_value [i]	=  get_db (Y_value [i] / 4);
-	}
-
-	spectrumScope_p -> display (X_axis, Y_value, freq / 1000, 
-	                                    spectrumSlider -> value ());
-	for (int i = 0; i < 512; i ++)
-	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
-	waterfallScope_p	-> display (X_axis, Y_value, 
-	                                    waterfallSlider -> value (),
-	                                    freq / 1000);
+	int lowFreq	= (freq - SAMPLERATE / 2) / 1000;
+	int highFreq	= (freq + SAMPLERATE / 2) / 1000;
+	spectrumScope_p -> display (v, lowFreq, highFreq,
+	                               spectrumSlider -> value ());
+	spectrumWaterfall_p	-> display (v,
+	                                    lowFreq, highFreq,
+	                                    waterfallSlider -> value ());
 }
 
 //	for "corr" we get a segment of 1024 float values,
@@ -351,50 +342,14 @@ floatQwt	Y_value [512];
 	if (currentTab != SHOW_TII)	// should not happen
 	   return;
 
-	theFFT. fft (v);
-
-//	smoothen the data a little
-	for (uint32_t i = 0; i < v. size (); i ++)
-	   workingBuffer [i] = workingBuffer [i] * DABFLOAT (0.9) +
-	                       abs (v [i]) * DABFLOAT (0.1);
-//
-//	in the regular scope we just show the data the tii decoder will
-//	be working on
-	int startLoc	= T_u - carriers / 2;
-	floatQwt resVec [carriers / 8];
-	for (int i = 0; i < carriers / 8; i ++) {
-	   resVec [i] = 0;
-	   for (int j = 0; j < 4; j ++) {
-	      int index = ((startLoc + 2 * i + j * carriers / 4) % T_u);
-	      resVec [i] += 2 * workingBuffer [index] +
-	                                        workingBuffer [index + 1];
-	   }
-	   X_axis [i] = i;
-	}
-
-	TII_Scope_p		-> display (X_axis, resVec, 96, 
-	                                      tiiSlider -> value (), marker);
-//
-//	for the waterfall we downsample again
-	for (int i = 0; i < T_u / 4; i ++) {
-	   Y_value [i] = 0;
-	   for (int j = 0; j < 4; j ++) {
-	      int index = (T_u / 2 + 4 * i + j) % T_u;
-	      Y_value [i] += workingBuffer [index];
-	   }
-	   X_axis [i] = -T_u / 2  +  4 * i;
-	}
-
-	for (int i = 0; i < 512; i ++)
-	   Y_value [i] = (get_db (Y_value [i]) - get_db (0));
-	waterfallScope_p	-> display (X_axis, Y_value, 
-	                                    1.5 * waterfallSlider -> value (),
-	                                    96);
+	tiiScope_p	-> display (v, 0, 192, 
+	                             tiiSlider -> value (), marker);
+	tiiWaterfall_p	-> display (v, 0, 384, 
+	                              waterfallSlider -> value ());
 }
 
 void	displayWidget::showChannel	(const std::vector<Complex> Values) {
 floatQwt	amplitudeValues	[NR_TAPS];
-floatQwt	phaseValues	[NR_TAPS];
 floatQwt	X_axis		[NR_TAPS];
 //floatQwt	waterfall_X	[512];
 floatQwt	waterfall_Y	[512];
@@ -403,25 +358,16 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
 	   return;
 	for (int i = 0; i < length; i ++) {
-	   amplitudeValues [i] = 4 * abs (Values [i]);
-	   phaseValues     [i] = arg (Values [i]) + 20;
+	   amplitudeValues [i] = abs (Values [i]);
 	   X_axis          [i] = i;
 	}
 	for (int i = length; i < NR_TAPS; i ++) {
 	   amplitudeValues [i] = 1;
-	   phaseValues     [i] = 0;
 	   X_axis	   [i] = i;
 	}
 
-	channelScope_p	-> display (X_axis,
-	                            amplitudeValues,
-	                            phaseValues,
+	channelScope_p	-> display (amplitudeValues,
 	                            channelSlider -> value ());
-
-	for (int i = 0; i < NR_TAPS; i ++) {
-//	   waterfall_X [i]	= i;
-//	   waterfall_Y [i]	= 0.1 * abs (Values [i]);
-	}
 
 	waterfallScope_p	-> display (X_axis, waterfall_Y, 
 	                                    waterfallSlider -> value (),
@@ -601,7 +547,7 @@ void	displayWidget::setSilent	() {
 	   correlationScope_p	-> clean ();
 
 	if (currentTab == SHOW_TII)
-	   TII_Scope_p		-> clean ();
+	   tiiScope_p		-> clean ();
 
 	if (currentTab == SHOW_CHANNEL)
 	   channelScope_p	-> clean ();

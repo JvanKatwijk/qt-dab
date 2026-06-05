@@ -44,8 +44,11 @@ class	RadioInterface;
 class	QSettings;
 
 class	spectrumScope;
+class	spectrumWaterfall;
 class	waterfallScope;
 class	nullScope;
+class	tiiScope;
+class	tiiWaterfall;
 class	correlationScope;
 class	devScope;
 class	channelScope;
@@ -98,10 +101,12 @@ private:
 	fftHandler		theFFT;
 	QSettings		*dabSettings_p;
 	spectrumScope		*spectrumScope_p;
+	spectrumWaterfall	*spectrumWaterfall_p;
 	waterfallScope		*waterfallScope_p;
 	nullScope		*nullScope_p;
+	tiiScope		*tiiScope_p;
+	tiiWaterfall		*tiiWaterfall_p;
 	correlationScope	*correlationScope_p;
-	spectrumScope		*TII_Scope_p;
 	devScope		*devScope_p;
 	channelScope		*channelScope_p;
 	IQDisplay		*IQDisplay_p;

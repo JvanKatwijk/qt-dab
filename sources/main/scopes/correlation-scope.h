@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -26,25 +26,9 @@
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	<QSettings>
-#include	<QObject>
-#include	"qwt-2.h"
-#include	<qwt_plot.h>
-#include	<qwt_plot_marker.h>
-#include	<qwt_plot_grid.h>
-#include	<qwt_plot_curve.h>
-#include        <qwt_color_map.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_textlabel.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include        <qwt_picker_machine.h>
-#include        <qwt_scale_widget.h>
-#include        <QBrush>
-#include	<QVector>
+#include	"basic-scope.h"
 
-
-class	RadioInterface;
-class	correlationScope: public QObject {
+class	correlationScope: public basicScope {
 Q_OBJECT
 public:
 			correlationScope	(QwtPlot *rig,
@@ -59,23 +43,10 @@ public:
 	void		clean			();
 
 private:
-	QwtPlotCurve	spectrumCurve;
 	QSettings	*dabSettings;
-	QwtPlotPicker   *lm_picker;
-        QColor          displayColor;
-        QColor          gridColor;
-        QColor          curveColor;
-	QColor		labelColor;
-
-	int		plotLength;
-	QwtPlot         *plotgrid;
-        QwtPlotGrid     *grid;
-
-	std::vector<QwtPlotMarker *>	Markers;
+	std::vector<markType>	markers;
 	int		displaySize;
 
 	float		get_db		(float);
-private slots:
-        void            rightMouseClick			(const QPointF &);
 };
 

@@ -24,56 +24,33 @@
 #pragma once
 
 #include        "dab-constants.h"
-#include	<QObject>
-#include	"qwt-2.h"
-#include	<qwt_plot.h>
-#include	<qwt_plot_marker.h>
-#include	<qwt_plot_grid.h>
-#include	<qwt_plot_curve.h>
-#include        <qwt_color_map.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_textlabel.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include	<qwt_picker_machine.h>
-#include        <qwt_scale_widget.h>
-#include        <QBrush>
-#include        <QTimer>
+#include	"basic-scope.h"
+#include	"fft-handler.h"
 
 class	RadioInterface;
 class	QSettings;
 
-class	spectrumScope: public QObject {
+
+class	spectrumScope: public basicScope {
 Q_OBJECT
 public:
 		spectrumScope	(QwtPlot *,
 	                         int,
-	                         QSettings *,
-	                         bool marker = false);
+	                         QSettings *, const QString &);
 		~spectrumScope	();
-	void	display		(floatQwt *, floatQwt *, int, int, int marker = -1);
+	void	display		(std::vector<Complex> &, int, int, int);
 	void	set_bitDepth	(int);
 	void	clean		();
 
 private:
-
-	QwtPlotCurve	spectrumCurve;
+	fftHandler	theFFT;
 	QSettings	*dabSettings;
-	QwtPlotPicker	*lm_picker;
-	QColor		displayColor;
-	QColor		gridColor;
-	QColor		curveColor;
 	int		bitDepth;
+	std::vector<DABFLOAT> Window;
+	std::vector<floatQwt> displayBuffer;
 	int		normalizer;
 	int16_t		displaySize;
 	bool		hasMarker;
-	QwtPlotMarker	*Marker;
-	QwtPlot		*plotgrid;
-	QwtPlotGrid	*grid;
-	int32_t		indexforMarker;
-	float		get_db			(float);
-	
-private slots:
-	void		rightMouseClick		(const QPointF &);
+	float		get_db		(float);
 };
 

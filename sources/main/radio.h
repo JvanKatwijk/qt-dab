@@ -238,7 +238,6 @@ class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 const QString	&,	//db
 	                                 const QString	&,	//freqExt
 	                                 const QString	&,	//schedule
 	                                 const QString	&,	//tiiFile

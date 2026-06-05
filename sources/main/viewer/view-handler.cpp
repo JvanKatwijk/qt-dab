@@ -842,13 +842,15 @@ QString res;
 
 void	serviceViewer::set_countryName	(const QString &name) {
 	countryName	-> setText (name);
-	theDataBase. set_countryName (name, currentChannel ());
+	if (theMode == ENSEMBLEVIEW)
+	   theDataBase. set_countryName (name, currentChannel ());
 }
 
 void	serviceViewer::set_ensembleId	(const QString &name, int id) {
 	ensembleId      -> setText (name + QString ("(") +
                   hextoString (static_cast<uint32_t>(id))+ QString (")"));
-	theDataBase. set_ensembleName (name, currentChannel ());
+	if (theMode == ENSEMBLEVIEW)
+	   theDataBase. set_ensembleName (name, currentChannel ());
 	connect (&timer_1, &QTimer::timeout,
 	         this, &serviceViewer::startButtons);
 	timer_1. start (1000);

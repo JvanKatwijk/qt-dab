@@ -75,7 +75,7 @@ uint16_t segmentNumber	= 0;
 	   next		= 16 + (extensionFlag ? 1 : 0) * 16 + (lengthInd + 1) * 8;
 	}
 	if (crcFlag && !check_CRC_bits (data, msc.size())) {	
-	   fprintf (stderr, "cntIdx %d fails\n", cntIdx);
+	   qWarning () <<  "cntIdx fails" << cntIdx;
 	   return;
 	}
 

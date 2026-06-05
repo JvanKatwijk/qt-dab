@@ -21,162 +21,35 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"channel-scope.h"
-#include	<QSettings>
-#include        <QColor>
-#include        <QPen>
-#include        <QColorDialog>
 
-	channelScope::channelScope (QwtPlot *channelDisplay,
-	                            int displaySize,
+	channelScope::channelScope (QwtPlot *plotArea, int displaySize,
 	                            QSettings	*dabSettings):
-	                                  amplitudeCurve (""),
-	                                  phaseCurve ("") {
-QString	colorString	= "black";
-
-	(void)displaySize;
-	this	-> dabSettings		= dabSettings;
+	                                  basicScope (plotArea,
+	                                              dabSettings, displaySize,
+	                                              "channelScope") {
 	this	-> displaySize		= displaySize;
-	dabSettings	-> beginGroup ("channelScope");
-	colorString	= dabSettings -> value ("displayColor",
-	                                           "white"). toString();
-	displayColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("gridColor",
-	                                           "vlack"). toString();
-	gridColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("curveColor",
-	                                            "cyan"). toString();
-	curveColor	= QColor (colorString);
-	dabSettings	-> endGroup ();
-	plotgrid	= channelDisplay;
-	plotgrid	-> setCanvasBackground (displayColor);
-	grid		= new QwtPlotGrid;
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid	-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid	-> enableXMin (true);
-	grid	-> enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid	-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid	-> attach (plotgrid);
-
-	lm_picker	= new QwtPlotPicker (plotgrid -> canvas ());
-	QwtPickerMachine *lpickerMachine =
-                             new QwtPickerClickPointMachine ();
-
-	lm_picker       -> setStateMachine (lpickerMachine);
-        lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
-                                            Qt::RightButton);
-        connect (lm_picker, qOverload<const QPointF&>(&QwtPlotPicker::selected),
-                 this, &channelScope::rightMouseClick);
-
-	amplitudeCurve. setPen (QPen(curveColor, 2.0));
-	amplitudeCurve. setOrientation (Qt::Horizontal);
-	amplitudeCurve. setBaseline	(get_db (0));
-
-	phaseCurve. setPen (QPen (QColor ("red"), 2.0));
-	phaseCurve. setOrientation (Qt::Horizontal);
-	phaseCurve. setBaseline	(get_db (0));
-
-	amplitudeCurve. attach (plotgrid);
-	phaseCurve. attach (plotgrid);
-	
-	Marker		= new QwtPlotMarker();
-	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-	Marker		-> setLinePen (QPen (Qt::red));
-	Marker		-> attach (plotgrid);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	normalizer	= 512;
 }
 
 	channelScope::~channelScope	() {
-
-	delete		Marker;
-	delete		grid;
 }
 
-void	channelScope::display		(const floatQwt *X_axis,
-	                                 const floatQwt *amplitudeValues,
-	                                 const floatQwt *phaseValues,
+void	channelScope::display		(const floatQwt *amplitudeValues,
 	                                 int Amp) {
-auto *ampVals	= dynVec (floatQwt, displaySize);
-//double ampVals [displaySize];
-	(void)Amp;
-	float Max	= 0;
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
-				         X_axis [displaySize - 1]);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         0, Amp);
+floatQwt ampVals [displaySize];
+floatQwt min	= +10000;
+floatQwt max	= -10000;
 
-	for (int i = 0; i < displaySize; i ++)
-	   if (amplitudeValues [i] > Max)
-	      Max = amplitudeValues [i];
-
-	if (Max > 15)
-	   for (int i = 0; i < displaySize; i ++)
-	      ampVals [i] = amplitudeValues [i] * 15.0 / Max;
-	amplitudeCurve. setBaseline (0);
-	ampVals [0]	= 0;
-	ampVals [displaySize - 1] = 0;
-
-	amplitudeCurve. setSamples (X_axis, ampVals, displaySize);
-	phaseCurve. setSamples  (X_axis, phaseValues, displaySize);
-	Marker		-> setXValue (0);
-	plotgrid	-> replot (); 
-}
-
-void	channelScope::rightMouseClick	(const QPointF &point) {
-QColor	color;
-	(void)point;
-	color	= QColorDialog::getColor (displayColor,
-	                                  nullptr, "displayColor");
-	if (!color. isValid ())
-	   return;
-	this	-> displayColor	= color;
-	color	= QColorDialog::getColor (gridColor, nullptr,  "grid color");
-	if (!color. isValid ())
-	   return;
-	this	-> gridColor	= color;
-	color	= QColorDialog::getColor (curveColor, nullptr, "curveColor");
-	if (!color. isValid ())
-	   return;
-	this	-> curveColor	= color;
-
-	dabSettings	-> beginGroup ("channelScope");
-	dabSettings	-> setValue ("displayColor", displayColor. name ());
-	dabSettings	-> setValue ("gridColor", gridColor. name ());
-	dabSettings	-> setValue ("curveColor", curveColor. name ());
-	dabSettings	-> endGroup ();
-
-	phaseCurve. setPen (QPen (QColor ("red"), 2.0));
-	amplitudeCurve. setPen (QPen (this -> curveColor, 2.0));
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
-#else
-	grid		-> setMajorPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
-#endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
-#else
-	grid		-> setMinorPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
-#endif
-	plotgrid	-> setCanvasBackground (this -> displayColor);
-}
-
-float   channelScope::get_db (float x) {
-        return 20 * log10 ((x + 1) / (float)(normalizer));
+	for (int i = 0; i < displaySize; i ++) {
+	   ampVals [i] = amplitudeValues [i];
+	   if (ampVals [i] < min)
+	      min = ampVals [i];
+	   else
+	   if (ampVals [i] > max)
+	      max = ampVals [i];
+	}
+	showSpectrum (ampVals, displaySize,
+	              0, displaySize,
+	              min, max);
 }
 
 void	channelScope::clean		() {

@@ -92,8 +92,6 @@ void	setTranslator (QTranslator *theTranslator, QString Language) {
 int     main (int argc, char **argv) {
 QString initFileName	= fullPathfor (QString (DEFAULT_INI), QString (".ini"));
 QString	scheduleFile	= fullPathfor (QString (SCHEDULE), QString (".sch"));
-QString serviceListFile	= fullPathfor (QString (".qt-dab-serviceList.xml"),
-	                                                 QString (".xml"));
 QString tiiFileName	= fullPathfor (QString (".txdata.tii"), 
 	                                                 QString (".tii"));
 RadioInterface	* myRadioInterface;
@@ -188,7 +186,6 @@ QTranslator	theTranslator;
 	qRegisterMetaType<QByteArray >("QByteArray");
 	qRegisterMetaType<QVector<tiiData> >("QVector<tiiData>");
 	myRadioInterface = new RadioInterface (&dabSettings,
-	                                        serviceListFile,
 	                                        freqExtension,
 	                                        scheduleFile,
 	                                        tiiFileName,

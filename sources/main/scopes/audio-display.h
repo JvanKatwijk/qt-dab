@@ -27,27 +27,12 @@
 #include	<QSettings>
 #include        "dab-constants.h"
 #include	<QFrame>
-#include	<QObject>
-
-#include	"qwt-2.h"
-#include	<qwt_plot.h>
-#include	<qwt_plot_marker.h>
-#include	<qwt_plot_grid.h>
-#include	<qwt_plot_curve.h>
-#include	<qwt_plot_marker.h>
-#include        <qwt_color_map.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_textlabel.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include        <qwt_picker_machine.h>
-#include        <qwt_scale_widget.h>
-#include        <QBrush>
+#include	<basic-scope.h>
 
 #include	"fft-handler.h"
 class	RadioInterface;
 
-class	audioDisplay: public QObject {
+class	audioDisplay: public basicScope {
 Q_OBJECT
 public:
 			audioDisplay		(RadioInterface *,
@@ -58,26 +43,13 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	QwtPlot		*plotGrid;
-	QwtPlotCurve	spectrumCurve;
-	QBrush		*ourBrush;
-	QwtPlotGrid	grid;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	floatQwt	displayBuffer [512];
+	floatQwt	*displayBuffer;
 	Complex		*spectrumBuffer;
 	DABFLOAT	Window [4 * 512];
 	fftHandler	fft;
-	QwtPlotPicker   *lm_picker;
-	QColor		displayColor;
-	QColor		gridColor;
-	QColor		curveColor;
-	bool		brush;
-	void		ViewSpectrum	(floatQwt *, floatQwt *,
-	                                             floatQwt, int);
 	float		get_db 		(float);
 	int32_t		normalizer;
-private slots:
-        void            rightMouseClick		(const QPointF &);
 };
 
