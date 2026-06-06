@@ -68,8 +68,8 @@ public:
 	                                         std::vector<markType> &);
 private:
 	RadioInterface	*parent;
-	QwtPlot		*plotGrid;
 	QSettings	*scopeSettings;
+	QwtPlot		*plotGrid;
 	int		displaySize;
 	QString		scopeName;
 

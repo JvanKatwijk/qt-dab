@@ -33,17 +33,15 @@
 #include	<vector>
 #include	<atomic>
 #include	"viterbi.h"
-#include	"dab-params.h"
 #include	"fib-decoder.h"
 
 
 class	RadioInterface;
-class	dabParams;
 
 class ficHandler: public fibDecoder {
 Q_OBJECT
 public:
-		ficHandler		(RadioInterface *, uint8_t, uint8_t);
+		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler		();
 	void	processFICBlock		(std::vector<int16_t> &, int16_t);
 	void	stop			();
@@ -54,7 +52,6 @@ public:
 	void	getFIBBits		(uint8_t *, bool *);
 	int	getFICQuality		();
 private:
-	dabParams	params;
 	viterbi		myViterbi;
 //	viterbiSpiral	myViterbi;
 	uint8_t		hardBits	[768];

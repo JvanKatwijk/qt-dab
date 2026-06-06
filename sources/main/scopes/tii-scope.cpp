@@ -70,8 +70,8 @@ Complex spectrumBuffer [T_u];
 	for (int i = 0; i < displaySize; i ++)
 	   X_axis [i] = i * (highFreq - lowFreq) / displaySize + lowFreq;
 
-	floatQwt resVec [carriers / 8];
-	for (int i = 0; i < v. size (); i ++)
+//	floatQwt resVec [carriers / 8];
+	for (uint32_t i = 0; i < v. size (); i ++)
 	   spectrumBuffer [i] = v [i];
 
 	theFFT. fft (spectrumBuffer);

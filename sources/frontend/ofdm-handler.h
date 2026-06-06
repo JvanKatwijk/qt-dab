@@ -44,7 +44,6 @@
 #include	"eti-generator.h"
 
 class	RadioInterface;
-class	dabParams;
 class	processParams;
 class	logger;
 
@@ -129,7 +128,6 @@ public:
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;
-	dabParams		params;
 	QSettings		*settings_p;
 	logger			*theLogger;
 	uint8_t			cpuSupport;

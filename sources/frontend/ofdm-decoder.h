@@ -29,7 +29,6 @@
 #include	"ringbuffer.h"
 #include	"phasetable.h"
 #include	"freq-interleaver.h"
-#include	"dab-params.h"
 #include	"fft-handler.h"
 #include	"phasetable.h"
 class	RadioInterface;
@@ -47,7 +46,6 @@ class	ofdmDecoder: public QObject {
 Q_OBJECT
 public:
 		ofdmDecoder		(RadioInterface *,
-	                                 uint8_t,
 	                                 int16_t,
 	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
@@ -66,7 +64,6 @@ public:
 	void	set_correctPhase	(bool);
 private:
 	RadioInterface		*myRadioInterface;
-	dabParams		params;
 	phaseTable		theTable;
 	interLeaver		myMapper;
 	fftHandler		fft;

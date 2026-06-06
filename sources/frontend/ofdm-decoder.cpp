@@ -105,23 +105,21 @@ Complex makeComplex (DABFLOAT phase) {
 }
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
-	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
 	                                 RingBuffer<float>   *devBuffer_i,
 	                                 RingBuffer<Complex> *iqBuffer_i) :
 	                                    myRadioInterface (mr),
-	                                    params	(dabMode),
-	                                    theTable	(dabMode),
-	                                    myMapper	(dabMode),
-	                                    fft (params. get_T_u (), false),
+	                                    theTable	(),
+	                                    myMapper	(),
+	                                    fft (get_T_u (), false),
 	                                    devBuffer	(devBuffer_i),
 	                                    iqBuffer	(iqBuffer_i),
-	                                    phaseReference (params. get_T_u ()),
-	                                    conjVector	(params. get_T_u ()),
-	                                    fft_buffer	(params. get_T_u ()),
-	                                    sigmaSQ_Vector (params. get_T_u ()),
-	                                    meanLevelVector(params. get_T_u ()),
-	                                    meanPowerVector (params. get_T_u ()){
+	                                    phaseReference (get_T_u ()),
+	                                    conjVector	(get_T_u ()),
+	                                    fft_buffer	(get_T_u ()),
+	                                    sigmaSQ_Vector (get_T_u ()),
+	                                    meanLevelVector (get_T_u ()),
+	                                    meanPowerVector (get_T_u ()) {
 	(void)bitDepth;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
@@ -130,10 +128,10 @@ Complex makeComplex (DABFLOAT phase) {
 	connect (this, &ofdmDecoder::show_stdDev,
 	         myRadioInterface, &RadioInterface::show_stdDev);
 //
-	this	-> T_s		= params. get_T_s	();
-	this	-> T_u		= params. get_T_u	();
-	this	-> nrBlocks	= params. get_L		();
-	this	-> carriers	= params. get_carriers	();
+	this	-> T_s		= get_T_s	();
+	this	-> T_u		= get_T_u	();
+	this	-> nrBlocks	= get_L		();
+	this	-> carriers	= get_carriers	();
 	this	-> T_g		= T_s - T_u;
 
 	repetitionCounter	= 10;
@@ -510,7 +508,8 @@ DABFLOAT ofdmDecoder::decoder_3 (const std::vector<Complex> &fft_buffer,
 	                        float		clockError) {
 DABFLOAT	sum = 0;
 
-	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * params. get_T_s ();
+	(void)snr;
+//	float phaseBase	= 2 * M_PI * clockError / 2048000.0 * get_T_s ();
 	for (int i = 0; i < carriers; i ++) {
 //	here we really start
 	   int16_t	carriers_2	= carriers / 2;
@@ -527,7 +526,7 @@ DABFLOAT	sum = 0;
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
 	   conjVector [index]	= fftBin;
-	   Complex fftBin_at_1	= toQ1 (fftBin);
+//	   Complex fftBin_at_1	= toQ1 (fftBin);
 
 //
 	   Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
@@ -550,6 +549,7 @@ DABFLOAT ofdmDecoder::decoder_4 (const std::vector<Complex> &fft_buffer,
 	                        DABFLOAT	snr) {
 DABFLOAT sum	= 0;
 
+	(void)snr;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 

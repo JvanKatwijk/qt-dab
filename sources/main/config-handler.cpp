@@ -72,8 +72,8 @@ int	index_for_key (int key) {
 
 	configHandler::configHandler (RadioInterface *parent,
 	                              QSettings *settings):
-	                                     theFilenameFinder (settings),
-	                                     superFrame (nullptr) {
+	                                     superFrame (nullptr),
+	                                     theFilenameFinder (settings) {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
 	this	-> setupUi (this);

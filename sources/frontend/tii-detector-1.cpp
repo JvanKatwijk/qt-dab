@@ -25,6 +25,7 @@
 //	Rolf Zerr's (aka old-dab) implemementation as done in DABstar.
 //	All rights acknowledged.
 
+#include "dab-params.h"
 #include "tii-detector-1.h"
 
 constexpr float F_DEG_PER_RAD = (float)(180.0 / M_PI);
@@ -121,14 +122,11 @@ uint16_t	nrPatterns () {
 #define	SECTION_SIZE	192
 #define	NR_SECTIONS	4
 
-	TII_Detector::TII_Detector (uint8_t dabMode,
-	                            phaseTable *theTable) :
-	                                params (dabMode),
-                                        T_u (params. get_T_u ()),
-                                        T_g (params. get_T_g ()),
-                                        carriers (params. get_carriers ()),
-                                        my_fftHandler (params. get_T_u (),
-                                                                    false) {
+	TII_Detector::TII_Detector (phaseTable *theTable) :
+                                        T_u (get_T_u ()),
+                                        T_g (get_T_g ()),
+                                        carriers (get_carriers ()),
+                                        my_fftHandler (get_T_u (), false) {
         nullSymbolBuffer. resize (T_u);
 	rotationTable. resize (carriers);
 	int teller = 0;

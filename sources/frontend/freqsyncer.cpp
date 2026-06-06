@@ -26,19 +26,18 @@
 #include	"radio.h"
 #include	<vector>
 
+#include	"dab-params.h"
+
 	freqSyncer::freqSyncer (RadioInterface *mr,
-	                                processParams	*p,
 	                                phaseTable	*theTable):
-	                                     params (p -> dabMode),
-	                                     fft_forward (params. get_T_u (),
-	                                                                false),
+	                                     fft_forward (get_T_u (), false),
 	                                     go_forward (TEST_SIZE, false),
 	                                     go_backwards (TEST_SIZE, true) {
 	(void)mr;
 	this	-> theTable	= theTable;
-	this	-> T_u		= params. get_T_u();
-	this	-> T_g		= params. get_T_g();
-	this	-> carriers	= params. get_carriers();
+	this	-> T_u		= get_T_u ();
+	this	-> T_g		= get_T_g ();
+	this	-> carriers	= get_carriers();
 
 //	first of all: compute the phases
 	for (int i = -TEST_SIZE / 2; i < TEST_SIZE / 2; i ++) {

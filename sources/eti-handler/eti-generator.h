@@ -47,7 +47,6 @@
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"fic-handler.h"
-#include	"dab-params.h"
 #include	"protection.h"
 
 class	RadioInterface;
@@ -66,8 +65,7 @@ typedef	struct {
 
 class etiGenerator {
 public:
-                etiGenerator		(uint8_t	 dabMode,
-                                         ficHandler     *my_ficHandler,
+                etiGenerator		(ficHandler     *my_ficHandler,
 	                                 uint8_t	couSupport);
 		~etiGenerator		();
 	void	newFrame		();
@@ -80,7 +78,6 @@ private:
 	ficHandler	*my_ficHandler;
 	uint8_t		cpuSupport;
 	FILE		*etiFile;
-	dabParams	params;
 	bool		running;
 	std::mutex	etiLocker;
 	int16_t		index_Out;

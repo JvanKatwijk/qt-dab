@@ -21,6 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"phasetable.h" 
+#include	"dab-params.h"
 
 static
 struct phasetableElement modeI_table [] = {
@@ -76,76 +77,16 @@ struct phasetableElement modeI_table [] = {
 	{ -1000, -1000, 0, 0}
 };
 
-struct phasetableElement modeII_table [] = {
-	{-192,	-161,	0,	2},
-	{-160,	-129,	1,	3},
-	{-128,	-97,	2,	2},
-	{-96,	-65,	3,	2},
-	{-64,	-33,	0,	1},
-	{-32,	-1,	1,	2},
-	{1,	32,	2,	0},
-	{33,	64,	1,	2},
-	{65,	96,	0,	2},
-	{97,	128,	3,	1},
-	{129,	160,	2,	0},
-	{161,	192,	1,	3},
-	{-1000,	-1000,	0,	0}
-};
-
-struct phasetableElement modeIV_table [] = {
-	{-384, -353, 0, 0},
-	{-352, -321, 1, 1},
-	{-320, -289, 2, 1},
-	{-288, -257, 3, 2},
-	{-256, -225, 0, 2},
-	{-224, -193, 1, 2},
-	{-192, -161, 2, 0},
-	{-160, -129, 3, 3},
-	{-128,  -97, 0, 3},
-	{-96,   -65, 1, 1},
-	{-64,   -33, 2, 3},
-	{-32,    -1, 3, 2},
-	{  1,    32, 0, 0},
-	{ 33,    64, 3, 1},
-	{ 65,    96, 2, 0},
-	{ 97,   128, 1, 2},
-	{ 129,  160, 0, 0},
-	{ 161,  192, 3, 1},
-	{ 193,  224, 2, 2},
-	{ 225,  256, 1, 2},
-	{ 257,  288, 0, 2},
-	{ 289,  320, 3, 1},
-	{ 321,  352, 2, 3},
-	{ 353,  384, 1, 0},
-	{-1000, -1000, 0, 0}
-};
-
-	phaseTable::phaseTable (int16_t dabMode):
-	                                params (dabMode),
-	                                T_u (params. get_T_u ()) {
-	Mode	= dabMode;
+	phaseTable::phaseTable ():
+	                    T_u (get_T_u ()) {
 	currentTable	= modeI_table;
-	switch (Mode) {
-	   default:
-	   case 1:
-	      currentTable	= modeI_table;
-	      break;
-
-	   case 2:
-	      currentTable	= modeII_table;
-	      break;
-
-	   case 4:
-	      currentTable	= modeIV_table;
-	      break;
-	}
 	refTable. resize (T_u);
         for (int i = 0; i < T_u; i ++)
            refTable [i] = Complex (0, 0);
 //
 //      generate the refence values using the format we have after
 //      doing an FFT
-        for (int i = 1; i <= params. get_carriers() / 2; i ++) {
+        for (int i = 1; i <= get_carriers() / 2; i ++) {
            float Phi_k =  get_Phi (i);
            refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
            Phi_k =  get_Phi (-i);

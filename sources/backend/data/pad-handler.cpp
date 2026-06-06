@@ -357,7 +357,7 @@ int16_t  dataLength                = 0;
 	   else {
 	      int test = ((prefix >> 4) & 07) + 1;
 	      if (test != segmentno + 1) {
-	         qWarning () << "mismatch with pad segment numbers ", test;
+	         qWarning () << "mismatch with pad segment numbers " << test;
 	         segmentno = -1;
 	         return;
 	      }

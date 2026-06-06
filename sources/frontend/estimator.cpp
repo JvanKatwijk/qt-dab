@@ -25,21 +25,20 @@
 #include	<cstring>
 #include	"radio.h"
 #include	<vector>
+#include	"dab-params.h"
 /**
   */
 
 	estimator::estimator (RadioInterface *mr,
-	                      processParams	*p,
 	                      phaseTable 	*theTable) :
-	                             params (p -> dabMode),
-	                             fft_forward (params. get_T_u (), false),
-	                             fft_backwards (params. get_T_u (), true) {
+	                             fft_forward (get_T_u (), false),
+	                             fft_backwards (get_T_u (), true) {
 	(void)mr;
 
 	this	-> theTable	= theTable;
-	this	-> T_u		= params. get_T_u();
-	this	-> T_g		= params. get_T_g();
-	this	-> carriers	= params. get_carriers();
+	this	-> T_u		= get_T_u ();
+	this	-> T_g		= get_T_g ();
+	this	-> carriers	= get_carriers();
 }
 
 	estimator::~estimator () {

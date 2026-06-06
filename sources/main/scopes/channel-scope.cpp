@@ -41,6 +41,7 @@ floatQwt ampVals [displaySize];
 floatQwt min	= +10000;
 floatQwt max	= -10000;
 
+	(void)Amp;
 	for (int i = 0; i < displaySize; i ++) {
 	   ampVals [i] = amplitudeValues [i];
 	   if (ampVals [i] < min)

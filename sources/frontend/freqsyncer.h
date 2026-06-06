@@ -30,7 +30,6 @@
 #include	"fft-handler.h"
 #include	"phasetable.h"
 #include	"dab-constants.h"
-#include	"dab-params.h"
 #include	"process-params.h"
 #include	"ringbuffer.h"
 
@@ -40,12 +39,10 @@ class freqSyncer : public QObject {
 Q_OBJECT
 public:
 			freqSyncer 		(RadioInterface *,
-	                                         processParams *,
 	                                         phaseTable *);
 			~freqSyncer		();
 	int16_t		estimateCarrierOffset	(std::vector<Complex>);
 private:
-	dabParams	params;
 	phaseTable	*theTable;
 	int32_t		T_u;
 	int32_t		T_g;

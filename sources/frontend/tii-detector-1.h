@@ -24,7 +24,6 @@
 #pragma once
 
 #include	<cstdint>
-#include	"dab-params.h"
 #include	<complex>
 #include	<vector>
 #include	"dab-constants.h"
@@ -36,14 +35,13 @@
 #define GROUPSIZE       24
 class	TII_Detector {
 public:
-			TII_Detector	(uint8_t dabMode, phaseTable *theTable);
+			TII_Detector	(phaseTable *theTable);
 			~TII_Detector	();
 	void		reset		();
 	void		addBuffer	(const std::vector<Complex> &);
 	QVector<tiiData>	processNULL	(int16_t, uint8_t);
 
 private:
-	dabParams	params;
 	int16_t		T_u;
 	int16_t		T_g;
 	int16_t		carriers;

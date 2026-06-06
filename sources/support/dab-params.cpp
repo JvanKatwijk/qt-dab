@@ -22,103 +22,49 @@
  */
 #include	"dab-params.h"
 
-		dabParams::dabParams (uint8_t Mode) {
-	switch (Mode) {
-	   case 2:
-	      dabMode		= 2;
-	      L			= 76;		// blocks per frame
-	      K			= 384;		// carriers
-	      T_null		= 664;		// null length
-	      T_F		= 49152;	// samples per frame
-	      T_s		= 638;		// block length
-	      T_u		= 512;		// useful part
-	      T_g		= 126;
-	      carrierDiff	= 4000;
-	      CIFs		= 1;
-	      break;
+constexpr int16_t	L		= 76;
+constexpr int16_t	K		= 1536;
+constexpr int32_t	T_F		= 196608;
+constexpr int16_t	T_null		= 2656;
+constexpr int16_t	T_s		= 2552;
+constexpr int16_t	T_u		= 2048;
+constexpr int16_t	T_g		= 504;
+constexpr int16_t	carrierDiff	= 1000;
+constexpr int16_t	CIFs		= 4;
 
-	   case 4:
-	      dabMode		= 4;
-	      L			= 76;
-	      K			= 768;
-	      T_F		= 98304;
-	      T_null		= 1328;
-	      T_s		= 1276;
-	      T_u		= 1024;
-	      T_g		= 252;
-	      carrierDiff	= 2000;
-	      CIFs		= 2;
-	      break;
-
-	   case 3:
-	      dabMode		= 3;
-	      L			= 153;
-	      K			= 192;
-	      T_F		= 49152;
-	      T_null		= 345;
-	      T_s		= 319;
-	      T_u		= 256;
-	      T_g		= 63;
-	      carrierDiff	= 2000;
-	      CIFs		= 1;
-	      break;
-
-	   case 1:
-	   default:
-	       dabMode		= 1;
-	       L		= 76;
-	       K		= 1536;
-	       T_F		= 196608;
-	       T_null		= 2656;
-	       T_s		= 2552;
-	       T_u		= 2048;
-	       T_g		= 504;
-	       carrierDiff	= 1000;
-	       CIFs		= 4;
-	      break;
-	}
-}
-
-	dabParams::~dabParams () {
-}
-
-int16_t	dabParams::get_dabMode () {
-	return dabMode;
-}
-
-int16_t dabParams::get_L () {
+int16_t get_L () {
 	return L;
 }
 
-int16_t	dabParams::get_carriers () {
+int16_t	get_carriers () {
 	return K;
 }
 
-int16_t	dabParams::get_T_null () {
+int16_t	get_T_null () {
 	return T_null;
 }
 
-int16_t	dabParams::get_T_s () {
+int16_t	get_T_s () {
 	return T_s;
 }
 
-int16_t	dabParams::get_T_u () {
+int16_t	get_T_u () {
 	return T_u;
 }
 
-int16_t	dabParams::get_T_g () {
+int16_t	get_T_g () {
 	return T_g;
 }
 
-int32_t	dabParams::get_T_F () {
+int32_t	get_T_F () {
 	return T_F;
 }
 
-int32_t	dabParams::get_carrierDiff () {
+int32_t	get_carrierDiff () {
 	return carrierDiff;
 }
 
-int16_t	dabParams::get_CIFs () {
+int16_t	get_CIFs () {
 	return CIFs;
 }
 

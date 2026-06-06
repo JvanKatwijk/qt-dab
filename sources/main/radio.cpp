@@ -44,7 +44,7 @@
 #include	"ofdm-handler.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
-#include	"dab-params.h"
+//#include	"dab-params.h"
 #include	"ITU_tables.h"
 #include	"mapport.h"
 #include	"tech-window.h"
@@ -217,8 +217,6 @@ QString h;
 	globals. frameBuffer	= &theFrameBuffer;
 	globals. stdDevBuffer	= &stdDevBuffer;
 
-	globals. dabMode         =
-	          value_i (theQSettings, DAB_GENERAL, "dabMode", 1);
 	globals. threshold		=
 	          value_i (theQSettings, DAB_GENERAL, "threshold", 3);
 	globals. diff_length	=
@@ -1218,9 +1216,10 @@ uint8_t *localBuffer = dynVec (uint8_t, length);
 //
 //	tdcData is triggered by a TPEG running backend
 void	RadioInterface::handle_frameOut	(int type, QByteArray data,
-	                                 int32_t SId, uint8_t SCIds) {
+	                                 int32_t SId, uint8_t SCIds) {	
+	(void)type;
 	for (auto &serv: channel. runningTasks) {
-	   if ((serv. SId == SId) && (serv. SCIds == SCIds) &&
+	   if (((int)serv. SId == SId) && (serv. SCIds == SCIds) &&
 	       (serv. dataServer != nullptr)) {
 	         serv. dataServer -> sendData (data);
 	   }
@@ -1269,6 +1268,7 @@ std::vector<dabService> taskCopy = channel. runningTasks;
 //	signals, we trigger this function at most 10 times a second
 void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	                                          bool ps, bool sbr) {
+	(void)amount;
 	if (!running. load () || !channel. audioActive)
 	   return;
 	audioTeller ++;
@@ -1283,7 +1283,7 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 //
 //	processing the audio
 	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, rate / 10);
-	while (theAudioBuffer. GetRingBufferReadAvailable () >= rate / 10) {
+	while (theAudioBuffer. GetRingBufferReadAvailable () >=  (uint32_t)rate / 10) {
 	   theAudioBuffer. getDataFromBuffer (vec, rate / 10);
 	   if (!theTechWindow -> isHidden ()) {
 	      theTechData. putDataIntoBuffer (vec, rate / 10);
@@ -4728,6 +4728,7 @@ QString	dir = s;
 }
 
 void	RadioInterface::reduceButtons	(bool flag) {
+	(void)flag;
 }
 
 void	RadioInterface::handleFontSelect	() {

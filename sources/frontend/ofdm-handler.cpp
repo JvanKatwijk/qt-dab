@@ -53,26 +53,21 @@
 	                                 logger		*theLogger,
 	                                 uint8_t	cpuSupport):
 	                                    radioInterface_p (mr),
-	                                    params (p -> dabMode),
 	                                    settings_p (dabSettings),
 	                                    theReader (mr,
 	                                              inputDevice,
 	                                              p -> spectrumBuffer),
-	                                    theFicHandler (mr, p -> dabMode,
-	                                                      cpuSupport),
-	                                    theEtiGenerator (p -> dabMode,
-	                                                  &theFicHandler,
+	                                    theFicHandler (mr, cpuSupport),
+	                                    theEtiGenerator (&theFicHandler,
 	                                                  cpuSupport),
 	                                    theOfdmDecoder (mr,
-	                                                 p -> dabMode,
 	                                                 inputDevice -> bitDepth(),
 	                                                 p -> stdDevBuffer,
 	                                                 p -> iqBuffer),
-	                                    theMscHandler (mr, p -> dabMode,
-	                                                p -> frameBuffer,
+	                                    theMscHandler (mr, p -> frameBuffer,
 	                                                theLogger,
 	                                                cpuSupport),
-	                                    theTable (p -> dabMode) {
+	                                    theTable () {
 	this	-> p			= p;
 	this	-> theLogger		= theLogger;
 	this	-> cpuSupport		= cpuSupport;
@@ -81,14 +76,14 @@
 	this	-> nullBuffer_p		= p -> nullBuffer;
 	this	-> snrBuffer_p		= p -> snrBuffer;
 	this	-> channelBuffer_p	= p -> channelBuffer;
-	this	-> T_null		= params. get_T_null ();
-	this	-> T_s			= params. get_T_s ();
-	this	-> T_u			= params. get_T_u ();
+	this	-> T_null		= get_T_null ();
+	this	-> T_s			= get_T_s ();
+	this	-> T_u			= get_T_u ();
 	this	-> T_g			= T_s - T_u;
-	this	-> T_F			= params. get_T_F ();
-	this	-> nrBlocks		= params. get_L ();
-	this	-> carriers		= params. get_carriers ();
-	this	-> carrierDiff		= params. get_carrierDiff ();
+	this	-> T_F			= get_T_F ();
+	this	-> nrBlocks		= get_L ();
+	this	-> carriers		= get_carriers ();
+	this	-> carrierDiff		= get_carrierDiff ();
 
 	starter				= true;
 	this	-> tiiDelay		= p -> tii_delay;
@@ -196,8 +191,8 @@ void	ofdmHandler::stop	() {
    */
 void	ofdmHandler::run	() {
 timeSyncer	myTimeSyncer (&theReader);
-TII_Detector	theTIIDetector (p -> dabMode, &theTable);
-freqSyncer	myFreqSyncer (radioInterface_p, p, &theTable);
+TII_Detector	theTIIDetector (&theTable);
+freqSyncer	myFreqSyncer (radioInterface_p, &theTable);
 correlator	myCorrelator (radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
 std::vector<int16_t> softbits;
@@ -208,10 +203,9 @@ int	cCount		= 0;
 bool	inSync		= false;
 int	tryCounter	= 0;
 Complex *tester	= dynVec (Complex, T_u / 2);
-int	snrCount	= 0;
 
 	this	-> snr		= 10; 	// until really computed
-	softbits. resize (2 * params. get_carriers());
+	softbits. resize (2 * get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
 	correctionNeeded	= true;
@@ -452,32 +446,30 @@ int	snrCount	= 0;
 //	frame comprising the CIFs of CIF count 0, 1, 2, 3
 //	modulo 8 (transmission mode I).
 //	We have the CIF count of the previous frame
-	      if (p -> dabMode == 1) {
-	         int16_t CIF_hi, CIF_lo;
-	         theFicHandler. getCIFcount (CIF_hi, CIF_lo); 
-	         if ((CIF_lo & 0x07) >= 4) {
-	            theTIIDetector. addBuffer (ofdmBuffer);
-	            tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data (),
-	                                                              T_null);
-	            showTIIspectrum ();
-	            if (++tiiCounter >= tiiDelay) {
-	               tiiCounter = 0;
-	               QVector<tiiData> resVec =
-	                       theTIIDetector. processNULL (tiiThreshold,
-	                                                    tiiCollision);
-	               showTIIData (resVec, 0);
-	            }
+	      int16_t CIF_hi, CIF_lo;
+	      theFicHandler. getCIFcount (CIF_hi, CIF_lo); 
+	      if ((CIF_lo & 0x07) >= 4) {
+	         theTIIDetector. addBuffer (ofdmBuffer);
+	         tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data (),
+	                                                           T_null);
+	         showTIIspectrum ();
+	         if (++tiiCounter >= tiiDelay) {
+	            tiiCounter = 0;
+	            QVector<tiiData> resVec =
+	                   theTIIDetector. processNULL (tiiThreshold,
+	                                                 tiiCollision);
+	            showTIIData (resVec, 0);
 	         }
-	         else {	// compute SNR
-	            float sum	= 0;
-	            for (int i = 0; i < T_null; i ++)
-	               sum += jan_abs (ofdmBuffer [i]);
-	            sum /= T_null;
-	            float snrV	=
-	                 20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	            this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
-	            showSnr (snr);
-	         }
+	      }
+	      else {	// compute SNR
+	         float sum	= 0;
+	         for (int i = 0; i < T_null; i ++)
+	            sum += jan_abs (ofdmBuffer [i]);
+	         sum /= T_null;
+	         float snrV	=
+	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
+	         this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
+	         showSnr (snr);
 	      }
 /**
   *	The first sample to be found for the next frame should be T_g
@@ -694,7 +686,7 @@ bool	ofdmHandler::serviceRuns	(uint32_t SId, uint16_t SCIds) {
 
 void	ofdmHandler::generate_CI (const std::vector<Complex> &rawBuffer,
 	                          int startIndex) {
-estimator	myEstimator  (radioInterface_p, p, &theTable);
+estimator	myEstimator  (radioInterface_p, &theTable);
 std::vector<Complex> inVector (T_u);
 std::vector<Complex> CI_Vector (T_u);
 

@@ -40,25 +40,23 @@ static int cifTable [] = {18, 72, 0, 36};
 //	Note CIF counts from 0 .. 3
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
-	                                 uint8_t	dabMode,
 	                                 RingBuffer<uint8_t> *frameBuffer_i,
 	                                 logger		*theLogger,
 	                                 uint8_t 	cpuSupport):
-	                                       params (dabMode),
-	                                       myMapper (dabMode),
+	                                       myMapper (),
 	                                       myRadioInterface (mr),
 	                                       frameBuffer (frameBuffer_i) {
 	this	-> theLogger	= theLogger;
 	this	-> cpuSupport	= cpuSupport;
 	cifVector. resize (55296);
-	BitsperBlock		= 2 * params. get_carriers();
+	BitsperBlock		= 2 * get_carriers();
 	softBits. resize (BitsperBlock);
-	nrBlocks		= params. get_L();
+	nrBlocks		= get_L();
 	connect (this, &mscHandler::activeServices,
 	         mr, &RadioInterface::nrActiveServices);
 	
 
-	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
+	numberofblocksperCIF = cifTable [0];	// always mode 1
 }
 
 		mscHandler::~mscHandler () {
@@ -97,7 +95,7 @@ void	mscHandler::stopBackend	(uint32_t SId, uint8_t SCIds) {
 	locker. lock ();
 	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
-	   if ((b -> SId == SId) && (b -> SCIds == SCIds)) {
+	   if (((uint32_t)(b -> SId) ==  SId) && (b -> SCIds == SCIds)) {
 	      b -> stopRunning ();
 	      usleep (1000);
 	      delete b;
@@ -130,7 +128,8 @@ bool	mscHandler::startBackend (descriptorType &d,
 
 bool	mscHandler::serviceRuns	(uint32_t SId, uint8_t SCIds) {
 	for (auto &backend : theBackends)
-	   if ((backend -> SId == SId) && (backend -> SCIds == SCIds))
+	   if (((uint32_t)(backend -> SId) == SId) &&
+	                           (backend -> SCIds == SCIds))
 	      return true;
 	return false;
 }

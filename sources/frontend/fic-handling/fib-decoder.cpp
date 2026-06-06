@@ -1161,7 +1161,7 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 void	fibDecoder::FIG1Extension6 (uint8_t *d) {
 uint16_t	bitOffset	= 0;
 const uint8_t PD_bit	= getBits_1 (d, bitOffset);
-const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
+//const uint8_t SCIds	= getBits_4 (d, bitOffset + 4);
 uint32_t SId;
 	
 	bitOffset += 8;
@@ -1175,7 +1175,7 @@ uint32_t SId;
 	   bitOffset += 16;
 	}
 
-	uint8_t xpadType	= getBits (d, bitOffset + 3, 5);
+//	uint8_t xpadType	= getBits (d, bitOffset + 3, 5);
 //	fprintf (stderr, "XPad type for %X %d is %d\m",
 //	                           SId, SCIds, xpadType);
 }

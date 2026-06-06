@@ -319,7 +319,6 @@ void	serviceViewer::insert	(const serviceDescriptor &sd, int pos) {
 	}
 QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
-bool	b;
 	viewLocker. lock ();
 	theTable     -> insertRow (pos);     // 
         QTableWidgetItem *item0 = new QTableWidgetItem;

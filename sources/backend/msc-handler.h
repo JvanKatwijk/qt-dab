@@ -31,7 +31,6 @@
 #include	<cstdio>
 #include	<vector>
 #include	"dab-constants.h"
-#include	"dab-params.h"
 #include        "ringbuffer.h"
 #include        "phasetable.h"
 #include        "freq-interleaver.h"
@@ -45,7 +44,6 @@ class	mscHandler: public QObject {
 Q_OBJECT
 public:
 			mscHandler		(RadioInterface *,
-	                                         uint8_t,
 	                                         RingBuffer<uint8_t> *,
 	                                         logger		*,
 	                                         uint8_t);
@@ -64,7 +62,6 @@ public:
 	void		set_dataTracer		(bool);
 private:
 
-	dabParams	params;
         interLeaver     myMapper;
 	RadioInterface		*myRadioInterface;
 	RingBuffer<uint8_t>	*frameBuffer;

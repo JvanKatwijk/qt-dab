@@ -23,12 +23,8 @@
 
 #pragma once
 
-#include	<cstdint>
+#include	<stdint.h>
 
-class	dabParams {
-public:
-			dabParams	(uint8_t);
-			~dabParams	();
 	int16_t		get_dabMode	();
 	int16_t		get_L		();
 	int16_t		get_carriers	();
@@ -39,16 +35,4 @@ public:
 	int32_t		get_T_F		();
 	int32_t		get_carrierDiff	();
 	int16_t		get_CIFs	();
-private:
-	uint8_t		dabMode;
-	int16_t		L;
-	int16_t		K;
-	int16_t		T_null;
-	int32_t		T_F;
-	int16_t		T_s;
-	int16_t		T_u;
-	int16_t		T_g;
-	int16_t		carrierDiff;
-	int16_t		CIFs;
-};
 

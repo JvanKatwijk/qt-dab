@@ -37,6 +37,7 @@
 	                              RingBuffer<uint8_t> *dataBuffer,
 	                              RingBuffer<uint8_t> *frameBuffer,
 	                              FILE *dump) {
+	(void)theLogger;
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy == DAB_OLD) {
               theProcessor. reset (new mp2Processor (mr, 

@@ -43,8 +43,6 @@
 
 void	devScope::display	(const std::vector<float> &V) {
 floatQwt Y_values [V. size () / 2];
-float	max	= -100;
-float	min	= 1000;
 //	we assume that V. size = 1536
 	for (uint16_t i = 0; i < V. size () / 2; i ++) 
 	   Y_values [i] = V [2 * i];

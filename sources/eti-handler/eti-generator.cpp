@@ -42,7 +42,7 @@
 #include	"eep-protection.h"
 #include	"uep-protection.h"
 #include	<memory>
-
+#include	"dab-params.h"
 #include	"crc-handlers.h"
 
 int16_t cif_In    [55296];
@@ -73,14 +73,12 @@ uint8_t	theVector [6144];
 //	amount of cycles
 //	Note CIF counts from 0 .. 3
 //
-		etiGenerator::etiGenerator	(uint8_t   dabMode,
-	                                        ficHandler *my_ficHandler,
-	                                        uint8_t		cpuSupport):
-	                                            params (dabMode) {
+		etiGenerator::etiGenerator	(ficHandler *my_ficHandler,
+	                                        uint8_t		cpuSupport) {
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> cpuSupport	= cpuSupport;
 	index_Out		= 0;
-	BitsperBlock		= 2 * params. get_carriers ();
+	BitsperBlock		= 2 * get_carriers ();
 	numberofblocksperCIF	= 18;	// mode I
 	amount			= 0;
 	CIFCount_hi		= -1;

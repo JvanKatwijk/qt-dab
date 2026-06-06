@@ -30,7 +30,6 @@
 #include	"fft-handler.h"
 #include	"phasetable.h"
 #include	"dab-constants.h"
-#include	"dab-params.h"
 #include	"process-params.h"
 
 class	RadioInterface;
@@ -38,14 +37,12 @@ class	RadioInterface;
 class estimator {
 public:
 			estimator 		(RadioInterface *,
-	                                         processParams *,
 	                                         phaseTable *);
 			~estimator		();
 	void		estimate		(std::vector<Complex>,
 	                                         std::vector<Complex> &);
 private:
 	phaseTable	*theTable;
-	dabParams	params;
 	fftHandler	fft_forward;
 	fftHandler	fft_backwards;
 	std::vector<Complex> refTable;

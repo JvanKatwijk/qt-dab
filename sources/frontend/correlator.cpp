@@ -25,6 +25,8 @@
 #include	<cstring>
 #include	"radio.h"
 #include	<vector>
+
+#include	"dab-params.h"
 /**
   *	\class correlator
   *	Implements the correlation that is used to identify
@@ -36,18 +38,17 @@
 	correlator::correlator (RadioInterface *mr,
 	                        processParams	*p,
 	                        phaseTable 	*theTable) :
-	                             params (p -> dabMode),
-	                             fft_forward (params. get_T_u (), false),
-	                             fft_backwards (params. get_T_u (), true),
+	                             fft_forward (get_T_u (), false),
+	                             fft_backwards (get_T_u (), true),
 	                             response (p -> responseBuffer) {
 	                    
 	this	-> theTable	= theTable;
 	this	-> depth	= p -> echo_depth;
-	this	-> T_u		= params. get_T_u();
-	this	-> T_g		= params. get_T_g();
-	this	-> carriers	= params. get_carriers();
+	this	-> T_u		= get_T_u ();
+	this	-> T_g		= get_T_g ();
+	this	-> carriers	= get_carriers ();
 
-	framesperSecond		= SAMPLERATE / params. get_T_F();
+	framesperSecond		= SAMPLERATE / get_T_F();
 	displayCounter		= 0;
 	connect (this, &correlator::showCorrelation,
 	         mr, &RadioInterface::showCorrelation);

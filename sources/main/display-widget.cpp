@@ -198,10 +198,6 @@ int	displayWidget::getTab		() {
 //	for "spectrum" we get a segment of 2048 timedomain samples
 //	we take the fft and average a little
 void	displayWidget::showSpectrum	(std::vector<Complex> &v, int freq) {
-int	l	= v. size ();
-floatQwt  X_axis [512];
-floatQwt  Y_value [512];
-static floatQwt avg [4 * 512];
 
 	if (currentTab != SHOW_SPECTRUM)
 	   return;
@@ -294,18 +290,18 @@ void	displayWidget::showTII	(std::vector<Complex> v, int freq, int marker) {
 
 void	displayWidget::showChannel	(const std::vector<Complex> Values) {
 floatQwt	amplitudeValues	[NR_TAPS];
-floatQwt	X_axis		[NR_TAPS];
+//floatQwt	X_axis		[NR_TAPS];
 
 int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
 	   return;
 	for (int i = 0; i < length; i ++) {
 	   amplitudeValues [i] = abs (Values [i]);
-	   X_axis          [i] = i;
+//	   X_axis          [i] = i;
 	}
 	for (int i = length; i < NR_TAPS; i ++) {
 	   amplitudeValues [i] = 1;
-	   X_axis	   [i] = i;
+//	   X_axis	   [i] = i;
 	}
 
 	channelScope_p		-> display (amplitudeValues,
@@ -314,9 +310,6 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 }
 
 void	displayWidget::showStdDev	(const std::vector<float> stdDevVector) {
-floatQwt X_axis [512];
-floatQwt Y_value [512];
-
 	if (currentTab != SHOW_STDDEV)
 	   return;
 	devScope_p -> display (stdDevVector);

@@ -30,7 +30,6 @@
 #include	"fft-handler.h"
 #include	"phasetable.h"
 #include	"dab-constants.h"
-#include	"dab-params.h"
 #include	"process-params.h"
 #include	"ringbuffer.h"
 
@@ -48,7 +47,6 @@ public:
 //	This one is used in the ofdm decoder
 private:
 	phaseTable	*theTable;
-	dabParams	params;
 	fftHandler	fft_forward;
 	fftHandler	fft_backwards;
 	RingBuffer<float> *response;

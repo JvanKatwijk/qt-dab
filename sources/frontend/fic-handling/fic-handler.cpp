@@ -26,6 +26,8 @@
 #include	"crc-handlers.h"
 #include	"protTables.h"
 #include	"dab-params.h"
+
+
 //	From 2304 incoming (soft) bits, a "motherword" of 3072 bits
 //	is formed by depuncturing with predefined puncture tables.
 //	The 3072 bits of the serial motherword shall be split into
@@ -50,14 +52,12 @@
   */
 
 		ficHandler::ficHandler (RadioInterface *mr,
-	                                uint8_t dabMode,
 	                                uint8_t cpuSupport):
 	                                    fibDecoder (mr),
-	                                    params (dabMode),
 	                                    myViterbi (768, true, cpuSupport) {
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-	BitsperBlock	= 2 * params. get_carriers();
+	BitsperBlock	= 2 * get_carriers();
 	index		= 0;
 	ficno		= 0;
 	ficBlocks	= 0;
