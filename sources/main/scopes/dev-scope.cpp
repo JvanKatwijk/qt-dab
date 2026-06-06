@@ -27,12 +27,13 @@
 #include        <QPen>
 #include	<QColorDialog>
 
-	devScope::devScope (QwtPlot *devPlot,
-	                    int displaySize,
-	                    QSettings	*dabSettings):
+	devScope::devScope (QwtPlot	*devPlot, int	displaySize,
+	                    QSettings	*dabSettings,
+	                    const QString &name):
 	                       basicScope (devPlot,
-	                                   dabSettings, displaySize,
-	                                   "devScope") {
+	                                   dabSettings,
+	                                   displaySize,
+	                                   name) {
 	this	-> displaySize	= displaySize;
 	this	-> dabSettings		= dabSettings;
 }

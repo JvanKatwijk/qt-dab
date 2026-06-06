@@ -33,9 +33,10 @@ Q_OBJECT
 public:
 		nullScope	(QwtPlot *,
 	                         int,
-	                         QSettings *);
+	                         QSettings *,
+	                         const QString &);
 		~nullScope	();
-	void	display		(const Complex * , int, int);
+	void	display		(const std::vector<Complex> & , int, int);
 	void	clean		();
 
 private:

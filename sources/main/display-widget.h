@@ -44,11 +44,8 @@ class	RadioInterface;
 class	QSettings;
 
 class	spectrumScope;
-class	spectrumWaterfall;
-class	waterfallScope;
 class	nullScope;
 class	tiiScope;
-class	tiiWaterfall;
 class	correlationScope;
 class	devScope;
 class	channelScope;
@@ -66,10 +63,10 @@ public:
 
 	void	setSilent	();
 	void	showSpectrum	(std::vector<Complex> &, int);
-	void	showNULL	(Complex *, int, int);
-	void	showCorrelation	(const std::vector<float> &,
-	                                 QVector<int> &, int,
-	                                 std::vector<transmitter> &);
+	void	showNULL	(std::vector<Complex> &, int, int);
+	void	showCorrelation	(std::vector<float> &,
+	                         QVector<int> &, int,
+	                         std::vector<transmitter> &);
 //	                                 std::vector<transmitterDesc> &);
 	void	showTII		(std::vector<Complex>, int, int);
 	void	showChannel	(const std::vector<Complex>);
@@ -101,14 +98,11 @@ private:
 	fftHandler		theFFT;
 	QSettings		*dabSettings_p;
 	spectrumScope		*spectrumScope_p;
-	spectrumWaterfall	*spectrumWaterfall_p;
-	waterfallScope		*waterfallScope_p;
 	nullScope		*nullScope_p;
 	tiiScope		*tiiScope_p;
-	tiiWaterfall		*tiiWaterfall_p;
 	correlationScope	*correlationScope_p;
-	devScope		*devScope_p;
 	channelScope		*channelScope_p;
+	devScope		*devScope_p;
 	IQDisplay		*IQDisplay_p;
 
 	DABFLOAT		workingBuffer [2048];

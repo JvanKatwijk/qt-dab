@@ -33,7 +33,8 @@ Q_OBJECT
 public:
 		channelScope	(QwtPlot *,
 	                         int,
-	                         QSettings *);
+	                         QSettings *,
+	                         const QString &);
 		~channelScope	();
 	void	display		(const floatQwt *, int);
 	void	clean		();

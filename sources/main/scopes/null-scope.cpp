@@ -28,16 +28,18 @@
 #include	<QColorDialog>
 
 	nullScope::nullScope (QwtPlot *plotGrid, int displaySize,
-	                      QSettings	*dabSettings):
+	                      QSettings	*dabSettings,
+	                      const QString &name):
 	                         basicScope (plotGrid, dabSettings,
-	                                     displaySize, "nullScope") {
+	                                     displaySize, name) {
 	this	-> displaySize	= displaySize;
 }
 
 	nullScope::~nullScope	() {
 }
 
-void	nullScope::display	(const Complex *V, int amount, int startIndex) {
+void	nullScope::display	(const  std::vector<Complex> &V,
+	                                   int amount, int startIndex) {
 float	max	= 0;
 floatQwt Y_values [512];
 

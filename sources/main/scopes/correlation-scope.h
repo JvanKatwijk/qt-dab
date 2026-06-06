@@ -33,7 +33,8 @@ Q_OBJECT
 public:
 			correlationScope	(QwtPlot *rig,
 	                                         int	displaySize,
-	                                         QSettings	*);
+	                                         QSettings	*,
+	                                         const QString &);
 			~correlationScope	();
 	void		display			(const std::vector<float> &v,
 	                                         uint32_t T_g,

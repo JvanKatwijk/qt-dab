@@ -99,7 +99,7 @@ auto Y_values	= dynVec (floatQwt, displaySize);
 	displayBuffer [displaySize - 1] = get_db (0);
 
 	showSpectrum (displayBuffer, displaySize, 0,
-	                            sampleRate / 1000, get_db (0),
+	                            sampleRate / 2000, get_db (0),
 	                                               get_db (0) + 40);
 }
 

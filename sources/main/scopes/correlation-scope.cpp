@@ -29,11 +29,12 @@
 
 	correlationScope::correlationScope	(QwtPlot	*plotArea,
 	                                         int		displaySize,
-	                                         QSettings	*s) :
+	                                         QSettings	*s,
+	                                         const QString	&name) :
 	                                             basicScope (plotArea,
 	                                                         s,
 	                                                         displaySize,
-	                                                         "corScope") {
+	                                                         name) {
 	this	-> dabSettings		= s;
 	this	-> displaySize		= displaySize;
 }

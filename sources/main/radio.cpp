@@ -3785,11 +3785,11 @@ std::vector<float> inBuffer (s);
 
 void	RadioInterface::show_null		(uint32_t amount,
 	                                                 int startIndex) {
-Complex	*inBuffer = dynVec (Complex, amount);
-	theNULLBuffer. getDataFromBuffer (inBuffer, amount);
+std::vector<Complex>	Values (amount);
+	theNULLBuffer. getDataFromBuffer (Values. data (), amount);
 	if (!theNewDisplay. isHidden ())
 	   if (theNewDisplay. getTab () ==  SHOW_NULL)
-	      theNewDisplay. showNULL (inBuffer, amount, startIndex);
+	      theNewDisplay. showNULL (Values, amount, startIndex);
 }
 
 void	RadioInterface::showIQ			(uint32_t amount) {

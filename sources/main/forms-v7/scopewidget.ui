@@ -6,43 +6,34 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>507</height>
+    <width>963</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>spectrumscope</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5">
+  <layout class="QVBoxLayout" name="verticalLayout_9">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_12">
+    <layout class="QHBoxLayout" name="horizontalLayout_10">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QTabWidget" name="tabWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>235</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The tabwidget here contains the tabs for the different scopes, supported by this Qt-DAB implementation&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="currentIndex">
-          <number>1</number>
-         </property>
-         <widget class="QWidget" name="spectr">
-          <attribute name="title">
-           <string>Spectrum</string>
-          </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>301</height>
+        </size>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="spectrumTab">
+        <attribute name="title">
+         <string>spectrum</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
             <widget class="QSlider" name="spectrumSlider">
              <property name="orientation">
@@ -51,7 +42,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QwtPlot" name="spectrumDisplay">
+            <widget class="QwtPlot" name="spectrumPlot">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -64,135 +55,115 @@
             </widget>
            </item>
           </layout>
-         </widget>
-         <widget class="QWidget" name="correlation">
-          <attribute name="title">
-           <string>Corr</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout">
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="correlationTab">
+        <attribute name="title">
+         <string>Corr</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_7">
-             <item>
-              <widget class="QSlider" name="correlationSlider">
-               <property name="value">
-                <number>50</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QwtPlot" name="correlationDisplay">
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>165</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fine time synchronization is by correlation. Ideally the match is on or around the 504-th sample.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QPushButton" name="show_marksButton">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The encoding of the TII data (if any) can be used to get an estimate of the delay of the signal. This estimate (not always very accurate) then can be used  to label the peaks in the correlation scope (these peaks can also be used to compute a delay in the arrival of the signal of a particular transmitter) label the peaks in the correlation scope with the TII numbers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>show marks</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="correlationsVector">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around sample number 504. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>TextLabel</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="correlationLength">
-               <property name="minimum">
-                <number>400</number>
-               </property>
-               <property name="maximum">
-                <number>8005</number>
-               </property>
-               <property name="singleStep">
-                <number>50</number>
-               </property>
-               <property name="value">
-                <number>600</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="null period">
-          <attribute name="title">
-           <string>NULL</string>
-          </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QwtPlot" name="nullDisplay">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The samples from the end of the NULL period and the start of the first data block of the DAB frame&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <widget class="QSlider" name="correlationSlider">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
             </widget>
            </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tii scope">
-          <attribute name="title">
-           <string>TII</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QSlider" name="tiiSlider">
-               <property name="value">
-                <number>50</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-              </widget>
+              <widget class="QwtPlot" name="correlationPlot"/>
              </item>
              <item>
-              <widget class="QwtPlot" name="tiiDisplay">
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The TII is encoded in the NULL period of a DAB frame. The  NULL part is transformed into 1536 carriers, where the data is repeated 4 times, each time in a segment of 384 carriers. The data elements of the TII value are build up in 4 rods, each consisting on two subsequent carriers.&lt;/p&gt;&lt;p&gt;The scope shows the 192 elements of the collapsed data. The TII values are (in some cases) recognizable as 4 rods. The 4 rods are forming a 4 out of 8 code.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <item>
+                <widget class="QPushButton" name="show_marksButton">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The encoding of the TII data (if any) can be used to get an estimate of the delay of the signal. This estimate (not always very accurate) then can be used  to label the peaks in the correlation scope (these peaks can also be used to compute a delay in the arrival of the signal of a particular transmitter) label the peaks in the correlation scope with the TII numbers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>show marks</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="correlationsVector">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around sample number 504. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="correlationLength">
+                 <property name="minimum">
+                  <number>400</number>
+                 </property>
+                 <property name="maximum">
+                  <number>8005</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>50</number>
+                 </property>
+                 <property name="value">
+                  <number>600</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="nullsymbolTab">
+        <attribute name="title">
+         <string>Null</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QwtPlot" name="nullPlot"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tiiTab">
+        <attribute name="title">
+         <string>TII</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_16">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_15">
            <item>
-            <widget class="QLabel" name="tiiLabel">
-             <property name="text">
-              <string>TextLabel</string>
+            <widget class="QSlider" name="tiiSlider">
+             <property name="value">
+              <number>50</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QwtPlot" name="tiiPlot"/>
+           </item>
           </layout>
-         </widget>
-         <widget class="QWidget" name="channel">
-          <attribute name="title">
-           <string>channel</string>
-          </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="channelTab">
+        <attribute name="title">
+         <string>channel</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_18">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_17">
            <item>
             <widget class="QSlider" name="channelSlider">
              <property name="maximum">
@@ -210,71 +181,30 @@
             </widget>
            </item>
            <item>
-            <widget class="QwtPlot" name="channelPlot">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;channel&amp;quot; has effect on the signal when it travels through the air from transmitter to receiver. The &amp;quot;transformation&amp;quot; made by the channel on the signal can be computed since for the first datablock in a DAB frame, it is known what the result should be. So, in Qt-DAB we take 64 of these values and compare them with the values actually received. Based on that we compute an estimate of the channel impulse, i.e. the result of feeding the channel with a single pulse.&lt;/p&gt;&lt;p&gt;That result is made visible in this scope.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
+            <widget class="QwtPlot" name="channelPlot"/>
            </item>
           </layout>
-         </widget>
-         <widget class="QWidget" name="stdDev">
-          <attribute name="title">
-           <string>Dev</string>
-          </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
-            <widget class="QSlider" name="deviationSlider">
-             <property name="value">
-              <number>50</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Orientation::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QwtPlot" name="devPlot">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;Dev&amp;quot; scope shows the standard deviation of the decoded signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <item>
-          <widget class="QSlider" name="waterfallSlider">
-           <property name="maximum">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>50</number>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Orientation::Vertical</enum>
-           </property>
-          </widget>
          </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="softbitTab">
+        <attribute name="title">
+         <string>softbits</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QwtPlot" name="waterfallDisplay">
+          <widget class="QwtPlot" name="devPlot">
            <property name="maximumSize">
             <size>
-             <width>448</width>
-             <height>171</height>
+             <width>16777215</width>
+             <height>260</height>
             </size>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The waterfall display shows the progress of the data of the selected scope in time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-      </layout>
+       </widget>
+      </widget>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -282,8 +212,8 @@
         <widget class="QwtPlot" name="iqDisplay">
          <property name="maximumSize">
           <size>
-           <width>261</width>
-           <height>211</height>
+           <width>16777215</width>
+           <height>257</height>
           </size>
          </property>
          <property name="toolTip">
@@ -292,7 +222,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QSlider" name="scopeSlider">
            <property name="toolTip">
@@ -318,46 +248,17 @@
          </item>
         </layout>
        </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_8">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0" colspan="2">
-          <layout class="QHBoxLayout" name="horizontalLayout_10">
-           <item>
-            <widget class="QLabel" name="channelDisplay">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Channel</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLCDNumber" name="frequencyDisplay">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency of the currently selected channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Shape::NoFrame</enum>
-             </property>
-             <property name="digitCount">
-              <number>7</number>
-             </property>
-             <property name="segmentStyle">
-              <enum>QLCDNumber::SegmentStyle::Flat</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>correction</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
           <widget class="QLCDNumber" name="coarse_correctorDisplay">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overall frequency correction, consisting of two parts, a fine correction, based on the phase difference between the timedomain samples in the cyclic prefix and the corresponding elements in the ofdm symbol (limited to 500 Hz) and the coarse correction, computed by correlation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -370,14 +271,18 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label">
+         <item>
+          <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>freq error</string>
+            <string>correction</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
           <widget class="QLCDNumber" name="frequencyOffsetDisplay">
            <property name="font">
             <font>
@@ -395,14 +300,18 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_5">
+         <item>
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>snr </string>
+            <string>freq error</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
           <widget class="QLCDNumber" name="snrDisplay">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SNR, i.e. Signal Noise ratio, computed from the difference in signal strength between the datablocks and the nullperiod.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -415,14 +324,18 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_2">
+         <item alignment="Qt::AlignmentFlag::AlignRight">
+          <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>time offset</string>
+            <string>snr </string>
            </property>
           </widget>
          </item>
-         <item row="4" column="1">
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
           <widget class="QLCDNumber" name="timeOffsetDisplay">
            <property name="font">
             <font>
@@ -440,14 +353,18 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_3">
+         <item>
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>clock offset</string>
+            <string>time offset</string>
            </property>
           </widget>
          </item>
-         <item row="5" column="1">
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
           <widget class="QLCDNumber" name="clock_errorDisplay">
            <property name="font">
             <font>
@@ -465,14 +382,18 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="dcOffset_label">
+         <item>
+          <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>IQ unbalance</string>
+            <string>clock offset</string>
            </property>
           </widget>
          </item>
-         <item row="6" column="1">
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
           <widget class="QLCDNumber" name="dcOffset_display">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The DC offset in the incoming signal, computed by looking at the average amplitude of both the I and the Q component of the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -485,14 +406,51 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QLabel" name="dcOffset_label">
+           <property name="text">
+            <string>IQ unbalance</string>
+           </property>
+          </widget>
+         </item>
         </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item alignment="Qt::AlignmentFlag::AlignRight">
+        <widget class="QLabel" name="channelDisplay">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Channel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLCDNumber" name="frequencyDisplay">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency of the currently selected channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
+         </property>
+         <property name="digitCount">
+          <number>7</number>
+         </property>
+         <property name="segmentStyle">
+          <enum>QLCDNumber::SegmentStyle::Flat</enum>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_11">
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
      <item>
       <widget class="QLabel" name="syncLabel">
        <property name="toolTip">

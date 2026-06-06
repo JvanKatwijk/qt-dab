@@ -22,12 +22,12 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 DEFINES         += VERSION=\\\"7.1.3\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 #QMAKE_CFLAGS	+=  -g 
 #QMAKE_CXXFLAGS	+=  -g 
 #QMAKE_LFLAGS	+=  -g 
@@ -118,9 +118,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/scopes/tii-scope.h \
 	   ./sources/main/scopes/channel-scope.h \
 	   ./sources/main/scopes/dev-scope.h \
-	   ./sources/main/scopes/spectrum-waterfall.h \
-	   ./sources/main/scopes/tii-waterfall.h \
-	   ./sources/main/scopes/waterfall-scope.h \
 	   ./sources/main/scopes/iqdisplay.h \
 	   ./sources/main/scopes/audio-display.h \
 	   ./sources/main//scopes/spectrogramdata.h \
@@ -287,9 +284,6 @@ SOURCES += ./sources/main/main.cpp \
            ./sources/main/scopes/tii-scope.cpp \
            ./sources/main/scopes/channel-scope.cpp \
            ./sources/main/scopes/dev-scope.cpp \
-           ./sources/main/scopes/spectrum-waterfall.cpp \
-           ./sources/main/scopes/tii-waterfall.cpp \
-           ./sources/main/scopes/waterfall-scope.cpp \
 	   ./sources/main/scopes/iqdisplay.cpp \
 	   ./sources/main/scopes/audio-display.cpp \
 	   ./sources/main/scopes/spectrogramdata.cpp \

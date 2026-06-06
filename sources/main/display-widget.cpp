@@ -25,14 +25,11 @@
 #include	<QDir>
 #include	"display-widget.h"
 #include	"spectrum-scope.h"
-#include	"spectrum-waterfall.h"
 #include	"tii-scope.h"
-#include	"tii-waterfall.h"
 #include	"null-scope.h"
 #include	"correlation-scope.h"
 #include	"channel-scope.h"
 #include	"dev-scope.h"
-#include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
 #include	"dab-constants.h"
@@ -65,30 +62,27 @@
 	dcOffset_display	-> show ();
 	dcOffset_label		-> show ();
 //	the "workers"
-	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
+	spectrumScope_p		= new spectrumScope	(spectrumPlot,
 	                                                 512, dabSettings_p,
 	                                                "inputSpectrum");
-	spectrumWaterfall_p	= new spectrumWaterfall	(waterfallDisplay,
-	                                                 512,
-	                                                  50);
-	nullScope_p		= new nullScope		(nullDisplay,
-	                                                 512, dabSettings_p);
-	correlationScope_p	= new correlationScope (correlationDisplay,
-	                                                512, dabSettings_p);
-	tiiScope_p		= new tiiScope		(tiiDisplay,
+	correlationScope_p	= new correlationScope (correlationPlot,
+	                                                512, dabSettings_p,
+	                                                "correlationScope");
+	nullScope_p		= new nullScope		(nullPlot,
+	                                                 512, dabSettings_p,
+	                                                 "nullScope");
+	tiiScope_p		= new tiiScope		(tiiPlot,
 	                                                192, dabSettings_p,
 	                                                "tiiScope");
-	tiiWaterfall_p		= new tiiWaterfall	(waterfallDisplay,
-	                                                 384,
-	                                                 50);
 	channelScope_p		= new channelScope	(channelPlot,
 	                                                 NR_TAPS,
-	                                                 dabSettings_p);
+	                                                 dabSettings_p,
+	                                                 "channelScope");
 	devScope_p		= new devScope		(devPlot,
-	                                                 768, dabSettings_p);
+	                                                 768, dabSettings_p,
+	                                                 "softbitScope");
 	IQDisplay_p		= new IQDisplay		(iqDisplay);
-	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
-	                                                 512, 50);
+//	                                                 512, 50);
 //
 //	and the settings for the sliders:
 	int sliderValue		= value_i (dabSettings_p,
@@ -121,10 +115,6 @@
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "tiiSlider", 00);
 	tiiSlider		-> setValue (sliderValue);
-	sliderValue		= value_i (dabSettings_p,
-	                                   DISPLAY_WIDGET_SETTINGS,
-	                                   "deviationSlider", 0);
-	deviationSlider		-> setValue (sliderValue);
 	sliderValue		= value_i (dabSettings_p,
 	                                   DISPLAY_WIDGET_SETTINGS,
 		                           "channelSlider", 20);
@@ -160,14 +150,11 @@
 
 	displayWidget::~displayWidget () {
 	delete		spectrumScope_p;
-	delete		spectrumWaterfall_p;
 	delete		nullScope_p;
 	delete		correlationScope_p;
 	delete		tiiScope_p;
-	delete		tiiWaterfall_p;
 	delete		channelScope_p;
 	delete		devScope_p;
-	delete		waterfallScope_p;
 	delete		IQDisplay_p;
 }
 
@@ -184,8 +171,6 @@
 	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
 	                        "tiiSlider", tiiSlider -> value ());
 	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
-	                        "deviationSlider", deviationSlider -> value ());
-	   store (dabSettings_p, DISPLAY_WIDGET_SETTINGS,
 	                     "channelSlider", channelSlider -> value ());
 	   myFrame. hide	();
 	}
@@ -194,7 +179,6 @@
 void	displayWidget::switch_tab	(int t) {
 	currentTab	= t;
 	store (dabSettings_p, DISPLAY_WIDGET_SETTINGS, "tabSettings", t);
-	waterfallScope_p	-> cleanUp ();
 	for (int i = 0; i < 2048; i ++)
 	   workingBuffer [i] =  0;
 }
@@ -226,15 +210,12 @@ static floatQwt avg [4 * 512];
 	int highFreq	= (freq + SAMPLERATE / 2) / 1000;
 	spectrumScope_p -> display (v, lowFreq, highFreq,
 	                               spectrumSlider -> value ());
-	spectrumWaterfall_p	-> display (v,
-	                                    lowFreq, highFreq,
-	                                    waterfallSlider -> value ());
 }
 
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
 //	and a list of transmitters
-void	displayWidget::showCorrelation	(const std::vector<float> &v,
+void	displayWidget::showCorrelation	(std::vector<float> &v,
 	                                 QVector<int> &maxVals,
 	                                 int T_g,
 	                                 std::vector<transmitter> &theTr) {
@@ -280,30 +261,11 @@ std::vector<corrElement> showData;
 	                                    correlationLength -> value (),
 	                                    correlationSlider -> value (),
 	                                    showData);
-//	and now for the waterfall scope
-	if (v. size () < 512)
-	   return;
-	floatQwt X_axis [512];
-	floatQwt Y_value [512];
-	float	MMax	= 0;
-	for (int i = v. size () / 2 - 256;
-	                       i < (int)( v. size ()) / 2 + 256; i ++) {
-	   X_axis [i - v. size () / 2 + 256] = i;
-	   Y_value [i - v. size () / 2 + 256] = v [i];
-	   if (v [i] > MMax)
-	      MMax = v [i];
-	}
-	for (int i = 0; i < 512; i ++)
-	   Y_value [i] *= 50.0 / MMax;
-
-	waterfallScope_p -> display (X_axis, Y_value, 
-	                              0.1 * waterfallSlider -> value (),
-	                              v. size () / 2);
 }
 //	for "null" we get a segment of 1024 timedomain samples
 //	(the amplitudes!)
 //	that can be displayed directly
-void	displayWidget::showNULL	(Complex *v, int amount,
+void	displayWidget::showNULL	(std::vector<Complex> &v, int amount,
 	                                      int startIndex) {
 	if  (currentTab != SHOW_NULL)
 	   return;
@@ -313,28 +275,12 @@ void	displayWidget::showNULL	(Complex *v, int amount,
 	   v [i] = (v [2 * i] + v [2 * i + 1]) / (DABFLOAT)2.0;
 
 	nullScope_p	-> display (v, amount, startIndex);
-	floatQwt X_axis [512];
-	floatQwt Y_value [512];
-	float	MMax	= 0;
-	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = 256 + i;
-	   Y_value [i] = abs (v [i]);
-	   if (Y_value [i] > MMax)
-	      MMax = Y_value [i];
-	}
-	for (int i = 0; i < 512; i ++)
-	   Y_value [i] *= 50.0 / MMax;
-	waterfallScope_p	-> display (X_axis, Y_value, 
-	                                    waterfallSlider -> value (), 256);
 }
 //
 //	for "tii" we get a segment of 2048 time domain samples,
 //	data is from the NULL period with TII data, after the
 //	FFT, we collapse to 192 "bin"s
 void	displayWidget::showTII	(std::vector<Complex> v, int freq, int marker) {
-floatQwt	X_axis [512];	//	for the waterfall
-floatQwt	Y_value [512];
-
 	if (v. size () != T_u)
 	   return;
 
@@ -344,15 +290,11 @@ floatQwt	Y_value [512];
 
 	tiiScope_p	-> display (v, 0, 192, 
 	                             tiiSlider -> value (), marker);
-	tiiWaterfall_p	-> display (v, 0, 384, 
-	                              waterfallSlider -> value ());
 }
 
 void	displayWidget::showChannel	(const std::vector<Complex> Values) {
 floatQwt	amplitudeValues	[NR_TAPS];
 floatQwt	X_axis		[NR_TAPS];
-//floatQwt	waterfall_X	[512];
-floatQwt	waterfall_Y	[512];
 
 int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
@@ -366,12 +308,9 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	   X_axis	   [i] = i;
 	}
 
-	channelScope_p	-> display (amplitudeValues,
-	                            channelSlider -> value ());
+	channelScope_p		-> display (amplitudeValues,
+	                                    channelSlider -> value ());
 
-	waterfallScope_p	-> display (X_axis, waterfall_Y, 
-	                                    waterfallSlider -> value (),
-	                                    0);
 }
 
 void	displayWidget::showStdDev	(const std::vector<float> stdDevVector) {
@@ -381,13 +320,6 @@ floatQwt Y_value [512];
 	if (currentTab != SHOW_STDDEV)
 	   return;
 	devScope_p -> display (stdDevVector);
-	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = -768 + 3 * i;
-	   Y_value [i] = stdDevVector [3 * i] * 5;
-	}
-	waterfallScope_p	-> display (X_axis, Y_value, 
-	                                    waterfallSlider -> value (),
-	                                    0);
 }
 
 //
@@ -480,7 +412,6 @@ QString textList;
 	                  " " + QString::number (subId) + ") ";
 	   textList. append (trId);
 	}
-	tiiLabel -> setText (textList);
 }
 
 void	displayWidget::setSyncLabel	(bool b) {
@@ -567,7 +498,6 @@ void	displayWidget::handleMarksButton	() {
 }
 
 void	displayWidget::cleanTII	() {
-	waterfallScope_p	-> cleanUp ();
 	for (int i = 0; i < 2048; i ++)
 	   workingBuffer [i] =  0;
 }

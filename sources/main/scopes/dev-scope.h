@@ -33,7 +33,8 @@ Q_OBJECT
 public:
 		devScope	(QwtPlot *,
 	                         int,
-	                         QSettings *);
+	                         QSettings *,
+	                         const QString &);
 		~devScope	();
 	void	display		(const std::vector<float> &);
 	void	clean		();

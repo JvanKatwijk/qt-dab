@@ -30,7 +30,6 @@
 class	RadioInterface;
 class	QSettings;
 
-
 class	spectrumScope: public basicScope {
 Q_OBJECT
 public:

@@ -23,10 +23,12 @@
 #include	"channel-scope.h"
 
 	channelScope::channelScope (QwtPlot *plotArea, int displaySize,
-	                            QSettings	*dabSettings):
+	                            QSettings	*dabSettings,
+	                            const QString &name):
 	                                  basicScope (plotArea,
-	                                              dabSettings, displaySize,
-	                                              "channelScope") {
+	                                              dabSettings,
+	                                              displaySize,
+	                                              name) {
 	this	-> displaySize		= displaySize;
 }
 
