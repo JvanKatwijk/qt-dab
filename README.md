@@ -13,12 +13,12 @@ About Qt-DAB
 ![6.10](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-7.1.1*, predefined executables - for Linux an AppImage, for Windows
+*Qt-DAB-7.1.3*, predefined executables - for Linux an AppImage, for Windows
 an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.1.3](#What-is-new-in-Qt-DAB-7.1.2)
+* [What is new in Qt-DAB-7.1.3](#What-is-new-in-Qt-DAB-7.1.3)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
 * [Handling packet services](#handling-packet-services)
