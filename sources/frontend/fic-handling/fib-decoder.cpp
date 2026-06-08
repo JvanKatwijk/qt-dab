@@ -1033,6 +1033,8 @@ char		label [17];
 	serviceName = toQStringUsingCharset (
 	                               (const char *) label,
 	                               (CharacterSet) charSet);
+	for (int i = serviceName. size (); i < 16; i ++)
+	   serviceName. push_back (QChar (' '));
 
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
@@ -1086,6 +1088,9 @@ uint32_t	SId;
 	QString serviceName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
+	for (int i = serviceName. size (); i < 16; i ++)
+	   serviceName. push_back (QChar (' '));
+
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
@@ -1144,6 +1149,8 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	QString serviceName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
+	for (int i = serviceName. size (); i < 16; i ++)
+	   serviceName. push_back (QChar (' '));
 	QString shortName;		
 	for (int i = 0; i < 16; i ++)  
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)

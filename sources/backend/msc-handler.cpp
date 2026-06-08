@@ -107,7 +107,7 @@ void	mscHandler::stopBackend	(uint32_t SId, uint8_t SCIds) {
 	activeServices ((int)(theBackends. size ()));
 }
 //
-//	Note that - in general - the backens run in their own thread
+//	Note that - in general - the backends run in their own thread
 bool	mscHandler::startBackend (descriptorType &d,
 	                          RingBuffer<std::complex<int16_t>> *audioBuffer,
 	                          RingBuffer<uint8_t> *dataBuffer,

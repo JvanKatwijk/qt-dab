@@ -44,7 +44,6 @@
 #include	"ofdm-handler.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
-//#include	"dab-params.h"
 #include	"ITU_tables.h"
 #include	"mapport.h"
 #include	"tech-window.h"
@@ -1306,7 +1305,7 @@ void	RadioInterface::setPeakLevel (const std::vector<float> &samples) {
 float	absPeakLeft	= 0;
 float	absPeakRight	= 0;
 static int teller = 0;
-	if (++teller < 4)
+	if (++teller < 3)
 	   return;
 	teller = 0;
 	for (uint32_t i = 0; i < samples. size () / 2; i ++) {
@@ -2095,7 +2094,7 @@ void	RadioInterface::announcement_stop (uint16_t SId) {
 }
 //
 ////////////////////////////////////////////////////////////////////////
-//	selection, either direct, from presets,  from scanlist or schedule
+//	selection, either direct, from presets, from scanlist or schedule
 //
 //	called from the viewhandler
 void	RadioInterface::localSelect (const QString &service,
@@ -2151,8 +2150,7 @@ void	RadioInterface::localSelect (const QString &service,
 //	selecting from a content description, which
 //	obviously is the "currently selected" channel.
 void	RadioInterface::handle_contentSelector (const QString &serviceName) {
-	uint32_t SId;
-	uint8_t SCIds;
+	uint32_t SId; uint8_t SCIds;
 	theOfdmHandler -> mapNameToId (serviceName, SId, SCIds);
 	if (theOfdmHandler -> isPacketService (SId, SCIds))	
 	   return;
@@ -2177,7 +2175,6 @@ QStringList list	= splitter (s);
 //
 void	RadioInterface::localSelect_SS (const QString &service,
 	                                const QString &theChannel) {
-
 QString serviceName	= service;
 	stopService (channel. currentService);
 	for (int i = service. size (); i < 16; i ++)
@@ -2190,7 +2187,7 @@ QString serviceName	= service;
 	   startChannel  (theChannel, serviceName);
 	   return;
 	}
-//
+
 //	if the service is from the current channel:
 	channel. currentService. isValid = false;
 	
@@ -2221,7 +2218,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	   theTechWindow	-> cleanUp ();
 	}
 
-//	all running backends are described in the runningtasks lit
+//	all running backends are recorded in the runningtasks lit
 	   for (uint32_t i = 0; i <  channel. runningTasks. size (); i ++) {
 	      dabService g = channel. runningTasks [i];
 	      if (g. SId == s. SId) {
@@ -2280,7 +2277,7 @@ dabService	s;
 	channel. currentService			= s;
 	channel. currentService. isValid	= false;
 	channel. currentService. frameDumper	= nullptr;
-	
+
 	if (theOfdmHandler -> isAudioService (s. SId, s. SCIds)) {
 	   audiodata ad;
 	   theOfdmHandler -> audioData (s. SId, s. SCIds, ad);
@@ -3104,7 +3101,7 @@ QString resetButton_font =
 
 QString etiButton_color =
 	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
-	                                             GREEN);
+	                                              BLUE);
 QString etiButton_font =
 	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
 	                                              BLACK);
@@ -3685,14 +3682,14 @@ void	RadioInterface::handle_etiButton	() {
 	   return;
 
 	if (!channel. etiActive) {
-	   fprintf (stderr, "eti was not active, starts\n");
 	   stopScanning ();
 	   start_etiHandler ();
 	   channel. etiActive	= true;
 	   return;
 	}
-	fprintf (stderr, "eti stops\n");
+//	eti stops, set the button color back
 	stop_etiHandler ();		// just in case
+
 	channel. etiActive	= false;
 }
 
@@ -3702,6 +3699,17 @@ void	RadioInterface::stop_etiHandler () {
 
 	theOfdmHandler -> stopEtiGenerator ();
 	channel. etiActive = false;
+	QString etiButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
+                                                                   GREEN);
+	QString etiButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_font",
+                                                                   BLACK);
+	QString temp = "QPushButton {background-color: %1; color: %2}";
+
+	etiButton       ->
+                      setStyleSheet (temp. arg (etiButton_color,
+                                                etiButton_font));
 	etiButton	-> setText ("eti");
 }
 
@@ -3726,8 +3734,11 @@ void	RadioInterface::start_etiHandler () {
 
 	channel. etiActive = theOfdmHandler -> startEtiGenerator (etiFile);
 	fprintf (stderr, "etigenerator returns %d\n", channel. etiActive);
-	if (channel. etiActive) 
+	if (channel. etiActive) {
+	   QString temp = "QPushButton {background-color: %1; color: %2}";
+	   etiButton       -> setStyleSheet (temp. arg (RED, WHITE));
 	   etiButton -> setText ("eti runs");
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////

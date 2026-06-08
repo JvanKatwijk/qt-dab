@@ -49,7 +49,6 @@ public:
 	void	showServiceData		(int, audiodata *, const QPixmap &);
 	void	cleanUp			();
 	void	isDABPlus		(bool);
-	void	hideMissedLabel		();
 	void	updateFM		(const std::vector<uint32_t> &);
 private:
 	RadioInterface		*myRadioInterface;

@@ -74,11 +74,11 @@
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 
 	framedumpButton ->
-                      setStyleSheet (temp. arg (framedumpButton_color,
-                                                framedumpButton_font));
+			      setStyleSheet (temp. arg (framedumpButton_color,
+							framedumpButton_font));
 
-	audiodumpButton ->
-                      setStyleSheet (temp. arg (audiodumpButton_color,
+		audiodumpButton ->
+			      setStyleSheet (temp. arg (audiodumpButton_color,
                                                 audiodumpButton_font));
 
 	connect (framedumpButton, &smallPushButton::rightClicked,
@@ -113,10 +113,13 @@ void	techWindow::cleanUp	() {
 	const QString ee ("-");
 	programName		-> setText (ee);
 	shortnameLabel		-> setText (ee);
-	rsCorrections		-> display (0);
-	frameError_display	-> setValue (0);
-	rsError_display		-> setValue (0);
-	aacError_display	-> setValue (0);
+	fmLabel			-> setStyleSheet ("QLabel {color : magenta}");
+	frameLabel		-> setStyleSheet ("QLabel {color : red}");
+	frameLabel		-> setText ("");
+	rsLabel			-> setStyleSheet ("QLabel {color : red}");
+	rsLabel			-> setText ("");
+	aacLabel		-> setStyleSheet ("QLabel {color : red}");
+	aacLabel		-> setText ("");
 	startAddressDisplay	-> setText (QString::number (0));
 	lengthDisplay		-> setText (QString::number (0));
 	subChIdDisplay		-> setText (QString::number (0));
@@ -129,6 +132,7 @@ void	techWindow::cleanUp	() {
 
 void	techWindow::showServiceData	(int tableNo, audiodata *ad) {
 	programName		-> setText (ad -> serviceName);
+	shortnameLabel		-> setAlignment (Qt::AlignRight);
 	shortnameLabel		-> setText (ad -> shortName);
 	showDetails (tableNo, ad);
 }
@@ -139,6 +143,7 @@ void	techWindow::showServiceData	(int tableNo, audiodata *ad,
 	int height = 60; 
 	int width =
 	         static_cast<float>(p. width ()) / p. height () * height;
+	shortnameLabel		-> setAlignment (Qt::AlignCenter);
 	shortnameLabel		->
 	                 setPixmap (p. scaled (width, height)); 
 	showDetails (tableNo, ad);
@@ -153,43 +158,60 @@ void	techWindow::showDetails		(int tableNo, audiodata *ad) {
 	showCodeRate		(ad -> shortForm, ad -> protLevel);
 	showLanguage		(tableNo, ad -> language);
 	showFm			(ad -> fmFrequencies);
-	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " kbits");
+	bitRateLabel		-> setText (QString::number (ad -> bitRate) + " k");
 }
 
 void	techWindow::showFrameErrors	(int e) {
-	QPalette p	= frameError_display -> palette();
-	if (100 - 4 * e < 80)
-	   p. setColor (QPalette::Highlight, Qt::red);
-	else
-	   p. setColor (QPalette::Highlight, Qt::green);
-
-	frameError_display	-> setPalette (p);
-	frameError_display	-> setValue (100 - 4 * e);
-}
-
-void	techWindow::showAacErrors	(int e) {
-	QPalette p      = aacError_display -> palette();
-        if (100 - 4 * e < 80)
-           p. setColor (QPalette::Highlight, Qt::red);
-        else
-           p. setColor (QPalette::Highlight, Qt::green);
-        aacError_display      -> setPalette (p);
-        aacError_display      -> setValue (100 - 4 * e);
+	if (100 - 4 * e < 90) {
+	   frameLabel		-> setStyleSheet ("QLabel {color : red}");
+	   frameLabel		-> setText ("frames");
+	}
+	else {
+	   frameLabel		-> setStyleSheet ("QLabel {color : lightgreen}");
+	   frameLabel		-> setText ("frames");
+	}
 }
 
 void	techWindow::showRsErrors		(int e) {
-	QPalette p	= rsError_display -> palette();
-	if (100 - 4 * e < 80)
-	   p. setColor (QPalette::Highlight, Qt::red);
-	else
-	   p. setColor (QPalette::Highlight, Qt::green);
-	rsError_display	-> setPalette (p);
-	rsError_display	-> setValue (100 - 4 * e);
+	if (100 - 4 * e < 90) {
+	   rsLabel		-> setStyleSheet ("QLabel {color : red}");
+	   rsLabel		-> setText ("RS");
+	}
+	else {
+	   rsLabel		-> setStyleSheet ("QLabel {color : lightgreen}");
+	   rsLabel		-> setText ("RS");
+	}
+}
+
+void	techWindow::showAacErrors	(int e) {
+	if (100 - 4 * e < 90) {
+	   aacLabel		-> setStyleSheet ("QLabel {color : red}");
+	   aacLabel		-> setText ("AAC");
+	}
+	else {
+	   aacLabel		-> setStyleSheet ("QLabel {color : lightgreen}");
+	   aacLabel		-> setText ("AAC");
+	}
 }
 
 void	techWindow::showRsCorrections	(int c, int ec) {
-	rsCorrections -> display (c);
-	ecCorrections -> display (ec);
+//	rsLabel_text	-> setStyleSheet ("QLabel {color: lightgreen}");
+//	ecLabel_text	-> setStyleSheet ("QLabel {color: lightgreen}");
+//	rsLabel_data	-> setStyleSheet ("QLabel {color: lightgreen}");
+//	ecLabel_data	-> setStyleSheet ("QLabel {color: lightgreen}");
+//	rsLabel_data	-> setText (QString::number (c));
+//	ecLabel_data	-> setText (QString::number (ec));
+}
+
+void	techWindow::showMissed	(int missed) {
+	if (missed > 90)
+	   audioLabel_text	-> setStyleSheet ("QLabel {color: lightgreen}");
+	else
+	   audioLabel_text	-> setStyleSheet ("QLabel {color: red}");
+}
+
+void	techWindow::hideMissed	() {
+	audioLabel_text	-> hide ();
 }
 
 void	techWindow::updateFM		(const std::vector<uint32_t> &fmFrequencies) {
@@ -254,17 +276,18 @@ void	techWindow::showFm		(const std::vector<uint32_t> &v) {
 	   fmLabel	-> hide ();
 	}
 	else {
-	   fmLabel            -> show ();
-           fmFrequency        -> show ();	
+	   fmLabel	-> setStyleSheet ("QLabel {color : magenta}");
+	   fmLabel	-> show ();
+           fmFrequency	-> show ();	
 	   QString f;
 	   int teller	= 0;
 //	for now there is room for up to 2 freqyencies
 	   for (auto freq: v) {
 	      if (++teller > 3)
 	         break;			// for now
-              f. append (QString::number (freq) + " ");
+              f. append (QString::number (((float)freq) / 1000.0, 'f', 1) + " ");
 	   }
-           f. append (" Khz");
+           f. append (" MHz");
            fmFrequency        -> setText (f);
 	}
 }
@@ -345,12 +368,12 @@ void	techWindow::showRate	(int rate, bool ps, bool sbr) {
 	else {
 	   sbrLabel -> setText ("sbr");
 	}
-	audiorateLabel	-> setText (QString::number (rate));
+	audiorateLabel	-> setText (QString::number (rate / 1000) + "k");
 }
 
 void	techWindow::showStereo	(bool b) {
 	 if (b) {
-	   stereoLabel	-> setStyleSheet ("QLabel {color : green}");
+	   stereoLabel	-> setStyleSheet ("QLabel {color : lightgreen}");
            stereoLabel  -> setText ("<i>stereo</i>");
         }
         else {
@@ -359,34 +382,19 @@ void	techWindow::showStereo	(bool b) {
 	}
 }
 
-void	techWindow::showMissed	(int missed) {
-	missedSamples	-> display (missed);
-}
-
-void	techWindow::hideMissed	() {
-	missedLabel	-> hide ();
-	missedSamples	-> hide ();
-}
 
 void	techWindow::isDABPlus	(bool b) {
 	if (b) {	// yes it is DAB+
 
 	   ASCTy	-> setText ("DAB+");
-	   rsErrorLabel		-> show ();
-	   aacErrorLabel	-> show ();
-	   rsError_display	-> show ();
-	   aacError_display	-> show ();
+	   frameLabel		-> show ();
+	   rsLabel		-> show ();
+	   aacLabel		-> show ();
 	}
 	else {
 	   ASCTy	-> setText ("DAB");
-	   rsErrorLabel		-> hide ();
-	   aacErrorLabel	-> hide ();
-	   rsError_display	-> hide ();
-	   aacError_display	-> hide ();
+	   frameLabel		-> hide ();
+	   rsLabel		-> hide ();
+	   aacLabel		-> hide ();
 	}
-}
-
-void	techWindow::hideMissedLabel	() {
-	missedLabel	-> hide ();
-	missedSamples	-> hide ();
 }

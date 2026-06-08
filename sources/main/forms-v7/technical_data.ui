@@ -6,42 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>309</width>
-    <height>660</height>
+    <width>321</width>
+    <height>536</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Technical Details</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLabel" name="programName">
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service long label&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>programName</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="shortnameLabel">
-       <property name="text">
-        <string>shortName</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
       <widget class="smallPushButton" name="framedumpButton">
        <property name="toolTip">
@@ -63,6 +37,60 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item alignment="Qt::AlignmentFlag::AlignLeft">
+      <widget class="QLabel" name="programName">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service long label&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>programName</string>
+       </property>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignmentFlag::AlignRight">
+      <widget class="QLabel" name="shortnameLabel">
+       <property name="text">
+        <string>shortName</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="fmLabel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This DAB service is on FM as well. Feature only used by some DAB services.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>also on FM:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="fmFrequency">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item alignment="Qt::AlignmentFlag::AlignHCenter">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>===========================</string>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout_2">
@@ -146,35 +174,8 @@
     </layout>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>Type:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="ASCTy">
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="text">
-        <string>ASCTy</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Language:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item alignment="Qt::AlignmentFlag::AlignLeft">
       <widget class="QLabel" name="language">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language (defined by provider)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -190,282 +191,177 @@
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="fmLabel">
+     <item alignment="Qt::AlignmentFlag::AlignRight">
+      <widget class="QLabel" name="ASCTy">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This DAB service is on FM as well. Feature only used by some DAB services.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>also on FM:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="fmFrequency">
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="0">
-      <widget class="QLabel" name="aacErrorLabel">
-       <property name="text">
-        <string>AAC</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QProgressBar" name="aacError_display">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator of the success rate of handling the AAC frames in the DAB+ transmissions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QProgressBar::chunk { background: #e6e600; }</string>
-       </property>
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QProgressBar" name="frameError_display">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frame errors. Indication of the quality of the DAB+ frame detection. 100 is good.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QProgressBar::chunk { background: #e6e600; }</string>
-       </property>
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QLabel" name="frameErrorLabel">
-       <property name="text">
-        <string>Frame</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QProgressBar" name="rsError_display">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality of the DAB+ frames. &lt;/p&gt;&lt;p&gt;Indicator for the amount of times meaning the frames contain more errors than the Reed Solomon correction can correct. &lt;/p&gt;&lt;p&gt;100 is good.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QProgressBar::chunk { background: #e6e600; }</string>
-       </property>
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QLabel" name="rsErrorLabel">
-       <property name="text">
-        <string>RS</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The average number of corrections by the Reed Solomon procedure. The RS procesure is able to fix up to 5 erroneous bytes in a segment of 110 bytes.&lt;/p&gt;&lt;p&gt;The number tells how many errors were fiixed per 100 frames&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>rs corrections/100</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLCDNumber" name="rsCorrections">
-       <property name="toolTip">
-        <string>The number of corrections made by the reed-solomon algorithm over 10 DAB+ frames (so the number does not relate to the classic DAB/MP2 frames)</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The RS procedure will try to fix errors. However, if the parity bits are erroneous then there might be a problem. That is why - after the RS procedure a CRC check is performed on the data. The number of remaining errors is sjpwn here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>ec errors </string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLCDNumber" name="ecCorrections">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS decoding/recovery uses parity bits. If, however, a parity bit is faulty, recovery of errors may lead to introducing errors. The crc check following the recovery should reveal that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="missedLabel">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The output hanfler expects 48000 two channel samples per second. If - for whatever reason - the amount actually delivered is less, the missing samples will be compensated for by NULL samples, and the percentage will be lower than 100&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>audio % OK</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLCDNumber" name="missedSamples">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audiohandler runs with its own clock. If less than the requested number of&lt;/p&gt;&lt;p&gt;audiosamples is passed on, the percentage = shown here - will drop accordingly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="stereoLabel">
-       <property name="text">
-        <string>stereo</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="uepField">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows Protection Level and Type (A or B)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB mode, either DAB or DAB+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="text">
-        <string>uep</string>
+        <string>ASCTy</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="codeRate">
-       <property name="text">
-        <string>cr</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="bitRateLabel">
-       <property name="text">
-        <string>bitRate</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="audiorateLabel">
-       <property name="text">
-        <string>48000</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="psLabel">
-       <property name="text">
-        <string>ps</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="sbrLabel">
-       <property name="text">
-        <string>sbr</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
-   <item>
-    <widget class="QwtPlot" name="audio">
-     <property name="maximumSize">
-      <size>
-       <width>291</width>
-       <height>151</height>
-      </size>
+   <item alignment="Qt::AlignmentFlag::AlignHCenter">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>===========================</string>
      </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="frameLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frames turns green if  (most of the) dab_ frames could be identified in the input stream. These DAB+ frames are carriers for the AAC data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>frame</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="rsLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS turns green if (most of the) RS error decoding succeeds. The RS decoding takes place on the input frames, and outputs the AAC frames for further decoding.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>RS</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="aacLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AAC turns green if (most of) the AAC frames could be interpreted and mapped upon PCM data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>AAC</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="audioLabel_text">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator telling - if green - that audio is send to the soundcard&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>audio</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="stereoLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for stereo signal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>stereo</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="uepField">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows Protection Level and Type (A or B)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string>uep</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="codeRate">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;protectionrate, ie. tells number of softbits used to compute a &amp;quot;hard bit&amp;quot;. Example, 1/2 tells 2 soft bits for a single hard bit&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>cr</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="bitRateLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of bits per second used to encode the AAC&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>bitRate</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="audiorateLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Samplerate as delivered by the AAC decoder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>48000</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="psLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pseudo stereo indicator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>ps</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="sbrLabel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;stereo band replication, i.e. an encoding technique to reduce the number of bits needed to encode a stereo signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>sbr</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QwtPlot" name="audio">
+       <property name="maximumSize">
+        <size>
+         <width>291</width>
+         <height>151</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

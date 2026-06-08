@@ -58,9 +58,9 @@ QString	colorString;
 	grid. enableXMin (true);
 	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
+//	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
+//	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
 	grid. attach (plotGrid);
 	lm_picker       = new QwtPlotPicker (plotGrid -> canvas ());
