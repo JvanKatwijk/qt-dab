@@ -18,11 +18,10 @@ an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.1.2](#What-is-new-in-Qt-DAB-7.1.2)
-* [Eliminating buttons and replacing some](#eliminating-buttons-and-replacing-some)
-* [Handling packet services](#handling-packet-services)
+* [What is new in Qt-DAB-7.1.3](#What-is-new-in-Qt-DAB-7.1.2)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
+* [Handling packet services](#handling-packet-services)
 * [Scan control](#scan-cntrol)
 * [Displaying TII data](#displaying-tii-data)
 * [EPG Handling and time tables](#epg-handling-and-time-tables)
@@ -33,99 +32,166 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.1.2
+What is new in Qt-DAB-7.1.3
 ======================================================================
 
-It turns out that using (sometimes left, sometimes right) mouseclicks in the GUI to achieve things is not very intuitive. 
-7.1.2 basically fixes this. The main window of the GUI has some additional
-buttons.
+In 7.1.3 some GUI elements were changed. The reason was pretty simple, I wanted to see all major windows on the screen of my laptop.
+This means that in particular the spectrum display and the technical window
+changed considerably, limiting their size.
 
-In the fourth quarter of 2023 the major version number for Qt-DAB became "6",
-the GUI had undergone some major  changes since the "5" version,
-and the basic idea was to increment **major** version numbers only
-when the GUI changed significantly.
+Of course, these changes have effect
+ - on the spectrum display window the waterfall disappeared. Having looked at it for quite some time, I figured that there was not much information that could be derived from the waterfall. The removal of the waterfall gave some room to create a different layout.
+ - on the technical window, there were three progressbars, quality indicators for the AAC (audio) decoding. Again, it felt that the bars did not give much numerical information, the only interest was to see whether or not the decoding was "good". (Of course some numerical data can de derived on the quality of the decoding, which now will be written into a log file). The progress bars are replaced by a "dashboard type" of presenting. Furthermore a clear distinction is made between the statical data of the servioe, and the dynamics of the decoding.
 
-While on the surface the GUI in 7.1.1 does not differ that much with the
-one in 6.9.10, there are fundamental differences in the main window while
-the configuration and control window differs completely with that of 6.9.
-So, it was time to increment the major version number.
+Windows and scopes
+=========================================================================
 
-The Beta version of 7.0 showed unfortunately a persistent error, fixing that required significant modifications, and, while doing that,  a number of important changes was made, so it felt better to update to 7.1.1.
+In the latest releases of 6.10 the **dump** button was already moved from the configuration window to the main window (the **button** implemented by a click
+on the **right hand button** on the mouse on the ensemblename). Furthermore,
 
-The major **visible** change in the main window is how services
-are shown.  The **ensemble display** is completely redesigned
-and now runs is in one of three "modes".
+when dumpimg,  a small window is shown that remminds the user that dumping is going on.
 
-Handling of data services is changed; when selecting a
-packet service, it will run as background task, so it is possible to
-listen to an audio service and have a couple of packet services run in the background.
+![7.1](/res/read_me/dumping.png?raw=true)
 
-To control running one or more services in the background, it
-is obviously possible to select and run an audio service,
-since that runs in the foreground.
+In Qt-DAB-7.1.2 some buttons were added to the main window.
+The selector of the list of audio devices was traditionally shown as combobox,
+now it is back as regular button.
+The same applies to the other buttons, the 
 
-![7.1](/res/read_me/qt-dab-7.1.2.png)
+![7.1.3](/res/read_me/qt-dab-7.1.3.png?raw=true)
 
-The ensemble display is in one of a three modes:
- * **ensemble** mode, where  services of the (current) channel(s) are shown, 
- * **favorite** mode, where only the favorites are shown, and
- * **file** mode, where the services from a file are shown.
+The icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
+small blue one controls the visibility of the device list.
+On the second line the "book style" icon controls the visibility of the
+technical window, and the icon with label **EPG**, is shown in case
+an EPG/SPI service is detected in the currently selected channel (Note that
+the EPG/SPI service is NOT shown in the services list.)
 
- **ensemble mode** - the most common mode - a list is compiled of
-services encountered, and - depending on the settings - the services
-of the currently selected channel - or all encountered sudio ervices
-are shown.
- 
-Ensemble mode has two submodes, one - when "audio only" is set on the configuration window - in which all audio services of all visited channels are shown and the names stored in a database, or - when "audio only" is not selected - one in which the services - both audio and data - are shown of the currently selected channel.
+Touching the **EPG** icon make a small window visible, the **timetable list**.
+The list shows the entries in the ensemblelist, coloured **green** is
+timetable data for the service could be detected, **red** otherwide.
 
-On  (normal) **program termination**, the list ("database") is stored
-in a file with the name ".qt-dab-serviceList.mxl", stored in
-the user's home directory 1n program startup, the list is read-in again.
+![7.0](/res/read_me/timetable-catalog.png?raw=true)
 
-For experimenting ith e.g. scanning, the **configuration and control**
-window contains an entry labeled **load selection** that - when set - shows 
-(on the next program invocation) a  dialog with options to read on
-the NEXT program invocation either an existing ensemble file, create a new one, clear the current
-ensemble file, or just stop with selecting.
-In the last two cases, the setting on the configuration window is "undone".
+Touching in this list on a green entry, shows yet another window, with
+time table data.
 
-![7.1](/res/read_me/ensemblelist-selector.png)
+![7.0](/res/read_me/timetable.png?raw=true)
 
-As in previous versions,  **ensemble** mode, a service in the list can be "promoted" to  **favorite**, by clicking on the left column.
+(Note: our NPO is not that advanced that it provides EPG/SPI data, so the
+development and testing uses file input).
 
-![7.1](/res/read_me/ensemble-dialog.png)
+As in previous versions, touching the **ensemble name** on the top left,
+controls the visibility of the content table, i.e. a window that shows
+the details of all services in the current ensemble.
 
-The window contains at the bottow - below the channel selector - a button
-with which a switch can be made between **ensemble** mode and **favorite** mode.
+![7.0](/res/read_me/content-table.png)
 
-![7.1](/res/read_me/favorite-mode.png)
+The content table shows details of the current ensemble.
+Up to three kinds of service may be shown, regular "audio", "packet", and secondary services.
 
-In **favorite** mode, the list of favorites is shown. Selecting this mode makes channel selection,  scanning and eti-generation rather useless and in
-Qt-DAB-7.XX these options are then blocked.
+The technical window shows - as the name suggests - technical details of
+the  selected audio service.
+New is that - if available - the icon of the selected service is shown.
 
-![7.1](/res/read_me/file-mode.png)
+![6.10](/res/read_me/technical-window.png)
 
-In **file** mode, i.e. after reading a file, the services are shown, and
-- obviously - may be selected. Again, scanning etc is not very usefull, so
-some options are blocked.
+As  said, the progress bars disappeared, and indicators now tell whether
+or not the steps in the transformation from raw data to audio are successfull.
 
-On starting the program with a **device** the **ensemble** mode is
-set, when starting with a file as input, the mode is set to **file** mode.
+![7.0](/res/read_me/spectrum-scope.png)
 
-Eliminating buttons and replacing some
-=======================================================================
+As mentioned, it was felt that the waterfall did not add much to understanding the characteritics of the signal, and it was removed from the window.
 
-It is always nice if settings to **start** or **stop** activities related to
-the processing are "within reach", i.e. directly reachable from the main window.
-A number of such settings were put on the configuration and control window,
-for some of them the functionality is moved back to the main window
+In the view shown in the picture above, the spectrum of the incoming
+ DAB signal is shown. To the right of this spectrum, one sees the
+**signal constellation**, i.e. the mapping from the complex signals
+onto their real and imaginary components. If the selector labeled
+"ncp" is set, the centerpoints of the 4 lobs is shown. 
 
- * selecting an audio channel in previous versions was on a combobox on the configuration window; since it is a real "control" item rather than a "configuration" item, its functionality is moved to the main window, and implemented by **clicking** on the speaker symbol (clicking with the right hand mouse button on the speaker now controls the muting);
- * as meantioned earlier, the "dump" button on the configuration window was removed. Dump functionality is obtained by clicking with the **right hand mouse button** on the ensemble name. Furthermore, while by default input dumping created ".uff" files, if selected (or the input device soes not support writing an ".uff" file), dumping is in ".wav" files.
- * similarly, the button on the configuration window to control the visibility od the device control window is removed. Clicking with the (again) **right hand mouse button** on the blue icon gives the same functionality;
- * I wanted the button for "eti" on the main window, after all,  clicking on it starts or stops an activity. The "scan" button functionality is now implemented by clicking with the right hand mouse button on the channel selector (The rationale being that scanning is closely related to channel selection), and eti control is by the button that used to be for scan control.
+Below the "scope" area, 
+some **quality indicators** of the DAB signal are shown.
+From left to right:
+ * the **computed** correction on the frequency of the incoming signal, applied to the signal;
+ * the remaining **freq error** (in Hz) after applying the correction;
+ * the **SNR**, i.e.  the Signal-Noise Ratio in dB;
+ * the **time offset**, the (relative) resulting error in sampling;
+ * the **clock offset**, telling the offset in the samplerate in Hz;
+ * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB signal;
+ * the channel and the frequency of the channel.
 
-The buttons for selection between Portaudio and QtAudio as well as for "skin" selection are removed, their functionality is not considered very useful.
+At the bottom of the window from left to right
+ * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream;
+ * a **FIC** indicator, telling the (average) successrate of decoding the FIC part of the DAB frames (i.e. the data that specifies the payload);
+ * a **BER**, Bit Error Rate, telling (on average) how many input bits were
+wrong (and were corrected), per 1000 input bits (lower is better) when processing the FIC;
+ * a **MER**, Modulation Error Rate, indicating the quality of the input signal (higher is better);
+
+![7.1.3](/res/read_me/spectrum-ideal.png)
+
+The ideal form of the spectrum and the signal constellation as shown in the
+picture above is not often seen with real inputs.
+
+![7.1.3](/res/read_me/qt-dab-correlation.png)
+
+The **correlation** scope shows the correlation between the incoming signal and
+predefined  data, i.e. the data as they should be.
+**Correlation** is used to identify the precise input sample in the input stream
+where the (relevant) data of the frame  starts.
+The picture shows more than one peaks, i.e. the signal from
+more than one transmitter is received. 
+The software chooses either the largest peak, or - if selected - the
+first peak one larger than a threshold.
+
+![7.1.3](/res/read_me/qt-dab-null-period.png)
+
+A DAB signal is received as a sequence of samples, and can be thought to
+be built up from **frames** (DAB frames) where each frame consists of 199608 consecutive samples.
+The **amplitude** of the first app. 2500 samples is (almost) zero, the **NULL**
+period.  The **NULL scope** shows the samples in the transition from the
+**NULL** part to the first samples **with** data of a DAB frame.
+It shows that samples 504 and up in the first data block are used.
+
+![7.1.3](/res/read_me/qt-dab-tii-data.png)
+
+In reality the **NULL** period is - in most cases - not completely
+without signal, each second  **NULL period** may contain
+an encoding of the TII (Transmitter Identification Information) data.
+The **TII scope** shows a condensed form of the spectrum of the data
+in the  relevant **NULL** period, the TII data is encoded as a 4 out of 8 code. Indeed, four larger (and four smaller) peaks can be seen in the picture. In this picture the pattern shown is 0x1e.
+
+The DAB definition provides tables to map the recognized patterm
+to two 2 digit numbers, these numbers are used to identify the transmitter in a database, available in Qt-DAB.
+
+![7.1.3](/res/read_me/qt-dab-channel.png)
+
+The picture shows the channel response on the amplitude, and
+the *red line*, i.e. the channel effects on the phase of the samples.
+The picture clearly shows two larger and a few smaller peaks.
+
+![7.1.3](/res/read_me/qt-dab-stddev.png)
+
+The last scope shows some of the output of the ofdm decoding process, the
+resulting bits have values between -127 to 127.
+
+![7.1.3](/res/read_me/configuration-and-control.png)
+
+The **configuration and control** window is completely redesigned.
+Some selectors, buttons and checkboxes are removed, as mentioned the functionality is moved to (mainly using right hand mouse clicks) the main window.
+
+Settings for the http and tpreg port, as well as the setting for the home position can now be set on the configuration window.
+
+In the previous version, a selector **mapview** was added, that selector 
+is now placed in a line with other http related settings.
+
+Since the software - on startup - always loads a database, i.e. 
+if one can be found in the user's how directory that one, otherwise a default version, there was no need for  selector for loading a database.
+
+New are selectors labeled  **load selection** and **update check**.
+If the **load selection**  selector is set, on program startup 
+a small menu shows, showing options.
+
+Also new is a checkbox that - wgen set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
 
 Handling packet and background services
 ========================================================================
@@ -200,163 +266,6 @@ in the services list, and the decoding is started.
 Manually stopping the service is by clicking again on the servicename.
 
 -------------------------------------------------------------------------
-
-Windows and scopes
-=========================================================================
-
-
-In the latest releases of 6.10 the **dump** button was already moved from the configuration window to the main window (the **button** implemented by a click
-on the **right hand button** on the mouse on the ensemblename). Furthermore,
-when dumpimg,  a small window is shown that remminds the user that dumping is going on.
-
-![7.1](/res/read_me/dumping.png?raw=true)
-
-In Qt-DAB-7.0 the **reset** button also moved to the main window (it was felt rather clumsy to first have to activate the **configuration and control** window before being able to press the **reset** button).
-
-![7.1](/res/read_me/resetbutton.png?raw=true)
-
-The reset button is located in the top line of the right half
-of the main window.
-
-![7.1](/res/read_me/speakerButton.png?raw=true)
-
-The list of audio devices was traditionally shown as combobox, it was felt better to be able to access the list from the main window. Clicking with the
-mouse of the speaker symbol shows (or hides) the list, a list that appears
-in a separate window. Clicking with the right hand mouse button controls
-the muting.
-
-The other icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
-small blue one controls the visibility of the device list.
-On the second line the "book style" icon controls the visibility of the
-technical window, and the icon with label **EPG**, is shown in case
-an EPG/SPI service is detected in the currently selected channel (Note that
-the EPG/SPI service is NOT shown in the services list.)
-
-Touching the **EPG** icon make a small window visible, the **timetable list**.
-The list shows the entries in the ensemblelist, coloured **green** is
-timetable data for the service could be detected, **red** otherwide.
-
-![7.0](/res/read_me/timetable-catalog.png?raw=true)
-
-Touching in this list on a green entry, shows yet another window, with
-time table data.
-
-![7.0](/res/read_me/timetable.png?raw=true)
-
-(Note: our NPO is not that advanced that it provides EPG/SPI data, so the
-development and testing uses file input).
-
-As in previous versions, touching the **ensemble name** on the top left,
-controls the visibility of the content table, i.e. a window that shows
-the details of all services in the current ensemble.
-
-![7.0](/res/read_me/content-table.png)
-
-The technical window shows - as the name suggests - technical details of
-the  selected audio service.
-New is that - if available - the icon of the selected service is shown.
-
-![6.10](/res/read_me/technical-widget.png)
-
-The spectrum widget is not modfied
-
-![7.0](/res/read_me/spectrum-scope.png)
-
-In the view shown in the picture above, the spectrum of the incoming
- DAB signal is shown. To the right of this spectrum, one sees the
-**signal constellation**, i.e. the mapping from the complex signals
-onto their real and imaginary components. If the selector labeled
-"ncp" is set, the centerpoints of the 4 lobs is shown. 
-
-Below this **constellation widget**, 
-some **quality indicators** of the DAB signal are shown.
-From top to bottom
- * the channel and the frequency of the channel
- * the **computed** correction on the frequency of the incoming signal, applied to the signal;
- * the remaining **freq error** (in Hz) after applying the correction;
- * the **SNR**, i.e.  the Signal-Noise Ratio in dB;
- * the **time offset**, the (relative) resulting error in sampling;
- * the **clock offset**, telling the offset in the samplerate in Hz;
- * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB signal.
-
-At the bottom of the window from left to right
- * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream;
- * a **FIC** indicator, telling the (average) successrate of decoding the FIC part of the DAB frames (i.e. the data that specifies the payload);
- * a **BER**, Bit Error Rate, telling (on average) how many input bits were
-wrong (and were corrected), per 1000 input bits (lower is better) when processing the FIC;
- * a **MER**, Modulation Error Rate, indicating the quality of the input signal (higher is better);
-
-![6.10](/res/read_me/spectrum-ideal.png)
-
-The ideal form of the spectrum and the signal constellation as shown in the
-picture above is not often seen with real inputs.
-
-![6.10](/res/read_me/qt-dab-correlation.png)
-
-The **correlation** scope shows the correlation between the incoming signal and
-predefined  data, i.e. the data as they should be.
-**Correlation** is used to identify the precise input sample in the input stream
-where the (relevant) data of the frame  starts.
-The picture shows more than one peaks, i.e. the signal from
-more than one transmitter is received. 
-The software chooses either the largest peak, or - if selected - the
-first peak one larger than a threshold.
-The picture shows an estimate of the TII numbers near the peaks, it shows
-that "(4, 21) Alphen aan den Rijn/Celinex toren" gives the strongest signal.
-
-![6.10](/res/read_me/qt-dab-null-period.png)
-
-A DAB signal is received as a sequence of samples, and can be thought to
-be built up from *frames* (DAB frames) where each frame consists of 199608 consecutive samples.
-The **amplitude** of the first app. 2500 samples is (almost) zero, the **NULL**
-period.  The **NULL scope** shows the samples in the transition from the
-**NULL** part to the first samples **with** data of a DAB frame.
-It shows that samples 504 and up in the first data block are used.
-
-![6.10](/res/read_me/qt-dab-tii-data.png)
-
-In reality the **NULL** period is - in most cases - not completely
-without signal, each second  **NULL period** may contain
-an encoding of the TII (Transmitter Identification Information) data.
-The **TII scope** shows a condensed form of the spectrum of the data
-in the  relevant **NULL** period, the TII data is encoded as a 4 out of 8 code. Indeed, four larger (and four smaller) peaks can be seen in the picture. In this picture the pattern shown is 0x1e.
-
-The DAB definition provides tables to map the recognized patterm
-to two 2 digit numbers, the numbers are used to identify the transmitter in a database, available in Qt-DAB.
-
-![6.10](/res/read_me/qt-dab-channel.png)
-
-The picture shows the channel response on the amplitude, and
-the *red line*, i.e. the channel effects on the phase of the samples.
-The picture clearly shows two larger and a few smaller peaks.
-
-![6.10](/res/read_me/qt-dab-stddev.png)
-
-The last scope shows some of the output of the ofdm decoding process, the
-resulting bits have values between -127 to 127.
-
-![6.10](/res/read_me/configuration-and-control.png)
-
-The **configuration and control** window is completely redesigned.
-Some selectors, buttons and checkboxes are removed, as mentioned the functionality is moved to (mainly using right hand mouse clicks) the main window.
-
-Settings for the http and tpreg port, as well as the setting for the home position can now be set on the configuration window.
-
-In the previous version, a selector **mapview** was added, that selector 
-is now placed in a line with other http related settings.
-
-Since the software - on startup - always loads a database, i.e. 
-if one can be found in the user's how directory that one, otherwise a default version, there was no need for  selector for loading a database.
-
-New are selectors labeled  **load selection** and **update check**.
-If the **load selection**  selector is set, on program startup 
-the user is asked for a filename to load a selection. If
-  * no name is specified, the default is loaded,
-  * a name is given and a file with that name exists, its content is loaded,
-  * a name is given and no file with that name exists (yet), an empty file with that name is created.
-
-Also new is a checkbox, bottom line right end, that - when set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
-
 Devices and device support
 ======================================================================
 
@@ -510,8 +419,7 @@ transmitter(s) received.
 somewhere in Amsterdam - that - together with  default database - allows the
 software to handle TII data and show the result of decoding on a map).
 It is advised to update the user's home location, the **configuration
-and control** window contains a button **coordinates** that when touched,
-shows a small menu where latitude and longitude can be filled in).
+and control** window contains entries to specify a latitude and a longitude.
 
 The picture shows the channels I receive with a simple whip next to my "lazy chair". Of course, using a more advanced antenna. more transmitters show, as seen on the picture below (courtesy of Herman Wijnants)
 
