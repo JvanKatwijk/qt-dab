@@ -22,7 +22,8 @@
  */
 #include	"channel-scope.h"
 
-	channelScope::channelScope (QwtPlot *plotArea, int displaySize,
+	channelScope::channelScope (clickableChart *plotArea,
+	                            int displaySize,
 	                            QSettings	*dabSettings,
 	                            const QString &name):
 	                                  basicScope (plotArea,
@@ -35,15 +36,14 @@
 	channelScope::~channelScope	() {
 }
 
-void	channelScope::display		(const floatQwt *amplitudeValues,
-	                                 int Amp) {
-floatQwt ampVals [displaySize];
-floatQwt min	= +10000;
-floatQwt max	= -10000;
+void	channelScope::display		(const double *ampValues, int Amp) {
+double  ampVals [displaySize];
+float	min	= +10000;
+float	max	= -10000;
 
 	(void)Amp;
 	for (int i = 0; i < displaySize; i ++) {
-	   ampVals [i] = amplitudeValues [i];
+	   ampVals [i] = ampValues [i];
 	   if (ampVals [i] < min)
 	      min = ampVals [i];
 	   else

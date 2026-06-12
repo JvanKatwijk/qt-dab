@@ -88,6 +88,12 @@ enum AudioFlags : uint32_t {
     AFL_PS_USED  = 0x2
 };
 
+typedef struct {
+        int offset;
+        QString text;
+} markType;
+
+
 typedef struct  {
 	uint8_t		mainId;
 	uint8_t		subId;

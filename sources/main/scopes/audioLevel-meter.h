@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2026
+ *    Copyright (C)  2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -20,27 +20,22 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include	<QWidget>
+#include	<QPaintEvent>
+
 #pragma once
 
-#include        "dab-constants.h"
-#include	"basic-scope.h"
-
-class	RadioInterface;
-class	QSettings;
-
-class	devScope: public basicScope {
+class audioLevel : public QWidget {
 Q_OBJECT
 public:
-		devScope	(clickableChart *,
-	                         int,
-	                         QSettings *,
-	                         const QString &);
-		~devScope	();
-	void	display		(const std::vector<float> &);
-	void	clean		();
+	audioLevel (QWidget *parent = 0);
+	void	setLevel(qreal level);
+
+protected:
+	void	paintEvent (QPaintEvent *event) override;
 
 private:
-	int		displaySize;
-	QSettings	*dabSettings;
+	QColor	colorMix (double level);
+	qreal m_level = 0.0;
 };
 

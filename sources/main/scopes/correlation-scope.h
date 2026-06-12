@@ -31,7 +31,7 @@
 class	correlationScope: public basicScope {
 Q_OBJECT
 public:
-			correlationScope	(QwtPlot *rig,
+			correlationScope	(clickableChart *rig,
 	                                         int	displaySize,
 	                                         QSettings	*,
 	                                         const QString &);

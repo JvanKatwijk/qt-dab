@@ -204,6 +204,7 @@ QString h;
 	mapViewer			= nullptr;
 	theDXDisplay. hide ();
 
+	levelMeter			= nullptr;
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
 	globals. spectrumBuffer	= &theSpectrumBuffer;
@@ -564,22 +565,22 @@ QString h;
 	muteTimer. setSingleShot (true);
 	set_Colors ();
 //
-	leftAudio	-> setBorderWidth	(0);
-	leftAudio	-> setScalePosition	(QwtThermo::NoScale);
-	rightAudio	-> setBorderWidth	(0);
-	rightAudio	-> setScalePosition	(QwtThermo::NoScale);
-	leftAudio	-> setValue (-35);
-	rightAudio	-> setValue (-35);
-	QwtLinearColorMap * mapLeft = new QwtLinearColorMap ();
-	mapLeft	-> setColorInterval (QColor (0, 50, 200), QColor(255, 0, 0));
-	mapLeft -> addColorStop (0.75, QColor (100, 50, 0)); 
-	mapLeft -> addColorStop (0.4, QColor (0, 200, 50)); 
-	leftAudio -> setColorMap (mapLeft);
-	QwtLinearColorMap * mapRight = new QwtLinearColorMap ();
-	mapRight -> setColorInterval (QColor(0, 50, 200), QColor(255, 0, 0));
-	mapRight -> addColorStop (0.75, QColor (100, 50, 0)); 
-	mapRight -> addColorStop (0.4, QColor (0, 200, 50)); 
-	rightAudio -> setColorMap (mapRight);
+//	leftAudio	-> setBorderWidth	(0);
+//	leftAudio	-> setScalePosition	(QwtThermo::NoScale);
+//	rightAudio	-> setBorderWidth	(0);
+//	rightAudio	-> setScalePosition	(QwtThermo::NoScale);
+//	leftAudio	-> setValue (-35);
+//	rightAudio	-> setValue (-35);
+//	QwtLinearColorMap * mapLeft = new QwtLinearColorMap ();
+//	mapLeft	-> setColorInterval (QColor (0, 50, 200), QColor(255, 0, 0));
+//	mapLeft -> addColorStop (0.75, QColor (100, 50, 0)); 
+//	mapLeft -> addColorStop (0.4, QColor (0, 200, 50)); 
+//	leftAudio -> setColorMap (mapLeft);
+//	QwtLinearColorMap * mapRight = new QwtLinearColorMap ();
+//	mapRight -> setColorInterval (QColor(0, 50, 200), QColor(255, 0, 0));
+//	mapRight -> addColorStop (0.75, QColor (100, 50, 0)); 
+//	mapRight -> addColorStop (0.4, QColor (0, 200, 50)); 
+//	rightAudio -> setColorMap (mapRight);
 //
 	audiorateLabel	-> setStyleSheet ("color:cyan");
 	psLabel		-> setStyleSheet ("color:cyan"); 
@@ -767,7 +768,7 @@ void	RadioInterface::no_signal_found () {
 //
 //	There are three FIG types that are used to define 
 //	servicelabels, we create an entryfor each of them
-//	FIG1/1 is for 16 bit primary services
+//	FIG1/1 is for primary services with a 16 bit SId
 void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	                                              uint32_t SId) {
 	(void)serviceName;
@@ -1305,7 +1306,7 @@ void	RadioInterface::setPeakLevel (const std::vector<float> &samples) {
 float	absPeakLeft	= 0;
 float	absPeakRight	= 0;
 static int teller = 0;
-	if (++teller < 3)
+	if (++teller < 2)
 	   return;
 	teller = 0;
 	for (uint32_t i = 0; i < samples. size () / 2; i ++) {
@@ -1332,8 +1333,8 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 	peak_avr (iPeakLeft,  peakLeftDamped);
 	peak_avr (iPeakRight, peakRightDamped);
 
-	leftAudio	-> setValue (peakLeftDamped);
-	rightAudio	-> setValue (peakRightDamped);
+	leftChannel	-> setLevel (peakLeftDamped);
+	rightChannel	-> setLevel (peakRightDamped);
 }
 //
 /////////////////////////////////////////////////////////////////////////////

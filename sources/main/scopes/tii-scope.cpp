@@ -37,12 +37,14 @@ int result	= 1;
 #define	T_u	2048
 #define	carriers	1536
 
-	tiiScope::tiiScope (QwtPlot *dabScope,
+	tiiScope::tiiScope (clickableChart *dabScope,
 	                    int displaySize,
 	                    QSettings	*dabSettings,
 	                    const QString &scopeName):
-	                          basicScope (dabScope, dabSettings,
-	                                      displaySize, scopeName),
+	                       basicScope (dabScope,
+	                                   dabSettings,
+	                                   displaySize,
+	                                   scopeName),
 	                          theFFT (T_u, false) {
 
 	this		-> dabSettings		= dabSettings;
@@ -60,8 +62,8 @@ int result	= 1;
 void	tiiScope::display		(std::vector<Complex> &v,
 	                                 int lowFreq, int highFreq,
 	                                 int Amp, int markOffset) {
-floatQwt X_axis [displaySize];
-floatQwt Y_values [displaySize];
+float X_axis [displaySize];
+double Y_values [displaySize];
 Complex spectrumBuffer [T_u];
 
 	if (v. size () != T_u)
@@ -70,14 +72,13 @@ Complex spectrumBuffer [T_u];
 	for (int i = 0; i < displaySize; i ++)
 	   X_axis [i] = i * (highFreq - lowFreq) / displaySize + lowFreq;
 
-//	floatQwt resVec [carriers / 8];
 	for (uint32_t i = 0; i < v. size (); i ++)
 	   spectrumBuffer [i] = v [i];
 
 	theFFT. fft (spectrumBuffer);
 
-	floatQwt min	= 100000;
-	floatQwt max	= -100000;
+	float min	= 100000;
+	float max	= -100000;
 	for (int i = 0; i < carriers / 8; i ++) {
 	   Y_values [i] = 0;
 	   for (int j = 0; j < 4; j ++) {
@@ -97,7 +98,7 @@ Complex spectrumBuffer [T_u];
 	marker. offset	= markOffset;
 	marker. text	= QString (">>> (") + QString::number (markOffset) + ")";
 	std::vector<markType> markers;
-	markers. push_back (marker);
+//	markers. push_back (marker);
 	showSpectrum (displayBuffer. data (), displaySize,
 	              X_axis [0], X_axis [displaySize - 1],
 	              min, min + (float)Amp + 20, markers);

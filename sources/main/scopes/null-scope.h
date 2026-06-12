@@ -23,7 +23,7 @@
 #pragma once
 
 #include        "dab-constants.h"
-#include	<basic-scope.h>
+#include	"basic-scope.h"
 
 class	RadioInterface;
 class	QSettings;
@@ -31,7 +31,7 @@ class	QSettings;
 class	nullScope: public basicScope {
 Q_OBJECT
 public:
-		nullScope	(QwtPlot *,
+		nullScope	(clickableChart *,
 	                         int,
 	                         QSettings *,
 	                         const QString &);

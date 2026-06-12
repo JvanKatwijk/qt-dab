@@ -23,15 +23,15 @@
 
 #include	"null-scope.h"
 #include	<QSettings>
-#include        <QColor>
-#include        <QPen>
-#include	<QColorDialog>
 
-	nullScope::nullScope (QwtPlot *plotGrid, int displaySize,
+	nullScope::nullScope (clickableChart *plotGrid,
+	                      int displaySize,
 	                      QSettings	*dabSettings,
 	                      const QString &name):
-	                         basicScope (plotGrid, dabSettings,
-	                                     displaySize, name) {
+	                         basicScope (plotGrid,
+	                                     dabSettings,
+	                                     displaySize,
+	                                     name) {
 	this	-> displaySize	= displaySize;
 }
 
@@ -41,7 +41,7 @@
 void	nullScope::display	(const  std::vector<Complex> &V,
 	                                   int amount, int startIndex) {
 float	max	= 0;
-floatQwt Y_values [512];
+double Y_values [512];
 
 	(void)amount;
 	for (int i = 0; i < 512; i ++) {

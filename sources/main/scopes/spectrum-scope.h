@@ -33,7 +33,7 @@ class	QSettings;
 class	spectrumScope: public basicScope {
 Q_OBJECT
 public:
-		spectrumScope	(QwtPlot *,
+		spectrumScope	(clickableChart *,
 	                         int,
 	                         QSettings *, const QString &);
 		~spectrumScope	();
@@ -46,7 +46,7 @@ private:
 	QSettings	*dabSettings;
 	int		bitDepth;
 	std::vector<DABFLOAT> Window;
-	std::vector<floatQwt> displayBuffer;
+	std::vector<double> displayBuffer;
 	int		normalizer;
 	int16_t		displaySize;
 	bool		hasMarker;

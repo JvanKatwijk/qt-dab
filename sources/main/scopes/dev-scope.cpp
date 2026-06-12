@@ -23,11 +23,9 @@
 
 #include	"dev-scope.h"
 #include	<QSettings>
-#include        <QColor>
-#include        <QPen>
-#include	<QColorDialog>
 
-	devScope::devScope (QwtPlot	*devPlot, int	displaySize,
+	devScope::devScope (clickableChart *devPlot,
+	                    int	displaySize,
 	                    QSettings	*dabSettings,
 	                    const QString &name):
 	                       basicScope (devPlot,
@@ -42,8 +40,7 @@
 }
 
 void	devScope::display	(const std::vector<float> &V) {
-floatQwt Y_values [V. size () / 2];
-//	we assume that V. size = 1536
+double Y_values [V. size () / 2];
 	for (uint16_t i = 0; i < V. size () / 2; i ++) 
 	   Y_values [i] = V [2 * i];
 

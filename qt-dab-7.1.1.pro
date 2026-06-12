@@ -120,7 +120,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/scopes/dev-scope.h \
 	   ./sources/main/scopes/iqdisplay.h \
 	   ./sources/main/scopes/audio-display.h \
-	   ./sources/main//scopes/spectrogramdata.h \
+	   ./sources/main/scopes/audioLevel-meter.h \
 	   ./sources/main/snr-viewer/snr-viewer.h \
 	   ./sources/main/config-handler.h \
 	   ./sources/main/tech-window.h \
@@ -234,6 +234,7 @@ HEADERS += ./sources/main/radio.h \
 //	   ./sources/support/gui-elements/presetcombobox.h \
 	   ./sources/support/gui-elements/circular-button.h \
 	   ./sources/support/gui-elements/clickable-label.h \
+	   ./sources/support/gui-elements/clickable-chart.h \
 	   ./sources/support/gui-elements/color-selector.h \
 	   ./sources/support/gui-elements/font-chooser.h \
 	   ./sources/support/gui-elements/icon-label.h \
@@ -246,7 +247,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/smallspinbox.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
-	   ./sources/support/gui-elements/qwt-2.h \
+#	   ./sources/support/gui-elements/qwt-2.h \
 	   ./sources/update/updatechecker.h \
 	   ./sources/update/appversion.h \
 	   ./sources/devices/selector.h \
@@ -286,7 +287,7 @@ SOURCES += ./sources/main/main.cpp \
            ./sources/main/scopes/dev-scope.cpp \
 	   ./sources/main/scopes/iqdisplay.cpp \
 	   ./sources/main/scopes/audio-display.cpp \
-	   ./sources/main/scopes/spectrogramdata.cpp \
+	   ./sources/main/scopes/audioLevel-meter.cpp \
 	   ./sources/main/snr-viewer/snr-viewer.cpp \
 	   ./sources/main/copyrightLabel.cpp \
 	   ./sources/main/tech-window.cpp \
@@ -386,6 +387,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/presetcombobox.cpp \
 	   ./sources/support/gui-elements/circular-button.cpp \
 	   ./sources/support/gui-elements/clickable-label.cpp \
+	   ./sources/support/gui-elements/clickable-chart.cpp \
 	   ./sources/support/gui-elements/color-selector.cpp \
 	   ./sources/support/gui-elements/font-chooser.cpp \
 	   ./sources/support/gui-elements/icon-label.cpp \
@@ -447,11 +449,11 @@ INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
 #correct this for the correct path to the qwt6 library on your system
-#LIBS		+= -lqwt
-equals (QT_MAJOR_VERSION, 6) {
-	 LIBS		+= -lqwt-qt6
-	}else{  LIBS += -lqwt-qt5
-	}
+##LIBS		+= -lqwt
+#equals (QT_MAJOR_VERSION, 6) {
+#	 LIBS		+= -lqwt-qt6
+#	}else{  LIBS += -lqwt-qt5
+#	}
 equals (QT_MAJOR_VERSION, 5) {
    TARGET               = qt-dab-qt5-7.1.3
 }

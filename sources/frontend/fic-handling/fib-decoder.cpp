@@ -102,7 +102,8 @@ uint8_t	*d		= p;
 	         break;
 
 	      case 2:		// not encountered yet
-	         fprintf (stderr, "FIG2 label\n");
+	         if (availableBytes >= 2)
+	            process_FIG2 (d);
 	         break;
 
 	      case 7:
@@ -1017,19 +1018,21 @@ char		label [17];
 	const uint8_t Rfu	= getBits_1	(d, 8 + 4);
 	const uint8_t extension	= getBits_3	(d, 8 + 5);
 	const uint32_t SId	= getBits	(d, 16, 16);
-	label [16]      = 0x00;
+	label [16]		= 0x00;
 	(void)Rfu; (void)extension;
 	for (auto &serv : FIG11_stack) {
-	   if (SId == serv. SId) 
+	   if (SId == serv. SId) {
 	      return;
+	   }
 	}
-// assume we are defined
+// assume we are defined as primary service
 	if (!get_subChId (SId, 0))
-	   return;		// wait for a next occurrence
+	   return;
 	QString serviceName;
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   label [i] = getBits_8 (d, offset + 8 * i);
+
 	serviceName = toQStringUsingCharset (
 	                               (const char *) label,
 	                               (CharacterSet) charSet);
@@ -1126,6 +1129,7 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	      return;
 	}
 
+	fprintf (stderr, "FIG15 with %X\n", SId);
 //	if no subch is not known (yet) we do not record the service yet
 	if (!get_subChId (SId, 0))
 	   return;
@@ -1187,6 +1191,41 @@ uint32_t SId;
 //	                           SId, SCIds, xpadType);
 }
 
+//	FIG 1 - Cover the different possible labels, section 5.2
+void	fibDecoder::process_FIG2 (uint8_t *d) {
+uint8_t	extension	= getBits_3 (d, 8 + 5); 
+
+	switch (extension) {
+	   case 0:		// ensemble name 8.1.13
+	      FIG1Extension0 (d);
+	      break;
+
+	   case 1:		// program service name 8.1.14.1
+	      FIG1Extension1 (d);
+	      break;
+
+	   case 2:		// Labels etc not seen yet
+	      break;
+
+	   case 3:		// obsolete
+	      break;
+
+	   case 4:		// Service Component Label 8.1.14.3
+	      FIG1Extension4 (d);
+	      break;
+
+	   case 5:		// Data service label, 8.1.14.2
+	      FIG1Extension5 (d);
+	      break;
+
+	   case 6:		// XPAD label - 8.1.14.4
+	      FIG1Extension6 (d);
+	      break;
+
+	   default:
+	      ;
+	}
+}
 //
 //////////////////////end of FIG1 ///////////////////////////////////////////
 

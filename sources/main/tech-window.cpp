@@ -56,7 +56,7 @@
 //	we start being hidden, the radio decides whether we are visible
 //	or not
 	this	-> hide ();
-	theAudioDisplay	= new audioDisplay (mr, audio, dabSettings);
+	theAudioDisplay	= new audioDisplay (mr, audioScope, dabSettings);
 
 	QString framedumpButton_color = 
            value_s (dabSettings, COLOR_SETTINGS, 

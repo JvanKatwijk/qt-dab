@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2014 .. 2017
+ *    Copyright (C)  2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,184 +21,164 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	<QColor>
+#include	<QSettings>
 #include	<QPen>
-#include	<QColorDialog>
+#include	<QLabel>
+#include	<QChart>
+#include        <QColorDialog>
+#include	<QGraphicsLayout>
 #include	"basic-scope.h"
+#include	"dab-constants.h"
 #include	"settings-handler.h"
 
-	basicScope::basicScope  (QwtPlot	*plotGrid_i,
-	                         QSettings	*dabSettings,
-	                         int		displaySize,
-	                         const QString	&scopeName):
-	                              scopeSettings (dabSettings),
-	                              plotGrid (plotGrid_i),
-	                              spectrumCurve ("") {
-
+	basicScope::basicScope (clickableChart *plotArea,
+	                        QSettings *dabSettings,
+	                        int	displaySize,
+	                        const QString &scopeName) {
 QString	colorString;
+
+	this	-> plotArea		= plotArea;
+	this	-> scopeSettings	= dabSettings;
 	this	-> displaySize		= displaySize;
+	this	-> scopeName		= scopeName;
 
-	colorString	= value_s (scopeSettings, scopeName,
-	                                       "gridColor", "5e5c64");
-	this	-> gridColor = QColor (colorString);
-	colorString	= value_s (scopeSettings, scopeName,
-	                                       "curveColor", "#f9f06b");
-	this	-> curveColor = QColor (colorString);
-	colorString	= value_s (scopeSettings, scopeName,
-	                                       "labelColor", "yellow");
-	labelColor	= QColor (colorString);
-	brush		= value_i (scopeSettings, scopeName, "brush", 0) != 0;
+	colorString     = value_s (scopeSettings, scopeName,
+                                               "displayColor", "black");
 
-	this	-> plotGrid	-> setCanvasBackground (displayColor);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid. enableXMin (true);
-	grid. enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-//	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-//	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid. attach (plotGrid);
-	lm_picker       = new QwtPlotPicker (plotGrid -> canvas ());
-        QwtPickerMachine *lpickerMachine =
-                             new QwtPickerClickPointMachine ();
+	theChart	= new QChart ();
+	theChart	-> setBackgroundBrush (QBrush (QColor ("black")));
+        theChart	 -> legend () -> hide ();
+        theChart	 -> layout () -> setContentsMargins(0, 0, 0, 0);
+        theChart	 -> setMargins (QMargins (2, 2, 2, 2));
 
-        lm_picker       -> setStateMachine (lpickerMachine);
-        lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
-                                            Qt::RightButton);
-        connect (lm_picker, qOverload<const QPointF&>(&QwtPlotPicker::selected),
-                 this, &basicScope::rightMouseClick);
+	X_axis		= new QValueAxis();
+	X_axis	-> 	setLabelsColor (Qt::lightGray);
+        colorString     = value_s (scopeSettings, scopeName,
+                                               "gridColor", "5e5c64");
+	X_axis	->	setGridLineColor (QColor (colorString));
+	X_axis	->	setGridLineVisible (true);
+	X_axis	->	setMinorGridLineVisible (false);
+	X_axis	->	setTickCount (5);
 
-   	spectrumCurve. setPen (QPen (curveColor, 3.0));
-	spectrumCurve. setOrientation (Qt::Horizontal);
-	if (brush) {
-	   QBrush ourBrush (curveColor);
-	   ourBrush. setStyle (Qt::Dense3Pattern);
-	   spectrumCurve. setBrush (ourBrush);
+	Y_axis		= new QValueAxis();
+	Y_axis	->	setLabelsColor (Qt::lightGray);
+	Y_axis	->	setGridLineColor (QColor (colorString));
+	Y_axis  ->      setGridLineVisible (true);
+        Y_axis  ->      setMinorGridLineVisible (false);
+        Y_axis  ->      setTickCount (5);
+//	Y_axis  ->      setMinorTickCount (1);
+
+	theChart	-> addAxis (X_axis, Qt::AlignBottom);
+	theChart	-> addAxis (Y_axis, Qt::AlignLeft);
+	plotArea	-> setChart (theChart);
+
+	connect (plotArea, &clickableChart::clicked_right,
+	         this, &basicScope::rightMouseClick);
+	ValueLine	= new QLineSeries ();
+	colorString     = value_s (scopeSettings, scopeName,
+                                               "curveColor", "#f9f06b");
+	ValueLine	-> setPen (QPen (QColor (colorString), 2.0));
+	theChart	-> addSeries (ValueLine);
+	ValueLine	-> attachAxis (X_axis);
+	ValueLine	-> attachAxis (Y_axis);
+}
+
+	basicScope::~basicScope	() {
+	for (auto &m : markerStack)
+	   delete m. pLine;
+	markerStack. resize (0);
+}
+
+void	basicScope::showSpectrum (double *data, int amount,
+	                            float x_min, float x_max,
+	                            float y_min, float y_max) {
+	for (auto &m: markerStack) {
+	   delete m. pLine;
+	   delete m. text;
 	}
-        spectrumCurve. attach (plotGrid);
-}
-
-	basicScope::~basicScope () {
-	for (auto &m : markerStack)
-	   delete m;
 	markerStack. resize (0);
+	X_axis	-> setRange	(x_min, x_max);
+	Y_axis	-> setRange	(y_min, y_max);
+
+	QList<QPointF> Y_Values;
+        Y_Values. reserve (displaySize);
+        for (uint16_t i = 0; i < displaySize; i++) 
+	   Y_Values. append (QPointF (i * (x_max - x_min) / displaySize + x_min,
+	                                                      data [i]));
+	ValueLine -> replace (Y_Values);
 }
 
-void	basicScope::showSpectrum  (floatQwt	*data,
-	                           int amount,
-	                           floatQwt x_min, floatQwt x_max,
-	                           floatQwt y_min, floatQwt y_max) {
-floatQwt X_axis [displaySize];
-
-	if (amount != displaySize)
-	   return;
-
-	for (auto &m : markerStack)
-	   delete m;
+void	basicScope::showSpectrum (double *data, int amount,
+	                          float x_min, float x_max,
+	                          float y_min, float y_max,
+	                          std::vector<markType> &markers) {
+	for (auto &m: markerStack) {
+	   delete m. pLine;
+	   delete m. text;
+	}
 	markerStack. resize (0);
-//	first X axis labels
-	for (int i = 0; i < displaySize; i ++)
-	   X_axis [i] = 
-	          (floatQwt(i)) * (x_max - x_min) / displaySize + x_min;
+	X_axis	-> setRange	(x_min, x_max);
+	Y_axis  -> setRange     (y_min, y_max);
 
-	plotGrid	-> setAxisScale (QwtPlot::xBottom,
-				         (floatQwt)X_axis [0],
-				         X_axis [displaySize - 1]);
-	plotGrid	-> enableAxis (QwtPlot::xBottom);
-	plotGrid	-> setAxisScale (QwtPlot::yLeft, y_min, y_max);
-	spectrumCurve. setBaseline (data [0]);
-	spectrumCurve. setSamples (X_axis, data, displaySize);
-	plotGrid	-> replot(); 
+	QList<QPointF> Y_Values;
+        Y_Values. reserve (displaySize);
+        for (uint16_t i = 0; i < displaySize; i++) 
+	   Y_Values. append (QPointF (i * (x_max - x_min) / displaySize + x_min,
+	                                                       data [i]));
+	ValueLine -> replace (Y_Values);
+
+//	Add marker for TII
+	for (auto & m : markers) {
+	   plotMarker p;
+	   p. offset	= m. offset;
+	   p. pLine = new QLineSeries ();
+	   p. pLine -> setPen (QPen(Qt::white, 1, Qt::DashDotLine));
+	   p. pLine -> append (m. offset, -1e9);
+	   p. pLine -> append (m. offset, +1e9);
+	   theChart -> addSeries (p. pLine);
+	   p. pLine -> attachAxis (X_axis);
+	   p. pLine -> attachAxis (Y_axis);
+
+	   p. text = new QGraphicsSimpleTextItem (m. text, theChart);
+	   p. text -> setBrush (Qt::white);
+	   p. text -> setRotation (-90);
+	   p. text -> setZValue (10);
+
+    // make the font smaller
+	   QFont font = p. text -> font ();
+	   font. setPointSize (12);
+	   p. text -> setFont (font);
+	   markerStack. push_back (std::move (p));
+	   double yTop = Y_axis -> max ();
+	   QPointF pos =
+	        theChart -> mapToPosition (QPointF (p. offset, yTop));
+	   double width = p.text -> boundingRect (). width ();
+	   p. text -> setPos (pos. x () + 2 , pos.y () + width + 20);
+	}
 }
 
-void	basicScope::showSpectrum  (floatQwt	*data,
-	                           int amount,
-	                           floatQwt x_min, floatQwt x_max,
-	                           floatQwt y_min, floatQwt y_max,
-	                           std::vector<markType> &markers) {
-floatQwt X_axis [displaySize];
+void	basicScope::rightMouseClick	() {
+QColor	displayColor;
+QColor	gridColor;
+QColor	curveColor;
 
-	if (amount != displaySize)
-	   return;
-//	first X axis labels
-	for (int i = 0; i < displaySize; i ++)
-	   X_axis [i] = 
-	          (floatQwt(i)) * (x_max - x_min) / displaySize + x_min;
-
-	for (auto& m: markerStack)
-	   delete m;
-	markerStack. resize (0);
-	for (auto &mark : markers) {
-	   QwtPlotMarker *Marker = new QwtPlotMarker;
-	   Marker	-> setXValue (mark. offset);
-	   Marker       -> setYValue (y_max);
-           Marker       -> setLineStyle (QwtPlotMarker::VLine);
-           QwtText theText = mark. text;
-           QFont zz = theText. font ();
-           int pp = zz. pointSize ();
-           zz . setPointSize (pp + 3);
-           theText. setFont (zz);
-           Marker       -> setLinePen (labelColor, 1.0);
-           Marker       -> setLabelOrientation (Qt::Orientation::Vertical);
-           Marker       -> setLabelAlignment (Qt::AlignLeft);
-           Marker       -> setLabel  (theText);
-           Marker       -> attach (plotGrid);
-	   markerStack. push_back (Marker);
-        }
-
-	plotGrid	-> setAxisScale (QwtPlot::xBottom,
-				         (floatQwt)X_axis [0],
-				         X_axis [displaySize - 1]);
-	plotGrid	-> enableAxis (QwtPlot::xBottom);
-	plotGrid	-> setAxisScale (QwtPlot::yLeft, y_min, y_max);
-	spectrumCurve. setBaseline (data [0]);
-	spectrumCurve. setSamples (X_axis, data, displaySize);
-	plotGrid	-> replot(); 
-}
-
-void	basicScope::rightMouseClick	(const QPointF &point) {
-QColor	color;
-	(void)point;
-
-	color = QColorDialog::getColor (color, nullptr, "displayColor");
-        if (!color. isValid ())
+	displayColor =
+	        QColorDialog::getColor (Qt::black, nullptr, "displayColor");
+        if (!displayColor. isValid ())
            return;
-	this	-> displayColor	= color;
-        color = QColorDialog::getColor (gridColor, nullptr, "gridColor");
-        if (!color. isValid ())
+        gridColor = QColorDialog::getColor (Qt::black, nullptr, "gridColor");
+        if (!gridColor. isValid ())
            return;
-	this	-> gridColor	= color;
-        color = QColorDialog::getColor (curveColor, nullptr, "curveColor");
-        if (!color. isValid ())
+        curveColor = QColorDialog::getColor (Qt::yellow, nullptr, "curveColor");
+        if (!curveColor. isValid ())
            return;
-	this	-> curveColor	= color;
 	store (scopeSettings, scopeName,
 	                    "displayColor", displayColor. name ());
 	store (scopeSettings, scopeName, "gridColor", gridColor. name ());
 	store (scopeSettings, scopeName, "curveColor", curveColor. name ());
-	spectrumCurve. setPen (QPen (this -> curveColor, 2.0));
-	if (brush) {
-           QBrush ourBrush (this -> curveColor); 
-           ourBrush. setStyle (Qt::Dense3Pattern);         
-           spectrumCurve. setBrush (ourBrush);
-        }
 
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMajPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#else
-	grid. setMajorPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#endif
-	grid. enableXMin (true);
-	grid. enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMinPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#else
-	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#endif
-	plotGrid	-> setCanvasBackground (this -> displayColor);
+	theChart	-> setBackgroundBrush (QBrush (displayColor));
+	X_axis		-> setGridLineColor (gridColor);
+	Y_axis		-> setGridLineColor (gridColor);
+        ValueLine       -> setPen (QPen (curveColor, 2.0));
 }

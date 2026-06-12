@@ -31,12 +31,12 @@ class	QSettings;
 class	channelScope: public basicScope {
 Q_OBJECT
 public:
-		channelScope	(QwtPlot *,
+		channelScope	(clickableChart *,
 	                         int,
 	                         QSettings *,
 	                         const QString &);
 		~channelScope	();
-	void	display		(const floatQwt *, int);
+	void	display		(const double *, int);
 	void	clean		();
 
 private:

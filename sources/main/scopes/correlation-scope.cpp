@@ -23,11 +23,8 @@
 
 #include	"correlation-scope.h"
 #include	<QSettings>
-#include	<QColor>
-#include	<QPen>
-#include	<QColorDialog>
 
-	correlationScope::correlationScope	(QwtPlot	*plotArea,
+	correlationScope::correlationScope	(clickableChart	*plotArea,
 	                                         int		displaySize,
 	                                         QSettings	*s,
 	                                         const QString	&name) :
@@ -47,14 +44,12 @@ void	correlationScope::display	(const std::vector<float> &v,
 	                                 uint32_t amount,
 	                                 int sliderValue,
 	                                 const std::vector<corrElement> &ss) {
-floatQwt X_axis [displaySize];
-floatQwt Y_values [displaySize];
-floatQwt Max	= -200;
-floatQwt Min	= 1000;
+double	 Y_values [displaySize];
+float	Max	= -1000;
+float	Min	= 1000;
 int	teller	= 0;
 
-	for (uint32_t i = T_g - 154; i < T_g - 154 + displaySize; i ++) {
-	   X_axis [teller] = i;
+	for (uint32_t i = 1024 - 768; i < 1024; i ++) {
 	   Y_values [teller] = get_db (v [i]);
 	   if (Y_values [teller] > Max)
 	      Max = Y_values [teller];
@@ -69,18 +64,18 @@ int	teller	= 0;
 	   up_to_5 ++;
 	   if (up_to_5 > 5)
 	      break;
-	   int x_coord = (int)(x. phase / 360 * 2048 + T_g - 104);
-	   if ((x_coord < X_axis [0]) || (x_coord >= X_axis [0] + amount))
+	   int x_coord = (int)(x. phase / 360 * 2048 + T_g - 96);
+	   if ((x_coord < 1024 - 768) || (x_coord >= 1024))
 	      continue;
 
 	   markType t;
-	   t. offset = x_coord;
-	   t. text	= ">>>> (" + QString::number (x. mainId) +
-	                      " " + QString::number (x. subId) + ")";
+	   t. offset	= x_coord;
+	   t. text	= QString::number (x. mainId) +
+	                      " " + QString::number (x. subId);
 	   markers. push_back (t);
 	}
 	showSpectrum (Y_values, displaySize,
-	              X_axis [0], X_axis [displaySize - 1],
+	              1024 - 768, 1024,
 	              Min, Min + 10 + sliderValue, markers);
 }
 

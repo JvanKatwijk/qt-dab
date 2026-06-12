@@ -6,16 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>963</width>
-    <height>441</height>
+    <width>615</width>
+    <height>330</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>spectrumscope</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_9">
+  <layout class="QVBoxLayout" name="verticalLayout_11">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_10">
+    <layout class="QHBoxLayout" name="horizontalLayout_9">
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="maximumSize">
@@ -25,13 +25,13 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="spectrumTab">
         <attribute name="title">
          <string>spectrum</string>
         </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
@@ -42,17 +42,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QwtPlot" name="spectrumPlot">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>170</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum of the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
+            <widget class="clickableChart" name="plotArea"/>
            </item>
           </layout>
          </item>
@@ -64,7 +54,7 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_14">
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
            <item>
             <widget class="QSlider" name="correlationSlider">
              <property name="orientation">
@@ -75,7 +65,7 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <widget class="QwtPlot" name="correlationPlot"/>
+              <widget class="clickableChart" name="correlationPlot"/>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -99,22 +89,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QSpinBox" name="correlationLength">
-                 <property name="minimum">
-                  <number>400</number>
-                 </property>
-                 <property name="maximum">
-                  <number>8005</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>50</number>
-                 </property>
-                 <property name="value">
-                  <number>600</number>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
             </layout>
@@ -129,7 +103,7 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QwtPlot" name="nullPlot"/>
+          <widget class="clickableChart" name="nullPlot"/>
          </item>
         </layout>
        </widget>
@@ -151,7 +125,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QwtPlot" name="tiiPlot"/>
+            <widget class="clickableChart" name="tiiPlot"/>
            </item>
           </layout>
          </item>
@@ -181,7 +155,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QwtPlot" name="channelPlot"/>
+            <widget class="clickableChart" name="channelPlot"/>
            </item>
           </layout>
          </item>
@@ -193,31 +167,21 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QwtPlot" name="devPlot">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>260</height>
-            </size>
-           </property>
-          </widget>
+          <widget class="clickableChart" name="softBitsPlot"/>
          </item>
         </layout>
        </widget>
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
-        <widget class="QwtPlot" name="iqDisplay">
-         <property name="maximumSize">
+        <widget class="clickableChart" name="iqPlotArea">
+         <property name="minimumSize">
           <size>
-           <width>16777215</width>
-           <height>257</height>
+           <width>221</width>
+           <height>0</height>
           </size>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IQ constallation of the decoded signal. Ideally one sees 4 dots, one in each quadrant&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -225,6 +189,12 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QSlider" name="scopeSlider">
+           <property name="maximumSize">
+            <size>
+             <width>142</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom in/out&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -238,6 +208,12 @@
          </item>
          <item>
           <widget class="QCheckBox" name="ncpScope_checkBox">
+           <property name="maximumSize">
+            <size>
+             <width>51</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the checkbox is set the constallation diagram of the decoded carriers is shown. The default setting is to show just the centerpoints of the &amp;quot;clouds&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -253,18 +229,211 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QLCDNumber" name="coarse_correctorDisplay">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QLCDNumber" name="coarse_correctorDisplay">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overall frequency correction, consisting of two parts, a fine correction, based on the phase difference between the timedomain samples in the cyclic prefix and the corresponding elements in the ofdm symbol (limited to 500 Hz) and the coarse correction, computed by correlation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::SegmentStyle::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item alignment="Qt::AlignmentFlag::AlignRight">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>correction</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <widget class="QLCDNumber" name="frequencyOffsetDisplay">
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequeny offset, the computed frequency error that is measured after applying the estimated frequency correction. Compuation is by looking at the phase difference in elements in subsequent DAB frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::SegmentStyle::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item alignment="Qt::AlignmentFlag::AlignRight">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>freq error</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QLCDNumber" name="snrDisplay">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SNR, i.e. Signal Noise ratio, computed from the difference in signal strength between the datablocks and the nullperiod.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::SegmentStyle::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item alignment="Qt::AlignmentFlag::AlignRight">
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>snr </string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+           <item>
+            <widget class="QLCDNumber" name="timeOffsetDisplay">
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sample clock offset. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::SegmentStyle::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>time offset</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QLCDNumber" name="clock_errorDisplay">
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;clock offset. The value indicates the number of samples too many or too few for periods of 1 second&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::SegmentStyle::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>clock offset</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QLCDNumber" name="dcOffset_display">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The DC offset in the incoming signal, computed by looking at the average amplitude of both the I and the Q component of the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::SegmentStyle::Flat</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="dcOffset_label">
+             <property name="text">
+              <string>IQ unbalance</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="syncLabel">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Overall frequency correction, consisting of two parts, a fine correction, based on the phase difference between the timedomain samples in the cyclic prefix and the corresponding elements in the ofdm symbol (limited to 500 Hz) and the coarse correction, computed by correlation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for the time synchronization, if green, it looks like time syncing is OK, i.e. the software is able to identify the start of the DAB frames in the incoming sample stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>synced</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QProgressBar" name="ficError_display">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The FIC quality, The FIC data contains structural information on the payload. Usually if the quality is less than 100 percent, decoding the payload will not succeed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Ber (fic)</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="ber_display">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bit error rate, i.e. the fraction of bits that are erroneous before applying Viterbi, i.e. lower is better.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::Shape::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
            <property name="segmentStyle">
             <enum>QLCDNumber::SegmentStyle::Flat</enum>
@@ -272,144 +441,27 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>correction</string>
+            <string>MER (dB)</string>
            </property>
           </widget>
          </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QLCDNumber" name="frequencyOffsetDisplay">
+          <widget class="QLCDNumber" name="quality_display">
            <property name="font">
             <font>
              <bold>true</bold>
             </font>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequeny offset, the computed frequency error that is measured after applying the estimated frequency correction. Compuation is by looking at the phase difference in elements in subsequent DAB frames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality Indicator according to the Modulation Error as specified in Tr 101 290, higher is better. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::Shape::NoFrame</enum>
            </property>
            <property name="segmentStyle">
             <enum>QLCDNumber::SegmentStyle::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>freq error</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_5">
-         <item>
-          <widget class="QLCDNumber" name="snrDisplay">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SNR, i.e. Signal Noise ratio, computed from the difference in signal strength between the datablocks and the nullperiod.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::SegmentStyle::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignmentFlag::AlignRight">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>snr </string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <item>
-          <widget class="QLCDNumber" name="timeOffsetDisplay">
-           <property name="font">
-            <font>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sample clock offset. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::SegmentStyle::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>time offset</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_7">
-         <item>
-          <widget class="QLCDNumber" name="clock_errorDisplay">
-           <property name="font">
-            <font>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;clock offset. The value indicates the number of samples too many or too few for periods of 1 second&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::SegmentStyle::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>clock offset</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <widget class="QLCDNumber" name="dcOffset_display">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The DC offset in the incoming signal, computed by looking at the average amplitude of both the I and the Q component of the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::SegmentStyle::Flat</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="dcOffset_label">
-           <property name="text">
-            <string>IQ unbalance</string>
            </property>
           </widget>
          </item>
@@ -418,17 +470,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item alignment="Qt::AlignmentFlag::AlignRight">
-        <widget class="QLabel" name="channelDisplay">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>Channel</string>
-         </property>
-        </widget>
-       </item>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
        <item>
         <widget class="QLCDNumber" name="frequencyDisplay">
          <property name="toolTip">
@@ -445,79 +487,17 @@
          </property>
         </widget>
        </item>
+       <item alignment="Qt::AlignmentFlag::AlignRight">
+        <widget class="QLabel" name="channelDisplay">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Channel</string>
+         </property>
+        </widget>
+       </item>
       </layout>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_9">
-     <item>
-      <widget class="QLabel" name="syncLabel">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for the time synchronization, if green, it looks like time syncing is OK, i.e. the software is able to identify the start of the DAB frames in the incoming sample stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>synced</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QProgressBar" name="ficError_display">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The FIC quality, The FIC data contains structural information on the payload. Usually if the quality is less than 100 percent, decoding the payload will not succeed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Ber (fic)</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLCDNumber" name="ber_display">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bit error rate, i.e. the fraction of bits that are erroneous before applying Viterbi, i.e. lower is better.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Shadow::Raised</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>MER (dB)</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLCDNumber" name="quality_display">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality Indicator according to the Modulation Error as specified in Tr 101 290, higher is better. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::SegmentStyle::Flat</enum>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -525,10 +505,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-   <container>1</container>
+   <class>clickableChart</class>
+   <extends>QGraphicsView</extends>
+   <header>clickable-chart.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

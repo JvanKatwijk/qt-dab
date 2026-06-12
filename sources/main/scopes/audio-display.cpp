@@ -24,10 +24,9 @@
 #include	"audio-display.h"
 #include	<QColor>
 #include	<QPen>
-#include	<QColorDialog>
 
 	audioDisplay::audioDisplay  (RadioInterface	*mr,
-	                             QwtPlot		*plotGrid,
+	                             clickableChart	*plotGrid,
 	                             QSettings		*dabSettings_i):
 	                              basicScope (plotGrid,
 	                                          dabSettings_i, 512,
@@ -40,7 +39,7 @@
 	spectrumSize			= 1024;
 	normalizer			= 16 * 2048;
 
-	displayBuffer	= new floatQwt [displaySize];
+	displayBuffer	= new double [displaySize];
 	for (int i = 0; i < displaySize; i ++)
 	   displayBuffer [i] = 0;
 	spectrumBuffer		= new Complex [spectrumSize];
@@ -59,7 +58,7 @@
 
 void	audioDisplay::createSpectrum  (std::complex<int16_t> *data,
 	                              int amount, int sampleRate) {
-auto Y_values	= dynVec (floatQwt, displaySize);
+auto Y_values	= dynVec (double, displaySize);
 
 	if (amount > spectrumSize)
 	   amount = spectrumSize;
@@ -82,8 +81,8 @@ auto Y_values	= dynVec (floatQwt, displaySize);
 	   Y_values [i] = get_db (abs (spectrumBuffer [i]));
 //
 //	average the image a little.
-	floatQwt min	= 100000;
-	floatQwt max	= -100000;
+	float	min	= 100000;
+	float	max	= -100000;
 	for (int i = 0; i < displaySize; i ++) {
 	   if (std::isnan (Y_values [i]) || std::isinf (Y_values [i]))
 	      continue;

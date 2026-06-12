@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,71 +21,57 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-//
 #pragma once
 
-#include	<QSettings>
-#include        "dab-constants.h"
-#include	<QFrame>
+#include	"dab-constants.h"
 #include	<QObject>
+#include	<QString>
+#include	<QSettings>
+#include	<QValueAxis>
+#include	<QLineSeries>
+#include	<QGraphicsSimpleTextItem>
+#include	<QChartView>
+#include	<QChart>
+#include	"clickable-chart.h"
+#include	<vector>
 
-#include	"qwt-2.h"
-#include	<qwt_plot.h>
-#include	<qwt_plot_marker.h>
-#include	<qwt_plot_grid.h>
-#include	<qwt_plot_curve.h>
-#include	<qwt_plot_marker.h>
-#include        <qwt_color_map.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_textlabel.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include        <qwt_picker_machine.h>
-#include        <qwt_scale_widget.h>
-#include        <QBrush>
-
-class	RadioInterface;
+//typedef struct {
+//        int offset;
+//        QString text;
+//} markType;
 
 typedef struct {
-	int offset;
-	QString text;
-} markType;
+        int     offset;
+        QLineSeries     *pLine;
+        QGraphicsSimpleTextItem *text;
+} plotMarker;
 
-class	basicScope: public QObject {
+
+class basicScope : public QObject {
 Q_OBJECT
+
 public:
-			basicScope		(QwtPlot	*, 	
-	                                         QSettings	*,
-	                                         int,
-	                                         const QString &);
-			~basicScope		();
-	void		showSpectrum		(floatQwt *, int,
-	                                         floatQwt, floatQwt,
-	                                         floatQwt, floatQwt);
-	void		showSpectrum		(floatQwt *, int,
-	                                         floatQwt, floatQwt,
-	                                         floatQwt, floatQwt,
-	                                         std::vector<markType> &);
+	basicScope	(clickableChart *, QSettings *, int, const QString &);
+	~basicScope	();
+
+void	showSpectrum	(double *, int, float, float, 
+	                                float, float);
+
+void	showSpectrum	(double *, int, float, float, 
+	                                float, float,
+	                                std::vector<markType> &);
+
 private:
-	RadioInterface	*parent;
+	clickableChart	*plotArea;
 	QSettings	*scopeSettings;
-	QwtPlot		*plotGrid;
 	int		displaySize;
 	QString		scopeName;
+	QChart		*theChart;
+	QValueAxis	*X_axis;
+	QValueAxis	*Y_axis;
+	QLineSeries	*ValueLine;
 
-	QwtPlotCurve	spectrumCurve;
-	QwtPlotGrid	grid;
-	QBrush		*ourBrush;
-
-	QwtPlotPicker   *lm_picker;
-	QColor		displayColor;
-	QColor		gridColor;
-	QColor		curveColor;
-	QColor		labelColor;
-
-	std::vector<QwtPlotMarker *>markerStack;
-	bool		brush;
-private	slots:
-        void            rightMouseClick		(const QPointF &);
+	std::vector<plotMarker>markerStack;
+public slots:
+	void		rightMouseClick	();
 };
-

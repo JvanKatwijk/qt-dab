@@ -25,40 +25,28 @@
 #include	<QMessageBox>
 #include	"snr-viewer.h"
 #include	<QSettings>
-#include	<QColor>
-#include	<QPen>
 #include	<string.h>
-#include	<QColorDialog>
+#include	"basic-scope.h"
 #include	"position-handler.h"
+#include	"settings-handler.h"
 
 	snrViewer::snrViewer	(RadioInterface	*mr,
 	                         QSettings	*s):
-	                             myFrame (nullptr),
-	                             spectrum_curve ("") {
-QString	colorString	= "black";
+	                             myFrame (nullptr) {
 	this		-> myRadioInterface	= mr;
 	this		-> dabSettings		= s;
 
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, "snrViewer");
-	dabSettings	-> beginGroup ("snrViewer");
-	plotLength	= dabSettings	-> value ("snrLength", 312). toInt ();
-	plotHeight	= dabSettings	-> value ("snrHeight", 15). toInt ();
-	delayCount	= dabSettings	-> value ("snrDelay", 5). toInt ();
-	colorString	= dabSettings	-> value ("displayColor", "black").
-	                                                       toString ();
-	displayColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("gridColor",
-	                                               "white"). toString();
-	gridColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("curveColor",
-	                                                "white"). toString();
-	curveColor	= QColor (colorString);
-	dabSettings	-> endGroup ();
-
-	snrLengthSelector -> setValue (plotLength);
-	snrSlider	-> setValue (plotHeight);
-	snrCompressionSelector -> setValue (delayCount);
+	theDisplay	= new  basicScope (snrPlot, dabSettings,
+	                                             512, "snrViewer");
+	Y_buffer. resize (512);
+	plotLength	= value_i (dabSettings, "snrViewer", "snrLength", 312);
+	plotHeight	= value_i (dabSettings, "snrViewer", "snrHeight", 15);
+	delayCount	= value_i (dabSettings, "snrViewer", "snrDelay", 5);
+	snrLengthSelector	-> setValue (plotLength);
+	snrSlider		-> setValue (plotHeight);
+	snrCompressionSelector	-> setValue (delayCount);
 	snrDumpFile. store (nullptr);
 	connect (snrDumpButton, &QPushButton::clicked,
 	         this, &snrViewer::handle_snrDumpButton);
@@ -69,54 +57,13 @@ QString	colorString	= "black";
 	         this, &snrViewer::set_snrDelay);
 	connect (snrLengthSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &snrViewer::set_snrLength);
-	plotgrid	= snrPlot;
-	plotgrid	-> setCanvasBackground (displayColor);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid. enableXMin (true);
-	grid. enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid. attach (plotgrid);
-
-	lm_picker	= new QwtPlotPicker (plotgrid -> canvas ());
-	lpickerMachine =
-	                  new QwtPickerClickPointMachine ();
-	lm_picker	-> setStateMachine (lpickerMachine);
-	lm_picker	-> setMousePattern (QwtPlotPicker::MouseSelect1,
-	                                            Qt::RightButton);
-	connect (lm_picker, qOverload<const QPointF&>(&QwtPlotPicker::selected),
-	         this, &snrViewer::rightMouseClick);
-
-   	spectrum_curve. setPen (QPen (curveColor, 2.0));
-	spectrum_curve. setOrientation (Qt::Horizontal);
-	spectrum_curve. setBaseline	(0);
-	spectrum_curve. attach (plotgrid);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         0, plotHeight);
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-	                                 0, plotLength - 1);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	X_axis.   resize (plotLength);
-	Y_Buffer. resize (plotLength);
-	for (int i = 0; i < plotLength; i ++) {
-	   X_axis  [i] = i;
-	   Y_Buffer [i] = 0;
-	}
-	delayBufferP	= 0;
 }
 
 	snrViewer::~snrViewer () {
 	stopDumping 	();
 	if (!myFrame. isHidden ())
 	   storeWidgetPosition (dabSettings, &myFrame, "snrViewer");
+	delete theDisplay;
 }
 
 void	snrViewer::show () {
@@ -153,11 +100,11 @@ static int displayPointer = 0;
 	displayBuffer [displayPointer] = v;
 	displayPointer = (displayPointer + 1) % VIEWBUFFER_SIZE;
 	if (displayPointer == 0) {
-	   memmove (&(Y_Buffer. data () [VIEWBUFFER_SIZE]),
-	                   &(Y_Buffer. data () [0]),
-	                   (plotLength - VIEWBUFFER_SIZE) * sizeof (floatQwt));
+	   memmove (&(Y_buffer. data () [VIEWBUFFER_SIZE]),
+	                   &(Y_buffer. data () [0]),
+	                   (plotLength - VIEWBUFFER_SIZE) * sizeof (double));
 	   for (int i = 0; i < VIEWBUFFER_SIZE; i ++)
-	      Y_Buffer [i] = displayBuffer [i];
+	      Y_buffer [i] = displayBuffer [i];
 	   if (snrDumpFile. load () != nullptr)
 	      fwrite (displayBuffer, sizeof (float), 
 	                             VIEWBUFFER_SIZE, snrDumpFile. load ());
@@ -166,66 +113,21 @@ static int displayPointer = 0;
 
 void	snrViewer::add_snr	(float sig, float noise) {
 float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
-	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
-	                               (plotLength - 1) * sizeof (floatQwt));
-	Y_Buffer [0]	= snr;
+	memmove (&(Y_buffer. data () [1]), &(Y_buffer. data () [0]),
+	                               (plotLength - 1) * sizeof (double));
+	Y_buffer [0]	= snr;
 	if (snrDumpFile. load () != nullptr)
 	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
 }
 
 void	snrViewer::show_snr () {
-	spectrum_curve. setSamples (X_axis. data (),
-	                           Y_Buffer. data (), plotLength);
-	plotgrid	-> replot (); 
+	theDisplay	-> showSpectrum (Y_buffer. data (), 512,
+	                                 0, 511,
+	                                 0, plotHeight);
 }
 
 float	snrViewer::get_db (float x) {
 	return 20 * log10 ((x + 1) / (float)(4 * 512));
-}
-
-void	snrViewer::rightMouseClick	(const QPointF &point) {
-QColor	color;
-//QString	displayColor;
-//QString	gridColor;
-//QString	curveColor;
-
-	(void)point;
-	color		= QColorDialog::getColor (displayColor,
-                                                  nullptr, "displayColor");
-        if (!color. isValid ())
-           return;
-	this	-> displayColor	= color;
-	color		= QColorDialog::getColor (gridColor,
-                                                  nullptr, "gridColor");
-        if (!color. isValid ())
-           return;
-	this	->  gridColor	= color;
-	color		= QColorDialog::getColor (curveColor,
-                                                  nullptr, "curveColor");
-        if (!color. isValid ())
-           return;
-	this	-> curveColor	= color;
-
-	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings	-> setValue ("displayColor", displayColor. name ());
-	dabSettings	-> setValue ("gridColor", gridColor. name ());
-	dabSettings	-> setValue ("curveColor", curveColor. name ());
-	dabSettings	-> endGroup ();
-
-	spectrum_curve. setPen (QPen(this -> curveColor, 2.0));
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMajPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#else
-	grid. setMajorPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#endif
-	grid. enableXMin (true);
-	grid. enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMinPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#else
-	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
-#endif
-	plotgrid	->  setCanvasBackground (this -> displayColor);
 }
 
 void	snrViewer::handle_snrDumpButton () {
@@ -286,26 +188,8 @@ void	snrViewer::set_snrHeight	(int n) {
 	dabSettings	-> beginGroup ("snrViewer");
 	dabSettings	-> setValue ("snrHeight", n);
 	dabSettings	-> endGroup ();
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				              0, plotHeight);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-//	spectrum_curve. setBaseline  (0);
 }
 
 void	snrViewer::set_snrLength	(int n) {
-	Y_Buffer. resize (n);
-	X_axis. resize (n);
-	if (n > plotLength) {
-	   for (int i = plotLength; i < n; i ++) {
-	      Y_Buffer [i] = 0;
-	      X_axis [i] = i;
-	   }
-	}
-	plotLength = n;
-	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings	-> setValue ("snrLength", plotLength);
-	dabSettings	-> endGroup ();
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-	                                           0, plotLength - 1);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
 }
+

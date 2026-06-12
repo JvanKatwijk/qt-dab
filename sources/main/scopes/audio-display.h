@@ -36,7 +36,7 @@ class	audioDisplay: public basicScope {
 Q_OBJECT
 public:
 			audioDisplay		(RadioInterface *,
-	                                         QwtPlot	*, 	
+	                                         clickableChart	*, 	
 	                                         QSettings *);
 			~audioDisplay		();
 	void		createSpectrum		(std::complex<int16_t> *, int, int);
@@ -45,7 +45,7 @@ private:
 	QSettings	*dabSettings;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	floatQwt	*displayBuffer;
+	double		*displayBuffer;
 	Complex		*spectrumBuffer;
 	DABFLOAT	Window [4 * 512];
 	fftHandler	fft;

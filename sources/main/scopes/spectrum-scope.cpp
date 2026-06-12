@@ -40,7 +40,7 @@ int	minimum	(int x, int y) {
 	return x;
 }
 
-	spectrumScope::spectrumScope (QwtPlot *dabScope,
+	spectrumScope::spectrumScope (clickableChart *dabScope,
 	                              int displaySize,
 	                              QSettings	*dabSettings,
 	                              const QString &scopeName):
@@ -66,8 +66,8 @@ int	minimum	(int x, int y) {
 
 void	spectrumScope::display		(std::vector<Complex> &v,
 	                                 int low, int high, int Amp) {
-floatQwt X_axis [displaySize];
-floatQwt Y_values [displaySize];
+float X_axis [displaySize];
+float Y_values [displaySize];
 Complex fftBuffer [4 * displaySize];
 int amount 	= minimum (v. size (), 4 * displaySize);
 
@@ -79,8 +79,8 @@ int amount 	= minimum (v. size (), 4 * displaySize);
 	   fftBuffer [i] = Complex (0, 0);
 	theFFT. fft (fftBuffer);
 
-	floatQwt min	= 100000;
-	floatQwt max	= -100000;
+	DABFLOAT min	= 100000;
+	DABFLOAT max	= -100000;
 	for (int i = 0; i < displaySize; i ++) {
 	   Y_values [i] = 0;
 	   for (int j = 0; j < 4; j ++) 

@@ -33,7 +33,7 @@ class	QSettings;
 class	tiiScope: public basicScope {
 Q_OBJECT
 public:
-		tiiScope	(QwtPlot *,
+		tiiScope	(clickableChart *,
 	                         int,
 	                         QSettings *, const QString &);
 		~tiiScope	();
@@ -47,7 +47,7 @@ public:
 private:
 	fftHandler	theFFT;
 	QSettings	*dabSettings;
-	std::vector<floatQwt> displayBuffer;
+	std::vector<double> displayBuffer;
 	int		bitDepth;
 	int		normalizer;
 	int16_t		displaySize;

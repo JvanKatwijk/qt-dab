@@ -49,7 +49,7 @@ class	tiiScope;
 class	correlationScope;
 class	devScope;
 class	channelScope;
-class	IQDisplay;
+class	iqDisplay;
 
 class	displayWidget: public QObject, public Ui_scopeWidget {
 Q_OBJECT
@@ -103,7 +103,7 @@ private:
 	correlationScope	*correlationScope_p;
 	channelScope		*channelScope_p;
 	devScope		*devScope_p;
-	IQDisplay		*IQDisplay_p;
+	iqDisplay		*IQDisplay_p;
 
 	DABFLOAT		workingBuffer [2048];
 	int			currentTab;

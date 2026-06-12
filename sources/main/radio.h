@@ -60,6 +60,7 @@
 #include	"display-widget.h"
 #include	"snr-viewer.h"
 
+#include	"audioLevel-meter.h"
 #include	"time-table.h"
 #include	"findfilenames.h"
 
@@ -79,6 +80,8 @@
 
 class	serviceViewer;
 class	copyrightText;
+
+class	AudioLevel;
 
 typedef struct {
 	uint32_t serviceId;
@@ -447,6 +450,8 @@ private:
 	QString			path_for_epg;
 	QString			path_for_slides;
 	QString			path_for_eti;
+
+	AudioLevel		*levelMeter;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;

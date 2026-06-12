@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C)  2016 .. 2026
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB 
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,30 +17,23 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB; if not, write to the Free Software
+ *    along with dab-scanner; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#pragma once
+#include "clickable-chart.h"
+#include	<QMouseEvent>
 
-#include        "dab-constants.h"
-#include	"basic-scope.h"
+	clickableChart::clickableChart (QWidget* parent,
+	                                Qt::WindowFlags f):
+	                                           QChartView (parent) {
+	(void)f;
+}
 
-class	RadioInterface;
-class	QSettings;
+	clickableChart::~clickableChart () {}
 
-class	devScope: public basicScope {
-Q_OBJECT
-public:
-		devScope	(clickableChart *,
-	                         int,
-	                         QSettings *,
-	                         const QString &);
-		~devScope	();
-	void	display		(const std::vector<float> &);
-	void	clean		();
-
-private:
-	int		displaySize;
-	QSettings	*dabSettings;
-};
-
+void	clickableChart::mousePressEvent (QMouseEvent* event) {
+	if (event -> buttons () & Qt::RightButton) 
+	   emit clicked_right ();
+	else
+	   emit clicked_left ();
+}

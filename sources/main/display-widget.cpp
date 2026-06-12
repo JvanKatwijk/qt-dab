@@ -62,11 +62,11 @@
 	dcOffset_display	-> show ();
 	dcOffset_label		-> show ();
 //	the "workers"
-	spectrumScope_p		= new spectrumScope	(spectrumPlot,
+	spectrumScope_p		= new spectrumScope	(plotArea,
 	                                                 512, dabSettings_p,
 	                                                "inputSpectrum");
 	correlationScope_p	= new correlationScope (correlationPlot,
-	                                                512, dabSettings_p,
+	                                                768, dabSettings_p,
 	                                                "correlationScope");
 	nullScope_p		= new nullScope		(nullPlot,
 	                                                 512, dabSettings_p,
@@ -78,11 +78,11 @@
 	                                                 NR_TAPS,
 	                                                 dabSettings_p,
 	                                                 "channelScope");
-	devScope_p		= new devScope		(devPlot,
+	devScope_p		= new devScope		(softBitsPlot,
 	                                                 768, dabSettings_p,
 	                                                 "softbitScope");
-	IQDisplay_p		= new IQDisplay		(iqDisplay);
-//	                                                 512, 50);
+	IQDisplay_p		= new iqDisplay		(iqPlotArea,
+	                                                 dabSettings_p);
 //
 //	and the settings for the sliders:
 	int sliderValue		= value_i (dabSettings_p,
@@ -97,7 +97,6 @@
 	                                   DISPLAY_WIDGET_SETTINGS,
 	                                   "correlationSlider", 50);
 	correlationSlider	-> setValue (sliderValue);
-	correlationLength       -> setValue (500);
 	correlationsVector 	-> 
 	          setStyleSheet (
 	                 "QLabel {background-color : green; color: white}");
@@ -133,8 +132,8 @@
 //
 	connect (tabWidget, &QTabWidget::currentChanged,
                  this, &displayWidget::switch_tab);
-	connect (IQDisplay_p, qOverload<>(&IQDisplay::rightMouseClick),
-	         this, &displayWidget::rightMouseClick);
+//	connect (IQDisplay_p, qOverload<>(&IQDisplay::rightMouseClick),
+//	         this, &displayWidget::rightMouseClick);
 #if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
 	connect (ncpScope_checkBox, &QCheckBox::checkStateChanged,
 #else
@@ -254,8 +253,7 @@ std::vector<corrElement> showData;
 	   showData. resize (0);
 
 	correlationScope_p	-> display (v, T_g,
-	                                    correlationLength -> value (),
-	                                    correlationSlider -> value (),
+	                                    768, correlationSlider -> value (),
 	                                    showData);
 }
 //	for "null" we get a segment of 1024 timedomain samples
@@ -289,8 +287,7 @@ void	displayWidget::showTII	(std::vector<Complex> v, int freq, int marker) {
 }
 
 void	displayWidget::showChannel	(const std::vector<Complex> Values) {
-floatQwt	amplitudeValues	[NR_TAPS];
-//floatQwt	X_axis		[NR_TAPS];
+double	amplitudeValues	[NR_TAPS];
 
 int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
@@ -306,7 +303,6 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 
 	channelScope_p		-> display (amplitudeValues,
 	                                    channelSlider -> value ());
-
 }
 
 void	displayWidget::showStdDev	(const std::vector<float> stdDevVector) {

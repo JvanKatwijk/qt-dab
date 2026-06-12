@@ -34,19 +34,8 @@
 #include	<atomic>
 #include	<stdio.h>
 #include	"ui_snr-widget.h"
-#include	"qwt-2.h"
-#include	<qwt_plot.h>
-#include	<qwt_plot_marker.h>
-#include	<qwt_plot_grid.h>
-#include	<qwt_plot_curve.h>
-#include        <qwt_color_map.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_textlabel.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include        <qwt_picker_machine.h>
-#include        <qwt_scale_widget.h>
-#include        <QBrush>
+
+class	basicScope;
 
 class	RadioInterface;
 class	snrViewer: public QObject, Ui_snrWidget {
@@ -63,22 +52,13 @@ public:
 	bool		isHidden	();
 
 private:
+	QFrame		myFrame;
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	QFrame		myFrame;
-	QwtPlotCurve	spectrum_curve;
-	QwtPlotCurve	baseLine_curve;
-	QwtPlotGrid	grid;
-	QwtPlotPicker	*lm_picker;
-	QwtPickerMachine	*lpickerMachine;
-	std::vector<floatQwt>	X_axis;
-	std::vector<floatQwt>	Y_Buffer;
+	basicScope	*theDisplay;
+	std::vector<double>	Y_buffer;
 	float		get_db		(float);
 	int16_t		displaySize;
-	QwtPlot		*plotgrid;
-        QColor          displayColor;
-        QColor          gridColor;
-        QColor          curveColor;
 	int		plotLength;
 	int		plotHeight;
 	int		delayCount;
@@ -88,7 +68,6 @@ private:
 	void		startDumping		();
 	void		stopDumping		();
 private slots:
-        void            rightMouseClick (const QPointF &);
 	void		handle_snrDumpButton	();
 	void		set_snrHeight		(int);
 	void		set_snrLength		(int);
