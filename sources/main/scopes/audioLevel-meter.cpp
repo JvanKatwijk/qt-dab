@@ -38,21 +38,7 @@ struct {float	level;
 	                                 : QWidget(parent) {
 //	resize (8, 200);
 }
-int	min	= 10000;
-int	max	= -10000;
-int	teller	= 0;
-
 void	audioLevel::setLevel (qreal level) {
-	if (level < min)
-	   min = level;
-	if (level > max)
-	   max = level;
-	if (++teller > 50) {
-	   fprintf (stderr, "%d %d\n", min, max);
-	   min	= 10000;
-	   max	= -10000;
-	   teller = 0;
-	}
 	level = (level + 20) * 6; 
 	if (m_level != level) {
 	   m_level = level;
@@ -61,29 +47,29 @@ void	audioLevel::setLevel (qreal level) {
 }
 
 QColor	audioLevel::colorMix (double level) {
-int32_t seg = 2;
+int32_t p = 4;
 
 	for (int i = 0; i < 5 - 1; i ++) {
 	   if (level <= colorStops [i + 1]. level) {
-	      seg = i;
+	      p = i;
 	      break;
 	   }
 	}
 
-	double t0	= colorStops [seg]. level;
-	double t1	= colorStops [seg + 1]. level;
-	QColor c0 (colorStops [seg]. color);
-	QColor c1 (colorStops [seg + 1]. color);
-	double frac = (t1 > t0) ?
-	       std::clamp ((level - t0) / (t1 - t0),
-	                    (double)0.0, (double)1.0) : 0.0;
+	double x0	= colorStops [p]. level;
+	QColor cx0 (colorStops [p]. color);
+	double x1	= colorStops [p + 1]. level;
+	QColor cx1 (colorStops [p + 1]. color);
+//	set up the mix
+	double  xx =  (level - x0) / (x1 - x0);
+	xx = xx < 0 ? 0 : xx >= 1 ? 1 : xx;
 	return {
-	   static_cast<int32_t>
-	            (c0. red () + frac * (c1. red () - c0. red ())),
-	   static_cast<int32_t>
-	            (c0. green () + frac * (c1. green() - c0. green ())),
-	   static_cast<int32_t>
-	            (c0. blue ()  + frac * (c1.blue () - c0. blue ()))
+	   static_cast<uint32_t>
+	            (cx0. red () + xx * (cx1. red () - cx0. red ())),
+	   static_cast<uint32_t>
+	            (cx0. green () + xx * (cx1. green () - cx0. green ())),
+	   static_cast<uint32_t>
+	            (cx0. blue ()  + xx * (cx1. blue () - cx0. blue () ))
 	};
 }
 

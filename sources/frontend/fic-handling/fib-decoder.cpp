@@ -1006,7 +1006,16 @@ char		label [17];
 	   emit  signal_FIG10 (name, EId);
 	}
 }
-//
+
+#define	isLCLetter(x) (('a' <= x) && (x <= 'z'))
+#define	isUCLetter(x) (('A' <= x) && (x <= 'Z'))
+#define	isDigit(x) (('0' <= x) && (x <= '9'))
+static inline
+bool	isDecent (uint8_t c) {
+	if (isLCLetter (c) || isUCLetter (c) || isDigit (c) || (c == ' '))
+	   return true;
+	return false;
+}
 //	Name of primary service
 void	fibDecoder::FIG1Extension1 (uint8_t *d) {
 int16_t		offset	= 32;
@@ -1030,15 +1039,19 @@ char		label [17];
 	   return;
 	QString serviceName;
 	QString shortName;		
-	for (int i = 0; i < 16; i ++) 
-	   label [i] = getBits_8 (d, offset + 8 * i);
-
+	int teller = 0;
+	for (int i = 0; i < 16; i ++) {
+	   uint8_t temp = getBits_8 (d, offset + 8 * i);
+	   if (isDecent (temp))
+	      label [teller ++] = getBits_8 (d, offset + 8 * i);
+	}
+	
 	serviceName = toQStringUsingCharset (
 	                               (const char *) label,
 	                               (CharacterSet) charSet);
 	for (int i = serviceName. size (); i < 16; i ++)
 	   serviceName. push_back (QChar (' '));
-	for (int i = 0; i < 16; i ++) 
+	for (int i = 0; i < serviceName. size (); i ++) 
 	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
 	      shortName. append (serviceName. at (i));
 
@@ -1075,13 +1088,14 @@ uint32_t	SId;
 	}
 	if (SCIds == 0)
 	   return;
+	
 //	just a check if we already have the servicename
 	for (auto &serv : FIG14_stack)
 	   if ((serv. SId == SId) && (serv. SCIds == SCIds))
 	      return;
 	if (!get_subChId (SId, SCIds))
 	   return;
-//
+
 	label [16]      = 0x00;
 	(void)Rfu;
 	(void)extension;
@@ -1092,7 +1106,6 @@ uint32_t	SId;
 	                                  (CharacterSet) charSet);
 	for (int i = serviceName. size (); i < 16; i ++)
 	   serviceName. push_back (QChar (' '));
-
 	QString shortName;		
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, bitOffset + 16 * 8 + i) != 0)
@@ -1128,7 +1141,6 @@ uint8_t	extension	= getBits_3 (d, 8 + 5);
 	      return;
 	}
 
-	fprintf (stderr, "FIG15 with %X\n", SId);
 //	if no subch is not known (yet) we do not record the service yet
 	if (!get_subChId (SId, 0))
 	   return;
