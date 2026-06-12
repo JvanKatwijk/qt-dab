@@ -227,6 +227,10 @@ ITU_countryCodes ITU_table_1  [] = {
 {0xF0, 0x05, "arc", "Australia"},
 {0xF0, 0x06, "arw", "Australia"},
 {0xF0, 0x06, "arc", "Australia"},
+{0xF0, 0x06, "arw", "Australia"},
+{0xF0, 0x07, "arv", "Australia"},
+{0xF0, 0x08, "arf", "Australia"},
+{0xF0, 0x0E, "BHR", "Bahrain"}, 
 {0, 0, "", ""}
 };
 
