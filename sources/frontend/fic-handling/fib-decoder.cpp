@@ -562,7 +562,7 @@ FIG08 comp;
 	            continue;
 	         if (h. subChId != comp. subChId)
 	            continue;
-	         h. SCIds =  comp. SCIds;
+	         h. SCIds = h. PS_flag == 0 ? comp. SCIds : 0;
 	         break;
 	      }
 	   }
@@ -1038,7 +1038,6 @@ char		label [17];
 	                               (CharacterSet) charSet);
 	for (int i = serviceName. size (); i < 16; i ++)
 	   serviceName. push_back (QChar (' '));
-
 	for (int i = 0; i < 16; i ++) 
 	   if (getBits_1 (d, offset + 16 * 8 + i) != 0)
 	      shortName. append (serviceName. at (i));

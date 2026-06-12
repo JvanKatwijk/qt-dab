@@ -236,7 +236,7 @@ int	index_for_key (int key) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (loadSelection_selector, &QCheckBox::checkStateChanged,
 #else
-	connect (kiadSelection_selector, &QCheckBox::stateChanged,
+	connect (loadSelection_selector, &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_loadSelection_selector);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
