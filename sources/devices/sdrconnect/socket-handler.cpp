@@ -45,8 +45,10 @@
 	        this, &socketHandler::onConnected);
 	connect (socket, &QWebSocket::disconnected,
 	         this, &socketHandler::onDisconnect);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 0)
 	connect (socket, &QWebSocket::errorOccurred,
                         this, &socketHandler::onSocketError);
+#endif
 	connected	= false;
 	QString urlString = "ws://%1:%2";
 	socket -> open (QUrl (urlString. arg (hostAddress). arg(QString::number (portNumber))));

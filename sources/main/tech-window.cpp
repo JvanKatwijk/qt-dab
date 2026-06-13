@@ -140,7 +140,7 @@ void	techWindow::showServiceData	(int tableNo, audiodata *ad) {
 void	techWindow::showServiceData	(int tableNo, audiodata *ad,
 	                                        const QPixmap &p) {
 	programName		-> setText (ad -> serviceName);
-	int height = 60; 
+	int height		= 60; 
 	int width =
 	         static_cast<float>(p. width ()) / p. height () * height;
 	shortnameLabel		-> setAlignment (Qt::AlignCenter);
@@ -281,7 +281,7 @@ void	techWindow::showFm		(const std::vector<uint32_t> &v) {
            fmFrequency	-> show ();	
 	   QString f;
 	   int teller	= 0;
-//	for now there is room for up to 2 freqyencies
+//	for now there is room for up to 3 freqyencies
 	   for (auto freq: v) {
 	      if (++teller > 3)
 	         break;			// for now
@@ -341,7 +341,8 @@ QColor	color;
 	store (dabSettings, COLOR_SETTINGS, buttonFont,  textColor_name);
 }
 
-void	techWindow::framedumpButton_text	(const QString &text, int size) {
+void	techWindow::framedumpButton_text	(const QString &text,
+	                                                        int size) {
 	QFont font	= framedumpButton -> font ();
 	font. setPointSize (size);
 	framedumpButton	-> setFont (font);
@@ -349,7 +350,8 @@ void	techWindow::framedumpButton_text	(const QString &text, int size) {
 	framedumpButton	-> update ();
 }
 
-void	techWindow::audiodumpButton_text	(const QString &text, int size) {
+void	techWindow::audiodumpButton_text	(const QString &text,
+	                                                       int size) {
 	QFont font	= audiodumpButton -> font ();
 	font. setPointSize (size);
 	audiodumpButton	-> setFont (font);
@@ -390,11 +392,13 @@ void	techWindow::isDABPlus	(bool b) {
 	   frameLabel		-> show ();
 	   rsLabel		-> show ();
 	   aacLabel		-> show ();
+	   audioLabel_text	-> show ();
 	}
 	else {
 	   ASCTy	-> setText ("DAB");
 	   frameLabel		-> hide ();
 	   rsLabel		-> hide ();
 	   aacLabel		-> hide ();
+	   audioLabel_text	-> hide ();
 	}
 }

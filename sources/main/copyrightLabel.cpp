@@ -49,7 +49,7 @@
 	versionLabel	-> setText (QString("Current Version-%1").arg (version));
 //
 	qtVersionLabel	= new QLabel;
-	qtVersionLabel	-> setText (QString(tr("Qt-DAB uses Qt %1 and Qwt %2")).arg(QT_VERSION_STR). arg (QWT_VERSION_STR));
+	qtVersionLabel	-> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));
 
 ///////////////////////////////////////////////////////////////////////////
 	QString support;

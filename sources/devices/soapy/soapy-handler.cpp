@@ -214,7 +214,8 @@ std::stringstream ss;
 	ppmIndicator	-> hide ();
 	if (m_device -> hasFrequencyCorrection (SOAPY_SDR_RX, 0)) {
 	   ppmIndicator		-> show ();
-	   connect (ppmIndicator, &QDoubleSpinBox::valueChanged,
+	   connect (ppmIndicator,
+	                  qOverload<double>(&QDoubleSpinBox::valueChanged),
 	            this, &soapyHandler::handle_ppmIndicator);
 	}
 

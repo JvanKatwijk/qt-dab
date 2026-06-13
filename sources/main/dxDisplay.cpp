@@ -24,10 +24,7 @@
 #include	"position-handler.h"
 #include	<QHeaderView>
 #include	<QHBoxLayout>
-#include	<qwt_compass.h>
 #include	<qlayout.h>
-#include	<qwt_compass_rose.h>
-#include	<qwt_dial_needle.h>
 #include	<QMap>
 
 static inline
@@ -77,24 +74,8 @@ uint16_t	secondDigit (v % 10);
 	                tr ("delay") <<
 	                tr ("transmitter")); 
 
-	theDial		= new QwtCompass ();
-	theDial		-> setLineWidth (8);
-
-	QMap<double, QString> map;
-	map.insert(0.0, "N");
-	map.insert(90.0, "E");
-	map.insert(180.0, "S");
-	map.insert(270.0, "W");
-
-	QwtSimpleCompassRose *rose = new QwtSimpleCompassRose( 4, 1 );
-            theDial->setRose( rose );
-	theDial -> setNeedle (
-	       new QwtCompassMagnetNeedle(QwtCompassMagnetNeedle::ThinStyle));
-	theDial -> setValue (220.0);
-
 	QHBoxLayout *l	= new QHBoxLayout ();
 	l -> addWidget (tableWidget);
-	l -> addWidget (theDial);
 	myWidget	-> setLayout (l);
 	myWidget	-> setWindowTitle ("dx display");
 	setPositionAndSize (s, myWidget, "DX_DISPLAY");
@@ -243,8 +224,6 @@ int16_t	row	= tableWidget -> rowCount ();
 	tableWidget	-> item (row, 11) -> setText (QString::number (delay, 'f', 1) + " samples");
 	tableWidget	-> item (row, 12) -> setText (transmitterName);
 	tableWidget	-> item (row, 0) -> setText (b ? "***" : "");
-	if (b)
-	   theDial -> setValue (azimuth);
 }
 
 void	dxDisplay::addRow (uint8_t mainId, uint8_t subId,

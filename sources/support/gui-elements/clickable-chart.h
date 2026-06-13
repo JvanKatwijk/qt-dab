@@ -25,6 +25,9 @@
 #include <QChartView>
 #include <QWidget>
 #include <Qt>
+#if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
+using namespace QtCharts;
+#endif
 
 class clickableChart : public QChartView { 
 Q_OBJECT 

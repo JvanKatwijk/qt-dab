@@ -28,7 +28,6 @@
 #include	<QTableWidgetItem>
 #include	<QObject>
 #include	<QSettings>
-#include	<qwt_compass.h>
 #include	"db-element.h"
 #include	"super-frame.h"
 class	RadioInterface;
@@ -51,7 +50,6 @@ private:
 	QScrollArea	*myWidget;
 	QTableWidget	*tableWidget;
 	QSettings	*dxSettings;
-	QwtCompass	*theDial;
 	QString		theChannel;
 	void		dump	(FILE *);
 public slots:

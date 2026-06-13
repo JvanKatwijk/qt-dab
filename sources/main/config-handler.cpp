@@ -107,8 +107,9 @@ int	index_for_key (int key) {
 	uint32_t http	=
 	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
 	httpPortSelector	-> setValue (http);
-	connect (httpPortSelector, &QSpinBox::valueChanged,
+	connect (httpPortSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_httpPort);
+
 
 	float latitude	=
 	              value_f (dabSettings, MAP_HANDLING,
@@ -119,9 +120,11 @@ int	index_for_key (int key) {
 	this	-> latitudeSelector	-> setValue (latitude);
 	this	-> longitudeSelector	-> setValue (longitude);
 
-	connect (latitudeSelector, &QDoubleSpinBox::valueChanged,
+	connect (latitudeSelector,
+	            qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::set_latitude);
-	connect (longitudeSelector, &QDoubleSpinBox::valueChanged,
+	connect (longitudeSelector,
+	            qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::set_longitude);
 
 	int	tpegPort	=
@@ -129,7 +132,7 @@ int	index_for_key (int key) {
 	                                         TPEG_PORT, 8888);
 	tpegPortSelector	-> setValue (tpegPort);
 
-	connect (tpegPortSelector, &QSpinBox::valueChanged,
+	connect (tpegPortSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::set_tpegPort);
 
 	QString path_for_files  = theFilenameFinder. basicPath ();

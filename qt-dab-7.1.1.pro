@@ -46,7 +46,6 @@ DEFINES		+= __THREADED_BACKEND__
 #	not yet functioning
 #DEFINES        += _UPLOAD_SCAN_RESULT_
 
-#DEFINES	+= __EPG_TRACE__  
 DEPENDPATH += . \
 	      ..sources \
 	      ./sources/backend\
@@ -247,7 +246,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/smallspinbox.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
-#	   ./sources/support/gui-elements/qwt-2.h \
 	   ./sources/update/updatechecker.h \
 	   ./sources/update/appversion.h \
 	   ./sources/devices/selector.h \
@@ -443,17 +441,9 @@ LIBS      	+= -ldl
 }
 PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
-#PKGCONFIG	+= sndfile
-#PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
-#correct this for the correct path to the qwt6 library on your system
-##LIBS		+= -lqwt
-#equals (QT_MAJOR_VERSION, 6) {
-#	 LIBS		+= -lqwt-qt6
-#	}else{  LIBS += -lqwt-qt5
-#	}
 equals (QT_MAJOR_VERSION, 5) {
    TARGET               = qt-dab-qt5-7.1.3
 }
@@ -463,8 +453,6 @@ else {
 
 #mac {
 # Should be possible to make on non Macs as well.
-# qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
-CONFIG		+= qwt
 #}
 CONFIG		+= double
 #CONFIG		+= single
@@ -526,8 +514,6 @@ isEmpty(GITHASHSTRING) {
 	DEFINES		+= __BITS64__
 	DESTDIR		=  /d/systems/qt-dab/linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-#	INCLUDEPATH     += /usr/i686-w64-mingw32/sys-root/mingw/include/qt6/qwt
-	INCLUDEPATH	+= /mingw64/include/qwt-qt6
 	LIBS		+= -L/mingw64/lib
 	CONFIG		+= airspy
 	CONFIG		+= dabstick
@@ -557,10 +543,7 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= -lws2_32
 	LIBS		+= -lusb-1.0
 	LIBS		+= -lz
-#correct this for the correct path to the qwt6 library on your system
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
-#LIBS		+= -lqwt
-	LIBS		+= -lqwt-qt6
 	CONFIG		+= fdk-aac
 #	CONFIG		+= faad
 #

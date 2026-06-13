@@ -231,6 +231,6 @@ QDomElement root = serviceDB. createElement ("serviceList");
 void	serviceBase::clearTable	() {
 	for (auto &ch : theData)
 	   ch. channelData. resize (0);
-	theData. resize (0);
+	theData. clear ();
 }
 

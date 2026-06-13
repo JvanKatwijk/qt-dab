@@ -181,6 +181,8 @@ QTranslator	theTranslator;
 //
 //	here we go for real!!
 	qRegisterMetaType<tiiData> ("tiiData");
+	qRegisterMetaType<uint8_t> ("uint8_t");
+	qRegisterMetaType<uint16_t> ("uint16_t");
 	qRegisterMetaType<uint32_t> ("uint32_t");
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	qRegisterMetaType<QByteArray >("QByteArray");

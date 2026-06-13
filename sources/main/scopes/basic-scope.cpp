@@ -46,7 +46,7 @@ QString	colorString;
                                                "displayColor", "black");
 
 	theChart	= new QChart ();
-	theChart	-> setBackgroundBrush (QBrush (QColor ("black")));
+	theChart	-> setBackgroundBrush (QBrush (QColor ("colorString")));
         theChart	 -> legend () -> hide ();
         theChart	 -> layout () -> setContentsMargins(0, 0, 0, 0);
         theChart	 -> setMargins (QMargins (2, 2, 2, 2));
@@ -58,14 +58,15 @@ QString	colorString;
 	X_axis	->	setGridLineColor (QColor (colorString));
 	X_axis	->	setGridLineVisible (true);
 	X_axis	->	setMinorGridLineVisible (false);
-	X_axis	->	setTickCount (5);
+	X_axis	->	setTickCount (6);
+//	X_axis  ->      setMinorTickCount (1);
 
 	Y_axis		= new QValueAxis();
 	Y_axis	->	setLabelsColor (Qt::lightGray);
 	Y_axis	->	setGridLineColor (QColor (colorString));
 	Y_axis  ->      setGridLineVisible (true);
         Y_axis  ->      setMinorGridLineVisible (false);
-        Y_axis  ->      setTickCount (5);
+        Y_axis  ->      setTickCount (4);
 //	Y_axis  ->      setMinorTickCount (1);
 
 	theChart	-> addAxis (X_axis, Qt::AlignBottom);
@@ -144,7 +145,6 @@ void	basicScope::showSpectrum (double *data, int amount,
 	   p. text -> setRotation (-90);
 	   p. text -> setZValue (10);
 
-    // make the font smaller
 	   QFont font = p. text -> font ();
 	   font. setPointSize (12);
 	   p. text -> setFont (font);

@@ -54,4 +54,7 @@ private:
 	QScatterSeries	*ValueLine;
 
 	QSettings	*scopeSettings;
+public slots:
+        void            rightMouseClick ();
+
 };

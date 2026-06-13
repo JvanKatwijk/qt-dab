@@ -24,8 +24,6 @@
 
 #include        "dab-constants.h"
 #include	<QObject>
-#include	"qwt-2.h"
-#include	<qwt_plot.h>
 #include	<QVector>
 #include	<QByteArray>
 #include	"fft-handler.h"

@@ -8,7 +8,7 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/Modules/CMakeFunctions.cmake)
 
 project(Qt-DAB VERSION 6)
-set (objectName qt-dab-6.10)
+set (objectName qt-dab-7.1.3)
 set (objectName "Qt-DAB")
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,13 +22,8 @@ endif()
 add_definitions(-DAPP_NAME="${objectName}")
 add_definitions(-DPRJ_NAME="${PROJECT_NAME}")
 add_definitions(-DPRJ_VERS="${PROJECT_VERSION}")
-add_definitions(-DVERSION="7.0")
+add_definitions(-DVERSION="7.1.3")
 add_definitions(-DVITERBI="scalar")
-
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    # regarding using QWT < 6.2.0 (6.1.4) to avoid many deprecated massages (only suppressed on release versions)
-    add_definitions(-DQT_NO_DEPRECATED_WARNINGS)
-endif()
 
 if(MINGW)
 	add_definitions ( -municode)
@@ -88,7 +83,6 @@ if (USE_LTO)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto")
 endif ()
 
-option(FDK_AAC ON)
 option(VITERBI_SSE OFF)
 option(VITERBI_NEON OFF)
 
@@ -105,17 +99,18 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	find_package (PkgConfig)
 	find_package (LSBId)
-
 	find_package (Qt6Core REQUIRED)
 	find_package (Qt6Widgets REQUIRED)
 	find_package (Qt6Network REQUIRED)
 	find_package (Qt6Xml REQUIRED)
+	find_package (Qt6Multimedia REQUIRED)
+	find_package (Qt6Charts REQUIRED)
+
 	include_directories (
 	  ${Qt6Network_INCLUDE_DIRS}
 	  ${Qt6Xml_INCLUDE_DIRS}
 	)
 
-	search_for_library (QWT Qwt)
 	search_for_library (ZLIB zlib)
 
 	find_package(FFTW3f)
@@ -125,6 +120,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	include_directories ( ${FFTW_INCLUDE_DIRS})
         list(APPEND extraLibs ${FFTW3F_LIBRARIES})
 
+	find_package(Fdk-AAC)
+	if (NOT LIBFDK_AAC_FOUND)
+	   message(FATAL_ERROR, "Please install libfdk-aac")
+	endif ()
+	include_directories (../helpers/specials/fdk-aac)
+	set($(objectName)_HDRS
+	   ${${objectName}_HDRS}
+	        ./sources/backend/audio/fdk-aac.h
+	   )
+	add_definitions(-D__WITH_FDK_AAC__)
+
 	if (NOT APPLE)
 	   find_library (PTHREADS pthread)
 	   if (NOT(PTHREADS))
@@ -133,6 +139,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	      set (extraLibs ${extraLibs} ${PTHREADS})
 	   endif (NOT(PTHREADS))
 	endif (NOT APPLE)
+
 
 #######################################################################
 #
@@ -179,20 +186,22 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	set (${objectName}_HDRS
 	   ./sources/main/display-widget.h 
+	   ./sources/main/scopes/basic-scope.h
 	   ./sources/main/scopes/spectrum-scope.h 
 	   ./sources/main/scopes/correlation-scope.h 
 	   ./sources/main/scopes/null-scope.h 
+	   ./sources/main/scopes/tii-scope.h 
 	   ./sources/main/scopes/channel-scope.h 
 	   ./sources/main/scopes/dev-scope.h 
-	   ./sources/main/scopes/waterfall-scope.h 
-	   ./sources/main/scopes/iqdisplay.h 
 	   ./sources/main/scopes/audio-display.h 
-	   ./sources/main//scopes/spectrogramdata.h 
+	   ./sources/main/scopes/audioLevel-meter.h
+	   ./sources/main/scopes/iqdisplay.h 
 	   ./sources/main/snr-viewer/snr-viewer.h 
 	   ./sources/main/viewer/channel-descriptor.h
 	   ./sources/main/viewer/database.h
 	   ./sources/main/viewer/service-descriptor.h
 	   ./sources/main/viewer/view-handler.h
+	   ./sources/main/viewer/channel-viewer.h
 	   ./sources/main/config-handler.h 
 	   ./sources/main/tech-window.h 
 	   ./sources/main/copyrightLabel.h 
@@ -259,7 +268,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/equalizer.h 
 	   ./sources/support/scan-handler.h 
 	   ./sources/support/scantable-handler.h 
-	   ./sources/support/audiosystem-selector.h 
 	   ./sources/support/dl2-handler.h 
 	   ./sources/support/http-handler.h 
 	   ./sources/support/timetable-control.h 
@@ -287,8 +295,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/findfilenames.h 
 	   ./sources/support/dl-cache.h 
 	   ./sources/support/content-table.h 
-	   ./sources/support/skin-handler.h 
-	   ./sources/support/mapport.h 
 	   ./sources/support/bandpass-filter.h 
 	   ./sources/support/fir-filters.h 
 	   ./sources/support/tii-mapper.h 
@@ -301,6 +307,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/presetcombobox.h 
 	   ./sources/support/gui-elements/circular-button.h 
 	   ./sources/support/gui-elements/clickable-label.h 
+	   ./sources/support/gui-elements/clickable-chart.h 
 	   ./sources/support/gui-elements/color-selector.h 
 	   ./sources/support/gui-elements/font-chooser.h 
 	   ./sources/support/gui-elements/icon-label.h 
@@ -313,7 +320,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/smallspinbox.h 
 	   ./sources/support/gui-elements/super-frame.h 
 	   ./sources/support/gui-elements/verysmallpushbutton.h 
-	   ./sources/support/gui-elements/qwt-2.h 
 	   ./sources/update/updatechecker.h
 	   ./sources/update/appversion.h
 	   ./sources/devices/selector.h 
@@ -338,19 +344,21 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/main.cpp
 	   ./sources/main/radio.cpp 
 	   ./sources/main/display-widget.cpp 
-           ./sources/main/scopes/correlation-scope.cpp 
+	   ./sources/main/scopes/basic-scope.cpp
            ./sources/main/scopes/spectrum-scope.cpp 
+           ./sources/main/scopes/correlation-scope.cpp 
            ./sources/main/scopes/null-scope.cpp 
+           ./sources/main/scopes/tii-scope.cpp 
            ./sources/main/scopes/channel-scope.cpp 
            ./sources/main/scopes/dev-scope.cpp 
-           ./sources/main/scopes/waterfall-scope.cpp 
 	   ./sources/main/scopes/iqdisplay.cpp 
 	   ./sources/main/scopes/audio-display.cpp 
-	   ./sources/main/scopes/spectrogramdata.cpp 
+	   ./sources/main/scopes/audioLevel-meter.cpp 
 	   ./sources/main/snr-viewer/snr-viewer.cpp 
 	   ./sources/main/viewer/channel-descriptor.cpp
 	   ./sources/main/viewer/database.cpp
 	   ./sources/main/viewer/view-handler.cpp
+	   ./sources/main/viewer/channel-viewer.cpp
 	   ./sources/main/copyrightLabel.cpp 
 	   ./sources/main/tech-window.cpp 
 	   ./sources/main/config-handler.cpp 
@@ -409,7 +417,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/output/converter_48000.cpp 
 	   ./sources/output/audio-player.cpp 
 	   ./sources/support/dump-display.cpp 
-	   ./sources/support/audiosystem-selector.cpp 
 	   ./sources/support/bandpass-filter.cpp 
 	   ./sources/support/basic-print.cpp 
 	   ./sources/support/dc-filter.cpp
@@ -428,13 +435,11 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/fir-filters.cpp 
 	   ./sources/support/http-handler.cpp 
 	   ./sources/support/logger.cpp 
-	   ./sources/support/mapport.cpp 
 	   ./sources/support/scan-handler.cpp 
 	   ./sources/support/scanlist-handler.cpp 
 	   ./sources/support/scantable-handler.cpp 
 	   ./sources/support/scheduler.cpp 
 	   ./sources/support/schedule-selector.cpp 
-	   ./sources/support/skin-handler.cpp 
 	   ./sources/support/tii-mapper.cpp 
 	   ./sources/support/tii-reader.cpp 
 	   ./sources/support/time-converter.cpp 
@@ -445,6 +450,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/presetcombobox.cpp 
 	   ./sources/support/gui-elements/circular-button.cpp 
 	   ./sources/support/gui-elements/clickable-label.cpp 
+	   ./sources/support/gui-elements/clickable-chart.cpp 
 	   ./sources/support/gui-elements/color-selector.cpp 
 	   ./sources/support/gui-elements/font-chooser.cpp 
 	   ./sources/support/gui-elements/icon-label.cpp 
@@ -480,16 +486,19 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/copyrightLabel.h 
 	     ./sources/main/dxDisplay.h
 	     ./sources/main/display-widget.h 
+	     ./sources/main/scopes/basic-scope.h 
 	     ./sources/main/scopes/correlation-scope.h 
 	     ./sources/main/scopes/spectrum-scope.h 
 	     ./sources/main/scopes/null-scope.h 
+	     ./sources/main/scopes/tii-scope.h 
 	     ./sources/main/scopes/channel-scope.h 
 	     ./sources/main/scopes/dev-scope.h 
-	     ./sources/main/scopes/waterfall-scope.h 
 	     ./sources/main/scopes/iqdisplay.h 
 	     ./sources/main/scopes/audio-display.h
+	     ./sources/main/scopes/audioLevel-meter.h
  	     ./sources/main/snr-viewer/snr-viewer.h
 	     ./sources/main/viewer/view-handler.h
+	     ./sources/main/viewer/channel-viewer.h
 	     ./sources/main/viewer/database.h
 	     ./sources/main/audio-selector.h
 	     ./sources/update/updatechecker.h
@@ -506,6 +515,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/frontend/estimator.h
 	     ./sources/support/gui-elements/presetcombobox.h
 	     ./sources/support/gui-elements/clickable-label.h 
+	     ./sources/support/gui-elements/clickable-chart.h 
 	     ./sources/support/gui-elements/color-selector.h 
 	     ./sources/support/gui-elements/font-chooser.h
 	     ./sources/support/gui-elements/icon-label.h 
@@ -528,8 +538,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/timetable-control.h
 	     ./sources/support/time-table.h
 	     ./sources/support/content-table.h
-	     ./sources/support/skin-handler.h
-	     ./sources/support/mapport.h
 	     ./sources/support/http-handler.h
 	     ./sources/server-thread/udp-broadcaster.h 
 	     ./sources/backend/msc-handler.h
@@ -795,7 +803,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./sources/devices/rtlsdr-handler/rtl-dongleselect.h
 	        ./sources/devices/rtlsdr-handler/rtlsdr-handler.h
 	   )
 
@@ -806,7 +813,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
 	        ./sources/devices/rtlsdr-handler/rtlsdr-handler.h
-	        ./sources/devices/rtlsdr-handler/rtl-dongleselect.h
 	        ./sources/devices/rtlsdr-handler/rtl-sdr.h
 	        ./sources/devices/rtlsdr-handler/rtl-sdr_export.h
 	   )
@@ -814,7 +820,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./sources/devices/rtlsdr-handler/rtlsdr-handler.cpp
-	        ./sources/devices/rtlsdr-handler/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)
@@ -993,16 +998,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 #########################################################################
 
-	if (FDK_AAC)
-	   find_package(Fdk-AAC)
-	   if (NOT LIBFDK_AAC_FOUND)
-	      message(FATAL_ERROR, "Please install libfdk-aac")
-	   endif ()
-	   include_directories (../helpers/specials/fdk-aac)
-	   set($(objectName)_HDRS
-	        ${${objectName}_HDRS}
-	        ./sources/backend/audio/fdk-aac.h
-	   )
 
 	   set(${objectName}_SRCS
 	        ${${objectName}_SRCS}
@@ -1013,27 +1008,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ./sources/backend/audio/fdk-aac.h
 	   )
 	   list(APPEND extraLibs ${FDK_AAC_LIBRARIES})
-	   add_definitions(-D__WITH_FDK_AAC__)
-	elseif (NOT FDK_AAC)
-	   find_package (Faad)
-	   if (NOT FAAD_FOUND)
-	      message(FATAL_ERROR "Please install libfaad")
-	   endif ()
-	   set(${objectName}_HDRS
-	       ${${objectName}_HDRS}
-	       ./sources/backend/audio/faad-decoder.h
-	   )
-
-	   set(${objectName}_SRCS
-	       ${${objectName}_SRCS}
-	       ./sources/backend/audio/faad-decoder.cpp
-	   )
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ./sources/backend/audio/faad-decoder.h
-	   )
-	   add_definitions(-D__WITH_FAAD__)
-	endif (FDK_AAC)
 
 #	the viterbi decoder
 #
@@ -1163,9 +1137,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	                       Qt6::Network
 	                       Qt6::Xml
 	                       Qt6::Multimedia
+	                       Qt6::Charts
 	                       ${RTLTCP_lib}
 	                       ${extraLibs}
-	                       ${FAAD_LIBRARIES}
 	                       ${CMAKE_DL_LIBS}
 	)
 #

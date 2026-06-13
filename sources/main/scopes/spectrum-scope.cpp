@@ -96,7 +96,8 @@ int amount 	= minimum (v. size (), 4 * displaySize);
 	}
 
 	showSpectrum (displayBuffer. data (), displaySize,
-	              X_axis [0], X_axis [displaySize - 1],
+	              low / 1000, high / 1000,
+//	              X_axis [0], X_axis [displaySize - 1],
 	              min, min + (float)Amp + 20);
 }
 

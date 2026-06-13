@@ -35,11 +35,6 @@
 #include	"clickable-chart.h"
 #include	<vector>
 
-//typedef struct {
-//        int offset;
-//        QString text;
-//} markType;
-
 typedef struct {
         int     offset;
         QLineSeries     *pLine;

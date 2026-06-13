@@ -144,7 +144,7 @@
 void	serviceViewer::clearAll		() {
 	theDataBase. clearTable ();
 	clearTable ();
-	displayList. resize (0);
+	displayList. clear ();
 }
 //
 //	While in most cases the startMode function operates with
@@ -474,7 +474,7 @@ void	serviceViewer::handle_channelSelector	(const QString &channel) {
 	emit setChannel (channel);
 	if (ensembleMode != ALL) {
 	   clearTable ();
-	   displayList. resize (0);
+	   displayList. clear ();
 	   show_displayList ();
 	}
 }
@@ -488,7 +488,7 @@ void	serviceViewer::handle_nextChannel	() {
 
 	if (ensembleMode != ALL) {
 	   clearTable ();
-	   displayList. resize (0);
+	   displayList. clear ();
 //	   displayList       =
 //	              theDataBase. getData (theMode, serviceOrder, 
 //	                                    channelSelector -> currentText ());
@@ -505,7 +505,7 @@ void	serviceViewer::handle_prevChannel	() {
 
 	if (ensembleMode != ALL) {
 	   clearTable ();
-	   displayList. resize (0);
+	   displayList. clear ();
 //	   displayList       =
 //	             theDataBase. getData (theMode, serviceOrder, 
 //	                                   channelSelector -> currentText ());
@@ -551,7 +551,7 @@ void	serviceViewer::handle_viewSelector	() {
 	      viewSelector	-> show ();
 	      viewSelector	-> setText ("Favorites");
 	      clearTable ();
-	      displayList. resize (0);
+	      displayList. clear ();
 	      if (ensembleMode == ALL)
 	         displayList	= theDataBase. getData (theMode, order);
 	      else
@@ -582,7 +582,7 @@ void	serviceViewer::handle_viewSelector	() {
 	      nextChannel	-> hide ();
 	      viewSelector	-> show ();
 	      clearTable ();
-	      displayList. resize (0);
+	      displayList. clear ();
 	      viewSelector	-> setText ("EnsembleView");
 	      displayList	= theDataBase. getData (theMode, order);
 	      show_displayList ();

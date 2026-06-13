@@ -36,24 +36,26 @@
 QString	colorString;
 
 	scopeSettings	= dabSettings;
+	colorString     = value_s (scopeSettings, "iqDisplay",
+                                               "displayColor", "black");
 	theChart	= new QChart ();
-	theChart	-> setBackgroundBrush (QBrush (QColor ("black")));
+	theChart	-> setBackgroundBrush (QBrush (QColor ("colorString")));
         theChart	 -> legend () -> hide ();
         theChart	 -> layout () -> setContentsMargins(0, 0, 0, 0);
         theChart	 -> setMargins (QMargins (2, 2, 2, 2));
 
 	X_axis		= new QValueAxis();
 	X_axis	-> 	setLabelsColor (Qt::lightGray);
-	X_axis	->	setGridLineColor (QColor ("black"));
-	X_axis	->	setGridLineVisible (true);
+//	X_axis	->	setGridLineColor (QColor ("black"));
+	X_axis	->	setGridLineVisible (false);
 	X_axis	->	setMinorGridLineVisible (false);
 	X_axis	->	setTickCount (5);
 	X_axis	->	setRange	(-100, 100);
 
 	Y_axis		= new QValueAxis();
 	Y_axis	->	setLabelsColor (Qt::lightGray);
-	Y_axis	->	setGridLineColor (QColor ("black"));
-	Y_axis  ->      setGridLineVisible (true);
+//	Y_axis	->	setGridLineColor (QColor ("black"));
+	Y_axis  ->      setGridLineVisible (false);
         Y_axis  ->      setMinorGridLineVisible (false);
         Y_axis  ->      setTickCount (5);
 	Y_axis	->	setRange	(-100, 100);
@@ -61,39 +63,106 @@ QString	colorString;
 	theChart	-> addAxis (X_axis, Qt::AlignBottom);
 	theChart	-> addAxis (Y_axis, Qt::AlignLeft);
 	plotArea	-> setChart (theChart);
+	connect (plotArea, &clickableChart::clicked_right,
+	         this, &iqDisplay::rightMouseClick);
 
 	ValueLine	= new QScatterSeries();
 	ValueLine	-> setMarkerSize (2.0);
+	colorString	= value_s (scopeSettings, "iqDisplay",
+                                               "valueLineColor", "#f9f06b");
+        ValueLine       -> setPen (QPen (QColor (colorString), 1.0));
 	theChart        -> addSeries (ValueLine);
         ValueLine       -> attachAxis (X_axis);
         ValueLine       -> attachAxis (Y_axis);
 }
 
 	iqDisplay::~iqDisplay	() {}
+	
 
 void	iqDisplay::displayIQ	(const std::vector<Complex> &v, float scale) {
 QList<QPointF> theValues;
+	ValueLine	-> setMarkerSize (2.0);
+        QString colorString =
+	                value_s (scopeSettings, "iqDisplay",
+                                               "valueLineColor", "#f9f06b");
+        ValueLine       -> setPen (QPen (QColor (colorString), 1.0));
 	for (int i = 0; i < v. size () / 2; i ++)
 	   theValues. append (QPointF (real (v [i]) * scale,
 	                               imag (v [i]) * scale));
 	ValueLine -> replace (theValues);
 }
 
-void	iqDisplay::display_centerPoints	(const std::vector<Complex> &v,
+void	iqDisplay::display_centerPoints	(const std::vector<Complex> &input,
 	                                                float scale) {
-	return displayIQ (v, scale);
+QList<QPointF> theValues;
+	Complex V [4];
+	extract_centerPoints (input, V);
+	for (int i = 0; i < 4; i ++)
+	   theValues. append (QPointF (real (V [i]) * scale,
+	                               imag (V [i]) * scale));
+
+	ValueLine	-> setMarkerSize (6.0);
+        QString colorString =
+	                value_s (scopeSettings, "iqDisplay",
+                                               "valueLineColor", "#f9f06b");
+        ValueLine	-> setPen (QPen (QColor (colorString), 4.0));
+	
+	ValueLine -> replace (theValues);
 }
 
-void	iqDisplay::set_fatPoint	(Complex v, int x, float xx) {
-	(void) v;
-	(void) x;
-	(void) xx;
-}
 
-void	iqDisplay::extract_centerPoints	(const std::vector<Complex> &v, 
+void	iqDisplay::extract_centerPoints	(const std::vector<Complex> &V, 
 	                                                    Complex *out) {
-	(void) v;
-	(void) out;
+int amounts [4] = {0};
+
+	for (int i = 0; i < 4; i ++) 
+	   out [i] = Complex (0, 0);
+
+	for (uint16_t i = 0; i < V. size (); i ++) {
+	   Complex W = V [i];
+	   if ((real (W) > 0) && (imag (W) > 0)) {
+	      out [0] += W;
+	      amounts [0] ++;
+	   }
+	   else
+	   if ((real (W) > 0) && (imag (W) < 0)) {
+	      out [1] += W;
+	      amounts [1] ++;
+	   }
+	   else
+	   if ((real (W) < 0) && (imag (W) > 0)) {
+	      out [2] += W;
+	      amounts [2] ++;
+	   }
+	   else 
+	   if ((real (W) < 0) && (imag (W) < 0)) {
+	      out [3] += W;
+	      amounts [3] ++;
+	   }
+	}
+	for (int i = 0; i < 4; i ++)
+	   out [i] /= (DABFLOAT)amounts [i];
 }
 
+void	iqDisplay::rightMouseClick	() {
+QColor	displayColor;
+QColor	valueLineColor;
 
+	displayColor =
+	        QColorDialog::getColor (Qt::black, nullptr, "displayColor");
+        if (!displayColor. isValid ())
+           return;
+        valueLineColor =
+	        QColorDialog::getColor (Qt::yellow, nullptr, "valueLineColor");
+        if (!valueLineColor. isValid ())
+           return;
+	store (scopeSettings, "iqDisplay",
+	                    "displayColor", displayColor. name ());
+	store (scopeSettings, "iqDisplay",
+	                     "valueLineColor", valueLineColor. name ());
+
+	theChart	-> setBackgroundBrush (QBrush (displayColor));
+//	X_axis		-> setGridLineColor (gridColor);
+//	Y_axis		-> setGridLineColor (gridColor);
+        ValueLine       -> setPen (QPen (valueLineColor, 1.0));
+}
