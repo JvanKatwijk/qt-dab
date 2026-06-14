@@ -46,18 +46,16 @@ QString	colorString;
 
 	X_axis		= new QValueAxis();
 	X_axis	-> 	setLabelsColor (Qt::lightGray);
-//	X_axis	->	setGridLineColor (QColor ("black"));
 	X_axis	->	setGridLineVisible (false);
 	X_axis	->	setMinorGridLineVisible (false);
-	X_axis	->	setTickCount (5);
+//	X_axis	->	setTickCount (5);
 	X_axis	->	setRange	(-100, 100);
 
 	Y_axis		= new QValueAxis();
 	Y_axis	->	setLabelsColor (Qt::lightGray);
-//	Y_axis	->	setGridLineColor (QColor ("black"));
 	Y_axis  ->      setGridLineVisible (false);
         Y_axis  ->      setMinorGridLineVisible (false);
-        Y_axis  ->      setTickCount (5);
+//	Y_axis  ->      setTickCount (5);
 	Y_axis	->	setRange	(-100, 100);
 
 	theChart	-> addAxis (X_axis, Qt::AlignBottom);
@@ -109,7 +107,6 @@ QList<QPointF> theValues;
 	
 	ValueLine -> replace (theValues);
 }
-
 
 void	iqDisplay::extract_centerPoints	(const std::vector<Complex> &V, 
 	                                                    Complex *out) {

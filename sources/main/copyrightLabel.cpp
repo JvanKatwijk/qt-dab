@@ -110,7 +110,7 @@ QString aacComment;
 	librariesLabel	-> setWordWrap (true);
 	librariesLabel -> setText (tr("Qt-DAB uses following libraries (and greatly acknowledges the copyright of their owners):")+
                            "<ul>" +
-	                   "<li>The excellent Qt framework by Qt, and the Qwt library by Uwe Rathmann</li>" +
+	                   "<li>The excellent Qt framework by Qt</li>" +
                            "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>" +
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solomon</a> by Phil Karn, KA9Q</li>" +
                            "<li><a href=\"https://www.spiral.net/software/viterbi.html\">viterbi code generator</a> by the Spiral project</li>" +

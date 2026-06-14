@@ -1330,11 +1330,13 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 	   ioPeakAvr = (iPeak > ioPeakAvr ? iPeak : ioPeakAvr - 0.5f /*decay*/);
 	};
 
-	peak_avr (iPeakLeft,  peakLeftDamped);
-	peak_avr (iPeakRight, peakRightDamped);
+//	peak_avr (iPeakLeft,  peakLeftDamped);
+//	peak_avr (iPeakRight, peakRightDamped);
 
-	leftChannel	-> setLevel (peakLeftDamped);
-	rightChannel	-> setLevel (peakRightDamped);
+//	leftChannel	-> setLevel (peakLeftDamped);
+//	rightChannel	-> setLevel (peakRightDamped);
+	leftChannel	-> setLevel (iPeakLeft);
+	rightChannel	-> setLevel (iPeakRight);
 }
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -2924,7 +2926,7 @@ QString	theName;
 	                      utcTime + ";" +
 	                      SNR + ";" +
 	                      QString::number (channel. nrServices) +";"  +
-	                      QString::number (freeSpace) + ", " +
+	                      QString::number (freeSpace) + ",  " +
 	                      QString::number (static_cast<int> (freeSpace / 864.0 * 100)) + "%" + ";";
 	return headLine;
 }

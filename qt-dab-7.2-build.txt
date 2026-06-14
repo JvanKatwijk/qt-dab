@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export LD_LIBRARY_PATH=/home/jan/Qt/6.8.3/gcc_64/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/home/jan/qwt-6.3.0/lib
 export PATH=/home/jan/Qt/6.8.3/gcc_64/bin:$PATH
 
 ls -lh .
@@ -11,8 +10,8 @@ mkdir -p ./appdir/usr/share/applications
 mkdir -p ./appdir/usr/share/icons/hicolor/128x128/apps/
 mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
 
-cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-7.1.2
-cp app-files/qt-dab-7.1.2.desktop	appdir/usr/share/applications
+cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-7.2
+cp app-files/qt-dab-7.2.desktop	appdir/usr/share/applications
 cp ../res/radio-pictures/qt-dab-7.1.1-128x128.png	appdir/qt-dab-7.1.1.png
 cp ../res/radio-pictures/qt-dab-7.1.1-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/
 cp ../res/radio-pictures/qt-dab-7.1.1-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/

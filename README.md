@@ -1,9 +1,8 @@
-# Qt-DAB-7.1.2
+# Qt-DAB-7.1.3
 
 -------------------------------------------------------------------
 
 ![6.10](/res/read_me/qt-dab-logo.png?raw=true)
-
 
 About Qt-DAB
 ======================================================================
@@ -13,12 +12,12 @@ About Qt-DAB
 ![6.10](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-7.1.3*, predefined executables - for Linux an AppImage, for Windows
+*Qt-DAB-7.23*, predefined executables - for Linux an AppImage, for Windows
 an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.1.3](#What-is-new-in-Qt-DAB-7.1.3)
+* [What is new in Qt-DAB-7.2](#What-is-new-in-Qt-DAB-7.2)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
 * [Handling packet services](#handling-packet-services)
@@ -32,16 +31,23 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.1.3
+What is new in Qt-DAB-7.2
 ======================================================================
 
-In 7.1.3 some GUI elements were changed. The reason was pretty simple, I wanted to see all major windows on the screen of my laptop.
-This means that in particular the spectrum display and the technical window
-changed considerably, limiting their size.
+ - In Qt-DAB-7.2 does NOT use qwt anymore, for now the "compass" on the display for showing transmitters is not (yet) reimplemented in Qt-DAB and not visible;
 
-Of course, these changes have effect
- - on the spectrum display window the waterfall disappeared. Having looked at it for quite some time, I figured that there was not much information that could be derived from the waterfall. The removal of the waterfall gave some room to create a different layout.
- - on the technical window, there were three progressbars, quality indicators for the AAC (audio) decoding. Again, it felt that the bars did not give much numerical information, the only interest was to see whether or not the decoding was "good". (Of course some numerical data can de derived on the quality of the decoding, which now will be written into a log file). The progress bars are replaced by a "dashboard type" of presenting. Furthermore a clear distinction is made between the statical data of the servioe, and the dynamics of the decoding.
+ - Qt-DAB-7.2 is usually compiled but can without problem sbe compiled using the  Qt5 framwork. 
+
+In QtDAB-7.2 some GUI elements were changed:
+
+ - The "waterfall" disappeared and a running version of Qt-DAB can be shown - including the other windows - on my laptop screen.
+
+ - the proressbars on the technical window are replaced by indicators telling just whether the processing is OK or not.
+
+ - the main window contains a button **channel view** that - when touched - shows in a separate window an overview of the channels in the current database.
+
+
+![7.2](/res/read_me/channelView.png?raw=true)
 
 Windows and scopes
 =========================================================================
@@ -51,14 +57,14 @@ on the **right hand button** on the mouse on the ensemblename). Furthermore,
 
 when dumpimg,  a small window is shown that remminds the user that dumping is going on.
 
-![7.1](/res/read_me/dumping.png?raw=true)
+![7.2](/res/read_me/dumping.png?raw=true)
 
-In Qt-DAB-7.1.2 some buttons were added to the main window.
+In Qt-DAB-7.1.1 some buttons were added to the main window.
 The selector of the list of audio devices was traditionally shown as combobox,
 now it is back as regular button.
 The same applies to the other buttons, the 
 
-![7.1.3](/res/read_me/qt-dab-7.1.3.png?raw=true)
+![7.2](/res/read_me/qt-dab-7.2.png?raw=true)
 
 The icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.
@@ -127,12 +133,12 @@ At the bottom of the window from left to right
 wrong (and were corrected), per 1000 input bits (lower is better) when processing the FIC;
  * a **MER**, Modulation Error Rate, indicating the quality of the input signal (higher is better);
 
-![7.1.3](/res/read_me/spectrum-ideal.png)
+![7.2](/res/read_me/spectrum-ideal.png)
 
 The ideal form of the spectrum and the signal constellation as shown in the
 picture above is not often seen with real inputs.
 
-![7.1.3](/res/read_me/qt-dab-correlation.png)
+![7.2](/res/read_me/qt-dab-correlation.png)
 
 The **correlation** scope shows the correlation between the incoming signal and
 predefined  data, i.e. the data as they should be.
@@ -143,7 +149,7 @@ more than one transmitter is received.
 The software chooses either the largest peak, or - if selected - the
 first peak one larger than a threshold.
 
-![7.1.3](/res/read_me/qt-dab-null-period.png)
+![7.2](/res/read_me/qt-dab-null-period.png)
 
 A DAB signal is received as a sequence of samples, and can be thought to
 be built up from **frames** (DAB frames) where each frame consists of 199608 consecutive samples.
@@ -152,7 +158,7 @@ period.  The **NULL scope** shows the samples in the transition from the
 **NULL** part to the first samples **with** data of a DAB frame.
 It shows that samples 504 and up in the first data block are used.
 
-![7.1.3](/res/read_me/qt-dab-tii-data.png)
+![7.2](/res/read_me/qt-dab-tii-data.png)
 
 In reality the **NULL** period is - in most cases - not completely
 without signal, each second  **NULL period** may contain
@@ -163,18 +169,18 @@ in the  relevant **NULL** period, the TII data is encoded as a 4 out of 8 code. 
 The DAB definition provides tables to map the recognized patterm
 to two 2 digit numbers, these numbers are used to identify the transmitter in a database, available in Qt-DAB.
 
-![7.1.3](/res/read_me/qt-dab-channel.png)
+![7.2](/res/read_me/qt-dab-channel.png)
 
 The picture shows the channel response on the amplitude, and
 the *red line*, i.e. the channel effects on the phase of the samples.
 The picture clearly shows two larger and a few smaller peaks.
 
-![7.1.3](/res/read_me/qt-dab-stddev.png)
+![7.2](/res/read_me/qt-dab-stddev.png)
 
 The last scope shows some of the output of the ofdm decoding process, the
 resulting bits have values between -127 to 127.
 
-![7.1.3](/res/read_me/configuration-and-control.png)
+![7.2](/res/read_me/configuration-and-control.png)
 
 The **configuration and control** window is completely redesigned.
 Some selectors, buttons and checkboxes are removed, as mentioned the functionality is moved to (mainly using right hand mouse clicks) the main window.
@@ -189,7 +195,7 @@ if one can be found in the user's how directory that one, otherwise a default ve
 
 New are selectors labeled  **load selection** and **update check**.
 If the **load selection**  selector is set, on program startup 
-a small menu shows, showing options.
+a small menu shows, showing options to create a new database next to or instead of the default one.
 
 Also new is a checkbox that - wgen set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
 

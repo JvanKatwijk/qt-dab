@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.1.3\\\"
+DEFINES         += VERSION=\\\"7.2\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
@@ -191,7 +191,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/dump-display.h \
 	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
-	   ./sources/support/audiosystem-selector.h \
 	   ./sources/support/dl2-handler.h \
 	   ./sources/support/http-handler.h \
 	   ./sources/support/timetable-control.h \
@@ -349,7 +348,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/output/converter_48000.cpp \
 	   ./sources/output/audio-player.cpp \
 	   ./sources/support/dump-display.cpp \
-	   ./sources/support/audiosystem-selector.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \
 	   ./sources/support/dc-filter.cpp \
@@ -445,10 +443,10 @@ INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.1.3
+   TARGET               = qt-dab-qt5-7.2
 }
 else {
-   TARGET               = qt-dab-7.1.3
+   TARGET               = qt-dab-7.2
 }
 
 #mac {

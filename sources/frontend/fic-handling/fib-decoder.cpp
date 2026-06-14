@@ -1045,6 +1045,7 @@ char		label [17];
 	   if (isDecent (temp))
 	      label [teller ++] = getBits_8 (d, offset + 8 * i);
 	}
+	label [teller] = 0;
 	
 	serviceName = toQStringUsingCharset (
 	                               (const char *) label,
