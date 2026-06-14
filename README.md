@@ -34,15 +34,15 @@ Table of Contents
 What is new in Qt-DAB-7.2
 ======================================================================
 
- - In Qt-DAB-7.2 does NOT use qwt anymore, for now the "compass" on the display for showing transmitters is not (yet) reimplemented in Qt-DAB and not visible;
+ - In Qt-DAB-7.2 does NOT use qwt anymore, for now the "compass" on the display for showing transmitters is not (yet) reimplemented in Qt-DAB and not visible; The feature "clicking with the right hand mouse button" on the scopes remains, i.e. in three clicks you can set blackground color, grid color or color of the data;
 
- - Qt-DAB-7.2 is usually compiled but can without problem sbe compiled using the  Qt5 framwork. 
+ - Qt-DAB-7.2 is usually compiled with Qt6 but can without problem be compiled using the  Qt5 framework using the "qmake/make" road. The CMakeLists,txt file cotains some Qt6 dependencies;
 
 In QtDAB-7.2 some GUI elements were changed:
 
- - The "waterfall" disappeared and a running version of Qt-DAB can be shown - including the other windows - on my laptop screen.
+ - The "waterfall" disappeared: a running version of Qt-DAB can be shown - including the other windows - on my laptop screen.
 
- - the proressbars on the technical window are replaced by indicators telling just whether the processing is OK or not.
+ - the progressbars on the technical window are replaced by simple indicators telling just whether the processing is OK.
 
  - the main window contains a button **channel view** that - when touched - shows in a separate window an overview of the channels in the current database.
 
