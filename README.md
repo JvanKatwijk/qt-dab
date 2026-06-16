@@ -338,7 +338,7 @@ reader for just reading udp packets (with no further interpretation at all).
 a separate facility was created to **stop** such a service.
 For that purpose, a small window can be made visible showing all running
 backends (starting an audio service in the background shows the window,
-its visibility iscontrolled by clicking on the number of services as shown
+its visibility is controlled by clicking on the number of services as shown
 in the configuration and control window)
 
 ![7.1](/res/read_me/process-management-2.png)
@@ -357,9 +357,7 @@ tells the task is running in the background.
 The picture shows an audio service, **Dlf** which carriers a
 secondary service, DlfTXT.
 Secondary services are also running in the background.
-
-**Touching the name of the service running in the background stops
-that service.**
+**Touching the name of the service  in this control window  that is running in the background stops that service.**
 
 Note that it is also possible to run audio services **found in the currently
 selected channel** in the background. The audio - for DAB mp2 format, for
