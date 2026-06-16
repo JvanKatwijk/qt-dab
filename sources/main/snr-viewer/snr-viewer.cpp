@@ -39,12 +39,11 @@
 	setupUi (&myFrame);
 	setPositionAndSize (s, &myFrame, "snrViewer");
 	theDisplay	= new  basicScope (snrPlot, dabSettings,
-	                                             512, "snrViewer");
-	Y_buffer. resize (512);
-	plotLength	= value_i (dabSettings, "snrViewer", "snrLength", 312);
+	                                             1024, "snrViewer");
+	plotLength	= 1024;
+	Y_buffer. resize (plotLength);
 	plotHeight	= value_i (dabSettings, "snrViewer", "snrHeight", 15);
 	delayCount	= value_i (dabSettings, "snrViewer", "snrDelay", 5);
-	snrLengthSelector	-> setValue (plotLength);
 	snrSlider		-> setValue (plotHeight);
 	snrCompressionSelector	-> setValue (delayCount);
 	snrDumpFile. store (nullptr);
@@ -55,8 +54,6 @@
 	connect (snrCompressionSelector,
 	                qOverload<int>(&QSpinBox::valueChanged),
 	         this, &snrViewer::set_snrDelay);
-	connect (snrLengthSelector, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &snrViewer::set_snrLength);
 }
 
 	snrViewer::~snrViewer () {
@@ -80,7 +77,7 @@ bool	snrViewer::isHidden () {
 }
 
 void	snrViewer::add_snr	(float snr) {
-static float delayBuffer [10];
+static float delayBuffer [3];
 float	sum	= 0;
 	delayBuffer [delayBufferP] = snr;
 	delayBufferP = (delayBufferP + 1) % delayCount;
@@ -121,8 +118,8 @@ float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
 }
 
 void	snrViewer::show_snr () {
-	theDisplay	-> showSpectrum (Y_buffer. data (), 512,
-	                                 0, 511,
+	theDisplay	-> showSpectrum (Y_buffer. data (), 1024,
+	                                 0, 120,
 	                                 0, plotHeight);
 }
 
@@ -170,26 +167,17 @@ void	snrViewer::startDumping () {
 	snrDumpButton -> setText ("dumping");
 }
 
-
 void	snrViewer::set_snrDelay	(int d) {
 	if ((0 <= d) && (d <= 10))
 	   delayCount = d;
 	else
 	   delayCount = 5;
 	delayBufferP	= 0;
-	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings     -> setValue ("snrDelay", d);
-	dabSettings	-> endGroup ();
-
+	store (dabSettings, "snrViewer", "snrDelay", d);
 }
 
 void	snrViewer::set_snrHeight	(int n) {
 	plotHeight	= n;
-	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings	-> setValue ("snrHeight", n);
-	dabSettings	-> endGroup ();
-}
-
-void	snrViewer::set_snrLength	(int n) {
+	store (dabSettings, "snrViewer", "snrHeight", n);
 }
 

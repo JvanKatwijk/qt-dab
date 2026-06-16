@@ -51,6 +51,11 @@ private:
         int             columns;
         QScrollArea     *myWidget;
         QTableWidget    *contentWidget;
+private slots:
+	void		selectElement	(int, int);
+signals:
+	void		selectChannel (const QString &);
+
 };
 
 

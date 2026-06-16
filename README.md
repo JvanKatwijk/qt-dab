@@ -1,4 +1,4 @@
-# Qt-DAB-7.1.3
+# Qt-DAB-7.2
 
 -------------------------------------------------------------------
 
@@ -9,10 +9,10 @@ About Qt-DAB
 
 *Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-![6.10](/res/read_me/qt-dab-front-picture.png?raw=true)
+![7.2](/res/read_me/qt-dab-front-picture.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-7.23*, predefined executables - for Linux an AppImage, for Windows
+*Qt-DAB-7.2*, predefined executables - for Linux an AppImage, for Windows
 an installer - are (or will be) available.
 
 Table of Contents
@@ -46,7 +46,6 @@ In QtDAB-7.2 some GUI elements were changed:
 
  - the main window contains a button **channel view** that - when touched - shows in a separate window an overview of the channels in the current database.
 
-
 ![7.2](/res/read_me/channelView.png?raw=true)
 
 Windows and scopes
@@ -54,7 +53,6 @@ Windows and scopes
 
 In the latest releases of 6.10 the **dump** button was already moved from the configuration window to the main window (the **button** implemented by a click
 on the **right hand button** on the mouse on the ensemblename). Furthermore,
-
 when dumpimg,  a small window is shown that remminds the user that dumping is going on.
 
 ![7.2](/res/read_me/dumping.png?raw=true)
@@ -62,9 +60,41 @@ when dumpimg,  a small window is shown that remminds the user that dumping is go
 In Qt-DAB-7.1.1 some buttons were added to the main window.
 The selector of the list of audio devices was traditionally shown as combobox,
 now it is back as regular button.
-The same applies to the other buttons, the 
+The same applies to the other buttons.
 
 ![7.2](/res/read_me/qt-dab-7.2.png?raw=true)
+
+The main window is visisble as long as the program runs.
+
+The left (almost) half is mainly reserved for selecting channel and service.
+ * the top line, displaying the ensemble name implements as clickable item as well
+
+    * clicking with the left mouse button, controls the visibility of the content table;
+![7.0](/res/read_me/content-table.png)
+
+    * clicking with the right mouse button control **dumping** the input.
+
+![7.2](/res/read_me/dumping.png?raw=true)
+
+Clicking on a service name selects the service with that name:
+
+ * in ensemble mode and in favorite mode, this might involving a channel switch which may take a few seconds;
+
+ * in ensemble mode, clicking with the **right hand** mouse button on an audio service other than the currently selected one, starts the service as background service;
+
+ * in ensemble mode the bottom part of the left half contaims next to the **next** and **previous** selectors for the services, a **channel selector** and a **mode selector**.
+
+ * in **favorite mode** no channel selector is available and the channelview button is meaningless.
+
+ * in **file mode** obviously only the services of the recording are shown and neither a mode selector nor a channel selector are visible. Furthermore, the **channelview button** is meaningless.
+
+ - the channelview button controls the visibility of the channeldisplay. The display shows an overview of the channels in the current database.
+
+![7.2](/res/read_me/channelView.png?raw=true) 
+
+Clicking on a line in the channeldisplay has the same effect has clicking on the channelselector.
+
+============================================================================
 
 The icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.
@@ -73,58 +103,113 @@ technical window, and the icon with label **EPG**, is shown in case
 an EPG/SPI service is detected in the currently selected channel (Note that
 the EPG/SPI service is NOT shown in the services list.)
 
+EPG and timetables
+------------------------------------------------------------------------
 Touching the **EPG** icon make a small window visible, the **timetable list**.
 The list shows the entries in the ensemblelist, coloured **green** is
 timetable data for the service could be detected, **red** otherwide.
 
-![7.0](/res/read_me/timetable-catalog.png?raw=true)
+![7.2](/res/read_me/timetable-catalog.png?raw=true)
 
 Touching in this list on a green entry, shows yet another window, with
 time table data.
 
-![7.0](/res/read_me/timetable.png?raw=true)
+![7.2](/res/read_me/timetable.png?raw=true)
 
 (Note: our NPO is not that advanced that it provides EPG/SPI data, so the
 development and testing uses file input).
 
-As in previous versions, touching the **ensemble name** on the top left,
-controls the visibility of the content table, i.e. a window that shows
-the details of all services in the current ensemble.
+SNR
+-------------------------------------------------------------------------
 
-![7.0](/res/read_me/content-table.png)
+Clicking with the mouse on the SNR icon controls the visibility of the
+snr-window. The snr window shows  the SNR of the current signal over time.
+The setting is such that the screen shows app 2 minutes of snr measurements.
+It was - long time ago - included when I was exercizing different antenans.
 
-The content table shows details of the current ensemble.
-Up to three kinds of service may be shown, regular "audio", "packet", and secondary services.
+![7.2](/res/read_me/snr-window.png?raw=true)
+
+Muting a signal
+--------------------------------------------------------------------------
+
+Clicking on the **speaker** symbol controls **muting** the audio signal.
+If set, a counter appears telling the remaining mute time. The mute time can be set on the configuration and control window. Of course, clicking on the speaker symbol when muting is "on", turns it off.
+
+The dynamic label.
+-------------------------------------------------------------------------
+
+The dynamic label shows below the slide space. Clicking with the right hand mouse button on the text shows a (very) small menu which allows saving (part of) the text. There are two other ways to save the dynamic label text or a part of it
+
+ * by selecting the **dllText** button on the configuration and control window;
+ * by selecting the **save titles** option in the configuration and control window. This latter option will work if the service supports DL2.
+
+
+Technical window
+----------------------------------------------------------------------------
 
 The technical window shows - as the name suggests - technical details of
 the  selected audio service.
 New is that - if available - the icon of the selected service is shown.
 
-![6.10](/res/read_me/technical-window.png)
+![7.2](/res/read_me/technical-window.png)
 
 As  said, the progress bars disappeared, and indicators now tell whether
 or not the steps in the transformation from raw data to audio are successfull.
 
-![7.0](/res/read_me/spectrum-scope.png)
+The buttons
+---------------------------------------------------------------------------
+
+Some buttons were moved from the configuration and control window tothe main window, resulting in two rows of buttons.
+For each of the buttons a **tooltip** gives more details on the functionality controlled by that button.
+
+The buttons:
+ * the buttons labeled **controls**, **spectrum** just control the visibility of the **configuration and control** resp. the **spectrum scope* window;
+ * the buttons **scan**, "audio" and "device" control the visibility of windows to control  **scanning**, selection of the audio channel, and controlling the selected device.
+ * the button labeled **http** controls the http handler with which the transmitters detected can be made visible on a map;
+ * the button labeled **reset** stops and restart processing;
+ * the button labeled **eti** controls the **eti-processor**, i.e. a processor with which the input can be transformed into "eti" compliant data files;
+
+The bottom line
+-------------------------------------------------------------------------
+
+The bottom line may show a transmittername. If the software detects the TII data it will show the name of the transmitter with the strongest signal here.
+Clicking on the line shows a table with the names of all transmitters detected.
+
+![7.2](/res/read_me/new-dxDisplay.png?raw=true)
+
+The spectrumscope and its widgets
+--------------------------------------------------------------------------
+
+![7.2](/res/read_me/spectrum-scope.png)
 
 As mentioned, it was felt that the waterfall did not add much to understanding the characteritics of the signal, and it was removed from the window.
 
-In the view shown in the picture above, the spectrum of the incoming
- DAB signal is shown. To the right of this spectrum, one sees the
+The spectrumscope show on iys left side six different "scopes".
+Note that for each of these scopes the coloring may be set
+Clicking with the right hand mouse button a small window shows on which **three*  colors can be selected:
+
+ * the first  selected color is the one for the background; I prefer black
+ * the second selected one is the color for the "grid", 
+ * the third selected one is the color for the data line.
+
+The spectrum
+-----------------------------------------------------------------------
+The spectrum of the incoming DAB signal is shown.
+To the right of this spectrum, one sees the
 **signal constellation**, i.e. the mapping from the complex signals
 onto their real and imaginary components. If the selector labeled
 "ncp" is set, the centerpoints of the 4 lobs is shown. 
 
-Below the "scope" area, 
-some **quality indicators** of the DAB signal are shown.
-From left to right:
+Below the constallation widget the name of the current channel as well as its frequency is shown.
+
+Below the "scope" area, some **quality indicators** of the DAB input signal are shown:
+
  * the **computed** correction on the frequency of the incoming signal, applied to the signal;
  * the remaining **freq error** (in Hz) after applying the correction;
  * the **SNR**, i.e.  the Signal-Noise Ratio in dB;
- * the **time offset**, the (relative) resulting error in sampling;
+ * the **time offset**, the (relative) resulting error in sampling time in Hz;
  * the **clock offset**, telling the offset in the samplerate in Hz;
  * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB signal;
- * the channel and the frequency of the channel.
 
 At the bottom of the window from left to right
  * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream;
@@ -138,6 +223,9 @@ wrong (and were corrected), per 1000 input bits (lower is better) when processin
 The ideal form of the spectrum and the signal constellation as shown in the
 picture above is not often seen with real inputs.
 
+The correlation
+------------------------------------------------------------------------
+
 ![7.2](/res/read_me/qt-dab-correlation.png)
 
 The **correlation** scope shows the correlation between the incoming signal and
@@ -149,6 +237,9 @@ more than one transmitter is received.
 The software chooses either the largest peak, or - if selected - the
 first peak one larger than a threshold.
 
+The null scope
+---------------------------------------------------------------------------
+
 ![7.2](/res/read_me/qt-dab-null-period.png)
 
 A DAB signal is received as a sequence of samples, and can be thought to
@@ -157,6 +248,9 @@ The **amplitude** of the first app. 2500 samples is (almost) zero, the **NULL**
 period.  The **NULL scope** shows the samples in the transition from the
 **NULL** part to the first samples **with** data of a DAB frame.
 It shows that samples 504 and up in the first data block are used.
+
+The TII scope
+--------------------------------------------------------------------------
 
 ![7.2](/res/read_me/qt-dab-tii-data.png)
 
@@ -169,16 +263,25 @@ in the  relevant **NULL** period, the TII data is encoded as a 4 out of 8 code. 
 The DAB definition provides tables to map the recognized patterm
 to two 2 digit numbers, these numbers are used to identify the transmitter in a database, available in Qt-DAB.
 
+The channel scope
+--------------------------------------------------------------------------
+
 ![7.2](/res/read_me/qt-dab-channel.png)
 
 The picture shows the channel response on the amplitude, and
 the *red line*, i.e. the channel effects on the phase of the samples.
 The picture clearly shows two larger and a few smaller peaks.
 
+The bits scope
+-------------------------------------------------------------------------
+
 ![7.2](/res/read_me/qt-dab-stddev.png)
 
-The last scope shows some of the output of the ofdm decoding process, the
-resulting bits have values between -127 to 127.
+The front end part of the software output "soft bits", encoded as values in the range -127 .. 127. Other parts of the software take soft bits in and - using visterbi decoding and in some case reed Solomon error repair - output "hard bit",
+i.e. "1" and "0" values.
+
+Configuration and control
+--------------------------------------------------------------------------
 
 ![7.2](/res/read_me/configuration-and-control.png)
 
@@ -197,7 +300,7 @@ New are selectors labeled  **load selection** and **update check**.
 If the **load selection**  selector is set, on program startup 
 a small menu shows, showing options to create a new database next to or instead of the default one.
 
-Also new is a checkbox that - wgen set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
+Also new is a checkbox that - when set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
 
 Handling packet and background services
 ========================================================================
@@ -220,8 +323,7 @@ Qt-DAB akways starts a packet service as background task.
 as for audio services.
 To avoid confusion, if the "audio only" selector is "unset", only the services of the currently selected channel are shown, including the data services.
 
-Obviously, when switching to another channel, 
-the service interpretation stops.
+Obviously, when switching to another channel, the service interpretation stops.
 
 Most package services contain some form of TPEG data,
 which is usually encoded;  Qt_DAB is  unable to interpret the TPEG data
@@ -276,7 +378,7 @@ Devices and device support
 ======================================================================
 
 In the current set up, Qt-DAB supports 6 types of (physical) input devices,
-some network input, and file input:
+some network input, and file input in some common formats.
 
   * DABsticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick in the precompiled Windows versions;
   * **All** SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library. **New** is extended support for the SDRPlay RspDuo. Tuner selection (and tuner 2 is connected to a port with biasT support) is now operational;
@@ -301,31 +403,30 @@ The exceptions are the SDRplay and Pluto devices.
  * For **SDRplay** devices the user has to install the drivers from the SDRplay site,
  * for Pluto support one should see the instructions in "https://github.com/analogdevicesinc/plutosdr-m2k-drivers-win".
 
-For Linux users, Ubuntu provides the required libraries for Pluto in a repository (i.e. libii0 and libad9361, for e.g. Fedora the support seems to stop at F33.
+For Linux users, Ubuntu provides the required libraries for Pluto in a repository (i.e. libii0 and libad9361), for e.g. Fedora the support seems to stop at F33.
 
 Qt-DAB also supports input using a network:
   * an rtl_tcp server connected to an RTLSDR device.
   * a **spyServer** (both 8 bit and a 16 bit version), i.e. from AIRSpy devices and RTLSDR devices.
   * (NEW) is support for using the **SDRconnect** program as "input device".
 
-Be aware that Qt-DAB processes the input with 2048000 Samples/second.
-When connected over a network to the SDRconnect server, it x sends -
-with a samplerate of 2000000 (which is converted to the required rate of 2048000),  4 bytes per sample over the network. My wifi cannot handle that.
+Be aware that when using SDRconnect, Qt-DAB processes input with a rate of 2048000 Samples/second. When connected over a network to the SDRconnect server,
+it sends - with a samplerate of 2000000 (which is converted to the required rate of 2048000),  4 bytes per sample over the network. My wifi cannot handle that.
 
-The same applies to  using the other servers.
-The rtl_tcp server sends 2 byte samples, i.e. a payload of 4096000 bytes per second; the 16 bit spyServer sends 4 byte samples (with an even higher rate), all leading to a transmission rate that a regular WiFi cannot handle.
+The same applies to using the other servers.
+The **rtl_tcp** server sends 2 byte samples, i.e. a payload of 4096000 bytes per second; the 16 bit spyServer sends 4 byte samples (with an even higher rate), all leading to a transmission rate that a regular WiFi cannot handle.
 
-![6.10](/res/read_me/sdrconnect.png?raw=true)
+![7.2](/res/read_me/sdrconnect.png?raw=true)
 
 Qt-DAB furthermore supports
   * **Soapy** (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000).
 
-![6.10](/res/read_me/soapy-control.png?raw=true)
+![7.2](/res/read_me/soapy-control.png?raw=true)
 
-In 6.10 soapy is renewed and now shows a deviceselector when more than
-a single soapy-supported device is seen.
+In Qt_DAB-6.10 the soapy driver was renewed and now shows a
+deviceselector when more than a single soapy-supported device is seen.
 
-![6.10](/res/read_me/soapy-selection.png?raw=true)
+![7.2](/res/read_me/soapy-selection.png?raw=true)
 
 Furthermore, soapy now supports xml (i.e. ".uff") files to be written,
 although not in native format. 
@@ -334,8 +435,8 @@ Qt-DAB obviously supports:
  * reading (and writing) ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate of 2048000 samples per secnd. Qt-DAB generates such files. As an extension to classical **RIFF** files that are limited to 4 Gb, Qt-DAB is able to handle (i.e. generate and read)
 ".wav" files with a size  **larger than 4 Gb**, their type is **BW64**.
 
-![6.8](/res/read_me/riff-reader-large.png?raw=true)
-![6.8](/res/read_me/riff-reader-small.png?raw=true)
+![7.2](/res/read_me/riff-reader-large.png?raw=true)
+![7.2](/res/read_me/riff-reader-small.png?raw=true)
 
 The device window gives information on the "type" of the file i.e. RIFF or BW64.
 When reading input from an ".sdr" file that was **generated by Qt-DAB** 
@@ -345,15 +446,18 @@ both the name of the SDR device as well as the channel frequency of the receptio
 
  * reading (and writing) so-called "xml" files, i.e. a file format preserving the precise structure of the input samples. All device handlers show on their device window a button to control dumping the **unmodified** input into an xml file (e.g. for the Airspy this means with a samplerate of 25000000 or 3000000). Note that there is no 4Gb limit for xml type files.
 
-![6.8](/res/read_me/xml-reader.png?raw=true)
+![7.2](/res/read_me/xml-reader.png?raw=true)
 
 Scan control
 =======================================================================
 
 A separate window - visible under control of the **scan** button on the
-main window - provides full control on scanning. Qt-DAB provides different scanning modes: scan to data, single scan and scan continuously.
+main window - provides full control on scanning. Qt-DAB provides different scanning modes:
+ * scan to data, i.ekeep on scanning until a channel with DAB data is detected;
+ *  single scan, i.e. a scan from channel 5A to 13F,
+ *  and scan continuously.
 
-![6.8](/res/read_me/scan-widget.png?raw=true)
+![7.2](/res/read_me/scan-widget.png?raw=true)
 
 **New** is the spinbox, at the left side with the default value 20. The value of this spinbox tells that if a channel is encountered with SOME DAB data, the
 software will be tuned to that channel for the number of seconds specified
@@ -379,7 +483,7 @@ Displaying TII data
 
 As mentioned, transmitters (usually) transmit some identifying data, the TII (Transmitter Identification Information) data. Qt-DAB uses a database (gratefully made available by "www.fmList.org") to map the decoded TII data to name and location of the transmitter.
 
-In recent versions, a copy of that database is part of the precompiled
+In recent versions, a copy of that database is included the precompiled
 versions which is automatically loaded if no database can be found in the user's home directory.
 
 A **fresh** copy of that database can be installed in the user's home directory
@@ -388,7 +492,7 @@ The **db-loader** installs the database, file ".txdata.ti" in the user's home di
 The **configuration and control** window contains a button to load the
 database from the user's home directory into the program.
 
-![6.10](/res/read_me/db-loader.png?raw=true)
+![7.2](/res/read_me/db-loader.png?raw=true)
 
 Alternatively (and for other computing environments) one can **download** a
  reasonably up to date copy of the database from the directory **helpers**
@@ -412,16 +516,13 @@ the identified transmitters.
 Furthermore, the **azimuth** from and the distance to my home location,
 the power of the transmitter, the altitude (we are in a low-laying part of the country), and the height of the transmitting antenna.
 
-The **compass** shows the direction of the signal from the strongest
-transmitter.
-
-![6.10](/res/read_me/QTmap.png?raw=true)
+![7.2](/res/read_me/QTmap.png?raw=true)
 
 Qt-DAB has as said - on the main window -  a button labeled **http**,
 when touched, a webserver is started  with on it a map centered around the
 home position, that - when running - shows the position(s) of the
 transmitter(s) received. 
-(Note that since recently, Qt-DAB contains a **default** home location -
+(Note that Qt-DAB is set to have a **default** home location -
 somewhere in Amsterdam - that - together with  default database - allows the
 software to handle TII data and show the result of decoding on a map).
 It is advised to update the user's home location, the **configuration

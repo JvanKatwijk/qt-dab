@@ -102,6 +102,7 @@ public slots:
 	void		setServiceOrder		(int);	// dummy
 
 	void		startButtons		();
+	void		prepareChannel		(const QString &);
 signals:
 	void		setChannel		(const QString &channel);
 	void		selectService		(const QString &,

@@ -490,13 +490,14 @@ DABFLOAT sum	= 0;
 	   DABFLOAT W2		= -100 / meanValue;
 
 	   DABFLOAT leftBit	= real (R1) * W2;
-	   limit_symmetrically (leftBit, MAX_VITERBI);
-	   softbits [i]		= (int16_t)leftBit;
+//	   limit_symmetrically (leftBit, MAX_VITERBI);
+	   softbits [i]		= std::clamp ((int)leftBit,
+	                                      -MAX_VITERBI, MAX_VITERBI);
 
 	   DABFLOAT rightBit	= imag (R1) * W2;
-	   limit_symmetrically (rightBit, MAX_VITERBI);
-	   softbits [i + carriers]	= (int16_t)rightBit;
-
+//	   limit_symmetrically (rightBit, MAX_VITERBI);
+	   softbits [i + carriers]	= std::clamp ((int)rightBit,
+	                                      -MAX_VITERBI, MAX_VITERBI);
 	   sum			+= jan_abs (R1);
 	}
 	return sum;

@@ -50,16 +50,6 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QSpinBox" name="snrLengthSelector">
-       <property name="minimum">
-        <number>100</number>
-       </property>
-       <property name="maximum">
-        <number>500</number>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>233</width>
-    <height>405</height>
+    <width>254</width>
+    <height>476</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblHelp">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLineEdit" name="hostLineEdit"/>

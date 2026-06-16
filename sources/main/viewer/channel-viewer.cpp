@@ -40,6 +40,8 @@
 	                          tr ("ensemble") << tr ("country") <<
 	                          tr ("audioserv") << tr ("dataserv") << 
 	                          tr ("secondary"));
+	connect (contentWidget, &QTableWidget::cellClicked,
+                 this, &channelViewer::selectElement);
 }
 
 	channelViewer::~channelViewer () {
@@ -117,3 +119,11 @@ void	channelViewer::reload		() {
 	   contentWidget     -> setItem (rowCount, 5, item5);
 	}
 }
+ 
+void	channelViewer::selectElement (int row, int column) {
+QTableWidgetItem* theItem = contentWidget  -> item (row, 0);
+        
+        (void)column;   
+        QString theChannel = theItem -> text ();
+	selectChannel (theChannel);
+}     

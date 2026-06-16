@@ -48,11 +48,11 @@
 	                              QFrame *theFrame): 
 	                                        theDataBase (),
 	                                        channelDisplay (&theDataBase),
-	                                        normalFont ("Times", 11, 
-                                                              -1, false),
-                                                markedFont ("Times", 12,
-                                                              -1, true),
-                                                channelFont ("Times", 8) {
+	                                        normalFont     ("Times", 11, 
+                                                                -1, false),
+                                                markedFont     ("Times", 12,
+                                                                -1, true),
+                                                channelFont    ("Times", 8) {
 
 	this	-> defaultName		= fileName;
 	this	-> fileName		= fileName;
@@ -75,6 +75,8 @@
 	theWidget	-> setWidget (theTable);
 	theWidget	-> show ();
 
+	connect (&channelDisplay, &channelViewer::selectChannel,
+	         this, &serviceViewer::prepareChannel);
 	QPixmap p;
         if (p. load (":res/radio-pictures/up-arrow.png", "png"))
            prevChannel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
@@ -913,4 +915,22 @@ void	serviceViewer::handle_channelDisplay	() {
 	   channelDisplay. show ();
 	}
 }
+//
+//	called from the channeldisplay
+void	serviceViewer::prepareChannel	(const QString &channel) {
+	if (theMode != ENSEMBLEVIEW)
+	   return;
+
+	disconnect (channelSelector,
+                     qOverload<const QString &> (&QComboBox::textActivated),
+                 this, &serviceViewer::handle_channelSelector);
+	int k = channelSelector -> findText (channel);
+        if (k != -1)  
+           channelSelector -> setCurrentIndex (k);
+	connect (channelSelector,
+                     qOverload<const QString &> (&QComboBox::textActivated),
+                 this, &serviceViewer::handle_channelSelector);
+	handle_channelSelector (channel);
+}
+
 

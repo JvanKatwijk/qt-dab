@@ -47,7 +47,7 @@ void	audioLevel::setLevel (qreal level) {
 }
 
 QColor	audioLevel::colorMix (double level) {
-int32_t p = 4;
+int32_t p = 3;
 
 	for (int i = 0; i < 5 - 1; i ++) {
 	   if (level <= colorStops [i + 1]. level) {
@@ -78,6 +78,8 @@ Q_UNUSED(event);
 QPainter painter (this);
 
 	int base	= 0.7 * height ();
+	if (m_level > height ())
+	   m_level = height () - 1;
 	int level	= (height () - m_level);
 
 	for (int i = 0; i < level; i ++) {

@@ -70,7 +70,6 @@ private:
 private slots:
 	void		handle_snrDumpButton	();
 	void		set_snrHeight		(int);
-	void		set_snrLength		(int);
 	void		set_snrDelay		(int);
 };
 

@@ -468,7 +468,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         sum /= T_null;
 	         float snrV	=
 	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	         this -> snr = 0.9 * this ->  snr + 0.1 * snrV;
+	         this -> snr = 0.5 * this ->  snr + 0.5 * snrV;
 	         showSnr (snr);
 	      }
 /**
