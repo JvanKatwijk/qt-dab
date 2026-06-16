@@ -23,7 +23,6 @@ Table of Contents
 * [Handling packet services](#handling-packet-services)
 * [Scan control](#scan-cntrol)
 * [Displaying TII data](#displaying-tii-data)
-* [EPG Handling and time tables](#epg-handling-and-time-tables)
 * [Journaline data](#journaline-data)
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
@@ -34,9 +33,10 @@ Table of Contents
 What is new in Qt-DAB-7.2
 ======================================================================
 
- - In Qt-DAB-7.2 does NOT use qwt anymore, for now the "compass" on the display for showing transmitters is not (yet) reimplemented in Qt-DAB and not visible; The feature "clicking with the right hand mouse button" on the scopes remains, i.e. in three clicks you can set blackground color, grid color or color of the data;
+ - In Qt-DAB-7.2 does NOT use qwt anymore. The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
+The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set background color, grid color and color of the data;
 
- - Qt-DAB-7.2 is usually compiled with Qt6 but can without problem be compiled using the  Qt5 framework using the "qmake/make" road. The CMakeLists,txt file cotains some Qt6 dependencies;
+ - Qt-DAB-7.2 is developed using Qt6 but can be compiled without problems using the Qt5 framework using "qmake -qt5" for generating a makefile. The CMakeLists.txt file  for using cmake contains some Qt6 dependencies;
 
 In QtDAB-7.2 some GUI elements were changed:
 
@@ -105,6 +105,15 @@ the EPG/SPI service is NOT shown in the services list.)
 
 EPG and timetables
 ------------------------------------------------------------------------
+
+If an EPG service is detected on starting a channel, Qt-DAB will attempt to start the service as  **background task**.  Data decoded by the EPG/SPI handler will be stored in a separate directory that is itself stored in the user's Qt-DAB-files directory.
+
+EPG/SPI data may consist of two parts: 
+ * icons for services. If on selecting a service an Icon is detected in the user's Qt-DAB-files directory, the Icon is made visible and takes the place of the **short name** of the service, both on the main window and the technical details window.
+
+![7.2](/res/read_me/bbc-3.png?raw=true)
+
+ * **Electronic Program Data**.
 Touching the **EPG** icon make a small window visible, the **timetable list**.
 The list shows the entries in the ensemblelist, coloured **green** is
 timetable data for the service could be detected, **red** otherwide.
@@ -119,13 +128,14 @@ time table data.
 (Note: our NPO is not that advanced that it provides EPG/SPI data, so the
 development and testing uses file input).
 
+Note however, that in general it may take some time before sufficient EPG/SPI data is read in for the above mentioned functionality to be operational.
+
 SNR
 -------------------------------------------------------------------------
 
-Clicking with the mouse on the SNR icon controls the visibility of the
-snr-window. The snr window shows  the SNR of the current signal over time.
-The setting is such that the screen shows app 2 minutes of snr measurements.
-It was - long time ago - included when I was exercizing different antenans.
+Clicking with the mouse on the SNR icon on the main window controls
+the visibility of the **snr-window**. The snr-window shows  the SNR of the current signal over time.
+The setting is such that the screen shows app 2 minutes of subsequent snr measurements. It was - long time ago - included when I was exercizing different antenans.
 
 ![7.2](/res/read_me/snr-window.png?raw=true)
 
@@ -133,7 +143,7 @@ Muting a signal
 --------------------------------------------------------------------------
 
 Clicking on the **speaker** symbol controls **muting** the audio signal.
-If set, a counter appears telling the remaining mute time. The mute time can be set on the configuration and control window. Of course, clicking on the speaker symbol when muting is "on", turns it off.
+If set, a counter appears telling the remaining mute time. The (maximum) mute time can be set on the configuration and control window. Of course, clicking on the speaker symbol when muting is "on", turns it off.
 
 The dynamic label.
 -------------------------------------------------------------------------
@@ -153,8 +163,9 @@ New is that - if available - the icon of the selected service is shown.
 
 ![7.2](/res/read_me/technical-window.png)
 
-As  said, the progress bars disappeared, and indicators now tell whether
+As  said, the progress bars disappeared:  indicators tell whether
 or not the steps in the transformation from raw data to audio are successfull.
+Eseentiallu, if all indicators are green there should be sound.
 
 The buttons
 ---------------------------------------------------------------------------
@@ -172,7 +183,7 @@ The buttons:
 The bottom line
 -------------------------------------------------------------------------
 
-The bottom line may show a transmittername. If the software detects the TII data it will show the name of the transmitter with the strongest signal here.
+The bottom line of the right half of the main window may show a transmittername. If the software detects the TII data it will show the name of the transmitter with the strongest signal here.
 Clicking on the line shows a table with the names of all transmitters detected.
 
 ![7.2](/res/read_me/new-dxDisplay.png?raw=true)
@@ -180,13 +191,11 @@ Clicking on the line shows a table with the names of all transmitters detected.
 The spectrumscope and its widgets
 --------------------------------------------------------------------------
 
-![7.2](/res/read_me/spectrum-scope.png)
-
 As mentioned, it was felt that the waterfall did not add much to understanding the characteritics of the signal, and it was removed from the window.
 
 The spectrumscope show on iys left side six different "scopes".
 Note that for each of these scopes the coloring may be set
-Clicking with the right hand mouse button a small window shows on which **three*  colors can be selected:
+Clicking with the right hand mouse button on the scope, shows a small window on which **three*  colors can be selected:
 
  * the first  selected color is the one for the background; I prefer black
  * the second selected one is the color for the "grid", 
@@ -194,26 +203,27 @@ Clicking with the right hand mouse button a small window shows on which **three*
 
 The spectrum
 -----------------------------------------------------------------------
+
+![7.2](/res/read_me/spectrum-scope.png)
+
 The spectrum of the incoming DAB signal is shown.
 To the right of this spectrum, one sees the
-**signal constellation**, i.e. the mapping from the complex signals
-onto their real and imaginary components. If the selector labeled
-"ncp" is set, the centerpoints of the 4 lobs is shown. 
+**signal constellation**, i.e. the mapping from the complex (i.e. "IQ") signals
+resulting from the decoder, onto their real and imaginary components. If the selector labeled "ncp" is set, the centerpoints of the 4 lobs is shown. 
 
 Below the constallation widget the name of the current channel as well as its frequency is shown.
 
 Below the "scope" area, some **quality indicators** of the DAB input signal are shown:
-
  * the **computed** correction on the frequency of the incoming signal, applied to the signal;
  * the remaining **freq error** (in Hz) after applying the correction;
  * the **SNR**, i.e.  the Signal-Noise Ratio in dB;
  * the **time offset**, the (relative) resulting error in sampling time in Hz;
  * the **clock offset**, telling the offset in the samplerate in Hz;
- * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB signal;
+ * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB  input signal;
 
 At the bottom of the window from left to right
- * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream;
- * a **FIC** indicator, telling the (average) successrate of decoding the FIC part of the DAB frames (i.e. the data that specifies the payload);
+ * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream (i.e. time synchronization);
+ * a **FIC** indicator, telling the (average) successrate of decoding the FIC part of the DAB frames (i.e. the data that implements a kind of "catalog" that describes the payload);
  * a **BER**, Bit Error Rate, telling (on average) how many input bits were
 wrong (and were corrected), per 1000 input bits (lower is better) when processing the FIC;
  * a **MER**, Modulation Error Rate, indicating the quality of the input signal (higher is better);
@@ -228,14 +238,12 @@ The correlation
 
 ![7.2](/res/read_me/qt-dab-correlation.png)
 
-The **correlation** scope shows the correlation between the incoming signal and
-predefined  data, i.e. the data as they should be.
 **Correlation** is used to identify the precise input sample in the input stream
 where the (relevant) data of the frame  starts.
 The picture shows more than one peaks, i.e. the signal from
-more than one transmitter is received. 
+more than one transmitter is received (after all, the same DAB (DAB+) signal is transmitted by a pretty large number of transmitters);
 The software chooses either the largest peak, or - if selected - the
-first peak one larger than a threshold.
+first peak one larger than a threshold. A setting on the configuration window controls this.
 
 The null scope
 ---------------------------------------------------------------------------
@@ -260,8 +268,8 @@ an encoding of the TII (Transmitter Identification Information) data.
 The **TII scope** shows a condensed form of the spectrum of the data
 in the  relevant **NULL** period, the TII data is encoded as a 4 out of 8 code. Indeed, four larger (and four smaller) peaks can be seen in the picture. In this picture the pattern shown is 0x1e.
 
-The DAB definition provides tables to map the recognized patterm
-to two 2 digit numbers, these numbers are used to identify the transmitter in a database, available in Qt-DAB.
+The DAB definition provides tables to map the recognized patterns
+on to two 2 digit numbers, these numbers are used to identify the transmitter in a database, available in Qt-DAB.
 
 The channel scope
 --------------------------------------------------------------------------
@@ -411,10 +419,10 @@ Qt-DAB also supports input using a network:
 Be aware that when using SDRconnect, Qt-DAB processes input with a rate of 2048000 Samples/second. When connected over a network to the SDRconnect server,
 it sends - with a samplerate of 2000000 (which is converted to the required rate of 2048000),  4 bytes per sample over the network. My wifi cannot handle that.
 
-The same applies to using the other servers.
-The **rtl_tcp** server sends 2 byte samples, i.e. a payload of 4096000 bytes per second; the 16 bit spyServer sends 4 byte samples (with an even higher rate), all leading to a transmission rate that a regular WiFi cannot handle.
-
 ![7.2](/res/read_me/sdrconnect.png?raw=true)
+
+The same restriction applies to using the other servers.
+The **rtl_tcp** server sends 2 byte samples, i.e. a payload of 4096000 bytes per second; the 16 bit spyServer sends 4 byte samples (with an even higher rate), all leading to a transmission rate that a regular WiFi cannot handle.
 
 Qt-DAB furthermore supports
   * **Soapy** (Linux only, not included in the AppImage), a renewed Soapy interface driver is even able to handle other samplerates than the required 2048000 (limited to the range 2000000 .. 4000000).
@@ -430,7 +438,7 @@ Furthermore, soapy now supports xml (i.e. ".uff") files to be written,
 although not in native format. 
 
 Qt-DAB obviously supports:
- * reading (and writing) ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate of 2048000 samples per secnd. Qt-DAB generates such files. As an extension to classical **RIFF** files that are limited to 4 Gb, Qt-DAB is able to handle (i.e. generate and read)
+ * reading (and writing) ".sdr" type files from the input, where ".sdr" type is a form of ".wav" file with IQ samples with fixed inputrate of 2048000 samples per second. Qt-DAB generates such files. As an extension to classical **RIFF** files that are limited to 4 Gb, Qt-DAB is able to handle (i.e. generate and read)
 ".wav" files with a size  **larger than 4 Gb**, their type is **BW64**.
 
 ![7.2](/res/read_me/riff-reader-large.png?raw=true)
@@ -498,22 +506,6 @@ in the Qt-DAB repository.
 Unpack the zipped file "tiiFile.zip" and name it ".txdata.tii" in the
 home directory.
 
-As was shown earlier, one usually receives signals from more than
-one transmitter.
-While the line at the bottom on the right half of the Qt-DAB's main
-window  always shows the strongest transmitter,
-Qt-DAB can also show data of **all** identified transmitters on a
-small separate window (if selected), the **dxDisplay**.
-
-![6.10](/res/read_me/new-dxDisplay.png?raw=true)
-
-The picture shows that the ensemble, transmitted in channel 12C is "NPO",
-and it shows for each of the identified transmitters some data.
-The first column shows a mark for the strongest transmitter, the pattern is shown as well as the **TII values** (the mainId, and the subId) of
-the identified transmitters.
-Furthermore, the **azimuth** from and the distance to my home location,
-the power of the transmitter, the altitude (we are in a low-laying part of the country), and the height of the transmitting antenna.
-
 ![7.2](/res/read_me/QTmap.png?raw=true)
 
 Qt-DAB has as said - on the main window -  a button labeled **http**,
@@ -548,37 +540,6 @@ reading in a generated map file, and displaying it, per country,
 per channel, per ensemble or completely.
 
 ![6.10](/res/read_me/map-viewer.png?raw=true)
-
-EPG Handling and time tables
-=================================================================
-
-While not here in the Netherlands, in many other countries an ensemble
-contains an **EPG** or **SPI** service.
-Such a service contains data for service logo's and  uduslly for **time tables**.
-If such a service is detected within a handful of seconds after the start of the channel, Qt-DAB will attempt to start the service as  **background task**.
-If the EPG/SPI service was identified late, the service can be started manually and will also run as background task.
-
-Data decoded by this service will be stored in a separate directory that is itself stored in the user's Qt-DAB-files directory.
-
-![6.10](/res/read_me/bbc-3.png?raw=true)
-
-If sufficient data is read in that directory, the software **might** find a service logo and a time table for the selected service.
-The logo - if found - is shown on the main window (picture above) next to the service name.
-The time table - if found - is made visible by touching the small icon
-on the main window labeled "EPG".
-(This selector is chosen since it is certain that if the icon is visible, there is at least an EPG/SPI service)
-
-![6.10](/res/read_me/timetable-catalog.png?raw=true)
-
-The timetable catalog shows for which channels their is **SOME** timetable data.
-
-![6.10](/res/read_me/timetable.png?raw=true)
-
-If no data for the time table is found, the time table will say so
-
-![6.10](/res/read_me/timeTable-notfound.png?raw=true)
-
-The timeTable window contains a **next** and **prev** button to scan through different dates. Older pages are not removed by default, selecting a page and touching the "remove" button will remove the currently selected page.
 
 Journaline data
 ================================================================
