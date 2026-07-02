@@ -127,6 +127,7 @@ int	index_for_key (int key) {
 	            qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::set_longitude);
 
+	TPEG_label	-> setStyleSheet ("color:yellow");
 	int	tpegPort	=
 	               value_i (dabSettings, MAP_HANDLING,
 	                                         TPEG_PORT, 8888);
@@ -160,7 +161,6 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
 	this	-> updateChecker	-> setChecked (b);
 //
-
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                          CLOSE_DIRECT_SETTING, 0) != 0;
 	this -> closeDirect_selector -> setChecked (b);
@@ -399,6 +399,8 @@ void	configHandler::set_connections () {
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
 	         this, &configHandler::handle_decoderSelector);
+	connect (this, &configHandler::selectDecoder,
+	         myRadioInterface, &RadioInterface::selectDecoder);
 }
 
 /////////////////////////////////////////////////////////////////////////

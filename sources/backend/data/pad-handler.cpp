@@ -33,7 +33,7 @@
   */
 	padHandler::padHandler	(RadioInterface *mr,
 	                         uint32_t	SId,
-	                            bool backgroundFlag):
+	                         bool backgroundFlag):
 	                              myRadioInterface (mr) {
 	this	-> SId			= SId;
 	this	-> backgroundFlag	= backgroundFlag;
@@ -233,7 +233,7 @@ std::vector<uint8_t> data;		// for the local addition
 //	   if (mscGroupElement && (xpadLength > 0)) {
 	   if (xpadLength > 0) {
 	      if (last < xpadLength - 1) {
-	         qWarning () << "handle_variablePAD: last < xpadLength - 1\n";
+//	         qWarning () << "handle_variablePAD: last < xpadLength - 1\n";
 	         return;
 	      }
 	      
@@ -302,7 +302,7 @@ std::vector<uint8_t> data;		// for the local addition
 	         return; // sorry, we do not handle this
 
 	      case 1:	//
-	         qWarning () <<  "unsupported mode in Pad\n";
+//	         qWarning () <<  "unsupported mode in Pad\n";
 	         return;
 	      case 2:	// Dynamic label segment, start of X-PAD data group
 	      case 3:	// Dynamic label segment, continuation of X-PAD data group
@@ -322,7 +322,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   last_appType = appType;
 	   base -= length;
 	   if (base < 0 && i < CI_Index - 1) {
-	      qWarning () << "Pad: something wrong with base " << base;
+//	      qWarning () << "Pad: something wrong with base " << base;
 	      return;
 	   }
 	}
@@ -357,7 +357,7 @@ int16_t  dataLength                = 0;
 	   else {
 	      int test = ((prefix >> 4) & 07) + 1;
 	      if (test != segmentno + 1) {
-	         qWarning () << "mismatch with pad segment numbers " << test;
+//	         qWarning () << "mismatch with pad segment numbers " << test;
 	         segmentno = -1;
 	         return;
 	      }
@@ -392,7 +392,7 @@ int16_t  dataLength                = 0;
 	            }
 	            break;
 	         default:
-	            qWarning () << "unknown command  in Pad : " << Command;
+//	            qWarning () << "unknown command  in Pad : " << Command;
 	            break;
 	      }
 	   }
@@ -506,7 +506,7 @@ int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
 	                                            dataGroupLength;
 
 	if (size < 2) {
-	   qWarning () << "build_MSC_segment: data size < 2\n";
+//	   qWarning () << "build_MSC_segment: data size < 2\n";
 	   return;
 	}
 	   
@@ -521,7 +521,7 @@ uint16_t	index;
 	if ((data [0] & 0x40) != 0) {
 	   bool res	= check_crc_bytes (data. data(), size - 2);
 	   if (!res) {
-	      qWarning () << "build_MSC_segment fails on crc check";
+//	      qWarning () << "build_MSC_segment fails on crc check";
 	      return;
 	   }
 //	   else
@@ -594,8 +594,8 @@ uint16_t	index;
 	      break;
 
 	   default:		// cannot (should not) happen
-	      qWarning () << " grouptype not yet handled mot in pad" <<
-	                                          groupType;
+//	      qWarning () << " grouptype not yet handled mot in pad" <<
+//	                                          groupType;
 	      break;
 	}
 }

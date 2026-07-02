@@ -7,7 +7,7 @@
 About Qt-DAB
 ======================================================================
 
-*Qt-DAB* is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
+*Qt-DAB* is software for Linux and Windows, and can be compiled for MacOS and Raspberry Pi. It is used for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 ![7.2](/res/read_me/qt-dab-front-picture.png?raw=true)
 
@@ -33,14 +33,14 @@ Table of Contents
 What is new in Qt-DAB-7.2
 ======================================================================
 
- - In Qt-DAB-7.2 does NOT use qwt anymore. The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
-The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set background color, grid color and color of the data;
+ - In Qt-DAB-7.2  qwt  is  not used anymore for the "scopes". The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
+The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set  (1) background color, (2) grid color and (3) color of the curve;
 
  - Qt-DAB-7.2 is developed using Qt6 but can be compiled without problems using the Qt5 framework using "qmake -qt5" for generating a makefile. The CMakeLists.txt file  for using cmake contains some Qt6 dependencies;
 
 In QtDAB-7.2 some GUI elements were changed:
 
- - The "waterfall" disappeared: a running version of Qt-DAB can be shown - including the other windows - on my laptop screen.
+ - The "waterfall" disappeared: the GUI of a running version of Qt-DAB is sufficently limited in size that it can be shown - including the other windows - on my laptop screen.
 
  - the progressbars on the technical window are replaced by simple indicators telling just whether the processing is OK.
 
@@ -58,17 +58,16 @@ when dumpimg,  a small window is shown that remminds the user that dumping is go
 ![7.2](/res/read_me/dumping.png?raw=true)
 
 In Qt-DAB-7.1.1 some buttons were added to the main window.
-The selector of the list of audio devices was traditionally shown as combobox,
-now it is back as regular button.
-The same applies to the other buttons.
+The selector of the list of audio devices was traditionally shown as combobox in the configuration and control window, 
+now it is a separate small window, the visibility of which id controlled by a button on the main window. 
+Some other buttons are just replaced on the main window.
 
 ![7.2](/res/read_me/qt-dab-7.2.png?raw=true)
 
 The main window is visisble as long as the program runs.
 
 The left (almost) half is mainly reserved for selecting channel and service.
- * the top line, displaying the ensemble name implements as clickable item as well
-
+    * the top line, displaying the ensemble name implements as clickable item as well
     * clicking with the left mouse button, controls the visibility of the content table;
 ![7.0](/res/read_me/content-table.png)
 
@@ -109,11 +108,11 @@ EPG and timetables
 If an EPG service is detected on starting a channel, Qt-DAB will attempt to start the service as  **background task**.  Data decoded by the EPG/SPI handler will be stored in a separate directory that is itself stored in the user's Qt-DAB-files directory.
 
 EPG/SPI data may consist of two parts: 
- * icons for services. If on selecting a service an Icon is detected in the user's Qt-DAB-files directory, the Icon is made visible and takes the place of the **short name** of the service, both on the main window and the technical details window.
+   * icons for services. If on selecting a service an Icon is detected in the user's Qt-DAB-files directory, the Icon is made visible and takes the place of the **short name** of the service, both on the main window and the technical details window.
 
 ![7.2](/res/read_me/bbc-3.png?raw=true)
 
- * **Electronic Program Data**.
+ * **Electronic Program Guide  Data**.
 Touching the **EPG** icon make a small window visible, the **timetable list**.
 The list shows the entries in the ensemblelist, coloured **green** is
 timetable data for the service could be detected, **red** otherwide.
@@ -165,7 +164,7 @@ New is that - if available - the icon of the selected service is shown.
 
 As  said, the progress bars disappeared:  indicators tell whether
 or not the steps in the transformation from raw data to audio are successfull.
-Eseentiallu, if all indicators are green there should be sound.
+Essentially, if all indicators are green there should be sound.
 
 The buttons
 ---------------------------------------------------------------------------
@@ -191,9 +190,9 @@ Clicking on the line shows a table with the names of all transmitters detected.
 The spectrumscope and its widgets
 --------------------------------------------------------------------------
 
-As mentioned, it was felt that the waterfall did not add much to understanding the characteritics of the signal, and it was removed from the window.
+As mentioned, it was felt that the waterfall did not add much to the understanding of the characteritics of the signal, and it was removed from the window.
 
-The spectrumscope show on iys left side six different "scopes".
+The spectrumscope show on its left side six different "scopes".
 Note that for each of these scopes the coloring may be set
 Clicking with the right hand mouse button on the scope, shows a small window on which **three*  colors can be selected:
 

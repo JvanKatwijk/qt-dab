@@ -358,6 +358,8 @@ void	serviceViewer::mark (int index) {
 }
 
 void	serviceViewer::unmark (int index) {
+	if ((index < 0) ||(index >= theTable -> rowCount ()))
+	   return;
 	viewLocker. lock ();
 	theTable -> item (index, 1) -> setFont (normalFont);
 	theTable -> item (index, 2) -> setFont (normalFont);

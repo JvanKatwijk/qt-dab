@@ -32,6 +32,7 @@
 #include	"mot-object.h"
 #include	"radio.h"
 #include	<algorithm>
+#include	"bit-extractors.h"
 #include	"charsets.h"
 
 	   motObject::motObject (RadioInterface *mr,
@@ -54,12 +55,21 @@ uint16_t	rawContentType = 0;
 	         mr, &RadioInterface::handle_motObject);
 	this	-> numofSegments	= -1;
 
-	headerSize     =
-	   ((segment [3] & 0x0F) << 9) |
-                   (segment [4] << 1) | ((segment [5] >> 7) & 0x01);
+//	7 bytes with descriptive data
+//	28 bits body size
+//	13 bits header zise
+//	6 bits contenttype
+//	9 bits content subtype
 	bodySize       =
-	   (segment [0] << 20) | (segment [1] << 12) |
-                            (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
+	          (segment [0] << 20) | (segment [1] << 12) |
+	                  (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
+	headerSize     =
+	          ((segment [3] & 0x0F) << 9) |
+                   (segment [4] << 1) | ((segment [5] >> 7) & 0x01);
+//	contentType	=
+//	           (segment [5] >> 1) & 0x3F;
+//	subType	=
+//	           ((segment [5] & 0x01) << 8) | segment [6];
 
 // Extract the content type
 //	int b	= (segment [5] >> 1) & 0x3F;
@@ -111,6 +121,7 @@ uint16_t	rawContentType = 0;
 	               break;
 
 	            case 5:	// trigger time
+//	               fprintf (stderr, "trigger time seen\m");
 	               pointer += length;	// 
 	               break;
 

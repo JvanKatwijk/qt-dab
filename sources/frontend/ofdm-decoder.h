@@ -69,18 +69,21 @@ private:
 	fftHandler		fft;
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<Complex>	*iqBuffer;
-
+	int			carriers_2;
 	bool			correctPhase;
-	DABFLOAT		decoder_12 (const std::vector<Complex> &,
-                                            std::vector<int16_t> &,
-                                            DABFLOAT        snr,
-                                            int             decType,
-	                                    float	   rateError);
-	DABFLOAT		decoder_3  (const std::vector<Complex> &,
+	DABFLOAT		decoder_1  (std::vector<Complex> &,
                                             std::vector<int16_t> &,
                                             DABFLOAT        snr,
 	                                    float	   clockError);
-	DABFLOAT		decoder_4  (const std::vector<Complex> &,
+	DABFLOAT		decoder_2  (std::vector<Complex> &,
+                                            std::vector<int16_t> &,
+                                            DABFLOAT        snr,
+	                                    float	   clockError);
+	DABFLOAT		decoder_3  (std::vector<Complex> &,
+                                            std::vector<int16_t> &,
+                                            DABFLOAT        snr,
+	                                    float	   clockError);
+	DABFLOAT		decoder_4  (std::vector<Complex> &,
                                             std::vector<int16_t> &,
                                             DABFLOAT        snr);
 
@@ -103,10 +106,10 @@ private:
 	std::vector<Complex>	fft_buffer;
 	std::vector<DABFLOAT>	sigmaSQ_Vector;
 	std::vector<DABFLOAT>	meanLevelVector;
+	std::vector<DABFLOAT>	meanNullSymbVector;
 	std::vector<DABFLOAT>	meanPowerVector;
 
 	float		meanValue;
-	float		avgBit;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;

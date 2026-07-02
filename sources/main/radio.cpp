@@ -294,7 +294,7 @@ QString h;
 	serviceLabel	-> setFont (font);
 	serviceLabel	-> setToolTip ("<font color=\"black\">the label displays the selected service. If a logo can be found, it will be displayed, otherwise the shortname is displayed");
 
-	motLabel	-> setStyleSheet ("QLabel {color : red}");
+	motLabel	-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
 	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
 
 	programTypeLabel	-> setStyleSheet (labelStyle);
@@ -565,26 +565,9 @@ QString h;
 	muteTimer. setSingleShot (true);
 	set_Colors ();
 //
-//	leftAudio	-> setBorderWidth	(0);
-//	leftAudio	-> setScalePosition	(QwtThermo::NoScale);
-//	rightAudio	-> setBorderWidth	(0);
-//	rightAudio	-> setScalePosition	(QwtThermo::NoScale);
-//	leftAudio	-> setValue (-35);
-//	rightAudio	-> setValue (-35);
-//	QwtLinearColorMap * mapLeft = new QwtLinearColorMap ();
-//	mapLeft	-> setColorInterval (QColor (0, 50, 200), QColor(255, 0, 0));
-//	mapLeft -> addColorStop (0.75, QColor (100, 50, 0)); 
-//	mapLeft -> addColorStop (0.4, QColor (0, 200, 50)); 
-//	leftAudio -> setColorMap (mapLeft);
-//	QwtLinearColorMap * mapRight = new QwtLinearColorMap ();
-//	mapRight -> setColorInterval (QColor(0, 50, 200), QColor(255, 0, 0));
-//	mapRight -> addColorStop (0.75, QColor (100, 50, 0)); 
-//	mapRight -> addColorStop (0.4, QColor (0, 200, 50)); 
-//	rightAudio -> setColorMap (mapRight);
-//
-	audiorateLabel	-> setStyleSheet ("color:cyan");
-	psLabel		-> setStyleSheet ("color:cyan"); 
-	sbrLabel	-> setStyleSheet ("color:cyan");
+	audiorateLabel	-> setStyleSheet ("font-weight: bold;color:cyan");
+	psLabel		-> setStyleSheet ("font-weight: bold;color:cyan"); 
+	sbrLabel	-> setStyleSheet ("font-weight: bold;color:cyan");
 
 	journalineKey		= -1;
 //	do we show controls?
@@ -1651,7 +1634,7 @@ static bool old_mot = false;
 	if (!running. load () || (old_mot == b))
 	   return;
 	if (b)
-	   motLabel	-> setStyleSheet (labelStyle);
+	   motLabel	-> setStyleSheet ("font-weight:bold; color:lightgreen");
 	else
 	   motLabel	-> setStyleSheet ("QLabel {color : red}");
 	old_mot = b;
@@ -1718,7 +1701,7 @@ void	RadioInterface::setStereo	(bool b) {
 	if (!running. load () || (stereoSetting == b))
 	   return;
 	if (b) {
-	   stereoLabel	-> setStyleSheet (labelStyle);
+	   stereoLabel	-> setStyleSheet ("font-weight: bold; color: lightgreen");
 	   stereoLabel	-> setText ("<i>stereo</i>");
 	}
 	else
@@ -2342,16 +2325,13 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   channel. audioActive	= true;
 	   setSoundLabel (true);
 	   programTypeLabel	-> setText (getProgramType (channel. internatTable, ad. programType));
-	   rateLabel		-> setStyleSheet ("color:magenta");
+	   rateLabel		-> setStyleSheet ("font-weight:bold;color:magenta");
 	   rateLabel		-> setText (QString::number (ad. bitRate) +
 	                                                        "kbit");
 	   QString protL	= getProtectionLevel (ad. shortForm,
 	                                                    ad. protLevel);
 	   QString crL		= getCodeRate (ad. shortForm, ad. protLevel);
-	   protectionLabel	-> setStyleSheet ("color:red");
-	   QFont font		= protectionLabel -> font ();
-	   font. setPointSize (9);
-	   protectionLabel	-> setFont (font);
+	   protectionLabel	-> setStyleSheet ("font-weight:bold; color:red");
 	   protectionLabel	-> setText (protL+ " " + crL);
 
 	   theOfdmHandler	-> getFreqs (ad. SId, ad. fmFrequencies);
@@ -2392,7 +2372,7 @@ void	RadioInterface::cleanScreen	() {
 	stereoSetting		= false;
 	setStereo	(false);
 	theTechWindow		-> cleanUp ();
-	motLabel		-> setStyleSheet ("QLabel {color : red}");
+	motLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
 	distanceLabel		-> setText ("");
 	newServices		-> set_countryName ("");
 	theNewDisplay. ficError_display	-> setValue (0);

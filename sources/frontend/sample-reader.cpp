@@ -62,7 +62,7 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	localBuffer. resize (bufferSize);
 	localCounter		= 0;
 	currentPhase		= 0;
-	sLevel			= 0;	// average power level
+	sLevel			= 0.1f;	// average power level
 	sampleCount		= 0;
 	dcRemoval		= false;
 	dcReal			= 0;

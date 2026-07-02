@@ -239,6 +239,7 @@ char	manufac [256], product [256], serial [256];
 	fprintf (stderr, "%s %s %s\n",
 	            manufac, product, serial);
 
+	fprintf (stderr, "serial %s\n", serial);
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
 
