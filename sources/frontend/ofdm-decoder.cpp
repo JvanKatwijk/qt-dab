@@ -506,7 +506,8 @@ DABFLOAT sum	= 0;
 	   DABFLOAT	preWeight	= nominator / denominator;
 
 //	scaler (due to old-dab)
-	   DABFLOAT	scaler		= -140 / meanValue;
+//	   DABFLOAT	scaler		= -140 / meanValue;
+	   DABFLOAT	scaler		= -100 / meanValue;
 	   Complex R1			= normalize (fftBin) * preWeight;
 	   DABFLOAT leftBit		= real (R1) * scaler;
 	   softBits [i]		= std::clamp ((int)leftBit,
@@ -569,7 +570,8 @@ DABFLOAT sum	= 0;
 	   amplifier		/= sigmaSQ_Vector [index] * abs (fftBin);
 	   amplifier		/= 1.0 / snr + 0.7f;
 	   Complex R1		= fftBin * amplifier;
-	   DABFLOAT scaler	= -140 / meanValue;
+//	   DABFLOAT scaler	= -140 / meanValue;
+	   DABFLOAT scaler	= -100 / meanValue;
 
 	   DABFLOAT leftBit	= real (R1) * scaler;
 	   softBits [0  +  i]	=

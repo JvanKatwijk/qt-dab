@@ -293,11 +293,27 @@ QString h;
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
 	serviceLabel	-> setToolTip ("<font color=\"black\">the label displays the selected service. If a logo can be found, it will be displayed, otherwise the shortname is displayed");
-
-	motLabel	-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
-	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
+	font		= localTimeDisplay -> font ();
+	font. setBold (true);
+        font. setPointSize (14);
+	localTimeDisplay	-> setStyleSheet (labelStyle);
+	localTimeDisplay	-> setFont (font);
 
 	programTypeLabel	-> setStyleSheet (labelStyle);
+
+	motLabel	->
+	            setStyleSheet ("QLabel {font-weight:bold; color: red}");
+	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
+
+	stereoLabel	->
+	            setStyleSheet ("font-weight: bold; color: lightgreen");
+	protectionLabel	-> setStyleSheet ("font-weight: bold; color:red");
+	audiorateLabel  -> setStyleSheet ("font-weight: bold; color:cyan");
+	rateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
+        psLabel         -> setStyleSheet ("font-weight: bold; color:cyan");
+        sbrLabel        -> setStyleSheet ("font-weight: bold; color:cyan");
+	crcLabel	-> setStyleSheet ("font-weight: bold; color:green");
+
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
 	pauzeSlideTeller	= 0; // counting pause slides
@@ -565,10 +581,6 @@ QString h;
 	muteTimer. setSingleShot (true);
 	set_Colors ();
 //
-	audiorateLabel	-> setStyleSheet ("font-weight: bold;color:cyan");
-	psLabel		-> setStyleSheet ("font-weight: bold;color:cyan"); 
-	sbrLabel	-> setStyleSheet ("font-weight: bold;color:cyan");
-
 	journalineKey		= -1;
 //	do we show controls?
 	bool visible	=
@@ -1560,11 +1572,6 @@ void	RadioInterface::handle_FIG010 (int year, int month, int day,
 	QDate theDate (year, month, day);
 	channel. theDate = theDate;
 
-	QFont font		= serviceLabel -> font ();
-	font. setBold (true);
-        font. setPointSize (14);
-	localTimeDisplay	-> setStyleSheet (labelStyle);
-	localTimeDisplay	-> setFont (font);
 	localTimeDisplay	-> setText (result);
 }
 
@@ -2325,17 +2332,13 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   channel. audioActive	= true;
 	   setSoundLabel (true);
 	   programTypeLabel	-> setText (getProgramType (channel. internatTable, ad. programType));
-	   rateLabel		-> setStyleSheet ("font-weight:bold;color:magenta");
 	   rateLabel		-> setText (QString::number (ad. bitRate) +
 	                                                        "kbit");
 	   QString protL	= getProtectionLevel (ad. shortForm,
 	                                                    ad. protLevel);
 	   QString crL		= getCodeRate (ad. shortForm, ad. protLevel);
-	   protectionLabel	-> setStyleSheet ("font-weight:bold; color:red");
 	   protectionLabel	-> setText (protL+ " " + crL);
-
 	   theOfdmHandler	-> getFreqs (ad. SId, ad. fmFrequencies);
-	                                      
 //	show service related data
 	   QPixmap p;
 	   if (get_serviceLogo (p, channel. currentService. SId)) {
@@ -3488,7 +3491,8 @@ bool	RadioInterface::autoStart_http () {
 	                                theConfigHandler -> localBrowserSelector_active (),
 	                                "",
 	                                theQSettings);
-	} catch (int e) {}
+	} catch (...) {
+	}
 	return mapViewer != nullptr;
 }
 //
@@ -3526,12 +3530,15 @@ void	RadioInterface::handle_httpButton	() {
 	               theFilenameFinder.
 	                   find_mapdumpName (theDeviceHandler -> deviceName ());
 	      mapViewer = new httpHandler (this,
-	                                    ":res/qt-map.html",
+	                                   ":res/qt-map.html",
 	                                    localPos,
 	                                    theConfigHandler -> localBrowserSelector_active (),
 	                                    saveName,
 	                                    theQSettings);
-	   } catch (int e) {}
+	   } catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"), 
+	                               "Opening http port failed");
+	   }
 	   if (mapViewer != nullptr)
 	      httpButton -> setText ("http-on");
 	}

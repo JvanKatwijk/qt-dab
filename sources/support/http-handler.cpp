@@ -49,6 +49,7 @@
 	this	-> close_map_on_exit = true;
 	this	-> saveName	= saveName;
 	this	-> dabSettings	= settings;
+
 	int  mapPort		=
 	            value_i (settings, MAP_HANDLING,
 	                                  HTTP_PORT, 8080);
@@ -62,24 +63,21 @@
 	delayTimer. setSingleShot (true);
 	connect (this, &httpHandler::setChannel,
 	         theRadio, &RadioInterface::channelSignal);
-	connect (this, &QTcpServer::newConnection,
-	         this, &httpHandler::newConnection);
-	connect (&delayTimer, &QTimer::timeout,
-	         this, &httpHandler::handle_timeOut);
 
 	if (!autoBrowser_on) {
 	   if (!QDesktopServices::openUrl(QUrl (browserAddress))) {
-	      fprintf (stderr, "cannot open URL\n");
-	      throw device_exception ("cannot open URL");
-	      return;
+	      throw device_exception ("cannot open URL for the map\n");
 	   }
 	}
 
 	if (!this -> listen (QHostAddress::Any, mapPort)) {
-	   throw device_exception ("listening to port failed");
-	   return;
+	   throw device_exception ("could not listen to mapPort\n");
 	}
 
+	connect (this, &QTcpServer::newConnection,
+	         this, &httpHandler::newConnection);
+	connect (&delayTimer, &QTimer::timeout,
+	         this, &httpHandler::handle_timeOut);
 	transmitterList. resize (0);
 	connection_stopped	= false;
 	closingInProgress. store (false);
