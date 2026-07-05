@@ -31,7 +31,7 @@
 #include	<QFileDialog>
 #include	<QDir>
 #include	"dab-constants.h"
-#include	"rtl_tcp_client.h"
+#include	"rtl-tcp-client.h"
 #include	"rtl-sdr.h"
 #include	"device-exceptions.h"
 #include	"position-handler.h"

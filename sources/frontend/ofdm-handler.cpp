@@ -63,6 +63,7 @@
 	                                    theOfdmDecoder (mr,
 	                                                 inputDevice -> bitDepth(),
 	                                                 p -> stdDevBuffer,
+	                                                 p -> carrierBuffer,
 	                                                 p -> iqBuffer),
 	                                    theMscHandler (mr, p -> frameBuffer,
 	                                                theLogger,
@@ -76,6 +77,7 @@
 	this	-> nullBuffer_p		= p -> nullBuffer;
 	this	-> snrBuffer_p		= p -> snrBuffer;
 	this	-> channelBuffer_p	= p -> channelBuffer;
+	this	-> carrierBuffer	= p -> carrierBuffer;
 	this	-> T_null		= get_T_null ();
 	this	-> T_s			= get_T_s ();
 	this	-> T_u			= get_T_u ();
@@ -85,6 +87,7 @@
 	this	-> carriers		= get_carriers ();
 	this	-> carrierDiff		= get_carrierDiff ();
 
+	viewCarrier_mode		= 255;
 	starter				= true;
 	this	-> tiiDelay		= p -> tii_delay;
 	this	-> tiiCounter		= 0;
@@ -124,12 +127,12 @@
 	         mr,  &RadioInterface::show_clock_error);
 	connect (this, &ofdmHandler::showNull,
 	         mr, &RadioInterface::show_null);
-//	for older versions, this is a dummy
 	connect (this, &ofdmHandler::showChannel,
 	         mr, &RadioInterface::show_channel);
-//	end of dummy
 	connect (this, &ofdmHandler::showCorrector,
 	         mr,  &RadioInterface::show_Corrector);
+	connect (this, &ofdmHandler::show_carriers,
+	         radioInterface_p, &RadioInterface::show_carriers);
 	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
                                              TII_THRESHOLD, 6);
 	tiiCollision	= value_i (settings_p, CONFIG_HANDLER,
@@ -449,6 +452,14 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      int16_t CIF_hi, CIF_lo;
 	      theFicHandler. getCIFcount (CIF_hi, CIF_lo); 
 	      if ((CIF_lo & 0x07) >= 4) {
+	         if (viewCarrier_mode == NULL_CARRIERS_TII) {
+	            DABFLOAT cBuf [carriers];
+	            for (int i = 0; i < carriers; i ++) 
+	               cBuf [i] =
+	                    abs (ofdmBuffer [T_null / 2 - carriers / 2 + i]);
+	            carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
+	            emit show_carriers (viewCarrier_mode, carriers);
+	         }
 	         theTIIDetector. addBuffer (ofdmBuffer);
 	         tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data (),
 	                                                           T_null);
@@ -462,6 +473,14 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         }
 	      }
 	      else {	// compute SNR
+	         if (viewCarrier_mode == NULL_CARRIERS_NO_TII) {
+	            DABFLOAT cBuf [carriers];
+	            for (int i = 0; i < carriers; i ++) 
+	               cBuf [i] =
+	                    abs (ofdmBuffer [T_null / 2 - carriers / 2 + i]);
+	            carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
+	            emit show_carriers (viewCarrier_mode, carriers);
+	         }
 	         float sum	= 0;
 	         for (int i = 0; i < T_null; i ++)
 	            sum += jan_abs (ofdmBuffer [i]);
@@ -713,5 +732,10 @@ void	ofdmHandler::set_dataTracer	(bool b) {
 
 std::vector<basicService>  ofdmHandler::getServices	() {
 	return theFicHandler. getServices ();
+}
+
+void	ofdmHandler::viewCarriers	(uint8_t carrierMode) {
+	viewCarrier_mode	= carrierMode;
+	theOfdmDecoder. viewCarriers	(carrierMode);
 }
 

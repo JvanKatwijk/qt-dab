@@ -176,36 +176,6 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item alignment="Qt::AlignmentFlag::AlignRight">
-          <widget class="QLabel" name="channelDisplay">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Channel</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLCDNumber" name="frequencyDisplay">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency of the currently selected channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="frameShape">
-            <enum>QFrame::Shape::NoFrame</enum>
-           </property>
-           <property name="digitCount">
-            <number>7</number>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::SegmentStyle::Flat</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="clickableChart" name="iqPlotArea">
          <property name="minimumSize">
           <size>
@@ -249,6 +219,36 @@
            </property>
            <property name="text">
             <string>ncp</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item alignment="Qt::AlignmentFlag::AlignRight">
+          <widget class="QLabel" name="channelDisplay">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The currently selected channel. Note that for some forms of file input this info does not represent reality.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Channel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="frequencyDisplay">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency of the currently selected channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::NoFrame</enum>
+           </property>
+           <property name="digitCount">
+            <number>7</number>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::SegmentStyle::Flat</enum>
            </property>
           </widget>
          </item>

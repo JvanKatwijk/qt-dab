@@ -93,7 +93,6 @@ typedef struct {
         QString text;
 } markType;
 
-
 typedef struct  {
 	uint8_t		mainId;
 	uint8_t		subId;
@@ -119,6 +118,12 @@ typedef struct {
 #define	SCAN_TO_DATA		1
 #define	SCAN_CONTINUOUS		2
 
+#define	NULL_CARRIERS_TII	0
+#define	NULL_CARRIERS_NO_TII	1
+#define	SYNC_CARRIERS		2
+#define	MEAN_CARRIERS		3
+#define	SIGMA_CARRIERS		4
+#define	NO_CARRIERS		0xFF
 using namespace std;
 //
 #define	Hz(x)		(x)

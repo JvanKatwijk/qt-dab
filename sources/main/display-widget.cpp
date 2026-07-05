@@ -23,6 +23,7 @@
 
 #include	<QSettings>
 #include	<QDir>
+#include	"radio.h"
 #include	"display-widget.h"
 #include	"spectrum-scope.h"
 #include	"tii-scope.h"
@@ -30,6 +31,7 @@
 #include	"correlation-scope.h"
 #include	"channel-scope.h"
 #include	"dev-scope.h"
+#include	"carrier-scope.h"
 #include	"iqdisplay.h"
 
 #include	"dab-constants.h"
@@ -40,7 +42,7 @@
 #define	DISPLAY_WIDGET_SETTINGS	"displayWidget"
 
 #define	T_u	2048
-#define	carriers	1546
+#define	carriers	1536
 
 	displayWidget::displayWidget	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings):
@@ -81,6 +83,10 @@
 	devScope_p		= new devScope		(softBitsPlot,
 	                                                 768, dabSettings_p,
 	                                                 "softbitScope");
+	carrierScope_p		= new carrierScope	(carrierView,
+	                                                 carriers,
+	                                                 dabSettings_p,
+	                                                 "carrierScope");
 	IQDisplay_p		= new iqDisplay		(iqPlotArea,
 	                                                 dabSettings_p);
 //
@@ -142,9 +148,29 @@
 	         this, &displayWidget::handleNcpScope_checkBox);
 	connect (show_marksButton, &QPushButton::clicked,
 	         this, &displayWidget::handleMarksButton);
+
+	carrierSelector	-> addItem ("nullsymbol tii");
+	carrierSelector	-> addItem ("nullsymbol no tii");
+	carrierSelector -> addItem ("syncSymbol");
+	carrierSelector -> addItem ("meanLevel");
+	carrierSelector -> addItem ("sigmaSQ");
+	connect (showCarriersButton, &QPushButton::clicked,
+	         this, &displayWidget::handle_showCarriers);
+	connect (carrierSelector, 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+	                              &QComboBox::textActivated,
+#else
+                 qOverload<const QString &>(&QComboBox::activated),
+#endif
+	         this, &displayWidget::handle_carrierSelector);
+	connect (this, &displayWidget::viewCarriers,
+	         mr, &RadioInterface::viewCarriers);
+	         
 //
 	for (int i = 0; i < 2048; i ++)
 	   workingBuffer [i] =  0; 
+	carrierViewContainer -> hide ();
+	show_carrierType	= 255;
 }
 
 	displayWidget::~displayWidget () {
@@ -154,6 +180,7 @@
 	delete		tiiScope_p;
 	delete		channelScope_p;
 	delete		devScope_p;
+	delete		carrierScope_p;
 	delete		IQDisplay_p;
 }
 
@@ -502,3 +529,32 @@ QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
 	fprintf (stderr, "file : %s\n", fileName. toLatin1 (). data ());
 	myFrame. grab (). save (fileName);
 }
+
+void	displayWidget::handle_showCarriers	() {
+	if (carrierViewContainer -> isVisible ()) {
+	   carrierViewContainer -> hide ();
+	   emit  viewCarriers (255);
+	}
+	else {
+	   carrierViewContainer -> show ();
+	   emit viewCarriers (show_carrierType);
+	}
+	myFrame. adjustSize ();
+}
+
+bool	displayWidget::does_showCarriers	() {
+	return carrierViewContainer -> isVisible ();
+}
+
+void	displayWidget::showCarriers	(int type,
+	                                 const std::vector<DABFLOAT> &v) {
+	carrierScope_p -> display (v, -768, 768);
+}
+
+void	displayWidget::handle_carrierSelector	(const QString &carrierType) {
+	fprintf (stderr, "selected carrier type %s\n",
+	                              carrierType. toLatin1 (). data ());
+	show_carrierType	= carrierSelector -> currentIndex ();
+	emit viewCarriers (show_carrierType);
+}
+

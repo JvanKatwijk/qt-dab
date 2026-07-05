@@ -44,7 +44,7 @@
 #include	"ofdm-handler.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
-#include	"ITU_tables.h"
+#include	"ITU-tables.h"
 #include	"mapport.h"
 #include	"tech-window.h"
 #include	"db-element.h"
@@ -173,6 +173,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 		                              theDataBuffer (32768),
 	                                      theAudioBuffer (8 * 32768),
 	                                      stdDevBuffer (2 * 1536),
+	                                      carrierBuffer (2048),
 	                                      theNewDisplay (this, Si),
 	                                      theSNRViewer (this, Si),
 	                                      theDLCache (10),
@@ -216,6 +217,7 @@ QString h;
 	globals. snrBuffer	= &theSNRBuffer;
 	globals. frameBuffer	= &theFrameBuffer;
 	globals. stdDevBuffer	= &stdDevBuffer;
+	globals. carrierBuffer	= &carrierBuffer;
 
 	globals. threshold		=
 	          value_i (theQSettings, DAB_GENERAL, "threshold", 3);
@@ -3813,6 +3815,14 @@ std::vector<float>Values (amount);
 	   theNewDisplay. showStdDev (Values);
 }
 
+void	RadioInterface::show_carriers	(int type, int amount) {
+std::vector<DABFLOAT>Values (amount);
+	carrierBuffer. getDataFromBuffer (Values. data (), amount);
+        if (!theNewDisplay. isHidden () &&
+	                     theNewDisplay. does_showCarriers ())
+           theNewDisplay. showCarriers (type, Values);
+}
+
 void	RadioInterface::show_snr		(float snr) {
 QPixmap p;
 
@@ -4867,4 +4877,9 @@ void	RadioInterface::handle_utcSwitch	() {
 	utc_on = !utc_on;
 	store (theQSettings, CONFIG_HANDLER, UTC_SELECTOR_SETTING, utc_on);
 }
-
+//
+//	Handling the buttom
+void	RadioInterface::viewCarriers		(uint8_t showType) {
+	if (theOfdmHandler != 0)
+	   theOfdmHandler	-> viewCarriers (showType);
+}

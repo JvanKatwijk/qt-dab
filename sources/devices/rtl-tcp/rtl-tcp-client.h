@@ -37,7 +37,7 @@
 #include  "dab-constants.h"
 #include  "device-handler.h"
 #include  "ringbuffer.h"
-#include  "ui_rtl_tcp-widget.h"
+#include  "ui_rtl-tcp-widget.h"
 
 class	xml_fileWriter;
 class	errorLogger;

@@ -45,6 +45,7 @@ public:
 	RingBuffer<Complex>	* channelBuffer;
 	RingBuffer<uint8_t>	* frameBuffer;
 	RingBuffer<float>	* stdDevBuffer;
+	RingBuffer<DABFLOAT>	* carrierBuffer;
 
 	processParams () {
 	   responseBuffer	= nullptr;

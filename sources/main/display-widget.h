@@ -46,6 +46,7 @@ class	nullScope;
 class	tiiScope;
 class	correlationScope;
 class	devScope;
+class	carrierScope;
 class	channelScope;
 class	iqDisplay;
 
@@ -70,6 +71,8 @@ public:
 	void	showChannel	(const std::vector<Complex>);
 	void	showStdDev	(const std::vector<float>);
 
+	bool	does_showCarriers	();
+	void	showCarriers	(int, const std::vector<DABFLOAT> &);
 	void	showIQ		(const std::vector<Complex>);
 
 	void	showFICBER	(float);
@@ -101,21 +104,28 @@ private:
 	correlationScope	*correlationScope_p;
 	channelScope		*channelScope_p;
 	devScope		*devScope_p;
+	carrierScope		*carrierScope_p;
 	iqDisplay		*IQDisplay_p;
 
 	DABFLOAT		workingBuffer [2048];
 	int			currentTab;
 	int			ncpScope;
 	bool			setMarkers;
+
+	uint8_t			show_carrierType;
 private slots:
 	void		switch_tab		(int);
 	void		rightMouseClick		();
 	void		handleNcpScope_checkBox (int);
 	void		handleMarksButton	();
 	void		handle_mouseClicked	();
+
+	void		handle_showCarriers	();
+	void		handle_carrierSelector	(const QString &);
 signals:
 	void		mouseClick	();
 	void		frameClosed	();
+	void		viewCarriers	(uint8_t);
 };
 
 

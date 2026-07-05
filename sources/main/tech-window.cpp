@@ -25,7 +25,7 @@
 #include	"tech-window.h"
 #include	"radio.h"
 #include	"audio-display.h"
-#include	"ITU_tables.h"
+#include	"ITU-tables.h"
 #include	<QColorDialog>
 
 #include	"settingNames.h"

@@ -8,7 +8,7 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/Modules/CMakeFunctions.cmake)
 
 project(Qt-DAB VERSION 6)
-set (objectName qt-dab-7.1.3)
+set (objectName qt-dab-7.2)
 set (objectName "Qt-DAB")
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,7 +22,7 @@ endif()
 add_definitions(-DAPP_NAME="${objectName}")
 add_definitions(-DPRJ_NAME="${PROJECT_NAME}")
 add_definitions(-DPRJ_VERS="${PROJECT_VERSION}")
-add_definitions(-DVERSION="7.1.3")
+add_definitions(-DVERSION="7.2")
 add_definitions(-DVITERBI="scalar")
 
 if(MINGW)
@@ -530,7 +530,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/gui-elements/verysmallpushbutton.h 
 	     ./sources/support/scan-handler.h 
 	     ./sources/support/scantable-handler.h 
-	     ./sources/support/audiosystem-selector.h
 	     ./sources/support/scanlist-handler.h
 	     ./sources/support/scheduler.h
 	     ./sources/support/schedule-selector.h

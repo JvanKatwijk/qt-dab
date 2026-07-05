@@ -74,7 +74,9 @@ public:
 //
 //	just a gadget
 	bool		serviceRuns		(uint32_t SId, uint16_t SCIds);
-
+//
+//	showing carriers (or not)
+	void		viewCarriers		(uint8_t);
 //
 //	for the tii settings
 	void		setTIIThreshold		(int16_t);
@@ -159,6 +161,7 @@ private:
 	RingBuffer<Complex >	*nullBuffer_p;
 	RingBuffer<float>	*snrBuffer_p;
 	RingBuffer<Complex>	*channelBuffer_p;
+	RingBuffer<DABFLOAT>	*carrierBuffer;
 	int16_t			tiiDelay;
 	int16_t			tiiCounter;
 	bool			etiOn;
@@ -169,6 +172,7 @@ private:
 	int32_t			T_s;
 	int32_t			T_g;
 	int32_t			T_F;
+	uint8_t			viewCarrier_mode;
 	int32_t			nrBlocks;
 	int32_t			carriers;
 	int32_t			carrierDiff;
@@ -199,5 +203,7 @@ signals:
 	void		showNull		(int, int);
 	void		showChannel		(int);
 	void		showCorrector		(int, float);
+
+	void		show_carriers		(int, int);
 };
 

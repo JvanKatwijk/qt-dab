@@ -37,7 +37,7 @@
 #include	"bit-extractors.h"
 #include	"fib-config.h"
 #include	"fib-table.h"
-#include	"ITU_tables.h"
+#include	"ITU-tables.h"
 #include	"time-converter.h"
 //
 //

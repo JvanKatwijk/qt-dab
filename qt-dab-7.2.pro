@@ -117,6 +117,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/scopes/tii-scope.h \
 	   ./sources/main/scopes/channel-scope.h \
 	   ./sources/main/scopes/dev-scope.h \
+	   ./sources/main/scopes/carrier-scope.h \
 	   ./sources/main/scopes/iqdisplay.h \
 	   ./sources/main/scopes/audio-display.h \
 	   ./sources/main/scopes/audioLevel-meter.h \
@@ -186,7 +187,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/journaline/NML.h \
 	   ./sources/backend/data/epg/epg-compiler.h \
 	   ./sources/backend/data/epg/xml-extractor.h \
-	   ./sources/output/converter_48000.h \
+	   ./sources/output/converter-48000.h \
 	   ./sources/output/audio-player.h \
 	   ./sources/support/dump-display.h \
 	   ./sources/support/scan-handler.h \
@@ -210,7 +211,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/ringbuffer.h \
 	   ./sources/support/dab-params.h \
 #	   ./sources/support/dab-tables.h \
-	   ./sources/support/ITU_tables.h \
+	   ./sources/support/ITU-tables.h \
 #	   ./sources/support/scanlist-handler.h \
 	   ./sources/support/scheduler.h \
 	   ./sources/support/schedule-selector.h \
@@ -263,7 +264,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/devices/filereaders/xml-filereader/xml-reader.h \
 	   ./sources/devices/filereaders/xml-filereader/xml-descriptor.h 
 
-FORMS	+= ./sources/main/forms-v7/technical_data.ui
+FORMS	+= ./sources/main/forms-v7/technical-data.ui
 FORMS	+= ./sources/main/forms-v7/dabradio-6.ui 
 FORMS	+= ./sources/main/forms-v7/config-helper.ui 
 FORMS	+= ./sources/main/forms-v7/scopewidget.ui
@@ -280,6 +281,7 @@ SOURCES += ./sources/main/main.cpp \
            ./sources/main/scopes/spectrum-scope.cpp \
            ./sources/main/scopes/null-scope.cpp \
            ./sources/main/scopes/tii-scope.cpp \
+           ./sources/main/scopes/carrier-scope.cpp \
            ./sources/main/scopes/channel-scope.cpp \
            ./sources/main/scopes/dev-scope.cpp \
 	   ./sources/main/scopes/iqdisplay.cpp \
@@ -345,7 +347,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/journaline/NML.cpp \
 	   ./sources/backend/data/epg/epg-compiler.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
-	   ./sources/output/converter_48000.cpp \
+	   ./sources/output/converter-48000.cpp \
 	   ./sources/output/audio-player.cpp \
 	   ./sources/support/dump-display.cpp \
 	   ./sources/support/bandpass-filter.cpp \
@@ -353,11 +355,9 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/dc-filter.cpp \
 	   ./sources/support/charsets.cpp \
 	   ./sources/support/content-table.cpp \
-#	   ./sources/support/coordinates.cpp \
 	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/dab-params.cpp \
-#	   ./sources/support/dab-tables.cpp \
-	   ./sources/support/ITU_tables.cpp \
+	   ./sources/support/ITU-tables.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/dl2-handler.cpp \
 	   ./sources/support/timetable-control.cpp \
@@ -462,7 +462,7 @@ CONFIG		+= sdrplay-v3
 CONFIG		+= sdrplay-duo
 CONFIG		+= sdrconnect
 CONFIG		+= dabstick
-CONFIG		+= rtl_tcp
+CONFIG		+= rtl-tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
@@ -477,7 +477,7 @@ CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
-#CONFIG		+= send_datagram
+#CONFIG		+= send-datagram
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
@@ -485,10 +485,10 @@ CONFIG		+= datastreamer
 CONFIG		+= local-audio
 
 #CONFIG		+= viterbi-scalar
-#CONFIG		+= viterbi-sse
+CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
 #CONFIG		+= spiral-sse
-CONFIG		+= spiral-no-sse
+#CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
@@ -508,16 +508,16 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.1.3
+        TARGET          = qt-dab-7.2
 	DEFINES		+= __BITS64__
-	DESTDIR		=  /d/systems/qt-dab/linux-bin
+	DESTDIR		=  ./linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 	LIBS		+= -L/mingw64/lib
 	CONFIG		+= airspy
 	CONFIG		+= dabstick
 	CONFIG          += spyServer-16
         CONFIG          += spyServer-8
-	CONFIG		+= rtl_tcp
+	CONFIG		+= rtl-tcp
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= pluto
@@ -657,13 +657,13 @@ airspy {
 }
 
 #
-rtl_tcp {
+rtl-tcp {
 	DEFINES		+= HAVE_RTL_TCP
 	QT		+= network
-	INCLUDEPATH	+= ./sources/devices/rtl_tcp
-	HEADERS		+= ./sources/devices/rtl_tcp/rtl_tcp_client.h
-	SOURCES		+= ./sources/devices/rtl_tcp/rtl_tcp_client.cpp
-	FORMS		+= ./sources/devices/rtl_tcp/rtl_tcp-widget.ui
+	INCLUDEPATH	+= ./sources/devices/rtl-tcp
+	HEADERS		+= ./sources/devices/rtl-tcp/rtl-tcp-client.h
+	SOURCES		+= ./sources/devices/rtl-tcp/rtl-tcp-client.cpp
+	FORMS		+= ./sources/devices/rtl-tcp/rtl-tcp-widget.ui
 }
 
 soapy {
@@ -757,7 +757,7 @@ uhd	{		#untested
 	LIBS		+= -luhd
 }
 
-send_datagram {
+send-datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network
 }
@@ -795,14 +795,6 @@ local-audio {
 	                   ./sources/output/portaudio/audiosink.cpp 
 	LIBS		+= -lportaudio
 	}
-}
-
-datastreamer	{
-#	DEFINES		+= DATA_STREAMER
-#	DEFINES		+= CLOCK_STREAMER
-#	INCLUDEPATH	+= ./sources/server-thread
-#	HEADERS		+= ./sources/server-thread/tcp-server.h
-#	SOURCES		+= ./sources/server-thread/tcp-server.cpp
 }
 
 viterbi-scalar {
@@ -883,10 +875,6 @@ unix {
 win32 {
 	LIBS		+= -lfdk-aac-2
 }
-}
-
-mapserver {
-	DEFINES		+= __HAVE_MAP_SERVER__
 }
 
 double	{

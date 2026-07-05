@@ -148,6 +148,7 @@ Complex makeComplex (DABFLOAT phase) {
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 int16_t	bitDepth,
 	                                 RingBuffer<float>   *devBuffer_i,
+	                                 RingBuffer<DABFLOAT> *carrierBuffer,
 	                                 RingBuffer<Complex> *iqBuffer_i) :
 	                                    myRadioInterface (mr),
 	                                    theTable	(),
@@ -163,12 +164,15 @@ Complex makeComplex (DABFLOAT phase) {
 	                                    meanLevelVector (get_T_u ()),
 	                                    meanPowerVector (get_T_u ()) {
 	(void)bitDepth;
+	this	-> carrierBuffer	= carrierBuffer;
 	connect (this, &ofdmDecoder::showIQ,
 	         myRadioInterface, &RadioInterface::showIQ);
 	connect (this, &ofdmDecoder::show_quality,
 	         myRadioInterface, &RadioInterface::show_quality);
 	connect (this, &ofdmDecoder::show_stdDev,
 	         myRadioInterface, &RadioInterface::show_stdDev);
+	connect (this, &ofdmDecoder::show_carriers,
+	         myRadioInterface, &RadioInterface::show_carriers);
 //
 	this	-> T_s		= get_T_s	();
 	this	-> T_u		= get_T_u	();
@@ -192,6 +196,8 @@ Complex makeComplex (DABFLOAT phase) {
 
 	for (int i = 0; i < 8; i ++)
 	   W_table [i] = w (-i);
+
+	viewCarriers_mode	= 255;
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -291,7 +297,7 @@ DABFLOAT sum	= 0;
 	
 //		end of decoding	, now for displaying things	//
 //////////////////////////////////////////////////////////////////
-	                     
+
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {
@@ -314,6 +320,7 @@ DABFLOAT sum	= 0;
 	         }
 	      }
 
+	      
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
 	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
@@ -335,6 +342,23 @@ DABFLOAT sum	= 0;
 	                                              phaseReference. data ());
 	      show_quality (Quality, timeOffset, freqOffset);
 	      cnt = 0;
+	      if (viewCarriers_mode == SYNC_CARRIERS) {
+	         carrierBuffer ->
+	             putDataIntoBuffer (meanNullSymbVector. data (), carriers);
+	         emit show_carriers (viewCarriers_mode, carriers);
+	      }
+	      else	
+	      if (viewCarriers_mode == MEAN_CARRIERS) {
+	         carrierBuffer ->
+	             putDataIntoBuffer (meanLevelVector. data (), carriers);
+	         emit show_carriers (viewCarriers_mode, carriers);
+	      }
+	      else
+	      if (viewCarriers_mode == SIGMA_CARRIERS) {
+	         carrierBuffer ->
+	             putDataIntoBuffer (sigmaSQ_Vector. data (), carriers);
+	         emit show_carriers (viewCarriers_mode, carriers);
+	      }
 	   }
 	}
 
@@ -479,30 +503,28 @@ DABFLOAT sum	= 0;
 
 //	updates
 	   DABFLOAT fftBinPower	= std::norm (fftBin);
-	   meanPowerVector [index] =
-	        compute_avg (meanPowerVector [index],
+	   meanPowerVector [i] =
+	        compute_avg (meanPowerVector [i],
 	                                     fftBinPower, ALPHA);
 
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin);
-	   meanLevelVector [index] =
-	        compute_avg (meanLevelVector [index],
-	                                     binAbsLevel, ALPHA);
+	   meanLevelVector [i] =
+	                  compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
 
 	   DABFLOAT d_x		=  abs (real (fftBin)) -
-	                                  meanLevelVector [index] / binAbsLevel;
+	                                  meanLevelVector [i] / binAbsLevel;
 	   DABFLOAT d_y		=  abs (imag (fftBin)) -
-	                                  meanLevelVector [index] / binAbsLevel;
+	                                  meanLevelVector [i] / binAbsLevel;
 	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
-	   sigmaSQ_Vector [index] =
-	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
-	snr	= 5;
+	   sigmaSQ_Vector [i] =
+	             compute_avg (sigmaSQ_Vector [i], sigmaSQ, ALPHA);
 //	The denomainator is (formula 9)
 	   DABFLOAT	denominator	=
-	   	              sigmaSQ_Vector [index] * (1.0 / snr + 3);
+	   	              sigmaSQ_Vector [i] * (1.0 / snr + 3);
 
 	   DABFLOAT	nominator	= 
 	   	                  sqrt (abs (fftBin) * abs (prevS)) *
-	                                          meanPowerVector [index];
+	                                          meanPowerVector [i];
 	   DABFLOAT	preWeight	= nominator / denominator;
 
 //	scaler (due to old-dab)
@@ -552,16 +574,15 @@ DABFLOAT sum	= 0;
            conjVector [index]   = fftBin;
 //	updates
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin) / sqrt_2;
-	   meanLevelVector [index] =
-	        compute_avg (meanLevelVector [index],
-	                                     binAbsLevel, ALPHA);
+	   meanLevelVector [i] =
+	        compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
 
 	   DABFLOAT d_x		=  (abs (real (fftBin)) -
-	                              meanLevelVector [index]);
+	                              meanLevelVector [i]);
 	   DABFLOAT d_y		=  (abs (imag (fftBin)) -
-	                              meanLevelVector [index]);
+	                              meanLevelVector [i]);
 	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
-	   sigmaSQ_Vector [index] =
+	   sigmaSQ_Vector [i] =
 	             compute_avg (sigmaSQ_Vector [index], sigmaSQ, ALPHA);
 
 	   DABFLOAT amplifier	= 
@@ -712,5 +733,9 @@ DABFLOAT sum	= 0;
 
 void	ofdmDecoder::set_correctPhase (bool b) {
 	correctPhase	= b;
+}
+
+void	ofdmDecoder::viewCarriers	(uint8_t carrierMode) {
+	viewCarriers_mode	= carrierMode;
 }
 

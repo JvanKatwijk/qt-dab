@@ -48,6 +48,7 @@ public:
 		ofdmDecoder		(RadioInterface *,
 	                                 int16_t,
 	                                 RingBuffer<float> *devBuffer,
+	                                 RingBuffer<DABFLOAT> *carrierBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
 //	Note: the parameter should not be altered, it is used later on
@@ -62,15 +63,18 @@ public:
 	void	handle_decoderSelector	(int);
 
 	void	set_correctPhase	(bool);
+	void	viewCarriers		(uint8_t);
 private:
 	RadioInterface		*myRadioInterface;
 	phaseTable		theTable;
 	interLeaver		myMapper;
 	fftHandler		fft;
 	RingBuffer<float>	*devBuffer;
+	RingBuffer<DABFLOAT>	*carrierBuffer;
 	RingBuffer<Complex>	*iqBuffer;
 	int			carriers_2;
 	bool			correctPhase;
+	uint8_t			viewCarriers_mode;
 	DABFLOAT		decoder_1  (std::vector<Complex> &,
                                             std::vector<int16_t> &,
                                             DABFLOAT        snr,
@@ -119,6 +123,7 @@ signals:
 	void		showIQ		(int);
 	void		show_quality	(float, float, float);
 	void		show_stdDev	(int);
+	void		show_carriers	(int, int);
 };
 
 

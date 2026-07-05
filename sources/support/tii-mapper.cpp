@@ -26,8 +26,8 @@
 #include	<QStringList>
 #include	<math.h>
 #include	"dab-constants.h"
+#include	"ITU-tables.h"
 #include	"tii-mapper.h"
-#include	"ITU_tables.h"
 #include	"tii-reader.h"
 
 		tiiMapper::tiiMapper	() {

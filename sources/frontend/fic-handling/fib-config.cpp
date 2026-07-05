@@ -27,7 +27,7 @@
 #include	"fib-config.h"
 #include	<stdio.h>
 #include	<string.h>
-#include	"ITU_tables.h"
+#include	"ITU-tables.h"
 #include	"radio.h"
 
 //

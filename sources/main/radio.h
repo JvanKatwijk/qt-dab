@@ -40,7 +40,7 @@
 #include	"ui_dabradio-6.h"
 #include	"ringbuffer.h"
 #include	"process-params.h"
-#include	"converter_48000.h"
+#include	"converter-48000.h"
 #include	"scanlist-handler.h"
 #include	"dl-cache.h"
 #include	"content-table.h"
@@ -271,6 +271,7 @@ private:
 	RingBuffer<uint8_t>	theDataBuffer;
 	RingBuffer<std::complex<int16_t>>	theAudioBuffer;
 	RingBuffer<float>	stdDevBuffer;
+	RingBuffer<DABFLOAT>	carrierBuffer;
 	uint8_t			cpuSupport;
 	displayWidget		theNewDisplay;
 	snrViewer		theSNRViewer;
@@ -522,6 +523,9 @@ public slots:
 	void			signal_dataTracer		(bool);
 	void			timeTableFrame_closed		();
 
+//	signals from the displayWidget
+	void			viewCarriers		(uint8_t);
+
 //	signals from ensemblehandler
 	void			localSelect		(const QString &c,
 	                                                 const QString &s);
@@ -543,6 +547,7 @@ public slots:
 	void			showIQ			(uint32_t);
 	void			show_quality		(float, float, float);
 	void			show_stdDev		(uint32_t);
+	void			show_carriers		(int, int);
 //
 //	signal for process monitor
 	void			handle_clickRequest	(const QString &);

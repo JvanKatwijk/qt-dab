@@ -27,7 +27,7 @@
 #include	<QObject>
 #include	<QFrame>
 #include	<QPixmap>
-#include	"ui_technical_data.h"
+#include	"ui_technical-data.h"
 #include	"dab-constants.h"
 #include	"audio-display.h"
 #include	"ringbuffer.h"

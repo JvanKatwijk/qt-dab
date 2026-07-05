@@ -22,7 +22,7 @@
  */
 //
 
-#include	"ITU_tables.h"
+#include	"ITU-tables.h"
 
 
 //      ETSI TS 101 756 V2.2.1: Registered Tables

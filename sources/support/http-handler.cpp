@@ -229,7 +229,6 @@ int	bodySize;
 char	*body;
 std::string latitude	= std::to_string (homeAddress. latitude);
 std::string longitude	= std::to_string (homeAddress. longitude);
-int	index		= 0;
 int	cc;
 int teller	= 0;
 int params	= 0;
@@ -267,7 +266,6 @@ int params	= 0;
 	      }
 	      else
 	         body [teller ++] = (char)cc;
-	      index ++;
 	   }
 	   body [teller ++] = 0;
 	}

@@ -73,7 +73,7 @@
 #ifdef	__MINGW32__
 #endif
 #ifdef	HAVE_RTL_TCP
-#include	"rtl_tcp_client.h"
+#include	"rtl-tcp-client.h"
 #define	RTL_TCP_DEVICE		0213
 #endif
 #ifdef	HAVE_SPYSERVER_16

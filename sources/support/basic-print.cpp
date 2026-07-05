@@ -22,7 +22,7 @@
  */
 
 #include	"basic-print.h"
-#include	"ITU_tables.h"
+#include	"ITU-tables.h"
 
 //	the fib decoder passes on the (more or less) raw data,
 //	needed to show the attributes of the different services
