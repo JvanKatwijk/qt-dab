@@ -193,9 +193,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/scopes/tii-scope.h 
 	   ./sources/main/scopes/channel-scope.h 
 	   ./sources/main/scopes/dev-scope.h 
+	   ./sources/main/scopes/carrier-scope.h 
+	   ./sources/main/scopes/iqdisplay.h 
 	   ./sources/main/scopes/audio-display.h 
 	   ./sources/main/scopes/audioLevel-meter.h
-	   ./sources/main/scopes/iqdisplay.h 
 	   ./sources/main/snr-viewer/snr-viewer.h 
 	   ./sources/main/viewer/channel-descriptor.h
 	   ./sources/main/viewer/database.h
@@ -262,7 +263,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/backend/data/journaline/NML.h 
 	   ./sources/backend/data/epg/epg-compiler.h 
 	   ./sources/backend/data/epg/xml-extractor.h 
-	   ./sources/output/converter_48000.h 
+	   ./sources/output/converter-48000.h 
 	   ./sources/output/audio-player.h 
 	   ./sources/support/dump-display.h 
 	   ./sources/support/equalizer.h 
@@ -286,7 +287,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/process-params.h 
 	   ./sources/support/ringbuffer.h 
 	   ./sources/support/dab-params.h 
-	   ./sources/support/ITU_tables.h 
+	   ./sources/support/ITU-tables.h 
 	   ./sources/support/scanlist-handler.h 
 	   ./sources/support/scheduler.h 
 	   ./sources/support/schedule-selector.h 
@@ -351,6 +352,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
            ./sources/main/scopes/tii-scope.cpp 
            ./sources/main/scopes/channel-scope.cpp 
            ./sources/main/scopes/dev-scope.cpp 
+           ./sources/main/scopes/carrier-scope.cpp 
 	   ./sources/main/scopes/iqdisplay.cpp 
 	   ./sources/main/scopes/audio-display.cpp 
 	   ./sources/main/scopes/audioLevel-meter.cpp 
@@ -414,7 +416,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/backend/data/journaline/NML.cpp 
 	   ./sources/backend/data/epg/epg-compiler.cpp 
 	   ./sources/backend/data/epg/xml-extractor.cpp 
-	   ./sources/output/converter_48000.cpp 
+	   ./sources/output/converter-48000.cpp 
 	   ./sources/output/audio-player.cpp 
 	   ./sources/support/dump-display.cpp 
 	   ./sources/support/bandpass-filter.cpp 
@@ -424,7 +426,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/content-table.cpp 
 	   ./sources/support/crc-handlers.cpp 
 	   ./sources/support/dab-params.cpp 
-	   ./sources/support/ITU_tables.cpp 
+	   ./sources/support/ITU-tables.cpp 
 	   ./sources/support/distances.cpp 
 	   ./sources/support/dl2-handler.cpp 
 	   ./sources/support/timetable-control.cpp 
@@ -493,6 +495,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/scopes/tii-scope.h 
 	     ./sources/main/scopes/channel-scope.h 
 	     ./sources/main/scopes/dev-scope.h 
+	     ./sources/main/scopes/carrier-scope.h 
 	     ./sources/main/scopes/iqdisplay.h 
 	     ./sources/main/scopes/audio-display.h
 	     ./sources/main/scopes/audioLevel-meter.h
@@ -559,7 +562,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/backend/data/epg/xml-extractor.h
 	     ./sources/output/audio-player.h
 	     ./sources/support/dump-display.h
-	     ./sources/output/converter_48000.h
+	     ./sources/output/converter-48000.h
 	    ./sources/devices/riff-writer.h 
 	    ./sources/devices/selector.h 
 	    ./sources/devices/device-handler.h 
@@ -579,7 +582,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 	set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	     ./sources/main/forms-v7/technical_data.ui
+	     ./sources/main/forms-v7/technical-data.ui
 	     ./sources/main/forms-v7/dabradio-6.ui
 	     ./sources/main/forms-v7/config-helper.ui
 	     ./sources/main/forms-v7/scopewidget.ui
@@ -968,27 +971,27 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   find_package (Qt6Network REQUIRED)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./sources/devices/rtl_tcp/rtl_tcp-widget.ui
+	        ./sources/devices/rtl-tcp/rtl-tcp-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./sources/devices/rtl_tcp/rtl_tcp_client.h
+	        ./sources/devices/rtl-tcp/rtl-tcp-client.h
 	   )
 
 	   include_directories (
-	      ./sources/devices/rtl_tcp
+	      ./sources/devices/rtl-tcp
 	      ${Qt6Network_INCLUDE_DIRS}
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./sources/devices/rtl_tcp/rtl_tcp_client.h
+	        ./sources/devices/rtl-tcp/rtl-tcp-client.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./sources/devices/rtl_tcp/rtl_tcp_client.cpp
+	        ./sources/devices/rtl-tcp/rtl-tcp-client.cpp
 	   )
 
 	   set (RTLTCP_lib Qt6::Network)

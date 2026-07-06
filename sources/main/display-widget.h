@@ -72,6 +72,7 @@ public:
 	void	showStdDev	(const std::vector<float>);
 
 	bool	does_showCarriers	();
+	uint8_t	carrierMode	();
 	void	showCarriers	(int, const std::vector<DABFLOAT> &);
 	void	showIQ		(const std::vector<Complex>);
 

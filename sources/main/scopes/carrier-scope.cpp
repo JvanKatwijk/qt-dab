@@ -59,7 +59,7 @@ double Y_values [displaySize];
 	}
         showSpectrum (Y_values, displaySize,
                       -738, 738,
-                      min - 1, max  + 1);
+                      min - max / 5, max  + max / 5);
 }
 
 void	carrierScope::clean		() {

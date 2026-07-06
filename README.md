@@ -221,6 +221,7 @@ Below the "scope" area, some **quality indicators** of the DAB input signal are 
  * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB  input signal;
 
 At the bottom of the window from left to right
+ * a button controlling rhw visisbility of a small panel showing carriers;
  * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream (i.e. time synchronization);
  * a **FIC** indicator, telling the (average) successrate of decoding the FIC part of the DAB frames (i.e. the data that implements a kind of "catalog" that describes the payload);
  * a **BER**, Bit Error Rate, telling (on average) how many input bits were
@@ -286,6 +287,19 @@ The bits scope
 
 The front end part of the software output "soft bits", encoded as values in the range -127 .. 127. Other parts of the software take soft bits in and - using visterbi decoding and in some case reed Solomon error repair - output "hard bit",
 i.e. "1" and "0" values.
+
+The carrier scope
+-------------------------------------------------------------------------
+
+![7.2](/res/read_me/qt-dab-carriers.png)
+
+As an option - visiblity controlled by the nutton labled **carriers**, a  panel is added with a scope showing carriers.
+In the current selection there is
+ * the NULL period with TII data;
+ * the NULL period without TII data;
+ * the carriers of the sync block (i.e. datablock 0);
+ * mean values of the carriers during decoding;
+ * the sigma (i.e. average squared distance to the center) of the carriers.
 
 Configuration and control
 --------------------------------------------------------------------------

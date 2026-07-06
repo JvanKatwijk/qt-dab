@@ -740,6 +740,7 @@ void	RadioInterface::startDirect	() {
 	      httpButton	-> setText ("http-on");
 	}
 
+	
 	bool do_updateCheck	=
 	       value_i (theQSettings, CONFIG_HANDLER, DO_UPDATECHECK, 1) != 0;
 	if (do_updateCheck) {
@@ -749,6 +750,9 @@ void	RadioInterface::startDirect	() {
 	   updateCheck_timer. start (10000);
 	}
 	running. store (true);
+	if (!theNewDisplay. isHidden () &&
+	           theNewDisplay. does_showCarriers ())
+	   theOfdmHandler	-> viewCarriers (theNewDisplay. carrierMode ());
 }
 //
 //	It took a while but now we are running
@@ -3825,7 +3829,6 @@ std::vector<DABFLOAT>Values (amount);
 
 void	RadioInterface::show_snr		(float snr) {
 QPixmap p;
-
 	if (!theNewDisplay. isHidden ())
 	   theNewDisplay. showSNR (snr);
 	channel. snr	= snr;

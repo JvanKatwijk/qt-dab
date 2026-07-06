@@ -75,22 +75,6 @@ private:
 	int			carriers_2;
 	bool			correctPhase;
 	uint8_t			viewCarriers_mode;
-	DABFLOAT		decoder_1  (std::vector<Complex> &,
-                                            std::vector<int16_t> &,
-                                            DABFLOAT        snr,
-	                                    float	   clockError);
-	DABFLOAT		decoder_2  (std::vector<Complex> &,
-                                            std::vector<int16_t> &,
-                                            DABFLOAT        snr,
-	                                    float	   clockError);
-	DABFLOAT		decoder_3  (std::vector<Complex> &,
-                                            std::vector<int16_t> &,
-                                            DABFLOAT        snr,
-	                                    float	   clockError);
-	DABFLOAT		decoder_4  (std::vector<Complex> &,
-                                            std::vector<int16_t> &,
-                                            DABFLOAT        snr);
-
 	std::vector<Complex>	compTable;
 	float		computeQuality		(Complex *);
 	float		compute_timeOffset      (Complex *,

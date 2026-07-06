@@ -41,6 +41,7 @@
 #include	"ofdm-decoder.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
+#include	"fft-handler.h"
 #include	"eti-generator.h"
 
 class	RadioInterface;
@@ -139,6 +140,7 @@ private:
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 	phaseTable		theTable;
+	fftHandler		fft;
 
 	bool			starter;
 
@@ -188,6 +190,9 @@ private:
 virtual	void			run		();
 	void			generate_CI	(const std::vector<Complex> &,
 	                                         int);
+	void			NullToCarriers (const std::vector<Complex> &in,
+                                                DABFLOAT *out);
+
 
 signals:
 	void		setSynced		(bool);

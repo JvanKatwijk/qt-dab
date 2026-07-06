@@ -68,7 +68,8 @@
 	                                    theMscHandler (mr, p -> frameBuffer,
 	                                                theLogger,
 	                                                cpuSupport),
-	                                    theTable () {
+	                                    theTable (),
+	                                    fft (get_T_u (), false) {
 	this	-> p			= p;
 	this	-> theLogger		= theLogger;
 	this	-> cpuSupport		= cpuSupport;
@@ -442,7 +443,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      theReader. getSamples (ofdmBuffer, 0,
 	                         T_null, coarseOffset + fineOffset, false);
 	      sampleCount += T_null;
-//
+
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
 //	" The TII signal shall fill the null symbol of each transmission
@@ -454,9 +455,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      if ((CIF_lo & 0x07) >= 4) {
 	         if (viewCarrier_mode == NULL_CARRIERS_TII) {
 	            DABFLOAT cBuf [carriers];
-	            for (int i = 0; i < carriers; i ++) 
-	               cBuf [i] =
-	                    abs (ofdmBuffer [T_null / 2 - carriers / 2 + i]);
+	            NullToCarriers (ofdmBuffer, cBuf);
 	            carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
 	            emit show_carriers (viewCarrier_mode, carriers);
 	         }
@@ -475,9 +474,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      else {	// compute SNR
 	         if (viewCarrier_mode == NULL_CARRIERS_NO_TII) {
 	            DABFLOAT cBuf [carriers];
-	            for (int i = 0; i < carriers; i ++) 
-	               cBuf [i] =
-	                    abs (ofdmBuffer [T_null / 2 - carriers / 2 + i]);
+	            NullToCarriers (ofdmBuffer, cBuf);
 	            carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
 	            emit show_carriers (viewCarrier_mode, carriers);
 	         }
@@ -737,5 +734,15 @@ std::vector<basicService>  ofdmHandler::getServices	() {
 void	ofdmHandler::viewCarriers	(uint8_t carrierMode) {
 	viewCarrier_mode	= carrierMode;
 	theOfdmDecoder. viewCarriers	(carrierMode);
+}
+
+void	ofdmHandler::NullToCarriers (const std::vector<Complex> &in,
+	                             DABFLOAT *out) {
+Complex buffer [T_u];
+	for (int i = 0; i < T_u; i ++)
+	   buffer [i] = in [i];
+	fft. fft (buffer);
+	for (int i = 0; i < carriers; i ++)
+	   out [i] = abs (buffer [(T_u - carriers / 2 + i) % T_u]);
 }
 
