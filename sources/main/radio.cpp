@@ -343,7 +343,7 @@ QString h;
 	         this, &RadioInterface::handle_startTimeTable);
 	epgLabel	-> hide ();
 #if QT_VERSION > QT_VERSION_CHECK (6, 0, 0)
-	version		= QString ("Qt6-DAB-") + VERSION ;
+	version		= QString ("Qt-DAB-") + VERSION ;
 #else
 	version		= QString ("Qt5-DAB-") + VERSION;
 #endif
@@ -396,10 +396,10 @@ QString h;
 	   httpButton	-> setEnabled (false);
 
 ///////////////////////////////////////////////////////////////////////
-	theTechWindow	= new techWindow (this, theQSettings, &theTechData);
-	connect (theTechWindow, &techWindow::frameClosed,
-	         this, &RadioInterface::handle_techFrame_closed);
-	theTechWindow 		-> hide ();	// until shown otherwise
+	theTechWindow	= new techWindow (techFrame,
+	                                  this, theQSettings, &theTechData);
+	techFrame	-> hide ();
+	this		-> adjustSize ();
 
 	if (value_i (theQSettings, DAB_GENERAL, NEW_DISPLAY_VISIBLE, 0) != 0)
 	   theNewDisplay. show ();
@@ -481,7 +481,9 @@ QString h;
 	   theTechWindow -> hideMissed ();
 #else
 	theAudioPlayer		= new tcpStreamer	(20040);
-	theTechWindow		-> hide		();
+//	theTechWindow		-> hide		();
+	techFrame		-> hide		();
+	this			-> adjustSize	();
 #endif
 //
 //	some MOT, text and other data is stored in the Qt-DAB-files directory
@@ -517,6 +519,7 @@ QString h;
 	                                             channelNames,
 	                                             theQSettings,
 	                                             the_newFrame);
+	the_newFrame	-> setMinimumWidth (230);
 	connect (theConfigHandler, &configHandler::set_serviceOrder,
 	         newServices, &serviceViewer::setServiceOrder);
 
@@ -598,8 +601,10 @@ QString h;
 	   theSNRViewer. show ();
 	else
 	   theSNRViewer. hide ();
-	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0)
-	   theTechWindow -> show ();
+	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0) {
+	   techFrame	-> show ();
+	   this		-> adjustSize ();
+	}
 
 	dynamicLabel	-> setFont (QFont ("Times", 12, -1, false));
 	dynamicLabel	-> setAlignment(Qt::AlignCenter);
@@ -1275,7 +1280,7 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	audioTeller ++;
 	if (audioTeller > 20) {
 	   audioTeller = 0;
-	   if (!theTechWindow -> isHidden ())
+	   if (!techFrame -> isHidden ())
 	      theTechWindow	-> showRate (rate, ps, sbr);
 	   audiorateLabel	-> setText (QString::number (rate));
 	   psLabel	-> setText (ps ? "ps" : " ");
@@ -1286,7 +1291,7 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, rate / 10);
 	while (theAudioBuffer. GetRingBufferReadAvailable () >=  (uint32_t)rate / 10) {
 	   theAudioBuffer. getDataFromBuffer (vec, rate / 10);
-	   if (!theTechWindow -> isHidden ()) {
+	   if (!techFrame -> isHidden ()) {
 	      theTechData. putDataIntoBuffer (vec, rate / 10);
 	      theTechWindow	-> audioDataAvailable (rate / 10, rate);
 	   }
@@ -1418,8 +1423,7 @@ void	RadioInterface::TerminateProcess () {
 	theDXDisplay. hide ();
 	theConfigHandler ->	storePosition ();
 	theConfigHandler	->	hide ();
-	theTechWindow	->	storePosition ();	
-	theTechWindow 	->	 hide ();
+	techFrame 	->	 hide ();
 //
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
@@ -1472,7 +1476,7 @@ void	RadioInterface::updateTimeDisplay() {
 	if (!running. load ())
 	   return;
 
-	if (!theTechWindow -> isHidden () &&
+	if (!techFrame -> isHidden () &&
 	                          theAudioPlayer -> hasMissed ())  {
 	   int totalSamples	= 0;
 	   int totalMissed	= 0;
@@ -1598,7 +1602,7 @@ QString	RadioInterface::convertTime (struct theTime &t) {
 void	RadioInterface::show_frameErrors (int s) {
 	if (!running. load ()) 
 	   return;
-	if (!theTechWindow -> isHidden ())
+	if (!techFrame -> isHidden ())
 	   theTechWindow -> showFrameErrors (s);
 }
 //
@@ -1606,7 +1610,7 @@ void	RadioInterface::show_frameErrors (int s) {
 void	RadioInterface::show_rsErrors (int s) {
 	if (!running. load ())		// should not happen
 	   return;
-	if (!theTechWindow -> isHidden ())
+	if (!techFrame -> isHidden ())
 	   theTechWindow	-> showRsErrors (s);
 }
 //
@@ -1614,7 +1618,7 @@ void	RadioInterface::show_rsErrors (int s) {
 void	RadioInterface::show_aacErrors (int s) {
 	if (!running. load ())
 	   return;
-	if (!theTechWindow -> isHidden ())
+	if (!techFrame -> isHidden ())
 	   theTechWindow	-> showAacErrors (s);
 }
 //
@@ -1727,12 +1731,13 @@ void	RadioInterface::setStereo	(bool b) {
 void	RadioInterface::handle_detailButton	() {
 	if (!running. load ())
 	   return;
-	if (theTechWindow -> isHidden ())
-	   theTechWindow -> show ();
+	if (techFrame -> isHidden ())
+	   techFrame -> show ();
 	else
-	   theTechWindow -> hide ();
+	   techFrame -> hide ();
+	this	-> adjustSize ();
 	store (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE,
-	                            theTechWindow -> isHidden () ? 0 : 1);
+	                            techFrame -> isHidden () ? 0 : 1);
 }
 //
 void	RadioInterface::set_sync_lost	() {
@@ -2592,7 +2597,7 @@ void	RadioInterface::startScanning	() {
 	}
 	stopChannel     ();
 //	scanning and showing the techWindows does not make much sense
-	theTechWindow	-> hide ();	// until shown otherwise
+	techFrame	-> hide ();	// until shown otherwise
         store (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, false);
 	presetTimer. stop ();
 	channelTimer. stop ();
@@ -3864,7 +3869,7 @@ void	RadioInterface::show_quality	(float q,
 void	RadioInterface::show_rsCorrections	(int c, int ec) {
 	if (!running)
 	   return;
-	if (!theTechWindow -> isHidden ())
+	if (!techFrame -> isHidden ())
 	   theTechWindow -> showRsCorrections (c, ec);
 }
 //
@@ -4628,16 +4633,16 @@ bool	RadioInterface::handle_keyEvent (int theKey) {
 	}
 	else 
 	if (theConfigHandler -> hasFocus ()) {
-	   theTechWindow -> activateWindow ();
-	   theTechWindow -> setFocus ();
+//	   theTechWindow -> activateWindow ();
+//	   theTechWindow -> setFocus ();
 	   return true;
 	}
-	else
-	if (theTechWindow -> hasFocus ()) {
+//	else
+//	if (theTechWindow -> hasFocus ()) {
 //	   theEnsembleHandler	-> activateWindow ();
 //	   theEnsembleHandler	-> setFocus ();
-	   return true;
-	}
+//	   return true;
+//	}
 	return false;
 }
 //////////////////////////////////////////////////////////////////////////

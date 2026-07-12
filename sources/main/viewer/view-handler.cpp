@@ -64,12 +64,13 @@
 	theFrame	-> show ();
 	theTable	= new QTableWidget (0, 3);
 	theTable	 -> setSelectionBehavior (QAbstractItemView::SelectRows);
-	theTable	-> setColumnWidth	(0, 2);
-	theTable	-> setColumnWidth	(2, 8);
+	theTable	-> setColumnWidth	(0, 120);
+	theTable	-> setColumnWidth	(1, 5);
+	theTable	-> setColumnWidth	(2, 1);
 	theTable	-> setHorizontalHeaderLabels (
-	                             QStringList () << tr ("") <<
-	                                               tr ("service") <<
-	                                               tr ("chan"));
+	                             QStringList () << tr ("service") <<
+	                                               tr ("ch") <<
+	                                               tr ("*"));
 	connect (theTable, &QTableWidget::cellClicked,
 	         this, &serviceViewer::clickOnService);
 	theWidget	-> setWidget (theTable);
@@ -323,25 +324,25 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
 	viewLocker. lock ();
 	theTable     -> insertRow (pos);     // 
-        QTableWidgetItem *item0 = new QTableWidgetItem;
-	item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
-	theTable     -> setItem (pos, 0, item0);
+	QTableWidgetItem *item_0 = new QTableWidgetItem; // serviceName
+	item_0           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	theTable	-> setItem (pos, 0, item_0);
+	theTable 	-> item (pos, 0) -> setFont (normalFont);
+	theTable 	-> item (pos, 0) -> setForeground (QColor(fontColor));
 
-	QTableWidgetItem *item1 = new QTableWidgetItem; // serviceName
-	item1           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	theTable	-> setItem (pos, 1, item1);
+        QTableWidgetItem *item_1 = new QTableWidgetItem; // channel
+	item_1           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	theTable	-> setItem (pos, 1, item_1);
 	theTable 	-> item (pos, 1) -> setFont (normalFont);
 	theTable 	-> item (pos, 1) -> setForeground (QColor(fontColor));
 
-        QTableWidgetItem *item2 = new QTableWidgetItem; // channel
-	item2           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-	theTable	-> setItem (pos, 2, item2);
-	theTable 	-> item (pos, 2) -> setFont (normalFont);
-	theTable 	-> item (pos, 2) -> setForeground (QColor(fontColor));
+        QTableWidgetItem *item_2 = new QTableWidgetItem;
+	item_2		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	theTable	-> setItem (pos, 2, item_2);
 
-	theTable	-> item (pos, 0) -> setText (sd. isFavorite ? "*" :"");
-	theTable	-> item (pos, 1) -> setText (sd. serviceName);
-	theTable	-> item (pos, 2) -> setText (sd. channelName);
+	theTable	-> item (pos, 0) -> setText (sd. serviceName);
+	theTable	-> item (pos, 1) -> setText (sd. channelName);
+	theTable	-> item (pos, 2) -> setText (sd. isFavorite ? "*" :"");
 	viewLocker. unlock ();
 }
 
@@ -351,9 +352,10 @@ void	serviceViewer::setServiceOrder	(int order) {
 
 void	serviceViewer::mark (int index) {
 	viewLocker. lock ();
+	theTable -> item (index, 0) -> setFont (markedFont);
 	theTable -> item (index, 1) -> setFont (markedFont);
-	theTable -> item (index, 2) -> setFont (markedFont);
 	theTable -> setCurrentItem (theTable -> item (index, 2));
+	theTable -> scrollToItem (theTable -> item (index, 0));
 	viewLocker. unlock ();
 }
 
@@ -361,8 +363,8 @@ void	serviceViewer::unmark (int index) {
 	if ((index < 0) ||(index >= theTable -> rowCount ()))
 	   return;
 	viewLocker. lock ();
+	theTable -> item (index, 0) -> setFont (normalFont);
 	theTable -> item (index, 1) -> setFont (normalFont);
-	theTable -> item (index, 2) -> setFont (normalFont);
 	viewLocker. unlock ();
 }
 
@@ -409,7 +411,7 @@ void	serviceViewer::reportService (const QString &channel,
 //	the displayList and theTable are synced
 void	serviceViewer::clickOnService	(int row, int column) {
 	serviceDescriptor t = displayList [row];
-	if (column == 0) {	// change the fav settings
+	if (column == 2) {	// change the fav settings
 	   switch (theMode) {
 	      case ENSEMBLEVIEW: 
 //	mark or unmark the service as favorite
@@ -658,16 +660,16 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
 	viewLocker. lock ();
 	for (int i = 0; i < theTable -> rowCount (); i ++) {
 	   if (i == currentService) {
+	      theTable -> item (i, 0) -> setFont (markedFont);
+	      theTable -> item (i, 0) -> setForeground (QColor(fontColor));
 	      theTable -> item (i, 1) -> setFont (markedFont);
 	      theTable -> item (i, 1) -> setForeground (QColor(fontColor));
-	      theTable -> item (i, 2) -> setFont (markedFont);
-	      theTable -> item (i, 2) -> setForeground (QColor(fontColor));
 	   }
 	   else {
+	      theTable -> item (i, 0) -> setFont (normalFont);
+	      theTable -> item (i, 0) -> setForeground (QColor(fontColor));
 	      theTable -> item (i, 1) -> setFont (normalFont);
 	      theTable -> item (i, 1) -> setForeground (QColor(fontColor));
-	      theTable -> item (i, 2) -> setFont (normalFont);
-	      theTable -> item (i, 2) -> setForeground (QColor(fontColor));
 	   }
 	}
 	viewLocker. unlock ();
@@ -700,23 +702,24 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
 	   theTable	-> insertRow (row);
 	   QTableWidgetItem *item_0 = new QTableWidgetItem;
 	   item_0	-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
-	   item_0	-> setFlags (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
 	   theTable -> setItem (row, 0, item_0);
-	   theTable -> item (row, 0) -> setText (isFavorite ? "*" : "");
-
+	   theTable -> item (row, 0) -> setText (serviceName);
+	   theTable -> item (row, 0) -> setFont (normalFont);
+	   theTable -> item (row, 0) -> setForeground (QColor(fontColor));
+	
 	   QTableWidgetItem *item_1 = new QTableWidgetItem;
-	   item_1	-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
+	   item_1	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
 	   theTable -> setItem (row, 1, item_1);
-	   theTable -> item (row, 1) -> setText (serviceName);
+	   theTable -> item (row, 1) -> setText (channel);
 	   theTable -> item (row, 1) -> setFont (normalFont);
 	   theTable -> item (row, 1) -> setForeground (QColor(fontColor));
-	
+
 	   QTableWidgetItem *item_2 = new QTableWidgetItem;
 	   item_2	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	   item_2	-> setFlags (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
 	   theTable -> setItem (row, 2, item_2);
-	   theTable -> item (row, 2) -> setText (channel);
-	   theTable -> item (row, 2) -> setFont (normalFont);
-	   theTable -> item (row, 2) -> setForeground (QColor(fontColor));
+	   theTable -> item (row, 2) -> setText (isFavorite ? "*" : "");
+
 	}
 	viewLocker. unlock ();
 }

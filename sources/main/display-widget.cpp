@@ -533,15 +533,19 @@ QString tempPath        = QDir::homePath () + "/Qt-DAB-files/";
 void	displayWidget::handle_showCarriers	() {
 	if (carrierViewContainer -> isVisible ()) {
 	   carrierViewContainer -> hide ();
+	   myFrame. resize (carrier_width, carrier_height);
 	   show_carrierType	= NO_CARRIERS;
 	   emit  viewCarriers (255);
-	
+	   
 	}
 	else {
+	   carrier_width	= myFrame. size (). width ();
+	   carrier_height	= myFrame. size (). height ();
 	   carrierViewContainer -> show ();
 	   emit viewCarriers (carrierSelector -> currentIndex ());
+	   myFrame. resize (carrier_width, myFrame. size (). height ());
 	}
-	myFrame. adjustSize ();
+//	myFrame. adjustSize ();
 }
 
 bool	displayWidget::does_showCarriers	() {

@@ -194,10 +194,10 @@ void	ofdmHandler::stop	() {
    *	Finally, estimating the small frequency error
    */
 void	ofdmHandler::run	() {
-timeSyncer	myTimeSyncer (&theReader);
-TII_Detector	theTIIDetector (&theTable);
-freqSyncer	myFreqSyncer (radioInterface_p, &theTable);
-correlator	myCorrelator (radioInterface_p, p, &theTable);
+timeSyncer	myTimeSyncer	(&theReader);
+TII_Detector	theTIIDetector	(&theTable);
+freqSyncer	myFreqSyncer	(radioInterface_p, &theTable);
+correlator	myCorrelator	(radioInterface_p, p, &theTable);
 int32_t		startIndex	= -1;
 std::vector<int16_t> softbits;
 int	frameCount	= 0;
@@ -276,11 +276,11 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         totalSamples	+= sampleCount;
 	         if (frameCount >= 10) {
 	            rateError = SAMPLERATE * 
-	                          (totalSamples / ((float)frameCount * T_F) - 1);
+	                         (totalSamples / ((float)frameCount * T_F) - 1);
 	            showClockError ((int)rateError);
 	            totalSamples = 0;
 	            frameCount	= 0;
-	            nullShower = true;
+	            nullShower	= true;
 	            memcpy (tester, &(ofdmBuffer [T_null - T_u / 3]),
 	                                 T_u / 4 * sizeof (Complex));
 	         }
@@ -438,7 +438,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      }
 /**
   *	OK,  here we are at the end of the frame
-  *	Assume everything went well and skip T_null samples
+  *	Assume everything went well and "skip" T_null samples
   */
 	      theReader. getSamples (ofdmBuffer, 0,
 	                         T_null, coarseOffset + fineOffset, false);

@@ -58,7 +58,7 @@ QString	colorString;
 	X_axis	->	setGridLineColor (QColor (colorString));
 	X_axis	->	setGridLineVisible (true);
 	X_axis	->	setMinorGridLineVisible (false);
-	X_axis	->	setTickCount (6);
+	X_axis	->	setTickCount (4);
 //	X_axis  ->      setMinorTickCount (1);
 
 	Y_axis		= new QValueAxis();

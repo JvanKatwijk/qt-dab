@@ -22,6 +22,7 @@
  */
 
 #include	<QSettings>
+#include	<QFrame>
 #include	"tech-window.h"
 #include	"radio.h"
 #include	"audio-display.h"
@@ -40,22 +41,21 @@
 #define FRAMEDUMP_BUTTON        QString ("framedumpButton") 
 #define AUDIODUMP_BUTTON        QString ("audiodumpButton")
 
-		techWindow::techWindow	(RadioInterface *mr,
+		techWindow::techWindow	(QFrame	* theFrame,
+	                                 RadioInterface *mr,
 	                                 QSettings	*s,
 	                                 RingBuffer<std::complex<int16_t>> *audioData):
-	                                         superFrame (nullptr) {
+	                                         myFrame (theFrame) {
 	myRadioInterface	= mr;
 	dabSettings		= s;
 	this	-> audioData	= audioData;
 
-        setupUi (this);
+        setupUi (myFrame);
 	QString settingsHeader	= TECHDATA_SETTING;
-
-	setPositionAndSize (dabSettings, this, TECHDATA_SETTING);
 
 //	we start being hidden, the radio decides whether we are visible
 //	or not
-	this	-> hide ();
+	myFrame	-> hide ();
 	theAudioDisplay	= new audioDisplay (mr, audioScope, dabSettings);
 
 	QString framedumpButton_color = 
@@ -111,13 +111,11 @@
 }
 
 		techWindow::~techWindow	() {
-	hide ();
+	myFrame	-> hide ();
 	delete theAudioDisplay;
 }
 
 void	techWindow::storePosition	() {
-	if (!isHidden ())
-	   storeWidgetPosition (dabSettings, this, TECHDATA_SETTING);
 }
 
 void	techWindow::cleanUp	() {
@@ -303,7 +301,7 @@ void	techWindow::audioDataAvailable	(int amount, int rate) {
 std::complex<int16_t> buffer [1024];
 
 	(void)amount;
-	if (isHidden ()) {
+	if (myFrame -> isHidden ()) {
 	   audioData -> FlushRingBuffer ();
 	   return;
 	}
@@ -384,14 +382,7 @@ void	techWindow::showRate	(int rate, bool ps, bool sbr) {
 }
 
 void	techWindow::showStereo	(bool b) {
-	 if (b) {
-	   stereoLabel	-> setStyleSheet ("QLabel {font-weight: bold; color : lightgreen}");
-           stereoLabel  -> setText ("<i>stereo</i>");
-        }
-        else {
-	   stereoLabel	-> setStyleSheet ("QLabel {font-weight: bold; color : white}");
-           stereoLabel  -> setText ("      ");
-	}
+	(void)b;
 }
 
 

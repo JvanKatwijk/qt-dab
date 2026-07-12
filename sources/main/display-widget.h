@@ -114,6 +114,8 @@ private:
 	bool			setMarkers;
 
 	uint8_t			show_carrierType;
+	int			carrier_width;
+	int			carrier_height;
 private slots:
 	void		switch_tab		(int);
 	void		rightMouseClick		();

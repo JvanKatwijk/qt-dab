@@ -36,7 +36,7 @@ struct {float	level;
 
 	audioLevel::audioLevel (QWidget *parent)
 	                                 : QWidget(parent) {
-//	resize (8, 200);
+	resize (8, 200);
 }
 void	audioLevel::setLevel (qreal level) {
 	level = (level + 20) * 6; 

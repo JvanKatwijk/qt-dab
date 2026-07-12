@@ -64,15 +64,6 @@ DABFLOAT IO (DABFLOAT x) {
 }
 
 static inline
-DABFLOAT	limit_symmetrically (DABFLOAT v, DABFLOAT limit) {
-	if (v < -limit)
-	   return - limit;
-	if (v > limit)
-	   return limit;
-	return v;
-}
-
-static inline
 Complex w (DABFLOAT kn) {
 	DABFLOAT re	= cos (kn * M_PI / 4);
 	DABFLOAT im	= sin (kn * M_PI / 4);
@@ -82,7 +73,7 @@ Complex w (DABFLOAT kn) {
 static Complex W_table [8];
 static inline
 DABFLOAT makeA (int i, Complex S, Complex prevS) {
-	return abs  (prevS + W_table [i] * S);
+	return jan_abs  (prevS + W_table [i] * S);
 }
 
 //
@@ -331,12 +322,11 @@ DABFLOAT scaler		= 0;
 //	updates
 	   DABFLOAT fftBinPower	= std::norm (fftBin);
 	   meanPowerVector [i] =
-	        compute_avg (meanPowerVector [i],
-	                                     fftBinPower, ALPHA);
+	        compute_avg (meanPowerVector [i], fftBinPower, ALPHA);
 
 	   DABFLOAT binAbsLevel	= jan_abs (fftBin) / sqrt_2;
 	   meanLevelVector [i] =
-	                  compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
+	        compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
 
 	   DABFLOAT d_x		=  abs (real (fftBin)) -
 	                                  meanLevelVector [i] / binAbsLevel;
@@ -345,47 +335,49 @@ DABFLOAT scaler		= 0;
 	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
 	   sigmaSQ_Vector [i] =
 	             compute_avg (sigmaSQ_Vector [i], sigmaSQ, ALPHA);
-
+//	actual decoding
 	   switch (this -> decoder) {
 	     default:
 	     case DECODER_1: //	The denomainator is (formula 9)
 	         {  DABFLOAT amplifier	= 
-	   	                    sqrt (abs (fftBin) * abs (prevS)) *
+	   	                sqrt (abs (fftBin) * abs (prevS)) *
 	                                          meanPowerVector [i];
-	            amplifier		/= sigmaSQ_Vector [i];
-	            amplifier		/= 1.0 / snr + 3;
-	           Complex R1		= normalize (fftBin) * amplifier;
+	            amplifier	/= sigmaSQ_Vector [i];
+	            amplifier	/= 1.0 / snr + 3;
+	           Complex R1	= normalize (fftBin) * amplifier;
 //	scaler (due to old-dab)
-	           scaler		= -100 / meanValue;
-	           leftBit		= real (R1) * scaler;
-	           rightBit		= imag (R1) * scaler;
-	           sum			+= jan_abs (R1);
+	           scaler	= -100 / meanValue;
+	           leftBit	= real (R1) * scaler;
+	           rightBit	= imag (R1) * scaler;
+	           sum		+= jan_abs (R1);
 	           break;
 	      }
+
 	   case DECODER_2:
 	      {  DABFLOAT amplifier	= 
 	                        std::sqrt (abs (fftBin) * abs (prevS)) *
 	                                            meanLevelVector [i];
-	         amplifier		/= sigmaSQ_Vector [i] *
-	                                                    abs (fftBin);
-	         amplifier		/= 1.0 / snr + 0.7f;
-	         Complex R1		= normalize (fftBin) * amplifier;
+	         amplifier	/= sigmaSQ_Vector [i] * abs (fftBin);
+	         amplifier	/= 1.0 / snr + 0.7f;
+	         Complex R1	= fftBin * amplifier;
 //	scaler (due to old-dab)
-	         scaler			= -100 / meanValue;
-	         leftBit		= real (R1) * scaler;
-	         rightBit		= imag (R1) * scaler;
+	         scaler		= -100 / meanValue;
+	         leftBit	= real (R1) * scaler;
+	         rightBit	= imag (R1) * scaler;
 	         sum		+= jan_abs (R1);
 	      }
 	      break;
-	  case DECODER_3:
-	     {  Complex R1		= fftBin * (DABFLOAT)(jan_abs (prevS));
-	        scaler			=  -140.0 / meanValue;
 
-	        leftBit			= real (R1) * scaler;
-	        rightBit		= imag (R1) * scaler;
-	        sum += jan_abs (R1);
+	  case DECODER_3:
+	     {  Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
+	        scaler		=  -140.0 / meanValue;
+
+	        leftBit		= real (R1) * scaler;
+	        rightBit	= imag (R1) * scaler;
+	        sum		+= jan_abs (R1);
 	      }
 	      break;
+
 	   case DECODER_4:
 	      {  DABFLOAT A	= 1.0 / sigmaSQ_Vector [i];
 	         DABFLOAT P1	= makeA (1, current, prevS) * A;
@@ -415,12 +407,13 @@ DABFLOAT scaler		= 0;
 	            b1 = 0;
 	         if (std::isnan (b2))
 	            b2 = 0;
-	         scaler 		=  100.0 / meanValue;
+	         scaler 	=  100.0 / meanValue;
 
-	         leftBit		=  - b1 * scaler;
-	         rightBit		=  - b2 * scaler;
-	         sum		+= abs (Complex (b1, b2));
+	         leftBit	=  - b1 * scaler;
+	         rightBit	=  - b2 * scaler;
+	         sum		+= jan_abs (Complex (b1, b2));
 	      }
+	      break;
 	   }
 	   softBits [i]		= std::clamp ((int)leftBit,
 	                                      -MAX_VITERBI, MAX_VITERBI);

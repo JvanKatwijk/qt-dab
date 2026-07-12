@@ -35,12 +35,13 @@
 
 class	RadioInterface;
 class	QSettings;
+class	QFrame;
 
-
-class	techWindow: public superFrame, public Ui_technical_data {
+class	techWindow: public QObject, public Ui_technical_data {
 Q_OBJECT
 public:
-		techWindow	(RadioInterface *,
+		techWindow	(QFrame *,
+	                         RadioInterface *,
 	                         QSettings *,
 	                         RingBuffer<std::complex<int16_t>> *audioData);
 		~techWindow	();
@@ -55,7 +56,7 @@ private:
 	QSettings		*dabSettings;
 	RingBuffer<std::complex<int16_t>>	*audioData;
 	audioDisplay		*theAudioDisplay;
-
+	QFrame			*myFrame;
 	void			setButtonColors	(QPushButton *,
 	                                            const QString &buttonName);
 	void			showDetails	(int, audiodata *);
