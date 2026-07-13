@@ -17,7 +17,7 @@ an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.2](#What-is-new-in-Qt-DAB-7.2)
+* [What is new in Qt-DAB-7.3](#What-is-new-in-Qt-DAB-7.3)
 * [Windows and scopes](#windows-and-scopes)
 * [Devices and device support](#devices-and-device-support)
 * [Handling packet services](#handling-packet-services)
@@ -30,8 +30,10 @@ Table of Contents
 * [Building an executable: a few notes](#building-an-executable-a-few-notes)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.2
+What is new in Qt-DAB-7.3
 ======================================================================
+
+ - In Qt-DAB-7.3 the visible change is the coupling of the technical window to the main window. Rather than a separate window, the technical window is now attached to the main window. Obviously, the control of the visibility remains the same.
 
  - In Qt-DAB-7.2  qwt  is  not used anymore for the "scopes". The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
 The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set  (1) background color, (2) grid color and (3) color of the curve;
@@ -62,7 +64,8 @@ The selector of the list of audio devices was traditionally shown as combobox in
 now it is a separate small window, the visibility of which id controlled by a button on the main window. 
 Some other buttons are just replaced on the main window.
 
-![7.2](/res/read_me/qt-dab-7.2.png?raw=true)
+![7.3](/res/read_me/qt-dab-7.3-a.png?raw=true)
+![7.3](/res/read_me/qt-dab-7.3-b.png?raw=true)
 
 The main window is visisble as long as the program runs.
 
@@ -97,8 +100,10 @@ Clicking on a line in the channeldisplay has the same effect has clicking on the
 
 The icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
 small blue one controls the visibility of the device list.
+
 On the second line the "book style" icon controls the visibility of the
-technical window, and the icon with label **EPG**, is shown in case
+most right part of the main window, housing the technical window.
+The icon with label **EPG**, is shown in case
 an EPG/SPI service is detected in the currently selected channel (Note that
 the EPG/SPI service is NOT shown in the services list.)
 
@@ -151,7 +156,6 @@ The dynamic label shows below the slide space. Clicking with the right hand mous
 
  * by selecting the **dllText** button on the configuration and control window;
  * by selecting the **save titles** option in the configuration and control window. This latter option will work if the service supports DL2.
-
 
 Technical window
 ----------------------------------------------------------------------------

@@ -159,7 +159,7 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_v3::setIfGainReduction);
 	connect (lnaGainSetting, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::setLnaGainReduction);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 2)
 	connect (agcControl, &QCheckBox::checkStateChanged,
 #else
 	connect (agcControl, &QCheckBox::stateChanged,
@@ -167,19 +167,19 @@ std::string errorMessage (int errorCode) {
 	         this, &sdrplayHandler_v3::setAgcControl);
 	connect (ppmControl, qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &sdrplayHandler_v3::setPpmControl);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 2)
 	connect (biasT_selector, &QCheckBox::checkStateChanged,	
 #else
 	connect (biasT_selector, &QCheckBox::stateChanged,	
 #endif
 	         this, &sdrplayHandler_v3::setBiasT);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 2)
 	connect (notch_selector, &QCheckBox::checkStateChanged,	
 #else
 	connect (notch_selector, &QCheckBox::stateChanged,	
 #endif
 	         this, &sdrplayHandler_v3::setNotch);
-#if QT_VERSION >= QT_VERSION_CHECK (6, 0, 2)
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 2)
 	connect (this, &sdrplayHandler_v3::overloadStateChanged,
 #else
 	connect (this, &sdrplayHandler_v3::overloadStateChanged,

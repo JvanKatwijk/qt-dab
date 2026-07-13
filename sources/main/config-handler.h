@@ -132,6 +132,7 @@ private slots:
 	void	handle_loadSelection_selector	(int);
 //	for the tracer
 	void	handle_tracerButton		();
+
 signals:
 	void	selectDecoder		(int);
 	void	set_transmitters_local	(bool);

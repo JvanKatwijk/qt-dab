@@ -52,6 +52,8 @@ public:
 int16_t	 MP42PCM         (stream_parms *sp,
                          uint8_t buffer [],
                          int16_t bufferLength);
+void	LostFrame	(uint32_t  length, uint8_t, uint8_t);
+
 private:
 bool    initialize      (stream_parms *);
 

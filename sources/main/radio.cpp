@@ -1686,7 +1686,7 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	   if (index >= 0) {
 	      QString res;
 	      for (int i = index; i < s. size (); i ++) {
-	         if (isDigit (s [i]) || isLetter (s [i]) || (s [i] == "."))
+	         if (isDigit (s [i]) || isLetter (s [i]) || (s [i] == '.'))
 	            res. push_back (s [i]);
 //	         fprintf (stderr, "%s\n", res. toUtf8 (). data ());
 	      }

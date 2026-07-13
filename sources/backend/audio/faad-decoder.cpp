@@ -24,6 +24,8 @@
 #include        "neaacdec.h"
 #include        "radio.h"
 
+#define	decayFactor	0.75f
+
 	faadDecoder::faadDecoder        (RadioInterface *mr,
 	                                 RingBuffer<complex16> *buffer) {
 	this    -> audioBuffer  = buffer;
@@ -32,6 +34,8 @@
 	aacConf         = NeAACDecGetCurrentConfiguration (aacHandle);
 	aacInitialized  = false;
 	baudRate        = 48000;
+	concealDecay	= 1.0f;
+	
 	connect (this, &faadDecoder::newAudio,
 	         mr, &RadioInterface::newAudio);
 }
@@ -145,9 +149,9 @@ uint8_t channels;
 	                               outBuffer [2 * i + 1]);
 	      audioBuffer -> putDataIntoBuffer (&s, 1);
 	   }
+
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 10)
 	      newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
-
 	}
 	else
 	if (channels == 1) {
@@ -165,3 +169,6 @@ uint8_t channels;
 	return channels; 
 }
 
+void	faadDecoder::LostFrame (uint32_t  length, uint8_t sbr, uint8_t ps) {
+	(void)length; (void)sbr; (void)ps;
+}

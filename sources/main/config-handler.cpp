@@ -110,7 +110,6 @@ int	index_for_key (int key) {
 	connect (httpPortSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::handle_httpPort);
 
-
 	float latitude	=
 	              value_f (dabSettings, MAP_HANDLING,
 	                                        HOME_LATITUDE, 52.22f);
@@ -153,6 +152,7 @@ int	index_for_key (int key) {
 	b = value_i (dabSettings, CONFIG_HANDLER,
 	                           LOCAL_BROWSER_SETTING, 1) != 0;
 	this -> localBrowserSelector -> setChecked (b);
+
 //
 //	second row
 	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 0) != 0;
@@ -771,4 +771,4 @@ void	configHandler::handle_dumpmodeSelector	(int k) {
 	bool b = this -> dumpmodeSelector -> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, b ? 1 : 0);
 }
-	
+

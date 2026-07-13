@@ -243,7 +243,11 @@ stream_parms    streamParameters;
   *	OK, the result is N * 110 * 8 bits (still single bit per byte!!!)
   *	extract the AU's, and prepare a buffer,  with the sufficient
   *	lengthy for conversion to PCM samples
+  *	DAB+ uses a 960-sample core AAC frame;
+  *	SBR doubles the output; output is always stereo.
   */
+
+	
 	for (int i = 0; i < num_aus; i ++) {
 	   int16_t	aac_frame_length;
 
@@ -255,6 +259,9 @@ stream_parms    streamParameters;
 	                                                arg (au_start [i]);
 	      qWarning () << errorReport;
 //	should not happen, all errors were corrected
+//	      aacDecoder. LostFrame (aac_frame_length, 
+//	                             streamParameters. sbrFlag,
+//	                             streamParameters. psFlag);
 	      return false;
 	   }
 
@@ -263,6 +270,9 @@ stream_parms    streamParameters;
 	   if ((aac_frame_length >=  960) || (aac_frame_length < 0)) {
 	      qWarning () << "invalid aac_frame_length " <<
 	                                             aac_frame_length << "\n";
+	      aacDecoder. LostFrame (aac_frame_length, 
+	                             streamParameters. sbrFlag,
+                                     streamParameters. psFlag);
 	      return false;
 	   }
 
@@ -271,6 +281,9 @@ stream_parms    streamParameters;
 	                                aac_frame_length)) {
 	      if (!crcFlag) {
 	         crcFlag = true;
+	         aacDecoder. LostFrame (aac_frame_length, 
+	                                streamParameters. sbrFlag,
+	                                streamParameters. psFlag);
 	         qWarning () << "crc error \n";
 	         emit crc_error (true);
 	      }
@@ -329,6 +342,9 @@ stream_parms    streamParameters;
 	   if (tmp <= 0) {
 #ifdef  __WITH_FDK_AAC__
 	      QString theError;
+	      aacDecoder. LostFrame (aac_frame_length,
+                                     streamParameters. sbrFlag,
+                                     streamParameters. psFlag);
 	      switch (tmp) {
 	         case -1:
 	            theError = "fdk driver not working";

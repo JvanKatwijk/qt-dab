@@ -108,8 +108,8 @@ void	Qt_Audio::restart	() {
 //	select the device
 	currentDevice = outputDevices. at (newDeviceIndex);
 	m_audioSink. reset (new QAudioSink (currentDevice, m_settings));
-	QtAudio::Error err = m_audioSink -> error ();
-	(void)err;
+//	QtAudio::Error err = m_audioSink -> error ();
+//	(void)err;
 //	fprintf (stderr, "Errorcode for new audiosink %d\n", (int)(err));
 	connect (m_audioSink. get (), &QAudioSink::stateChanged,
                  this, &Qt_Audio::state_changed);
@@ -123,7 +123,7 @@ void	Qt_Audio::restart	() {
 	m_audioSink	-> setVolume	(linearVolume);
 	theIODevice	= new Qt_AudioDevice (mr); // will start as well
 	m_audioSink	-> start (theIODevice);
-	err = m_audioSink -> error ();
+//	err = m_audioSink -> error ();
 //	fprintf (stderr, "Errorcode for new audiosink start %d\n", (int)(err));
 }
 

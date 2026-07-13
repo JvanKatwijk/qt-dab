@@ -30,7 +30,7 @@
 #include	"fdk-aac.h"
 
 //
-/**
+/**k
   *	For interpreting the HeAAC frames we have the faad decoder
   *	and the fdk-aac decoder
   */
@@ -44,6 +44,7 @@
 	connect (this, &fdkAAC::newAudio, 
 	         mr, &RadioInterface::newAudio);
 	working			= true;
+	lastRate		= 48000;
 }
 
 	fdkAAC::~fdkAAC () {
@@ -97,6 +98,7 @@ int		output_size	= 8 * 2048;
 	   return -8;
 
 	if (info -> numChannels == 2) {		// default for DAB+
+	   lastRate	= info	-> sampleRate;
 	   for (int i = 0; i < info -> frameSize; i ++) {
 	      complex16 s = complex16 (bufp [2 * i], bufp [2 * i + 1]);
 	      audioBuffer  -> putDataIntoBuffer (&s, 1);
@@ -108,25 +110,31 @@ int		output_size	= 8 * 2048;
 	}
 	else
 	if (info -> numChannels == 1) {
+	   lastRate	= info -> sampleRate;
 	   int16_t *buffer = dynVec (int16_t, 2 * info -> frameSize);
 	   for (uint16_t i = 0; i < info -> frameSize; i ++) {
 	      buffer [2 * i]	= ((int16_t *)bufp) [i];
 	      buffer [2 * i + 1] = buffer [2 * i];
 //	      buffer [2 * i + 1] = 0;
 	   }
-
+	   
 	   audioBuffer  -> putDataIntoBuffer ((complex16 *)buffer,
 	                                      info -> frameSize);
 	   if (audioBuffer -> GetRingBufferReadAvailable () >
 	                                    (uint32_t)info -> sampleRate / 8)
 	      newAudio (info -> frameSize, info -> sampleRate,
 	                sp   ->  psFlag, sp   ->  sbrFlag);
-
 	}
 	else {
 	   qWarning () << "cannor handle these channels";
 	}
 
 	return info -> numChannels; 
+}
+
+void	fdkAAC::LostFrame (uint32_t length, 
+	                                uint8_t sbrFlag, uint8_t psFlag) {
+	(void)length; (void)sbrFlag; (void)psFlag;
+	fprintf (stderr, "x");
 }
 

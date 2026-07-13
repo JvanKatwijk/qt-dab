@@ -247,6 +247,11 @@ int	fcmp (const void *a, const void *b) {
 	   return 0;
 }
 
+static inline
+Complex computeMean (Complex s, Complex n, DABFLOAT Alpha) {
+	return (1 - Alpha) * s + Alpha * n;
+}
+
 QVector<tiiData> TII_Detector::processNULL (int16_t threshold_db, 
 	                                    uint8_t selected_subId) {
 //	collapsed ETSI float values
@@ -265,13 +270,18 @@ QVector<tiiData> theResult;		// results
 float	avg_etsi	[NUM_GROUPS];
 float	avg_nonetsi	[NUM_GROUPS];
 
-float threshold = pow (10, (float)threshold_db / 10); // threshold above noise
+float threshold	= pow (10, (float)threshold_db / 10); // threshold above noise
 int Teller = 0;
 
 	for (int32_t idx = -carriers / 2; idx < carriers / 2; idx += 2) {
 	   const int32_t fftIdx = idx < 0 ? idx + T_u : idx + 1;
-	   decodedBuffer [Teller++] += 
-	       nullSymbolBuffer [fftIdx] * conj (nullSymbolBuffer [fftIdx + 1]);
+	   
+	   Complex newTerm =
+	            nullSymbolBuffer [fftIdx] * conj (nullSymbolBuffer [fftIdx + 1]);
+	   decodedBuffer [Teller] = 
+	            computeMean (decodedBuffer [Teller], newTerm, 0.01f);
+	   Teller ++;
+	 
 	}
 
 	collapse (decodedBuffer, etsiTable, nonetsiTable);
@@ -438,10 +448,6 @@ int Teller = 0;
 	      }
 	   }
 	}
-//	fprintf(stderr, "max =%.0f, noise = %.1fdB\n", max, 10 * log10(noise/max));
-	if (max > 4000)
-	   for (int i = 0; i < carriers / 2; i++)
-	      decodedBuffer [i] *= 0.9;
 	resetBuffer	();
 	qsort (theResult. data (), theResult. size (), sizeof (tiiData), &fcmp);
 	return theResult;

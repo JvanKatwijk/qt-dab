@@ -22,8 +22,8 @@
  *
  *	Use the fdk-aac library.
  */
-#ifdef	__WITH_FDK_AAC__
 #pragma once
+#ifdef	__WITH_FDK_AAC__
 
 #include	<QObject>
 #include	<stdint.h>
@@ -60,10 +60,12 @@ public:
 int16_t		MP42PCM (stream_parms *sp,
                          uint8_t   packet [],
                          int16_t   packetLength);
+void		LostFrame (uint32_t amount, uint8_t sbr, uint8_t psFlag);
 private:
 	RingBuffer<complex16>	*audioBuffer;
 	bool			working;
 	HANDLE_AACDECODER	handle;
+	int			lastRate;
 signals:
 	void			newAudio	(int, int, bool, bool);
 };
