@@ -368,7 +368,7 @@ void	techWindow::showRate	(int rate, bool ps, bool sbr) {
 	if (!ps)
 	   psLabel -> setText (" ");
 	else {
-	   psLabel	-> setStyleSheet ("font-weight: bold; color:green");
+	   psLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
 	   psLabel -> setText ("ps");
 	}
 	if (!sbr) {

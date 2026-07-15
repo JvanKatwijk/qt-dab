@@ -105,7 +105,7 @@ int16_t	deviceIndex;
 QString	temp;
 int	k;
 char	manufac [256], product [256], serial [256];
-
+	serial [0] = 0;
 	rtlsdrSettings			= s;
 	this	-> libraryString	= libraryString;
 	storageName			= QString ("rtlsdrSettings-V") +
@@ -195,6 +195,10 @@ char	manufac [256], product [256], serial [256];
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
 	deviceVersion	-> setText (deviceModel);
 	product_display	-> setText (tunerType);
+	if (QString (serial) != "")
+	   serial_display	-> setText (serial);
+	else
+	   serial_display	-> hide ();
 
 	int currentBandWidth	=
 	           value_i (rtlsdrSettings, storageName, "bandwidth", 1750);
@@ -203,7 +207,7 @@ char	manufac [256], product [256], serial [256];
 	if (rtlsdr_set_tuner_bandwidth != nullptr) {
 	   r = rtlsdr_set_tuner_bandwidth (theDevice, KHz (currentBandWidth));
 	   if (r != 0) {
-	      QString t = QString ("cannot set frequency ") +
+	      QString t = QString ("cannot set bandwidth ") +
 	                               QString::number (currentBandWidth);
 	      theErrorLogger -> add ("RTLSDR", t);
 	   }
@@ -236,8 +240,7 @@ char	manufac [256], product [256], serial [256];
 	}
 
 	rtlsdr_get_usb_strings (theDevice, manufac, product, serial);
-	fprintf (stderr, "%s %s %s\n",
-	            manufac, product, serial);
+	fprintf (stderr, "%s %s %s\n", manufac, product, serial);
 
 	fprintf (stderr, "serial %s\n", serial);
 //	all sliders/values are set to previous values, now do the settings
@@ -263,7 +266,9 @@ char	manufac [256], product [256], serial [256];
 	         qOverload<const QString &>(&QComboBox::activated),
 #endif
 	         this, &rtlsdrHandler::set_ExternalGain);
-	connect (ppm_correction, qOverload<double>(&QDoubleSpinBox::valueChanged),
+
+	connect (ppm_correction,
+	            qOverload<double>(&QDoubleSpinBox::valueChanged),
 	         this, &rtlsdrHandler::set_ppmCorrection);
 	connect (agc_hw, &QRadioButton::toggled,
                  this, &rtlsdrHandler::set_hw_agc);

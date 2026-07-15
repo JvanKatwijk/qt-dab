@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>281</width>
-    <height>560</height>
+    <width>242</width>
+    <height>462</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -167,6 +167,13 @@
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="serial_display">
+     <property name="text">
+      <string>serial</string>
      </property>
     </widget>
    </item>

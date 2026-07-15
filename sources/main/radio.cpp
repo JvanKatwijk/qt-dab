@@ -314,7 +314,7 @@ QString h;
 	rateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
         psLabel         -> setStyleSheet ("font-weight: bold; color:cyan");
         sbrLabel        -> setStyleSheet ("font-weight: bold; color:cyan");
-	crcLabel	-> setStyleSheet ("font-weight: bold; color:green");
+//	crcLabel	-> setStyleSheet ("font-weight: bold; color:green");
 
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
@@ -533,7 +533,7 @@ QString h;
 	previous_idle_time	= 0;
 	previous_total_time	= 0; 
 	numberofSeconds		= 0;
-	crcLabel	-> setStyleSheet ("color : green");
+//	crcLabel	-> setStyleSheet ("color : green");
 
 //	Connect the buttons for the color_settings
 	connect (configButton, &smallPushButton::rightClicked,
@@ -1771,7 +1771,7 @@ void	RadioInterface::stopAudioDumping	() {
 
 	theAudioConverter. stop_audioDump ();
 	audioDumping	= false;
-	theTechWindow	-> audiodumpButton_text ("audio dump", 10);
+	theTechWindow	-> audiodumpButton_text ("WAV", 10);
 }
 
 void	RadioInterface::startAudioDumping () {
@@ -3311,7 +3311,7 @@ void	RadioInterface::stopFrameDumping () {
 	   return;
 
 	fclose (channel. currentService. frameDumper);
-	theTechWindow ->  framedumpButton_text ("save AAC/MP2", 10);
+	theTechWindow ->  framedumpButton_text ("AAC/MP2", 10);
 	channel. currentService. frameDumper	= nullptr;
 }
 
@@ -3325,7 +3325,7 @@ void	RadioInterface::startFrameDumping () {
 	if (channel. currentService. frameDumper == nullptr)
 	   return;
 	QString mode = channel. currentService. ASCTy == DAB_PLUS ?
-	                                       "recording aac" : "recording mp2";
+	                                       "rec aac" : "rec mp2";
 	theTechWindow ->  framedumpButton_text (mode, 12);
 }
 
@@ -4770,7 +4770,7 @@ int	RadioInterface::get_serviceOrder	() {
 }
 
 void	RadioInterface::crc_error (bool b) {
-	crcLabel	-> setStyleSheet (b ? "color : red" :  "color : green");
+//	crcLabel	-> setStyleSheet (b ? "color : red" :  "color : green");
 }
 //
 //	This function is called in the set-up whenever the

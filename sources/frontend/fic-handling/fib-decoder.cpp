@@ -1203,10 +1203,9 @@ uint32_t SId;
 //	                           SId, SCIds, xpadType);
 }
 
-//	FIG 1 - Cover the different possible labels, section 5.2
+//	FIG 2 - Cover the different possible labels, section 5.2
 void	fibDecoder::process_FIG2 (uint8_t *d) {
 uint8_t	extension	= getBits_3 (d, 8 + 5); 
-
 	switch (extension) {
 	   case 0:		// ensemble name 8.1.13
 	      FIG1Extension0 (d);

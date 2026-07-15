@@ -231,13 +231,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="crcLabel">
-            <property name="text">
-             <string>crc</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="clickablelabel" name="soundLabel">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon shows whether or not audio is (or should be) generated, and can be used as &amp;quot;mute&amp;quot; button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
