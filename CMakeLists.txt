@@ -303,6 +303,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/uploader.h 
 	   ./sources/support/basic-print.h 
 	   ./sources/support/dc-filter.h
+	   ./sources/support/mutetimeSelector.h
 	   ./sources/support/gui-elements/position-handler.h 
 	   ./sources/support/gui-elements/settings-handler.h 
 	   ./sources/support/gui-elements/presetcombobox.h 
@@ -447,6 +448,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/time-converter.cpp 
 	   ./sources/support/time-table.cpp 
 	   ./sources/support/uploader.cpp 
+	   ./sources/support/mutetimeSelector.cpp
 	   ./sources/support/gui-elements/settings-handler.cpp 
 	   ./sources/support/gui-elements/position-handler.cpp 
 	   ./sources/support/gui-elements/presetcombobox.cpp 
@@ -541,6 +543,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/time-table.h
 	     ./sources/support/content-table.h
 	     ./sources/support/http-handler.h
+	     ./sources/support/mutetimeSelector.h
 	     ./sources/server-thread/udp-broadcaster.h 
 	     ./sources/backend/msc-handler.h
 	     ./sources/backend/backend.h

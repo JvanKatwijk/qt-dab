@@ -9,7 +9,8 @@ About Qt-DAB
 
 *Qt-DAB* is software for Linux and Windows, and can be compiled for MacOS and Raspberry Pi. It is used for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-![7.2](/res/read_me/qt-dab-front-picture.png?raw=true)
+![7.2](/res/read_me/qt-dab-front-picture-1.png?raw=true)
+![7.2](/res/read_me/qt-dab-front-picture-2.png?raw=true)
 
 Of course, as for previous versions, for the current version,
 *Qt-DAB-7.2*, predefined executables - for Linux an AppImage, for Windows
@@ -33,7 +34,7 @@ Table of Contents
 What is new in Qt-DAB-7.3
 ======================================================================
 
- - In Qt-DAB-7.3 the visible change is the coupling of the technical window to the main window. Rather than a separate window, the technical window is now attached to the main window. Obviously, the control of the visibility remains the same.
+ - In Qt-DAB-7.3 the "technical window" is incorporated in the main window, with the option to "hide" it. Similarly, the spectrum scope has a "carriers" window that is part of the window with as option to make it (in)visible.
 
  - In Qt-DAB-7.2  qwt  is  not used anymore for the "scopes". The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
 The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set  (1) background color, (2) grid color and (3) color of the curve;
@@ -67,7 +68,7 @@ Some other buttons are just replaced on the main window.
 ![7.3](/res/read_me/qt-dab-7.3-a.png?raw=true)
 ![7.3](/res/read_me/qt-dab-7.3-b.png?raw=true)
 
-The main window is visisble as long as the program runs.
+The **main window** is visisble as long as the program runs. The two pictures show the main window with and without the technical window visible.
 
 The left (almost) half is mainly reserved for selecting channel and service.
     * the top line, displaying the ensemble name implements as clickable item as well
@@ -98,14 +99,21 @@ Clicking on a line in the channeldisplay has the same effect has clicking on the
 
 ============================================================================
 
-The icons on the top line behave as in previous versions, i.e. the yellow one controls the visibility of the Qt-DAB-files directory (folder), and the
-small blue one controls the visibility of the device list.
+The icons on the top line behave more or less as in previous versions
+ * clicking on the copyright symbol shows some data on the Qt-DAB version and shows acknowledgements;
+ * the yellow/blue  icon controls the visibility of the Qt-DAB-files directory (folder); 
+ * the small blue icon controls the visibility of the device list;
+ * the snr widget controls the visibility of a small window showing the progress of the SNR.
 
-On the second line the "book style" icon controls the visibility of the
-most right part of the main window, housing the technical window.
-The icon with label **EPG**, is shown in case
-an EPG/SPI service is detected in the currently selected channel (Note that
-the EPG/SPI service is NOT shown in the services list.)
+![7.2](/res/read_me/snr-window.png?raw=true)
+
+On the second line:
+ * the "book style" icon controls the visibility of the most right part of the main window, housing the technical window.
+ * the icon with label **EPG**, is shown in case an EPG/SPI service is detected in the currently selected channel (Note that the EPG/SPI service is NOT shown in the services list.)
+
+On the third line technical data on the currently selected service is shown, at the end on the right hand side the speaker symbol:
+ * clicking with the **left** mouse button controls **muting** the signal;
+ *clicking with the **right** mouse button shows a small window where the muting time (i.e. the time after which muting stops) can be set.
 
 EPG and timetables
 ------------------------------------------------------------------------
@@ -134,28 +142,20 @@ development and testing uses file input).
 
 Note however, that in general it may take some time before sufficient EPG/SPI data is read in for the above mentioned functionality to be operational.
 
-SNR
--------------------------------------------------------------------------
+The slide
+-----------------------------------------------------------------------
 
-Clicking with the mouse on the SNR icon on the main window controls
-the visibility of the **snr-window**. The snr-window shows  the SNR of the current signal over time.
-The setting is such that the screen shows app 2 minutes of subsequent snr measurements. It was - long time ago - included when I was exercizing different antenans.
+In the middle part of the right half of the main window **slides** are shown. By default some slides with old computer or radio stuff are shown. If, however, the service carries MOT data in the PAD part, the slides are shown whenever they are decoded.
 
-![7.2](/res/read_me/snr-window.png?raw=true)
-
-Muting a signal
---------------------------------------------------------------------------
-
-Clicking on the **speaker** symbol controls **muting** the audio signal.
-If set, a counter appears telling the remaining mute time. The (maximum) mute time can be set on the configuration and control window. Of course, clicking on the speaker symbol when muting is "on", turns it off.
+ * **clicking** with the mouse on the slide area controls whether or not the incoming slides are saved. If they are saved, they can be found in a subdirectory within the directory where Qt-DAB stores data.
 
 The dynamic label.
 -------------------------------------------------------------------------
 
-The dynamic label shows below the slide space. Clicking with the right hand mouse button on the text shows a (very) small menu which allows saving (part of) the text. There are two other ways to save the dynamic label text or a part of it
+The dynamic labelis seen below the slide space. Clicking with the right hand mouse button on the text shows a (very) small menu which allows saving (part of) the text. There are two other ways to save the dynamic label text or a part of it
 
- * by selecting the **dllText** button on the configuration and control window;
- * by selecting the **save titles** option in the configuration and control window. This latter option will work if the service supports DL2.
+ * by selecting the **dll text** checkbox on the configuration and control window. Selecting this, asks for a filename where the content is to be stored;
+ * by selecting the **save titles** option in the configuration and control window. This latter option will work if the service supports DL2. Data is stored in a file **Dl2_titles.csv** in the local storage area.
 
 Technical window
 ----------------------------------------------------------------------------
@@ -169,6 +169,10 @@ New is that - if available - the icon of the selected service is shown.
 As  said, the progress bars disappeared:  indicators tell whether
 or not the steps in the transformation from raw data to audio are successfull.
 Essentially, if all indicators are green there should be sound.
+
+The window contains two buttons
+ * the button labeled **AAC/MP2** when touched, asks for a filename where the AAC or MP2 (depending on the type of DAB service) is stored;
+ * the button labeled **WAV** when touched asks for a filename where the resulting audio (PCM) is stored.
 
 The buttons
 ---------------------------------------------------------------------------
@@ -207,7 +211,8 @@ Clicking with the right hand mouse button on the scope, shows a small window on 
 The spectrum
 -----------------------------------------------------------------------
 
-![7.2](/res/read_me/spectrum-scope.png)
+![7.3](/res/read_me/spectrum-scope-a.png)
+![7.3](/res/read_me/spectrum-scope-b.png)
 
 The spectrum of the incoming DAB signal is shown.
 To the right of this spectrum, one sees the
@@ -225,7 +230,7 @@ Below the "scope" area, some **quality indicators** of the DAB input signal are 
  * the IQ unbalance, i.e. the (average) difference in strength between the I and the Q part of the DAB  input signal;
 
 At the bottom of the window from left to right
- * a button controlling rhw visisbility of a small panel showing carriers;
+ * a button controlling the visisbility of a small panel showing carriers;
  * a **sync** indicator,  **green** indicates that the software is synchronized with the incoming sample stream (i.e. time synchronization);
  * a **FIC** indicator, telling the (average) successrate of decoding the FIC part of the DAB frames (i.e. the data that implements a kind of "catalog" that describes the payload);
  * a **BER**, Bit Error Rate, telling (on average) how many input bits were
@@ -310,22 +315,19 @@ Configuration and control
 
 ![7.2](/res/read_me/configuration-and-control.png)
 
-The **configuration and control** window is completely redesigned.
+The **configuration and control** window is completely redesigned and
+selectors are grouped.
+
 Some selectors, buttons and checkboxes are removed, as mentioned the functionality is moved to (mainly using right hand mouse clicks) the main window.
 
-Settings for the http and tpreg port, as well as the setting for the home position can now be set on the configuration window.
-
-In the previous version, a selector **mapview** was added, that selector 
-is now placed in a line with other http related settings.
-
-Since the software - on startup - always loads a database, i.e. 
-if one can be found in the user's how directory that one, otherwise a default version, there was no need for  selector for loading a database.
-
-New are selectors labeled  **load selection** and **update check**.
-If the **load selection**  selector is set, on program startup 
-a small menu shows, showing options to create a new database next to or instead of the default one.
-
-Also new is a checkbox that - when set - instructs the software to check on program startup on the availability of a new version of Qt-DAB.
+While the function for must selectors is quite obvious, there are some that need some explanation
+ *  **check updates** - when set - checks on program startup for a newer version on the repository;
+ *  **input dump in xml** -when set - makes that dumps from the input are in so-called "xml" ("uff*) format, where the content is the input as delivered from
+the inpt device. If not set the input dump is in PCM formt.
+ * **all tii** - when set - tells the software that - on extracting tii data - the data also should be shown if no transmittername can be found in the database;
+ * **save map** - when set - tells the software to save the transitterdata shown on the map to save in a file for use with an external program to re-view the map with the transmitters offline;
+ ***load selection** - when set - shows on program start up a small menu,
+showing options to create a new database next to or instead of the default one.
 
 Handling packet and background services
 ========================================================================

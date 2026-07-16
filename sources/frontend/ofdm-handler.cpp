@@ -59,15 +59,15 @@
 	                                              p -> spectrumBuffer),
 	                                    theFicHandler (mr, cpuSupport),
 	                                    theEtiGenerator (&theFicHandler,
-	                                                  cpuSupport),
+	                                                     cpuSupport),
 	                                    theOfdmDecoder (mr,
 	                                                 inputDevice -> bitDepth(),
 	                                                 p -> stdDevBuffer,
 	                                                 p -> carrierBuffer,
 	                                                 p -> iqBuffer),
 	                                    theMscHandler (mr, p -> frameBuffer,
-	                                                theLogger,
-	                                                cpuSupport),
+	                                                   theLogger,
+	                                                   cpuSupport),
 	                                    theTable (),
 	                                    fft (get_T_u (), false) {
 	this	-> p			= p;
@@ -453,11 +453,15 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      int16_t CIF_hi, CIF_lo;
 	      theFicHandler. getCIFcount (CIF_hi, CIF_lo); 
 	      if ((CIF_lo & 0x07) >= 4) {
+	         static int t2 = 0;
 	         if (viewCarrier_mode == NULL_CARRIERS_TII) {
-	            DABFLOAT cBuf [carriers];
-	            NullToCarriers (ofdmBuffer, cBuf);
-	            carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
-	            emit show_carriers (viewCarrier_mode, carriers);
+	            if (++t2 >= 4) {
+	               DABFLOAT cBuf [carriers];
+	               NullToCarriers (ofdmBuffer, cBuf);
+	               carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
+	               emit show_carriers (viewCarrier_mode, carriers);
+	               t2 = 0;
+	            }
 	         }
 	         theTIIDetector. addBuffer (ofdmBuffer);
 	         tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data (),
@@ -473,10 +477,14 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      }
 	      else {	// compute SNR
 	         if (viewCarrier_mode == NULL_CARRIERS_NO_TII) {
-	            DABFLOAT cBuf [carriers];
-	            NullToCarriers (ofdmBuffer, cBuf);
-	            carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
-	            emit show_carriers (viewCarrier_mode, carriers);
+	            static int t3 = 0;
+	            if (++t3 >= 4) {
+	               DABFLOAT cBuf [carriers];
+	               NullToCarriers (ofdmBuffer, cBuf);
+	               carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
+	               emit show_carriers (viewCarrier_mode, carriers);
+	               t3 = 0;
+	            }
 	         }
 	         float sum	= 0;
 	         for (int i = 0; i < T_null; i ++)

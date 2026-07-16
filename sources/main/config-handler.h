@@ -51,13 +51,11 @@ public:
 //	the value extractors
 //	top
 	int	get_serviceOrder	();
-	int	muteValue		();
 	int	switchDelayValue	();
 
 	bool	upload_selector_active	();
 	bool	upload_active		();
 	bool	closeDirect_active	();
-	bool	saveSliders_active	();
 	bool	epg2_active		();
 	bool	onTop_active		();
 	bool	localBrowserSelector_active	();
@@ -67,7 +65,6 @@ public:
 //
 //	a few others
 	void	showLoad		(float);
-	void	mark_dlTextButton	(bool);
 	void	set_closeDirect		(bool);
 
 	void	enable_loadLib		();
@@ -96,7 +93,6 @@ private slots:
 //	first the color setters
 	void	color_fontButton	();
 	void	color_fontColorButton	();
-	void	color_dlTextButton	();
 	void	color_scheduleButton	();
 	void	color_loadTableButton	();
 //
@@ -107,9 +103,9 @@ private slots:
 	void	handle_mapViewSelector		(int);
 	void	handle_updateChecker		(int);
 
+	void	handle_dlTextSelector		(int);
 	void	handle_tiiThreshold		(int);
 	void	handle_allTIISelector		(int);
-	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
 	void	handle_upload_selector		(int);
 	void	handle_dumpmodeSelector		(int);
@@ -122,7 +118,6 @@ private slots:
 	void	handle_saveTitles		(int);
 
 	void	handle_dcRemovalSelector	(int);
-	void	handle_saveSlides		(int);
 	void	handle_audioServices_only	(int);
 
 	void	handle_decoderSelector		(const QString &s);
@@ -148,5 +143,7 @@ signals:
 
 	void	process_tiiSelector	(bool);
 	void	signal_dataTracer	(bool);
+
+	void	handle_dlText		(bool);
 };
 

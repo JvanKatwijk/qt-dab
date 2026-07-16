@@ -258,6 +258,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="crcErrorLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;While the RS (Reed-Solomon) handling is there to fix upto 5 errors in a input segment of 110 data bytes, and tells when not succeeding, there is a (more than theoretical) change that the parity bits themselves contain errors, and nevertheles the RS decoder &amp;quot;thinks&amp;quot; all errors are repaired.&lt;/p&gt;&lt;p&gt;That is why is a later stage a crc check is performed.&lt;/p&gt;&lt;p&gt;The indicator is green when the check passes and red otherwise.&lt;/p&gt;&lt;p&gt;It can be expected that the color is most of the time green.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>crc</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="aacLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AAC turns green if (most of) the AAC frames could be interpreted and mapped upon PCM data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -290,7 +300,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows Protection Level and Type (A or B)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;protection&amp;quot; (either EEP or UEP) level determines how many input bits are used to compute a single &amp;quot;hard&amp;quot; output bit.&lt;/p&gt;&lt;p&gt;The difference between UEP and EEP is that with EEP all incoming bits are treated equally, while for UEP the input section is split up into two parts, with the first part with a (usually) higher protection level than the second part.&lt;/p&gt;&lt;p&gt;As an example, for EEP 1A we take 4 input bits to generate a single output bit, while for EEP 4B we take 5 input bits to generate 4 output bits. &lt;/p&gt;&lt;p&gt;The notation might be slightly confusing since 1/4 seems smaller than 4/5, while the first states 4 in 1 out and the second 5 in 4 out.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::Shape::NoFrame</enum>

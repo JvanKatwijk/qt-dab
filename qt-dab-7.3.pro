@@ -210,9 +210,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/process-params.h \
 	   ./sources/support/ringbuffer.h \
 	   ./sources/support/dab-params.h \
-#	   ./sources/support/dab-tables.h \
 	   ./sources/support/ITU-tables.h \
-#	   ./sources/support/scanlist-handler.h \
 	   ./sources/support/scheduler.h \
 	   ./sources/support/schedule-selector.h \
 	   ./sources/support/element-selector.h \
@@ -228,6 +226,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/uploader.h \
 	   ./sources/support/basic-print.h \
 	   ./sources/support/dc-filter.h \
+	   ./sources/support/mutetimeSelector.h \
 	   ./sources/support/gui-elements/position-handler.h \
 	   ./sources/support/gui-elements/settings-handler.h \
 //	   ./sources/support/gui-elements/presetcombobox.h \
@@ -353,6 +352,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \
 	   ./sources/support/dc-filter.cpp \
+	   ./sources/support/mutetimeSelector.cpp \
 	   ./sources/support/charsets.cpp \
 	   ./sources/support/content-table.cpp \
 	   ./sources/support/crc-handlers.cpp \

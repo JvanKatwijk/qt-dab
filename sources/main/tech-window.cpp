@@ -91,12 +91,12 @@
 	connect	(framedumpButton, &QPushButton::clicked,
 	         mr, &RadioInterface::handleFramedumpButton);
 
-	bitRateLabel	-> setStyleSheet ("font-weight: bold;color:red");
-	uepField	-> setStyleSheet ("font-weight: bold;color:magenta");
-	codeRate	-> setStyleSheet ("font-weight: bold;color:magenta");
+	uepField	-> setStyleSheet ("font-weight: bold;color:red");
+	codeRate	-> setStyleSheet ("font-weight: bold;color:red");
+	bitRateLabel	-> setStyleSheet ("font-weight: bold;color:magenta");
+	audiorateLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
 	psLabel		-> setStyleSheet ("font-weight: bold; color:cyan");
 	sbrLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
-	audiorateLabel	-> setStyleSheet ("font-weight: bold; color:red");
 	frameLabel	-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
 	rsLabel		-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
 	aacLabel	-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
@@ -124,6 +124,7 @@ void	techWindow::cleanUp	() {
 	shortnameLabel		-> setText (ee);
 	frameLabel		-> setText ("");
 	rsLabel			-> setText ("");
+	crcErrorLabel		-> setText ("");
 	aacLabel		-> setText ("");
 	startAddressDisplay	-> setText (QString::number (0));
 	lengthDisplay		-> setText (QString::number (0));
@@ -188,6 +189,17 @@ void	techWindow::showRsErrors		(int e) {
 	}
 }
 
+void	techWindow::showcrcErrors		(int e) {
+	if (e > 0) {
+	   crcErrorLabel	-> setStyleSheet ("QLabel {font-weight:bold;color:red}");
+	   crcErrorLabel	-> setText ("crc");
+	}
+	else {
+	   crcErrorLabel	-> setStyleSheet ("QLabel {font-weight:bold;color:lightgreen}");
+	   crcErrorLabel	-> setText ("crc");
+	}
+}
+	
 void	techWindow::showAacErrors	(int e) {
 	if (100 - 4 * e < 90) {
 	   aacLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : red}");

@@ -62,6 +62,7 @@ private:
 	void			showDetails	(int, audiodata *);
 public slots:
 	void		showFrameErrors		(int);
+	void		showcrcErrors		(int);
 	void		showAacErrors		(int);
 	void		showRsErrors		(int);
 	void		showRsCorrections	(int, int);

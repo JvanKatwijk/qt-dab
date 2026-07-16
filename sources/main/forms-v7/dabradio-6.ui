@@ -62,362 +62,358 @@
      <property name="frameShadow">
       <enum>QFrame::Shadow::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="clickablelabel" name="aboutLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click on this copyright symbol to see some details about the implementation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>©</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="folder_shower">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon instructs the software to start a shell and run the explorer (or the Linux equivalent) showing the folder/directory where Qt-DAB stores its files&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>files</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="deviceSelectorLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon - i.e. a clickable label - controls the visibility of the device list.&lt;/p&gt;&lt;p&gt;Clicking with the right hand mouse button controls the visibility of the device window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>dev</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="localTimeDisplay">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The local time. If you want UTC instead, set the utc selector on the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>local</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="snrLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A simple &amp;quot;signal strength&amp;quot; indicator, telling in graphical terms the SNR of the signal.&lt;/p&gt;&lt;p&gt;Clicking with the mouse controls the visibility of the snrViewer window&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="clickablelabel" name="serviceButton">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon controls the visibility of the Technical details window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="epgLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG label is shown only if in the ensemble of the currently selected channel an EPG/SPI service is detected. Clicking on the label controls the visibility of the time table handler.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="serviceLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clicing with the left mouse button lets you choose the color used for the display of the service name. Clicking with the right hand mouse button controls the visibility of the technical window.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>service</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="iconLabel">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLCDNumber" name="stillMuting"/>
-          </item>
-          <item>
-           <widget class="QLabel" name="programTypeLabel">
-            <property name="maximumSize">
-             <size>
-              <width>91</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>pty</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <item>
-           <widget class="QLabel" name="motLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator telling whether or not MOT data is begin decoded&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>mot</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="stereoLabel">
-            <property name="text">
-             <string>stereo</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="protectionLabel">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="rateLabel">
-            <property name="text">
-             <string>ratelabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="audiorateLabel">
-            <property name="text">
-             <string>48000</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="psLabel">
-            <property name="text">
-             <string>ps</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="sbrLabel">
-            <property name="text">
-             <string>sbr</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="soundLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon shows whether or not audio is (or should be) generated, and can be used as &amp;quot;mute&amp;quot; button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>volume</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLabel" name="pictureLabel">
-            <property name="text">
-             <string>No Slide</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QSlider" name="volumeSlider">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Volume slider is part of the Qt_Audio audio subsystem.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Orientation::Vertical</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="audioLevel" name="leftChannel" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>8</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="audioLevel" name="rightChannel" native="true">
-              <property name="maximumSize">
-               <size>
-                <width>8</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QLabel" name="dynamicLabel">
-          <property name="font">
-           <font>
-            <pointsize>14</pointsize>
-            <italic>false</italic>
-            <bold>false</bold>
-           </font>
+         <widget class="clickablelabel" name="aboutLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Click on this copyright symbol to see some details about the implementation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>TextLabel</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
+           <string>©</string>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0" rowspan="2">
-           <widget class="smallPushButton" name="configButton">
+         <widget class="clickablelabel" name="folder_shower">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon instructs the software to start a shell and run the explorer (or the Linux equivalent) showing the folder/directory where Qt-DAB stores its files&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>files</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="deviceSelectorLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon - i.e. a clickable label - controls the visibility of the device list.&lt;/p&gt;&lt;p&gt;Clicking with the right hand mouse button controls the visibility of the device window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>dev</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="localTimeDisplay">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The local time. If you want UTC instead, set the utc selector on the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>local</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="snrLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A simple &amp;quot;signal strength&amp;quot; indicator, telling in graphical terms the SNR of the signal.&lt;/p&gt;&lt;p&gt;Clicking with the mouse controls the visibility of the snrViewer window&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="clickablelabel" name="serviceButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this icon controls the visibility of the Technical details window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="epgLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG label is shown only if in the ensemble of the currently selected channel an EPG/SPI service is detected. Clicking on the label controls the visibility of the time table handler.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="serviceLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clicing with the left mouse button lets you choose the color used for the display of the service name. Clicking with the right hand mouse button controls the visibility of the technical window.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>service</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="iconLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLCDNumber" name="stillMuting"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="programTypeLabel">
+          <property name="maximumSize">
+           <size>
+            <width>91</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>pty</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QLabel" name="motLabel">
+          <property name="text">
+           <string>mot</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="protectionLabel">
+          <property name="text">
+           <string>protect</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="rateLabel">
+          <property name="text">
+           <string>rate</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="audiorateLabel">
+          <property name="text">
+           <string>48k</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="psLabel">
+          <property name="text">
+           <string>ps</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="sbrLabel">
+          <property name="text">
+           <string>sbr</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="stereoLabel">
+          <property name="text">
+           <string>stereo</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="soundLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This icon shows whether or not audio is (or should be) generated, and can be used as &amp;quot;mute&amp;quot; button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>volume</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="clickablelabel" name="pictureLabel">
+          <property name="text">
+           <string>No Slide</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QSlider" name="volumeSlider">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Volume slider is part of the Qt_Audio audio subsystem.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="text">
-             <string>controls</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1" rowspan="2">
-           <widget class="smallPushButton" name="spectrumButton">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>spectrum</string>
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
            </widget>
           </item>
-          <item row="0" column="2" rowspan="2">
-           <widget class="smallPushButton" name="httpButton">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>http</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="smallPushButton" name="scanButton">
-            <property name="text">
-             <string>scan</string>
+          <item>
+           <widget class="audioLevel" name="leftChannel" native="true">
+            <property name="maximumSize">
+             <size>
+              <width>8</width>
+              <height>16777215</height>
+             </size>
             </property>
            </widget>
           </item>
-          <item row="1" column="3" rowspan="2">
-           <widget class="smallPushButton" name="devicewidgetButton">
-            <property name="text">
-             <string>device</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="smallPushButton" name="resetButton">
-            <property name="text">
-             <string>reset </string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="smallPushButton" name="etiButton">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop the eti generator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>eti</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="smallPushButton" name="audioSelectButton">
-            <property name="text">
-             <string>audio</string>
+          <item>
+           <widget class="audioLevel" name="rightChannel" native="true">
+            <property name="maximumSize">
+             <size>
+              <width>8</width>
+              <height>16777215</height>
+             </size>
             </property>
            </widget>
           </item>
          </layout>
         </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4"/>
+      </item>
+      <item>
+       <widget class="clickablelabel" name="dynamicLabel">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0" rowspan="2">
+         <widget class="smallPushButton" name="configButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>controls</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" rowspan="2">
+         <widget class="smallPushButton" name="spectrumButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>spectrum</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2" rowspan="2">
+         <widget class="smallPushButton" name="httpButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>http</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="smallPushButton" name="scanButton">
+          <property name="text">
+           <string>scan</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3" rowspan="2">
+         <widget class="smallPushButton" name="devicewidgetButton">
+          <property name="text">
+           <string>device</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="smallPushButton" name="resetButton">
+          <property name="text">
+           <string>reset </string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="smallPushButton" name="etiButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop the eti generator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>eti</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="smallPushButton" name="audioSelectButton">
+          <property name="text">
+           <string>audio</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_11">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_11">
-          <item>
-           <widget class="QLabel" name="cpuLabel">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This label - if shown - shows the CPU support instructions used in the deconvolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="clickablelabel" name="distanceLabel">
-            <property name="minimumSize">
-             <size>
-              <width>141</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clicking on this label shows - or hides - the dxDisplay&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>108</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+         <widget class="QLabel" name="cpuLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This label - if shown - shows the CPU support instructions used in the deconvolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="clickablelabel" name="distanceLabel">
+          <property name="minimumSize">
+           <size>
+            <width>141</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clicking on this label shows - or hides - the dxDisplay&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>108</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>

@@ -38,7 +38,6 @@
 #define FONT_BUTTON             QString ("fontButton")
 #define FONTCOLOR_BUTTON        QString ("fontColorButton")
 
-#define	DLTEXT_BUTTON		QString ("dlTextButton")
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
 
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
@@ -82,14 +81,11 @@ int	index_for_key (int key) {
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
 	
-	int x =  value_i (dabSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10);
-	this	-> muteTimeSetting -> setValue (x);
-
         int fontSize    =  
 	         value_i (dabSettings, COLOR_SETTINGS, "fontSize", 10);
 	this	-> fontSizeSelector -> setValue (fontSize);
 
-	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING,
+	int x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING,
 	                               DEFAULT_SWITCHVALUE);
 	this -> switchDelaySetting -> setValue (x);
 
@@ -144,6 +140,10 @@ int	index_for_key (int key) {
 	decoderLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	nrServicesLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	pathLabel	-> setText (path_for_files);
+	variousLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	tiiLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	maphandlingLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	decodingLabel	-> setStyleSheet ("QLabel {color: yellow}");
 
 //	first row of checkboxes
 	bool b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 1) != 0;
@@ -181,9 +181,6 @@ int	index_for_key (int key) {
 //
 //	fifth row of checkboxes
 	b = value_i (dabSettings, CONFIG_HANDLER, SHOWALL_SETTING, 1) != 0;;
-
-	b = value_i (dabSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 1) != 0;
-	this	-> saveSlides -> setChecked (b);
 
 	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
 	this	-> audioServices_only -> setChecked (b);
@@ -279,8 +276,6 @@ void	configHandler::set_connections () {
 	         this, &configHandler::color_fontButton);
 	connect (fontColorButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_fontColorButton );
-	connect (dlTextButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_dlTextButton);
 	connect (scheduleButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_scheduleButton);
 	connect (loadTableButton, &smallPushButton::rightClicked,
@@ -290,8 +285,6 @@ void	configHandler::set_connections () {
 //	real handlers
 	connect (scheduleButton, &QPushButton::clicked,
                  myRadioInterface, &RadioInterface::handle_scheduleButton);
-	connect (muteTimeSetting, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &configHandler::handle_muteTimeSetting);
 	connect (switchDelaySetting, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_switchDelaySetting);
 	connect (orderAlfabetical, &QRadioButton::clicked,
@@ -310,8 +303,14 @@ void	configHandler::set_connections () {
 //
 //	Now the two rows with buttons
 //
-	connect (dlTextButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_dlTextButton);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (dlTextSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (dlTextSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_dlTextSelector);
+	connect (this, &configHandler::handle_dlText,
+	         myRadioInterface, &RadioInterface::handle_dlText);
 	connect (loadTableButton, &QPushButton::clicked,
 	         myRadioInterface, &RadioInterface::handle_loadTable);
 	loadTableButton	-> setText ("refresh table");
@@ -374,14 +373,6 @@ void	configHandler::set_connections () {
 //
 //	fifh line
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (saveSlides, &QCheckBox::checkStateChanged,
-#else
-	connect (saveSlides, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_saveSlides);
-
-
 //	sixth ine
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -421,13 +412,6 @@ QString	fontColorButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              FONTCOLOR_BUTTON + "_color", BLACK);
 
-QString	dlTextButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              DLTEXT_BUTTON + "_color", YELLOW);
-QString dlTextButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              DLTEXT_BUTTON + "_font", BLACK);
-
 QString	scheduleButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              SCHEDULE_BUTTON + "_color", YELLOW);
@@ -453,11 +437,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (fontColorButton_color,
 	                                        fontColorButton_font));
 
-	this -> dlTextButton ->
-	              setStyleSheet (temp. arg (dlTextButton_color,
-	                                        dlTextButton_font));
-
-
 	this -> scheduleButton ->
 	              setStyleSheet (temp. arg (scheduleButton_color,
 	                                        scheduleButton_font));
@@ -475,14 +454,9 @@ void	configHandler::color_fontColorButton	() 	{
 	set_buttonColors (this -> fontColorButton, FONTCOLOR_BUTTON);
 }
 
-void	configHandler::color_dlTextButton	()	{
-	set_buttonColors (this ->  dlTextButton, DLTEXT_BUTTON);
-}
-
 void	configHandler::color_scheduleButton	() 	{
 	set_buttonColors (this ->  scheduleButton, SCHEDULE_BUTTON);
 }
-
 
 void	configHandler::color_loadTableButton	() 	{
 	set_buttonColors (this ->  loadTableButton, LOAD_TABLE_BUTTON);
@@ -512,10 +486,6 @@ QColor	color;
 	QString textColor_name	= textColor. name ();
 	store (dabSettings, COLOR_SETTINGS, buttonColor, baseColor_name);
 	store (dabSettings, COLOR_SETTINGS, buttonFont, textColor_name);
-}
-
-void	configHandler::handle_muteTimeSetting	(int newV) {
-	store (dabSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, newV);
 }
 
 void	configHandler::handle_switchDelaySetting	(int newV) {
@@ -549,12 +519,6 @@ void	configHandler::handle_localBrowser	(int d) {
 	(void)d;
 	store (dabSettings, CONFIG_HANDLER, LOCAL_BROWSER_SETTING, 
 	               this ->  localBrowserSelector -> isChecked () ? 1 : 0);
-}
-
-void	configHandler::handle_saveSlides	(int x) {
-	(void)x;
-	store (dabSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 
-	                         this ->  saveSlides -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_decoderSelector	(const QString &s) {
@@ -604,10 +568,6 @@ bool	configHandler::get_dcRemovalSelector	() {
 	return this -> dcRemovalSelector -> isChecked ();
 }
 
-bool	configHandler::saveSliders_active	() {
-	return saveSlides -> isChecked ();
-}
-
 //
 bool	configHandler::onTop_active	() {
 	return onTop	-> isChecked ();
@@ -626,30 +586,12 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 	b		-> update ();
 }
 
-//void	configHandler::mark_dumpButton (bool b) {
-//	if (b)
-//	   setButtonFont (dumpButton, "writing", 12);
-//	else
-//	   setButtonFont (dumpButton, "Raw dump", 10);
-//}
-
-void	configHandler::mark_dlTextButton (bool b) {
-	if (b)
-	   setButtonFont (dlTextButton, "writing", 12);
-	else
-	   setButtonFont (dlTextButton, "dlText", 10);
-}
-
 void	configHandler::set_closeDirect (bool b) {
 	closeDirect_selector	-> setChecked (b);
 }
 
 int	configHandler::switchDelayValue		() {
 	return switchDelaySetting	-> value () * 1000;
-}
-
-int	configHandler::muteValue		() {
-	return  muteTimeSetting -> value ();
 }
 
 void	configHandler::showLoad		(float load) {
@@ -772,3 +714,7 @@ void	configHandler::handle_dumpmodeSelector	(int k) {
 	store (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, b ? 1 : 0);
 }
 
+void	configHandler::handle_dlTextSelector	(int k) {
+	(void)k;
+	emit handle_dlText (dlTextSelector -> isChecked ());
+}

@@ -227,6 +227,7 @@ void	motObject::addBodySegment (const uint8_t	*bodySegment,
 //
 //	once we know how many segments there are/should be,
 //	we check for completeness
+
 	for (int16_t i = 0; i < numofSegments; i ++) {
 	   if (motMap. find (i) == motMap. end())
 	      return;

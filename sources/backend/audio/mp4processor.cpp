@@ -76,7 +76,7 @@
 	         mr, &RadioInterface::show_rsCorrections);
 	connect (this, &mp4Processor::crc_error,
 	         mr, &RadioInterface::crc_error);
-	crcFlag			= false;
+	crcFlag			= true;
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;
@@ -278,16 +278,13 @@ stream_parms    streamParameters;
 
 //	but first the crc check
 	   if (!check_crc_bytes (&outVector [au_start [i]],
-	                                aac_frame_length)) {
-	      if (!crcFlag) {
-	         crcFlag = true;
-	         aacDecoder. LostFrame (aac_frame_length, 
-	                                streamParameters. sbrFlag,
-	                                streamParameters. psFlag);
-	         qWarning () << "crc error \n";
-	         emit crc_error (true);
-	      }
-	      crcErrors ++;
+	                             aac_frame_length)) {
+	      aacDecoder. LostFrame (aac_frame_length, 
+	                             streamParameters. sbrFlag,
+	                             streamParameters. psFlag);
+	      qWarning () << "crc error \n";
+	      emit crc_error (true);
+	      crcFlag = true;
 	      return true;
 	   }
 	   if (crcFlag) {

@@ -53,6 +53,7 @@
 #include	"position-handler.h"
 #include	"settings-handler.h"
 #include	"selector.h"
+#include	"mutetimeSelector.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #else
@@ -281,6 +282,7 @@ QString h;
 	dxMode     = value_i (theQSettings, CONFIG_HANDLER, S_DX_MODE, 0) != 0;
 	connect (distanceLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_distanceLabel);
+
 	utc_on	= value_i (theQSettings, CONFIG_HANDLER,
                                         UTC_SELECTOR_SETTING, 0) == 1;
 
@@ -314,12 +316,13 @@ QString h;
 	rateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
         psLabel         -> setStyleSheet ("font-weight: bold; color:cyan");
         sbrLabel        -> setStyleSheet ("font-weight: bold; color:cyan");
-//	crcLabel	-> setStyleSheet ("font-weight: bold; color:green");
 
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
 	pauzeSlideTeller	= 0; // counting pause slides
 
+	connect (pictureLabel, &clickablelabel::clicked_right,
+	         this, &RadioInterface::handle_saveSlides);
 	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
 	connect (devicewidgetButton, &QPushButton::clicked,
@@ -558,6 +561,8 @@ QString h;
 //	
 	connect (soundLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_muteButton);
+	connect (soundLabel, &clickablelabel::clicked_right,
+	         this, &RadioInterface::set_muteTime);
 	connect (snrLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_snrLabel);
 
@@ -2206,6 +2211,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	stopMuting	();
+	announcement_stop (s. SId);
 	setSoundLabel (false);
 	channel. audioActive	= false;
 
@@ -3026,11 +3032,19 @@ void	RadioInterface::handle_muteButton	() {
 	setSoundLabel (false);
 	connect (&muteTimer, &QTimer::timeout,
 	         this, &RadioInterface::muteButton_timeOut);
-	muteDelay	= theConfigHandler -> muteValue ();
+	muteDelay	= 
+	     value_i (theQSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10);
 	muteDelay	*= 60;	// seconds
 	muteTimer. start (1000);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
+}
+
+void	RadioInterface::set_muteTime		() {
+mutetimeSelector theSelector (
+	     value_i (theQSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, 10));
+int	newTime	= theSelector. QDialog::exec ();
+	store (theQSettings, CONFIG_HANDLER, MUTE_TIME_SETTING, newTime);
 }
 
 void	RadioInterface::muteButton_timeOut	() {
@@ -3366,9 +3380,6 @@ void	RadioInterface::scheduledFICDumping () {
 
 void	RadioInterface::scheduledDLTextDumping () {
 	if (dlTextFile != nullptr) {
-	   fclose (dlTextFile);
-	   dlTextFile = nullptr;
-	   theConfigHandler	-> mark_dlTextButton (false);
 	   return;
 	}
 
@@ -3376,7 +3387,6 @@ void	RadioInterface::scheduledDLTextDumping () {
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile == nullptr)
 	   return;
-	theConfigHandler -> mark_dlTextButton (true);
 }
 //
 //////////////////////////////////////////////////////////////////////////
@@ -3402,11 +3412,11 @@ void	RadioInterface::handle_devicewidgetButton	() {
 }
 //
 //	called from the configHandler
-void	RadioInterface::handle_dlTextButton	() {
-	if (dlTextFile != nullptr) {
-	   fclose (dlTextFile);
+void	RadioInterface::handle_dlText	(bool b) {
+	if (!b) {
+	   if (dlTextFile != nullptr) 
+	      fclose (dlTextFile);
 	   dlTextFile = nullptr;
-	   theConfigHandler	-> mark_dlTextButton (false);
 	   return;
 	}
 
@@ -3414,7 +3424,6 @@ void	RadioInterface::handle_dlTextButton	() {
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile	== nullptr)
 	   return;
-	theConfigHandler	-> mark_dlTextButton (true);
 }
 //
 void	RadioInterface::handle_resetButton	() {
@@ -4770,7 +4779,7 @@ int	RadioInterface::get_serviceOrder	() {
 }
 
 void	RadioInterface::crc_error (bool b) {
-//	crcLabel	-> setStyleSheet (b ? "color : red" :  "color : green");
+	theTechWindow	-> showcrcErrors (b);
 }
 //
 //	This function is called in the set-up whenever the
@@ -4891,3 +4900,15 @@ void	RadioInterface::viewCarriers		(uint8_t showType) {
 	if (theOfdmHandler != 0)
 	   theOfdmHandler	-> viewCarriers (showType);
 }
+
+void	RadioInterface::handle_saveSlides	() {
+bool	b = value_i (theQSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 1) != 0;
+	store (theQSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, !b ? 1 : 0);
+	
+	QMessageBox::warning (this, tr ("Warning"),
+                                       b ? 
+	                               tr ("slides will be saved from now on"):
+	                               tr ("slides will NOT be saved from now on"));
+
+}
+

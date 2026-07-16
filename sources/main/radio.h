@@ -507,7 +507,7 @@ public slots:
 	void			set_transmitters_local		(bool);
 	void			handle_scheduleButton		();
 	void			handle_devicewidgetButton	();
-	void			handle_dlTextButton		();
+	void			handle_dlText			(bool);
 	void			handle_snrButton		();
 	void			handle_loadTable		();
 	void			handle_correlationSelector	(int);
@@ -688,6 +688,7 @@ private slots:
 	void			handle_detailButton	();
 	void			handle_spectrumButton	();
 	void			handle_muteButton	();
+	void			set_muteTime		();
 	void			show_streamSelector     ();
 
 	void			handle_folderButton	();
@@ -701,6 +702,7 @@ private slots:
 	void			handle_startTimeTable	();
 
 	void			handle_utcSwitch	();
+	void			handle_saveSlides	();
 //
 //
 	void			TerminateProcess	();
