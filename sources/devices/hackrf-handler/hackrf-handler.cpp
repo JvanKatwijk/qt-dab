@@ -270,12 +270,9 @@ void	hackrfHandler::handle_VGAGain	(int newGain) {
 }
 
 void	hackrfHandler::handle_biasT (int d) {
-int res;
-bool	b;
-
 	(void)d;
-	b = biasT_button	-> checkState() == Qt::Checked;
-	res = this -> hackrf_set_antenna_enable (theDevice, b);
+	bool b = biasT_button	-> checkState() == Qt::Checked;
+	int res = this -> hackrf_set_antenna_enable (theDevice, b);
 	if (res != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   theErrorLogger -> add ("Hackrf",
@@ -286,12 +283,9 @@ bool	b;
 }
 
 void	hackrfHandler::handle_Ampli (int a) {
-int res;
-bool	b;
-
 	(void)a;
-	b = AmpEnableButton	-> checkState() == Qt::Checked;
-	res = this -> hackrf_set_amp_enable (theDevice, b);
+	bool b = AmpEnableButton	-> checkState() == Qt::Checked;
+	int res = this -> hackrf_set_amp_enable (theDevice, b);
 	if (res != HACKRF_SUCCESS) {
 	   showStatus (this -> hackrf_error_name (hackrf_error (res)));
 	   theErrorLogger -> add ("Hackrf Ampli",
@@ -347,7 +341,7 @@ float correctedRate = SAMPLERATE + correction;
 	if (!running. load ())
 	   return;
 	stopReader();
-	restartReader(getVFOFrequency());
+	restartReader (getVFOFrequency());
 }
 //
 //	we use a static large buffer, rather than trying to allocate

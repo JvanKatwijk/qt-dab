@@ -9,11 +9,11 @@ About Qt-DAB
 
 *Qt-DAB* is software for Linux and Windows, and can be compiled for MacOS and Raspberry Pi. It is used for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-![7.2](/res/read_me/qt-dab-front-picture-1.png?raw=true)
-![7.2](/res/read_me/qt-dab-front-picture-2.png?raw=true)
+![7.3](/res/read_me/qt-dab-front-picture-1.png?raw=true)
+![7.3](/res/read_me/qt-dab-front-picture-2.png?raw=true)
 
 Of course, as for previous versions, for the current version,
-*Qt-DAB-7.2*, predefined executables - for Linux an AppImage, for Windows
+*Qt-DAB-7.3*, predefined executables - for Linux an AppImage, for Windows
 an installer - are (or will be) available.
 
 Table of Contents
@@ -28,28 +28,34 @@ Table of Contents
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
 * [Software for device support](#softare-for-device-support)
-* [Building an executable: a few notes](#building-an-executable-a-few-notes)
+* [Building an executable](#building-an-executable)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
 What is new in Qt-DAB-7.3
 ======================================================================
 
- - In Qt-DAB-7.3 the "technical window" is incorporated in the main window, with the option to "hide" it. Similarly, the spectrum scope has a "carriers" window that is part of the window with as option to make it (in)visible.
+ - In Qt-DAB-7.3 the "technical window" is incorporated in a frame in the main window, with the option to "hide" it. Similarly, the spectrum scope has a "carriers" window that is part of the window with as option to make it (in)visible.
 
- - In Qt-DAB-7.2  qwt  is  not used anymore for the "scopes". The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
+ - Since Qt-DAB-7.2  qwt  is  not used anymore for the "scopes". The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
 The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set  (1) background color, (2) grid color and (3) color of the curve;
 
- - Qt-DAB-7.2 is developed using Qt6 but can be compiled without problems using the Qt5 framework using "qmake -qt5" for generating a makefile. The CMakeLists.txt file  for using cmake contains some Qt6 dependencies;
+ - Qt-DAB-7.3 is developed using Qt6 but can be compiled without problems using the Qt5 framework using "qmake -qt5" for generating a makefile. The CMakeLists.txt file  for using cmake contains some Qt6 dependencies;
 
-In QtDAB-7.2 some GUI elements were changed:
+In QtDAB-7.2 and 7.3 some GUI elements were changed:
 
  - The "waterfall" disappeared: the GUI of a running version of Qt-DAB is sufficently limited in size that it can be shown - including the other windows - on my laptop screen.
 
- - the progressbars on the technical window are replaced by simple indicators telling just whether the processing is OK.
+ - added is an option to show the full spectrum of the NULL part of the DAB frame (with options to select the NULL part carrying the TII data) or the mean value or sigmaSE values measured during decoding.
+
+ - the **progressbars** on the technical window are replaced by simple indicators telling just whether the processing is OK (green) or not (red);
+
+ - the technical window is made an optional part of the main window rather than a separate window.
 
  - the main window contains a button **channel view** that - when touched - shows in a separate window an overview of the channels in the current database.
 
 ![7.2](/res/read_me/channelView.png?raw=true)
+
+ - the selector for setting the (maximum) mute time is moved from the configuration window to a separate small window that is activated by clicking with the right hand mouse button on the speaker symbol on the main window.
 
 Windows and scopes
 =========================================================================
@@ -68,7 +74,8 @@ Some other buttons are just replaced on the main window.
 ![7.3](/res/read_me/qt-dab-7.3-a.png?raw=true)
 ![7.3](/res/read_me/qt-dab-7.3-b.png?raw=true)
 
-The **main window** is visisble as long as the program runs. The two pictures show the main window with and without the technical window visible.
+The **main window** is visible as long as the program runs. The two pictures show the main window with and without the technical window visible.
+The icon left of the service name (Here **NPO Klassiek**) controls the visibility of the frame containing the tech window data.
 
 The left (almost) half is mainly reserved for selecting channel and service.
     * the top line, displaying the ensemble name implements as clickable item as well
@@ -87,11 +94,9 @@ Clicking on a service name selects the service with that name:
 
  * in ensemble mode the bottom part of the left half contaims next to the **next** and **previous** selectors for the services, a **channel selector** and a **mode selector**.
 
- * in **favorite mode** no channel selector is available and the channelview button is meaningless.
+ * in **file mode** obviously only the services of the recording are shown and neither a mode selector nor a channel selector are visible. Furthermore, the **channelview button** is meaningless in this mode.
 
- * in **file mode** obviously only the services of the recording are shown and neither a mode selector nor a channel selector are visible. Furthermore, the **channelview button** is meaningless.
-
- - the channelview button controls the visibility of the channeldisplay. The display shows an overview of the channels in the current database.
+ * the channelview button controls the visibility of the channeldisplay. The display shows an overview of the channels in the current database and is - obviously - meaningless in **file** mode.
 
 ![7.2](/res/read_me/channelView.png?raw=true) 
 
@@ -100,7 +105,7 @@ Clicking on a line in the channeldisplay has the same effect has clicking on the
 ============================================================================
 
 The icons on the top line behave more or less as in previous versions
- * clicking on the copyright symbol shows some data on the Qt-DAB version and shows acknowledgements;
+ * clicking on the **copyright symbol** shows some data on the Qt-DAB version and shows acknowledgements;
  * the yellow/blue  icon controls the visibility of the Qt-DAB-files directory (folder); 
  * the small blue icon controls the visibility of the device list;
  * the snr widget controls the visibility of a small window showing the progress of the SNR.
@@ -108,7 +113,8 @@ The icons on the top line behave more or less as in previous versions
 ![7.2](/res/read_me/snr-window.png?raw=true)
 
 On the second line:
- * the "book style" icon controls the visibility of the most right part of the main window, housing the technical window.
+ * the **book style** icon controls the visibility of the most right part of the main window, housing the technical window.
+
  * the icon with label **EPG**, is shown in case an EPG/SPI service is detected in the currently selected channel (Note that the EPG/SPI service is NOT shown in the services list.)
 
 On the third line technical data on the currently selected service is shown, at the end on the right hand side the speaker symbol:
@@ -631,216 +637,13 @@ Linux I followed the instructions on
 
 Note that Ubuntu releases provide libraries for supporting the Pluto.
 
-Building an executable: a few notes
-=====================================================================
-
-As mentioned, Windows an installer, for Linux an AppImage is available.
-Since the sources are available, it is certainly possible to
-build and executable.
-I am doing the development on a Fedora box, but I am building the AppImage
-on an Ubuntu 22 VM.
-For Windows, I have installed Mingw64/MSYS and build the Windows version
-on it.
-
-It is strongly advised to use qmake/make for the compilation process,
-the *qt-dab-6.9.pro* file contains (much) more configuration options
-than the *CMakeLists.txt* file that is used when using cmake.
-
-Note that the scheme presented below is applied when building the AppImage
-on Ubuntu 22, and the Windows version using MSYS/Mingw64.
-
-For other distributions (or later Ubuntu versions), names of library
-packages may be different. Note that in all cases, the development versions (i.e. the versions with the include (".h") files) are required.
-
-For creating an executable on and for Windows the easiest approach is
-to install msys/mingw and follow the process as sketched.
-Using an MS toolchain on Windows was for me (I tried it once) not successfull
-and, since I develop compile and cross compile on a Fedora Linux box, my interest in developing ON windows is less than zero.
-
-Step 1
------------------------------------------------------------------
-
-- :information_source:  In the repository, the sources for the current Qt-DAB version (6.10) are in the directory "qt-dab/ sources". All sources and include files are found in this directory". The ".pro" file is - as is the CMakeLists.txt file - in the "qt-dab" directory.
-The qt-dab repository contains a file "structure.md" in which the structure is explained.
-
-Running with the ".pro" file as in the repository, the resulting Qt-DAB executable is stored in a directory "/linux-bin" when compiled for Linux and in a directory "/d/systems/qt-dab/linux-bin" when compiling
-for windows (using mingw64). You probably want to modify it.
-
-For building the AppImage on Ubuntu 22, I load the required libraries as given below:
-
- *   sudo apt-get update
- *   sudo apt-get install git
- *   sudo apt-get install cmake
- *   sudo apt-get install qmake6
- *   sudo apt-get install build-essential
- *   sudo apt-get install g++
- *   sudo apt-get install pkg-config
- *   sudo apt-get install libfftw3-dev
- *   sudo apt-get install portaudio19-dev 
- *   sudo apt-get install zlib1g-dev 
- *   sudo apt-get install libusb-1.0-0-dev
- *   sudo apt-get install mesa-common-dev
- *   sudo apt-get install qt6-base-dev
- *   sudo apt-get install qt6-multimedia-dev
- *   sudo apt-get install libcurl4-openssl-dev
- *   sudo apt-get install libfdk-aac-dev (read the note below)
-
-- :information_source:  An issue is getting the required qwt library. On my Fedora box, a qwt-6.2 version for Qt6 is available, Ubuntu does not provide
-the Qt6 version for qwt. I had to install it myself as shown below
-
- *   Download qwt-6.30 from "https://sourceforge.net/projects/qwt/files/qwt/6.3.0/";
- *   follow the instructions (i.e. unzip, *cd* to the unzipped folder) and adapt the config file to your likings;
- *   building is then simple (takes some time though): "qmake6 qwt.pro", "make";
- *   install the library ("sudo make install") and inform the loader "sudo ldconfig";
- *   Note that the default for installation is "/usr/local/qwt/6.3.0", adjust the PATH settings accordingly.
-
-- :information_source: While the *libfdk-aac-dev* package in both Fedora and Ubuntu 24 seems to work fine, I had some problems with the package from the repository in Ubuntu 22. For the AppImage, built on Ubuntu 22, a library version was created from the sources to be found as github repository:
-
-* "https://github.com/mstorsjo/fdk-aac"
-
-The sources contain a *CMakeLists.txt* file, building and installing is straightforward.
-
-Alternatively, one could configure for *libfaad*, change the configuration to
-
-*  CONFIG	+= faad
- *  #CONFIG	+= fdk-aac
-
-and install the libfaad package
- *   sudo apt-get install libfaad-dev
-
-- :information_source: If "soapy" is configured, libsamplerate (both the library and the include files) should be installed on the development system. Of course the various Soapy libraries as well.
-
-Step 2
------------------------------------------------------------------
-
-While there are dozens of configuration options, take note
-of the following ones:
-
-- :information_source: A new viterbi decoder is part of the sources, one may choose between this "new" one and the "older" version derived from the spiral project.
-
-	CONFIG          += viterbi-scalar
-	#CONFIG         += viterbi-sse
-	#CONFIG         += viterbi-avx2
-	#CONFIG         += spiral-sse
-	#CONFIG         += spiral-no-sse
-
-If unsure, choose either "viterbi-scalar" or "spiral-no-sse"
-
-While the cou load is somewhat higher when using a scalar version,
-the implementation does not use any special CPU specific instructions.
-Default is there using a *scalar* version of the viterbi decoder, which works just fine.
-
-- :information_source: Qt-DAB can be compiled with floating numbers as "floats" or as "doubles"
-
-	*CONFIG += single*
-
-	*CONFIG += double*.
-
-In the latter case, all computations in the "front end" are done with double precision arithmetic.
-
-- :information_source: Devices like SDRplay, AIRspy, RTLSDR dongle, LimeSDR,
-HackRf and Adalm Pluto can be included in the configuration *even if no support library is installed*. (Note that including *Soapy* requires Soapy libraries to be installed, so this does not apply for Soapy). Qt-DAB is designed such that on selecting a device in runtime, the required functions from the device library are linked in.
-
-- :information_source: The Soapy library used in Ubuntu 22 (used for tessting the AppImage) is incompatible with Soapy libraries installed on other versions of Ubuntu and other Linux distributions, therefore *Soapy* is **NOT** configured
-for inclusion in the AppImage.
-
-- :information_source: Uncomment the line *DEFINES += __THREADED_BACKEND* if you intend to have more than one backend running simultaneously. E.g. activating the automatic search for an EPG service starts a separate service if such a service is found. With this setting each backend will run in its own thread.
- 
-Step 3
------------------------------------------------------------------
-
-Run *qmake* (variants of the name are *qmake6*, *qt6-qmake*, etc),
-which generates a *Makefile* and then run *make*.  *Compiling may take some time*.
-Use *make -j XX* for speeding up the build process, with XX the amount
-of parallel threads used. Of course, qmake will complain if not all
-required libraries can be found.
-If all libraries were found, this step should result in an executable.
-
-Step 4
------------------------------------------------------------------
-Use the database downloader (for Windows and Linux available as
-precompiled item) to download a fresh copy of the database. Or download a
-copy of the database from the repository.
-
-A copy of the database is part of the repository. The directory **helpers**
-contains a file "tiiFile.zip", unpack the zipped file and store the result
-in your homedirectory (folder).
-
-If Qt-DAB does not *see* the database, it will just function without mapping TII data onto names and locations.
-
-Some comments
-================================================================
-
-A user compiled Qt-DAB-6.9, on and for an RPI,  and met the following issues:
-
-Once I had downloaded the qt-dab-master from the code page,
-installed all the libraries listed in the Readme on the code page,
-and then installed the new qwt 6.30 as instructed,
-I had a problem getting the .pro file to recognise the new qwt version.
-This was because on the pi it installs to /usr/include.
-
-So I changed the .pro file as follows:
-
-	 Line 433
-	 INCLUDEPATH += /usr/include
-	 !mac {
-	 INCLUDEPATH += /usr/include/qwt-6.3.0/lib
-	 #correct this for the correct path to the qwt6 library on your system
-	 #LIBS += -lqwt
-	 equals (QT_MAJOR_VERSION, 6) {
-	 LIBS += -lqwt-qt6
-	 }else{ LIBS += -lqwt-qt5
-
-However I still could not get the qwt recognised so further changes were needed, this time to the Modules folder.
-
-To do this, I went to the qt-dab-6.9 folder in the qt-dab-master, and then opened the folder cmake. Then Modules.
-Found the relevant FindQwt file and made the following changes:
-
-	find_path(QWT_INCLUDE_DIRS
-	NAMES qwt_global.h
-	HINTS
-	${CMAKE_INSTALL_PREFIX}/include/qwt
-	${CMAKE_INSTALL_PREFIX}/include/qwt-qt6
-	PATHS
-	/usr/local/include/qwt-qt6
-	/usr/local/include/qwt
-	/usr/include/qwt6
-	/usr/include/qwt6-qt6
-	/usr/include/qt6/qwt
-	/opt/local/include/qwt
-	/usr/include/qwt-6.3.0
-	/sw/include/qwt
-	/usr/local/lib/qwt.framework/Headers
-	/usr/local/lib/qwt-qt5/lib/framework/Headers
-	/usr/include/qwt-6.3.0/include
-	)
-	if (APPLE)
-	set(CMAKE_FIND_LIBRARY_SUFFIXES " " " .dylib" ".so" ".a ")
-	endif (APPLE)
-
-	find_library (QWT_LIBRARIES
-	NAMES qwt6 qwt6-qt6 qwt-qt6 qwt
-	HINTS
-	${CMAKE_INSTALL_PREFIX}/lib
-	${CMAKE_INSTALL_PREFIX}/lib64
-	PATHS
-	/usr/local/lib
-	/usr/lib
-	/opt/local/lib
-	/sw/lib
-	/usr/local/lib/qwt.framework
-	/usr/local/lib/qwt-qt6/lib/framework
-	/usr/include/qwt-6.3.0/lib
-	)
-
-With these settings Qt-DAB could be compiled
-
 Using user specified bands
 =================================================================
 
-While it is known that the DAB transmissions are now all in Band III, there might be situations where it is desirable to use other frequencies.
+DAB transmissions are now all restricted to Mode I and band III.
 Qt-DAB provides (Unix/Linux builds only) the opportunity to specify
 one's own band. Specify in a file a list of channels, e.g.
+Note however, that in Qt_DAB 7.3 only Mode I is supported.
 
 	one	227360
 	two	220352
@@ -849,14 +652,23 @@ one's own band. Specify in a file a list of channels, e.g.
 
 and pass the file on program start-up with the `-A` command line switch. The channel name is just any identifier, the channel frequency is given in kHz. Your SDR device obviously has to support the frequencies for these channels.
 
+Building an executable
+=================================================================
+
+A detailed description on building the executable is in a separate
+document,
+ - building-dab.txt
+
+to be found in the "docs" directory.
+
 Copyright and acknowledgements
 =================================================================
 
-	Copyright (C)  2016 .. 2025
+	Copyright (C)  2016 .. 2026
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
-	Copyright of libraries used - Qt, qwt, fftw, portaudio,
+	Copyright of libraries used - Qt, fftw, portaudio,
 	libusb-1, libfaad, libfdk-aac, - is gratefully acknowledged.
 
 	In developing Qt-DAB many people have contributed, special thanks

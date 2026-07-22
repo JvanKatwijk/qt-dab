@@ -28,18 +28,14 @@
 #include	<QDir>
 #include	"dab-constants.h"
 #include	"config-handler.h"
-#include	"mapport.h"
 #include	"radio.h"
 #include	"position-handler.h"
 #include	"settingNames.h"
 #include	"settings-handler.h"
-//#include	"audiosystem-selector.h"
 
 #define FONT_BUTTON             QString ("fontButton")
 #define FONTCOLOR_BUTTON        QString ("fontColorButton")
-
 #define SCHEDULE_BUTTON         QString ("scheduleButton")
-
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
 
 
@@ -80,259 +76,38 @@ int	index_for_key (int key) {
 	hide ();
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
-	
+
         int fontSize    =  
 	         value_i (dabSettings, COLOR_SETTINGS, "fontSize", 10);
 	this	-> fontSizeSelector -> setValue (fontSize);
-
-	int x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING,
-	                               DEFAULT_SWITCHVALUE);
-	this -> switchDelaySetting -> setValue (x);
-
-	x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
-	                               ALPHA_BASED);
-	if (x == ALPHA_BASED)
-	   this -> orderAlfabetical -> setChecked (true);
-	else
-	if (x == ID_BASED)
-	   this -> orderServiceIds -> setChecked (true);
-	else
-	   this -> ordersubChannelIds -> setChecked (true);
-	serviceOrder	= x;
-
-	uint32_t http	=
-	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
-	httpPortSelector	-> setValue (http);
-	connect (httpPortSelector, qOverload<int>(&QSpinBox::valueChanged),
-	         myRadioInterface, &RadioInterface::handle_httpPort);
-
-	float latitude	=
-	              value_f (dabSettings, MAP_HANDLING,
-	                                        HOME_LATITUDE, 52.22f);
-	float longitude =
-	              value_f (dabSettings, MAP_HANDLING,
-	                                        HOME_LONGITUDE, 4.54f);
-	this	-> latitudeSelector	-> setValue (latitude);
-	this	-> longitudeSelector	-> setValue (longitude);
-
-	connect (latitudeSelector,
-	            qOverload<double>(&QDoubleSpinBox::valueChanged),
-	         myRadioInterface, &RadioInterface::set_latitude);
-	connect (longitudeSelector,
-	            qOverload<double>(&QDoubleSpinBox::valueChanged),
-	         myRadioInterface, &RadioInterface::set_longitude);
-
-	TPEG_label	-> setStyleSheet ("color:yellow");
-	int	tpegPort	=
-	               value_i (dabSettings, MAP_HANDLING,
-	                                         TPEG_PORT, 8888);
-	tpegPortSelector	-> setValue (tpegPort);
-
-	connect (tpegPortSelector, qOverload<int>(&QSpinBox::valueChanged),
-	         myRadioInterface, &RadioInterface::set_tpegPort);
-
+//
+//	Topline
+	storageLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	QString path_for_files  = theFilenameFinder. basicPath ();
         path_for_files  = value_s (dabSettings, DAB_GENERAL,
                                                    BASIC_PATH, path_for_files);
-	storageLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	fontLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	cpuLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	decoderLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	nrServicesLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	pathLabel	-> setText (path_for_files);
-	variousLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	tiiLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	maphandlingLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	decodingLabel	-> setStyleSheet ("QLabel {color: yellow}");
 
-//	first row of checkboxes
-	bool b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 1) != 0;
-	this	-> dumpmodeSelector	-> setChecked (b);
-	
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                           LOCAL_BROWSER_SETTING, 1) != 0;
-	this -> localBrowserSelector -> setChecked (b);
-
-//
-//	second row
-	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 0) != 0;
-	this	-> auto_http -> setChecked (b);
-
-	b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
-	this	-> updateChecker	-> setChecked (b);
-//
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          CLOSE_DIRECT_SETTING, 0) != 0;
-	this -> closeDirect_selector -> setChecked (b);
-
-	b	= value_i (dabSettings, CONFIG_HANDLER, SAVE_HTTP, 0) != 0;
-	mapViewSelector		-> setChecked (b);
-//
-	b =  value_i (dabSettings, CONFIG_HANDLER, ON_TOP_SETTING, 0) != 0;;
-	this ->  onTop -> setChecked (b);
-//
-//	fourth row of checkboxes
-	b =  value_i (dabSettings, CONFIG_HANDLER,
-	                           S_CORRELATION_ORDER, 0) != 0;
-	this	-> correlationSelector -> setChecked (b);
-
-	b =  value_i (dabSettings, CONFIG_HANDLER, DC_REMOVAL, 0) != 0;
-	this -> dcRemovalSelector -> setChecked (b);
-//
-//	fifth row of checkboxes
-	b = value_i (dabSettings, CONFIG_HANDLER, SHOWALL_SETTING, 1) != 0;;
-
-	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
-	this	-> audioServices_only -> setChecked (b);
-
-	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          "LOAD_SELECTION", 0) == 1;
-	this -> loadSelection_selector -> setChecked (b);
-
-	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
-	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
-
-	int d	= value_i (dabSettings, CONFIG_HANDLER,
-	                                 SHOWALL_TII, 1);
-	this	-> allTIISelector	-> setChecked (d != 0);
-
-	int k	= value_i (dabSettings, CONFIG_HANDLER,
-	                                 DECODERS, DECODER_1);
-	decoderSelector	-> setCurrentIndex (index_for_key (k));
-
-//	tiiCollisions -> setEnabled (false);
-	tiiThreshold_setter -> setMinimum (6);
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (mapViewSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (mapViewSelector, &QCheckBox::stateChanged,
-#endif
-	this, &configHandler::handle_mapViewSelector);
-
-	int v = value_i (dabSettings, CONFIG_HANDLER,
-	                             TII_THRESHOLD, 12);
-	this -> tiiThreshold_setter -> setValue (v);
-	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
-	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (auto_http, &QCheckBox::checkStateChanged,
-#else
-	connect (auto_http, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_auto_http);
-	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &configHandler::handle_tiiCollisions);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (allTIISelector, &QCheckBox::checkStateChanged,
-#else
-	connect (allTIISelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_allTIISelector);
-	connect (activeServices, &clickablelabel::clicked_left,
-	         myRadioInterface, &RadioInterface::handle_activeServices);
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (loadSelection_selector, &QCheckBox::checkStateChanged,
-#else
-	connect (loadSelection_selector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_loadSelection_selector);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (updateChecker, &QCheckBox::checkStateChanged,
-#else
-	connect (updateChecker, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_updateChecker);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (dumpmodeSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (dumpmodeSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_dumpmodeSelector);
-//
-//	Tracer special
-//	connect	(tracerButton, &QPushButton::clicked,
-//	         this, &configHandler::handle_tracerButton);
-	traceOn	= false;
-	set_Colors ();
-}
-
-	configHandler::~configHandler	() {
-	hide ();
-}
-
-void	configHandler::storePosition () {
-	if (!isHidden ())
-	   storeWidgetPosition (dabSettings, this, CONFIG_HANDLER);
-}
-
-void	configHandler::set_connections () {
-	connect (this, &configHandler::set_dcRemoval,
-	         myRadioInterface, &RadioInterface::set_dcRemoval);
-
+	fontLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	connect (fontButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_fontButton);
 	connect (fontColorButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_fontColorButton );
 	connect (scheduleButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_scheduleButton);
-	connect (loadTableButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_loadTableButton);
-
-//
-//	real handlers
-	connect (scheduleButton, &QPushButton::clicked,
-                 myRadioInterface, &RadioInterface::handle_scheduleButton);
-	connect (switchDelaySetting, qOverload<int>(&QSpinBox::valueChanged),
-	         this, &configHandler::handle_switchDelaySetting);
-	connect (orderAlfabetical, &QRadioButton::clicked,
-	         this, &configHandler::handle_orderAlfabetical);
-	connect (orderServiceIds, &QRadioButton::clicked,
-	         this, &configHandler::handle_orderServiceIds);
-	connect (ordersubChannelIds, &QRadioButton::clicked,
-	         this, &configHandler::handle_ordersubChannelIds);
-//
 	connect (fontButton, &QPushButton::clicked,
 	         this,  &configHandler::handle_fontSelect);
 	connect (fontColorButton, &QPushButton::clicked,
 	         this, &configHandler::handle_fontColorSelect);
 	connect (fontSizeSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_fontSizeSelect);
+	connect (scheduleButton, &QPushButton::clicked,
+                 myRadioInterface, &RadioInterface::handle_scheduleButton);
+/////////////////////////////////////////////////////////////////////////////
+//	selector for left frame labeled "various"
+	variousLabel	-> setStyleSheet ("QLabel {color: yellow}");
 //
-//	Now the two rows with buttons
-//
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (dlTextSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (dlTextSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_dlTextSelector);
-	connect (this, &configHandler::handle_dlText,
-	         myRadioInterface, &RadioInterface::handle_dlText);
-	connect (loadTableButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_loadTable);
-	loadTableButton	-> setText ("refresh table");
-//	however, by default loadTable is disabled
-	loadTableButton	-> setEnabled (false);
-//
-//	Now the checkboxes
-//	top line
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (audioServices_only, &QCheckBox::checkStateChanged,
-#else
-	connect (audioServices_only, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_audioServices_only);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (correlationSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (correlationSelector, &QCheckBox::stateChanged,
-#endif
-	         myRadioInterface, &RadioInterface::handle_correlationSelector);
-//
-//	second line
+//	upload selector
 	int upload = value_i (dabSettings, CONFIG_HANDLER,
 	                              "UPLOAD_ENABLED", 0);
 	if (upload != 0)
@@ -345,7 +120,51 @@ void	configHandler::set_connections () {
 	else
 	   upload_selector -> setEnabled (false);
 
-//	third line
+//	save slides
+
+	int saveSlides	= value_i (dabSettings, CONFIG_HANDLER,
+	                           SAVE_SLIDES_SETTING, 1);
+	saveSlidesSelector	-> setChecked (saveSlides != 0);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+           connect (saveSlidesSelector, &QCheckBox::checkStateChanged,
+#else   
+           connect (saveSlidesSelector, &QCheckBox::stateChanged,
+#endif                                
+                    this, &configHandler::handle_saveSlides);
+
+
+//	dl Text selector is not set on start up
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (dlTextSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (dlTextSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_dlTextSelector);
+	connect (this, &configHandler::handle_dlText,
+	         myRadioInterface, &RadioInterface::handle_dlText);
+
+//	save title selector is not set on startup
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (saveTitlesSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (saveTitlesSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_saveTitles);
+//
+//	check updated
+	bool b = value_i (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, 0) != 0;
+	this	-> updateChecker	-> setChecked (b);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (updateChecker, &QCheckBox::checkStateChanged,
+#else
+	connect (updateChecker, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_updateChecker);
+
+//	on top selector
+	b =  value_i (dabSettings, CONFIG_HANDLER, ON_TOP_SETTING, 0) != 0;;
+	this ->  onTop -> setChecked (b);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect (onTop, &QCheckBox::checkStateChanged,
@@ -354,8 +173,101 @@ void	configHandler::set_connections () {
 #endif
 	         this, &configHandler::handle_onTop);
 //
-//	fourthline
+//	close direct
+	b = value_i (dabSettings, CONFIG_HANDLER,
+	                          CLOSE_DIRECT_SETTING, 0) != 0;
+	this -> closeDirect_selector -> setChecked (b);
+//
+//	for close Direct we just poll
 
+//	dumpmode
+	b = value_i (dabSettings, CONFIG_HANDLER, DUMPMODE_SET, 1) != 0;
+	this	-> dumpmodeSelector	-> setChecked (b);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (dumpmodeSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (dumpmodeSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_dumpmodeSelector);
+//
+//	end of left frame
+//////////////////////////////////////////////////////////////////////////
+//	middle frame labeled "tii and db selection
+//	
+	float latitude	=
+	              value_f (dabSettings, MAP_HANDLING,
+	                                        HOME_LATITUDE, 52.22f);
+	this	-> latitudeSelector	-> setValue (latitude);
+
+	connect (latitudeSelector,
+	            qOverload<double>(&QDoubleSpinBox::valueChanged),
+	         myRadioInterface, &RadioInterface::set_latitude);
+
+	float longitude =
+	              value_f (dabSettings, MAP_HANDLING,
+	                                        HOME_LONGITUDE, 4.54f);
+	this	-> longitudeSelector	-> setValue (longitude);
+
+	connect (longitudeSelector,
+	            qOverload<double>(&QDoubleSpinBox::valueChanged),
+	         myRadioInterface, &RadioInterface::set_longitude);
+
+//	tiiCollisions -> setEnabled (false);
+	tiiThreshold_setter -> setMinimum (6);
+
+	int v = value_i (dabSettings, CONFIG_HANDLER,
+	                             TII_THRESHOLD, 12);
+	this -> tiiThreshold_setter -> setValue (v);
+	connect (tiiThreshold_setter, qOverload<int>(&QSpinBox::valueChanged),
+	         myRadioInterface, &RadioInterface::handle_tiiThreshold);
+
+	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_tiiCollisions);
+
+	connect (loadTableButton, &smallPushButton::rightClicked,
+	         this, &configHandler::color_loadTableButton);
+	connect (loadTableButton, &QPushButton::clicked,
+	         myRadioInterface, &RadioInterface::handle_loadTable);
+	loadTableButton	-> setText ("refresh table");
+//	however, by default loadTable is disabled
+	loadTableButton	-> setEnabled (false);
+
+	int d	= value_i (dabSettings, CONFIG_HANDLER,
+	                                 SHOWALL_TII, 1);
+	this	-> allTIISelector	-> setChecked (d != 0);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (allTIISelector, &QCheckBox::checkStateChanged,
+#else
+	connect (allTIISelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_allTIISelector);
+//
+//////////////////////////////////////////////////////////////////////////////
+//
+//	Third frame, no label, CPU load on top
+
+	cpuLabel	-> setStyleSheet ("QLabel {color: yellow}");
+
+	TPEG_label	-> setStyleSheet ("color:yellow");
+	int	tpegPort	=
+	               value_i (dabSettings, MAP_HANDLING,
+	                                         TPEG_PORT, 8888);
+	tpegPortSelector	-> setValue (tpegPort);
+
+	connect (tpegPortSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         myRadioInterface, &RadioInterface::set_tpegPort);
+
+	uint32_t http	=
+	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
+	httpPortSelector	-> setValue (http);
+	connect (httpPortSelector, qOverload<int>(&QSpinBox::valueChanged),
+	         myRadioInterface, &RadioInterface::handle_httpPort);
+
+	b = value_i (dabSettings, CONFIG_HANDLER,
+	                           LOCAL_BROWSER_SETTING, 1) != 0;
+	this -> localBrowserSelector -> setChecked (b);
 	connect (localBrowserSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	             &QCheckBox::checkStateChanged,
@@ -363,26 +275,61 @@ void	configHandler::set_connections () {
 		     &QCheckBox::stateChanged,
 #endif
 	         this, &configHandler::handle_localBrowser);
-//
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (dcRemovalSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (dcRemovalSelector, &QCheckBox::stateChanged,
-#endif
-	         this, &configHandler::handle_dcRemovalSelector);
-//
-//	fifh line
 
-//	sixth ine
+	b = value_i (dabSettings, CONFIG_HANDLER, AUTO_HTTP, 0) != 0;
+	this	-> auto_http -> setChecked (b);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (saveTitlesSelector, &QCheckBox::checkStateChanged,
+	connect (auto_http, &QCheckBox::checkStateChanged,
 #else
-	connect (saveTitlesSelector, &QCheckBox::stateChanged,
+	connect (auto_http, &QCheckBox::stateChanged,
 #endif
-	         this, &configHandler::handle_saveTitles);
+	         this, &configHandler::handle_auto_http);
+
+	maphandlingLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	b	= value_i (dabSettings, CONFIG_HANDLER, SAVE_HTTP, 0) != 0;
+	mapViewSelector		-> setChecked (b);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (mapViewSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (mapViewSelector, &QCheckBox::stateChanged,
+#endif
+	this, &configHandler::handle_mapViewSelector);
 //
-//	botton row
+///////////////////////////////////////////////////////////////////////////////
+//
+//	fourth frame labeled "decoding and services"
+//	active services
+	nrServicesLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	activeServices	-> setText (QString::number (0));
+	connect (activeServices, &clickablelabel::clicked_left,
+	         myRadioInterface, &RadioInterface::handle_activeServices);
+
+	int x = value_i ( dabSettings, CONFIG_HANDLER, SERVICE_ORDER_SETTING,
+	                                                       ALPHA_BASED);
+	if (x == ALPHA_BASED)
+	   this -> orderAlfabetical -> setChecked (true);
+	else
+	if (x == ID_BASED)
+	   this -> orderServiceIds -> setChecked (true);
+	else
+	   this -> ordersubChannelIds -> setChecked (true);
+	serviceOrder	= x;
+	connect (orderAlfabetical, &QRadioButton::clicked,
+	         this, &configHandler::handle_orderAlfabetical);
+	connect (orderServiceIds, &QRadioButton::clicked,
+	         this, &configHandler::handle_orderServiceIds);
+	connect (ordersubChannelIds, &QRadioButton::clicked,
+	         this, &configHandler::handle_ordersubChannelIds);
+//
+	decoderLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
+	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
+
+	int k	= value_i (dabSettings, CONFIG_HANDLER,
+	                                 DECODERS, DECODER_1);
+	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	connect (decoderSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	         &QComboBox::textActivated,
@@ -392,6 +339,72 @@ void	configHandler::set_connections () {
 	         this, &configHandler::handle_decoderSelector);
 	connect (this, &configHandler::selectDecoder,
 	         myRadioInterface, &RadioInterface::selectDecoder);
+
+	b =  value_i (dabSettings, CONFIG_HANDLER,
+	                           S_CORRELATION_ORDER, 0) != 0;
+	this	-> correlationSelector -> setChecked (b);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (correlationSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (correlationSelector, &QCheckBox::stateChanged,
+#endif
+	         myRadioInterface, &RadioInterface::handle_correlationSelector);
+
+
+	b =  value_i (dabSettings, CONFIG_HANDLER, DC_REMOVAL, 0) != 0;
+	this -> dcRemovalSelector -> setChecked (b);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (dcRemovalSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (dcRemovalSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_dcRemovalSelector);
+
+	connect (this, &configHandler::set_dcRemoval,
+	         myRadioInterface, &RadioInterface::set_dcRemoval);
+
+	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
+	this	-> audioServices_only -> setChecked (b);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (audioServices_only, &QCheckBox::checkStateChanged,
+#else
+	connect (audioServices_only, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_audioServices_only);
+
+	b = value_i (dabSettings, CONFIG_HANDLER,
+	                          "LOAD_SELECTION", 0) == 1;
+	this -> loadSelection_selector -> setChecked (b);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (loadSelection_selector, &QCheckBox::checkStateChanged,
+#else
+	connect (loadSelection_selector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_loadSelection_selector);
+
+	connect (switchDelaySetting, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &configHandler::handle_switchDelaySetting);
+
+	x = value_i (dabSettings, CONFIG_HANDLER, SWITCH_VALUE_SETTING,
+	                               DEFAULT_SWITCHVALUE);
+	this -> switchDelaySetting -> setValue (x);
+//
+/////////////////////////////////////////////////////////////////////////////
+	tiiLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	decodingLabel	-> setStyleSheet ("QLabel {color: yellow}");
+	
+	traceOn	= false;
+	set_Colors ();
+}
+
+	configHandler::~configHandler	() {
+	hide ();
+}
+
+void	configHandler::storePosition () {
+	if (!isHidden ())
+	   storeWidgetPosition (dabSettings, this, CONFIG_HANDLER);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -655,6 +668,13 @@ void	configHandler::handle_mouseClicked () {
 
 void	configHandler::set_activeServices	(int activeS) {
 	activeServices	-> setText (QString::number (activeS));
+}
+
+              
+void	configHandler::handle_saveSlides       (int k) {
+	(void)k;
+        store (dabSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 
+	                saveSlidesSelector -> isChecked ());
 }
 
 void	configHandler::handle_saveTitles	(int h) {

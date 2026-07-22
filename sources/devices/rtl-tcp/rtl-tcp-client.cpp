@@ -82,7 +82,6 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         value_i (remoteSettings, RTL_TCP_SETTINGS, "basePort",  1234);
 	ipAddress	=
 	         value_s (remoteSettings, RTL_TCP_SETTINGS, "remoteserver", ipAddress);
-
 	
 	gainSelector	-> setValue (Gain);
 	ppmSelector	-> setValue (Ppm);

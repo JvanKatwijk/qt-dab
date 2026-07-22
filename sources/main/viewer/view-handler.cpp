@@ -422,9 +422,9 @@ void	serviceViewer::clickOnService	(int row, int column) {
 	         theDataBase. update (displayList [row],
 	                              displayList [row]. isFavorite);
 	         if (displayList [row]. isFavorite)
-	            theTable -> item (row, 0) -> setText ("*");
+	            theTable -> item (row, 2) -> setText ("*");
 	         else
-	            theTable -> item (row, 0) -> setText ("");
+	            theTable -> item (row, 2) -> setText ("");
 	         return;
 	      case FAVORITEVIEW:
 	      case FILEINPUT:

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -35,9 +35,11 @@
 #include	"viterbi.h"
 #include	"fib-decoder.h"
 
-
 class	RadioInterface;
-
+#define FIC_BLOCKSIZE   3072
+#define FIC_RESIDU      24
+#define FIC_INPUT       2304
+#define	NR_HARDBITS	768
 class ficHandler: public fibDecoder {
 Q_OBJECT
 public:
@@ -54,12 +56,12 @@ public:
 private:
 	viterbi		myViterbi;
 //	viterbiSpiral	myViterbi;
-	uint8_t		hardBits	[768];
-        int16_t		ficInput	[2304];
-	uint8_t		punctureTable	[3072 + 24];
-	uint8_t		fibBits		[4 * 768];
+	uint8_t		hardBits	[NR_HARDBITS];
+        int16_t		ficInput	[FIC_INPUT];
+	uint8_t		punctureTable	[FIC_BLOCKSIZE + FIC_RESIDU];
+	uint8_t		fibBits		[4 * NR_HARDBITS];
 	bool		ficValid	[4];
-	uint8_t		PRBS		[768];
+	uint8_t		PRBS		[NR_HARDBITS];
 	bool		processFICInput	(int16_t);
 	int16_t		index;
 	int16_t		BitsperBlock;

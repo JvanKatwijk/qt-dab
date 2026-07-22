@@ -74,14 +74,10 @@ public:
 	                                         uint32_t, uint8_t);
 	void		mapNameToId		(const QString &,
 	                                            uint32_t &, uint8_t &);
-//	uint16_t	getAnnouncing		(uint16_t);
-//	std::vector<int>	getFrequency	(const QString &);
-//	bool		nonTIIFrame		();	
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	int		freeSpace		();
-//	QList<contentType> contentPrint		();
-//	std::vector<basicService> getServices	();
+
 protected:
 	void		processFIB		(uint8_t *, uint16_t);
 private:

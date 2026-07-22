@@ -68,6 +68,7 @@ DEPENDPATH += . \
 	      ./sources/protection \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
+	      ./sources/support/tables \
 	      ./sources/devices \
 	      ./sources/devices/filereaders/ \
 	      ./sources/devices/filereaders/new-reader \
@@ -99,6 +100,7 @@ INCLUDEPATH += . \
 	      ./sources/server-thread \
 	      ./sources/support \
 	      ./sources/support/gui-elements \
+	      ./sources/support/tables \
 	      ./sources/devices \
 	      ./sources/devices/filereaders/ \
 	      ./sources/devices/filereaders/new-reader \
@@ -133,6 +135,8 @@ HEADERS += ./sources/main/radio.h \
            ./sources/main/viewer/view-handler.h \
 	   ./sources/main/viewer/channel-viewer.h \
 	   ./sources/main/audio-selector.h \
+	   ./sources/main/scan-handler.h \
+	   ./sources/main/mutetimeSelector.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
 	   ./sources/frontend/timesyncer.h \
@@ -190,16 +194,13 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/output/converter-48000.h \
 	   ./sources/output/audio-player.h \
 	   ./sources/support/dump-display.h \
-	   ./sources/support/scan-handler.h \
 	   ./sources/support/scantable-handler.h \
 	   ./sources/support/dl2-handler.h \
 	   ./sources/support/http-handler.h \
 	   ./sources/support/timetable-control.h \
 	   ./sources/support/dab-constants.h \
 	   ./sources/support/bit-extractors.h \
-	   ./sources/support/charsets.h \
 	   ./sources/support/crc-handlers.h \
-	   ./sources/support/mot-content-types.h \
 	   ./sources/support/distances.h \
 	   ./sources/support/time-converter.h \
 	   ./sources/support/logger.h \
@@ -207,10 +208,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/db-element.h \
 	   ./sources/support/settingNames.h \
 	   ./sources/support/fft-handler.h \
-	   ./sources/support/process-params.h \
 	   ./sources/support/ringbuffer.h \
-	   ./sources/support/dab-params.h \
-	   ./sources/support/ITU-tables.h \
 	   ./sources/support/scheduler.h \
 	   ./sources/support/schedule-selector.h \
 	   ./sources/support/element-selector.h \
@@ -218,7 +216,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/findfilenames.h \
 	   ./sources/support/dl-cache.h \
 	   ./sources/support/content-table.h \
-	   ./sources/support/mapport.h \
 	   ./sources/support/bandpass-filter.h \
 	   ./sources/support/fir-filters.h \
 	   ./sources/support/tii-mapper.h \
@@ -226,10 +223,9 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/uploader.h \
 	   ./sources/support/basic-print.h \
 	   ./sources/support/dc-filter.h \
-	   ./sources/support/mutetimeSelector.h \
 	   ./sources/support/gui-elements/position-handler.h \
 	   ./sources/support/gui-elements/settings-handler.h \
-//	   ./sources/support/gui-elements/presetcombobox.h \
+#	   ./sources/support/gui-elements/presetcombobox.h \
 	   ./sources/support/gui-elements/circular-button.h \
 	   ./sources/support/gui-elements/clickable-label.h \
 	   ./sources/support/gui-elements/clickable-chart.h \
@@ -245,6 +241,10 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/smallspinbox.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
+	   ./sources/support/tables/charsets.h \
+	   ./sources/support/tables/dab-params.h \
+	   ./sources/support/tables/ITU-tables.h \
+	   ./sources/support/tables/mot-content-types.h \
 	   ./sources/update/updatechecker.h \
 	   ./sources/update/appversion.h \
 	   ./sources/devices/selector.h \
@@ -297,7 +297,9 @@ SOURCES += ./sources/main/main.cpp \
            ./sources/main/viewer/view-handler.cpp \
            ./sources/main/viewer/channel-viewer.cpp \
 	   ./sources/main/audio-selector.cpp \
+	   ./sources/main/mutetimeSelector.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
+	   ./sources/main/scan-handler.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
 	   ./sources/frontend/timesyncer.cpp \
 	   ./sources/frontend/sample-reader.cpp \
@@ -352,12 +354,8 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \
 	   ./sources/support/dc-filter.cpp \
-	   ./sources/support/mutetimeSelector.cpp \
-	   ./sources/support/charsets.cpp \
 	   ./sources/support/content-table.cpp \
 	   ./sources/support/crc-handlers.cpp \
-	   ./sources/support/dab-params.cpp \
-	   ./sources/support/ITU-tables.cpp \
 	   ./sources/support/distances.cpp \
 	   ./sources/support/dl2-handler.cpp \
 	   ./sources/support/timetable-control.cpp \
@@ -368,8 +366,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/fir-filters.cpp \
 	   ./sources/support/http-handler.cpp \
 	   ./sources/support/logger.cpp \
-	   ./sources/support/mapport.cpp \
-	   ./sources/support/scan-handler.cpp \
 	   ./sources/support/scantable-handler.cpp \
 	   ./sources/support/scheduler.cpp \
 	   ./sources/support/schedule-selector.cpp \
@@ -396,6 +392,9 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/smallspinbox.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
+	   ./sources/support/tables/charsets.cpp \
+	   ./sources/support/tables/dab-params.cpp \
+	   ./sources/support/tables/ITU-tables.cpp \
 	   ./sources/update/updatechecker.cpp \
 	   ./sources/devices/riff-writer.cpp \
 	   ./sources/devices/selector.cpp \

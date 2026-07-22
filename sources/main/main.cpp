@@ -100,7 +100,6 @@ RadioInterface	* myRadioInterface;
 int32_t		clockPort	= 8889;
 int		opt;
 QString		freqExtension	= "";
-bool		error_report	= false;
 int		fmFrequency	= 110000;
 
 QTranslator	theTranslator;
@@ -128,7 +127,6 @@ QTranslator	theTranslator;
 	         break;
 	
 	      case 'T':
-	         error_report	= true;
 	         break;
 
 	      case 'F':
@@ -144,15 +142,13 @@ QTranslator	theTranslator;
 	}
 
 	QSettings dabSettings (initFileName, QSettings::IniFormat);
-
-	qWarning () << "we gaan ervoor\n";
 /*
  *      Before we connect control to the gui, we have to
  *      instantiate
  */
-#if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
-	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
-#endif
+//#if QT_VERSION < QT_VERSION_CHECK (6, 0, 0)
+//	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
+//#endif
 
 	dabSettings. beginGroup ("SKIN_HANDLING");
 	QString skin    = dabSettings. value ("skin", "globstyle"). toString ();
@@ -187,14 +183,14 @@ QTranslator	theTranslator;
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	qRegisterMetaType<QByteArray >("QByteArray");
 	qRegisterMetaType<QVector<tiiData> >("QVector<tiiData>");
+
 	myRadioInterface = new RadioInterface (&dabSettings,
-	                                        freqExtension,
-	                                        scheduleFile,
-	                                        tiiFileName,
-	                                        error_report,
-	                                        clockPort,
-	                                        fmFrequency
-	                                       );
+	                                       freqExtension,
+	                                       scheduleFile,
+	                                       tiiFileName,
+	                                       clockPort,
+	                                       fmFrequency
+	                                      );
 	myRadioInterface -> show ();
 	a. exec ();
 /*

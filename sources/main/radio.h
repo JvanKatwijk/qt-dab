@@ -41,7 +41,7 @@
 #include	"ringbuffer.h"
 #include	"process-params.h"
 #include	"converter-48000.h"
-#include	"scanlist-handler.h"
+//#include	"scanlist-handler.h"
 #include	"dl-cache.h"
 #include	"content-table.h"
 #include	"dxDisplay.h"
@@ -244,7 +244,6 @@ public:
 	                                 const QString	&,	//freqExt
 	                                 const QString	&,	//schedule
 	                                 const QString	&,	//tiiFile
-	                                 bool,			// errorreport
 	                                 int32_t	clockPort,
 	                                 int,
 	                                 QWidget	*parent = nullptr);
@@ -432,7 +431,6 @@ private:
 	processParams		globals;
 	QString			SystemVersion;
 	QString			version;
-	bool			error_report;
 	int			fmFrequency;
 	channelDescriptor	channel;
 	int16_t			tii_delay;
@@ -492,7 +490,7 @@ private:
 //
 public slots:
 //	signals from the configuration window
-	void			startDirect		();
+	void			startDirect			();
 	void			copyrightText_closed		();
 	void			handle_tiiThreshold		(int);
 	void			handle_tiiCollisions		(int);
@@ -508,7 +506,7 @@ public slots:
 	void			handle_scheduleButton		();
 	void			handle_devicewidgetButton	();
 	void			handle_dlText			(bool);
-	void			handle_snrButton		();
+//	void			handle_snrButton		();
 	void			handle_loadTable		();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
@@ -702,7 +700,6 @@ private slots:
 	void			handle_startTimeTable	();
 
 	void			handle_utcSwitch	();
-	void			handle_saveSlides	();
 //
 //
 	void			TerminateProcess	();

@@ -45,7 +45,6 @@ public:
 
 	findfileNames	theFilenameFinder;
 	void	storePosition		();
-	void	set_connections		();
 	void	set_activeServices	(int);
 //
 //	the value extractors
@@ -115,6 +114,7 @@ private slots:
 	void	handle_localBrowser		(int);
 	void	handle_onTop			(int);
 
+	void	handle_saveSlides		(int);
 	void	handle_saveTitles		(int);
 
 	void	handle_dcRemovalSelector	(int);

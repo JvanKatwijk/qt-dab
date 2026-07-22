@@ -33,7 +33,9 @@
 
 #include	"fib-dbtypes.h"
 class	RadioInterface;
-
+//
+//	The "FIB" data is kept as original as possible in tables
+//	per FIG.
 class	fibConfig: public QObject {
 Q_OBJECT
 public:

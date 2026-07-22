@@ -32,6 +32,9 @@
 #include	<vector>
 class		logger;
 class		errorLogger;
+//
+//	The class "deviceChooser" is called when selecting a device is
+//	requested on the main window.
 
 class	deviceChooser: public QWidget {
 Q_OBJECT

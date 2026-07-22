@@ -33,6 +33,8 @@
 #include	<QToolTip>
 #include	<QKeyEvent>
 #include	<QDesktopServices>
+#include	<QScreen>
+#include	<QDomElement>
 #include	<fstream>
 #include	"dab-constants.h"
 #include	"mot-content-types.h"
@@ -45,7 +47,7 @@
 #include	"schedule-selector.h"
 #include	"element-selector.h"
 #include	"ITU-tables.h"
-#include	"mapport.h"
+//#include	"mapport.h"
 #include	"tech-window.h"
 #include	"db-element.h"
 #include	"distances.h"
@@ -68,8 +70,6 @@
 #include	"updatechecker.h"
 #include	"appversion.h"
 #include	"dump-display.h"
-#include	<QScreen>
-#include	<QDomElement>
 
 #include	"dl2-handler.h"
 #include	"basic-print.h"
@@ -153,12 +153,14 @@ QStringList splitter (const QString &s) {
 
 static const
 char	LABEL_STYLE [] = "color:lightgreen";
+//
+//	The class "RadioInterface" is the main controller. It
+//	It handles the gui and is responsible for all actions
 
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
 	                                const QString	&tiiFile,
-	                                bool		is_error_report,
 	                                int32_t		clockPort,
 	                                int		fmFreq,
 	                                QWidget		*parent):
@@ -195,7 +197,6 @@ char	LABEL_STYLE [] = "color:lightgreen";
 QString h;
 
 	theQSettings			= Si;
-	this	-> error_report		= is_error_report;
 	this	-> fmFrequency		= fmFreq;
 	this	-> dlTextFile		= nullptr;
 	this	-> thecopyrightLabel	= nullptr;
@@ -209,29 +210,28 @@ QString h;
 	levelMeter			= nullptr;
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
-	globals. spectrumBuffer	= &theSpectrumBuffer;
-	globals. iqBuffer	= &theIQBuffer;
-	globals. responseBuffer	= &theResponseBuffer;
-	globals. tiiBuffer	= &theTIIBuffer;
-	globals. nullBuffer	= &theNULLBuffer;
-	globals. channelBuffer	= &theChannelBuffer;
-	globals. snrBuffer	= &theSNRBuffer;
-	globals. frameBuffer	= &theFrameBuffer;
-	globals. stdDevBuffer	= &stdDevBuffer;
-	globals. carrierBuffer	= &carrierBuffer;
-
+	globals. spectrumBuffer		= &theSpectrumBuffer;
+	globals. iqBuffer		= &theIQBuffer;
+	globals. responseBuffer		= &theResponseBuffer;
+	globals. tiiBuffer		= &theTIIBuffer;
+	globals. nullBuffer		= &theNULLBuffer;
+	globals. channelBuffer		= &theChannelBuffer;
+	globals. snrBuffer		= &theSNRBuffer;
+	globals. frameBuffer		= &theFrameBuffer;
+	globals. stdDevBuffer		= &stdDevBuffer;
+	globals. carrierBuffer		= &carrierBuffer;
+//
+//	threshold is used in the correlation
 	globals. threshold		=
 	          value_i (theQSettings, DAB_GENERAL, "threshold", 3);
-	globals. diff_length	=
-	          value_i (theQSettings, DAB_GENERAL, "diff_length", DIFF_LENGTH);
+//	globals. diff_length	=
+//	          value_i (theQSettings, DAB_GENERAL, "diff_length", DIFF_LENGTH);
 	globals. tii_delay   =
 	          value_i (theQSettings, DAB_GENERAL, "tii_delay", 3);
 	if (globals. tii_delay < 3)
 	   globals. tii_delay	= 3;
 	globals. tii_depth      =
 	          value_i (theQSettings, DAB_GENERAL, "tii_depth", 4);
-	globals. echo_depth     =
-	          value_i (theQSettings, DAB_GENERAL, "echo_depth", 1);
 
 #ifdef	_SEND_DATAGRAM_
 	ipAddress	=  value_s (theQSettings, "DATAGRAM",
@@ -246,7 +246,7 @@ QString h;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 
-//	and init the up and down button, the select for details button ans
+//	and init the up and down button, the select for details button and
 //	the button to show the directory with files 
 //	signal strength icons
 	QPixmap p;
@@ -321,8 +321,6 @@ QString h;
 	volumeSlider		-> hide ();
 	pauzeSlideTeller	= 0; // counting pause slides
 
-	connect (pictureLabel, &clickablelabel::clicked_right,
-	         this, &RadioInterface::handle_saveSlides);
 	connect (deviceSelectorLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::devSL_visibility);
 	connect (devicewidgetButton, &QPushButton::clicked,
@@ -333,7 +331,7 @@ QString h;
 	         this, &RadioInterface::handle_scanButton);
 
 	aboutLabel -> setText (QString ("© V") + VERSION);
-	aboutLabel -> setToolTip ("Click to see the acknowledgements");
+	aboutLabel -> setToolTip ("Click to see configuration and the acknowledgements");
 	connect (aboutLabel, &clickablelabel::clicked_left,
 	         this, &RadioInterface::handle_copyrightLabel);
 
@@ -355,13 +353,13 @@ QString h;
 	setWindowTitle (version);
 //	put the widgets in the right place and create the workers
 	setPositionAndSize	(theQSettings, this, S_MAIN_WIDGET);
-
+//
+//	The others:
 	theConfigHandler		= new configHandler (this,
 	                                                 theQSettings);
 //	we have the configuration handler and the ensemble handler,
 //	connect some signals directly
-	theConfigHandler		-> set_activeServices (0);
-	theConfigHandler		-> set_connections ();
+//	theConfigHandler		-> set_connections ();
 
 	connect (theConfigHandler, &configHandler::frameClosed,
 	         this, &RadioInterface::handle_configFrame_closed);
@@ -399,9 +397,14 @@ QString h;
 	   httpButton	-> setEnabled (false);
 
 ///////////////////////////////////////////////////////////////////////
+//	Since 7.3 the techwindow is a frame in the main window
+
 	theTechWindow	= new techWindow (techFrame,
 	                                  this, theQSettings, &theTechData);
-	techFrame	-> hide ();
+	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0) {
+	   techFrame	-> show ();
+	   this		-> adjustSize ();
+	}
 	this		-> adjustSize ();
 
 	if (value_i (theQSettings, DAB_GENERAL, NEW_DISPLAY_VISIBLE, 0) != 0)
@@ -409,6 +412,7 @@ QString h;
 	else
 	   theNewDisplay. hide ();
 
+	dumpDisplay_p		= nullptr;
 	etiActivated		= false;
 	channel. etiActive	= false;
 	channel. cleanChannel ();
@@ -418,6 +422,7 @@ QString h;
         localPos. longitude =
                       value_f (theQSettings, MAP_HANDLING,
                                                 HOME_LONGITUDE, 4.54f);
+////////////////////////////////////////////////////////////////////////////
 //	Where do we leave the audio out?
 	int latency	= value_i (theQSettings, SOUND_HANDLING, "latency", 5);
 	theAudioPlayer		= nullptr;
@@ -489,9 +494,10 @@ QString h;
 	this			-> adjustSize	();
 #endif
 //
+//	Filepaths for various things
 //	some MOT, text and other data is stored in the Qt-DAB-files directory
-	path_for_files	= theFilenameFinder. basicPath ();	
-	path_for_files	= value_s (theQSettings, DAB_GENERAL,
+	path_for_files		= theFilenameFinder. basicPath ();	
+	path_for_files		= value_s (theQSettings, DAB_GENERAL,
 	                                           BASIC_PATH, path_for_files);
 	path_for_files		= QDir::toNativeSeparators (path_for_files);
 	path_for_files		= checkDir (path_for_files);
@@ -511,7 +517,9 @@ QString h;
 	path_for_eti		= path_for_files + "eti/";
 	path_for_eti		= QDir::toNativeSeparators (path_for_eti);
 	path_for_eti		= checkDir (path_for_eti);
-
+//
+//////////////////////////////////////////////////////////////////////////
+//	the serviceviewer
 //	extract the channelnames and fill the combobox
 	QStringList channelNames	= theSCANHandler. getChannelNames ();
 
@@ -522,17 +530,19 @@ QString h;
 	                                             channelNames,
 	                                             theQSettings,
 	                                             the_newFrame);
-	the_newFrame	-> setMinimumWidth (230);
+	the_newFrame	-> setMinimumWidth (240);
 	connect (theConfigHandler, &configHandler::set_serviceOrder,
 	         newServices, &serviceViewer::setServiceOrder);
-
+//
+/////////////////////////////////////////////////////////////////////////
+//	various
 	audioDumping		= false;
 	theControl		= nullptr;
 	journalineHandler 	= nullptr;
+	journalineKey		= -1;
 	peakLeftDamped          = -100;
 	peakRightDamped         = -100;
 	audioTeller		= 0;	// counting audio frames
-	dumpDisplay_p		= nullptr;
 	previous_idle_time	= 0;
 	previous_total_time	= 0; 
 	numberofSeconds		= 0;
@@ -591,8 +601,7 @@ QString h;
 	muteTimer. setSingleShot (true);
 	set_Colors ();
 //
-	journalineKey		= -1;
-//	do we show controls?
+///////////////////////////////////////////////////////////////////////
 	bool visible	=
 	            value_i (theQSettings, DAB_GENERAL, 
 	                                     CONFIG_WIDGET_VISIBLE, 0) != 0;
@@ -602,14 +611,12 @@ QString h;
 	connect (configButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_configButton);
 
+/////////////////////////////////////////////////////////////////////////
 	if (value_i (theQSettings, DAB_GENERAL, SNR_WIDGET_VISIBLE, 0) != 0)
 	   theSNRViewer. show ();
 	else
 	   theSNRViewer. hide ();
-	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0) {
-	   techFrame	-> show ();
-	   this		-> adjustSize ();
-	}
+///////////////////////////////////////////////////////////////////////////
 
 	dynamicLabel	-> setFont (QFont ("Times", 12, -1, false));
 	dynamicLabel	-> setAlignment(Qt::AlignCenter);
@@ -635,7 +642,6 @@ QString h;
 	cpuSupport	= has_avg2 + has_sse4;
 #endif
 
-
 //	Just check whether the ini file is used before
 	bool iniExists	=
 	           value_i (theQSettings, DAB_GENERAL, "EXISTS", 0) != 0;
@@ -644,6 +650,9 @@ QString h;
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("The ini file is new and no home location is known yet"));
 	}
+//
+/////////////////////////////////////////////////////////////////////////
+//	input devices
 
 	theDeviceHandler	= nullptr;
 //	do we have a known device from previous invocations?
@@ -675,7 +684,7 @@ QString h;
 //
 //	doStart (QString) is called when - on startup - NO device
 //	was registered to be used, and the user presses the
-//	selectDevice comboBox
+//	an enty in the list of devices
 void	RadioInterface::doStart (const QString &dev) {
 	if (theDeviceHandler != nullptr)
 	   delete theDeviceHandler;
@@ -698,7 +707,6 @@ void	RadioInterface::doStart (const QString &dev) {
 //	we (re)start a device, if it happens to be a regular
 ////	device, check for a preset name
 void	RadioInterface::startDirect	() {
-
 	cpuLabel -> setText (VITERBI);
 
 	theOfdmHandler	= new ofdmHandler  (this,
@@ -888,7 +896,7 @@ void	RadioInterface::handle_FIG10 (const QString &v, uint16_t EId) {
 
 //
 ///////////////////////////////////////////////////////////////////////////
-
+//	
 void	RadioInterface::handle_contentButton	() {
 
 	if (theContentTable != nullptr) {
@@ -3020,7 +3028,7 @@ QString theHeight;
 void	RadioInterface::handle_muteButton	() {
 //	do not activate mute timer if volume == 0
 //	but Volume is only defined with Qt_Audio
-	if ((theAudioPlayer -> is_QtAudio () && audioVolume == 0) &&
+	if ((theAudioPlayer -> is_QtAudio () && (audioVolume == 0)) &&
 	                           !muteTimer. isActive ())
 	   return;
 	if (muteTimer. isActive ()) {
@@ -3436,7 +3444,7 @@ void	RadioInterface::handle_resetButton	() {
 	startChannel	(channelName);
 }
 //
-//	called from the config handler
+//	called from touching the snr symbol on the main window
 void	RadioInterface::handle_snrLabel	() {
 	if (!running. load ())
 	   return;
@@ -3450,13 +3458,13 @@ void	RadioInterface::handle_snrLabel	() {
 	                          theSNRViewer. isHidden () ? 0 : 1);
 }
 
-void	RadioInterface::handle_snrButton	() {
-	if (running. load()) {
-	   dynamicLabel	-> setStyleSheet (labelStyle);
-	   QString SNR	= "SNR " + QString::number (channel. snr);
-	   dynamicLabel	-> setText (SNR);
-	}
-}
+//void	RadioInterface::handle_snrButton	() {
+//	if (running. load()) {
+//	   dynamicLabel	-> setStyleSheet (labelStyle);
+//	   QString SNR	= "SNR " + QString::number (channel. snr);
+//	   dynamicLabel	-> setText (SNR);
+//	}
+//}
 //
 //	called from the configHandler
 void	RadioInterface::handle_loadTable	 () {
@@ -3501,7 +3509,7 @@ void	RadioInterface:: set_streamSelector (const QString &channel, int k) {
 bool	RadioInterface::autoStart_http () {
 	if (localPos. latitude == 0) 	// cannot happen
 	   return false;
-	if (mapViewer != nullptr)  
+	if (mapViewer != nullptr)  	// cannot happen
 	   return false;
 
 	try {
@@ -3682,6 +3690,7 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	pauzeTimer. start (1 * 30 * 1000);
 	pauzeSlideTeller = (pauzeSlideTeller + 1) % 11;
 }
+
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti
 //
@@ -3891,6 +3900,10 @@ void	RadioInterface::show_clock_error	(int d) {
 	}
 }
 
+void	RadioInterface::show_dcOffset (float dcOffset) {
+	theNewDisplay. showDCOffset (dcOffset);
+}
+
 void	RadioInterface::show_channel	(uint32_t n) {
 std::vector<Complex> v (n);
 	theChannelBuffer. getDataFromBuffer (v. data (), n);
@@ -3965,10 +3978,6 @@ void	RadioInterface::handle_httpPort (int port) {
 
 void	RadioInterface::set_tpegPort	(int port) {
 	store (theQSettings, MAP_HANDLING, TPEG_PORT, port);
-}
-
-void	RadioInterface::show_dcOffset (float dcOffset) {
-	theNewDisplay. showDCOffset (dcOffset);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -4899,16 +4908,5 @@ void	RadioInterface::handle_utcSwitch	() {
 void	RadioInterface::viewCarriers		(uint8_t showType) {
 	if (theOfdmHandler != 0)
 	   theOfdmHandler	-> viewCarriers (showType);
-}
-
-void	RadioInterface::handle_saveSlides	() {
-bool	b = value_i (theQSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, 1) != 0;
-	store (theQSettings, CONFIG_HANDLER, SAVE_SLIDES_SETTING, !b ? 1 : 0);
-	
-	QMessageBox::warning (this, tr ("Warning"),
-                                       b ? 
-	                               tr ("slides will be saved from now on"):
-	                               tr ("slides will NOT be saved from now on"));
-
 }
 

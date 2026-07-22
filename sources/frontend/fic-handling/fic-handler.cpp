@@ -27,7 +27,6 @@
 #include	"protTables.h"
 #include	"dab-params.h"
 
-
 //	From 2304 incoming (soft) bits, a "motherword" of 3072 bits
 //	is formed by depuncturing with predefined puncture tables.
 //	The 3072 bits of the serial motherword shall be split into
@@ -39,9 +38,6 @@
 //	The last 24 bits shall be subjected to puncturing
 //	according to the table 8
 
-#define	FIC_BLOCKSIZE	3072
-#define	FIC_RESIDU	24
-#define	FIC_INPUT	2304
 /**
   *	\class ficHandler
   * 	We get in - through process_ficBlock - the FIC data
@@ -54,7 +50,8 @@
 		ficHandler::ficHandler (RadioInterface *mr,
 	                                uint8_t cpuSupport):
 	                                    fibDecoder (mr),
-	                                    myViterbi (768, true, cpuSupport) {
+	                                    myViterbi (NR_HARDBITS,
+	                                                 true, cpuSupport) {
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	BitsperBlock	= 2 * get_carriers();

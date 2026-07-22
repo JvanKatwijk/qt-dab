@@ -118,7 +118,6 @@ uint8_t	*d		= p;
 	}
 }
 //
-//
 void	fibDecoder::process_FIG0 (uint8_t *d) {
 uint8_t	extension	= getBits_5 (d, 8 + 3);
 

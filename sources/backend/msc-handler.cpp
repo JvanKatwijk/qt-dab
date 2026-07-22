@@ -54,7 +54,6 @@ static int cifTable [] = {18, 72, 0, 36};
 	nrBlocks		= get_L();
 	connect (this, &mscHandler::activeServices,
 	         mr, &RadioInterface::nrActiveServices);
-	
 
 	numberofblocksperCIF = cifTable [0];	// always mode 1
 }
@@ -88,6 +87,7 @@ void	mscHandler::resetChannel () {
 	}
 	theBackends. resize (0);
 	locker. unlock ();
+	theLogger -> log ("MscHandler", "reset buffer");
 	activeServices ((int)(theBackends. size ()));
 }
 
@@ -104,6 +104,9 @@ void	mscHandler::stopBackend	(uint32_t SId, uint8_t SCIds) {
 	   }
 	}
 	locker. unlock ();
+	theLogger -> log ("mscHandler",
+	                   QString ("stopping service ") +
+	                                 QString::number (SId, 16));
 	activeServices ((int)(theBackends. size ()));
 }
 //
@@ -123,6 +126,9 @@ bool	mscHandler::startBackend (descriptorType &d,
 	                                     flag,
 	                                     cpuSupport));
 	activeServices ((int)(theBackends. size ()));
+	theLogger -> log ("mscHandler",
+	                  QString ("starting service ") +
+	                            QString::number (d.SId));
 	return true;
 }
 

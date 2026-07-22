@@ -1,0 +1,144 @@
+
+Building an executable: a few notes
+=====================================================================
+
+While for Linux an "appImage" and for Window an installer is availablw,
+the availability of the sources makes it possible  to build an executable.
+I am doing the development on a Fedora box, but I am building the AppImage
+on an Ubuntu 22 VM.
+For Windows, I have installed the Mingw64 cross compilation tools
+and - on Linux - I generate a Windows version that I test under Wine
+before building an installer on Windows.
+
+For both version I generate a Make using qmake
+ - on/for Linux (both F44 and U22) I call qmake6 
+ - on Linux for Windows I call x86_64-w64-mingw32-qmake-qt6 
+
+Then running the makefile (may take some time, use "-j x" with x the number of separare threads.
+
+The target directory in both cases is "./linux-bin"
+
+Step 1
+-----------------------------------------------------------------
+
+- In the repository, the sources for the current Qt-DAB version (7.3) are in the directory "qt-dab/ sources". All sources and include files are found in this directory". The ".pro" file is - as is the CMakeLists.txt file - in the "qt-dab" directory.
+The qt-dab repository contains a file "structure.md" in which the structure is explained.
+
+Running with the ".pro" file as in the repository, the resulting Qt-DAB executable is stored in a directory "/linux-bin" when compiled for Linux and in a directory "/d/systems/qt-dab/linux-bin" when compiling
+for windows (using mingw64). You probably want to modify it.
+
+For building the AppImage on Ubuntu 22, I load the required libraries as given below:
+
+ *   sudo apt-get update
+ *   sudo apt-get install git
+ *   sudo apt-get install cmake
+ *   sudo apt-get install qmake6
+ *   sudo apt-get install build-essential
+ *   sudo apt-get install g++
+ *   sudo apt-get install pkg-config
+ *   sudo apt-get install libfftw3-dev
+ *   sudo apt-get install portaudio19-dev 
+ *   sudo apt-get install zlib1g-dev 
+ *   sudo apt-get install libusb-1.0-0-dev
+ *   sudo apt-get install mesa-common-dev
+ *   sudo apt-get install qt6-base-dev
+ *   sudo apt-get install qt6-multimedia-dev
+ *   sudo apt-get install libcurl4-openssl-dev
+ *   sudo apt-get install libfdk-aac-dev (read the note below)
+
+Note that in version 7.3 the graphics is using Qt libraries rather than qwt
+libraries, so there is no need to install a qwt library.
+
+There are two options for mapping the AAC frames that are generated from DAB+ services to PCM samples
+ - libfaad,
+ - fdk-aac
+
+Selecting the library is by inclusing or excluding the config items
+the default setting i
+ - #CONFIG	+= faad
+ - CONFIG	+= fdk-aac
+
+Personally I prefer fdk-aac. While the *libfdk-aac-dev* package in both Fedora and Ubuntu 24 seems to work fine, I had some problems with the package from the repository in Ubuntu 22. For the AppImage, built on Ubuntu 22, a library version was created from the sources to be found as github repository:
+
+* "https://github.com/mstorsjo/fdk-aac"
+
+The sources contain a *CMakeLists.txt* file, building and installing is straightforward.
+
+Alternatively one could select "libfaad" as library 
+ - CONFIG	+= faad
+ - #CONFIG	+= fdk-aac
+	
+ and install the libfaad package
+ *   sudo apt-get install libfaad-dev
+
+- If "soapy" is configured, libsamplerate (both the library and the include files) should be installed on the development system. Of course the various Soapy libraries as well.
+
+Step 2
+-----------------------------------------------------------------
+
+While there are dozens of configuration options, take note
+of the following ones:
+
+One may select a viterbi decoder, one may choose between this "new" one and the "older" version derived from the spiral project.
+
+	CONFIG          += viterbi-scalar
+	#CONFIG         += viterbi-sse
+	#CONFIG         += viterbi-avx2
+	#CONFIG         += spiral-sse
+	#CONFIG         += spiral-no-sse
+
+If unsure, choose either "viterbi-scalar" or "spiral-no-sse"
+
+While the cpu load might be slightly higher when using a scalar version,
+the implementation then does not depend on any special CPU specific instructions.
+Default is there using a *scalar* version of the viterbi decoder, which works just fine.
+
+- Qt-DAB can be compiled with floating numbers as "floats" or as "doubles"
+
+	*CONFIG += single*
+
+	*CONFIG += double*.
+
+In the latter case, all computations in the "front end" are done with double precision arithmetic.
+
+  - Devices like SDRplay, AIRspy, RTLSDR dongle, LimeSDR, HackRf and
+Adalm Pluto can be included in the confi guration.
+As such, for including a device in the configuration does not have to
+have device libraries installed.
+There is one notable exception,  Soapy requires Soapy libraries to be installed.
+For devices it holds that - on selecting a device - Qt-DAB tries to extract required functions from a device library for that device (and obviously shall tell
+if that does not succeed);
+
+ - line *DEFINES += __THREADED_BACKEND* is uncommented by default. In Qt_DAB it is possible to have more than one "backend" run. Think e.g.on the backend of an EPG/SPI service, that will run as a background process next to whatever service you selected.
+If THREADED_BACKEND is defined, each beackend will run in its iwn thread.
+
+Since some time Qt_DAB contains a database file that is used whenever the
+software is unable to detect a database file in the user's homedirectory.
+The database file used is found in the directory "./res" and is named
+"txdata.tii".
+
+Use the database downloader (for Windows and Linux available as
+precompiled item) to download a fresh copy of the database. Or download a
+copy of the database from the repository.
+
+A copy of the database is part of the repository. The directory **helpers**
+contains a file "tiiFile.zip", unpack the zipped file and store the result
+in your homedirectory (folder).
+
+Step 3
+-----------------------------------------------------------------
+
+Assuming all required libraries are installed, and the configuration is adapted
+to your needs, run the qmake command as mentioned above
+ - qmake6 for Fedora44 and Ubuntu22 and probably some others as well, for generating a Makefile with which a Linux executable can be generated;
+ -  x86_64-w64-mingw32-qmake-qt6 on an Fedora44 box (probabaly the same name on other Linux distros with mingw32-w54 installed)
+
+which generates a *Makefile* and then run *make*.
+Compiling may take up to 10 minutes, use *make -j XX* for speeding up
+the build process, with XX the amount of parallel threads used.
+Of course, qmake will complain if not all
+required libraries can be found.
+If all libraries were found, this step should result in an executable.
+
+
+

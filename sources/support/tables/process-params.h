@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,35 +20,43 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+//
 #pragma once
 
-#include	<QListView>
-#include	<QStringList>
-#include	<QStringListModel>
-#include	<QModelIndex>
+#include	<stdint.h>
+#include	<complex>
+#include	"ringbuffer.h"
 
-class	RadioInterface;
-class	descriptorType;
-
-class	scanListHandler:public QListView {
-Q_OBJECT
+class	processParams {
 public:
-		scanListHandler	(RadioInterface *radio,
-	                                 const QString fileName);
-		~scanListHandler	();
-	void	addElement	(const QString &, const QString &);
-	void	clearScanList	();
-	void	dump		();
-public slots:
-	void	selectElement	(QModelIndex);
-signals:
-	void	handleScanListSelect (const QString &);
-private:
-	QStringList	scanList;
-	QStringListModel	displayList;
-	RadioInterface	*radio;
-	QString		fileName;
+	uint8_t	dabMode;
+	int16_t	threshold;
+	int16_t	tii_delay;
+	int16_t	tii_depth;
+//	int16_t	echo_depth;
+	int16_t	bitDepth;
+	RingBuffer<float>	* responseBuffer;
+	RingBuffer<Complex>	* spectrumBuffer;
+	RingBuffer<Complex>	* iqBuffer;
+	RingBuffer<Complex>	* tiiBuffer;
+	RingBuffer<Complex>	* nullBuffer;
+	RingBuffer<float>	* snrBuffer;
+	RingBuffer<Complex>	* channelBuffer;
+	RingBuffer<uint8_t>	* frameBuffer;
+	RingBuffer<float>	* stdDevBuffer;
+	RingBuffer<DABFLOAT>	* carrierBuffer;
+
+	processParams () {
+	   responseBuffer	= nullptr;
+	   spectrumBuffer	= nullptr;
+	   iqBuffer		= nullptr;
+	   nullBuffer		= nullptr;
+	   snrBuffer		= nullptr;
+	   channelBuffer	= nullptr;
+	   stdDevBuffer		= nullptr;
+	   carrierBuffer	= nullptr;
+	}
+	~processParams	()	{}
 };
 
 

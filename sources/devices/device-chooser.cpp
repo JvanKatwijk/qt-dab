@@ -98,7 +98,7 @@
 #include	"newfiles.h"
 #include	"rawfiles.h"
 //
-//	Some devices are always configured
+//	file reading devices are always configured
 //
 #define	NO_ENTRY	0100
 #define	FILE_INPUT	0177
@@ -132,7 +132,6 @@
 	deviceList. push_back (deviceItem ("sdrplay", SDRPLAY_V3_DEVICE));
 	addtoList ("sdrplay");
 #endif
-//
 //	RTLSDR  handlers for windows differ from the one for Linux
 #ifdef	HAVE_RTLSDR
 #ifdef	__MINGW32__

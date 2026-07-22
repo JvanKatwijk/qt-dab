@@ -52,7 +52,6 @@ private:
 	RingBuffer<float> *response;
 
 	std::vector<Complex> refTable;
-	int16_t		depth;
 	int32_t		T_u;
 	int32_t		T_g;
 	int16_t		carriers;

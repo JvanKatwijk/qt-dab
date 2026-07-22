@@ -43,7 +43,6 @@
 	                             response (p -> responseBuffer) {
 	                    
 	this	-> theTable	= theTable;
-	this	-> depth	= p -> echo_depth;
 	this	-> T_u		= get_T_u ();
 	this	-> T_g		= get_T_g ();
 	this	-> carriers	= get_carriers ();
