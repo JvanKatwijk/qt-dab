@@ -47,7 +47,7 @@
 
 void	carrierScope::display		(const std::vector<DABFLOAT> &V,
 	                                 int lowFreq, int highFreq) {
-double Y_values [displaySize];
+double *Y_values = dynVec (double, displaySize);
 	int max = 0;
 	int	min	= 1000000;
 	for (uint16_t i = 0; i < V. size (); i ++) {

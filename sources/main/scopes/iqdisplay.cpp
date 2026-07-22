@@ -84,7 +84,7 @@ QList<QPointF> theValues;
 	                value_s (scopeSettings, "iqDisplay",
                                                "valueLineColor", "#f9f06b");
         ValueLine       -> setPen (QPen (QColor (colorString), 1.0));
-	for (int i = 0; i < v. size () / 2; i ++)
+	for (uint32_t i = 0; i < v. size () / 2; i ++)
 	   theValues. append (QPointF (real (v [i]) * scale,
 	                               imag (v [i]) * scale));
 	ValueLine -> replace (theValues);

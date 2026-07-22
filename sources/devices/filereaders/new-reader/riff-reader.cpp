@@ -113,7 +113,7 @@ char header [5];
            int junkSize;
            fread (&junkSize, 1, 4, filePointer);
 	   fprintf (stderr, "junksize %d\n", junkSize);
-           char junkBuffer [junkSize];
+           char *junkBuffer = dynVec (char, junkSize);
            fread (&junkBuffer, 1, junkSize, filePointer);
            fread (header, 1, 4, filePointer);
         }

@@ -62,9 +62,9 @@ int result	= 1;
 void	tiiScope::display		(std::vector<Complex> &v,
 	                                 int lowFreq, int highFreq,
 	                                 int Amp, int markOffset) {
-float X_axis [displaySize];
-double Y_values [displaySize];
-Complex spectrumBuffer [T_u];
+float *X_axis	= dynVec (float, displaySize);
+double *Y_values = dynVec (double, displaySize);
+Complex *spectrumBuffer  = dynVec (Complex, T_u);
 
 	if (v. size () != T_u)
 	   return;
