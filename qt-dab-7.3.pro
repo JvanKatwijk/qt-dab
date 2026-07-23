@@ -22,6 +22,7 @@ QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 DEFINES         += VERSION=\\\"7.3\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
+QMAKE_CXXFLAGS	+= -Wvla
 QMAKE_CXXFLAGS	+=  -ffast-math -flto 
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto

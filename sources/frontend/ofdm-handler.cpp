@@ -456,7 +456,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         static int t2 = 0;
 	         if (viewCarrier_mode == NULL_CARRIERS_TII) {
 	            if (++t2 >= 4) {
-	               DABFLOAT cBuf [carriers];
+	               DABFLOAT *cBuf = dynVec (DABFLOAT, carriers);
 	               NullToCarriers (ofdmBuffer, cBuf);
 	               carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
 	               emit show_carriers (viewCarrier_mode, carriers);
@@ -479,7 +479,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         if (viewCarrier_mode == NULL_CARRIERS_NO_TII) {
 	            static int t3 = 0;
 	            if (++t3 >= 4) {
-	               DABFLOAT cBuf [carriers];
+	               DABFLOAT *cBuf = dynVec (DABFLOAT, carriers);
 	               NullToCarriers (ofdmBuffer, cBuf);
 	               carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
 	               emit show_carriers (viewCarrier_mode, carriers);
@@ -746,7 +746,7 @@ void	ofdmHandler::viewCarriers	(uint8_t carrierMode) {
 
 void	ofdmHandler::NullToCarriers (const std::vector<Complex> &in,
 	                             DABFLOAT *out) {
-Complex buffer [T_u];
+Complex *buffer = dynVec (Complex, T_u);
 	for (int i = 0; i < T_u; i ++)
 	   buffer [i] = in [i];
 	fft. fft (buffer);

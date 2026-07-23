@@ -66,9 +66,9 @@ int	minimum	(int x, int y) {
 
 void	spectrumScope::display		(std::vector<Complex> &v,
 	                                 int low, int high, int Amp) {
-float X_axis [displaySize];
-float Y_values [displaySize];
-Complex fftBuffer [4 * displaySize];
+float *X_axis 	= dynVec (float, displaySize);
+float *Y_values = dynVec (float, displaySize);
+Complex *fftBuffer = dynVec (Complex, 4 * displaySize);
 int amount 	= minimum (v. size (), 4 * displaySize);
 
 	for (int i = 0; i < displaySize; i ++)

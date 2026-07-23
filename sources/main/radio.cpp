@@ -47,7 +47,6 @@
 #include	"schedule-selector.h"
 #include	"element-selector.h"
 #include	"ITU-tables.h"
-//#include	"mapport.h"
 #include	"tech-window.h"
 #include	"db-element.h"
 #include	"distances.h"
@@ -453,6 +452,7 @@ QString h;
 
 //	we end up here if  Qt_Audio failed
 //	as it does on U20
+
 	if (theAudioPlayer == nullptr) {
 	   theAudioPlayer	= new audioSink	(latency);
 	   streams		= static_cast<audioSink *>(theAudioPlayer) -> streams ();
@@ -1301,23 +1301,27 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	}
 //
 //	processing the audio
-	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, rate / 10);
-	while (theAudioBuffer. GetRingBufferReadAvailable () >=  (uint32_t)rate / 10) {
-	   theAudioBuffer. getDataFromBuffer (vec, rate / 10);
+	std::complex<int16_t> *vec = dynVec (std::complex<int16_t>, rate / 20);
+	while (theAudioBuffer. GetRingBufferReadAvailable () >= (uint32_t)rate / 20) {
+	   theAudioBuffer. getDataFromBuffer (vec, rate / 20);
 	   if (!techFrame -> isHidden ()) {
-	      theTechData. putDataIntoBuffer (vec, rate / 10);
-	      theTechWindow	-> audioDataAvailable (rate / 10, rate);
+	      theTechData. putDataIntoBuffer (vec, rate / 20);
+	      theTechWindow	-> audioDataAvailable (rate / 20, rate);
 	   }
 #ifdef	HAVE_PLUTO_RXTX
 	   if (theDabStreamer != nullptr)
-	      theDabStreamer	-> audioOut (vec, rate / 10, rate);
+	      theDabStreamer	-> audioOut (vec, rate / 20, rate);
 #endif
 	   std::vector<float> tmpBuffer;
-	   int size = theAudioConverter. convert (vec, rate / 10,
+	   int size = theAudioConverter. convert (vec, rate / 20,
 	                                               rate, tmpBuffer);
 	   if (!muteTimer. isActive ())
 	      theAudioPlayer -> audioOutput (tmpBuffer. data (), size);
-	   setPeakLevel (tmpBuffer);
+	   static int vertrager = 0;
+	   if (++vertrager > 2) {
+	      setPeakLevel (tmpBuffer);
+	      vertrager = 0;
+	   }
 	}
 }
 

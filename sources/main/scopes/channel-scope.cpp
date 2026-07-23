@@ -37,7 +37,7 @@
 }
 
 void	channelScope::display		(const double *ampValues, int Amp) {
-double  ampVals [displaySize];
+double	*ampVals = dynVec (double,  displaySize);
 float	min	= +10000;
 float	max	= -10000;
 

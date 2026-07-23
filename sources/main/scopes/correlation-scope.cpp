@@ -44,7 +44,7 @@ void	correlationScope::display	(const std::vector<float> &v,
 	                                 uint32_t amount,
 	                                 int sliderValue,
 	                                 const std::vector<corrElement> &ss) {
-double	 Y_values [displaySize];
+double	 *Y_values 	= dynVec (double, displaySize);
 float	Max	= -1000;
 float	Min	= 1000;
 int	teller	= 0;

@@ -34,8 +34,7 @@
 
 //
 //	The format is known, everything mapped onto 2 channel 48000
-	Qt_Audio::Qt_Audio (RadioInterface *mr,
-	                    QSettings *settings) {
+	Qt_Audio::Qt_Audio (RadioInterface *mr, QSettings *settings) {
 	this	-> mr		= mr;
 	this	-> audioSettings	= settings;
 	newDeviceIndex		= 0;

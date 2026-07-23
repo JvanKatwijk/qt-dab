@@ -96,7 +96,6 @@ qint64	amount = 0;
 	return maxSize;
 }
 
-
 bool	Qt_AudioDevice::isRunning () {
 	return running;
 }

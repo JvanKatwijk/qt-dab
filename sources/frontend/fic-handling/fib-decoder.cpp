@@ -1197,6 +1197,7 @@ uint32_t SId;
 	   bitOffset += 16;
 	}
 
+	(void)SId;
 //	uint8_t xpadType	= getBits (d, bitOffset + 3, 5);
 //	fprintf (stderr, "XPad type for %X %d is %d\m",
 //	                           SId, SCIds, xpadType);

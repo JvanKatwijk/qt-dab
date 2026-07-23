@@ -27,7 +27,7 @@
  */
 	converter_48000::converter_48000 (RadioInterface *mr):
 	                                   filter_16_48 (5, 8000, 48000),
-	                                   filter_24_48 (5, 12000, 89000),
+	                                   filter_24_48 (5, 12000, 96000),
 	                                   filter_32_96 (5, 16000, 96000) {
 	(void)mr;
 	buffer_32_96. resize (0);
@@ -179,7 +179,6 @@ void	converter_48000::dump (const Complex *buffer, int nrSamples) {
         theWriter. write (lBuf, nrSamples);
         locker. unlock ();
 }
-
 
 void	converter_48000::dump (const complex16 *buffer,
 	                                          int nrSamples) {

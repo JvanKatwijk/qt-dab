@@ -40,7 +40,7 @@
 }
 
 void	devScope::display	(const std::vector<float> &V) {
-double Y_values [V. size () / 2];
+double *Y_values  = dynVec (double, V. size () / 2);
 	for (uint16_t i = 0; i < V. size () / 2; i ++) 
 	   Y_values [i] = V [2 * i];
 
