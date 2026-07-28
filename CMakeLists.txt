@@ -161,6 +161,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/server-thread
 	           ./sources/eti-handler
 	           ./sources/support
+	           ./sources/support/tables
 	           ./sources/support/gui-elements
 	           ./sources/frontend
 	           ./sources/frontend/fic-handling
@@ -209,6 +210,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/dxDisplay.h 
 	   ./sources/main/process-monitor.h
 	   ./sources/main/audio-selector.h 
+	   ./sources/main/scan-handler.h 
+	   ./sources/main/mutetimeSelector.h 
 	   ./sources/eti-handler/eti-generator.h 
 	   ./sources/frontend/ofdm-handler.h 
 	   ./sources/frontend/timesyncer.h 
@@ -267,14 +270,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/output/audio-player.h 
 	   ./sources/support/dump-display.h 
 	   ./sources/support/equalizer.h 
-	   ./sources/support/scan-handler.h 
 	   ./sources/support/scantable-handler.h 
 	   ./sources/support/dl2-handler.h 
 	   ./sources/support/http-handler.h 
 	   ./sources/support/timetable-control.h 
 	   ./sources/support/dab-constants.h 
 	   ./sources/support/bit-extractors.h 
-	   ./sources/support/charsets.h 
 	   ./sources/support/crc-handlers.h 
 	   ./sources/support/mot-content-types.h 
 	   ./sources/support/distances.h 
@@ -286,9 +287,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/fft-handler.h 
 	   ./sources/support/process-params.h 
 	   ./sources/support/ringbuffer.h 
-	   ./sources/support/dab-params.h 
-	   ./sources/support/ITU-tables.h 
-	   ./sources/support/scanlist-handler.h 
 	   ./sources/support/scheduler.h 
 	   ./sources/support/schedule-selector.h 
 	   ./sources/support/element-selector.h 
@@ -303,7 +301,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/uploader.h 
 	   ./sources/support/basic-print.h 
 	   ./sources/support/dc-filter.h
-	   ./sources/support/mutetimeSelector.h
+	   ./sources/support/tables/charsets.h 
+           ./sources/support/tables/dab-params.h 
+           ./sources/support/tables/ITU-tables.h 
 	   ./sources/support/gui-elements/position-handler.h 
 	   ./sources/support/gui-elements/settings-handler.h 
 	   ./sources/support/gui-elements/presetcombobox.h 
@@ -368,6 +368,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/dxDisplay.cpp 
 	   ./sources/main/process-monitor.cpp 
 	   ./sources/main/audio-selector.cpp 
+	   ./sources/main/scan-handler.cpp 
+	   ./sources/main/mutetimeSelector.cpp 
 	   ./sources/eti-handler/eti-generator.cpp 
 	   ./sources/frontend/ofdm-handler.cpp 
 	   ./sources/frontend/timesyncer.cpp 
@@ -423,11 +425,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/bandpass-filter.cpp 
 	   ./sources/support/basic-print.cpp 
 	   ./sources/support/dc-filter.cpp
-	   ./sources/support/charsets.cpp 
 	   ./sources/support/content-table.cpp 
 	   ./sources/support/crc-handlers.cpp 
-	   ./sources/support/dab-params.cpp 
-	   ./sources/support/ITU-tables.cpp 
 	   ./sources/support/distances.cpp 
 	   ./sources/support/dl2-handler.cpp 
 	   ./sources/support/timetable-control.cpp 
@@ -438,8 +437,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/fir-filters.cpp 
 	   ./sources/support/http-handler.cpp 
 	   ./sources/support/logger.cpp 
-	   ./sources/support/scan-handler.cpp 
-	   ./sources/support/scanlist-handler.cpp 
 	   ./sources/support/scantable-handler.cpp 
 	   ./sources/support/scheduler.cpp 
 	   ./sources/support/schedule-selector.cpp 
@@ -448,7 +445,9 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/time-converter.cpp 
 	   ./sources/support/time-table.cpp 
 	   ./sources/support/uploader.cpp 
-	   ./sources/support/mutetimeSelector.cpp
+	   ./sources/support/tables/charsets.cpp 
+           ./sources/support/tables/dab-params.cpp 
+           ./sources/support/tables/ITU-tables.cpp 
 	   ./sources/support/gui-elements/settings-handler.cpp 
 	   ./sources/support/gui-elements/position-handler.cpp 
 	   ./sources/support/gui-elements/presetcombobox.cpp 
@@ -506,8 +505,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/viewer/channel-viewer.h
 	     ./sources/main/viewer/database.h
 	     ./sources/main/audio-selector.h
+	     ./sources/main/mutetimeSelector.h 
 	     ./sources/update/updatechecker.h
 	     ./sources/main/process-monitor.h
+	     ./sources/main/scan-handler.h 
 	     ./sources/frontend/ofdm-handler.h
 	     ./sources/frontend/sample-reader.h
 	     ./sources/frontend/ofdm-decoder.h
@@ -533,9 +534,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/gui-elements/smallspinbox.h 
 	     ./sources/support/gui-elements/super-frame.h 
 	     ./sources/support/gui-elements/verysmallpushbutton.h 
-	     ./sources/support/scan-handler.h 
 	     ./sources/support/scantable-handler.h 
-	     ./sources/support/scanlist-handler.h
 	     ./sources/support/scheduler.h
 	     ./sources/support/schedule-selector.h
 	     ./sources/support/element-selector.h
@@ -543,7 +542,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/time-table.h
 	     ./sources/support/content-table.h
 	     ./sources/support/http-handler.h
-	     ./sources/support/mutetimeSelector.h
 	     ./sources/server-thread/udp-broadcaster.h 
 	     ./sources/backend/msc-handler.h
 	     ./sources/backend/backend.h
