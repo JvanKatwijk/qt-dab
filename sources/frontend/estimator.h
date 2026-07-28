@@ -36,8 +36,7 @@ class	RadioInterface;
 
 class estimator {
 public:
-			estimator 		(RadioInterface *,
-	                                         phaseTable *);
+			estimator 		(phaseTable *);
 			~estimator		();
 	void		estimate		(std::vector<Complex>,
 	                                         std::vector<Complex> &);

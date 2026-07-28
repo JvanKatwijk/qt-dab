@@ -431,10 +431,25 @@ QString textList;
 }
 
 void	displayWidget::setSyncLabel	(bool b) {
-	if (b)
-	   syncLabel    -> setStyleSheet ("QLabel {background-color : green}");
-	else
-	   syncLabel    -> setStyleSheet ("QLabel {background-color : yellow}");              
+	if (b) {
+	   syncLabel    -> setStyleSheet ("font-weight:bold; color: lightgreen");
+	   syncLabel	-> setText ("synced");
+	}
+	else {
+	   syncLabel	-> setStyleSheet ("font-weight:bold; color: red");
+	   syncLabel	-> setText ("synced");
+	}
+}
+
+void	displayWidget::setFIC_label	(bool b) {
+	if (b) {
+	   FIC_label    -> setStyleSheet ("font-weight:bold; color: lightgreen");
+	   FIC_label	-> setText ("FIC");
+	}
+	else {
+	   FIC_label	-> setStyleSheet ("font-weight:bold; color: red");
+	   FIC_label	-> setText ("FIC");
+	}
 }
 
 void	displayWidget::showDCOffset	(float dcOffset) {

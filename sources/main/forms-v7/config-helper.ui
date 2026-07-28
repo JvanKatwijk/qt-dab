@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>904</width>
-    <height>339</height>
+    <height>357</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_6">
+  <layout class="QVBoxLayout" name="verticalLayout_8">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_18">
      <item>
@@ -123,7 +123,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_16">
+    <layout class="QHBoxLayout" name="horizontalLayout_19">
      <item>
       <widget class="QFrame" name="frame_4">
        <property name="frameShape">
@@ -136,7 +136,7 @@
         <item>
          <widget class="QLabel" name="variousLabel">
           <property name="text">
-           <string>various</string>
+           <string>VARIOUS</string>
           </property>
          </widget>
         </item>
@@ -221,7 +221,31 @@
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_16">
+         <item>
+          <widget class="QCheckBox" name="audioHandler">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;By default (selector is set) Qt_DAB tries to open the QtAudio library functions for the napping of the PCM samples to the soundcard. If either that fails, or this selector is unset, Qt_DAB uses the portaudio library&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>qt-audio</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="audioSystem_label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name of the selected audio engine is displayed. Note that the default is Qt_Audio, on U20 starting that up in Qt5 failed, therefore the portaudio library remained included.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QFrame" name="frame">
          <property name="frameShape">
@@ -234,7 +258,7 @@
           <item>
            <widget class="QLabel" name="tiiLabel">
             <property name="text">
-             <string>tii and db selection</string>
+             <string>TII and DB SELECTION</string>
             </property>
            </widget>
           </item>
@@ -372,7 +396,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
         <widget class="QFrame" name="frame_7">
          <property name="frameShape">
@@ -440,64 +464,68 @@
          <property name="frameShadow">
           <enum>QFrame::Shadow::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QLabel" name="maphandlingLabel">
-            <property name="text">
-             <string>map handling</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_15">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QLabel" name="label_6">
+             <widget class="QLabel" name="maphandlingLabel">
               <property name="text">
-               <string>httpPort</string>
+               <string>MAP HANDLING</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="httpPortSelector">
-              <property name="maximum">
-               <number>100000</number>
+             <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>httpPort</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="httpPortSelector">
+                <property name="maximum">
+                 <number>100000</number>
+                </property>
+                <property name="value">
+                 <number>8080</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="localBrowserSelector">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
-              <property name="value">
-               <number>8080</number>
+              <property name="text">
+               <string> browser manually</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="auto_http">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the software will (try to) start the http handler on program start up&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>auto http</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="mapViewSelector">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data for showing transmitters on the map can be saved into a file, and used with a separate program to re-view the map with the transmitters displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>save map</string>
               </property>
              </widget>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="localBrowserSelector">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that on starting the http service a browser will have to be started manually. By default  browser starts automaticall when the http button is set. Effective immediately&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string> browser manually</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="auto_http">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, the software will (try to) start the http handler on program start up&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>auto http</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="mapViewSelector">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Data for showing transmitters on the map can be saved into a file, and used with a separate program to re-view the map with the transmitters displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>save map</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>
@@ -516,7 +544,7 @@
         <item>
          <widget class="QLabel" name="decodingLabel">
           <property name="text">
-           <string>decoding and services</string>
+           <string>DECODING AND SERVICES</string>
           </property>
          </widget>
         </item>

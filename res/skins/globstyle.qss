@@ -76,12 +76,6 @@ QListView::item:selected { background-color: #b78620; border: 1px solid #b78620;
 QListView::item:selected:!active { background-color: #b78620; border: 1px solid #b78620; color: #fff; color: white; }
 QListView::item:selected:active { background-color: #b78620; border: 1px solid #b78620; color: #fff; color: white; }
 QListView::item:hover { background-color: #262626; border: none; color: white; }
-QCheckBox { background-color:transparent; color:lightgray; border:none; }
-QCheckBox::indicator { background-color: #323232; border: 1px solid darkgray; width: 12px; height: 12px; }
-QCheckBox::indicator:checked { background-color: #b78620; border: 1px solid #3a546e; }
-QCheckBox::indicator:unchecked:hover { border: 1px solid #b78620; }
-QCheckBox::disabled { color: #656565; }
-QCheckBox::indicator:disabled { background-color: #656565; color: #656565; border: 1px solid #656565; }
 QRadioButton { background-color:transparent; color:lightgray; border:none; }
 QRadioButton::indicator { background-color: #323232; border: 1px solid darkgray; width: 12px; height: 12px; }
 QRadioButton::indicator:checked { background-color: #b78620; border: 1px solid #3a546e; border-radius: 6px; }
@@ -118,3 +112,23 @@ QProgressBar { border: 1px solid #666666; text-align: center; color: #000; font-
 /*
 QProgressBar::chunk { background-color: #b78620; width: 30px; margin: 0.5px; }
 */
+/*QCheckBox { background-color:transparent; color:lightgray; border:none; } */
+QCheckBox::disabled { color: #656565; }
+/*QCheckBox::indicator:disabled { background-color: #656565; color: #656565; border: 1px solid #656565; } */
+
+    QCheckBox::indicator {
+    width: 10px;
+    height: 10px;
+    border: 1px solid #888888;
+    background: #00ffff;
+    }
+    QCheckBox::indicator:unchecked {
+    width: 10px;
+    height: 10px;
+    background: #00ffff;
+    }
+    QCheckBox::indicator:checked {
+    width: 12px;
+    height: 12px;
+    background: #ff007f;
+    }

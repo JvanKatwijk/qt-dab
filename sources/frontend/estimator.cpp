@@ -26,26 +26,19 @@
 #include	"radio.h"
 #include	<vector>
 #include	"dab-params.h"
+#include	"dab-constants.h"
 /**
   */
-
-	estimator::estimator (RadioInterface *mr,
-	                      phaseTable 	*theTable) :
+	estimator::estimator (phaseTable	*theTable) :
 	                             fft_forward (get_T_u (), false),
 	                             fft_backwards (get_T_u (), true) {
-	(void)mr;
-
 	this	-> theTable	= theTable;
 	this	-> T_u		= get_T_u ();
 	this	-> T_g		= get_T_g ();
-	this	-> carriers	= get_carriers();
 }
 
 	estimator::~estimator () {
 }
-
-/**
-  */
 //
 void	estimator::estimate (std::vector <Complex> v,
 	                       std::vector<Complex> &CI_Vector) {
@@ -70,4 +63,5 @@ void	estimator::estimate (std::vector <Complex> v,
 	for (int i = 0; i < NR_TAPS; i ++) 
 	   CI_Vector [i] = v [i];
 }
+
 

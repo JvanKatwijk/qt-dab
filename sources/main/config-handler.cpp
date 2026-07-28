@@ -259,6 +259,18 @@ int	index_for_key (int key) {
 	connect (tpegPortSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         myRadioInterface, &RadioInterface::set_tpegPort);
 
+	int audioDriver		=
+	           value_i (dabSettings, SOUND_HANDLING, S_QT_AUDIO, 1);
+	audioHandler	-> setChecked (audioDriver != 0);
+
+	connect (audioHandler,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	             &QCheckBox::checkStateChanged,
+#else
+		     &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_audioHandler);
+
 	uint32_t http	=
 	              value_i (dabSettings, MAP_HANDLING, HTTP_PORT, 8080);
 	httpPortSelector	-> setValue (http);
@@ -393,7 +405,28 @@ int	index_for_key (int key) {
 /////////////////////////////////////////////////////////////////////////////
 	tiiLabel	-> setStyleSheet ("QLabel {color: yellow}");
 	decodingLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	
+//
+//	Experimental
+//	loadSelection_selector ->
+//	        setStyleSheet ("QCheckBox::indicator {"
+//	                     "width:   10px;"
+//	                      "height: 10px;"
+//	                      "background-color: white" "}");
+//	loadSelection_selector ->
+//	        setStyleSheet ("QCheckBox::indicator:checked {"
+//	                     "width:   14px;"
+//	                      "height: 14px;"
+//	                      "background-color: blue;" "}");
+//	loadSelection_selector ->
+//	        setStyleSheet ("QCheckBox::indicator:pressed {"
+//	                     "width:   14px;"
+//	                      "height: 14px;"
+//	                      "background-color: blue;" "}");
+//	loadSelection_selector ->
+//	        setStyleSheet ("QCheckBox::indicator:unchecked {"
+//	                     "width: 8px;"
+//	                      "height: 8px;"
+//	                      "background-color: white;" "}");
 	traceOn	= false;
 	set_Colors ();
 }
@@ -738,3 +771,15 @@ void	configHandler::handle_dlTextSelector	(int k) {
 	(void)k;
 	emit handle_dlText (dlTextSelector -> isChecked ());
 }
+
+void	configHandler::handle_audioHandler	(int k) {
+	(void)k;
+	bool b = this -> audioHandler -> isChecked ();
+	store (dabSettings, SOUND_HANDLING, S_QT_AUDIO, b ? 1 : 0);
+}
+
+void	configHandler::set_audioSystem_label	(const QString &s) {
+	audioSystem_label	-> setStyleSheet ("QLabel {color: yellow}");
+	audioSystem_label	-> setText (s);
+}
+

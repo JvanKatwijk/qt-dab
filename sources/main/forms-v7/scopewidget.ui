@@ -443,12 +443,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QProgressBar" name="ficError_display">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The FIC quality, The FIC data contains structural information on the payload. Usually if the quality is less than 100 percent, decoding the payload will not succeed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="value">
-          <number>24</number>
+        <widget class="QLabel" name="FIC_label">
+         <property name="text">
+          <string>FIC</string>
          </property>
         </widget>
        </item>

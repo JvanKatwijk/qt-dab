@@ -223,8 +223,6 @@ QString h;
 //	threshold is used in the correlation
 	globals. threshold		=
 	          value_i (theQSettings, DAB_GENERAL, "threshold", 3);
-//	globals. diff_length	=
-//	          value_i (theQSettings, DAB_GENERAL, "diff_length", DIFF_LENGTH);
 	globals. tii_delay   =
 	          value_i (theQSettings, DAB_GENERAL, "tii_delay", 3);
 	if (globals. tii_delay < 3)
@@ -291,14 +289,14 @@ QString h;
 	labelStyle	= value_s (theQSettings, DAB_GENERAL, LABEL_COLOR,
 	                                                     LABEL_STYLE);
 	QFont font	= serviceLabel -> font ();
-	font. setPointSize (16);
+	font. setPointSize (13);
 	font. setBold (true);
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
 	serviceLabel	-> setToolTip ("<font color=\"black\">the label displays the selected service. If a logo can be found, it will be displayed, otherwise the shortname is displayed");
 	font		= localTimeDisplay -> font ();
 	font. setBold (true);
-        font. setPointSize (14);
+        font. setPointSize (13);
 	localTimeDisplay	-> setStyleSheet (labelStyle);
 	localTimeDisplay	-> setFont (font);
 
@@ -311,10 +309,10 @@ QString h;
 	stereoLabel	->
 	            setStyleSheet ("font-weight: bold; color: lightgreen");
 	protectionLabel	-> setStyleSheet ("font-weight: bold; color:red");
-	audiorateLabel  -> setStyleSheet ("font-weight: bold; color:cyan");
 	rateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
-        psLabel         -> setStyleSheet ("font-weight: bold; color:cyan");
-        sbrLabel        -> setStyleSheet ("font-weight: bold; color:cyan");
+	audiorateLabel  -> setStyleSheet ("font-weight: bold; color:magenta");
+        psLabel         -> setStyleSheet ("font-weight: bold; color:yellow");
+        sbrLabel        -> setStyleSheet ("font-weight: bold; color:yellow");
 
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
@@ -373,11 +371,6 @@ QString h;
 
 	connect (&theNewDisplay, &displayWidget::frameClosed,
 	         this, &RadioInterface::handle_newDisplayFrame_closed);
-	{  QPalette p	= theNewDisplay. ficError_display -> palette();
-	   p. setColor (QPalette::Highlight, Qt::red);
-	   theNewDisplay. ficError_display	-> setPalette (p);
-	   p. setColor (QPalette::Highlight, Qt::green);
-	}
 	connect (&theNewDisplay, &displayWidget::mouseClick,
 	         this, &RadioInterface::handle_iqSelector);
 //
@@ -400,7 +393,7 @@ QString h;
 
 	theTechWindow	= new techWindow (techFrame,
 	                                  this, theQSettings, &theTechData);
-	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 0) != 0) {
+	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 1) != 0) {
 	   techFrame	-> show ();
 	   this		-> adjustSize ();
 	}
@@ -432,24 +425,30 @@ QString h;
 #ifndef	TCP_STREAMER
 	QStringList streams;
 	QString	temp;
-//
-	try {
-	   theAudioPlayer	= new Qt_Audio (this, theQSettings);
-	   streams		= static_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
-	   temp		=
-	          value_s (theQSettings, SOUND_HANDLING,
-	                                  AUDIO_STREAM_NAME, "default");
-	   volumeSlider	-> show ();
-	   audioVolume	=
-	          value_i (theQSettings, SOUND_HANDLING, QT_AUDIO_VOLUME, 50);
-	   volumeSlider		-> setValue (audioVolume);
-	   static_cast<Qt_Audio *>(theAudioPlayer) -> setVolume (audioVolume);
-	   connect (volumeSlider, &QSlider::valueChanged,
-	            this, &RadioInterface::setVolume);
-	} catch (...) {
-	   theAudioPlayer = nullptr;
-	}
 
+	theAudioPlayer = nullptr;
+	if (value_i (theQSettings, SOUND_HANDLING, S_QT_AUDIO, 1)) {
+	   try {
+	      theAudioPlayer	= new Qt_Audio (this, theQSettings);
+	      streams		= static_cast<Qt_Audio *>(theAudioPlayer) -> streams ();
+	      temp		=
+	             value_s (theQSettings, SOUND_HANDLING,
+	                                  AUDIO_STREAM_NAME, "default");
+	      volumeSlider	-> show ();
+	      audioVolume	=
+	             value_i (theQSettings, SOUND_HANDLING,
+	                                            QT_AUDIO_VOLUME, 50);
+	      volumeSlider		-> setValue (audioVolume);
+	      static_cast<Qt_Audio *>(theAudioPlayer) ->
+	                                       setVolume (audioVolume);
+	      connect (volumeSlider, &QSlider::valueChanged,
+	              this, &RadioInterface::setVolume);
+	      
+	      theConfigHandler -> set_audioSystem_label ("Qt_audio");
+	   } catch (...) {
+	      theAudioPlayer = nullptr;
+	   }
+	}
 //	we end up here if  Qt_Audio failed
 //	as it does on U20
 
@@ -459,6 +458,7 @@ QString h;
 	   temp		=
 	          value_s (theQSettings, SOUND_HANDLING,
 	                                 AUDIO_STREAM_NAME, "default");
+	   theConfigHandler -> set_audioSystem_label ("portaudio");
 	}
 
 	if (streams. size () > 0) {
@@ -466,7 +466,7 @@ QString h;
 	   p. load (":res/radio-pictures/volume_on.png", "png");
            soundLabel	-> setAlignment(Qt::AlignRight);
            soundLabel	->  
-               setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+               setPixmap (p. scaled (25, 25, Qt::KeepAspectRatio));
 
 	   for (auto sle : streams) 
 	      streamOutSelector. addtoList (sle);
@@ -483,6 +483,7 @@ QString h;
 	else {
 	   delete theAudioPlayer;
 	   theAudioPlayer = new audioPlayer ();
+	   theConfigHandler -> set_audioSystem_label ("no soundsystem");
 	}
 
 	if (!theAudioPlayer -> hasMissed ())
@@ -618,7 +619,7 @@ QString h;
 	   theSNRViewer. hide ();
 ///////////////////////////////////////////////////////////////////////////
 
-	dynamicLabel	-> setFont (QFont ("Times", 12, -1, false));
+	dynamicLabel	-> setFont (QFont ("Times", 13, -1, false));
 	dynamicLabel	-> setAlignment(Qt::AlignCenter);
 	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
 	dynamicLabel    -> setToolTip ("<font color=\"black\">The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
@@ -648,7 +649,11 @@ QString h;
 	if (!iniExists) {
 	   store (theQSettings, DAB_GENERAL, "EXISTS", 1);
 	   QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("The ini file is new and no home location is known yet"));
+	                               tr ("Qt_DAB creates an \".ini\" file" \
+".qt-dab-68.ini "\
+
+"and a directory \"Qt_DAB-files-7" \
+"in your home directory"));
 	}
 //
 /////////////////////////////////////////////////////////////////////////
@@ -1643,14 +1648,7 @@ void	RadioInterface::show_aacErrors (int s) {
 void	RadioInterface::show_ficQuality (int val, int scaler) {
 	if (!running. load ())	
 	   return;
-	QPalette p      = theNewDisplay. ficError_display -> palette();
-	if (val * scaler < 85)
-	   p. setColor (QPalette::Highlight, Qt::red);
-	else
-	   p. setColor (QPalette::Highlight, Qt::green);
-
-	theNewDisplay. ficError_display	-> setPalette (p);
-	theNewDisplay. ficError_display	-> setValue (val * scaler);
+	theNewDisplay. setFIC_label (val * scaler > 85);
 }
 
 void	RadioInterface::show_ficBER	(float ber) {
@@ -2407,7 +2405,7 @@ void	RadioInterface::cleanScreen	() {
 	motLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
 	distanceLabel		-> setText ("");
 	newServices		-> set_countryName ("");
-	theNewDisplay. ficError_display	-> setValue (0);
+	theNewDisplay. setFIC_label (false);
 }
 
 //
@@ -3644,7 +3642,7 @@ int h   = 3 * w / 4;
 	   return;
 	pauzeTimer. stop ();
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
-	if ((p. width () != 320) || (p. height () != 200))
+	if ((p. width () != 320) || (p. height () != 240))
 	   pictureLabel ->
 	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 	else
@@ -3871,7 +3869,7 @@ QPixmap p;
 	else
 	   p = strengthLabels. at (3);
 	this -> snrLabel -> setAlignment(Qt::AlignRight);
-	this -> snrLabel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+	this -> snrLabel -> setPixmap (p. scaled (25, 25, Qt::KeepAspectRatio));
 
 	if (!theSNRViewer. isHidden ()) {
 	   theSNRViewer. add_snr (snr);
@@ -4233,7 +4231,7 @@ QColor	labelColor;
 	labelStyle		= "color:" + color. name ();
 	store (theQSettings, COLOR_SETTINGS, LABEL_COLOR, labelStyle);
 	QFont font	= serviceLabel -> font ();
-	font. setPointSize (16);
+	font. setPointSize (13);
 	font. setBold (true);
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);

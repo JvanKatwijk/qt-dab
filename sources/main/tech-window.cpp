@@ -74,11 +74,11 @@
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 
 	framedumpButton ->
-			      setStyleSheet (temp. arg (framedumpButton_color,
+	 	     setStyleSheet (temp. arg (framedumpButton_color,
 							framedumpButton_font));
 
-		audiodumpButton ->
-			      setStyleSheet (temp. arg (audiodumpButton_color,
+	audiodumpButton ->
+	 	     setStyleSheet (temp. arg (audiodumpButton_color,
                                                 audiodumpButton_font));
 
 	connect (framedumpButton, &smallPushButton::rightClicked,
@@ -91,23 +91,27 @@
 	connect	(framedumpButton, &QPushButton::clicked,
 	         mr, &RadioInterface::handleFramedumpButton);
 
-	uepField	-> setStyleSheet ("font-weight: bold;color:red");
-	codeRate	-> setStyleSheet ("font-weight: bold;color:red");
-	bitRateLabel	-> setStyleSheet ("font-weight: bold;color:magenta");
-	audiorateLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
-	psLabel		-> setStyleSheet ("font-weight: bold; color:cyan");
-	sbrLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
+	uepField	-> setStyleSheet ("font-weight: bold; color:red");
+	codeRate	-> setStyleSheet ("font-weight: bold; color:red");
+	bitRateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
+	audiorateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
+	psLabel		-> setStyleSheet ("font-weight: bold; color:magenta");
+	sbrLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	frameLabel	-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
 	rsLabel		-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
 	aacLabel	-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
 	programName	-> setStyleSheet ("font-weight: bold; color: white");
+	QFont font      = programName -> font ();
+        font. setPointSize (13); 
+        programName	-> setFont (font);
+
 	serviceIdDisplay	-> setStyleSheet ("font-weight: bold; color: white");
 	fmLabel		-> setStyleSheet ("QLabel {color : magenta}");
 	startAddressDisplay	-> setStyleSheet ("font-weight: bold; color:white");
 	lengthDisplay	-> setStyleSheet ("font-weight: bold; color:white");
 	subChIdDisplay	-> setStyleSheet ("font-weight: bold; color:white");
 	ASCTy			-> setStyleSheet ("font-weight: bold; color:white");
-	language		-> setStyleSheet ("font-weight: bold; color:white");
+	language	-> setStyleSheet ("font-weight: bold; color:white");
 }
 
 		techWindow::~techWindow	() {
@@ -146,7 +150,7 @@ void	techWindow::showServiceData	(int tableNo, audiodata *ad) {
 void	techWindow::showServiceData	(int tableNo, audiodata *ad,
 	                                        const QPixmap &p) {
 	programName		-> setText (ad -> serviceName);
-	int height		= 60; 
+	int height		= 40; 
 	int width =
 	         static_cast<float>(p. width ()) / p. height () * height;
 	shortnameLabel		-> setAlignment (Qt::AlignCenter);
@@ -380,14 +384,14 @@ void	techWindow::showRate	(int rate, bool ps, bool sbr) {
 	if (!ps)
 	   psLabel -> setText (" ");
 	else {
-	   psLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
+//	   psLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	   psLabel -> setText ("ps");
 	}
 	if (!sbr) {
 	   sbrLabel -> setText ("  ");
 	}
 	else {
-	   sbrLabel	-> setStyleSheet ("font-weight: bold; color:cyan");
+//	   sbrLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	   sbrLabel	-> setText ("sbr");
 	}
 	audiorateLabel	-> setText (QString::number (rate / 1000) + "k");

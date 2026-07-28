@@ -52,6 +52,7 @@ public:
 	int	get_serviceOrder	();
 	int	switchDelayValue	();
 
+	void	set_audioSystem_label	(const QString &);
 	bool	upload_selector_active	();
 	bool	upload_active		();
 	bool	closeDirect_active	();
@@ -60,6 +61,7 @@ public:
 	bool	localBrowserSelector_active	();
 	bool	dumpmode_set		();
 
+	
 	void	enable_scheduler	(bool);
 //
 //	a few others
@@ -111,6 +113,7 @@ private slots:
 
 	void	handle_auto_http		(int);
 
+	void	handle_audioHandler		(int);
 	void	handle_localBrowser		(int);
 	void	handle_onTop			(int);
 

@@ -91,6 +91,7 @@ public:
 	void	showDCOffset	(float);
 	void	set_dcRemoval	(bool);
 	void	setSyncLabel	(bool);
+	void	setFIC_label	(bool);
 	void	show		();
 	void	hide		();
 	bool	isHidden	();
