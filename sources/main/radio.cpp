@@ -1242,6 +1242,7 @@ uint8_t *localBuffer = dynVec (uint8_t, length);
 void	RadioInterface::handle_frameOut	(int type, QByteArray data,
 	                                 int32_t SId, uint8_t SCIds) {	
 	(void)type;
+	fprintf (stderr, "Frame sent\n");
 	for (auto &serv: channel. runningTasks) {
 	   if (((int)serv. SId == SId) && (serv. SCIds == SCIds) &&
 	       (serv. dataServer != nullptr)) {

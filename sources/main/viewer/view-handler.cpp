@@ -56,6 +56,8 @@
 
 	this	-> defaultName		= fileName;
 	this	-> fileName		= fileName;
+	fprintf (stderr, "de db is %s\n",
+	                           fileName. toLatin1 (). data ());
 	this	-> theRadio		= theRadio;
 	this	-> viewSettings		= serviceSettings;
 	this	-> theFrame		= theFrame;
@@ -145,7 +147,8 @@
 }
 
 void	serviceViewer::clearAll		() {
-	theDataBase. clearTable ();
+	fprintf (stderr, "The database wordt killed\n");
+//	theDataBase. clearTable ();
 	clearTable ();
 	displayList. clear ();
 }
@@ -166,7 +169,7 @@ void	serviceViewer::startMode	(int Mode,
 	   f	= fopen (fileName. toLatin1 (). data (), "w");
 	else
 	   f	= fopen (fileName. toLatin1 (). data (), "r");
-	clearAll ();
+//	clearAll ();
 	if (f == nullptr) {
 //	   fclose (f);
 	   startMode (Mode, order, withPackets);
@@ -179,7 +182,8 @@ void	serviceViewer::startMode	(int Mode,
 
 void	serviceViewer::startMode	(int Mode,
 	                                 int order, bool withPackets) {
-	clearAll ();
+	clearTable ();
+	displayList. clear ();
 	this	-> fileName	= defaultName;
 	theDataBase. load (fileName, withPackets);
 	startSession (Mode, order, withPackets);
@@ -542,7 +546,7 @@ void	serviceViewer::handle_viewSelector	() {
 	   return;
 	int order	= theRadio -> get_serviceOrder (); 
 	switch (theMode) {
-	   case FAVORITEVIEW: {
+	   case FAVORITEVIEW: {		// -> ENSEMBLEVIEW
 	      serviceDescriptor oldService;
 	      theMode		= ENSEMBLEVIEW;
 	      if (currentService != -1) 
@@ -571,7 +575,7 @@ void	serviceViewer::handle_viewSelector	() {
 	      }
 	   }
 	   break;
-	   case ENSEMBLEVIEW: {
+	   case ENSEMBLEVIEW: {		//	-> to FAVORITEVIEW
 	      serviceDescriptor oldService;
 	      if ((currentService != -1) &&
 	         displayList [currentService]. isFavorite)
@@ -873,8 +877,10 @@ void	serviceViewer::clear_ensembleId	() {
 	disconnect (ensembleId, &clickablelabel::clicked_right,
 	            theRadio, &RadioInterface::handle_dump);
 	if ((theMode == ENSEMBLEVIEW) &&
-	    (ensembleMode == SINGLE_CHANNEL))
-	   clearAll ();
+	    (ensembleMode == SINGLE_CHANNEL)) {
+	   clearTable ();
+	   displayList. clear ();
+	}
 }
 
 void	serviceViewer::startButtons () {

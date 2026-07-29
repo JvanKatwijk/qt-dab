@@ -54,7 +54,7 @@ int base	= 8;
 int	main	(int argc, char *argv []) {
 	QCoreApplication a (argc, argv);
 
-	tpegClient	*theReader  = new tpegClient (8080);
+	tpegClient	*theReader  = new tpegClient (8888);
 
 	return a.exec ();
 }

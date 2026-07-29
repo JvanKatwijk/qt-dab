@@ -61,7 +61,7 @@ void	tdc_dataHandler::add_mscDatagroup (const std::vector<uint8_t> &m) {
 int32_t	offset	= 0;
 uint8_t	*data	= (uint8_t *)(m. data());
 int32_t	size	= m. size();
-int16_t	i;
+	fprintf (stderr, "x ");
 
 //	we maintain offsets in bits, the "m" array has one bit per byte
 	while (offset < size) {
@@ -90,14 +90,14 @@ int16_t	i;
 	   uint8_t checkVector [18];
 //
 //	first the syncword and the length
-	   for (i = 0; i < 4; i ++)
+	   for (int i = 0; i < 4; i ++)
 	      checkVector [i] = getBits (data, offset + i * 8, 8);
 //
 //	we skip the crc in the incoming data and take the frametype
 	   checkVector [4] = getBits (data, offset + 6 * 8, 8);
 
 	   int size = length < 11 ? length : 11;
-	   for (i = 0; i < size; i ++)
+	   for (int i = 0; i < size; i ++)
 	      checkVector [5 + i] = getBits (data,  offset + 7 * 8 + i * 8, 8);
 	   checkVector [5 + size]	= getBits (data, offset + 4 * 8, 8);
 	   checkVector [5 + size + 1]	= getBits (data, offset + 5 * 8, 8);

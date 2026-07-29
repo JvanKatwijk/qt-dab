@@ -46,8 +46,9 @@ QList <serviceDescriptor>
 QList<serviceDescriptor> 
 		getData		(int, int, const QString &);	// the Mode, the order
 	void	update		(const serviceDescriptor &, bool);
-	void	clearTable	();
 	void	insert		(const theChannel &);
 	QList<theChannel> theData;
+private:
+	void	clearTable	();
 };
 

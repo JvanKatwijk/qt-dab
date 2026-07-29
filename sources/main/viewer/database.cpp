@@ -201,9 +201,12 @@ void	serviceBase::store	(const QString &fileName) {
 QDomDocument serviceDB;
 QDomElement root = serviceDB. createElement ("serviceList");
 
+	fprintf (stderr, "De db gaat sluiten\n");
         serviceDB. appendChild (root);
 
         for (auto &channel : theData) { 
+	   fprintf (stderr, "Channel %s gaat sluiten\n",
+	                                   channel. channelName. toLatin1 (). data ());
 	   QDomElement channelElement = serviceDB.
 	                          createElement ("channel");
 	   channelElement. setAttribute ("channelName", channel. channelName);
@@ -224,6 +227,7 @@ QDomElement root = serviceDB. createElement ("serviceList");
 	   return;
 
 	QTextStream stream (&file);
+	fprintf (stderr, "en daar gaan we\n");
 	stream << serviceDB. toString ();
 	file. close ();
 }

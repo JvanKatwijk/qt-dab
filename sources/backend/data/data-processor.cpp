@@ -187,8 +187,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   return;
 
 	if (cntIdx != (last_cntIdx + 1) % 4) {
-//	   fprintf (stderr, "packet  %d cntIdx %d expected %d address %d\n",
-//	                                teller, cntIdx, last_cntIdx, paddr);
+	   fprintf (stderr, "packet  %d cntIdx %d expected %d address %d\n",
+	                                teller, cntIdx, last_cntIdx, paddr);
 //	packet is OK, so try to process it
 //	which obviously  only makes sense if flflg == 2,
 	   assembling = false;
@@ -311,7 +311,6 @@ void	dataProcessor::handleRSPacket (const uint8_t  *vec) {
 int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
 
-//	fprintf (stderr, "handling RS\n");
 //	we differentiate between the "data" packets and the "RS" packets
 //
 //	the "order" is first RSDIMS * FRAMESIZE packet elements

@@ -136,10 +136,10 @@ private:
 	QTimer		timer_1;
 	int		locate		(serviceDescriptor &sd);
 
-	void	color_prevService	();
-	void	color_nextService	();
-	void	color_viewSelector	();
-	void	color_channelDisplay	();
+	void		color_prevService	();
+	void		color_nextService	();
+	void		color_viewSelector	();
+	void		color_channelDisplay	();
 
 	void	setButtonColors		(QPushButton *b,
                                          const QString &buttonName);
