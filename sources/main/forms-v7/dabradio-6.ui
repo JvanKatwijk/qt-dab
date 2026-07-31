@@ -6,31 +6,31 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>877</width>
-    <height>491</height>
+    <width>880</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
-    <width>885</width>
+    <width>880</width>
     <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-7.0</string>
+   <string>Qt-DAB-7.3.0</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_5">
    <item>
     <widget class="QFrame" name="the_newFrame">
      <property name="minimumSize">
       <size>
-       <width>210</width>
+       <width>214</width>
        <height>500</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>210</width>
+       <width>215</width>
        <height>500</height>
       </size>
      </property>
@@ -46,13 +46,13 @@
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
       <size>
-       <width>411</width>
+       <width>401</width>
        <height>500</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>411</width>
+       <width>401</width>
        <height>500</height>
       </size>
      </property>
@@ -336,6 +336,9 @@
         </item>
         <item row="0" column="3">
          <widget class="smallPushButton" name="scanButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This button controls the visibility of a separate **control** window for scanning;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>scan</string>
           </property>
@@ -343,15 +346,21 @@
         </item>
         <item row="1" column="3" rowspan="2">
          <widget class="smallPushButton" name="devicewidgetButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This button controls the visibility of the device support window (for the selected device)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>device</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="smallPushButton" name="resetButton">
+         <widget class="smallPushButton" name="scheduleButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When touched, a small window shows where you can select a command or a service to be activated at a specific time  on a day varying from today to today + 7 days.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
-           <string>reset </string>
+           <string>schedule</string>
           </property>
          </widget>
         </item>
@@ -367,6 +376,9 @@
         </item>
         <item row="2" column="2">
          <widget class="smallPushButton" name="audioSelectButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The button controls the vibibility of a small window with the selectable audio channels.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>audio</string>
           </property>

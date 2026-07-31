@@ -205,7 +205,7 @@ QString h;
 	theScanTable			= nullptr;
 	mapViewer			= nullptr;
 	theDXDisplay. hide ();
-
+	newServices			= nullptr;
 	levelMeter			= nullptr;
 //	"globals" is introduced to reduce the number of parameters
 //	for the ofdmHandler
@@ -322,8 +322,8 @@ QString h;
 	         this, &RadioInterface::devSL_visibility);
 	connect (devicewidgetButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_devicewidgetButton);
-	connect (resetButton, &QPushButton::clicked,
-	         this, &RadioInterface::handle_resetButton);
+	connect (scheduleButton, &QPushButton::clicked,
+                 this, &RadioInterface::handle_scheduleButton);
 	connect (scanButton, &QPushButton::clicked,
 	         this, &RadioInterface::handle_scanButton);
 
@@ -560,8 +560,8 @@ QString h;
 	         this, &RadioInterface::color_httpButton);
 	connect	(scanButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_scanButton);
-	connect	(resetButton, &smallPushButton::rightClicked,
-	         this, &RadioInterface::color_resetButton);
+	connect	(scheduleButton, &smallPushButton::rightClicked,
+	         this, &RadioInterface::color_scheduleButton);
 	connect	(etiButton, &smallPushButton::rightClicked,
 	         this, &RadioInterface::color_etiButton);
 	connect	(audioSelectButton, &smallPushButton::rightClicked,
@@ -728,12 +728,13 @@ void	RadioInterface::startDirect	() {
 	theNewDisplay. set_dcRemoval (true);
 	channel. cleanChannel ();
 //
+
 	if (theDeviceHandler -> isFileInput ()) {
 	   newServices	-> startMode (FILEINPUT, 
 	                              get_serviceOrder (), 
 	                              !theConfigHandler ->
 	                                     get_audioServices_only ());
-	   theConfigHandler	-> enable_scheduler (false);
+	   enable_scheduler (false);
 	}
 	else 
 	if (!theConfigHandler -> get_loadSelection ()) {
@@ -741,18 +742,70 @@ void	RadioInterface::startDirect	() {
 	                             get_serviceOrder (),
 	                              !theConfigHandler ->
 	                                     get_audioServices_only ());
-	   theConfigHandler	-> enable_scheduler (true);
+	   enable_scheduler (true);
 	}
 	else {
-	   bool resetFlag = false;
-//	Basically, the choices here are
-//	1. open an existing file and use that'
-//	2. create a new file and name it;
-//	3. start with a fresh default input file
-//	4. this was a mistake, just start with the default file
-	   startList	(resetFlag);	// he does the querying
-	   if (resetFlag)
-	      theConfigHandler -> reset_loadSelection ();
+	   int option = fetchApproach ();
+	   QString fileName;
+
+	   switch (option) {
+	      case 0: {	// open existing file
+	         fileName =            
+	             QFileDialog::getOpenFileName (nullptr,
+                                                   "Open file ...",
+	                                           path_for_serviceLists,
+	                                           "*.xml");
+	         if (fileName != "") {
+	            newServices	-> closeOperation	();
+	            newServices	-> setDataBase		(fileName);
+	         }
+	         break;
+	      }
+	      case 1: {	// open existing file and set it as default
+	         fileName =            
+	                QFileDialog::getOpenFileName (nullptr,
+                                                      "Open file ...",
+	                                              path_for_serviceLists,
+	                                              "*.xml");
+	         if (fileName != "") {
+	            newServices	-> closeOperation ();
+	            newServices	-> setDataBase (fileName);
+	            store (theQSettings, DAB_GENERAL, "dbFileName", fileName);
+	         }
+	         break;
+	      }
+	      case 2: {	// create a new  default file
+	         fileName =
+	             QFileDialog::getSaveFileName (nullptr,
+                                                   "Open file ...",
+	                                           path_for_serviceLists,
+	                                           "*.xml");
+	         if (fileName != "") {
+	            newServices	-> closeOperation ();
+	            newServices	-> setDataBase (fileName);
+	         }
+	         break;
+	      }
+	      case 3: {	// empty current default
+	         newServices	-> closeOperation ();
+	         QFile f (newServices -> dbName ());
+	         if (f. open (QFile::ReadWrite)) {
+	            f. resize (0);
+	            f. close ();
+	         }
+	         newServices	-> setDataBase (newServices -> dbName ());
+	         break;
+	      }
+	      default:
+	      case 4:	// selecting this was a mistake
+	         break;
+	   }
+	   newServices -> startMode (ENSEMBLEVIEW,
+                                     get_serviceOrder (),
+                                     !theConfigHandler ->
+                                         get_audioServices_only ());
+	    theConfigHandler     -> reset_loadSelection ();
+	    enable_scheduler (true);
 	}
 //
 	startChannel (newServices -> currentChannel ());
@@ -3114,12 +3167,12 @@ QString	scanButton_color =
 QString scanButton_font	=
 	   value_s (theQSettings, COLOR_SETTINGS, SCAN_BUTTON + "_font",
 	                                              BLACK);
-QString resetButton_color =
-	   value_s (theQSettings, COLOR_SETTINGS, RESET_BUTTON + "_color",
-	                                             RED);
-QString resetButton_font =
-	   value_s (theQSettings, COLOR_SETTINGS, RESET_BUTTON + "_font",
-	                                              WHITE);
+QString scheduleButton_color =
+	   value_s (theQSettings, COLOR_SETTINGS, SCHEDULE_BUTTON + "_color",
+	                                             YELLOW);
+QString scheduleButton_font =
+	   value_s (theQSettings, COLOR_SETTINGS, SCHEDULE_BUTTON + "_font",
+	                                              BLACK);
 
 QString etiButton_color =
 	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
@@ -3155,9 +3208,9 @@ QString devicewidgetButton_font =
 	scanButton	->
 	              setStyleSheet (temp. arg (scanButton_color,
 	                                        scanButton_font));
-	resetButton	->
-	              setStyleSheet (temp. arg (resetButton_color,
-	                                        resetButton_font));
+	scheduleButton	->
+	              setStyleSheet (temp. arg (scheduleButton_color,
+	                                        scheduleButton_font));
 	etiButton	->
 	              setStyleSheet (temp. arg (etiButton_color,
 	                                        etiButton_font));
@@ -3185,8 +3238,8 @@ void	RadioInterface::color_scanButton	() {
 	setButtonColors (scanButton, SCAN_BUTTON);
 }
 
-void	RadioInterface::color_resetButton	() {
-	setButtonColors (resetButton, RESET_BUTTON);
+void	RadioInterface::color_scheduleButton	() {
+	setButtonColors (scheduleButton, SCHEDULE_BUTTON);
 }
 
 void	RadioInterface::color_etiButton	() {
@@ -3435,16 +3488,6 @@ void	RadioInterface::handle_dlText	(bool b) {
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile	== nullptr)
 	   return;
-}
-//
-void	RadioInterface::handle_resetButton	() {
-	if (!running. load())
-	   return;
-	QString	channelName	= channel. channelName;
-	stopScanning	();
-	stopChannel	();
-	newServices	-> clearAll ();
-	startChannel	(channelName);
 }
 //
 //	called from touching the snr symbol on the main window
@@ -4797,92 +4840,14 @@ void	RadioInterface::crc_error (bool b) {
 //	This function is called in the set-up whenever the
 //	getLoadSelection selector is set
 
-void	RadioInterface::startList (bool &resetFlag) {
-QString fileName;
+int	RadioInterface::fetchApproach () {
 selector ListSelector ("select option");
 	ListSelector. addtoList ("Open existing file");
 	ListSelector. addtoList ("Open existing file and set as default");
 	ListSelector. addtoList ("Create new servicelist");
 	ListSelector. addtoList ("Clear default servicelist");
 	ListSelector. addtoList ("Forget it");
-	int option = ListSelector. QDialog::exec ();
-	       
-	switch (option) {
-	   case 0: {	// open existing file
-	      fileName =            
-	             QFileDialog::getOpenFileName (nullptr,
-                                                   "Open file ...",
-	                                           path_for_serviceLists,
-	                                           "*.xml");
-	      if (fileName != "")
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                   fileName,
-	                                   get_serviceOrder (),
-	                                   !theConfigHandler ->
-	                                     get_audioServices_only (), false);
-	      else
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                   get_serviceOrder (),
-	                                   !theConfigHandler ->
-	                                     get_audioServices_only ());
-	      break;
-	   }
-	   case 1: {	// open existing file and set as default
-	      fileName =            
-	             QFileDialog::getOpenFileName (nullptr,
-                                                   "Open file ...",
-	                                           path_for_serviceLists,
-	                                           "*.xml");
-	      if (fileName != "") {
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                   fileName,
-	                                   get_serviceOrder (),
-	                                   !theConfigHandler ->
-	                                     get_audioServices_only (), false);
-	         store (theQSettings, DAB_GENERAL, "dbFileName", fileName);
-	      }
-	      else
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                   get_serviceOrder (),
-	                                   !theConfigHandler ->
-	                                     get_audioServices_only ());
-	      break;
-	   }
-	   case 2: {	// create a new file
-	      fileName =
-	             QFileDialog::getSaveFileName (nullptr,
-                                                   "Open file ...",
-	                                           path_for_serviceLists,
-	                                           "*.xml");
-	      if (fileName != "")  
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                   fileName,
-	                                   get_serviceOrder (),
-	                                   !theConfigHandler ->
-	                                     get_audioServices_only (), true);
-	      else
-	         newServices -> startMode (ENSEMBLEVIEW,
-	                                   get_serviceOrder (),
-	                                   !theConfigHandler ->
-	                                     get_audioServices_only ());
-	      break;
-	   }
-	   case 3:	// empty current default
-	      newServices -> startMode (ENSEMBLEVIEW, 
-	                                "",
-	                                get_serviceOrder (),
-	                                !theConfigHandler ->
-	                                     get_audioServices_only (), false);
-	      resetFlag	= true;
-	      break;
-	   default:
-	   case 4:	// selecting this was a mistake
-	      newServices -> startMode (ENSEMBLEVIEW,
-	                                get_serviceOrder (),
-	                                !theConfigHandler ->
-	                                     get_audioServices_only ());
-	      resetFlag	= true;
-	}
+	return  ListSelector. QDialog::exec ();
 }
 
 QString	RadioInterface::background_audioName (const audiodata &ad) {
@@ -4913,3 +4878,8 @@ void	RadioInterface::viewCarriers		(uint8_t showType) {
 	   theOfdmHandler	-> viewCarriers (showType);
 }
 
+ 
+void	RadioInterface::enable_scheduler         (bool b) {
+        scheduleButton  -> setEnabled (b);
+}
+ 

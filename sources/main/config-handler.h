@@ -62,8 +62,6 @@ public:
 	bool	dumpmode_set		();
 
 	
-	void	enable_scheduler	(bool);
-//
 //	a few others
 	void	showLoad		(float);
 	void	set_closeDirect		(bool);
@@ -94,7 +92,6 @@ private slots:
 //	first the color setters
 	void	color_fontButton	();
 	void	color_fontColorButton	();
-	void	color_scheduleButton	();
 	void	color_loadTableButton	();
 //
 	void	handle_orderAlfabetical		();

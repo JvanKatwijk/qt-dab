@@ -36,6 +36,8 @@ What is new in Qt-DAB-7.3.0
 
  - In Qt-DAB-7.3.0 the "technical window" is incorporated in a frame in the main window, with the option to "hide" it. Similarly, the spectrum scope has a "carriers" window that is part of the window with as option to make it (in)visible.
 
+ - in Qt-DAB-7.3.0 the **configuration and control window" was completely redesigned. The **schedule** button is (at last) moved to the main window, the **reset** button on the main window disappeared: it turned out that restarting Qt-DAB with the same of another input device does that job in an excellent way.
+
  - Since Qt-DAB-7.2  the qwt library is  not used anymore for the "scopes". The "compass" on the display for showing transmitters  was a widget in Qwt and is not (yet) reimplemented in Qt-DAB and not visible.
 The feature *clicking with the right hand mouse button* on the scopes remains, i.e. in three clicks you can set  (1) background color, (2) grid color and (3) color of the curve;
 
@@ -116,7 +118,7 @@ The icons on the top line behave more or less as in previous versions
 On the second line:
  * the **book style** icon controls the visibility of the most right part of the main window, housing the technical window.
 
- * the icon with label **EPG**, is shown in case an EPG/SPI service is detected in the currently selected channel (Note that the EPG/SPI service is NOT shown in the services list.)
+ * the icon with label **EPG**, is **ONLY** shown in case an EPG/SPI service is detected in the currently selected channel (Note that the EPG/SPI service is NOT shown in the services list.)
 
 On the third line some  technical details on the currently selected service
 shows, is shown. At the end on the right hand side the speaker symbol:
@@ -321,7 +323,7 @@ In the current selection there is
 Configuration and control
 --------------------------------------------------------------------------
 
-![7.2](/res/read_me/configuration-and-control.png)
+![7.3](/res/read_me/configuration-and-control.png)
 
 The **configuration and control** window is completely redesigned and
 selectors are grouped.

@@ -28,6 +28,7 @@
 #include	"database.h"
 
 	serviceBase::serviceBase	() {
+	changed	= false;
 }
 
 	serviceBase::~serviceBase	() {
@@ -44,6 +45,7 @@ void	serviceBase::add		(const serviceDescriptor &sd) {
 	channel. setName (sd. channelName);
 	channel. add (sd);
 	insert (channel);
+	changed		= true;
 }
 
 void	serviceBase::set_ensembleName	(const QString &ensembleName,
@@ -94,7 +96,6 @@ void	serviceBase::remove		(const QString &channel,
 void	serviceBase::insert		(const theChannel &channel) {
 	if (theData. size () == 0) {
 	   theData. insert (0, channel);
-	   fprintf (stderr, "Inserted in an empty list\n");
 	   return;
 	}
 
@@ -111,6 +112,7 @@ void	serviceBase::update		(const serviceDescriptor &sd, bool f) {
 	for (auto &ch: theData) {
 	   if (ch. channelName == sd. channelName) {
 	      ch. update (sd, f);
+	      changed = true;
 	      return;
 	   }
 	}
@@ -148,6 +150,7 @@ QDomDocument xmlBOM;
 	QFile f (fileName);
 	if (!f. open (QIODevice::ReadOnly)) 
 	   return;
+	dbName	= fileName;
 	xmlBOM. setContent (&f);
 	f. close ();
 	QDomElement root	= xmlBOM. documentElement ();
@@ -201,7 +204,8 @@ void	serviceBase::store	(const QString &fileName) {
 QDomDocument serviceDB;
 QDomElement root = serviceDB. createElement ("serviceList");
 
-	fprintf (stderr, "De db gaat sluiten\n");
+	if (!changed)
+	   return;
         serviceDB. appendChild (root);
 
         for (auto &channel : theData) { 
@@ -227,9 +231,12 @@ QDomElement root = serviceDB. createElement ("serviceList");
 	   return;
 
 	QTextStream stream (&file);
-	fprintf (stderr, "en daar gaan we\n");
 	stream << serviceDB. toString ();
 	file. close ();
+}
+
+void	serviceBase::reset	() {
+	clearTable ();
 }
 
 void	serviceBase::clearTable	() {

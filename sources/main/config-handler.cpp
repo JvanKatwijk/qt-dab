@@ -22,6 +22,7 @@
  */
 #include	<QSettings>
 #include	<QDebug>
+#include	<QMessageBox>
 #include	<QStringList>
 #include	<QStringListModel>
 #include	<QColorDialog>
@@ -35,7 +36,6 @@
 
 #define FONT_BUTTON             QString ("fontButton")
 #define FONTCOLOR_BUTTON        QString ("fontColorButton")
-#define SCHEDULE_BUTTON         QString ("scheduleButton")
 #define LOAD_TABLE_BUTTON       QString ("loadTableButton")
 
 
@@ -93,16 +93,12 @@ int	index_for_key (int key) {
 	         this, &configHandler::color_fontButton);
 	connect (fontColorButton, &smallPushButton::rightClicked,
 	         this, &configHandler::color_fontColorButton );
-	connect (scheduleButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_scheduleButton);
 	connect (fontButton, &QPushButton::clicked,
 	         this,  &configHandler::handle_fontSelect);
 	connect (fontColorButton, &QPushButton::clicked,
 	         this, &configHandler::handle_fontColorSelect);
 	connect (fontSizeSelector, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_fontSizeSelect);
-	connect (scheduleButton, &QPushButton::clicked,
-                 myRadioInterface, &RadioInterface::handle_scheduleButton);
 /////////////////////////////////////////////////////////////////////////////
 //	selector for left frame labeled "various"
 	variousLabel	-> setStyleSheet ("QLabel {color: yellow}");
@@ -385,7 +381,7 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_audioServices_only);
 
 	b = value_i (dabSettings, CONFIG_HANDLER,
-	                          "LOAD_SELECTION", 0) == 1;
+	                          LOAD_SELECTION, 0) == 1;
 	this -> loadSelection_selector -> setChecked (b);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -458,13 +454,6 @@ QString	fontColorButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              FONTCOLOR_BUTTON + "_color", BLACK);
 
-QString	scheduleButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                              SCHEDULE_BUTTON + "_color", YELLOW);
-QString scheduleButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS, 
-	                              SCHEDULE_BUTTON + "_font", BLACK);
-
 QString	loadTableButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                               LOAD_TABLE_BUTTON + "_color", RED);
@@ -483,10 +472,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (fontColorButton_color,
 	                                        fontColorButton_font));
 
-	this -> scheduleButton ->
-	              setStyleSheet (temp. arg (scheduleButton_color,
-	                                        scheduleButton_font));
-
 	this -> loadTableButton ->
 	              setStyleSheet (temp. arg (loadTableButton_color,
 	                                        loadTableButton_font));
@@ -498,10 +483,6 @@ void	configHandler::color_fontButton	() 	{
 
 void	configHandler::color_fontColorButton	() 	{
 	set_buttonColors (this -> fontColorButton, FONTCOLOR_BUTTON);
-}
-
-void	configHandler::color_scheduleButton	() 	{
-	set_buttonColors (this ->  scheduleButton, SCHEDULE_BUTTON);
 }
 
 void	configHandler::color_loadTableButton	() 	{
@@ -596,7 +577,7 @@ void	configHandler::reset_loadSelection	() {
 	loadSelection_selector	-> setEnabled (false);
 	loadSelection_selector	-> setChecked (false);
 	loadSelection_selector	-> setEnabled (true);
-	store (dabSettings, CONFIG_HANDLER, "LOAD_SELECTION", false);
+	store (dabSettings, CONFIG_HANDLER, LOAD_SELECTION, false);
 }
 
 bool	configHandler::upload_selector_active	() {
@@ -679,6 +660,8 @@ uint8_t x	= auto_http -> isChecked ();
 void	configHandler::handle_audioServices_only	(int state) {
 uint8_t x       = audioServices_only -> isChecked ();
         (void)state;
+        QMessageBox::warning (this, tr ("Warning"),
+                                       tr ("this setting has effect of the next (warm or cold) restart"));
         store (dabSettings, CONFIG_HANDLER, "audioServices_only", x);
 }
 
@@ -717,7 +700,6 @@ void	configHandler::handle_saveTitles	(int h) {
 bool	configHandler::get_saveTitles		() {
 	return saveTitlesSelector -> isChecked ();
 }
-
 //
 void	configHandler::handle_tracerButton	() {
 //	traceOn	= !traceOn;
@@ -748,17 +730,16 @@ void    configHandler::handle_dcRemovalSelector (int k) {
 void	configHandler::handle_loadSelection_selector (int k) {
 	(void)k;
 	bool b = this -> loadSelection_selector -> isChecked ();
-	store (dabSettings, CONFIG_HANDLER, "LOAD_SELECTION", b);
+	if (b) 
+	   QMessageBox::warning (this, tr ("Warning"),
+                                       tr ("This setting has effect on the next (re)start"));
+	store (dabSettings, CONFIG_HANDLER, LOAD_SELECTION, b);
 }
 
 void	configHandler::handle_updateChecker	(int k) {
 	(void)k;
 	bool b = this -> updateChecker -> isChecked ();
 	store (dabSettings, CONFIG_HANDLER, DO_UPDATECHECK, b ? 1 : 0);
-}
-
-void	configHandler::enable_scheduler		(bool b) {
-	scheduleButton	-> setEnabled (b);
 }
 
 void	configHandler::handle_dumpmodeSelector	(int k) {

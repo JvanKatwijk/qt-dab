@@ -62,7 +62,7 @@
 #define	COLOR_SETTINGS		"colorSettings"
 #define	SKIN_SETTING		"skin"
 #define	SAVE_SERVICE_SETTING	"saveService"
-
+#define	LOAD_SELECTION		"loadSelection"
 #define	HTTP_PORT		"mapPort"
 #define	MAP_TIMEOUT		"timeOut"
 #define	TPEG_PORT		"tpegPort"

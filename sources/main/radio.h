@@ -115,7 +115,7 @@ class	configHandler;
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
 #define SCAN_BUTTON		QString ("scanButton")   
-#define	RESET_BUTTON		QString ("resetButton")
+#define	SCHEDULE_BUTTON		QString ("scheduleButton")
 #define	AUDIOSELECT_BUTTON	QString ("audioSelectButton")
 #define ETI_BUTTON              QString ("etiButton")   
 #define DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")   
@@ -309,7 +309,7 @@ private:
 #endif
 	audioPlayer			*theAudioPlayer;
 //
-	void			startList		(bool &);
+	int			fetchApproach		();
 	void			connectGUI		();
 	void			disconnectGUI		();
 	void			cleanScreen		();
@@ -487,6 +487,7 @@ private:
 
 	void			localSelect_SS		(const QString &,
 	                                                 const QString &);
+     void    enable_scheduler        (bool);
 //
 public slots:
 //	signals from the configuration window
@@ -506,7 +507,6 @@ public slots:
 	void			handle_scheduleButton		();
 	void			handle_devicewidgetButton	();
 	void			handle_dlText			(bool);
-//	void			handle_snrButton		();
 	void			handle_loadTable		();
 	void			handle_correlationSelector	(int);
 	void			handle_LoggerButton		(int);
@@ -691,7 +691,6 @@ private slots:
 
 	void			handle_folderButton	();
 	void			devSL_visibility	();
-	void			handle_resetButton		();
 
 	void			setVolume		(int);
 	void			handle_snrLabel		();
@@ -716,9 +715,8 @@ private slots:
 	void			color_configButton	();
 	void			color_httpButton	();
 	void			color_scanButton	();
-	void			color_resetButton	();
+	void			color_scheduleButton	();
 	void			color_audioSelectButton	();
 	void			color_etiButton		();
 	void			color_devicewidgetButton		();
-
 };

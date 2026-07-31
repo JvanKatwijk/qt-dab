@@ -110,16 +110,6 @@
        </layout>
       </widget>
      </item>
-     <item>
-      <widget class="smallPushButton" name="scheduleButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>schedule</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>

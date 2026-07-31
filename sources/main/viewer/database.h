@@ -37,6 +37,7 @@ public:
 		~serviceBase	();
 	void	load		(const QString &fileName, bool withPackets);
 	void	store		(const QString &fileName);
+	void	reset		();
 	void	set_ensembleName	(const QString &, const QString &);
 	void	set_countryName	(const QString &, const QString &);
 	void	add		(const serviceDescriptor &);
@@ -50,5 +51,7 @@ QList<serviceDescriptor>
 	QList<theChannel> theData;
 private:
 	void	clearTable	();
+	bool 	changed;
+	QString	dbName;
 };
 

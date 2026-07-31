@@ -58,8 +58,11 @@ public:
 	                         QSettings	*serviceSettings,
 	                         QFrame *theFrame);
 		~serviceViewer		();
-	void	startMode		(int, const QString &,  int, bool, bool);
 	void	startMode		(int, int, bool);
+	void	closeOperation		();
+	void	setDataBase		(const QString &);
+	void	resetDb			();
+	QString	dbName			();
 	QString	currentChannel		();
 	int	getMode			();
 	void	set_channelIndex	(const QString &);

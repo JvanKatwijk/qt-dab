@@ -31,6 +31,7 @@
 #include	<QHBoxLayout>
 #include	<QScrollBar>
 #include	<QVBoxLayout>
+#include	<stdio.h>
 #include        "settingNames.h"
 #include        "settings-handler.h"
 #include	"view-handler.h"
@@ -66,13 +67,16 @@
 	theFrame	-> show ();
 	theTable	= new QTableWidget (0, 3);
 	theTable	 -> setSelectionBehavior (QAbstractItemView::SelectRows);
-	theTable	-> setColumnWidth	(0, 120);
-	theTable	-> setColumnWidth	(1, 5);
+	theTable	-> verticalHeader () -> setVisible (false);
+	theTable	-> setColumnWidth	(1, 115);
+	theTable	-> setColumnWidth	(0, 3);
 	theTable	-> setColumnWidth	(2, 1);
 	theTable	-> setHorizontalHeaderLabels (
-	                             QStringList () << tr ("service") <<
-	                                               tr ("ch") <<
+	                             QStringList () << tr ("ch") <<
+	                                               tr ("service") <<
 	                                               tr ("*"));
+//	theTable	-> horizontalHeader () ->
+//	                          setSectionResizeMode (QHeaderView::Stretch);
 	connect (theTable, &QTableWidget::cellClicked,
 	         this, &serviceViewer::clickOnService);
 	theWidget	-> setWidget (theTable);
@@ -147,46 +151,45 @@
 }
 
 void	serviceViewer::clearAll		() {
-	fprintf (stderr, "The database wordt killed\n");
 //	theDataBase. clearTable ();
 	clearTable ();
 	displayList. clear ();
 }
 //
-//	While in most cases the startMode function operates with
-//	the default filename, there are situations that
-//	a user selectable filename is used
-void	serviceViewer::startMode	(int Mode,
-	                                 const QString &fileName,
-	                                 int order, bool withPackets, bool ff) {
-	if (fileName == "") {
-	   this -> fileName	= defaultName;
-	   startSession (Mode, order, withPackets);
-	   return;
-	}
-	FILE *f;
-	if (ff)
-	   f	= fopen (fileName. toLatin1 (). data (), "w");
-	else
-	   f	= fopen (fileName. toLatin1 (). data (), "r");
-//	clearAll ();
-	if (f == nullptr) {
-//	   fclose (f);
-	   startMode (Mode, order, withPackets);
-	   return;
-	}
-	theDataBase. load (fileName, withPackets);
-	this	-> fileName	= fileName;
-	startSession (Mode, order, withPackets);
-}
 
 void	serviceViewer::startMode	(int Mode,
 	                                 int order, bool withPackets) {
 	clearTable ();
 	displayList. clear ();
-	this	-> fileName	= defaultName;
+//	this	-> fileName	= defaultName;
 	theDataBase. load (fileName, withPackets);
 	startSession (Mode, order, withPackets);
+}
+//
+//	The database and the display shoud be cleared
+void	serviceViewer::closeOperation	() {
+	clearTable	();
+	displayList. clear	();
+	theDataBase. reset ();
+}
+//
+//	ensire that the dB file is empty
+void	serviceViewer::resetDb		() {
+	FILE *f = fopen (fileName. toLatin1 (). data (), "a");
+	if (f == nullptr)
+	   return;
+	fseek (f, 0, SEEK_SET);
+	fclose (f);
+}
+
+//	The database should be set  to a new name, not opened yet
+void	serviceViewer::setDataBase	(const QString &fileName) {
+	this -> fileName	= fileName;
+}
+//
+//	db gtables cleared,
+QString	serviceViewer::dbName		() {
+	return fileName;
 }
 
 void	serviceViewer::startSession	(int Mode,
@@ -328,25 +331,28 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
 	viewLocker. lock ();
 	theTable     -> insertRow (pos);     // 
-	QTableWidgetItem *item_0 = new QTableWidgetItem; // serviceName
-	item_0           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	theTable	-> setItem (pos, 0, item_0);
-	theTable 	-> item (pos, 0) -> setFont (normalFont);
-	theTable 	-> item (pos, 0) -> setForeground (QColor(fontColor));
-
-        QTableWidgetItem *item_1 = new QTableWidgetItem; // channel
-	item_1           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	QTableWidgetItem *item_1 = new QTableWidgetItem; // serviceName
+	item_1           -> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	theTable	-> setItem (pos, 1, item_1);
 	theTable 	-> item (pos, 1) -> setFont (normalFont);
 	theTable 	-> item (pos, 1) -> setForeground (QColor(fontColor));
 
+        QTableWidgetItem *item_0 = new QTableWidgetItem; // channel
+	item_0           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	theTable	-> setItem (pos, 0, item_0);
+	theTable 	-> item (pos, 0) -> setFont (normalFont);
+	theTable 	-> item (pos, 0) -> setForeground (QColor(fontColor));
+
         QTableWidgetItem *item_2 = new QTableWidgetItem;
-	item_2		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	item_2		-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
 	theTable	-> setItem (pos, 2, item_2);
 
-	theTable	-> item (pos, 0) -> setText (sd. serviceName);
-	theTable	-> item (pos, 1) -> setText (sd. channelName);
+	theTable	-> item (pos, 1) -> setText (sd. serviceName);
+	theTable	-> item (pos, 0) -> setText (sd. channelName);
 	theTable	-> item (pos, 2) -> setText (sd. isFavorite ? "*" :"");
+	theTable	-> setColumnWidth	(1, 115);
+	theTable	-> setColumnWidth	(0, 3);
+	theTable	-> setColumnWidth	(2, 1);
 	viewLocker. unlock ();
 }
 
@@ -704,25 +710,25 @@ QString fontColor = value_s (viewSettings, ENSEMBLE,
 	   bool	isFavorite	= dt. isFavorite;
 	   int row = theTable -> rowCount ();
 	   theTable	-> insertRow (row);
-	   QTableWidgetItem *item_0 = new QTableWidgetItem;
-	   item_0	-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
-	   theTable -> setItem (row, 0, item_0);
-	   theTable -> item (row, 0) -> setText (serviceName);
-	   theTable -> item (row, 0) -> setFont (normalFont);
-	   theTable -> item (row, 0) -> setForeground (QColor(fontColor));
-	
 	   QTableWidgetItem *item_1 = new QTableWidgetItem;
-	   item_1	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	   item_1	-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
 	   theTable -> setItem (row, 1, item_1);
-	   theTable -> item (row, 1) -> setText (channel);
+	   theTable -> item (row, 1) -> setText (serviceName);
 	   theTable -> item (row, 1) -> setFont (normalFont);
 	   theTable -> item (row, 1) -> setForeground (QColor(fontColor));
+	
+	   QTableWidgetItem *item_0 = new QTableWidgetItem;
+	   item_0	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	   theTable -> setItem (row, 0, item_0);
+	   theTable -> item (row, 0) -> setText (channel);
+	   theTable -> item (row, 0) -> setFont (normalFont);
+	   theTable -> item (row, 0) -> setForeground (QColor(fontColor));
 
 	   QTableWidgetItem *item_2 = new QTableWidgetItem;
-	   item_2	-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
+	   item_2	-> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
 	   item_2	-> setFlags (Qt::ItemIsSelectable|Qt::ItemIsEnabled);
-	   theTable -> setItem (row, 2, item_2);
-	   theTable -> item (row, 2) -> setText (isFavorite ? "*" : "");
+	   theTable	-> setItem (row, 2, item_2);
+	   theTable	-> item (row, 2) -> setText (isFavorite ? "*" : "");
 
 	}
 	viewLocker. unlock ();
