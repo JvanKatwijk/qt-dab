@@ -194,7 +194,7 @@ The buttons:
  * the buttons labeled **controls**, **spectrum** just control the visibility of the **configuration and control** resp. the **spectrum scope* window;
  * the buttons **scan**, "audio" and "device" control the visibility of windows to control  **scanning**, selection of the audio channel, and controlling the selected device.
  * the button labeled **http** controls the http handler with which the transmitters detected can be made visible on a map;
- * the button labeled **reset** stops and restart processing;
+ * the button labeled **schedule** controls scheduling; if touched a small window shows where a schedule command or a service can be selected for starting at a specified time and date within the next 7 days;
  * the button labeled **eti** controls the **eti-processor**, i.e. a processor with which the input can be transformed into "eti" compliant data files;
 
 The bottom line

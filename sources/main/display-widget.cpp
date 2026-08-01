@@ -61,8 +61,21 @@
 //
 	myFrame. hide ();
 
+	correctionLabel	->
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	correctionLabel ->
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	freqErrorLabel ->
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	snrLabel	->
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	timeOffsetLabel -> 
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	clockOffsetLabel ->
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	unbalanceLabel	->
+	   setStyleSheet ("font-weight:bold; color: yellow");
 	dcOffset_display	-> show ();
-	dcOffset_label		-> show ();
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(plotArea,
 	                                                 512, dabSettings_p,
@@ -459,11 +472,11 @@ void	displayWidget::showDCOffset	(float dcOffset) {
 void	displayWidget::set_dcRemoval	(bool b) {
 	if (b) {
 	   dcOffset_display	-> show ();
-	   dcOffset_label	-> show ();
+	   unbalanceLabel	-> show ();
 	}
 	else {
 	   dcOffset_display	-> hide ();
-	   dcOffset_label	-> hide ();
+	   unbalanceLabel	-> hide ();
 	}
 }
 

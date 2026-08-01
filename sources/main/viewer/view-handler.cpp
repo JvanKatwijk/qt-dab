@@ -266,7 +266,7 @@ QString	serviceViewer::extractName	(uint32_t SId) {
 //	In ensembleview mode, services might be added
 void	serviceViewer::addService	(const descriptorType & ad) {
 QString channel	= channelSelector -> currentText ();
-	
+
 	for (auto &ssd: displayList) {
 	   if ((ssd. serviceName == ad. serviceName) &&
 	       (ssd. channelName == ad. channel))
@@ -287,14 +287,12 @@ QString channel	= channelSelector -> currentText ();
 	int index	= -1;
 	switch (theMode) {
 	   case ENSEMBLEVIEW:
-	      sd. channelName	= channel;
 	      index = add_to_displayList (sd);
 	      if (ensembleMode == ALL)
 	         theDataBase. add (sd);
 	      insert (sd, index);	// in the table
 	      break;
 	   case FILEINPUT:
-	      sd. channelName	= "FILE";
 	      sd. isFavorite	= false;
 	      displayList. push_back (sd);
 	      insert (sd, displayList. size () - 1);

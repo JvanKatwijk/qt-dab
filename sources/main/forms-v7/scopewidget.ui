@@ -276,7 +276,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QLabel" name="label_8">
+        <widget class="QLabel" name="correctionLabel">
          <property name="text">
           <string>correction</string>
          </property>
@@ -305,7 +305,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="freqErrorLabel">
          <property name="text">
           <string>freq error</string>
          </property>
@@ -329,7 +329,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QLabel" name="label_5">
+        <widget class="QLabel" name="snrLabel">
          <property name="text">
           <string>snr </string>
          </property>
@@ -358,7 +358,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="timeOffsetLabel">
          <property name="text">
           <string>time offset</string>
          </property>
@@ -387,7 +387,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="clockOffsetLabel">
          <property name="text">
           <string>clock offset</string>
          </property>
@@ -411,7 +411,7 @@
         </widget>
        </item>
        <item alignment="Qt::AlignmentFlag::AlignHCenter">
-        <widget class="QLabel" name="dcOffset_label">
+        <widget class="QLabel" name="unbalanceLabel">
          <property name="text">
           <string>IQ unbalance</string>
          </property>

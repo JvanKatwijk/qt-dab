@@ -858,7 +858,10 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	   return;		// should not happen
 	}
 
-	ad. channel	= channel. channelName;
+	if (channel. channelName == "")
+	   ad. channel	= "X";
+	else
+	   ad. channel	= channel. channelName;
 	newServices	-> addService (ad);
 
 	channel. nrServices ++;
@@ -1352,11 +1355,13 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	audioTeller ++;
 	if (audioTeller > 20) {
 	   audioTeller = 0;
-	   if (!techFrame -> isHidden ())
+	   if (!techFrame -> isHidden ()) {
 	      theTechWindow	-> showRate (rate, ps, sbr);
-	   audiorateLabel	-> setText (QString::number (rate));
-	   psLabel	-> setText (ps ? "ps" : " ");
-	   sbrLabel	-> setText (sbr ? "sbr" : " ");
+	      int displayRate =  rate / 1000;
+	      audiorateLabel	-> setText (QString::number (displayRate) + "kb");
+	      psLabel	-> setText (ps ? "ps" : " ");
+	      sbrLabel	-> setText (sbr ? "sbr" : " ");
+	   }
 	}
 //
 //	processing the audio
@@ -2414,7 +2419,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   setSoundLabel (true);
 	   programTypeLabel	-> setText (getProgramType (channel. internatTable, ad. programType));
 	   rateLabel		-> setText (QString::number (ad. bitRate) +
-	                                                        "kbit");
+	                                                        "kb");
 	   QString protL	= getProtectionLevel (ad. shortForm,
 	                                                    ad. protLevel);
 	   QString crL		= getCodeRate (ad. shortForm, ad. protLevel);
