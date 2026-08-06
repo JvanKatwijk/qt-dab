@@ -34,7 +34,6 @@
 	aacConf         = NeAACDecGetCurrentConfiguration (aacHandle);
 	aacInitialized  = false;
 	baudRate        = 48000;
-	concealDecay	= 1.0f;
 	
 	connect (this, &faadDecoder::newAudio,
 	         mr, &RadioInterface::newAudio);

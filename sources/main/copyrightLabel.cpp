@@ -93,7 +93,7 @@ QString	aacSupport;
 	char *faadIdentity = nullptr;
 	char *faadCopyright = nullptr;
 	NeAACDecGetVersion (&faadIdentity, &faadCopyright);
-	aacSupport = (faadIdentity != nullptr ? "Faad2 " + QString (faadIdentity) : QString ("Faad2")) +
+	aacSupport = (faadIdentity != nullptr ? "Faad2 " + QString (faadIdentity) : QString ("Faad2"));
 #endif
 
 QString aacComment;

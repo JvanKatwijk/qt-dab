@@ -743,7 +743,6 @@ QString	theValue	= "";
 
 
 bool	plutoHandler::load_iioFunctions	() {
-
 	iio_device_find_channel =
 	           (pfn_iio_device_find_channel)
 	                    pHandle -> resolve ("iio_device_find_channel");

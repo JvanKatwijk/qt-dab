@@ -42,7 +42,6 @@ typedef struct {
 	int	ExtensionSrIndex;
 } stream_parms;
 
-
 class	faadDecoder: public QObject{
 Q_OBJECT
 public:

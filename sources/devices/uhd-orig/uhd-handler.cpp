@@ -138,14 +138,14 @@ void	uhd_streamer::run () {
 	set_KhzOffset	(KhzOffset	-> value ());
 	connect (externalGain, qOverload<int>(QSpinBox::valueChanged),
 	         this, &uhdHandler::setExternalGain);
-	connect (KhzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_KhzOffset (int)));
+	connect (KhzOffset, qOverload<int>(valueChanged),
+	         this, &uhdHandler::set_KhzOffset);
 }
 
 	uhdHandler::~uhdHandler () {
 	storeWidgetPosition (uhdSettings, &myFrame, "uhdSettings");
 
-	if (theBuffer != NULL) {
+	if (theBuffer != nullptr) {
 	   stopReader();
 	   uhdSettings	-> beginGroup ("uhdSettings");
 	   uhdSettings	-> setValue ("externalGain", 

@@ -341,6 +341,7 @@ char header [5];
 
 void	riffReader::reset	() {
 	fsetpos (filePointer, &baseofData);
+	fprintf (stderr, "We gaan voor de volgende ronde\n");
 	remainingElements = nrElements;
 }
 

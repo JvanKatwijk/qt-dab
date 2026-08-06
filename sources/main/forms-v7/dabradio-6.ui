@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
+    <width>870</width>
     <height>500</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
-    <width>875</width>
+    <width>870</width>
     <height>500</height>
    </size>
   </property>
@@ -30,7 +30,7 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>215</width>
+       <width>214</width>
        <height>500</height>
       </size>
      </property>
@@ -46,13 +46,13 @@
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
       <size>
-       <width>396</width>
+       <width>392</width>
        <height>500</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>396</width>
+       <width>391</width>
        <height>500</height>
       </size>
      </property>
@@ -135,9 +135,22 @@
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG label is shown only if in the ensemble of the currently selected channel an EPG/SPI service is detected. Clicking on the label controls the visibility of the time table handler.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string/>
+           <string>epg</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <widget class="clickablelabel" name="serviceLabel">

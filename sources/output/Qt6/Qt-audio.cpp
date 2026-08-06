@@ -62,6 +62,7 @@
               outputDevices. push_back (deviceInfo);
            }
         }
+	shouldRun	= false;
 }
 
 	Qt_Audio::~Qt_Audio	() {
@@ -87,6 +88,7 @@ QStringList nameList;
 }
 //
 void	Qt_Audio::stop	() {
+	shouldRun	= false;
 	if (m_audioSink. isNull () || (theIODevice == nullptr)) 
 	   return;
 	m_audioSink	-> stop ();
@@ -107,9 +109,9 @@ void	Qt_Audio::restart	() {
 //	select the device
 	currentDevice = outputDevices. at (newDeviceIndex);
 	m_audioSink. reset (new QAudioSink (currentDevice, m_settings));
-//	QtAudio::Error err = m_audioSink -> error ();
-//	(void)err;
-//	fprintf (stderr, "Errorcode for new audiosink %d\n", (int)(err));
+	QtAudio::Error err = m_audioSink -> error ();
+	if ((int)err != 0)
+	   fprintf (stderr, "Errorcode for new audiosink %d\n", (int)(err));
 	connect (m_audioSink. get (), &QAudioSink::stateChanged,
                  this, &Qt_Audio::state_changed);
 	int currentVolume = value_i (audioSettings, SOUND_HANDLING, 
@@ -122,8 +124,10 @@ void	Qt_Audio::restart	() {
 	m_audioSink	-> setVolume	(linearVolume);
 	theIODevice	= new Qt_AudioDevice (mr); // will start as well
 	m_audioSink	-> start (theIODevice);
-//	err = m_audioSink -> error ();
-//	fprintf (stderr, "Errorcode for new audiosink start %d\n", (int)(err));
+	err = m_audioSink -> error ();
+	if ((int)err != 0)
+	   fprintf (stderr,	
+	            "Errorcode for new audiosink start %d\n", (int)(err));
 }
 
 qreal	Volume;
@@ -131,23 +135,33 @@ qreal	Volume;
 void	Qt_Audio::suspend	() {
 	if (m_audioSink == nullptr)
 	   return;
+	shouldRun	= false;
+//	fprintf (stderr, "suspend called with %d\n",
+//	                                 (int) (m_audioSink -> state ()));
 	if (m_audioSink -> state () == QAudio::ActiveState) {
 	   Volume	= m_audioSink -> volume ();
 	   m_audioSink	-> setVolume (0);
 	   m_audioSink -> suspend ();
 	   theIODevice	-> suspend ();
+//	   fprintf (stderr, "en uitgevoerd, state is %d\n",
+//	                                 (int) (m_audioSink -> state ()));
 	}
 }
 
 void	Qt_Audio::resume	() {
 	if (m_audioSink == nullptr)
 	   return;
-	if ((m_audioSink -> state () == QAudio::SuspendedState) ||
-	    (m_audioSink -> state () == QAudio::StoppedState))  {
+//	fprintf (stderr, "resume called met state %d\n",
+//	                          (int) (m_audioSink -> state ()));
+	shouldRun	= true;
+	if (m_audioSink -> state () == QAudio::SuspendedState)  {
 	   m_audioSink -> resume ();
 	   m_audioSink	-> setVolume (Volume);
 	   theIODevice -> resume ();
+	   return;
 	}
+	if (m_audioSink -> state () == QAudio::StoppedState)  
+	   restart ();
 }
 //      Note that - by convention - all audio samples here
 //      are in a rate 48000
@@ -164,15 +178,17 @@ void	Qt_Audio::state_changed (const QAudio::State newState) {
 	switch (newState) {
 	   case QAudio::ActiveState:
 	      break;
+	   case QAudio::StoppedState:
+	      fprintf (stderr, "State: Stopped with shouldRun %d\n", shouldRun);
+	      if (shouldRun)
+	         restart ();
+	      break;	
+	   case QAudio::SuspendedState:
+	      fprintf (stderr, "State: suspended\n");
+	      break;
 	   case QAudio::IdleState:
 	      if (m_audioSink -> error () != QAudio::NoError)
 //	         fprintf (stderr, "we found %d \n", (int)(m_audioSink -> error ()));
-	      break;
-	   case QAudio::StoppedState:
-//	      fprintf (stderr, "State: Stopped\n");
-	      break;	
-	   case QAudio::SuspendedState:
-//	      fprintf (stderr, "State: suspended\n");
 	      break;
 	}
 }

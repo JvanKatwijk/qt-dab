@@ -54,7 +54,7 @@ QString	colorString;
 	X_axis		= new QValueAxis();
 	X_axis	-> 	setLabelsColor (Qt::lightGray);
         colorString     = value_s (scopeSettings, scopeName,
-                                               "gridColor", "5e5c64");
+                                               "gridColor", "yellow");
 	X_axis	->	setGridLineColor (QColor (colorString));
 	X_axis	->	setGridLineVisible (true);
 	X_axis	->	setMinorGridLineVisible (false);

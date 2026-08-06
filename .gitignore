@@ -1,4 +1,5 @@
 ./obsolete/
+./sources/devices/obsolete/*
 ./Makefile
 .qmake.stash
 ./linux-bin/

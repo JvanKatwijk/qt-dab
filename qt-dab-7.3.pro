@@ -226,7 +226,6 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/dc-filter.h \
 	   ./sources/support/gui-elements/position-handler.h \
 	   ./sources/support/gui-elements/settings-handler.h \
-#	   ./sources/support/gui-elements/presetcombobox.h \
 	   ./sources/support/gui-elements/circular-button.h \
 	   ./sources/support/gui-elements/clickable-label.h \
 	   ./sources/support/gui-elements/clickable-chart.h \
@@ -377,7 +376,6 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/uploader.cpp \
 	   ./sources/support/gui-elements/settings-handler.cpp \
 	   ./sources/support/gui-elements/position-handler.cpp \
-	   ./sources/support/gui-elements/presetcombobox.cpp \
 	   ./sources/support/gui-elements/circular-button.cpp \
 	   ./sources/support/gui-elements/clickable-label.cpp \
 	   ./sources/support/gui-elements/clickable-chart.cpp \
@@ -467,7 +465,7 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
-#CONFIG		+= pluto-rxtx
+#CONFIG		+= pluto-rxtx	# incomplete and experimental
 CONFIG		+= pluto
 CONFIG		+= spyServer-16
 CONFIG		+= spyServer-8
@@ -508,7 +506,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.3
+        TARGET          = qt-dab-7.3.0
 	DEFINES		+= __BITS64__
 	DESTDIR		=  ./linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -542,8 +540,8 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= -lusb-1.0
 	LIBS		+= -lz
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
-	CONFIG		+= fdk-aac
-#	CONFIG		+= faad
+#	CONFIG		+= fdk-aac
+	CONFIG		+= faad
 #
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
@@ -680,6 +678,8 @@ soapy {
 }
 
 pluto-rxtx	{
+#
+#	Do not use this, very exoerimental and complete
 	DEFINES		+= HAVE_PLUTO_RXTX
 	QT		+= network
 	INCLUDEPATH	+= ./sources/devices/pluto-rxtx
@@ -859,6 +859,7 @@ spiral-no-sse	{
 
 faad	{
 	DEFINES		+= __WITH_FAAD__
+	HEADERS		+= ./sources/backend/audio/neaacdec.h
 	HEADERS		+= ./sources/backend/audio/faad-decoder.h 
 	SOURCES		+= ./sources/backend/audio/faad-decoder.cpp 
 	LIBS		+= -lfaad

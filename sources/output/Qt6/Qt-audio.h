@@ -76,6 +76,7 @@ private:
 	QList<QAudioDevice>     outputDevices;
         int32_t         outputRate;
 
+	bool		shouldRun;
 	QAudioDevice 	currentDevice;
 public slots:
 	void		state_changed		(const QAudio::State);

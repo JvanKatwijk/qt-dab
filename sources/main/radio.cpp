@@ -4531,11 +4531,14 @@ QString RadioInterface::findPicture (uint32_t SId, const QString &url) {
 	QString pict  = path_for_epg +
 	                QString::number (channel. Eid, 16). toUpper ()+
 	                "/" + url;
+
+	pict		= QDir::toNativeSeparators (pict);
 	if (fs::exists (pict. toUtf8 (). data ()))
 	   return pict;
 	pict  = path_for_epg +
 	        QString::number (channel. Eid, 16). toUpper () +
 	        "/" + QString::number (SId,16) + "_" + url;
+	pict	= QDir::toNativeSeparators (pict);
 	if (fs::exists (pict. toUtf8 (). data ()))
 	   return pict;
 	return "";

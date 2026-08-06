@@ -119,10 +119,10 @@ typedef struct {  	// 12 bytes, 3 * 4 bytes
 	         this, &rtl_tcp_client::sendGain);
 	connect  (hw_agc, &QRadioButton::clicked,
 	          this, &rtl_tcp_client::set_agc_hw);
-	connect  (sw_agc, SIGNAL (clicked()),
-	          this, SLOT (set_agc_sw ()));
-	connect  (agc_off, SIGNAL (clicked ()),
-	          this, SLOT (set_agc_off ()));
+	connect  (sw_agc, &QPushButton::clicked,
+	          this, &rtl_tcp_client::set_agc_sw);
+	connect  (agc_off, &QPushButton::clicked,
+	          this, &rtl_tcp_client::set_agc_off);
 
 	xml_dumping. store (false);
 	theState	-> setText("waiting to start");

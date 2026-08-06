@@ -134,26 +134,25 @@ struct stream_cfg {
 };
 
 
-class	plutoHandler: //public QObject,
+class	plutoHandler_rxtx: //public QObject,
 	              public deviceHandler, public Ui_plutorxtxWidget {
 Q_OBJECT
 public:
-			plutoHandler		(QSettings *,
+			plutoHandler_rxtx	(QSettings *,
 	                                         const QString &,
 	                                         int fmFreq = 0);
             		~plutoHandler		();
-	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency		();
-	bool		restartReader		(int32_t);
+	bool		restartReader		(int32_t,
+	                                            int skipped = 0);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
 	int32_t		Samples			();
 	void		sendSample		(std::complex<float>, float);
-	void		startTransmitter	(int);
-	void		stopTransmitter		();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
+	void		startTransmitter	(int);
+	void		stopTransmitter		();
 
 	void		show			();
 	void		hide			();
@@ -161,7 +160,7 @@ public:
 	QString		deviceName		();
 private:
 	bool			loadFunctions	();
-	HINSTANCE		Handle;
+	QLibrary		*pHandle;
 	QFrame			myFrame;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	RingBuffer<std::complex<float>>	_O_Buffer;
