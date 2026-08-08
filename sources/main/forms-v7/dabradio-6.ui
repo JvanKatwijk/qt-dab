@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>870</width>
-    <height>500</height>
+    <width>910</width>
+    <height>523</height>
    </rect>
   </property>
   <property name="maximumSize">
    <size>
-    <width>870</width>
-    <height>500</height>
+    <width>1200</width>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -24,14 +24,14 @@
     <widget class="QFrame" name="the_newFrame">
      <property name="minimumSize">
       <size>
-       <width>214</width>
-       <height>500</height>
+       <width>225</width>
+       <height>505</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>214</width>
-       <height>500</height>
+       <width>400</width>
+       <height>700</height>
       </size>
      </property>
      <property name="frameShape">
@@ -46,14 +46,14 @@
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
       <size>
-       <width>392</width>
+       <width>400</width>
        <height>500</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>391</width>
-       <height>500</height>
+       <width>450</width>
+       <height>700</height>
       </size>
      </property>
      <property name="frameShape">
@@ -94,6 +94,19 @@
            <string>dev</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <widget class="clickablelabel" name="localTimeDisplay">
@@ -253,7 +266,20 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="clickablelabel" name="pictureLabel">
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="resizableLabel" name="pictureLabel">
           <property name="text">
            <string>No Slide</string>
           </property>
@@ -455,8 +481,8 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>250</width>
-       <height>500</height>
+       <width>400</width>
+       <height>700</height>
       </size>
      </property>
      <property name="frameShape">
@@ -485,6 +511,11 @@
    <extends>QWidget</extends>
    <header>audioLevel-meter.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>resizableLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">resizablelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

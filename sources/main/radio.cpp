@@ -62,6 +62,9 @@
 #include	"audiosink.h"
 #endif
 
+#ifdef  HAVE_PLUTO_RXTX
+#include	"dab-streamer.h"
+#endif
 #include	"device-exceptions.h"
 #include	"settingNames.h"
 #include	"uploader.h"
@@ -242,6 +245,7 @@ QString h;
 //
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
+//	put the widgets in the right place and create the workers
 
 //	and init the up and down button, the select for details button and
 //	the button to show the directory with files 
@@ -348,8 +352,6 @@ QString h;
 	if (!QString (GITHASH). contains ("----"))
 	   version = version + " (" + QString (GITHASH) + ")";
 	setWindowTitle (version);
-//	put the widgets in the right place and create the workers
-	setPositionAndSize	(theQSettings, this, S_MAIN_WIDGET);
 //
 //	The others:
 	theConfigHandler		= new configHandler (this,
@@ -381,6 +383,7 @@ QString h;
 	}
 //	If no database in the homedirectory can be found,
 //	we load the "default" version
+	
 	if (!theTIIProcessor. has_tiiFile ()) {
 	   theTIIProcessor. reload (":res/txdata.tii");
 	}
@@ -395,9 +398,7 @@ QString h;
 	                                  this, theQSettings, &theTechData);
 	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 1) != 0) {
 	   techFrame	-> show ();
-	   this		-> adjustSize ();
 	}
-	this		-> adjustSize ();
 
 	if (value_i (theQSettings, DAB_GENERAL, NEW_DISPLAY_VISIBLE, 0) != 0)
 	   theNewDisplay. show ();
@@ -417,7 +418,7 @@ QString h;
 ////////////////////////////////////////////////////////////////////////////
 //	Where do we leave the audio out?
 	int latency	= value_i (theQSettings, SOUND_HANDLING, "latency", 5);
-	theAudioPlayer		= nullptr;
+	theAudioPlayer	= nullptr;
 //
 //	If we do not have a TCP streamer, we go for either the
 //	portaudio and the Qt_audio alternatives.
@@ -449,6 +450,9 @@ QString h;
 	      theAudioPlayer = nullptr;
 	   }
 	}
+//	
+//	All components are "in"
+	setPositionAndSize	(theQSettings, this, S_MAIN_WIDGET);
 //	we end up here if  Qt_Audio failed
 //	as it does on U20
 
@@ -631,7 +635,6 @@ QString h;
 //	we wait until one is selected
 //	nrServicesLabel	-> display (QString::number (0));
 	connectGUI ();
-//
 	this	-> cpuSupport	= 0;
 
 #ifdef	__ARCH_X86__
@@ -811,11 +814,10 @@ void	RadioInterface::startDirect	() {
 	startChannel (newServices -> currentChannel ());
 	int auto_http	= value_i (theQSettings, CONFIG_HANDLER, AUTO_HTTP, 0);
 	if ((auto_http != 0) && (localPos. latitude != 0)) {
-	   bool succ = autoStart_http ();
+	   bool succ	= autoStart_http ();
 	   if (succ)
 	      httpButton	-> setText ("http-on");
 	}
-
 	
 	bool do_updateCheck	=
 	       value_i (theQSettings, CONFIG_HANDLER, DO_UPDATECHECK, 1) != 0;
@@ -825,6 +827,7 @@ void	RadioInterface::startDirect	() {
 	            this, &RadioInterface::check_newVersion);
 	   updateCheck_timer. start (10000);
 	}
+
 	running. store (true);
 	if (!theNewDisplay. isHidden () &&
 	           theNewDisplay. does_showCarriers ())
@@ -841,7 +844,6 @@ void	RadioInterface::startDirect	() {
 void	RadioInterface::no_signal_found () {
 	channel_timeOut ();
 }
-//
 //
 //	There are three FIG types that are used to define 
 //	servicelabels, we create an entryfor each of them
@@ -954,7 +956,6 @@ void	RadioInterface::handle_FIG10 (const QString &v, uint16_t EId) {
 	   channelTimer. start (switchStay);
 	}
 }
-
 //
 ///////////////////////////////////////////////////////////////////////////
 //	
@@ -1372,13 +1373,13 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 	      theTechData. putDataIntoBuffer (vec, rate / 20);
 	      theTechWindow	-> audioDataAvailable (rate / 20, rate);
 	   }
-#ifdef	HAVE_PLUTO_RXTX
-	   if (theDabStreamer != nullptr)
-	      theDabStreamer	-> audioOut (vec, rate / 20, rate);
-#endif
 	   std::vector<float> tmpBuffer;
 	   int size = theAudioConverter. convert (vec, rate / 20,
 	                                               rate, tmpBuffer);
+#ifdef	HAVE_PLUTO_RXTX
+	   if (theDabStreamer != nullptr)
+	      theDabStreamer	-> audioOutput (tmpBuffer);
+#endif
 	   if (!muteTimer. isActive ())
 	      theAudioPlayer -> audioOutput (tmpBuffer. data (), size);
 	   static int vertrager = 0;
@@ -1805,11 +1806,21 @@ void	RadioInterface::setStereo	(bool b) {
 void	RadioInterface::handle_detailButton	() {
 	if (!running. load ())
 	   return;
-	if (techFrame -> isHidden ())
+
+	int wi		= techFrame	-> size (). width ();
+	int he		= techFrame	-> size (). height ();
+	int m_wi	= this -> size (). width ();
+	int m_he	= this -> size (). height ();
+	if (techFrame -> isHidden ()) {
 	   techFrame -> show ();
-	else
+	   this	-> resize (QSize (m_wi + wi, m_he));
+	}
+	else {
 	   techFrame -> hide ();
-	this	-> adjustSize ();
+	   this	-> resize (QSize (m_wi - wi, m_he));
+	}
+	
+//	this	-> adjustSize ();
 	store (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE,
 	                            techFrame -> isHidden () ? 0 : 1);
 }
@@ -3690,12 +3701,13 @@ int h   = 3 * w / 4;
 	if (channel. announcing)
 	   return;
 	pauzeTimer. stop ();
-	pictureLabel	-> setAlignment(Qt::AlignCenter);
-	if ((p. width () != 320) || (p. height () != 240))
-	   pictureLabel ->
-	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-	else
-	   pictureLabel -> setPixmap (p);
+	pictureLabel	-> setPicture (p);
+//	pictureLabel	-> setAlignment(Qt::AlignCenter);
+//	if ((p. width () != 320) || (p. height () != 240))
+//	   pictureLabel ->
+//	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+//	else
+//	   pictureLabel -> setPixmap (p);
 	pictureLabel -> setToolTip (t);
 	pictureLabel -> show ();
 }

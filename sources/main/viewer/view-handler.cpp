@@ -68,13 +68,14 @@
 	theTable	= new QTableWidget (0, 3);
 	theTable	 -> setSelectionBehavior (QAbstractItemView::SelectRows);
 	theTable	-> verticalHeader () -> setVisible (false);
-	theTable	-> setColumnWidth	(1, 115);
 	theTable	-> setColumnWidth	(0, 3);
 	theTable	-> setColumnWidth	(2, 1);
 	theTable	-> setHorizontalHeaderLabels (
 	                             QStringList () << tr ("ch") <<
 	                                               tr ("service") <<
 	                                               tr ("*"));
+	theTable	-> horizontalHeader () -> setSectionResizeMode (1, 
+	                                            QHeaderView::Stretch);
 //	theTable	-> horizontalHeader () ->
 //	                          setSectionResizeMode (QHeaderView::Stretch);
 	connect (theTable, &QTableWidget::cellClicked,

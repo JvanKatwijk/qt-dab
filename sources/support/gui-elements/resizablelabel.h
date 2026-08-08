@@ -1,10 +1,11 @@
 #
 /*
- *    Copyright (C) 2026
+ *    Copyright (C) 2016 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Computing
+ *    Lazy Chair Programming
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -19,30 +20,20 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "smallpushbutton.h"
-#include	<QMouseEvent>
 
-	smallPushButton::smallPushButton (QWidget *parent):
-	                                  QPushButton (parent) {
-}
+#pragma once
 
-	smallPushButton::~smallPushButton () {}
-
-QSize	smallPushButton::sizeHint ()const {
-QSize	temp = QPushButton::sizeHint ();
-//	return QSize (1 * temp. rwidth () / 4, temp. rheight ());
-	return QSize (1 * temp. rwidth () / 4, 7 * temp. rheight () / 8);
-}
-
-void	smallPushButton::mousePressEvent (QMouseEvent *e) {
-	if (e -> button () == Qt::RightButton) {
-	   emit rightClicked ();
-	}
-	else
-	if (e -> type () == QEvent::MouseButtonDblClick)
-	   emit doubleClicked ();
-	else
-	   emit clicked ();
-}
-
-
+#include	<QLabel>
+#include	<QPixmap>
+#include	<QResizeEvent>
+#
+class resizableLabel : public QLabel {
+private:
+	QPixmap thePicture;
+public:
+		resizableLabel	(QWidget *parent = Q_NULLPTR);
+		~resizableLabel	();
+	void	setPicture	(const QPixmap &p);
+protected:
+	void resizeEvent(QResizeEvent *event) override;
+};

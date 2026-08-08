@@ -38,7 +38,7 @@
 #include	"dab-streamer.h"
 #include	"pluto-rxtx-handler.h"
 static inline
-int64_t         getMyTime       (void) {
+int64_t         getMyTime       () {
 struct timeval  tv;
 
 	gettimeofday (&tv, NULL);
@@ -47,7 +47,7 @@ struct timeval  tv;
 
 		dabStreamer::dabStreamer (int		inRate,
 	                                  int		outRate,
-	                                  plutoHandler	*generator):
+	                                  plutoHandler_rxtx	*generator):
 	                                    lowPassFilter (21, 13000, inRate),
 	                                    lmrFilter	  (25, 38000 - 12000,
 	                                                       38000 + 12000,
@@ -97,33 +97,34 @@ struct timeval  tv;
 	running. store (true);
 }
 
-	dabStreamer::~dabStreamer (void) {
+	dabStreamer::~dabStreamer () {
 	stop ();
 
 	delete	sinTable;
 	delete	oscillatorTable;
 }
 
-void	dabStreamer::stop (void) {
+void	dabStreamer::stop () {
 	if (!running. load ())
 	   return;
 	running. store (false);
 	threadHandle. join ();
 }
 
-void	dabStreamer::audioOutput (float *v, int amount) {
-float lBuffer [2 * amount];
+void	dabStreamer::audioOutput (std::vector<float> &buffer) {
+int amount = buffer. size ();
+float lBuffer [amount];
 
-	while (pcmBuffer. GetRingBufferWriteAvailable () < 2 * amount)
+	while (pcmBuffer. GetRingBufferWriteAvailable () < amount)
 	   usleep (1000);
-	for (int i = 0; i < amount; i ++) {
-	   std::complex<float> x = std::complex<float> (v [2 * i],
-	                                                v [2 * i + 1]);
+	for (int i = 0; i < amount / 2; i ++) {
+	   std::complex<float> x = std::complex<float> (buffer [2 * i],
+	                                                buffer [2 * i + 1]);
 	   x	= lowPassFilter. Pass (x);
 	   lBuffer [2 * i] = real (x);
 	   lBuffer [2 * i + 1] = imag (x);
 	}
-	pcmBuffer. putDataIntoBuffer (lBuffer, 2 * amount);
+	pcmBuffer. putDataIntoBuffer (lBuffer, amount);
 }
 
 void	dabStreamer::addRds (const std::string v) {
@@ -200,7 +201,7 @@ static	double a0	= 5.309858008;
 static	double a1	= -4.794606188;
 static	double b1	= 0.4847481783;
 
-float sample;
+float theSample;
 struct sample_i {
 	float l;
 	float r;
@@ -290,7 +291,7 @@ int	i;
 //
 //	and build up the resulting sample
 	      float sym		= lowPass (fabs (symclk) * bit_d);
-	      sample		= 0.50	* lpr +
+	      theSample		= 0.50	* lpr +
 	                          0.05	* pilot +
 	                          0.35	* lmr * carrier + 
 //	                          lmrFilter. Pass (0.85	* lmr * carrier) + 
@@ -300,11 +301,11 @@ int	i;
 	   }
 	   else
 	   if (channels == 2) 
-	      sample	= preemp (samp_s.l + bo [i * 2]) / 2;
+	      theSample	= preemp (samp_s.l + bo [i * 2]) / 2;
 	   else
-	      sample	= preemp (samp_s.l);
+	      theSample	= preemp (samp_s.l);
 
-	   nextPhase += 5 * sample;
+	   nextPhase += 5 * theSample;
 	   if (nextPhase >= 2 * M_PI)
 	      nextPhase -= 2 * M_PI;
 	   if (nextPhase < 0)
@@ -315,7 +316,7 @@ int	i;
 //	may be nan, inf, or just too large
 	   int aa	= index % outRate;
 	   if ((0 <= aa) && (aa < outRate))
-	      generator -> sendSample (oscillatorTable [aa], sample);
+	      generator -> sendSample (oscillatorTable [aa], theSample);
 	   pos++;
 	}
 }

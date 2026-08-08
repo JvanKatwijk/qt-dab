@@ -34,26 +34,14 @@
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 #include	"ui_pluto-rxtx-widget.h"
-#include        <qwt.h>
-#include        <qwt_plot.h>
-#include        <qwt_plot_marker.h>
-#include        <qwt_plot_grid.h>
-#include        <qwt_plot_curve.h>
-#include        <qwt_plot_marker.h>
-#include        <qwt_color_map.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_textlabel.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include        <qwt_picker_machine.h>
-#include        <qwt_scale_widget.h>
+#include	<QLibrary>
 
 #include	"up-filter.h"
-#ifdef __MINGW32__
-#define GETPROCADDRESS  GetProcAddress
-#else
-#define GETPROCADDRESS  dlsym
-#endif
+//#ifdef __MINGW32__
+//#define GETPROCADDRESS  GetProcAddress
+//#else
+//#define GETPROCADDRESS  dlsym
+//#endif
 
 
 class	xml_fileWriter;
@@ -141,9 +129,8 @@ public:
 			plutoHandler_rxtx	(QSettings *,
 	                                         const QString &,
 	                                         int fmFreq = 0);
-            		~plutoHandler		();
-	bool		restartReader		(int32_t,
-	                                            int skipped = 0);
+            		~plutoHandler_rxtx	();
+	bool		restartReader		(int32_t, int skipped = 0);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
@@ -154,10 +141,13 @@ public:
 	void		startTransmitter	(int);
 	void		stopTransmitter		();
 
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
 	QString		deviceName		();
+
+        bool            providesDump            () override;
+        void            startDump               (const QString &,
+                                                       int) override;
+        void            stopDump                () override;
+
 private:
 	bool			loadFunctions	();
 	QLibrary		*pHandle;
@@ -182,13 +172,7 @@ private:
 	bool			debugFlag;
 	std::thread		threadHandle_r;
 	std::thread		threadHandle_t;
-	QwtPlotCurve		spectrumCurve;
-        QwtPlotGrid		grid;
-	QColor			gridColor;
-        QColor			curveColor;
-
 	float		window	[8192];
-	QwtPlot         *plotgrid;
 	std::complex<float>*	fftBuffer;
 
 	void		showBuffer		(float *);

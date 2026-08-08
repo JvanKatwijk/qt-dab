@@ -24,8 +24,7 @@
  *	from Jan Roemisch (github.com/maxx23), all rights acknowledged
  */
 
-#ifndef __DAB_STREAMER_H
-#define __DAB_STREAMER_H
+#pragma once
 
 #include	<thread>
 #include	<stdint.h>
@@ -33,7 +32,6 @@
 #include	<complex>
 #include	<atomic>
 #include	"ringbuffer.h"
-#include	"audio-base.h"
 #include	"ringbuffer.h"
 #include	"fir-filters.h"
 #include	"bandpass-filter.h"
@@ -131,14 +129,16 @@ typedef struct {
 	float	rightChannel;
 } floatSample;
 
-class dabStreamer : public audioBase {
+class	plutoHandler_rxtx;
+class dabStreamer  {
+//class dabStreamer : public audioBase {
 public:
-		dabStreamer		(int, int, plutoHandler *);
-		~dabStreamer		(void);
-	void	audioOutput		(float *, int);
+		dabStreamer		(int, int, plutoHandler_rxtx *);
+		~dabStreamer		();
+	void	audioOutput		(std::vector<float> &);
 	void	addRds			(const std::string);
 	void	addName			(const std::string);
-	void	stop			(void);
+	void	stop			();
 private:
 	LowPassFIR	lowPassFilter;
 	BandPassFIR	lmrFilter;
@@ -149,7 +149,7 @@ private:
 	std::thread	threadHandle;
 	int		inRate;
 	int		outRate;
-	plutoHandler	*generator;
+	plutoHandler_rxtx	*generator;
 	std::complex<float>	*oscillatorTable;
 	float		*sinTable;
 	void		modulateData	(float *, int, int);
@@ -186,5 +186,4 @@ private:
 	   	rds_group_schedule	(void);
 };
 
-#endif
 

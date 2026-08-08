@@ -31,9 +31,6 @@
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
-#include	<QPen>
-#include	"fft-complex.h"
-
 //	Description for the fir-filter is here:
 //#include	"ad9361.h"
 
@@ -204,8 +201,8 @@ int	ret;
 //}
 
 	plutoHandler_rxtx::plutoHandler_rxtx  (QSettings *s,
-	                             const QString &recorderVersion,
-	                             int	fmFrequency):
+	                                       const QString &recorderVersion,
+	                                       int	fmFrequency):
 	                                  myFrame (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024),
 	                                  _O_Buffer (4 * 1024 * 1024),
@@ -224,27 +221,15 @@ int	ret;
         myFrame. move (QPoint (x, y));
         myFrame. show ();
 
-#ifdef	__MINGW32__
-	wchar_t *libname = (wchar_t *)L"libiio.dll";
-        Handle  = LoadLibrary (libname);
-	if (Handle == NULL) {
-	  throw (pluto_exception ("Failed to libiio.dll"));
-	}
-#else
-	Handle		= dlopen ("libiio.so", RTLD_NOW);
-	if (Handle == NULL) {
-	   throw (pluto_exception ("we could not load libiio.so"));
-	}
-#endif
-
-	bool success			= loadFunctions ();
-	if (!success) {
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
-	   throw (pluto_exception ("could load all required lib functions"));
+	QString libraryString	= "libiio";
+	pHandle	= new QLibrary (libraryString);
+	pHandle	-> load ();
+	if (!pHandle -> isLoaded ()) {
+           throw (device_exception (std::string ("failed to open ") + libraryString. toStdString ()));
+        }
+	if (!loadFunctions ()) {
+           delete (pHandle);
+           throw (device_exception ("could not load one or more essential library functions"));
         }
 
 	this	-> ctx			= nullptr;
@@ -302,26 +287,25 @@ int	ret;
 	}
 
 	if (ctx == nullptr) {
-	   throw (pluto_exception ("No pluto device detected"));
+	   throw (device_exception ("No pluto device detected"));
 	}
 //
-
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   throw (pluto_exception ("no pluto devices detected"));
+	   throw (device_exception ("no pluto devices detected"));
 	}
 
 	if (!get_ad9361_stream_dev (ctx, TX, &tx)) {
-           throw (pluto_exception ("No TX device found"));
+           throw (device_exception ("No TX device found"));
         }
 
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
-	   throw (pluto_exception ("No RX device found"));
+	   throw (device_exception ("No RX device found"));
 	}
 
 	fprintf (stderr, "* Configuring AD9361 for streaming\n");
 	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
-	   throw (pluto_exception ("RX port 0 not found"));
+	   throw (device_exception ("RX port 0 not found"));
 	}
 
 	struct iio_channel *chn;
@@ -355,24 +339,24 @@ int	ret;
 
         if (!cfg_ad9361_streaming_ch (ctx, &tx_cfg, TX, 0)) {
            fprintf (stderr, "TX port 0 not found");
-	   throw (pluto_exception ("TX port 0 not found"));
+	   throw (device_exception ("TX port 0 not found"));
         }
 
 	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 0, &rx0_i)) {
-	   throw (pluto_exception ("RX  I channel not found"));
+	   throw (device_exception ("RX  I channel not found"));
 	}
 	
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 1, &rx0_q)) {
-	   throw (pluto_exception ("RX Q  channel not found"));
+	   throw (device_exception ("RX Q  channel not found"));
 	}
 
 	if (!get_ad9361_stream_ch (ctx, TX, tx, 0, &tx0_i)) {
-           throw (pluto_exception ("TX chan i not found"));
+           throw (device_exception ("TX chan i not found"));
         }
 
         if (!get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q)) {
-           throw (pluto_exception ("TX chan q not found"));
+           throw (device_exception ("TX chan q not found"));
         }
 
 	iio_channel_enable (rx0_i);
@@ -384,33 +368,37 @@ int	ret;
 	rxbuf = iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
 	   iio_context_destroy (ctx);
-	   throw (pluto_exception ("could not create RX buffer"));
+	   throw (device_exception ("could not create RX buffer"));
 	}
 
 	txbuf = iio_device_create_buffer (tx, 1024*1024, false);
 	if (txbuf == nullptr) {
 	   iio_context_destroy (ctx);
-	   throw (pluto_exception ("could not create TX buffer"));
+	   throw (device_exception ("could not create TX buffer"));
 	}
 
 	iio_buffer_set_blocking_mode (rxbuf, true);
 //	and be prepared for future changes in the settings
-	connect (gainControl, &QSpinBox::valueChanged,
-	         this, &plutohandler::set_gainControl);
-	connect (agcControl, QCheckBox::stateChanged,
+	connect (gainControl, qOverload<int>(&QSpinBox::valueChanged),
+	         this, &plutoHandler_rxtx::set_gainControl);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+        connect (agcControl, &QCheckBox::checkStateChanged,
+#else 
+        connect (agcControl, &QCheckBox::stateChanged,
+#endif
 	         this, &plutoHandler_rxtx::set_agcControl);
-	connect (debugButton, QPushButton::clicked,
+	connect (debugButton, &QPushButton::clicked,
 	         this, &plutoHandler_rxtx::toggle_debugButton);
-	connect (dumpButton, QPushButton::clicked,
+	connect (dumpButton, &QPushButton::clicked,
 	         this, &plutoHandler_rxtx::set_xmlDump);
 	connect (filterButton, &QPushButton::clicked,
 	         this, &plutoHandler_rxtx::set_filter);
 
-	connect (freqSetter, QSpinBox::valueChanged,
+	connect (freqSetter, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &plutoHandler_rxtx::set_fmFrequency);
 
 	connect (this, &plutoHandler_rxtx::new_gainValue,
-	         gainControl,  QSpinBox::setValue);
+	         gainControl,  &QSpinBox::setValue);
 	connect (this, &plutoHandler_rxtx::new_agcValue,
 	         agcControl, &QCheckBox::setChecked);
 	connect (this, &plutoHandler_rxtx::showSignal,
@@ -441,32 +429,7 @@ int	ret;
 	filterButton	-> setText ("filter off");
 	connected	= true;
 	state -> setText ("ready to go");
-//	set up for the display
 	fftBuffer	= new std::complex<float> [8192];
-        plotgrid        = transmittedSignal;
-        plotgrid        -> setCanvasBackground (QColor("black"));
-	gridColor	= QColor ("white");
-	curveColor	= QColor ("white");
-
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid. enableXMin (true);
-	grid. enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid. attach (plotgrid);
-   	spectrumCurve. setPen (QPen(curveColor, 2.0));
-	spectrumCurve. setOrientation (Qt::Horizontal);
-	spectrumCurve.  setBaseline	(get_db (0));
-	spectrumCurve. attach (plotgrid);
-	plotgrid        -> enableAxis (QwtPlot::yLeft);
-
 	for (int i = 0; i < 8192; i ++)
 	   window [i] =
 	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (8192 - 1)) +
@@ -494,27 +457,7 @@ int	ret;
 	iio_context_destroy (ctx);
 }
 //
-void	plutoHandler_rxtx::setVFOFrequency	(int32_t newFrequency) {
-int	ret;
-struct iio_channel *lo_channel;
 
-	rx_cfg. lo_hz = newFrequency;
-	ret	= get_lo_chan (ctx, RX, &lo_channel);
-	ret	= iio_channel_attr_write_longlong (lo_channel,
-	                                           "frequency",
-	                                           rx_cfg. lo_hz);
-	if (ret < 0) {
-	   fprintf (stderr, "cannot set local oscillator frequency\n");
-	}
-	if (debugFlag)
-	   fprintf (stderr, "frequency set to %d\n",
-	                                 (int)(rx_cfg. lo_hz));
-}
-
-int32_t	plutoHandler_rxtx::getVFOFrequency () {
-	return rx_cfg. lo_hz;
-}
-//
 //	If the agc is set, but someone touches the gain button
 //	the agc is switched off. Btw, this is hypothetically
 //	since the gain control is made invisible when the
@@ -533,12 +476,19 @@ struct iio_channel *chn;
 	         fprintf (stderr, "could not change gain control to manual");
 	      return;
 	   }
-	   
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+	   disconnect (agcControl, &QCheckBox::checkStateChanged,
+#else 
 	   disconnect (agcControl, &QCheckBox::stateChanged,
+#endif
 	               this, &plutoHandler_rxtx::set_agcControl);
 	   agcControl -> setChecked (false);
+#if QT_VERSION >= QT_VERSION_CHECK (6, 7, 0)
+	   connect (agcControl, &QCheckBox::checkStateChanged,
+#else 
 	   connect (agcControl, &QCheckBox::stateChanged,
-	            this, &plutoHandler_rxtx::set_agcControl (int)));
+#endif
+	            this, &plutoHandler_rxtx::set_agcControl);
 	}
 
 	ret = iio_channel_attr_write_longlong (chn, "hardwaregain", newGain);
@@ -592,11 +542,11 @@ struct iio_channel *gain_channel;
 	}
 }
 
-bool	plutoHandler_rxtx::restartReader	(int32_t freq) {
+bool	plutoHandler_rxtx::restartReader	(int32_t freq, int skipped) {
 int ret;
 iio_channel *lo_channel;
 iio_channel *gain_channel;
-
+	(void)skipped;
 	if (debugFlag)
 	   fprintf (stderr, "restart called with %d\n", freq);
 	if (!connected)		// should not happen
@@ -689,10 +639,10 @@ std::complex<int16_t> dumpBuf [CONV_SIZE + 1];
 	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
-	            localBuf [j]	= std::complex<float> (
-	                                   convBuffer [inpBase + 1] / inpRatio,
-	                                   convBuffer [inpBase],
-	                                                 (float)(1 - inpRatio));
+	            localBuf [j]	= 
+	                             convBuffer [inpBase + 1] * inpRatio *
+	                             convBuffer [inpBase] *
+	                                                 (float)(1 - inpRatio);
 	         }
 	         _I_Buffer. putDataIntoBuffer (localBuf,
 	                                        DAB_RATE / DIVIDER);
@@ -740,18 +690,6 @@ QString	plutoHandler_rxtx::deviceName	() {
 	return "ADALM PLUTO";
 }
 
-void	plutoHandler_rxtx::show	() {
-	myFrame. show	();
-}
-
-void	plutoHandler_rxtx::hide	() {
-	myFrame. hide	();
-}
-
-bool	plutoHandler_rxtx::isHidden	() {
-	return myFrame. isHidden ();
-}
-
 void	plutoHandler_rxtx::toggle_debugButton	() {
 	debugFlag	= !debugFlag;
 	debugButton -> setText (debugFlag ? "debug on" : "debug off");
@@ -773,57 +711,37 @@ bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-');
 }
 
-bool	plutoHandler_rxtx::setup_xmlDump () {
-QTime	theTime;
-QDate	theDate;
-QString saveDir = plutoSettings -> value ("saveDir_xmlDump",
-	                                   QDir::homePath ()). toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ("/")))
-	   saveDir += "/";
-	QString channel		= plutoSettings -> value ("channel", "xx").
-	                                                     toString ();
-	QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-	for (int i = 0; i < timeString. length (); i ++)
-	   if (!isValid (timeString. at (i)))
-	      timeString. replace (i, 1, "-");
-	QString suggestedFileName =
-	        saveDir + "pluto" + "-" + channel + "-" + timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName + ".uff",
-	                                         tr ("Xml (*.uff)"));
-	fileName        = QDir::toNativeSeparators (fileName);
-	xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-	
-	xmlWriter	= new xml_fileWriter (xmlDumper,
-	                                      12,
-	                                      "int16",
-	                                      RX_RATE,
-	                                      getVFOFrequency (),
-	                                      "pluto",
-	                                      "I",
-	                                      recorderVersion);
-	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	plutoSettings	-> setValue ("saveDir_xmlDump", saveDir);
+bool	plutoHandler_rxtx::providesDump	() {
 	return true;
 }
 
-void	plutoHandler_rxtx::close_xmlDump () {
+void	plutoHandler_rxtx::startDump (const QString &dumpName, int mode) {
+	QString channel		= plutoSettings -> value ("channel", "xx").
+	                                                     toString ();
+	try {
+	   xmlWriter	= new xml_fileWriter (dumpName,
+	                                      plutoSettings,
+	                                      channel,
+	                                      12,
+	                                      "int16",
+	                                      RX_RATE,
+	                                      lastFrequency,
+	                                      gainControl	-> value (),
+	                                      "pluto",
+	                                      "adalm",
+	                                      recorderVersion);
+	} catch (...) {
+	   return;
+	}
+}
+
+void	plutoHandler_rxtx::stopDump  () {
 	if (xmlDumper == nullptr)	// this can happen !!
 	   return;
 	dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;
-	fclose (xmlDumper);
 	xmlDumper	= nullptr;
 }
 
@@ -1185,39 +1103,4 @@ static int bufferC	= 0;
 	}
 }
 
-void	plutoHandler_rxtx::showBuffer (float *b) {
-static double X_axis [2048];
-static double Y_values [2048];
-static double endV [2048] = {0};
-
-	for (int i = 0; i < 8192; i ++)
-	   fftBuffer [i] = std::complex<float> (b [i] * window [i], 0);
-
-	Fft_transform (fftBuffer, 8192, false);
-	
-	for (int i = 0; i < 2048; i ++)
-	   X_axis [i] = i * 96 / 2048;
-
-	for (int i = 0; i < 2048; i ++) 
-	   Y_values [i] = abs (fftBuffer [i]);
-
-	for (int i = 0; i < 2048; i ++)
-	   if (!isnan (Y_values [i]) && !isinf (Y_values [i]))
-	      endV [i] = 0.1 * get_db (Y_values [i]) + 0.9 * endV [i];
-
-	float max	= -100;
-	for (int i = 0; i < 2048; i ++)
-	   if (endV [i] > max)
-	      max = endV [i];
-
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-	                                 X_axis [0], X_axis [2047]);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-	                                 get_db (0), get_db (max + 40));
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	spectrumCurve. setSamples (X_axis, endV, 2048);
-	plotgrid	-> replot();
-}
-	
 	
