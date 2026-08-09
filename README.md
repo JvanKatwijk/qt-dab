@@ -20,6 +20,7 @@ Table of Contents
 =================================================================
 * [What is new in Qt-DAB-7.3.0](#What-is-new-in-Qt-DAB-7.3.0)
 * [Windows and scopes](#windows-and-scopes)
+* [NEW: Managing service lists](#new-managing-service lists_
 * [Devices and device support](#devices-and-device-support)
 * [Handling packet services](#handling-packet-services)
 * [Scan control](#scan-cntrol)
@@ -414,6 +415,30 @@ in the services list, and the decoding is started.
 ![7.1](/res/read_me/process-management-3.png)
 
 Manually stopping the service is by clicking again on the servicename.
+
+------------------------------------------------------------------------
+New: Managing service lists
+========================================================================
+
+In **normal** operation, i.e. with on the **Configuration and control** window
+the selector **show only audio services** set, and reading a real device,
+the service list contains the (audio) services in all channels encountered.
+
+For me, the list contains just the channels I normally visit, and from which I listen to a selected subset of services.
+From time to time I do an experiment, where I want to maintain my service list,
+and where I want a separate service list.
+
+Qt_DAB supports maintaining several service lists. If the selector **load selection* is set, a small window appears **at the first subsequent (cold or hot) start.
+
+![7.3](/res/read_me/load-selection.png?raw=true)
+
+The window shows a selection:
+ * **Open existing file**, when selected a file selection menu shows on which a file can be selected with a previously built service file;
+ * **Open existing file and set as default**, as the previous case, but now the filename is set as default;
+ * **Create new servicelist**, when selected a new save file can be selected, the file will be empty of start. During processing it will be filled;
+ * **Clear default servicelist** does what the name suggests, the defeult service list is empties;
+ * **Forget it** is useful when you have second thoughts
+
 
 -------------------------------------------------------------------------
 Devices and device support
