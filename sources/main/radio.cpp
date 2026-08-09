@@ -63,6 +63,7 @@
 #endif
 
 #ifdef  HAVE_PLUTO_RXTX
+#include	"pluto-rxtx-handler.h"
 #include	"dab-streamer.h"
 #endif
 #include	"device-exceptions.h"
@@ -238,6 +239,10 @@ QString h;
 	                              "ipAddress", "127.0.0.1");
 	port		=  value_i (theQSettings, "DATAGRAM",
 	                              "port" 8888);
+#endif
+
+#ifdef	HAVE_PLUTO_RXTX
+	theDabStreamer	= nullptr;
 #endif
 //	set on top or not? checked at start up
 	if (value_i (theQSettings, DAB_GENERAL, "onTop", 0) == 1) 
@@ -1577,11 +1582,17 @@ void	RadioInterface::updateTimeDisplay() {
 deviceHandler	*RadioInterface::createDevice (const QString &s) {
 deviceHandler	*inputDevice = theDeviceChooser.
 	                               createDevice  (s, version);
-	
 	if (inputDevice	== nullptr) {
 	   return nullptr;
 	}
 
+#ifdef	HAVE_PLUTO_RXTX
+	if (s == "pluto_rxtx") {
+	   theDabStreamer = new dabStreamer (48000, 192000,
+                                            (plutoHandler_rxtx *)inputDevice);
+	   ((plutoHandler_rxtx *)inputDevice) -> startTransmitter (fmFrequency);
+	}
+#endif
 	channel. realChannel	= !inputDevice -> isFileInput ();
 	connect (inputDevice, &deviceHandler::frameClosed,
 	         this, &RadioInterface::handle_deviceFrame_closed);

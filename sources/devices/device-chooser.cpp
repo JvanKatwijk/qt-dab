@@ -62,13 +62,17 @@
 #include	"pluto-handler.h"
 #define	PLUTO_DEVICE		0207
 #endif
+#ifdef	HAVE_PLUTO_RXTX
+#include	"pluto-rxtx-handler.h"
+#define	PLUTO_DEVICE_RXTX	0210
+#endif
 #ifdef	HAVE_SOAPY
 #include	"soapy-handler.h"
-#define	SOAPY_DEVICE		0210
+#define	SOAPY_DEVICE		0211
 #endif
 #ifdef	HAVE_UHD
 #include	"uhd-handler.h"
-#define	USRP_DEVICE		0211
+#define	USRP_DEVICE		0212
 #endif
 #ifdef	__MINGW32__
 #endif
@@ -159,6 +163,10 @@
 #ifdef	HAVE_PLUTO
 	deviceList. push_back (deviceItem ("pluto", PLUTO_DEVICE));
 	addtoList ("pluto");
+#endif
+#ifdef	HAVE_PLUTO_RXTX
+	deviceList. push_back (deviceItem ("pluto_rxtx", PLUTO_DEVICE_RXTX));
+	addtoList ("pluto_rxtx");
 #endif
 #ifdef	HAVE_RTL_TCP
 	deviceList. push_back (deviceItem ("rtl_tcp", RTL_TCP_DEVICE));
@@ -298,6 +306,26 @@ int	deviceNumber	= getDeviceIndex (s);
 	      store (dabSettings, CONFIG_HANDLER,
 	                              "plutoContext", context);
 	      return new plutoHandler (dabSettings, version,
+	                                         context, theErrorLogger);
+	   }
+#endif
+#ifdef	HAVE_PLUTO_RXTX
+	   case PLUTO_DEVICE_RXTX: {
+	      bool ok = false;
+	      QString context =
+	          value_s (dabSettings, CONFIG_HANDLER,
+	                              "plutoContext", "pluto.local");
+	      context = QInputDialog::
+	                    getText (this, tr("QInputDialog::getText()"),
+                                     tr("pluto context:"),
+	                             QLineEdit::Normal,
+                                     context, &ok);
+	      if (!ok || context.isEmpty ())
+	         return nullptr;
+	      store (dabSettings, CONFIG_HANDLER,
+	                              "plutoContext", context);
+	      
+	      return new plutoHandler_rxtx (dabSettings, version,
 	                                         context, theErrorLogger);
 	   }
 #endif

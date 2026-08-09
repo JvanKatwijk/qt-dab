@@ -28,8 +28,11 @@
 #include	<QDebug>
 #include	<QFileDialog>
 #include	"pluto-rxtx-handler.h"
-#include	"xml-filewriter.h"
 #include	"device-exceptions.h"
+#include	"errorlog.h"
+#include        "settingNames.h"
+#include        "settings-handler.h"
+#include	"position-handler.h"
 
 //	Description for the fir-filter is here:
 //#include	"ad9361.h"
@@ -200,37 +203,58 @@ int	ret;
 //                                                  unsigned long wnom_rx);
 //}
 
-	plutoHandler_rxtx::plutoHandler_rxtx  (QSettings *s,
-	                                       const QString &recorderVersion,
-	                                       int	fmFrequency):
-	                                  myFrame (nullptr),
-	                                  _I_Buffer (4 * 1024 * 1024),
-	                                  _O_Buffer (4 * 1024 * 1024),
-	                                  theFilter (21, 192000, FM_RATE) {
+///////////////////////////////////////////////////////////////////////////
+
+	plutoHandler_rxtx::
+	        plutoHandler_rxtx  (QSettings *s,
+	                            const QString &recorderVersion,
+	                            const QString &content,
+	                            errorLogger *theLogger,
+	                            int fmFrequency):
+	                                     myFrame (nullptr),
+	                                     _I_Buffer (4 * 1024 * 1024),
+	                                     _O_Buffer (4 * 1024 * 1024),
+	                                     theFilter (21, 192000, FM_RATE) {
 	
 	plutoSettings			= s;
+	this	-> theErrorLogger	= theLogger;
 	this	-> recorderVersion	= recorderVersion;
-	if (fmFrequency == 0)
-	   fmFrequency = 110000;
+	if (fmFrequency != 0)
+	   this	-> fmFrequency		= 110000;
 	this	-> fmFrequency		= fmFrequency * KHz (1);
-	plutoSettings -> beginGroup ("plutoSettings");
-        int x   = plutoSettings -> value ("position-x", 100). toInt ();
-        int y   = plutoSettings -> value ("position-y", 100). toInt ();
-        plutoSettings -> endGroup ();
-        setupUi (&myFrame);
-        myFrame. move (QPoint (x, y));
-        myFrame. show ();
+	setupUi (&myFrame);
+        setPositionAndSize (s, &myFrame, PLUTO_SETTINGS);
+        myFrame. show   ();
 
-	QString libraryString	= "libiio";
-	pHandle	= new QLibrary (libraryString);
-	pHandle	-> load ();
+
+#ifdef  __MINGW32__
+        const char * libName = "libiio.dll";
+#else
+        const char * libName= "libiio.so.0";
+#endif
+
+        pHandle         = new QLibrary (libName);
+        if (pHandle == nullptr) {
+           throw device_exception ("could not load " + std::string (libName));
+        }
+
+        pHandle -> load ();
 	if (!pHandle -> isLoaded ()) {
-           throw (device_exception (std::string ("failed to open ") + libraryString. toStdString ()));
+	   throw device_exception ("Failed to open " + std::string (libName));
         }
-	if (!loadFunctions ()) {
-           delete (pHandle);
-           throw (device_exception ("could not load one or more essential library functions"));
+
+        bool success                    = load_iioFunctions ();
+        if (!success) {
+           delete pHandle;
+           throw device_exception ("could not load all required lib functions");
         }
+
+	char git_tag [8];
+        unsigned int major;
+        unsigned int minor;
+        iio_library_get_version (&major, &minor, git_tag);
+        fprintf (stderr, "Library version %d %d %s\n",
+                                     major, minor, git_tag);
 
 	this	-> ctx			= nullptr;
 	this    -> rxbuf                = nullptr;
@@ -251,17 +275,19 @@ int	ret;
 	tx_cfg. rfport                  = "A";
 
 
-	plutoSettings	-> beginGroup ("plutoSettings");
-	bool agcMode	=
-	             plutoSettings -> value ("pluto-agc", 0). toInt () == 1;
-	int  gainValue	=
-	             plutoSettings -> value ("pluto-gain", 50). toInt ();
-	debugFlag	=
-	             plutoSettings -> value ("pluto-debug", 0). toInt () == 1;
-	save_gainSettings =
-	             plutoSettings -> value ("save_gainSettings", 1). toInt () != 0;
-	filterOn	= true;
-	plutoSettings	-> endGroup ();
+	bool agcMode    =
+                     value_i (plutoSettings, PLUTO_SETTINGS,
+                                           "pluto-agc", 0) != 0;
+        int  gainValue  =
+                     value_i (plutoSettings, PLUTO_SETTINGS,
+                                           "pluto-gain", 50);
+        debugFlag       =
+                     value_i (plutoSettings, PLUTO_SETTINGS,
+                                           "pluto-debug", 0)!= 0;
+        save_gainSettings =
+                     value_i (plutoSettings, PLUTO_SETTINGS,
+                                           "save_gainSettings", 1) != 0;
+        filterOn        = true;
 
 	if (debugFlag)
 	   debugButton	-> setText ("debug on");
@@ -389,8 +415,6 @@ int	ret;
 	         this, &plutoHandler_rxtx::set_agcControl);
 	connect (debugButton, &QPushButton::clicked,
 	         this, &plutoHandler_rxtx::toggle_debugButton);
-	connect (dumpButton, &QPushButton::clicked,
-	         this, &plutoHandler_rxtx::set_xmlDump);
 	connect (filterButton, &QPushButton::clicked,
 	         this, &plutoHandler_rxtx::set_filter);
 
@@ -401,8 +425,6 @@ int	ret;
 	         gainControl,  &QSpinBox::setValue);
 	connect (this, &plutoHandler_rxtx::new_agcValue,
 	         agcControl, &QCheckBox::setChecked);
-	connect (this, &plutoHandler_rxtx::showSignal,
-	         this, &plutoHandler_rxtx::handleSignal);
 //	set up for interpolator
 	float	denominator	= float (DAB_RATE) / DIVIDER;
 	float inVal		= float (RX_RATE) / DIVIDER;
@@ -412,8 +434,6 @@ int	ret;
 	                     i * (inVal / denominator) - mapTable_int [i];
 	}
 	convIndex       = 0;
-	dumping. store	(false);
-	xmlDumper	= nullptr;
 	running. store (false);
 	transmitting. store (false);
 	int enabled;
@@ -604,7 +624,6 @@ iio_channel *gain_channel;
 void	plutoHandler_rxtx::stopReader() {
 	if (!running. load())
 	   return;
-	close_xmlDump	();
 	if (save_gainSettings)
 	   record_gainSettings (rx_cfg. lo_hz/ MHz (1));
 	running. store (false);
@@ -634,8 +653,6 @@ std::complex<int16_t> dumpBuf [CONV_SIZE + 1];
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
 	      if (convIndex > CONV_SIZE) {
-	         if (dumping. load ())
-	            xmlWriter -> add (&dumpBuf [1], CONV_SIZE);
 	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
@@ -695,54 +712,13 @@ void	plutoHandler_rxtx::toggle_debugButton	() {
 	debugButton -> setText (debugFlag ? "debug on" : "debug off");
 }
 
-void	plutoHandler_rxtx::set_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
-	}
-	else {
-	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
-	}
-}
-
 static inline
 bool	isValid (QChar c) {
 	return c. isLetterOrNumber () || (c == '-');
 }
 
 bool	plutoHandler_rxtx::providesDump	() {
-	return true;
-}
-
-void	plutoHandler_rxtx::startDump (const QString &dumpName, int mode) {
-	QString channel		= plutoSettings -> value ("channel", "xx").
-	                                                     toString ();
-	try {
-	   xmlWriter	= new xml_fileWriter (dumpName,
-	                                      plutoSettings,
-	                                      channel,
-	                                      12,
-	                                      "int16",
-	                                      RX_RATE,
-	                                      lastFrequency,
-	                                      gainControl	-> value (),
-	                                      "pluto",
-	                                      "adalm",
-	                                      recorderVersion);
-	} catch (...) {
-	   return;
-	}
-}
-
-void	plutoHandler_rxtx::stopDump  () {
-	if (xmlDumper == nullptr)	// this can happen !!
-	   return;
-	dumping. store (false);
-	usleep (1000);
-	xmlWriter	-> computeHeader ();
-	delete xmlWriter;
-	xmlDumper	= nullptr;
+	return false;
 }
 
 void	plutoHandler_rxtx::record_gainSettings (int freq) {
@@ -872,15 +848,14 @@ std::complex<float> buf [FM_RATE / 192000];
 	_O_Buffer. putDataIntoBuffer (buf, FM_RATE / 192000);
 }
 
-bool	plutoHandler_rxtx::loadFunctions	() {
-	connect (this, &plutoHandler_rxtx::showSignal,
-	         this, &plutoHandler_rxtx::handleSignal);
-
+bool	plutoHandler_rxtx::load_iioFunctions	() {
 	iio_device_find_channel =
 	                (pfn_iio_device_find_channel)
 	                     pHandle -> resolve ("iio_device_find_channel");
 	if (iio_device_find_channel == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_device_find_channel");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_device_find_channel");
+
 	   return false;
 	}
 
@@ -888,7 +863,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_create_default_context)
 	                     pHandle -> resolve ("iio_create_default_context");
 	if (iio_create_default_context == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_create_default_context");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_create_default_context");
 	   return false;
 	}
 
@@ -896,7 +872,9 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_create_local_context)
 	                    pHandle -> resolve ("iio_create_local_context");
 	if (iio_create_local_context == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_create_local_context");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_create_local_context");
+
 	   return false;
 	}
 
@@ -904,7 +882,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_create_network_context)
 	                     pHandle -> resolve ("iio_create_network_context");
 	if (iio_create_network_context == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_create_network_context");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_create_network_context");
 	   return false;
 	}
 
@@ -912,7 +891,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_context_get_name)
 	                     pHandle -> resolve ("iio_context_get_name");
 	if (iio_context_get_name == nullptr) {
-	   fprintf (stderr, "could not load %s\n", iio_context_get_name);
+	   theErrorLogger -> add ("Pluto",
+                             "could not load  iio_context_get_name");
 	   return false;
 	}
 
@@ -920,7 +900,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_context_get_devices_count)
 	                     pHandle -> resolve ("iio_context_get_devices_count");
 	if (iio_context_get_devices_count == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_context_get_devices_count");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_context_get_devices_count");
 	   return false;
 	}
 
@@ -928,7 +909,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_context_find_device)
 	                     pHandle -> resolve ("iio_context_find_device");
 	if (iio_context_find_device == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_context_find_device");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_context_find_device");
 	   return false;
 	}
 
@@ -936,7 +918,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_device_attr_read_bool)
 	                     pHandle -> resolve ("iio_device_attr_read_bool");
 	if (iio_device_attr_read_bool == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_device_attr_read_bool");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_device_attr_read_bool");
 	   return false;
 	}
 
@@ -944,7 +927,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_device_attr_write_bool)
 	                     pHandle -> resolve ( "iio_device_attr_write_bool");
 	if (iio_device_attr_write_bool == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_bool");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_device_attr_write_bool");
 	   return false;
 	}
 
@@ -952,7 +936,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_channel_attr_read_bool)
 	                     pHandle -> resolve ("iio_channel_attr_read_bool");
 	if (iio_channel_attr_read_bool == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_read_bool");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_channel_attr_read_bool");
 	   return false;
 	}
 
@@ -960,7 +945,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_channel_attr_write_bool)
 	                      pHandle -> resolve ("iio_channel_attr_write_bool");
 	if (iio_channel_attr_write_bool == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_bool");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_channel_attr_write_bool");
 	   return false;
 	}
 
@@ -968,7 +954,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_channel_enable)
 	                     pHandle -> resolve ("iio_channel_enable");
 	if (iio_channel_enable == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_channel_enable");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_channel_enable");
 	   return false;
 	}
 
@@ -976,7 +963,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_channel_attr_write)
 	                     pHandle -> resolve ("iio_channel_attr_write");
 	if (iio_channel_attr_write == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_channel_attr_write");
 	   return false;
 	}
 
@@ -984,7 +972,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_channel_attr_write_longlong)
 	                     pHandle -> resolve ("iio_channel_attr_write_longlong");
 	if (iio_channel_attr_write_longlong == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_longlong");
+         theErrorLogger -> add ("Pluto",
+                             "could not load iio_channel_attr_write_longlong");
 	   return false;
 	}
 
@@ -992,7 +981,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_device_attr_write_longlong)
 	                    pHandle -> resolve ("iio_device_attr_write_longlong");
 	if (iio_device_attr_write_longlong == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_longlong");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_device_attr_write_longlong");
 	   return false;
 	}
 
@@ -1000,7 +990,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_device_attr_write_raw)
 	                    pHandle -> resolve ("iio_device_attr_write_raw");
 	if (iio_device_attr_write_raw == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_raw");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_device_attr_write_raw");
 	   return false;
 	}
 
@@ -1008,15 +999,17 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_device_create_buffer)
 	                     pHandle -> resolve ("iio_device_create_buffer");
 	if (iio_device_create_buffer == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_device_create_buffer");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_device_create_buffer");
 	   return false;
 	}
 
 	iio_buffer_set_blocking_mode =
 	              (pfn_iio_buffer_set_blocking_mode)
-	                     pHandle -> resolve ("iio_buffer_set_blocking_mode");
+	                    pHandle -> resolve ("iio_buffer_set_blocking_mode");
 	if (iio_buffer_set_blocking_mode == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_set_blocking_mode");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_set_blocking_mode");
 	   return false;
 	}
 
@@ -1024,7 +1017,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_destroy)
 	                     pHandle -> resolve ("iio_buffer_destroy");
 	if (iio_buffer_destroy == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_destroy");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_destroy");
 	   return false;
 	}
 
@@ -1032,7 +1026,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	               (pfn_iio_context_destroy)
 	                      pHandle -> resolve ("iio_context_destroy");
 	if (iio_context_destroy == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_context_destroy");
+           theErrorLogger -> add ("Pluto",
+                             "could not load iio_context_destroy");
 	   return false;
 	}
 
@@ -1040,7 +1035,9 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_refill)
 	                     pHandle -> resolve ("iio_buffer_refill");
 	if (iio_buffer_refill == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_refill");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_refill");
+
 	   return false;
 	}
 
@@ -1048,7 +1045,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_start)
 	                     pHandle -> resolve ("iio_buffer_start");
 	if (iio_buffer_start == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_start");
+	   theErrorLogger -> add ("Pluto",
+	                          "could not load iio_buffer_start");
 	   return false;
 	}
 
@@ -1056,7 +1054,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_step)
 	                     pHandle -> resolve ("iio_buffer_step");
 	if (iio_buffer_step == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_step");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_step");
 	   return false;
 	}
 
@@ -1064,7 +1063,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_end)
 	                     pHandle -> resolve ("iio_buffer_end");
 	if (iio_buffer_end == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_end");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_end");
 	   return false;
 	}
 
@@ -1072,7 +1072,8 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_push)
 	                     pHandle -> resolve ("iio_buffer_push");
 	if (iio_buffer_push == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_push");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_push");
 	   return false;
 	}
 
@@ -1080,27 +1081,48 @@ bool	plutoHandler_rxtx::loadFunctions	() {
 	              (pfn_iio_buffer_first)
 	                     pHandle -> resolve ("iio_buffer_first");
 	if (iio_buffer_first == nullptr) {
-	   fprintf (stderr, "could not load %s\n", "iio_buffer_first");
+	   theErrorLogger -> add ("Pluto",
+                             "could not load iio_buffer_first");
+
 	   return false;
 	}
-	return true;
+
+	iio_library_get_version =
+                       (pfn_iio_library_get_version) 
+                                 pHandle -> resolve ("iio_library_get_version");
+        if (iio_library_get_version == nullptr) {
+           theErrorLogger -> add ("Pluto", 
+                             "could not load iio_library_get_version");
+           return false;
+        }
+
+        iio_strerror =
+                       (pfn_iio_strerror)
+                                  pHandle -> resolve ("iio_strerror");
+        if (iio_strerror == nullptr) { 
+           theErrorLogger -> add ("Pluto",
+                             "could not load iio_strerror");
+           return false;
+        }
+        return true;
+
 }
 
 void	plutoHandler_rxtx::handleSignal (float s) {
-static float buffer [8192];
-static int bufferP	= 0;
-static int bufferC	= 0;
-
-	buffer [bufferP] = s;
-	bufferP ++;
-	if (bufferP >= 8192) {
-	   bufferP = 0;
-	   bufferC ++;
-	   if (bufferC >= 4) {
-	      bufferC = 0;
-	      showBuffer (buffer);
-	   }
-	}
+//static float buffer [8192];
+//static int bufferP	= 0;
+//static int bufferC	= 0;
+//
+//	buffer [bufferP] = s;
+//	bufferP ++;
+//	if (bufferP >= 8192) {
+//	   bufferP = 0;
+//	   bufferC ++;
+//	   if (bufferC >= 4) {
+//	      bufferC = 0;
+//	      showBuffer (buffer);
+//	   }
+//	}
 }
 
 	

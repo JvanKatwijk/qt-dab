@@ -32,7 +32,6 @@
 #include	"settingNames.h"
 #include	"settings-handler.h"
 
-#define	PLUTO_SETTINGS	"PLUTO_SETTINGS"
 
 //	Description for the fir-filter is here:
 #include	"dabFilter.h"
@@ -597,9 +596,9 @@ std::complex<int16_t> dumpBuf [SAMPLERATE / DIVIDER];
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
-	      if (convIndex > CONV_SIZE) {
+	      if (convIndex > CONVERSION_SIZE) {
 	         if (!xmlWriter. isNull ())
-	            xmlWriter -> add (dumpBuf, CONV_SIZE);
+	            xmlWriter -> add (dumpBuf, CONVERSION_SIZE);
 	         for (int j = 0; j < SAMPLERATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
@@ -612,7 +611,7 @@ std::complex<int16_t> dumpBuf [SAMPLERATE / DIVIDER];
 	         else
 	            _I_Buffer. putDataIntoBuffer (localBuf,
 	                                          SAMPLERATE / DIVIDER);
-	         convBuffer [0] = convBuffer [CONV_SIZE];
+	         convBuffer [0] = convBuffer [CONVERSION_SIZE];
 	         convIndex = 1;
 	      }
 	   }
@@ -740,7 +739,6 @@ QString	theValue	= "";
 	set_agcControl (agcControl -> isChecked ());
 	agcControl	-> blockSignals (false);
 }
-
 
 bool	plutoHandler::load_iioFunctions	() {
 	iio_device_find_channel =

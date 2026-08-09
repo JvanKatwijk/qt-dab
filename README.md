@@ -34,6 +34,8 @@ Table of Contents
 What is new in Qt-DAB-7.3.0
 ======================================================================
 
+ - Based on user's request in Qt-DAB-7.3.0 the main window is - within limits - resizable.
+
  - In Qt-DAB-7.3.0 the "technical window" is incorporated in a frame in the main window, with the option to "hide" it. Similarly, the spectrum scope has a "carriers" window that is part of the window with as option to make it (in)visible.
 
  - in Qt-DAB-7.3.0 the **configuration and control window" was completely redesigned. The **schedule** button is (at last) moved to the main window, the **reset** button on the main window disappeared: it turned out that restarting Qt-DAB with the same of another input device does that job in an excellent way.

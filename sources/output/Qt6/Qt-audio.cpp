@@ -66,6 +66,7 @@
 }
 
 	Qt_Audio::~Qt_Audio	() {
+	shouldRun	= false;
 	if (!m_audioSink. isNull ()) {
 	   m_audioSink -> stop ();
 	}

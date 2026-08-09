@@ -45,11 +45,9 @@ class	errorLogger;
 #ifndef	PLUTO_RATE
 #define	PLUTO_RATE	2112000
 #define	DIVIDER		1000
-#define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
-#define	FM_RATE		2112000
+#define	CONVERSION_SIZE	(PLUTO_RATE / DIVIDER)
 #endif
 
-enum iodev { RX, TX };
 
 //
 //	Dll and ".so" function prototypes
@@ -114,12 +112,6 @@ typedef void (*pfn_iio_library_get_version)(unsigned int *major,
 	                                    unsigned int *minor,
 	                                    char git_tag [8]);
 
-struct stream_cfg {
-        long long bw_hz;
-        long long fs_hz;
-        long long lo_hz;
-        const char *rfport;
-};
 
 class	plutoHandler:  //public QThread,
 	              public deviceHandler, public Ui_plutoWidget {
@@ -130,6 +122,13 @@ public:
 	                                         const QString &,
 	                                         errorLogger *);
             		~plutoHandler		() override;
+	struct stream_cfg {
+           long long bw_hz;
+           long long fs_hz;
+           long long lo_hz;
+           const char *rfport;
+	};
+	enum iodev { RX, TX };
 	bool		restartReader		(int32_t,
 	                                            int skipped = 0) override;
 	void		stopReader		();
@@ -166,7 +165,7 @@ private:
 	struct	iio_buffer	*rxbuf;
 	struct stream_cfg	rx_cfg;
 	bool			connected;
-	std::complex<float>	convBuffer	[CONV_SIZE + 1];
+	std::complex<float>	convBuffer	[CONVERSION_SIZE + 1];
 	int			convIndex;
 	int16_t			mapTable_int	[SAMPLERATE / DIVIDER];
 	float			mapTable_float	[SAMPLERATE / DIVIDER];

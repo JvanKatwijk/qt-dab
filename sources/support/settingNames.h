@@ -111,6 +111,7 @@
 #define	S_DABBAND		"dabBand"
 #define	S_SCAN_MODE		"scanMode"
 
+#define	PLUTO_SETTINGS		"pluto_settings"
 #define	WAVSETTINGS		"wavFileSettings"
 #define	RAWSETTINGS		"rawFilesSettings"
 #define	XMLSETTINGS		"xmlFilesSettings"

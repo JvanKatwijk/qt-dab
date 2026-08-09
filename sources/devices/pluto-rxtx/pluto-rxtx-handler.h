@@ -44,7 +44,8 @@
 //#endif
 
 
-class	xml_fileWriter;
+
+class	errorLogger;
 
 #ifndef	RX_RATE
 #define	RX_RATE		2112000
@@ -53,7 +54,6 @@ class	xml_fileWriter;
 #define	CONV_SIZE	(RX_RATE / DIVIDER)
 #define	FM_RATE		2112000
 #endif
-enum iodev {RX, TX};
 //
 //	Dll and ".so" function prototypes
 
@@ -113,13 +113,10 @@ typedef void * (*pfn_iio_buffer_end)(const struct iio_buffer *buf);
 typedef int	(*pfn_iio_buffer_push)(const struct iio_buffer *buf);
 typedef void * (*pfn_iio_buffer_first)(const struct iio_buffer *buf,
                                    const struct iio_channel *chn);
-
-struct stream_cfg {
-        long long bw_hz;
-        long long fs_hz;
-        long long lo_hz;
-        const char *rfport;
-};
+typedef void (*pfn_iio_strerror)(int err, char *, size_t len);
+typedef void (*pfn_iio_library_get_version)(unsigned int *major,
+                                            unsigned int *minor,
+                                            char git_tag [8]);
 
 
 class	plutoHandler_rxtx: //public QObject,
@@ -128,9 +125,21 @@ Q_OBJECT
 public:
 			plutoHandler_rxtx	(QSettings *,
 	                                         const QString &,
-	                                         int fmFreq = 0);
-            		~plutoHandler_rxtx	();
-	bool		restartReader		(int32_t, int skipped = 0);
+	                                         const QString &,
+	                                         errorLogger *,
+	                                         int fmFrequency = 0);
+            		~plutoHandler_rxtx	() override;
+	struct stream_cfg {
+           long long bw_hz;
+           long long fs_hz;
+           long long lo_hz;
+           const char *rfport;
+	};
+
+	enum iodev {RX, TX};
+	void		setFrequency		(int);
+	bool		restartReader		(int32_t,
+	                                            int skipped = 0) override;
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
@@ -144,25 +153,18 @@ public:
 	QString		deviceName		();
 
         bool            providesDump            () override;
-        void            startDump               (const QString &,
-                                                       int) override;
-        void            stopDump                () override;
 
 private:
-	bool			loadFunctions	();
+	bool			load_iioFunctions	();
 	QLibrary		*pHandle;
 	QFrame			myFrame;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	RingBuffer<std::complex<float>>	_O_Buffer;
 	upFilter		theFilter;
 	int			fmFrequency;
+	errorLogger		*theErrorLogger;
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
-	FILE			*xmlDumper;
-	xml_fileWriter		*xmlWriter;
-	bool			setup_xmlDump	();
-	void			close_xmlDump	();
-	std::atomic<bool>	dumping;
 	bool			filterOn;
 	void			run_receiver	();
 	void			run_transmitter	();
@@ -263,6 +265,11 @@ private:
 	                        iio_buffer_push;
 	pfn_iio_buffer_first
 		                iio_buffer_first;
+	pfn_iio_strerror
+                                iio_strerror;
+        pfn_iio_library_get_version
+                                iio_library_get_version;
+
 	struct  iio_device      *rx;
         struct  iio_device      *tx;
         struct  iio_context     *ctx;
@@ -294,7 +301,6 @@ private slots:
 	void		set_agcControl		(int);
 	void		toggle_debugButton	();
 	void		set_filter		();
-	void		set_xmlDump		();
 	void		handleSignal		(float);
 	void		set_fmFrequency		(int);
 private:		// for the display
