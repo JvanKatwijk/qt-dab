@@ -241,7 +241,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/smallspinbox.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
-	   ./sources/support/gui-elements/resizableLabel.h \
+	   ./sources/support/gui-elements/slidelabel.h \
 	   ./sources/support/tables/charsets.h \
 	   ./sources/support/tables/dab-params.h \
 	   ./sources/support/tables/ITU-tables.h \
@@ -392,7 +392,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/smallspinbox.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
-	   ./sources/support/gui-elements/resizableLabel.cpp \
+	   ./sources/support/gui-elements/slidelabel.cpp \
 	   ./sources/support/tables/charsets.cpp \
 	   ./sources/support/tables/dab-params.cpp \
 	   ./sources/support/tables/ITU-tables.cpp \

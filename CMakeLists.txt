@@ -322,7 +322,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/smallspinbox.h 
 	   ./sources/support/gui-elements/super-frame.h 
 	   ./sources/support/gui-elements/verysmallpushbutton.h 
-	   ./sources/support/gui-elements/resisablelabel.h 
+	   ./sources/support/gui-elements/slidelabel.h 
 	   ./sources/update/updatechecker.h
 	   ./sources/update/appversion.h
 	   ./sources/devices/selector.h 
@@ -467,7 +467,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/smallspinbox.cpp 
 	   ./sources/support/gui-elements/super-frame.cpp 
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp 
-	   ./sources/support/gui-elements/resizablelabel.cpp 
+	   ./sources/support/gui-elements/slidelabel.cpp 
 	   ./sources/update/updatechecker.cpp
 	   ./sources/devices/riff-writer.cpp 
 	   ./sources/devices/selector.cpp 

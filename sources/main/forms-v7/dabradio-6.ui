@@ -266,20 +266,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <spacer name="horizontalSpacer_4">
-          <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="resizableLabel" name="pictureLabel">
+         <widget class="slideLabel" name="pictureLabel">
           <property name="text">
            <string>No Slide</string>
           </property>
@@ -513,9 +500,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>resizableLabel</class>
+   <class>slideLabel</class>
    <extends>QLabel</extends>
-   <header location="global">resizablelabel.h</header>
+   <header location="global">slidelabel.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

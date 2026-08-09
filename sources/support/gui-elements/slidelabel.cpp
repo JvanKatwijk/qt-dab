@@ -21,12 +21,12 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	"resizablelabel.h"
+#include	"slidelabel.h"
 
-	resizableLabel::resizableLabel	(QWidget *parent):
-	                                             QLabel (parent) {}
-	resizableLabel::~resizableLabel	() {}
-void	resizableLabel::setPicture	(const QPixmap &p) {
+	slideLabel::slideLabel	(QWidget *parent):
+	                               QLabel (parent) {}
+	slideLabel::~slideLabel	() {}
+void	slideLabel::setPicture	(const QPixmap &p) {
 	
 	   int w	= this -> size (). width ();
 	   int h	= this -> size (). height ();
@@ -36,7 +36,7 @@ void	resizableLabel::setPicture	(const QPixmap &p) {
 	   setPixmap (thePicture);
 	}
 
-void	resizableLabel::resizeEvent (QResizeEvent *event) {
+void	slideLabel::resizeEvent (QResizeEvent *event) {
            QLabel::resizeEvent(event); // Call base class event
         
            int newWidth		= event -> size (). width ();
@@ -44,6 +44,8 @@ void	resizableLabel::resizeEvent (QResizeEvent *event) {
         
 //	Scale your original pixmap 
            QPixmap scaledPixmap = thePicture.
-	                      scaled (newWidth, newHeight, Qt::KeepAspectRatio);
+	                      scaled (newWidth, newHeight,
+	                         Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//	                      scaled (newWidth, newHeight, Qt::KeepAspectRatio);
            setPixmap (scaledPixmap);
 }

@@ -27,12 +27,12 @@
 #include	<QPixmap>
 #include	<QResizeEvent>
 #
-class resizableLabel : public QLabel {
+class slideLabel : public QLabel {
 private:
 	QPixmap thePicture;
 public:
-		resizableLabel	(QWidget *parent = Q_NULLPTR);
-		~resizableLabel	();
+		slideLabel	(QWidget *parent = Q_NULLPTR);
+		~slideLabel	();
 	void	setPicture	(const QPixmap &p);
 protected:
 	void resizeEvent(QResizeEvent *event) override;
