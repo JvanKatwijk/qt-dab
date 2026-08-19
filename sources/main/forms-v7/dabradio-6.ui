@@ -203,7 +203,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_9">
         <item>
-         <widget class="QLabel" name="motLabel">
+         <widget class="colorlabel" name="motLabel">
           <property name="text">
            <string>mot</string>
           </property>
@@ -503,6 +503,11 @@
    <class>slideLabel</class>
    <extends>QLabel</extends>
    <header location="global">slidelabel.h</header>
+  </customwidget>
+  <customwidget>
+   <class>colorlabel</class>
+   <extends>QLabel</extends>
+   <header>color-label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -98,6 +98,7 @@ static std::vector<uint8_t> buffer (64 * 1024);
 	         break;
 	   }
 	}
+	fprintf (stderr, "de lus is gestopt\n");
 }
 
 bool	spyHandler_8::readHeader	(struct MessageHeader &header) {
@@ -301,6 +302,7 @@ bool	spyHandler_8::is_streaming	() {
 
 void	spyHandler_8::start_running	() {
 std::vector<uint32_t> p (1);
+	fprintf (stderr, "start running\n");
 	if (!streaming. load ()) {
 	   std::cerr << "spyHandler: Starting Streaming" << std::endl;
 	   streaming. store (true);
@@ -313,7 +315,7 @@ void	spyHandler_8::stop_running	() {
 std::vector<uint32_t> p;
 	if (streaming. load ()) {
 	   streaming. store (false);
-	   running = false;
+//	   running = false;
 	   p. push_back (0);
 	   set_setting (SETTING_STREAMING_ENABLED, p);
 	}

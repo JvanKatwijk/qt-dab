@@ -433,7 +433,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="syncLabel">
+        <widget class="colorlabel" name="syncLabel">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for the time synchronization, if green, it looks like time syncing is OK, i.e. the software is able to identify the start of the DAB frames in the incoming sample stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -443,7 +443,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="FIC_label">
+        <widget class="colorlabel" name="FIC_label">
          <property name="text">
           <string>FIC</string>
          </property>
@@ -547,6 +547,11 @@
    <class>clickableChart</class>
    <extends>QGraphicsView</extends>
    <header>clickable-chart.h</header>
+  </customwidget>
+  <customwidget>
+   <class>colorlabel</class>
+   <extends>QLabel</extends>
+   <header location="global">color-label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -444,25 +444,19 @@ QString textList;
 }
 
 void	displayWidget::setSyncLabel	(bool b) {
-	if (b) {
-	   syncLabel    -> setStyleSheet ("font-weight:bold; color: lightgreen");
-	   syncLabel	-> setText ("synced");
-	}
-	else {
-	   syncLabel	-> setStyleSheet ("font-weight:bold; color: red");
-	   syncLabel	-> setText ("synced");
-	}
+	syncLabel	-> setLabel ("sync");
+	if (b) 
+	   syncLabel    -> setColor (S_GREEN);
+	else 
+	   syncLabel	-> setColor (S_RED);
 }
 
 void	displayWidget::setFIC_label	(bool b) {
-	if (b) {
-	   FIC_label    -> setStyleSheet ("font-weight:bold; color: lightgreen");
-	   FIC_label	-> setText ("FIC");
-	}
-	else {
-	   FIC_label	-> setStyleSheet ("font-weight:bold; color: red");
-	   FIC_label	-> setText ("FIC");
-	}
+	FIC_label	-> setLabel ("FIC");
+	if (b)
+	   FIC_label    -> setColor (S_GREEN);
+	else
+	   FIC_label    -> setColor (S_RED);
 }
 
 void	displayWidget::showDCOffset	(float dcOffset) {

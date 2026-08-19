@@ -46,7 +46,8 @@ public:
 	findfileNames	theFilenameFinder;
 	void	storePosition		();
 	void	set_activeServices	(int);
-//
+
+	void	set_loadTable		(bool);
 //	the value extractors
 //	top
 	int	get_serviceOrder	();
@@ -92,7 +93,7 @@ private slots:
 //	first the color setters
 	void	color_fontButton	();
 	void	color_fontColorButton	();
-	void	color_loadTableButton	();
+//	void	color_loadTableButton	();
 //
 	void	handle_orderAlfabetical		();
 	void	handle_orderServiceIds		();

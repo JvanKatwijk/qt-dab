@@ -88,8 +88,12 @@ char*	get_ch_name (const char* type, int id) {
 	unsigned int major;
 	unsigned int minor;
 	iio_library_get_version (&major, &minor, git_tag);
-	fprintf (stderr, "Library version %d %d %s\n", 
-	                             major, minor, git_tag);
+//	fprintf (stderr, "Library version %d %d %s\n", 
+//	                             major, minor, git_tag);
+	QString libV	= QString::number (major) + ":" +
+	                  QString::number (minor) + ":" +
+	                  QString (git_tag);
+	libraryLabel	-> setText (libV);
 	this	-> ctx			= nullptr;
 	this	-> rxbuf		= nullptr;
 	this	-> rx0_i		= nullptr;
@@ -125,10 +129,11 @@ char*	get_ch_name (const char* type, int id) {
 //
 //	step 1: establish a context
 //
-	ctx	= iio_create_default_context ();
-	if (ctx == nullptr) {
-	   ctx = iio_create_local_context ();
-	}
+	ctx	= nullptr;
+//	ctx	= iio_create_default_context ();
+//	if (ctx == nullptr) {
+//	   ctx = iio_create_local_context ();
+//	}
 
 	if (ctx == nullptr) {
 //	   ctx = iio_create_network_context ("pluto.local");
@@ -144,12 +149,28 @@ char*	get_ch_name (const char* type, int id) {
 	if (ctx == nullptr) {
 	   throw (device_exception ("No pluto device detected"));
 	}
+	fprintf (stderr, "context name = %s\n",
+	                     iio_context_get_name (ctx));
 //
 	if (iio_context_get_devices_count (ctx) <= 0) {
 	   throw (device_exception ("no pluto device detected"));
 	}
-//	
+
+	fprintf (stderr, "we have %d devices\n",
+	             iio_context_get_devices_count (ctx));
+
+//	int n = iio_context_get_devices_count (ctx);
+//	for (uint8_t i = 0; i < n; i ++) {
+//	   struct iio_device *x = 
+//	              iio_context_get_device (ctx, i);
+//	   if (x != nullptr)
+//	      fprintf (stderr, "for index %d, device %s\n",
+//	                             i, iio_device_get_name (x));
+//	   else
+//	      fprintf (stderr, "no device found at index %d\n", i);	
+//	}
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
+
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
 	   throw (device_exception ("No RX device found"));
 	}
@@ -795,12 +816,30 @@ bool	plutoHandler::load_iioFunctions	() {
 	   return false;
 	}
 
+	iio_context_get_device =
+	             (pfn_iio_context_get_device)
+	                    pHandle -> resolve ("iio_context_get_device");
+	if (iio_context_get_device == nullptr) {
+	   theErrorLogger -> add ("Pluto", 
+	                     "could not load iio_context_get_device");
+	   return false;
+	}
+
 	iio_context_find_device =
 	             (pfn_iio_context_find_device)
 	                    pHandle -> resolve ("iio_context_find_device");
 	if (iio_context_find_device == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_context_find_device");
+	   return false;
+	}
+
+	iio_device_get_name	=
+	              (pfn_iio_device_get_name)
+	                     pHandle -> resolve ("iio_device_get_name");
+	if (iio_device_get_name == nullptr) {
+	   theErrorLogger -> add ("Pluto",
+	                       "could not load iio_device_get_name");
 	   return false;
 	}
 

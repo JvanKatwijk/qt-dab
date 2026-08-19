@@ -38,7 +38,7 @@
 
 void	tiiMapper::reload	(const QString &tiiFile) {
 tiiReader theReader;
-	if (tiiFile == "")
+	if (tiiFile. isEmpty ())
 	   return;
 	theDataBase. resize (0);
 	theDataBase	= theReader. readFile (tiiFile);

@@ -23,15 +23,15 @@ DEFINES         += VERSION=\\\"7.3.0\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+= -Wvla
-QMAKE_CXXFLAGS	+=  -ffast-math -flto 
+QMAKE_CXXFLAGS	+=  -ffast-math -flto -fsingle-precision-constant
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g -fsanitize=address 
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
-#QMAKE_CFLAGS	+=  -g 
-#QMAKE_CXXFLAGS	+=  -g 
-#QMAKE_LFLAGS	+=  -g 
+#QMAKE_CFLAGS	+=  -pg 
+#QMAKE_CXXFLAGS	+=  -pg 
+#QMAKE_LFLAGS	+=  -pg 
 }
 
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
@@ -242,6 +242,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/gui-elements/super-frame.h \
 	   ./sources/support/gui-elements/verysmallpushbutton.h \
 	   ./sources/support/gui-elements/slidelabel.h \
+	   ./sources/support/gui-elements/color-label.h \
 	   ./sources/support/tables/charsets.h \
 	   ./sources/support/tables/dab-params.h \
 	   ./sources/support/tables/ITU-tables.h \
@@ -393,6 +394,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/gui-elements/super-frame.cpp \
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp \
 	   ./sources/support/gui-elements/slidelabel.cpp \
+	   ./sources/support/gui-elements/color-label.cpp \
 	   ./sources/support/tables/charsets.cpp \
 	   ./sources/support/tables/dab-params.cpp \
 	   ./sources/support/tables/ITU-tables.cpp \
@@ -452,8 +454,8 @@ else {
 #mac {
 # Should be possible to make on non Macs as well.
 #}
-CONFIG		+= double
-#CONFIG		+= single
+#CONFIG		+= double
+CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)

@@ -154,7 +154,7 @@ int	index	= 0;
 	         }
 	         case 0x80: {	// version
 	            QString s = process_483 (v, index);
-	            if (s != "")
+	            if (s. isEmpty ())
 	               serviceInformation. setAttribute ("Version", s);
 	            break;
 	         }
@@ -233,7 +233,7 @@ int endPoint = setLength (v, index);
 	if (v [index] == 0x80)	// xml:lang
 	   ignore (v, index);
 	QString res = fetchString (v, index, endPoint);
-	if (res == "")
+	if (res. isEmpty ())
 	   res = " ";
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);
@@ -251,7 +251,7 @@ int endPoint = setLength (v, index);
 	   ignore (v, index);
 	}
 	QString res = fetchString (v, index, endPoint, false);
-	if (res == "")
+	if (res. isEmpty ())
 	   res = " ";
 	QDomText t = doc. createTextNode (res);
 	child. appendChild (t);

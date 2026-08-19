@@ -41,7 +41,7 @@
 #include	"spyserver-client-8.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
-
+#include	"clickable-label.h"
 #include	"xml-filewriter.h"
 #include	"errorlog.h"
 
@@ -57,6 +57,11 @@
 	recorderVersion		= recorder;
 	theErrorLogger		= theLogger;
 	setupUi (&myFrame);
+
+	QString address         = "https://airspy.com/directory/";
+        QString text             = "spy servers can be found: " + address ;
+        copyrightLabel          -> setToolTip ("Copyright J van Katwijk\nLazy Chair Computing\n" + text);
+
 	setPositionAndSize (s, &myFrame, SPY_SERVER_8_SETTINGS);
 	myFrame. show		();
 
@@ -105,7 +110,7 @@
 	if (connected) {		// close previous connection
 	   stopReader();
 	
-	   if (!theServer. isNull ()) {
+	   if (!theServer. isNull ()) {		// jsut to be safe
 	      theServer -> stop_running ();
 	      theServer. reset ();
 	   }
@@ -130,17 +135,17 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	      theServer. reset ();
 	   }
 	   spyServer_connect	-> setText ("connect");
-	   theState	-> setText ("Enter IP address, \nthen press return");
+	   theState	-> setText ("Enter IP address, \nthen press ack nutton");
 	   return;
 	}
-	// use the first non-localhost IPv4 address
-	for (uint16_t i = 0; i < ipAddressesList.size (); i ++) {
-	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
-	      ipAddressesList. at (i). toIPv4Address()) {
-	      ipAddress = ipAddressesList. at(i). toString();
-	      break;
-	   }
-	}
+//	// use the first non-localhost IPv4 address
+//	for (uint16_t i = 0; i < ipAddressesList.size (); i ++) {
+//	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
+//	      ipAddressesList. at (i). toIPv4Address()) {
+//	      ipAddress = ipAddressesList. at(i). toString();
+//	      break;
+//	   }
+//	}
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
@@ -150,25 +155,27 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	hostLineEdit ->  setText (ipAddress);
 
 	hostLineEdit -> setInputMask ("000.000.000.000");
-//	Setting default IP address
-	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (hostLineEdit, &QLineEdit::returnPressed,
+	theState	-> setText ("Enter IP address, \nthen press the ack button");
+	connect (ackButton, &QPushButton::clicked,
 	         this, &spyServer_client_8::setConnection);
 }
 
-//	if/when a return is pressed in the line edit,
+//	after clicking the "ack" button,
 //	a signal appears and we are able to collect the
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
 void	spyServer_client_8::setConnection () {
 QString s	= hostLineEdit -> text();
 QString theAddress	= QHostAddress (s). toString ();
+	disconnect (ackButton, &QPushButton::clicked,
+	            this, &spyServer_client_8::setConnection);
 	onConnect. store (false);
 	settings. basePort	= portNumber -> value ();
 	try {
+	fprintf (stderr, "Trying to start\n");
 	   theServer. reset (new spyHandler_8 (this, theAddress,
-	                                    (int)settings. basePort,
-	                                    &tmpBuffer));
+	                                       (int)settings. basePort,
+	                                       &tmpBuffer));
 	} catch (...) {
 	   theServer. reset ();		// ???
 	   QMessageBox::warning (nullptr, tr ("Warning"),
@@ -190,7 +197,7 @@ QString theAddress	= QHostAddress (s). toString ();
 //
 //	If the server connects but could not find a suitable
 //	device, connection stands but no data is transferred
-	int delay	= 2000;		// 2 seconds
+	int delay	= 4000;		// 2 seconds
 	while (!onConnect. load () && !timedOut) {
 	   delay --;
 	   if (delay == 0) {
@@ -215,6 +222,7 @@ QString theAddress	= QHostAddress (s). toString ();
 	theServer	-> connection_set ();
 
 	spyServer_connect	-> setText ("disconnect");
+
 	struct DeviceInfo theDevice;
 	theServer	-> get_deviceInfo (theDevice);
 

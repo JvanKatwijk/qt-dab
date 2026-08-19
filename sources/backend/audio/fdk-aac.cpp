@@ -41,6 +41,9 @@
 	handle			= aacDecoder_Open (TT_MP4_LOAS, 1);
 	if (handle == nullptr)
 	   return;
+//	Enable the decoder's built-in error concealment.
+	aacDecoder_SetParam (handle, AAC_CONCEAL_METHOD, 1);
+
 	connect (this, &fdkAAC::newAudio, 
 	         mr, &RadioInterface::newAudio);
 	working			= true;
@@ -134,7 +137,36 @@ int		output_size	= 8 * 2048;
 
 void	fdkAAC::LostFrame (uint32_t length, 
 	                                uint8_t sbrFlag, uint8_t psFlag) {
-	(void)length; (void)sbrFlag; (void)psFlag;
+AAC_DECODER_ERROR err;
+	fprintf (stderr, "a");
+	std::vector<INT_PCM> decoder_buf (8 * 2048);
+	uint32_t outputSize = 8 * 2048;
+
+	err = aacDecoder_DecodeFrame (handle, decoder_buf.data (),
+	                              outputSize, AACDEC_CONCEAL);
+	if (err != AAC_DEC_OK) 
+	   return;
+
+	CStreamInfo * info = aacDecoder_GetStreamInfo (handle);
+
+	if ((info == nullptr) || (info -> sampleRate <= 0) ||
+	                                (info -> frameSize <= 0))
+	   return;
+
+        if (info -> numChannels == 2) 
+           audioBuffer -> putDataIntoBuffer (decoder_buf. data(),
+	                                     info -> frameSize * 2);
+        else
+	if (info -> numChannels == 1) {
+           auto *buffer = dynVec (int16_t, info -> frameSize * 2);
+           for (uint16_t i = 0; i < info -> frameSize; i++)
+	      buffer [2 * i + 0] = buffer [2 * i + 1] = decoder_buf [i];
+	   audioBuffer -> putDataIntoBuffer (buffer, info -> frameSize * 2);
+        }
+
+	if (audioBuffer -> GetRingBufferReadAvailable () >
+	                                (uint32_t)info -> sampleRate / 8)
+	   newAudio (info -> frameSize, info -> sampleRate, psFlag, sbrFlag);
 	fprintf (stderr, "x");
 }
 

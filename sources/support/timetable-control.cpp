@@ -71,7 +71,7 @@ findfileNames theFilenameFinder (dabSettings);
                               value_s (dabSettings, DAB_GENERAL,
                                                 S_FILE_PATH, tempPath);
 	path_for_files               = checkDir (path_for_files);
-	if (path_for_files == "")
+	if (path_for_files. isEmpty ())
 	   return;
 	path_for_files += "EpgData/";
 	path_for_files +=

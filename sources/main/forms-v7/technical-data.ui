@@ -241,7 +241,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QLabel" name="frameLabel">
+         <widget class="colorlabel" name="frameLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frames turns green if  (most of the) dab_ frames could be identified in the input stream. These DAB+ frames are carriers for the AAC data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -251,7 +251,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="rsLabel">
+         <widget class="colorlabel" name="rsLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS turns green if (most of the) RS error decoding succeeds. The RS decoding takes place on the input frames, and outputs the AAC frames for further decoding.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -261,7 +261,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="crcErrorLabel">
+         <widget class="colorlabel" name="crcErrorLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;While the RS (Reed-Solomon) handling is there to fix upto 5 errors in a input segment of 110 data bytes, and tells when not succeeding, there is a (more than theoretical) change that the parity bits themselves contain errors, and nevertheles the RS decoder &amp;quot;thinks&amp;quot; all errors are repaired.&lt;/p&gt;&lt;p&gt;That is why is a later stage a crc check is performed.&lt;/p&gt;&lt;p&gt;The indicator is green when the check passes and red otherwise.&lt;/p&gt;&lt;p&gt;It can be expected that the color is most of the time green.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -271,7 +271,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="aacLabel">
+         <widget class="colorlabel" name="aacLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;AAC turns green if (most of) the AAC frames could be interpreted and mapped upon PCM data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -281,7 +281,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="audioLabel_text">
+         <widget class="colorlabel" name="audioLabel_text">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator telling - if green - that audio is send to the soundcard&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -389,6 +389,11 @@
    <class>clickableChart</class>
    <extends>QGraphicsView</extends>
    <header>clickable-chart.h</header>
+  </customwidget>
+  <customwidget>
+   <class>colorlabel</class>
+   <extends>QLabel</extends>
+   <header location="global">color-label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -73,7 +73,7 @@ QString suggestedFileName;
 //	                                      useNativeFileDialog ?
 //	                                          QFileDialog::Options() :
 //	                                          QFileDialog::DontUseNativeDialog);
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return "";
 	return QDir::toNativeSeparators (fileName);
 }
@@ -81,7 +81,7 @@ QString suggestedFileName;
 FILE	*findfileNames::find_contentDump_fileName (const QString &channel) {
 QString	fileName	= outputDialog (basicPath (), channel, ".csv", true);
 
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 	FILE *fileP	= fopen (fileName. toUtf8(). data(), "w");
 
@@ -106,7 +106,7 @@ FILE	*findfileNames::find_frameDump_fileName (const QString &service,
 	checkDir (subName);
 	QString	fileName	= outputDialog (subName, service,
 	                                                 ending, flag);
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 	
 	FILE *theFile	= fopen (fileName. toUtf8 (). data (), "w+b");
@@ -127,7 +127,7 @@ QString	saveDir		= basicPath () + "audiodumps/";
 	checkDir (saveDir);
 	QString fileName = outputDialog (saveDir, service, ".wav", flag);
 	
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 
 	save_dirName ("saveDir_audioDump", fileName);
@@ -143,7 +143,7 @@ QString	saveDir		= basicPath () + "rawdump/";
 	              outputDialog (saveDir, 
 	                            QString (deviceName + "-" + channelName),
 	                            ".sdr", true);
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 	save_dirName ("saveDir_rawDump", fileName);
 	return fileName;
@@ -159,7 +159,7 @@ QString	saveDir	=  basicPath () + "xmlDump/";
 	              outputDialog (saveDir, 
 	                            QString (deviceName + "-" + channelName),
 	                            ".uff", direct);
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 
 	save_dirName ("saveDir_xmlDump", fileName);
@@ -174,7 +174,7 @@ QString   saveDir =  basicPath ();
 	                                        ".csv", 
 	                                        true);
 
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
@@ -185,7 +185,7 @@ QString   saveDir =  basicPath ();
 	QString fileName = outputDialog (saveDir, 
 	                                 "Qt_DAB-summary",
 	                                 ".csv", true);
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
@@ -205,7 +205,7 @@ QString   saveDir = basicPath ();
 	                                 Q_NULLPTR,
 	                                 QFileDialog::DontUseNativeDialog |
 	                                 QFileDialog::DontConfirmOverwrite);
-	if (fileName == "")	// canceled?
+	if (fileName. isEmpty ())	// canceled?
 	   return nullptr;
 	fileName	= QDir::toNativeSeparators (fileName);
 	return  fileName;
@@ -218,7 +218,7 @@ QString   saveDir = basicPath ();
         	                                "Qt-DAB-dlText",
 	                                        ".text", flag);
 
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return "";
         return  fileName;
 }
@@ -230,7 +230,7 @@ QString   saveDir =  basicPath ();
 	                                        "Qt_DAB-log",
 	                                        ".text", true);
 
-	if (fileName == "")
+	if (fileName. isEmpty ())
 	   return nullptr;	
 	return fopen (fileName. toUtf8 (). data (), "w");
 }

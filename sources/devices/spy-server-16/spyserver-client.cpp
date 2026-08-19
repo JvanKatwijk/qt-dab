@@ -41,6 +41,7 @@
 #include	"spyserver-client.h"
 #include	"position-handler.h"
 #include	"settings-handler.h"
+#include	"clickable-label.h"
 
 #include	"xml-filewriter.h"
 #include	"errorlog.h"
@@ -57,6 +58,12 @@
 	recorderVersion		= recorder;
 	theErrorLogger		= theLogger;
 	setupUi (&myFrame);
+	copyrightLabel		-> setText (QString ("©"));
+
+	QString address		= "https://airspy.com/directory/";
+	QString text		 = "spy servers can be found: " + address ;
+	copyrightLabel		-> setToolTip ("Copyright J van Katwijk\nLazy Chair Computing\n" + text);
+
 	setPositionAndSize (s, &myFrame, SPY_SERVER_16_SETTINGS);
 	myFrame. show		();
 
@@ -128,18 +135,18 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
               theServer. reset ();
            }
            spyServer_connect    -> setText ("connect");
-           theState     -> setText ("Enter IP address, \nthen press return");
+           theState     -> setText ("Enter IP address, \nthen press ack");
            return;
         }
 
-	// use the first non-localhost IPv4 address
-	for (int16_t i = 0; i < ipAddressesList.size (); ++i) {
-	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
-	      ipAddressesList. at (i). toIPv4Address()) {
-	      ipAddress = ipAddressesList. at(i). toString();
-	      break;
-	   }
-	}
+//	// use the first non-localhost IPv4 address
+//	for (int16_t i = 0; i < ipAddressesList.size (); ++i) {
+//	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
+//	      ipAddressesList. at (i). toIPv4Address()) {
+//	      ipAddress = ipAddressesList. at(i). toString();
+//	      break;
+//	   }
+//	}
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
 	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
@@ -149,7 +156,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	hostLineEdit -> setInputMask ("000.000.000.000");
 //	Setting default IP address
 	theState	-> setText ("Enter IP address, \nthen press return");
-	connect (hostLineEdit, &QLineEdit::returnPressed,
+	connect (ackButton, &QPushButton::clicked,
 	         this, &spyServer_client::setConnection);
 }
 
@@ -161,6 +168,8 @@ void	spyServer_client::setConnection () {
 QString s	= hostLineEdit -> text();
 QString theAddress	= QHostAddress (s). toString ();
 	onConnect. store (false);
+	disconnect (ackButton, &QPushButton::clicked,
+	         this, &spyServer_client::setConnection);
 	settings. basePort	= portNumber -> value ();
 	try {
 	   theServer. reset (new spyHandler (this, theAddress,

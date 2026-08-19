@@ -36,7 +36,6 @@
 
 #define FONT_BUTTON             QString ("fontButton")
 #define FONTCOLOR_BUTTON        QString ("fontColorButton")
-#define LOAD_TABLE_BUTTON       QString ("loadTableButton")
 
 
 #define	WHITE	"#ffffff"
@@ -221,13 +220,6 @@ int	index_for_key (int key) {
 	connect (tiiCollisions, qOverload<int>(&QSpinBox::valueChanged),
 	         this, &configHandler::handle_tiiCollisions);
 
-	connect (loadTableButton, &smallPushButton::rightClicked,
-	         this, &configHandler::color_loadTableButton);
-	connect (loadTableButton, &QPushButton::clicked,
-	         myRadioInterface, &RadioInterface::handle_loadTable);
-	loadTableButton	-> setText ("refresh table");
-//	however, by default loadTable is disabled
-	loadTableButton	-> setEnabled (false);
 
 	int d	= value_i (dabSettings, CONFIG_HANDLER,
 	                                 SHOWALL_TII, 1);
@@ -332,7 +324,7 @@ int	index_for_key (int key) {
 	         this, &configHandler::handle_ordersubChannelIds);
 //
 	decoderLabel	-> setStyleSheet ("QLabel {color: yellow}");
-	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
+	for (int i = 0; !decoders [i]. decoderName. isEmpty (); i ++) 
 	  this ->  decoderSelector -> addItem (decoders [i]. decoderName);
 
 	int k	= value_i (dabSettings, CONFIG_HANDLER,
@@ -454,14 +446,7 @@ QString	fontColorButton_color =
 	   value_s (dabSettings, COLOR_SETTINGS,
 	                              FONTCOLOR_BUTTON + "_color", BLACK);
 
-QString	loadTableButton_color =
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               LOAD_TABLE_BUTTON + "_color", RED);
-QString loadTableButton_font	=
-	   value_s (dabSettings, COLOR_SETTINGS,
-	                               LOAD_TABLE_BUTTON + "_font", WHITE);
-
-	QString temp = "QPushButton {background-color: %1; color: %2}";
+QString temp = "QPushButton {background-color: %1; color: %2}";
 
 
 	this -> fontButton ->
@@ -471,10 +456,6 @@ QString loadTableButton_font	=
 	this -> fontColorButton ->
 	              setStyleSheet (temp. arg (fontColorButton_color,
 	                                        fontColorButton_font));
-
-	this -> loadTableButton ->
-	              setStyleSheet (temp. arg (loadTableButton_color,
-	                                        loadTableButton_font));
 }
 
 void	configHandler::color_fontButton	() 	{
@@ -483,10 +464,6 @@ void	configHandler::color_fontButton	() 	{
 
 void	configHandler::color_fontColorButton	() 	{
 	set_buttonColors (this -> fontColorButton, FONTCOLOR_BUTTON);
-}
-
-void	configHandler::color_loadTableButton	() 	{
-	set_buttonColors (this ->  loadTableButton, LOAD_TABLE_BUTTON);
 }
 
 void	configHandler::set_buttonColors	(QPushButton *b,
@@ -550,7 +527,7 @@ void	configHandler::handle_localBrowser	(int d) {
 
 void	configHandler::handle_decoderSelector	(const QString &s) {
 int	decoder	= 0100;
-	for (int i = 0; decoders [i]. decoderName != ""; i ++)
+	for (int i = 0; !decoders [i]. decoderName. isEmpty (); i ++)
 	   if (decoders [i]. decoderName == s) {
 	      decoder = decoders [i]. decoderKey;
 	      selectDecoder (decoder);
@@ -764,3 +741,24 @@ void	configHandler::set_audioSystem_label	(const QString &s) {
 	audioSystem_label	-> setText (s);
 }
 
+
+void	configHandler::set_loadTable	(bool b) {
+	if (b) {	// a table was found in the user's directory
+	   loadTableButton ->
+	   setStyleSheet
+	        ("QPushButton {background-color: lightgreen; color: black}");
+	   connect (loadTableButton, &QPushButton::clicked,
+	            myRadioInterface, &RadioInterface::handle_loadTable);
+	   loadTableButton	-> setText ("refresh table");
+	   loadTableButton	-> setEnabled (true);
+	   loadTableButton	-> setToolTip ("touching this button will refresh the TII database used by the one detected in your homedirectory");
+	}
+	else {
+	   loadTableButton ->
+	   setStyleSheet
+	        ("QPushButton {background-color: red; color: white}");
+	   loadTableButton	-> setText ("disabled");
+	   loadTableButton	-> setEnabled (false);
+	   loadTableButton	-> setToolTip ("In your home directory no TII database was detected, the embedded database can not be refreshed");
+	}
+}

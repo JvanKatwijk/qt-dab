@@ -56,7 +56,7 @@
 //
 std::vector<dbElement> tiiReader::readFile (const QString &s) {
 std::vector<dbElement> res;
-	if (s == "") {
+	if (s. isEmpty ()) {
 	   return res;
 	}
 
@@ -130,7 +130,7 @@ std::vector<QString> columnVector;
 	   ed. valid = false;
 	if ((ed. mainId == 0) || (ed. subId == 0))
 	   ed. valid = false;
-	if (ed. ensemble == "")
+	if (ed. ensemble. isEmpty ())
 	   ed. valid = false;
 	ed. key_1	= ((ed. Eid << 16) | (ed. mainId << 8)) +  ed. subId; 
 	bool ok;

@@ -413,10 +413,6 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         }
 //
 //	Normal Processing, no eti 
-//	we distinguish vetween processing everything in this thread, or
-//	delegate processing of the data blocks in the MSC thread
-//	Of course, if scanning is ON, then we do not process
-//	the payload at all
 	         if (ofdmSymbolCount <= 3) {
 	            theOfdmDecoder.
                            decode (ofdmBuffer, ofdmSymbolCount,

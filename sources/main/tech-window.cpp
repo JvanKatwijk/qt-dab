@@ -91,15 +91,18 @@
 	connect	(framedumpButton, &QPushButton::clicked,
 	         mr, &RadioInterface::handleFramedumpButton);
 
-	uepField	-> setStyleSheet ("font-weight: bold; color:red");
-	codeRate	-> setStyleSheet ("font-weight: bold; color:red");
+	uepField	-> setStyleSheet ("font-weight: bold; color:magenta");
+	codeRate	-> setStyleSheet ("font-weight: bold; color:magenta");
 	bitRateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	audiorateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	psLabel		-> setStyleSheet ("font-weight: bold; color:magenta");
 	sbrLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	frameLabel	-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
+	frameLabel	-> setText ("frame");
 	rsLabel		-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
+	rsLabel		-> setText ("RS");
 	aacLabel	-> setStyleSheet ("QLabel {font-weight: bold; color: red}");
+	aacLabel	-> setText ("AAC");
 	programName	-> setStyleSheet ("font-weight: bold; color: white");
 	QFont font      = programName -> font ();
         font. setPointSize (13); 
@@ -126,10 +129,14 @@ void	techWindow::cleanUp	() {
 	const QString ee ("-");
 	programName		-> setText (ee);
 	shortnameLabel		-> setText (ee);
-	frameLabel		-> setText ("");
-	rsLabel			-> setText ("");
-	crcErrorLabel		-> setText ("");
-	aacLabel		-> setText ("");
+	frameLabel		-> setText ("frame");
+	frameLabel		-> setColor (S_RED);
+	rsLabel			-> setText ("RS");
+	rsLabel			-> setColor (S_RED);
+	crcErrorLabel		-> setText ("error");
+	crcErrorLabel		-> setColor (S_RED);
+	aacLabel		-> setText ("AAC");
+	aacLabel		-> setColor (S_RED);
 	startAddressDisplay	-> setText (QString::number (0));
 	lengthDisplay		-> setText (QString::number (0));
 	subChIdDisplay		-> setText (QString::number (0));
@@ -172,47 +179,58 @@ void	techWindow::showDetails		(int tableNo, audiodata *ad) {
 }
 
 void	techWindow::showFrameErrors	(int e) {
-	if (100 - 4 * e < 90) {
-	   frameLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
-	   frameLabel		-> setText ("frames");
-	}
-	else {
-	   frameLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : lightgreen}");
-	   frameLabel		-> setText ("frames");
-	}
+//	frameLabel	-> setLabel ("frame");
+	if (e > 8)
+	   frameLabel	-> setColor (S_RED);
+	else
+	if (e > 3)
+	   frameLabel	-> setColor (S_YELLOW);
+	else
+	   frameLabel	-> setColor (S_GREEN);
 }
 
 void	techWindow::showRsErrors		(int e) {
-	if (100 - 4 * e < 90) {
-	   rsLabel		-> setStyleSheet ("QLabel {font-weight:bold; color : red}");
-	   rsLabel		-> setText ("RS");
-	}
-	else {
-	   rsLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : lightgreen}");
-	   rsLabel		-> setText ("RS");
-	}
+//	rsLabel	-> setLabel ("RS");
+	if (e > 8)
+	   rsLabel	-> setColor (S_RED);
+	else
+	if (e > 3)
+	   rsLabel	-> setColor (S_YELLOW);
+	else
+	   rsLabel	-> setColor (S_GREEN);
 }
 
 void	techWindow::showcrcErrors		(int e) {
-	if (e > 0) {
-	   crcErrorLabel	-> setStyleSheet ("QLabel {font-weight:bold;color:red}");
-	   crcErrorLabel	-> setText ("crc");
-	}
-	else {
-	   crcErrorLabel	-> setStyleSheet ("QLabel {font-weight:bold;color:lightgreen}");
-	   crcErrorLabel	-> setText ("crc");
-	}
+	crcErrorLabel	-> setLabel ("crc");
+	if (e > 8)
+	   crcErrorLabel	-> setColor (S_RED);
+	else
+	if (e > 3)
+	   crcErrorLabel	-> setColor (S_YELLOW);
+	else
+	   crcErrorLabel	-> setColor (S_GREEN);
 }
 	
 void	techWindow::showAacErrors	(int e) {
-	if (100 - 4 * e < 90) {
-	   aacLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
-	   aacLabel		-> setText ("AAC");
-	}
-	else {
-	   aacLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : lightgreen}");
-	   aacLabel		-> setText ("AAC");
-	}
+//	aacLabel	-> setLabel ("AAC");
+	if (e > 8)
+	   aacLabel	-> setColor (S_RED);
+	else
+	if (e > 3)
+	   aacLabel	-> setColor (S_YELLOW);
+	else
+	   aacLabel	-> setColor (S_GREEN);
+}
+
+void	techWindow::showMissed	(int missed) {
+	audioLabel_text	-> setLabel	("Audio");
+	if (missed > 90)
+	   audioLabel_text	-> setColor (S_GREEN);
+	else
+	if (missed > 70)
+	   audioLabel_text	-> setColor (S_YELLOW);
+	else
+	   audioLabel_text	-> setColor (S_RED);
 }
 
 void	techWindow::showRsCorrections	(int c, int ec) {
@@ -222,13 +240,6 @@ void	techWindow::showRsCorrections	(int c, int ec) {
 //	ecLabel_data	-> setStyleSheet ("QLabel {color: lightgreen}");
 //	rsLabel_data	-> setText (QString::number (c));
 //	ecLabel_data	-> setText (QString::number (ec));
-}
-
-void	techWindow::showMissed	(int missed) {
-	if (missed > 90)
-	   audioLabel_text	-> setStyleSheet ("QLabel {font-weight:bold;color: lightgreen}");
-	else
-	   audioLabel_text	-> setStyleSheet ("QLabel {font-weight:bold;color: red}");
 }
 
 void	techWindow::hideMissed	() {

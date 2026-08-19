@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Qt_DAB-7.3
-Exec=qt-dab-7.3
+Name=Qt_DAB-7.3.0
+Exec=qt-dab-7.3.0
 Icon=qt-dab-7.1.1
 Type=Application
 Categories=AudioVideo;

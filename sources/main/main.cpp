@@ -42,7 +42,7 @@ static
 QString fullPathfor (const QString &v, const QString &ending) {
 QString fileName;
 
-	if (v == QString (""))
+	if (v. isEmpty ())
 	   return QString ("/tmp/xxx");
 
 	if (v. at (0) == QChar ('/'))           // full path specified

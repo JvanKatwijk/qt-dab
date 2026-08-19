@@ -311,17 +311,17 @@ QString h;
 
 	programTypeLabel	-> setStyleSheet (labelStyle);
 
-	motLabel	->
-	            setStyleSheet ("QLabel {font-weight:bold; color: red}");
+	motLabel	->	setLabel ("mot");
+	motLabel	->	setColor (S_RED);
 	motLabel	-> setToolTip ("<font color=\"black\">the label colors green when MOT data, for the currently selected service, can be decoded");
 
 	stereoLabel	->
 	            setStyleSheet ("font-weight: bold; color: lightgreen");
-	protectionLabel	-> setStyleSheet ("font-weight: bold; color:red");
+	protectionLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	rateLabel	-> setStyleSheet ("font-weight: bold; color:magenta");
 	audiorateLabel  -> setStyleSheet ("font-weight: bold; color:magenta");
-        psLabel         -> setStyleSheet ("font-weight: bold; color:yellow");
-        sbrLabel        -> setStyleSheet ("font-weight: bold; color:yellow");
+        psLabel         -> setStyleSheet ("font-weight: bold; color:magenta");
+        sbrLabel        -> setStyleSheet ("font-weight: bold; color:magenta");
 
 	stillMuting		-> hide ();
 	volumeSlider		-> hide ();
@@ -390,8 +390,11 @@ QString h;
 //	we load the "default" version
 	
 	if (!theTIIProcessor. has_tiiFile ()) {
+	   theConfigHandler	-> set_loadTable (false);
 	   theTIIProcessor. reload (":res/txdata.tii");
 	}
+	else
+	   theConfigHandler	-> set_loadTable (true);
 
 	if (!theTIIProcessor. has_tiiFile ())	// should not happen
 	   httpButton	-> setEnabled (false);
@@ -763,7 +766,7 @@ void	RadioInterface::startDirect	() {
                                                    "Open file ...",
 	                                           path_for_serviceLists,
 	                                           "*.xml");
-	         if (fileName != "") {
+	         if (!fileName. isEmpty ()) {
 	            newServices	-> closeOperation	();
 	            newServices	-> setDataBase		(fileName);
 	         }
@@ -775,7 +778,7 @@ void	RadioInterface::startDirect	() {
                                                       "Open file ...",
 	                                              path_for_serviceLists,
 	                                              "*.xml");
-	         if (fileName != "") {
+	         if (!fileName. isEmpty ()) {
 	            newServices	-> closeOperation ();
 	            newServices	-> setDataBase (fileName);
 	            store (theQSettings, DAB_GENERAL, "dbFileName", fileName);
@@ -788,7 +791,7 @@ void	RadioInterface::startDirect	() {
                                                    "Open file ...",
 	                                           path_for_serviceLists,
 	                                           "*.xml");
-	         if (fileName != "") {
+	         if (!fileName. isEmpty ()) {
 	            newServices	-> closeOperation ();
 	            newServices	-> setDataBase (fileName);
 	         }
@@ -865,7 +868,7 @@ void	RadioInterface::handle_FIG11 (const QString &serviceName,
 	   return;		// should not happen
 	}
 
-	if (channel. channelName == "")
+	if (channel. channelName. isEmpty ())
 	   ad. channel	= "X";
 	else
 	   ad. channel	= channel. channelName;
@@ -1056,7 +1059,7 @@ void	RadioInterface::handle_motObject (QByteArray	result,
 	   case  MOTBaseTypeApplication: { 	// epg data
 	      if (theSCANHandler. active ())
 	         return;
-	      if (objectName == QString (""))
+	      if (objectName. isEmpty ())
 	         objectName	= "epgFile";	// should not happen
 	      process_epgData (objectName, result);
 	   }
@@ -1082,7 +1085,7 @@ uint8_t docType	= theEpgCompiler. process_epg (epgDocument,
 	}
 
 	QString theName = extractName (objectName);
-	if (theName == "") 
+	if (theName. isEmpty ()) 
 	   return;
 	
 	QString temp = path_for_epg +
@@ -1140,7 +1143,7 @@ int base	= motName. lastIndexOf (QChar ('/'));
 	   uint32_t sid = sidString. toUInt (&ok, 16);
 	   if (ok) {
 	      QString name = newServices -> extractName (sid);
-	      if (name != "") {
+	      if (!name. isEmpty ()) {
 	         return env + dateString + "_" + sidString. toUpper () + "_SI.xml";
 	      }
 	   }
@@ -1174,7 +1177,7 @@ void	RadioInterface::saveMOTtext (QByteArray &result,
 void	RadioInterface::saveMOTObject (QByteArray  &result,
 	                               int contentType,
 	                               QString  &name) {
-	if (name == "") {	// should not happen
+	if (name. isEmpty ()) {	// should not happen
 	   static int counter	= 0;
 	   name = "motObject_" + QString::number (counter);
 	   counter ++;
@@ -1190,7 +1193,7 @@ void	RadioInterface::showMOTlabel	(QByteArray	&motData,
 	                                 uint32_t	SId) {
 const char *type;
 
-	if (!running. load () || (pictureName == QString ("")))
+	if (!running. load () || pictureName. isEmpty ())
 	   return;
 
 	switch (static_cast<MOTContentType>(contentType)) {
@@ -1232,7 +1235,7 @@ const char *type;
 //	handle slides for current service
 	if (dirs || ((value_i (theQSettings, CONFIG_HANDLER,
 	                           SAVE_SLIDES_SETTING, 0) != 0) &&
-	                                         (path_for_slides != ""))) {
+	                                      (!path_for_slides. isEmpty ()))) {
 	   QString thePath	= slidePath (dirs, SId, pictureName);
 	   QString pict		= thePath + pictureName;
 	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
@@ -1737,9 +1740,7 @@ static bool old_mot = false;
 	if (!running. load () || (old_mot == b))
 	   return;
 	if (b)
-	   motLabel	-> setStyleSheet ("font-weight:bold; color:lightgreen");
-	else
-	   motLabel	-> setStyleSheet ("QLabel {color : red}");
+	motLabel	-> setColor (b ? S_GREEN : S_RED);
 	old_mot = b;
 }
 	
@@ -1763,7 +1764,7 @@ bool	isLetter (QChar x) {
 void	RadioInterface::showLabel	(const QString &s, int charset) {
 	(void)charset;
 #ifdef	HAVE_PLUTO_RXTX
-	if ((theDabStreamer != nullptr) && (s != ""))
+	if ((theDabStreamer != nullptr) && (!s . isEmpty ()))
 	   theDabStreamer -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
 	
@@ -1780,7 +1781,7 @@ void	RadioInterface::showLabel	(const QString &s, int charset) {
 	   dynamicLabel	-> setText (s);
 	}
 
-	if ((s == "") || (dlTextFile == nullptr) ||
+	if ((s. isEmpty ()) || (dlTextFile == nullptr) ||
 	                                (theDLCache. addifNew (s)))
 	   return;
 
@@ -1877,7 +1878,7 @@ void	RadioInterface::startAudioDumping () {
 	QString audioDumpName	=
 	      theFilenameFinder.
 	           find_audioDump_fileName  (channel. currentService. serviceName, true);
-	if (audioDumpName == "")
+	if (audioDumpName. isEmpty ())
 	   return;
 
 	theTechWindow	-> audiodumpButton_text ("writing", 12);
@@ -1926,7 +1927,7 @@ QString	dumpName;
 	          !theDeviceHandler	-> providesDump ()) {
 	   dumpName	=
 	         theFilenameFinder. find_rawDump_fileName (deviceName, channelName);
-	   if (dumpName == "")
+	   if (dumpName. isEmpty ())
 	      return;
 
 	   theOfdmHandler -> startDumping (dumpName,
@@ -1949,7 +1950,7 @@ QString	dumpName;
 	   return;
 	}
 
-	if (dumpName == "")
+	if (dumpName. isEmpty ())
 	   return;
 
 	theDeviceHandler -> startDump (dumpName, 0);
@@ -2483,7 +2484,7 @@ void	RadioInterface::cleanScreen	() {
 	stereoSetting		= false;
 	setStereo	(false);
 	theTechWindow		-> cleanUp ();
-	motLabel		-> setStyleSheet ("QLabel {font-weight:bold;color : red}");
+	motLabel		-> setColor (S_RED);
 	distanceLabel		-> setText ("");
 	newServices		-> set_countryName ("");
 	theNewDisplay. setFIC_label (false);
@@ -2548,7 +2549,7 @@ int	tunedFrequency	=
 	if (theDeviceHandler -> isFileInput ()) {
 	   int freq		= theDeviceHandler -> getVFOFrequency ();
 	   QString realChannel	= theSCANHandler. getChannel (freq);
-	   if (realChannel != "") {
+	   if (!realChannel. isEmpty ()) {
 	      newServices	-> set_channelIndex (realChannel);
 	      channel. channelName	= realChannel;
 	      channel. tunedFrequency	= freq;
@@ -2581,14 +2582,14 @@ int	tunedFrequency	=
 //	was the last time the channel was active
 	if (!theDeviceHandler -> isFileInput () &&
 	                   !theSCANHandler. active ()) {
-	   if (firstService == "") 	// no preset specified
+	   if (firstService. isEmpty ()) 	// no preset specified
 	      firstService =
 	            value_s (theQSettings, "channelPresets", theChannel, "");
 //	at this point we do not know whether or not a preset is 
 //	set, so if this mode is "on" and there is a service name
 //	associated with the channel, we set the preset handling on
 //	but only if ....
-	   if (firstService != "") {
+	   if (!firstService. isEmpty ()) {
 	      presetTimer. stop ();	// should not run here
 	      nextService. channel	= theChannel;
 	      nextService. serviceName	= firstService;
@@ -2962,7 +2963,7 @@ QString	theHeight;
 	                                     channel. subId);
 	else
 	   tii		= "???";
-	if (channel. strongestTransmitter != "")
+	if (!channel. strongestTransmitter. isEmpty ())
 	   theName	= channel. strongestTransmitter;
 	else
 	   theName 	= " ";
@@ -3059,7 +3060,7 @@ void	RadioInterface::show_for_continuous () {
 	for (auto &tr: channel. transmitters) {
 	   if (!tr. isStrongest) {
 	      QString line = build_cont_addLine (tr);
-	      if (line == "")
+	      if (line. isEmpty ())
 	         continue;
 	      theScanTable -> addLine (line);
 	   }
@@ -3075,7 +3076,7 @@ QString theCorner;
 QString theHeight;
 
 	tii	= idsToString (tr. mainId, tr. subId) + ";" ;
-	if (tr. transmitterName != "")
+	if (!tr. transmitterName. isEmpty ())
 	   theName	= tr. transmitterName;
 	else
 	   theName 	= "";
@@ -3393,7 +3394,7 @@ void	RadioInterface::scheduledAudioDumping () {
 	QString audioDumpName	=
 	      theFilenameFinder.
 	            find_audioDump_fileName  (serviceLabel -> text (), false);
-	if (audioDumpName == "")
+	if (audioDumpName. isEmpty ())
 	   return;
 
 	theTechWindow	-> audiodumpButton_text ("writing", 12);
@@ -3464,7 +3465,7 @@ void	RadioInterface::scheduledFICDumping () {
 
 	QString ficDumpFileName =
 	     theFilenameFinder. find_ficDump_file (channel. channelName);
-	if (ficDumpFileName == "")
+	if (ficDumpFileName. isEmpty ())
 	   return;
 	theOfdmHandler -> startFicDump (ficDumpFileName);
 }
@@ -3822,7 +3823,7 @@ void	RadioInterface::start_etiHandler () {
 	fname. replace (QRegularExpression (" "), "-");
 	etiFile +=  fname;
 	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
-	if (etiFile == QString (""))
+	if (etiFile. isEmpty ())
 	   return;
 
 	channel. etiActive = theOfdmHandler -> startEtiGenerator (etiFile);
@@ -4577,7 +4578,7 @@ bool pictureFound	= false;
 	   for (auto &ff: ss. elements) {
 	      QPixmap candidate;
 	      QString pict	= findPicture (SId, ff. url);
-	      if (pict == "")
+	      if (pict. isEmpty ())
 	         continue;
 	      bool res = candidate. load (pict, "png");
 	      if (!res)

@@ -6,14 +6,35 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>202</width>
-    <height>381</height>
+    <width>255</width>
+    <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>spy_server</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="clickablelabel" name="copyrightLabel">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The url  &amp;quot;https://airspy.com/directory/&amp;quot; shows a list of publicly available spyservers. Note however that for Qt-DAB one needs at least 2 Msamples/sec, which, for 16 bit samples means 8 Mb/sec. So you need a pretty fast connection.&lt;/p&gt;&lt;p/&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>spy-server 16 bits</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -26,7 +47,18 @@
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="hostLineEdit"/>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLineEdit" name="hostLineEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="ackButton">
+       <property name="text">
+        <string>ack</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -79,13 +111,6 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="xml_dumpButton">
-     <property name="text">
-      <string>PushButton</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="theState">
      <property name="text">
       <string>state</string>
@@ -113,18 +138,15 @@
      </property>
     </widget>
    </item>
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The url  &amp;quot;https://airspy.com/directory/&amp;quot; shows a list of publicly available spyservers. Note however that for Qt-DAB one needs at least 2 Msamples/sec, which, for 16 bit samples means 8 Mb/sec. So you need a pretty fast connection.&lt;/p&gt;&lt;p/&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>spy-server 16 bits</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>clickablelabel</class>
+   <extends>QLabel</extends>
+   <header>clickable-label.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

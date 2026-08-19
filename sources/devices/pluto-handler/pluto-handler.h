@@ -61,6 +61,11 @@ typedef struct iio_context * (*pfn_iio_create_network_context)(const char *host)
 typedef const char * (*pfn_iio_context_get_name)(const struct iio_context *ctx);
 typedef unsigned int (*pfn_iio_context_get_devices_count)(
                                    const struct iio_context *ctx);
+typedef struct iio_device * (*pfn_iio_context_get_device)(
+	                           const struct iio_context *ctx,
+	                           uint32_t index);
+typedef const char * (*pfn_iio_device_get_name)(
+	                           const struct iio_device *);
 typedef struct iio_device * (*pfn_iio_context_find_device)(
                                    const struct iio_context *ctx,
 	                           const char *name);
@@ -216,6 +221,10 @@ private:
 	                        iio_context_get_name;
 	pfn_iio_context_get_devices_count
 	                        iio_context_get_devices_count;
+	pfn_iio_context_get_device
+	                        iio_context_get_device;
+	pfn_iio_device_get_name
+	                        iio_device_get_name;
 	pfn_iio_context_find_device
 	                        iio_context_find_device;
 

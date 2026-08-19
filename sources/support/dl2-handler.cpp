@@ -62,7 +62,7 @@ static	QString	programNow	= "";
 	switch (ct) {
 	   case 1:	// the title
 	      title = s;
-	      if (composer != "") {
+	      if (!composer. isEmpty ()) {
 	         res = front + title + ";" + composer + ";";
 	         title		= "";
 	         composer	= "";
@@ -71,7 +71,7 @@ static	QString	programNow	= "";
 	   case 4:	// the artist
 	   case 8:	// the composer
 	   case 9:	// the band
-	      if (previousComposer == "")
+	      if (previousComposer. isEmpty ())
 	         previousComposer = s;
 	      else
 	      if (previousComposer. startsWith (s) ||
@@ -80,7 +80,7 @@ static	QString	programNow	= "";
 	      break;
 	      previousComposer = s;
 	      composer = s;
-	      if (title != "") {
+	      if (!title. isEmpty ()) {
 	         res = front + title + ";" + composer + ";";
 	         title		= "";
 	         composer	= "";
@@ -89,7 +89,7 @@ static	QString	programNow	= "";
 	   case 31:	// stationname short
 	   case 32:	// stationname long
 	      stationName	= s;
-	      if  (programNow != "") {	
+	      if  (!programNow . isEmpty ()) {	
 	         res =  front + stationName + ";" + programNow + ";";
 	         stationName	= "";
 	         programNow	= "";
@@ -97,7 +97,7 @@ static	QString	programNow	= "";
 	      break;
 	   case 33:	// program now
 	      programNow	= s;
-	      if  (stationName != "") {	
+	      if  (!stationName. isEmpty ()) {	
 	         res =  front + stationName + ";" + programNow + ";";
 	         stationName	= "";
 	         programNow	= "";
@@ -106,7 +106,7 @@ static	QString	programNow	= "";
 	   default:	
 	      break;
 	}
-	if (res != "") {
+	if (!res. isEmpty ()) {
 	   FILE *dlTextFile	= fopen (fileName. toUtf8 (). data (), "a+");
 	   if (dlTextFile != nullptr) {
 	      fprintf (dlTextFile, "%s\n", res. toLatin1 (). data ());

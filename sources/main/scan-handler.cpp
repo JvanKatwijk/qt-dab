@@ -116,7 +116,7 @@ QString scanmodeText (int e) {
 	this	-> selectedBand		= nullptr;
 	this	-> no_scanTables	= false;
 #ifndef	__MINGW32__
-	if (extFile != "") 
+	if (!extFile. isEmpty ()) 
 	   selectedBand = load_extFile (extFile);
 #else
 	(void)extFile;
@@ -398,7 +398,7 @@ QString saveDir	= filenameFinder. basicPath ();
 	                                          "Open file ...",
 	                                          saveDir,
 	                                          "xml data (*.xml)");
-	if (scanFile == QString ("")) 
+	if (scanFile. isEmpty ()) 
 	   return;
 
 	scanTable. load_scanTable (scanFile);
@@ -411,7 +411,7 @@ QString saveDir = filenameFinder. basicPath ();
 	                                          "Open file ...",
 	                                          saveDir,
 	                                          "xml data (*.xml)");
-	if (scanFile == QString ("")) 
+	if (scanFile. isEmpty ()) 
 	   return;
 	if (!scanFile. endsWith (".xml"))
 	   scanFile += ".xml";
@@ -468,7 +468,7 @@ QString dir     =
                                              QDir::homePath (),
                                              QFileDialog::ShowDirsOnly
                                              | QFileDialog::DontResolveSymlinks);
-        if (dir != "")
+        if (!dir. isEmpty ())
            store (dabSettings, DAB_GENERAL,  S_SCANFILE_PATH, dir);
 }
 

@@ -211,7 +211,7 @@ scheduleDescriptor result;
 	}
 	else {
 	   startTime	= stringToDateTime (startDate);
-	   if (duration != "") {
+	   if (!duration. isEmpty ()) {
 	      int minutes = durationToInt (duration);
 	      stopTime = startTime. addSecs (minutes * 60);
 	   }

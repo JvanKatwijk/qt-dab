@@ -178,7 +178,7 @@ Complex makeComplex (DABFLOAT phase) {
 //	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
 
-	sqrt_2			= sqrt (2);
+	sqrt_2			= 1.0 /sqrt (2);
 //
 //	Prefil some tables for faster access
 	for (int i = 0; i < 2048; i ++) {
@@ -238,7 +238,7 @@ static float f_n = 1;
 static float f_d = 1;
 	for (int i = 0; i < carriers; i ++) {
 	   Complex ss	= v [T_u / 2 - carriers / 2 + i];
-	   float ab	= jan_abs (ss) / sqrt_2;
+	   float ab	= jan_abs (ss) * sqrt_2;
 	   f_n		=  0.99 * f_n + 0.01 * (jan_abs (ss) * jan_abs (ss));
 	   float R	= abs (abs (real (ss)) - ab);
 	   float I	= abs (abs (imag (ss)) - ab);
@@ -324,14 +324,15 @@ DABFLOAT scaler		= 0;
 	   meanPowerVector [i] =
 	        compute_avg (meanPowerVector [i], fftBinPower, ALPHA);
 
-	   DABFLOAT binAbsLevel	= jan_abs (fftBin) / sqrt_2;
+	   DABFLOAT binAbsLevel	= jan_abs (fftBin) * sqrt_2;
+	   DABFLOAT binAbsInv	= 1.0 / binAbsLevel;
 	   meanLevelVector [i] =
 	        compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
 
 	   DABFLOAT d_x		=  abs (real (fftBin)) -
-	                                  meanLevelVector [i] / binAbsLevel;
+	                                  meanLevelVector [i] * binAbsInv;
 	   DABFLOAT d_y		=  abs (imag (fftBin)) -
-	                                  meanLevelVector [i] / binAbsLevel;
+	                                  meanLevelVector [i] * binAbsInv;
 	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
 	   sigmaSQ_Vector [i] =
 	             compute_avg (sigmaSQ_Vector [i], sigmaSQ, ALPHA);
