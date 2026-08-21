@@ -96,12 +96,23 @@ private:
 	std::vector<DABFLOAT>	meanLevelVector;
 	std::vector<DABFLOAT>	meanNullSymbVector;
 	std::vector<DABFLOAT>	meanPowerVector;
-
+//
+//	special for now
+	float *V_r;
+        float *V_i;
+        float *DD;
+        float *dx;
+        float *dy;
+        float *sigmaSQ;
+//
+//	end of special
 	float		meanValue;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;
 
+	void		computeAverage     (float *V, float *A,
+	                                            float D, int N);
 	double		sqrt_2;
 signals:
 	void		showIQ		(int);

@@ -24,7 +24,9 @@
 #include	"sample-reader.h"
 #include	"radio.h"
 #include	"dab-constants.h"
-
+#ifdef	__HAVE_VOLK
+#include	<volk/volk.h>
+#endif
 static  inline
 int16_t valueFor (int16_t b) {
 int16_t res     = 1;
@@ -49,6 +51,26 @@ void    constrain (float &testVal, const float limit) {
 }
 
 static
+std::complex<float>cmplx_from_phase (float x) {
+  /*
+   * Minimax polynomial for sin(x) and cos(x) on [-pi/4, pi/4]
+   * Coefficients via Remez algorithm (Sollya)
+   * Max |error| < 1.5e-4 for sinus, < 6e-4 for cosinus
+   */
+  float x2 = x * x; 
+  float s1 =  0.99903142452239990234375f;
+  float s2 = -0.16034401953220367431640625; 
+  float sine = x * (x2 * s2 + s1);
+ 
+  float c1 =  0.9994032382965087890625f;
+  float c2 = -0.495580852031707763671875;
+  float c3 =  3.679168224334716796875e-2;
+  float cosine = c1 + x2 * (x2 * c3 + c2);
+
+  return std::complex<float> (cosine, sine);
+}
+
+static
 Complex oscillatorTable [SAMPLERATE];
 constexpr float ALPHA = 1.0f / SAMPLERATE;
 
@@ -70,6 +92,7 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	IQ_Real			= 0;
 	IQ_Imag			= 0;
 
+	phase			= std::complex<float> (1.0, 0.0);
 	repetitionCounter	= 8;
 	for (int i = 0; i < SAMPLERATE; i ++)
 	   oscillatorTable [i] = Complex
@@ -77,7 +100,6 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	                             sin (2.0 * M_PI * i / SAMPLERATE));
 
 	bufferContent	= 0;
-	corrector	= 0;
 	dumpIndex	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
 	fprintf (stderr, "bitDepth %d, scale %d\n", theRig -> bitDepth (), dumpScale);
@@ -109,9 +131,8 @@ std::vector<Complex> buffer (1);
 void	sampleReader::getSamples (std::vector<Complex>  &v_out,
 	                           int index,
 	                           int32_t nrSamples,
-	                           int32_t phaseOffset, bool saving) {
+	                           float phaseOffset, bool saving) {
 auto *buffer	= dynVec (std::complex<float>, nrSamples);
-	corrector	= phaseOffset;
 
 //	if we get a kill signal, do the kill
 	if (!running. load())
@@ -135,43 +156,81 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 
 //	if dumping is "on" dump
 	if (sourceDumper. isActive ()) {
+	   auto *dumpBuffer = dynVec (int16_t, 2 * nrSamples);
 	   for (int i = 0; i < nrSamples; i ++) {
-	      dumpBuffer [2 * dumpIndex    ] = real (buffer [i]) * dumpScale;
+	      dumpBuffer [2 * i            ] = real (buffer [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (buffer [i]) * dumpScale;
-	      if (++ dumpIndex >= DUMPSIZE / 2) {
-	         sourceDumper. write (dumpBuffer, dumpIndex);
-	         dumpIndex = 0;
-	      }
+	      sourceDumper. write (dumpBuffer, nrSamples);
 	   }
 	}
+
 //	OK, we have samples!!
-	for (int i = 0; i < nrSamples; i ++) {
-	   float Alpha	= 1.0 / SAMPLERATE;
-	   std::complex<float> v = buffer [i];
-	   DABFLOAT real_V	= abs (real (v));
-	   DABFLOAT imag_V	= abs (imag (v)); 
-	   IQ_Real		= compute_avg (IQ_Real, real_V, Alpha);
-	   IQ_Imag		= compute_avg (IQ_Imag, imag_V, Alpha);
-	   static int teller = 0; 
-	   if (++teller >= SAMPLERATE) {
-	      show_dcOffset (10 * (IQ_Real - IQ_Imag) / 
-	                                  ((IQ_Real + IQ_Imag) / 2));
-	      teller = 0;
-	   }
-	   if (dcRemoval) 
-	      v			= dcRemover. filter (v);
 
-//	first: adjust frequency. We need Hz accuracy
-//	Note that "phase" itself might be negative
-	   currentPhase	-= phaseOffset;
-	   currentPhase	= (currentPhase + SAMPLERATE) % SAMPLERATE;
-	   if (saving && (localCounter < bufferSize))
-	      localBuffer [localCounter ++]     = v;
-	   v_out  [index + i]	= Complex (real (v), imag (v)) *
-	                                oscillatorTable [currentPhase];
-	   sLevel = 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
+	float Alpha	= 1.0 / SAMPLERATE;
+//	compute_avg	-> res = (1 - Alpha * res + Alpha * new
+	for (int i = 0; i < nrSamples; i ++) 
+	   IQ_Real	= average (IQ_Real, abs (real (buffer [i])), Alpha);
+	for (int i = 0; i < nrSamples; i ++) 
+	   IQ_Imag	= average (IQ_Imag, abs (imag (buffer [i])), Alpha);
+	if (dcRemoval) 
+	   for (int i = 0; i < nrSamples; i ++) 
+	      buffer [i]	= dcRemover. filter (buffer [i]);
+#ifndef	__HAVE_VOLK__
+	for (int i = 0; i < nrSamples; i ++)
+	   sLevel = 0.00001 * jan_abs (buffer [i]) + (1 - 0.00001) * sLevel;
+#else
+	{  alignas(64) float *realTable = dynVec (float, nrSamples);
+	   alignas(64) float *imagTable = dynVec (float, nrSamples);
+	   volk_32fc_deinterleave_32f_x2_u (realTable, imagTable,
+                                            buffer, nrSamples);
+	   float	I_sum;
+	   float	Q_sum;
+	   volk_32f_accumulator_s32f_a (&I_sum, realTable, nrSamples);
+	   volk_32f_accumulator_s32f_a (&Q_sum, imagTable, nrSamples);
+	   I_sum	/= nrSamples;
+	   Q_sum	/= nrSamples;
+	   sLevel	= average (sLevel,
+	                   sqrt (I_sum * I_sum + Q_sum * Q_sum),
+	                   Alpha); 
+	}
+#endif
+	static int teller = 0; 
+	teller += nrSamples;
+	if (teller >= SAMPLERATE) {
+	   show_dcOffset (10 * (IQ_Real - IQ_Imag) / 
+	                                  ((IQ_Real + IQ_Imag) / 2));
+	   teller = 0;
 	}
 
+	if (saving) {
+	   int samples = localCounter + nrSamples >= bufferSize ?
+	                          bufferSize - localCounter :
+	                          nrSamples;
+	   if (samples > 0) {
+	      memcpy (&localBuffer [localCounter], buffer, 
+	                             samples * sizeof (std::complex<float>));
+	      localCounter += samples;
+	   }
+	}
+
+#ifndef	__HAVE_VOLK__
+	for (int i = 0; i < nrSamples; i ++) {
+	   currentPhase	-= std::round (phaseOffset);
+	   currentPhase	= (currentPhase + SAMPLERATE) % SAMPLERATE;
+	   v_out  [index + i]	=
+	           std::complex<float> (real (buffer [i]), imag (buffer [i])) *
+	                                oscillatorTable [currentPhase];
+	}
+#else
+	std::complex<float> phaseInc = 
+	      cmplx_from_phase (- (float)phaseOffset / SAMPLERATE * 2 * M_PI);
+        volk_32fc_s32fc_x2_rotator2_32fc_u (buffer, buffer,
+//	volk_32fc_s32fc_x2_rotator_32fc_u (buffer, buffer,
+                                           phaseInc, &phase, nrSamples);
+//	                                    &phaseInc, &phase, nrSamples);
+	memcpy (&v_out [index], buffer,
+	                nrSamples * sizeof (std::complex<float>));
+#endif
 	sampleCount	+= nrSamples;
 
 	if (saving && (spectrumBuffer != nullptr) &&

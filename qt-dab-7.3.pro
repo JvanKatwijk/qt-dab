@@ -476,6 +476,7 @@ CONFIG		+= spyServer-8
 #CONFIG		+= uhd		#untested
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
+#CONFIG		+= volk
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -489,8 +490,8 @@ CONFIG		+= local-audio
 #CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
-CONFIG		+= spiral-sse
-#CONFIG		+= spiral-no-sse
+#CONFIG		+= spiral-sse
+CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
@@ -531,8 +532,8 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= spiral-no-sse
 #	CONFIG		+= viterbi-avx2
 #	CONFIG		+= spiral-sse
-	CONFIG		+= double
-#	CONFIG		+= single
+#	CONFIG		+= double
+	CONFIG		+= single
 #
 	INCLUDEPATH	+= /usr/local/include
 	LIBS		+= -lportaudio
@@ -882,11 +883,16 @@ win32 {
 }
 }
 
-double	{
-	DEFINES		+= __WITH_DOUBLES__
-	LIBS		+= -lfftw3
-}
+#double	{
+#	DEFINES		+= __WITH_DOUBLES__
+#	LIBS		+= -lfftw3
+#}
 
 single	{
 	LIBS		+= -lfftw3f
+}
+
+volk	{
+	DEFINES		+= __HAVE_VOLK__
+	LIBS		+= -lvolk
 }

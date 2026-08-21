@@ -54,6 +54,7 @@
 	connect (snrCompressionSelector,
 	                qOverload<int>(&QSpinBox::valueChanged),
 	         this, &snrViewer::set_snrDelay);
+	delayBufferP	= 0;
 }
 
 	snrViewer::~snrViewer () {

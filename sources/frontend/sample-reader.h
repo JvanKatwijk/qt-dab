@@ -55,7 +55,7 @@ public:
 	      Complex	getSample	(float);
 	      void	getSamples	(std::vector<Complex> &v,
 	                                 int index,
-	                                 int32_t n, int32_t phase,  bool saving);
+	                                 int32_t n, float phase,  bool saving);
 	      void	startDumping	(const QString &, int, int, const QString);
 	      void	stopDumping	();
 	      void	set_dcRemoval	(bool);
@@ -73,7 +73,7 @@ private:
 	      int32_t		bufferContent;
 	      float		sLevel;
 	      int32_t		sampleCount;
-	      int32_t		corrector;
+	      float		corrector;
 	      bool		dumping;
 	      int16_t		dumpIndex;
 	      int16_t		dumpScale;
@@ -81,6 +81,7 @@ private:
 //	      std::atomic<SNDFILE *>	dumpfilePointer;
 	      int		repetitionCounter;
 
+	      std::complex<float> phase;
 	      bool		dcRemoval;
 	      DABFLOAT		dcReal;
 	      DABFLOAT		dcImag;

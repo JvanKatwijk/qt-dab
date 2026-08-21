@@ -33,6 +33,9 @@
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
 #include	"dab-constants.h"
+#ifdef	__HAVE_VOLK__
+#include	<volk/volk.h>
+#endif
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is
@@ -152,8 +155,8 @@ Complex makeComplex (DABFLOAT phase) {
 	                                    fft_buffer	(get_T_u ()),
 	                                    sigmaSQ_Vector (get_T_u ()),
 	                                    meanNullSymbVector (get_T_u ()),
-	                                    meanLevelVector (get_T_u ()),
-	                                    meanPowerVector (get_T_u ()) {
+	                                    meanLevelVector (get_carriers ()),
+	                                    meanPowerVector (get_carriers ()) {
 	(void)bitDepth;
 	this	-> carrierBuffer	= carrierBuffer;
 	connect (this, &ofdmDecoder::showIQ,
@@ -177,7 +180,23 @@ Complex makeComplex (DABFLOAT phase) {
 	iqSelector		= SHOW_DECODED;
 //	iqSelector		= SHOW_RAW;
 	decoder			= DECODER_1;
-
+	int vectorSize		= carriers * sizeof (float);
+#ifdef	__HAVE_VOLK__
+	uint32_t alignment	= volk_get_alignment ();
+	V_r      = (float *)volk_malloc (vectorSize, alignment);
+        V_i      = (float *)volk_malloc (vectorSize, alignment);
+        DD       = (float *)volk_malloc (vectorSize, alignment);
+        dx       = (float *)volk_malloc (vectorSize, alignment);
+        dy       = (float *)volk_malloc (vectorSize, alignment);
+        sigmaSQ  = (float *)volk_malloc (vectorSize, alignment);
+#else
+	V_r      = new float [vectorSize];
+	V_i	 = new float [vectorSize];
+	DD	 = new float [vectorSize];
+	dx	 = new float [vectorSize];
+	dy	 = new float [vectorSize];
+        sigmaSQ  = new float [vectorSize];
+#endif
 	sqrt_2			= 1.0 /sqrt (2);
 //
 //	Prefil some tables for faster access
@@ -192,15 +211,30 @@ Complex makeComplex (DABFLOAT phase) {
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
+#ifdef	__HAVE_VOLK__
+        volk_free (V_r);
+        volk_free (V_i);
+        volk_free (DD);
+        volk_free (dx);
+        volk_free (dy);
+        volk_free (sigmaSQ);
+#else
+        delete [] V_r;
+        delete [] V_i;
+        delete [] DD;
+        delete [] dx;
+        delete [] dy;
+        delete [] sigmaSQ;
+#endif
 }
 //
 void	ofdmDecoder::stop ()	{
 }
 //
 void	ofdmDecoder::reset ()	{
-	memset (sigmaSQ_Vector. data (), 0, T_u * sizeof (float));
-	memset (meanNullSymbVector. data (),  0, T_u * sizeof (float));
-	for (int i = 0; i < T_u; i ++) {
+	memset (sigmaSQ_Vector. data (), 0, carriers * sizeof (float));
+	memset (meanNullSymbVector. data (),  0, carriers * sizeof (float));
+	for (int i = 0; i < carriers; i ++) {
 	   sigmaSQ_Vector [i]		= 1;
 	   meanLevelVector [i]		= 1;
 	   meanPowerVector [i]		= 1;
@@ -285,6 +319,11 @@ DABFLOAT sum		= 0;
 DABFLOAT leftBit	= 0;
 DABFLOAT rightBit	= 0;
 DABFLOAT scaler		= 0;
+
+	Complex currentV [carriers];
+	Complex prevV    [carriers];
+	DABFLOAT	fftBinPower [carriers];
+	DABFLOAT	binAbsLevel [carriers];
 //	Note that in case of file input, elements of the fft_buffer
 //	may contain a zero value.
 
@@ -292,61 +331,67 @@ DABFLOAT scaler		= 0;
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
 	fft. fft (fft_buffer. data ());
-
-//	here we really start
+//
+//	We map the fftBins onto the correct carrier number
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index		= myMapper.  mapIn (i);
-	   int16_t	binIndex	= index;
-	   if (index < 0) {
-	      binIndex	+= carriers_2;
-	      index	+= T_u;
-	   }
-	   else
-	      binIndex	+= carriers_2 - 1;
+	   if (index < 0)
+	      index += T_u;
 
-	   Complex current	= fft_buffer [index];
-	   if (current == Complex (0, 0)) {
-	      current = Complex (1, 1);
-	      fft_buffer [index] = current;
-	   }
-	   Complex prevS	= phaseReference [index];
-	   Complex fftBin	= current * normalize (conj (prevS));
-//
-//	correction on the fftBin value using the approach from
-//	old-dab, see text above
-
+	   currentV [i]		= fft_buffer [index];
+	   prevV    [i]		= phaseReference [index];
+	   currentV [i]		*= normalize (conj (prevV [i]));
+	   conjVector [index]	= currentV [i];
 	   DABFLOAT phaseError	= clockError / (DABFLOAT)carriers_2 * M_PI * 
-	                          (carriers_2 - binIndex) / (carriers_2);
-	   fftBin		*= makeComplex (-phaseError);
-	   conjVector [index]	= fftBin;
+	                          (carriers_2 - i) / (carriers_2);
+	   currentV [i]		*= makeComplex (-phaseError);
+	   fftBinPower [i]	= std::norm (currentV [i]);
+	   binAbsLevel [i]	= jan_abs (currentV [i]) * sqrt_2;
+	}
 
-//	updates
-	   DABFLOAT fftBinPower	= std::norm (fftBin);
-	   meanPowerVector [i] =
-	        compute_avg (meanPowerVector [i], fftBinPower, ALPHA);
-
-	   DABFLOAT binAbsLevel	= jan_abs (fftBin) * sqrt_2;
-	   DABFLOAT binAbsInv	= 1.0 / binAbsLevel;
-	   meanLevelVector [i] =
-	        compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
-
-	   DABFLOAT d_x		=  abs (real (fftBin)) -
-	                                  meanLevelVector [i] * binAbsInv;
-	   DABFLOAT d_y		=  abs (imag (fftBin)) -
-	                                  meanLevelVector [i] * binAbsInv;
-	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
-	   sigmaSQ_Vector [i] =
-	             compute_avg (sigmaSQ_Vector [i], sigmaSQ, ALPHA);
+	computeAverage (meanPowerVector. data (), fftBinPower, ALPHA, carriers);
+	computeAverage (meanLevelVector. data (), binAbsLevel, ALPHA, carriers);
+	
+	int vectorSize	= sizeof (float) * carriers;
+	for (int i = 0; i < carriers; i ++) {
+	   V_r [i]	= abs (real (currentV [i]));
+	   V_i [i]	= abs (imag (currentV [i]));
+#ifndef	__HAVE_VOLK__
+	   DD [i]	= meanLevelVector [i] / binAbsLevel [i];
+	   dx [i]	= V_r [i] / DD [i];
+	   dy [i]	= V_i [i] / DD [i];
+	   sigmaSQ [i]	= dx [i] * dx [i] + dy [i] * dy [i];
+#endif
+	}
+#ifdef	__HAVE_VOLK__
+	uint32_t alignment = volk_get_alignment ();
+	{  float *d2x	= (float *)volk_malloc (vectorSize, alignment);
+	   float *d2y	= (float *)volk_malloc (vectorSize, alignment);
+	   volk_32f_x2_divide_32f (DD,	binAbsLevel,
+	                                 meanLevelVector. data (), carriers);
+	   volk_32f_x2_multiply_32f	(dx, V_r, DD, carriers);
+	   volk_32f_x2_multiply_32f	(dy, V_i, DD, carriers);
+	   volk_32f_x2_multiply_32f 	(d2x, dx, dx, carriers);
+	   volk_32f_x2_multiply_32f 	(d2y, dy, dy, carriers);
+	   volk_32f_x2_add_32f 		(sigmaSQ, d2x, d2y, carriers);
+	   volk_free (d2x);
+	   volk_free (d2y);
+	}
+#endif
+	computeAverage (sigmaSQ_Vector. data (), sigmaSQ, ALPHA, carriers);
+//
+//	Preparations done, now decoding
+	for (int i = 0; i < carriers; i ++) {
 //	actual decoding
 	   switch (this -> decoder) {
 	     default:
-	     case DECODER_1: //	The denomainator is (formula 9)
+	     case DECODER_1: //	The denominator is (formula 9)
 	         {  DABFLOAT amplifier	= 
-	   	                sqrt (abs (fftBin) * abs (prevS)) *
+	   	                sqrt (abs (currentV [i]) * abs (prevV [i])) *
 	                                          meanPowerVector [i];
 	            amplifier	/= sigmaSQ_Vector [i];
 	            amplifier	/= 1.0 / snr + 3;
-	           Complex R1	= normalize (fftBin) * amplifier;
+	           Complex R1	= normalize (currentV [i]) * amplifier;
 //	scaler (due to old-dab)
 	           scaler	= -100 / meanValue;
 	           leftBit	= real (R1) * scaler;
@@ -357,11 +402,11 @@ DABFLOAT scaler		= 0;
 
 	   case DECODER_2:
 	      {  DABFLOAT amplifier	= 
-	                        std::sqrt (abs (fftBin) * abs (prevS)) *
-	                                            meanLevelVector [i];
-	         amplifier	/= sigmaSQ_Vector [i] * abs (fftBin);
+	                     sqrt (abs (currentV [i]) * abs (prevV [i]) *
+	                                            meanLevelVector [i]);
+	         amplifier	/= sigmaSQ_Vector [i] * abs (currentV [i]);
 	         amplifier	/= 1.0 / snr + 0.7f;
-	         Complex R1	= fftBin * amplifier;
+	         Complex R1	= currentV [i] * amplifier;
 //	scaler (due to old-dab)
 	         scaler		= -100 / meanValue;
 	         leftBit	= real (R1) * scaler;
@@ -371,7 +416,7 @@ DABFLOAT scaler		= 0;
 	      break;
 
 	  case DECODER_3:
-	     {  Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
+	     {  Complex R1	= currentV [i] * jan_abs (prevV [i]);
 	        scaler		=  -140.0 / meanValue;
 
 	        leftBit		= real (R1) * scaler;
@@ -381,7 +426,9 @@ DABFLOAT scaler		= 0;
 	      break;
 
 	   case DECODER_4:
-	      {  DABFLOAT A	= 1.0 / sigmaSQ_Vector [i];
+	      {	 Complex current 	= currentV [i];
+	         Complex prevS		= prevV [i];
+	         DABFLOAT A	= 1.0 / sigmaSQ_Vector [i];
 	         DABFLOAT P1	= makeA (1, current, prevS) * A;
 	         DABFLOAT P7	= makeA (7, current, prevS) * A;
 	         DABFLOAT P3	= makeA (3, current, prevS) * A;
@@ -594,4 +641,34 @@ void	ofdmDecoder::set_correctPhase (bool b) {
 void	ofdmDecoder::viewCarriers	(uint8_t carrierMode) {
 	viewCarriers_mode	= carrierMode;
 }
+
+void	ofdmDecoder::computeAverage	(float *V, float *A, float D, int N) {
+//
+//	in single mode this would be
+//	v = v * (1 - D) + D * A
+#ifndef	__HAVE_VOLK__
+	for (int i = 0; i < N; i ++)
+	   V [i] = V [i] * (1.0 - D) + D * A [i];
+#else
+	uint32_t alignment = volk_get_alignment ();
+	float *V_Table	= (float *)volk_malloc (sizeof (float) * N, alignment);
+	float *A_Table	= (float *)volk_malloc (sizeof (float) * N, alignment);
+	float *V_in	= (float *)volk_malloc (sizeof (float) * N, alignment);
+	float *A_in	= (float *)volk_malloc (sizeof (float) * N, alignment);
+	memcpy (V_in, V, sizeof (float) * N);
+	memcpy (A_in, A, sizeof (float) * N);
+	volk_32f_s32f_multiply_32f (V_Table, V_in, 1.0 - D, N);
+	volk_32f_s32f_multiply_32f (A_Table, A_in, D, N);
+	volk_32f_x2_add_32f (V_in, V_Table, A_Table, N);
+	memcpy (V, V_in, sizeof (float) * N);
+	volk_free (V_Table);
+	volk_free (A_Table);
+	volk_free (V_in);
+	volk_free (A_in);
+#endif
+}
+
+	
+	
+ 
 

@@ -33,6 +33,7 @@
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
 #include	"dab-constants.h"
+#include	<volk/volk.h>
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is
@@ -594,4 +595,34 @@ void	ofdmDecoder::set_correctPhase (bool b) {
 void	ofdmDecoder::viewCarriers	(uint8_t carrierMode) {
 	viewCarriers_mode	= carrierMode;
 }
+
+void	ofdmDecoder::computeAverage	(float *V, float *A, float D, int N) {
+//
+//	in single mode this would be
+//	v = v * (1 - D) + D * A
+#ifndef	__HAVE_VOLK__
+	for (int i = 0; i < N; i ++)
+	   V [i] = V [i] * (1.0 - D) + D * A [i];
+#else
+	uint32_t alignment = volk_get_alignment ();
+	float *V_Table = (float *)volk_malloc (sizeof (float) * N, alignment);
+	float *A_Table = (float *)volk_malloc (sizeof (float) * N, alignment);
+	float *V_in = (float *)volk_malloc (sizeof (float) * N, alignment);
+	float *A_in = (float *)volk_malloc (sizeof (float) * N, alignment);
+	memcpy (V_in, V, N * sizeof (float));
+	memcpy (A_in, A, N * sizeof (float));
+	volk_32f_s32f_multiply_32f (V_Table, V_in, 1.0 - D, N);
+	volk_32f_s32f_multiply_32f (A_Table, A_in, D, N);
+	volk_32f_x2_multiply_32f (V_in, V_Table, A_Table, N);
+	memcpy (V, V_in, N * sizeof (float));
+	volk_free (V_Table);
+	volk_free (A_Table);
+	volk_free (V_in);
+	volk_free (A_in);
+#endif
+}
+
+	
+	
+ 
 

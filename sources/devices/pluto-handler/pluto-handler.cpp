@@ -613,13 +613,13 @@ std::complex<int16_t> dumpBuf [SAMPLERATE / DIVIDER];
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
 	      std::complex<int16_t>dumpS = std::complex<int16_t> (i_p, q_p);
-	      dumpBuf [convIndex] = dumpS;
+//	      dumpBuf [convIndex] = dumpS;
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
 	      if (convIndex > CONVERSION_SIZE) {
-	         if (!xmlWriter. isNull ())
-	            xmlWriter -> add (dumpBuf, CONVERSION_SIZE);
+//	         if (!xmlWriter. isNull ())
+//	            xmlWriter -> add (dumpBuf, CONVERSION_SIZE);
 	         for (int j = 0; j < SAMPLERATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];

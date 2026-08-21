@@ -178,7 +178,7 @@ private:
 	int32_t			nrBlocks;
 	int32_t			carriers;
 	int32_t			carrierDiff;
-	int16_t			fineOffset;
+	float			fineOffset;
 	int32_t			coarseOffset;
 //	QByteArray		transmitters;
 	bool			correctionNeeded;

@@ -145,7 +145,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 	   }
 	}
 
-	if (firstFound)
+	if ((firstFound) && (indices. size () > 0))
 	   return indices [0];
 	return maxIndex;
 }

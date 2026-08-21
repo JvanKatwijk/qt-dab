@@ -8,7 +8,7 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/Modules/CMakeFunctions.cmake)
 
 project(Qt-DAB VERSION 6)
-set (objectName qt-dab-7.2)
+set (objectName qt-dab-7.3.0)
 set (objectName "Qt-DAB")
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,7 +22,7 @@ endif()
 add_definitions(-DAPP_NAME="${objectName}")
 add_definitions(-DPRJ_NAME="${PROJECT_NAME}")
 add_definitions(-DPRJ_VERS="${PROJECT_VERSION}")
-add_definitions(-DVERSION="7.2")
+add_definitions(-DVERSION="7.3.0")
 add_definitions(-DVITERBI="scalar")
 
 if(MINGW)
@@ -323,6 +323,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/super-frame.h 
 	   ./sources/support/gui-elements/verysmallpushbutton.h 
 	   ./sources/support/gui-elements/slidelabel.h 
+	   ./sources/support/gui-elements/color-label.h 
 	   ./sources/update/updatechecker.h
 	   ./sources/update/appversion.h
 	   ./sources/devices/selector.h 
@@ -468,6 +469,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/gui-elements/super-frame.cpp 
 	   ./sources/support/gui-elements/verysmallpushbutton.cpp 
 	   ./sources/support/gui-elements/slidelabel.cpp 
+	   ./sources/support/gui-elements/color-label.cpp 
 	   ./sources/update/updatechecker.cpp
 	   ./sources/devices/riff-writer.cpp 
 	   ./sources/devices/selector.cpp 
@@ -536,6 +538,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/support/gui-elements/smallspinbox.h 
 	     ./sources/support/gui-elements/super-frame.h 
 	     ./sources/support/gui-elements/verysmallpushbutton.h 
+	     ./sources/support/gui-elements/color-label.h 
 	     ./sources/support/scantable-handler.h 
 	     ./sources/support/scheduler.h
 	     ./sources/support/schedule-selector.h
