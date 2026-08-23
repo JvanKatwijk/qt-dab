@@ -196,7 +196,7 @@ The buttons on the main window
 Some buttons were moved from the configuration and control window tothe main window, resulting in two rows of buttons.
 For each of the buttons a **tooltip** gives more details on the functionality controlled by that button.
 
-![7.3](res/read_me/main-window-buttons?raw=true)
+![7.3](/res/read_me/main-window-buttons.png?raw=true)
 
 The buttons:
  * the buttons labeled **controls**, **spectrum** just control the visibility of the **configuration and control** resp. the **spectrum scope* window;
@@ -398,11 +398,12 @@ The number "5", displayed in the process counter,
 
 ![7.1](/res/read_me/process-management.png)
 
-(Note that the NPO and other Dutch broadcasters do not provide EPG/SPI
-or other packet services, so the example is using a recording).
 
 The figure shows that 5 services are running, the "Mode" indicator set to 1
 tells the task is running in the background.
+
+(Note that the NPO and other Dutch broadcasters do not provide EPG/SPI
+or other packet services, so the example is using a recording).
 
 The picture shows an audio service, **Dlf** which carriers a
 secondary service, DlfTXT.
@@ -420,6 +421,7 @@ in the services list, and the decoding is started.
 ![7.1](/res/read_me/process-management-3.png)
 
 Manually stopping the service is by clicking again on the servicename.
+or by clicking on the name in the above mentioned control window.
 
 ------------------------------------------------------------------------
 New: Managing service lists
