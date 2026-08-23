@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.3.0\\\"
+DEFINES         += VERSION=\\\"7.3.1\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+= -Wvla
@@ -445,10 +445,10 @@ INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.3.-
+   TARGET               = qt-dab-qt5-7.3.1
 }
 else {
-   TARGET               = qt-dab-7.3.0
+   TARGET               = qt-dab-7.3.1
 }
 
 #mac {
@@ -511,7 +511,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.3.0
+        TARGET          = qt-dab-7.3.1
 	DEFINES		+= __BITS64__
 	DESTDIR		=  ./linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

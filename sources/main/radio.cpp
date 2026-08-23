@@ -1401,10 +1401,6 @@ void	RadioInterface::newAudio	(uint32_t amount, int rate,
 void	RadioInterface::setPeakLevel (const std::vector<float> &samples) {
 float	absPeakLeft	= 0;
 float	absPeakRight	= 0;
-static int teller = 0;
-	if (++teller < 2)
-	   return;
-	teller = 0;
 	for (uint32_t i = 0; i < samples. size () / 2; i ++) {
 	   const float absLeft  = std::abs (samples [2 * i]);
 	   const float absRight = std::abs (samples [2 * i + 1]);

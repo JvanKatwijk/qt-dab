@@ -24,7 +24,7 @@
 #include	"sample-reader.h"
 #include	"radio.h"
 #include	"dab-constants.h"
-#ifdef	__HAVE_VOLK
+#ifdef	__HAVE_VOLK__
 #include	<volk/volk.h>
 #endif
 static  inline
@@ -224,10 +224,10 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 #else
 	std::complex<float> phaseInc = 
 	      cmplx_from_phase (- (float)phaseOffset / SAMPLERATE * 2 * M_PI);
+//
+//	Note that for U22 parameter is phaseInc rather than &phaseInc
         volk_32fc_s32fc_x2_rotator2_32fc_u (buffer, buffer,
-//	volk_32fc_s32fc_x2_rotator_32fc_u (buffer, buffer,
-                                           phaseInc, &phase, nrSamples);
-//	                                    &phaseInc, &phase, nrSamples);
+	                                    &phaseInc, &phase, nrSamples);
 	memcpy (&v_out [index], buffer,
 	                nrSamples * sizeof (std::complex<float>));
 #endif

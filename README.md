@@ -1,4 +1,4 @@
-# Qt-DAB-7.3.0
+# Qt-DAB-7.3.1
 
 -------------------------------------------------------------------
 
@@ -7,20 +7,19 @@
 About Qt-DAB
 ======================================================================
 
-*Qt-DAB* is software for Linux and Windows, and can be compiled for MacOS and Raspberry Pi. It is used for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
+*Qt-DAB* is software for Linux and Windows. It is to be used in combination with an SDR device for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**. 
+For the current version, *Qt-DAB-7.3.1*, predefined executables - for Linux an AppImage, for Windows an installer - will be available.
+Sources can be compiled for e.g. Raspberry and Mac.
 
 ![7.3](/res/read_me/qt-dab-front-picture-1.png?raw=true)
 ![7.3](/res/read_me/qt-dab-front-picture-2.png?raw=true)
 
-Of course, as for previous versions, for the current version,
-*Qt-DAB-7.3.0*, predefined executables - for Linux an AppImage, for Windows
-an installer - are (or will be) available.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.3.0](#What-is-new-in-Qt-DAB-7.3.0)
+* [What is new in Qt-DAB-7.3.1](#What-is-new-in-Qt-DAB-7.3.1)
 * [Windows and scopes](#windows-and-scopes)
-* [NEW: Managing service lists](#new-managing-service lists_
+* [Managing service lists](#new-managing-service lists)
 * [Devices and device support](#devices-and-device-support)
 * [Handling packet services](#handling-packet-services)
 * [Scan control](#scan-cntrol)
@@ -34,6 +33,12 @@ Table of Contents
 
 What is new in Qt-DAB-7.3.0
 ======================================================================
+
+Qt-DAB-7.3.1 and 7.3.0 ony differ in  few errors being removed:
+ - the adalm pluto device now runs fine under Fedora;
+ - an uninitialized variable gave somtimes nasty results in the snr window.
+
+Furthermore, some code was cleaned up, and some color settings on the main window were changed.
 
  - Based on user's request in Qt-DAB-7.3.0 the main window is - within limits - resizable.
 
@@ -136,7 +141,7 @@ If an EPG service is detected on starting a channel, Qt-DAB will attempt to star
 EPG/SPI data may consist of two parts: 
    * icons for services. If on selecting a service an Icon is detected in the user's Qt-DAB-files directory, the Icon is made visible and takes the place of the **short name** of the service, both on the main window and the technical details window.
 
-![7.2](/res/read_me/bbc-3.png?raw=true)
+![7.2](/res/read_me/poland.png?raw=true)
 
  * **Electronic Program Guide  Data**.
 Touching the **EPG** icon make a small window visible, the **timetable list**.
@@ -146,21 +151,19 @@ timetable data for the service could be detected, **red** otherwide.
 ![7.2](/res/read_me/timetable-catalog.png?raw=true)
 
 Touching in this list on a green entry, shows yet another window, with
-time table data.
-
-![7.2](/res/read_me/timetable.png?raw=true)
+time table data (as shown on the right half of the picture).
 
 (Note: our NPO is not that advanced that it provides EPG/SPI data, so the
 development and testing uses file input).
 
-Note however, that in general it may take some time before sufficient EPG/SPI data is read in for the above mentioned functionality to be operational.
+**Note however, that in general it takes some time before sufficient EPG/SPI data is read in such that icons can be shown and timetables can be displayed.**
 
 The slide
 -----------------------------------------------------------------------
 
 In the middle part of the right half of the main window **slides** are shown. By default some slides with old computer or radio stuff are shown. If, however, the service carries MOT data in the PAD part, the slides are shown whenever they are decoded.
 
- * **clicking** with the mouse on the slide area controls whether or not the incoming slides are saved. If they are saved, they can be found in a subdirectory within the directory where Qt-DAB stores data.
+The configuration and control window contains a selector, when set slides are saved in a subdirectory (labeled with the EId of the ensemble) in the directory where Qt-DAB stores its data.
 
 The dynamic label.
 -------------------------------------------------------------------------
@@ -179,19 +182,21 @@ New is that - if available - the icon of the selected service is shown.
 
 ![7.2](/res/read_me/technical-window.png)
 
-As  said, the progress bars disappeared:  indicators tell whether
+As said, the progress bars disappeared:  indicators tell whether
 or not the steps in the transformation from raw data to audio are successfull.
-Essentially, if all indicators are green there should be sound.
+Indicators may take the colors **green** when the process part they represent is functioning correctly, **yellow** if not completely correct, and **red** if basically failing.
 
 The window contains two buttons
  * the button labeled **AAC/MP2** when touched, asks for a filename where the AAC or MP2 (depending on the type of DAB service) is stored;
  * the button labeled **WAV** when touched asks for a filename where the resulting audio (PCM) is stored.
 
-The buttons
+The buttons on the main window
 ---------------------------------------------------------------------------
 
 Some buttons were moved from the configuration and control window tothe main window, resulting in two rows of buttons.
 For each of the buttons a **tooltip** gives more details on the functionality controlled by that button.
+
+![7.3](/res/read_me/main-window-buttons?raw=true)
 
 The buttons:
  * the buttons labeled **controls**, **spectrum** just control the visibility of the **configuration and control** resp. the **spectrum scope* window;
@@ -203,7 +208,7 @@ The buttons:
 The bottom line
 -------------------------------------------------------------------------
 
-The bottom line of the right half of the main window may show a transmittername. If the software detects the TII data it will show the name of the transmitter with the strongest signal here.
+The bottom line of the right half of the main window (see the picture above) may show a transmittername. If the software detects the TII data it will show the name of the transmitter with the strongest signal here.
 Clicking on the line shows a table with the names of all transmitters detected.
 
 ![7.2](/res/read_me/new-dxDisplay.png?raw=true)
@@ -221,13 +226,17 @@ Clicking with the right hand mouse button on the scope, shows a small window on 
  * the second selected one is the color for the "grid", 
  * the third selected one is the color for the data line.
 
-The spectrum
+The spectrum scope and its displays
 -----------------------------------------------------------------------
 
 ![7.3](/res/read_me/spectrum-scope-a.png)
 ![7.3](/res/read_me/spectrum-scope-b.png)
 
-The spectrum of the incoming DAB signal is shown.
+New in Qt-DAB 7.3.0 is that the spectrum of the NULL part of DAB fraes
+can be made visisble with the **carriers** button.
+
+The "scope" shows thr spectrum of the incoming DAB signal. The width of the spectrum is app 1.5 MHz (the channel distance between successive DAB channels app 1.7Mhz).
+
 To the right of this spectrum, one sees the
 **signal constellation**, i.e. the mapping from the complex (i.e. "IQ") signals
 resulting from the decoder, onto their real and imaginary components. If the selector labeled "ncp" is set, the centerpoints of the 4 lobs is shown. 
@@ -274,10 +283,9 @@ The null scope
 
 A DAB signal is received as a sequence of samples, and can be thought to
 be built up from **frames** (DAB frames) where each frame consists of 199608 consecutive samples.
-The **amplitude** of the first app. 2500 samples is (almost) zero, the **NULL**
-period.  The **NULL scope** shows the samples in the transition from the
-**NULL** part to the first samples **with** data of a DAB frame.
-It shows that samples 504 and up in the first data block are used.
+The **amplitude** of the first app. 2500 samples should be (almost) zero,
+the **NULL** period.  This **NULL scope** shows the samples in the transition from the **NULL** part to the first samples **with** data of a DAB frame.
+It shows that samples 504 and up in the first data block are used, it furthermore shows that in the picture there is quite some noise in the signal.
 
 The TII scope
 --------------------------------------------------------------------------
@@ -298,17 +306,14 @@ The channel scope
 
 ![7.2](/res/read_me/qt-dab-channel.png)
 
-The picture shows the channel response on the amplitude, and
-the *red line*, i.e. the channel effects on the phase of the samples.
-The picture clearly shows two larger and a few smaller peaks.
+The picture gives an overview of the strengths of the signals received from the different transmitters in the neighbourhood.
 
 The bits scope
 -------------------------------------------------------------------------
 
 ![7.2](/res/read_me/qt-dab-stddev.png)
 
-The front end part of the software output "soft bits", encoded as values in the range -127 .. 127. Other parts of the software take soft bits in and - using visterbi decoding and in some case reed Solomon error repair - output "hard bit",
-i.e. "1" and "0" values.
+The front end part of the software output "soft bits", encoded as values in the range -127 .. 127. Other parts of the software take these soft bits in and - using visterbi decoding and in some case reed Solomon error repair - output "hard bit", i.e. "1" and "0" values.
 
 The carrier scope
 -------------------------------------------------------------------------

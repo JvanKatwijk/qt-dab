@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>803</width>
-    <height>501</height>
+    <height>444</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -454,7 +454,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_8">
        <item>
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="berLabel">
          <property name="text">
           <string>Ber (fic)</string>
          </property>
@@ -477,7 +477,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="merLabel">
          <property name="text">
           <string>MER (dB)</string>
          </property>

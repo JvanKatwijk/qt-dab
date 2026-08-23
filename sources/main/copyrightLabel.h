@@ -41,12 +41,16 @@ private:
 	QLabel	*authorLabel;
 	QLabel	*versionLabel;
 	QLabel	*buildLabel;
-	QLabel	*qtVersionLabel;
 	QLabel	*sourceLocationLabel;
 	QLabel	*librariesLabel;
 	QLabel	*configurationLabel;
 	QLabel	*acknowledgementsLabel;
 	QTextEdit	*disclaimerLabel;
 	QVBoxLayout	*theLayout;
+
+	QFrame		*frame_1;
+	QFrame		*frame_2;
+	QFrame		*frame_3;
+	QFrame		*frame_4;
 };
 

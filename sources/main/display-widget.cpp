@@ -75,6 +75,10 @@
 	   setStyleSheet ("font-weight:bold; color: yellow");
 	unbalanceLabel	->
 	   setStyleSheet ("font-weight:bold; color: yellow");
+	berLabel	->
+	   setStyleSheet ("font-weight:bold; color: yellow");
+	merLabel	->
+	   setStyleSheet ("font-weight:bold; color: yellow");
 	dcOffset_display	-> show ();
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(plotArea,

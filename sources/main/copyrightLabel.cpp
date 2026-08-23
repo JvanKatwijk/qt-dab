@@ -48,8 +48,7 @@
 	versionLabel	= new QLabel;
 	versionLabel	-> setText (QString("Current Version-%1").arg (version));
 //
-	qtVersionLabel	= new QLabel;
-	qtVersionLabel	-> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));
+	QString qtVersion = QString(tr("( Qt %1)")).arg(QT_VERSION_STR);
 
 ///////////////////////////////////////////////////////////////////////////
 	QString support;
@@ -110,7 +109,7 @@ QString aacComment;
 	librariesLabel	-> setWordWrap (true);
 	librariesLabel -> setText (tr("Qt-DAB uses following libraries (and greatly acknowledges the copyright of their owners):")+
                            "<ul>" +
-	                   "<li>The excellent Qt framework by Qt</li>" +
+	                   "<li>The excellent Qt framework by Qt" + qtVersion + "</li>" +
                            "<li><a href=\"www.fftw.org\">FFTW</a> by Matteo Frigo and Steven G Johnsom</li>" +
                            "<li><a href=\"https://github.com/Opendigitalradio/ka9q-fec\">Reed Solomon</a> by Phil Karn, KA9Q</li>" +
                            "<li><a href=\"https://www.spiral.net/software/viterbi.html\">viterbi code generator</a> by the Spiral project</li>" +
@@ -191,15 +190,34 @@ QString aacComment;
 //	build up the layout
 ///////////////////////////////////////////////////////////////////////////
 	theLayout	= new QVBoxLayout;
-	theLayout	-> addWidget (titleLabel);
-	theLayout	-> addWidget (versionLabel);
+	frame_1		= new QFrame;
+	frame_1		-> setFrameShape (QFrame::Box);
+	QHBoxLayout	*V1 = new QHBoxLayout;
+	V1		-> addWidget (titleLabel);
+	V1		-> addWidget (versionLabel);
+	frame_1		-> setLayout (V1);
+	theLayout	-> addWidget (frame_1);
 	theLayout	-> addWidget (authorLabel);
 	theLayout	-> addWidget (buildLabel);
-	theLayout	-> addWidget (qtVersionLabel);
 	theLayout	-> addWidget (sourceLocationLabel);
-	theLayout	-> addWidget (librariesLabel);
-	theLayout	-> addWidget (configurationLabel);
-	theLayout	-> addWidget (acknowledgementsLabel);
+	frame_2		= new QFrame;
+	frame_2		-> setFrameShape (QFrame::Box);
+	QVBoxLayout	*V2 = new QVBoxLayout;
+	V2		-> addWidget (librariesLabel);
+	frame_2		-> setLayout (V2);
+	theLayout	-> addWidget (frame_2);
+	frame_3		= new QFrame;
+	frame_3		-> setFrameShape (QFrame::Box);
+	QVBoxLayout *V3	= new QVBoxLayout;
+	V3		-> addWidget (configurationLabel);
+	frame_3		-> setLayout (V3);
+	theLayout	-> addWidget (frame_3);
+	frame_4		= new QFrame;
+	frame_4		-> setFrameShape (QFrame::Box);
+	QVBoxLayout *V4	= new QVBoxLayout;
+	V4		-> addWidget (acknowledgementsLabel);
+	frame_4		-> setLayout (V4);
+	theLayout	-> addWidget (frame_4);
 	theLayout	-> addWidget (disclaimerLabel);
 	this	-> setLayout (theLayout);
 	show ();
