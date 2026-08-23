@@ -196,7 +196,7 @@ The buttons on the main window
 Some buttons were moved from the configuration and control window tothe main window, resulting in two rows of buttons.
 For each of the buttons a **tooltip** gives more details on the functionality controlled by that button.
 
-![7.3](/res/read_me/main-window-buttons?raw=true)
+![7.3](res/read_me/main-window-buttons?raw=true)
 
 The buttons:
  * the buttons labeled **controls**, **spectrum** just control the visibility of the **configuration and control** resp. the **spectrum scope* window;
