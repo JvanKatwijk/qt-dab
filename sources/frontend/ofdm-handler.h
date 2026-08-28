@@ -126,6 +126,7 @@ public:
 	void		setCorrelationOrder	(bool);
 	void		setDXMode		(bool);
 	void		set_dcRemoval		(bool);
+	void		set_iqBalance		(bool);
 
 	std::vector<basicService> getServices	();
 private:

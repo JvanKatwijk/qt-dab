@@ -171,7 +171,7 @@ QTranslator	theTranslator;
 	}
 //	setting the language
 	QString locale = QLocale::system (). name ();
-	qDebug() << "main:" <<  "Detected system language" << locale;
+	qDebug () << "main:" <<  "Detected system language" << locale;
 	setTranslator (&theTranslator, locale);
 	a. setWindowIcon (QIcon (":/res/qt-dab-6-128x128.png"));
 //

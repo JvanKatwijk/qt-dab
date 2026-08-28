@@ -35,7 +35,7 @@
 #include	"ringbuffer.h"
 #include	"riff-writer.h"
 #include	"dc-filter.h"
-#include	"equalizer.h"
+#include	"iq-filter.h"
 //      Note:
 //      It was found that enlarging the buffersize to e.g. 8192
 //      cannot be handled properly by the underlying system.
@@ -59,9 +59,11 @@ public:
 	      void	startDumping	(const QString &, int, int, const QString);
 	      void	stopDumping	();
 	      void	set_dcRemoval	(bool);
+	      void	set_iqBalance	(bool);
 private:
 	      deviceHandler	*theRig;
 	      dcFilter		dcRemover;
+	      iqFilter		balancer;
 	      RingBuffer<Complex> *spectrumBuffer;
 	      riffWriter	sourceDumper;
 	      RadioInterface	*myRadioInterface;
@@ -83,6 +85,7 @@ private:
 
 	      std::complex<float> phase;
 	      bool		dcRemoval;
+	      bool		iqBalance;
 	      DABFLOAT		dcReal;
 	      DABFLOAT		dcImag;
 	      DABFLOAT		IQ_Real;

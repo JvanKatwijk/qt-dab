@@ -228,6 +228,7 @@ char	manufac [256], product [256], serial [256];
 	ppm_correction	->  
 	     setValue (value_i (rtlsdrSettings, storageName,
 	                                 "ppm_correction", 0));
+	
 	save_gainSettings	=
 	     value_i (rtlsdrSettings, storageName,
 	                             "save_gainSettings", 1) != 0;
@@ -254,6 +255,11 @@ char	manufac [256], product [256], serial [256];
 	   theErrorLogger -> add ("RTLSDR", t);
 	}
 	set_ppmCorrection	(ppm_correction -> value());
+
+	int biasT	= 
+	     value_i (rtlsdrSettings, storageName, 
+	                             "save_biasSettings", 0) != 0;
+	biasControl	-> setChecked (biasT != 0);
 
 	for (int i = 0; i < 256; i ++)
 	   convTable [i] = (i - 127.38) / 128.0;
@@ -412,6 +418,9 @@ void	rtlsdrHandler::set_biasControl	(int dummy) {
 	if (rtlsdr_set_bias_tee != nullptr) {
 	   int res =  rtlsdr_set_bias_tee (theDevice,
 	                             biasControl -> isChecked () ? 1 : 0);
+	   
+	   store (rtlsdrSettings, storageName,
+	                      "save_biasSettings", biasControl -> isChecked () ? 1 : 0);
 	   if (res != 0) {
 	      QString t = QString ("Cannot set bias tee to ") +
 	                             (biasControl -> isChecked () ? "1" : "0");

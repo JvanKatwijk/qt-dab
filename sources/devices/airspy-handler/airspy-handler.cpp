@@ -118,7 +118,7 @@ uint32_t samplerateCount;
 //	fprintf (stderr, "%d samplerates are supported\n", samplerateCount); 
 	sampleRates. resize (samplerateCount);
 	my_airspy_get_samplerates (device,
-	                            sampleRates. data(), samplerateCount);
+	                            sampleRates. data (), samplerateCount);
 
 	selectedRate	= 0;
 	for (int i = 0; i < (int)samplerateCount; i ++) {
@@ -162,6 +162,9 @@ uint32_t samplerateCount;
         convBuffer. resize (convBufferSize + 1);
 //
 	restore_gainSettings (tab);
+	int biasT	=  value_i (airspySettings, AIRSPY_SETTINGS,
+	                                        "save_biasSettings", 0) != 0;
+        biasButton	-> setChecked (biasT != 0);
 	connect (linearitySlider, &QSlider::valueChanged,
 	         this, &airspyHandler::set_linearity);
 	connect (sensitivitySlider, &QSlider::valueChanged,
@@ -947,6 +950,8 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	   printf("airspy_set_rf_bias() failed: %s (%d)\n",
 	           my_airspy_error_name ((airspy_error)result), result);
 	}
+	store (airspySettings, AIRSPY_SETTINGS,
+                             "save_biasSettings", biasButton -> isChecked () ? 1 : 0);
 }
 
 void	airspyHandler::showStatus	(const QString s) {

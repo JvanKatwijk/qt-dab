@@ -736,6 +736,7 @@ void	RadioInterface::startDirect	() {
 	}
 
 	theOfdmHandler	-> set_dcRemoval (theConfigHandler -> get_dcRemovalSelector ());
+	theOfdmHandler	-> set_iqBalance (theConfigHandler -> get_iqBalanceSelector ());
 	theNewDisplay. set_dcRemoval (true);
 	channel. cleanChannel ();
 //
@@ -3729,16 +3730,16 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	QString tooltipText = "";
 	   switch (pauzeSlideTeller) {
 	      case 2:
-	         tooltipText = "homebrew 60-ies";
+	         tooltipText = "homebrew mid 60-ies";
 	         break;
 	      case 3:
-	         tooltipText = "homebrew 70-ies";
+	         tooltipText = "homebrew early 70-ies";
 	         break;
 	      case 4:
 	         tooltipText = "Flee market in the 60-ies";
 	         break;
 	      case 5:
-	         tooltipText = "The DEC PDP-11/60";
+	         tooltipText = "The DEC PDP-11/60, our first Unix machine on an RK05";
 	         break;
 	      case 6:
 	         tooltipText = "the DEC PDP-1 mainframe";
@@ -3747,9 +3748,12 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 	         tooltipText = "the DEC PDP-10 mainframe";
 	         break;
 	      case 8:
-	         tooltipText = "the unforgettable DEC PDP-8";
+	         tooltipText = "the unforgettable DEC PDP-8, 12 bits, 4096 words and papertape";
 	         break;
 	      case 9:
+	         tooltipText = "the 18 bits DEC PDP-9, 18 bits and DECtape";
+	         break;
+	      case 10:
 	         tooltipText = "The DEC VAX 11/780";
 	         break;
 	      default:
@@ -4031,6 +4035,10 @@ void	RadioInterface::copyrightText_closed	() {
 void	RadioInterface::set_dcRemoval	(bool b) {
 	theOfdmHandler	-> set_dcRemoval (b);
 	theNewDisplay. set_dcRemoval (b);
+}
+
+void	RadioInterface::set_iqBalance	(bool b) {
+	theOfdmHandler	-> set_iqBalance (b);
 }
 
 void	RadioInterface::set_latitude	(float lat) {

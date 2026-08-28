@@ -73,6 +73,7 @@ public:
 	bool	get_allTIISelector	();
 
 	bool	get_dcRemovalSelector	();
+	bool	get_iqBalanceSelector	();
 	bool	get_saveTitles		();
 
 	bool	check_correctPhase	();
@@ -119,6 +120,7 @@ private slots:
 	void	handle_saveTitles		(int);
 
 	void	handle_dcRemovalSelector	(int);
+	void	handle_iqBalanceSelector	(int);
 	void	handle_audioServices_only	(int);
 
 	void	handle_decoderSelector		(const QString &s);
@@ -134,6 +136,7 @@ signals:
 	void	set_transmitters_local	(bool);
 
 	void	set_dcRemoval		(bool);
+	void	set_iqBalance		(bool);
 	void	handle_fontSelect	();
 	void	handle_fontColorSelect	();
 	void	handle_fontSizeSelect	(int);

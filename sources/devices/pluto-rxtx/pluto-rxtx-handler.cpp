@@ -299,14 +299,8 @@ int	ret;
 //
 //	step 1: establish a context
 //
-	ctx	= iio_create_default_context ();
-	if (ctx == nullptr) {
-	   ctx = iio_create_local_context ();
-	}
 
-	if (ctx == nullptr) {
-	   ctx = iio_create_network_context ("pluto.local");
-	}
+	ctx = iio_create_network_context ("pluto.local");
 
 	if (ctx == nullptr) {
 	   ctx = iio_create_network_context ("192.168.2.1");

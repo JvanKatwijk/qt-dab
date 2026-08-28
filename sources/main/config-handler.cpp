@@ -363,6 +363,18 @@ int	index_for_key (int key) {
 	connect (this, &configHandler::set_dcRemoval,
 	         myRadioInterface, &RadioInterface::set_dcRemoval);
 
+	b =  value_i (dabSettings, CONFIG_HANDLER, IQ_BALANCE, 0) != 0;
+	this -> iqBalanceSelector -> setChecked (b);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect (iqBalanceSelector, &QCheckBox::checkStateChanged,
+#else
+	connect (iqBalanceSelector, &QCheckBox::stateChanged,
+#endif
+	         this, &configHandler::handle_iqBalanceSelector);
+
+	connect (this, &configHandler::set_iqBalance,
+	         myRadioInterface, &RadioInterface::set_iqBalance);
+
 	b = value_i (dabSettings, CONFIG_HANDLER, AUDIOSERVICES_ONLY, 1);
 	this	-> audioServices_only -> setChecked (b);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -572,6 +584,10 @@ bool	configHandler::get_dcRemovalSelector	() {
 	return this -> dcRemovalSelector -> isChecked ();
 }
 
+bool	configHandler::get_iqBalanceSelector	() {
+	return this -> iqBalanceSelector -> isChecked ();
+}
+
 //
 bool	configHandler::onTop_active	() {
 	return onTop	-> isChecked ();
@@ -702,6 +718,13 @@ void    configHandler::handle_dcRemovalSelector (int k) {
         bool b = this -> dcRemovalSelector -> isChecked ();
         store (dabSettings, CONFIG_HANDLER, DC_REMOVAL, b ? 1 : 0);
 	emit set_dcRemoval	(b);
+}
+
+void    configHandler::handle_iqBalanceSelector (int k) {
+        (void)k;
+        bool b = this -> iqBalanceSelector -> isChecked ();
+        store (dabSettings, CONFIG_HANDLER, IQ_BALANCE, b ? 1 : 0);
+	emit set_iqBalance	(b);
 }
 
 void	configHandler::handle_loadSelection_selector (int k) {

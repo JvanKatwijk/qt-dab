@@ -224,6 +224,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/support/uploader.h \
 	   ./sources/support/basic-print.h \
 	   ./sources/support/dc-filter.h \
+	   ./sources/support/iq-filter.h \
 	   ./sources/support/gui-elements/position-handler.h \
 	   ./sources/support/gui-elements/settings-handler.h \
 	   ./sources/support/gui-elements/circular-button.h \
@@ -356,6 +357,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/support/bandpass-filter.cpp \
 	   ./sources/support/basic-print.cpp \
 	   ./sources/support/dc-filter.cpp \
+	   ./sources/support/iq-filter.cpp \
 	   ./sources/support/content-table.cpp \
 	   ./sources/support/crc-handlers.cpp \
 	   ./sources/support/distances.cpp \
@@ -469,13 +471,17 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
-#CONFIG		+= pluto-rxtx	# incomplete and experimental
+CONFIG		+= pluto-rxtx	# incomplete and experimental
 CONFIG		+= pluto
 CONFIG		+= spyServer-16
 CONFIG		+= spyServer-8
 #CONFIG		+= uhd		#untested
+#
+#	for audio decoding:
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
+#
+#	for performance experiments
 #CONFIG		+= volk
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer

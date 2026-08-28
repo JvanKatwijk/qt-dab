@@ -87,6 +87,7 @@ constexpr float ALPHA = 1.0f / SAMPLERATE;
 	sLevel			= 0.1f;	// average power level
 	sampleCount		= 0;
 	dcRemoval		= false;
+	iqBalance		= false;
 	dcReal			= 0;
 	dcImag			= 0;
 	IQ_Real			= 0;
@@ -168,32 +169,15 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 
 	float Alpha	= 1.0 / SAMPLERATE;
 //	compute_avg	-> res = (1 - Alpha * res + Alpha * new
-	for (int i = 0; i < nrSamples; i ++) 
+	for (int i = 0; i < nrSamples; i ++) {
 	   IQ_Real	= average (IQ_Real, abs (real (buffer [i])), Alpha);
-	for (int i = 0; i < nrSamples; i ++) 
 	   IQ_Imag	= average (IQ_Imag, abs (imag (buffer [i])), Alpha);
-	if (dcRemoval) 
-	   for (int i = 0; i < nrSamples; i ++) 
+	   if (dcRemoval) 
 	      buffer [i]	= dcRemover. filter (buffer [i]);
-#ifndef	__HAVE_VOLK__
-	for (int i = 0; i < nrSamples; i ++)
+	   if (iqBalance)
+	      buffer [i]	= balancer. process (buffer [i]);
 	   sLevel = 0.00001 * jan_abs (buffer [i]) + (1 - 0.00001) * sLevel;
-#else
-	{  alignas(64) float *realTable = dynVec (float, nrSamples);
-	   alignas(64) float *imagTable = dynVec (float, nrSamples);
-	   volk_32fc_deinterleave_32f_x2_u (realTable, imagTable,
-                                            buffer, nrSamples);
-	   float	I_sum;
-	   float	Q_sum;
-	   volk_32f_accumulator_s32f_a (&I_sum, realTable, nrSamples);
-	   volk_32f_accumulator_s32f_a (&Q_sum, imagTable, nrSamples);
-	   I_sum	/= nrSamples;
-	   Q_sum	/= nrSamples;
-	   sLevel	= average (sLevel,
-	                   sqrt (I_sum * I_sum + Q_sum * Q_sum),
-	                   Alpha); 
 	}
-#endif
 	static int teller = 0; 
 	teller += nrSamples;
 	if (teller >= SAMPLERATE) {
@@ -250,11 +234,16 @@ void	sampleReader::startDumping (const QString &fileName,
 	                    freq, bitDepth, deviceName);
 }
 
-void	sampleReader::stopDumping() {
+void	sampleReader::stopDumping	() {
 	sourceDumper.close ();
 }
 
 void	sampleReader::set_dcRemoval	(bool b) {
 	dcRemoval	= b;
 }
+
+void	sampleReader::set_iqBalance	(bool b) {
+	iqBalance	= b;
+}
+
 

@@ -45,6 +45,8 @@
 #define	SWITCH_VALUE_SETTING	"switchDelay"
 #define	SWITCH_STAY_SETTING	"switchStay"
 #define	SERVICE_ORDER_SETTING	"servicOrder"
+
+#define	IQ_BALANCE		"iq-balance"
 //#define	LOG_MODE		"logMode"
 //#define	EPG2XML_SETTING		"epg2xml"
 //#define	TII_DETECTOR_SETTING	"tii+detector"

@@ -31,14 +31,14 @@ Table of Contents
 * [Building an executable](#building-an-executable)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.3.0
+What is new in Qt-DAB-7.3.1
 ======================================================================
 
 Qt-DAB-7.3.1 and 7.3.0 ony differ in  few errors being removed:
  - the adalm pluto device now runs fine under Fedora;
- - an uninitialized variable gave somtimes nasty results in the snr window.
+ - an uninitialized variable gave sometimes nasty results in the snr window.
 
-Furthermore, some code was cleaned up, and some color settings on the main window were changed.
+Furthermore, some code was cleaned up, and some color settings on the main window were changed and a selector was added for controlling a filter to balance the incoming IQ signal;
 
  - Based on user's request in Qt-DAB-7.3.0 the main window is - within limits - resizable.
 

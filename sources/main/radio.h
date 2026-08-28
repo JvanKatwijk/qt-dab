@@ -497,6 +497,7 @@ public slots:
 	void			handle_tiiCollisions		(int);
 	void			handle_activeServices		();
 	void			set_dcRemoval			(bool);
+	void			set_iqBalance			(bool);
 	void			set_latitude			(float);
 	void			set_longitude			(float);
 	void			handle_httpPort			(int);
