@@ -91,6 +91,19 @@
         if (p. load (":res/radio-pictures/down-arrow.png", "png"))
            nextChannel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 
+	theFont		= value_s (viewSettings, ENSEMBLE, "theFont", "Times");
+	fontSize	=
+	                  value_i (viewSettings, ENSEMBLE, "fontSize", 11);
+	fontColor	=
+	                  value_s (viewSettings, ENSEMBLE,
+                                             "fontColor", "white");
+	fprintf (stderr, "%s, %s, %d\n",
+	                     theFont. toLatin1 (). data (),
+	                     fontColor. toLatin1 (). data (), fontSize);
+	normalFont	= QFont (theFont, fontSize, -1, false);
+	markedFont	= QFont (theFont, fontSize + 2, -1, true);
+	channelFont	= QFont (theFont, fontSize - 2);
+
 	set_Colors ();	// the buttons
 	theMode		= ENSEMBLEVIEW;
 	serviceOrder	= 0;
@@ -326,8 +339,7 @@ void	serviceViewer::insert	(const serviceDescriptor &sd, int pos) {
 	   fprintf (stderr, "H E L P\n");
 	   return;
 	}
-QString fontColor = value_s (viewSettings, ENSEMBLE,
-                                             "fontColor", "white");
+
 	viewLocker. lock ();
 	theTable     -> insertRow (pos);     // 
 	QTableWidgetItem *item_1 = new QTableWidgetItem; // serviceName
@@ -621,7 +633,6 @@ int fontSize;
 	                                         "fontSize", 10);
 fontChooser selectFont ("select font");
 QStringList fontList;
-QString	theFont;
 	fontList << QString ("Times");
 	fontList << QString ("Helvetica");
 	fontList << QString ("Arial");
@@ -633,7 +644,7 @@ QString	theFont;
 	for (auto &s : fontList)
 	   selectFont. add (s);
 	int fontIndex	= selectFont. QDialog::exec ();
-	theFont	= fontList. at (fontIndex);
+	theFont		= fontList. at (fontIndex);
 	store (viewSettings, ENSEMBLE, "theFont", theFont);
 	normalFont	= QFont (theFont, fontSize, -1, false);
 	markedFont	= QFont (theFont, fontSize + 2, -1, true);
@@ -647,7 +658,7 @@ QColor	color;
 	color	= QColorDialog::getColor (color, nullptr, "fontColor");
 	if (!color. isValid ())
 	   return;
-	QString fontColor	= color. name ();
+	fontColor	= color. name ();
 	store (viewSettings, ENSEMBLE, "fontColor", fontColor);
 	updateFonts ();
 }
@@ -656,6 +667,7 @@ void	serviceViewer::handleFontSizeSelect	(int fontSize) {
 QString	theFont	= viewSettings -> value ("theFont", "Times"). toString ();
 	if (fontSize < 8) 
 	   return;
+	this	-> fontSize	= fontSize;
 	store (viewSettings, ENSEMBLE, "fontSize", fontSize);
 	normalFont	= QFont (theFont, fontSize, -1, false);
 	markedFont	= QFont (theFont, fontSize + 2, -1, true);
@@ -664,8 +676,15 @@ QString	theFont	= viewSettings -> value ("theFont", "Times"). toString ();
 }
 
 void	serviceViewer::updateFonts	() {
-QString fontColor = value_s (viewSettings, ENSEMBLE,
+	fontColor	= value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
+	theFont         = value_s (viewSettings, ENSEMBLE, "theFont", "Times");
+        fontSize        =
+                          value_i (viewSettings, ENSEMBLE, "fontSize", 11);
+        normalFont      = QFont (theFont, fontSize, -1, false);
+        markedFont      = QFont (theFont, fontSize + 2, -1, true);
+        channelFont     = QFont (theFont, fontSize - 2);
+
 	viewLocker. lock ();
 	for (int i = 0; i < theTable -> rowCount (); i ++) {
 	   if (i == currentService) {

@@ -77,7 +77,7 @@ int	index_for_key (int key) {
 //	note that ONLY the GUI is set, values are not used
 
         int fontSize    =  
-	         value_i (dabSettings, COLOR_SETTINGS, "fontSize", 10);
+	         value_i (dabSettings, ENSEMBLE, "fontSize", 10);
 	this	-> fontSizeSelector -> setValue (fontSize);
 //
 //	Topline

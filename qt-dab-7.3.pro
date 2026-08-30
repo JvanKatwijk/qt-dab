@@ -8,7 +8,7 @@
 TEMPLATE	= app
 QT		+= widgets xml multimedia charts
 QT		+= network
-#CONFIG		+= console
+$CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 

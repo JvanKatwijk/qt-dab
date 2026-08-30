@@ -61,7 +61,6 @@ void	tdc_dataHandler::add_mscDatagroup (const std::vector<uint8_t> &m) {
 int32_t	offset	= 0;
 uint8_t	*data	= (uint8_t *)(m. data());
 int32_t	size	= m. size();
-	fprintf (stderr, "x ");
 
 //	we maintain offsets in bits, the "m" array has one bit per byte
 	while (offset < size) {

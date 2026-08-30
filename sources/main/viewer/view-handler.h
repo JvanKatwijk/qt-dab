@@ -134,6 +134,10 @@ private:
 	void		mark		(int);
 	void		unmark		(int);
 
+	QString		theFont;
+        int		fontSize;
+        QString		fontColor;
+
 	uint8_t		ensembleMode;
 	QTimer		updateTimer;
 	QTimer		timer_1;

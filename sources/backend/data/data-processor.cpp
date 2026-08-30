@@ -29,7 +29,6 @@
 #include	"ip-datahandler.h"
 #include	"mot-handler.h"
 #include	"journaline-controller.h"
-//#include	"journaline-datahandler.h"
 #include	"tdc-datahandler.h"
 #include	"adv-datahandler.h"
 

@@ -34,11 +34,14 @@ Table of Contents
 What is new in Qt-DAB-7.3.1
 ======================================================================
 
-Qt-DAB-7.3.1 and 7.3.0 ony differ in  few errors being removed:
+Qt-DAB-7.3.1 and 7.3.0 ony differ in some details:
  - the adalm pluto device now runs fine under Fedora;
- - an uninitialized variable gave sometimes nasty results in the snr window.
+ - an uninitialized variable gave sometimes nasty results in the snr window;
+ - color settings of the audio attributes was harmonized;
+ - the biasT setting in some devices was not remembered between program invocations, and now it is;
+ - the font, font size and font color settings of the service list on the main window is now maintained between program invocations.
+ - a selector is added for controlling a filter to balance the I and Q components of the incoming signal.
 
-Furthermore, some code was cleaned up, and some color settings on the main window were changed and a selector was added for controlling a filter to balance the incoming IQ signal;
 
  - Based on user's request in Qt-DAB-7.3.0 the main window is - within limits - resizable.
 

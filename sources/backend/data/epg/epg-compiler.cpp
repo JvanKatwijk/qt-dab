@@ -27,6 +27,8 @@
 #include	"time-converter.h"
 #include	"errorlog.h"
 //	miniparser for epg
+//	parser is a straightforward recursive descent one
+
 //	input:	a vector delivered by the MOT handler
 //	output:	A QDOMDocument
 
@@ -127,6 +129,7 @@ int	index	= 0;
 	   }
 	   return scheduleType;
 	}
+
 	if (tag == SERVICE_TAG)	{	// superfluous test
 	   QDomElement serviceInformation;
 	   serviceInformation = doc. createElement ("serviceInformation");
