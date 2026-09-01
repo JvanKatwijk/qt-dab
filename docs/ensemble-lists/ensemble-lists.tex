@@ -23,7 +23,8 @@
 \bibliographystyle{plain}
 \addtocontents{toc}{\setcounter{tocdepth}{2}}
 \begin{document}
-\title{Handling ensemble lists in Qt-DAB}
+\title{Handling ensemble lists in Qt-DAB\\
+updated}
 \author{
 Jan van Katwijk, 
 Lazy Chair Computing \\
@@ -34,15 +35,29 @@ The Netherlands}
 %\baselineskip 22pt
 \ \\
 \section{Introduction}
-Qt-DAB - with normal use - shows on its left part a long list of services, services from all ensembles seen. It resembles my car radio, we drove a few times from the Netherlands to Spain and my car radio shows dozens of service names with interesting names, but that obviously cannot be decoded here.
+Qt-DAB - with normal use - shows on its left part a long list of services, services from all ensembles seen.
+It resembles my car radio, we drove a number times from the Netherlands to Spain (and back) and my car radio shows dozens of service names from Belgium, France and Spain, services that will not run very well where I live.
 \par
-It shows that some form of management of ensemble lists is needed. In Qt-DAB, with its scanning possibilities one may need different service lists for different occasions and Qt-DABe provides a form of management. But first, a note on the modes.
+It shows that some form of management of ensemble lists is needed.
+There are two forms, one is managing the current list, the other one is maintaining more than one list.
+\par
+As said, adding to the lists is beyond user control: the software adds (channelm service name) pairs whenever it detects one.
+Delering a service from the current list is also pisisble, see below.
+\par
+In Qt-DAB, with its scanning possibilities one may need different service lists for different occasions and Qt-DAB provides the possibility of using different service lists on different occasions.
 \section{Running with different modes}
 \paragraph{Running the default mode}
-When running with default settings with input from a {\em real} device, Qt-DAB just collects all service names and maintains a list of these names between program invocations. On selecting a service, Qt-DAB switched to a different
-channel - if needed.
-In the list one may select {\em favourites}, the favourites - I usually have somewhere between 5 and 10 services marked as favourite - can be shown as a short list, and - obviously - the marking as favourite is stored in the database.
-Note that this list only shows audio services, EPG/SPI services are part of the list and automatically started as background task, but not shown;
+The default setting is that the selector {\em show only audio services} is set,
+When running with default settings with input from a {\em real} device, Qt-DAB just collects all names of audio (and EPG/SPI) services and maintains a list of these names between program invocations. (The EPG/SPI services remain invisble and, when the channel such a service is on, the EPG/SPI services runs invisible in the background).
+On selecting a service, Qt-DAB switches to a different
+channel - if needed. It may take a few seconds before the data describing the ensemble in that channel is collected.
+\par
+In the list of services one may set a service to become {\em favourite}, just by clicking on the third column in the row where the service is found.
+The favourites - I usually have somewhere between 5 and 10 services marked as favourite - can be shown as a short list, and - obviously - the marking as favourite is stored in the database. (Removing a service from the list of favourites is by clicking on the star in the thrd column).
+\par
+It sometimes happens that the content of an ensemble changes, one or more services out, and one or more in.
+In the current implementation, the {\em new} services appear in the list, however, the old services remain visible. While in a next version the services list will be updated automatically, in the current version one needs to remove the services from the list manually. Removing a service from the list is by clicking on the first column or the row where the service name is found, i.e. the column where the channelname is displayed.
+
 \paragraph{Running with file input}
 Qt-DAB supports reading from a file. Of course, when running with input from a file, a number of options is meaningless: i.e. selecting a channel, setting a favourite are options with no meaning.
 In case the channel on which the transmission was recorded was not detected (xml files and ".wav" files generated on Qt-DAB contain the channel information), no channel is shown.
@@ -55,7 +70,7 @@ The {\em configuration and control} window contains a selector, labeled {\em sho
 The rationale is that you most likely only want to see packet services is you want to select them. Note that EPG/SPI services are always selected.
 A selected packet service (usually) does not generate audio, most TPEG type services are encoded in a way Qt-DAB cannot decode them.  Qt-DAB spits out the converted packets as udp packets, and from time to time I let a separate program listen to see if further deciphering is possible.
 
-That is why in Qt-DAB the choise was made to run a service on selection as a background service, just letting it sending output to thr aforementioned port.
+That is why in Qt-DAB the choice was made to run a selected packet service  as a background service, just letting it sending output to the aforementioned port.
 This allows an audio service to be selected as forground task.
 (Note that EPG/SPI type services already ran in the background).
 \par

@@ -41,7 +41,8 @@ Qt-DAB-7.3.1 and 7.3.0 ony differ in some details:
  - the biasT setting in some devices was not remembered between program invocations, and now it is;
  - the font, font size and font color settings of the service list on the main window is now maintained between program invocations.
  - a selector is added for controlling a filter to balance the I and Q components of the incoming signal.
-
+ - sorting when adding a service to the services list contained a small error.
+ - removing superfluous services from the services list is now supported.
 
  - Based on user's request in Qt-DAB-7.3.0 the main window is - within limits - resizable.
 

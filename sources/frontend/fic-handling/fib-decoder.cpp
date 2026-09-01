@@ -1041,11 +1041,11 @@ char		label [17];
 	int teller = 0;
 	for (int i = 0; i < 16; i ++) {
 	   uint8_t temp = getBits_8 (d, offset + 8 * i);
-	   if (isDecent (temp))
+//	   if (isDecent (temp))
 	      label [teller ++] = getBits_8 (d, offset + 8 * i);
 	}
 	label [teller] = 0;
-	
+
 	serviceName = toQStringUsingCharset (
 	                               (const char *) label,
 	                               (CharacterSet) charSet);
@@ -1681,6 +1681,8 @@ void	fibDecoder::check_announcements (uint8_t clusterId,
 	         uint16_t flags = (ac. ASUFlags & AswFlags);
 	         uint16_t theSId = 0;
 //
+	         fprintf (stderr, "announcement for %d\n",
+	                               subChId);
 //	we know that signalling is only for audio services
 	         for (auto & comp : currentConfig -> FIG02_stack) {
 	             for (auto &g : comp. components) {

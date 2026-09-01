@@ -68,7 +68,7 @@
 	theTable	= new QTableWidget (0, 3);
 	theTable	 -> setSelectionBehavior (QAbstractItemView::SelectRows);
 	theTable	-> verticalHeader () -> setVisible (false);
-	theTable	-> setColumnWidth	(0, 3);
+	theTable	-> setColumnWidth	(0, 2);
 	theTable	-> setColumnWidth	(2, 1);
 	theTable	-> setHorizontalHeaderLabels (
 	                             QStringList () << tr ("ch") <<
@@ -97,9 +97,9 @@
 	fontColor	=
 	                  value_s (viewSettings, ENSEMBLE,
                                              "fontColor", "white");
-	fprintf (stderr, "%s, %s, %d\n",
-	                     theFont. toLatin1 (). data (),
-	                     fontColor. toLatin1 (). data (), fontSize);
+//	fprintf (stderr, "%s, %s, %d\n",
+//	                     theFont. toLatin1 (). data (),
+//	                     fontColor. toLatin1 (). data (), fontSize);
 	normalFont	= QFont (theFont, fontSize, -1, false);
 	markedFont	= QFont (theFont, fontSize + 2, -1, true);
 	channelFont	= QFont (theFont, fontSize - 2);
@@ -432,6 +432,20 @@ void	serviceViewer::reportService (const QString &channel,
 //	the displayList and theTable are synced
 void	serviceViewer::clickOnService	(int row, int column) {
 	serviceDescriptor t = displayList [row];
+	if (column == 0) {	// delete service
+	   if (theMode == ENSEMBLEVIEW) {
+	      viewLocker. lock ();
+	      QString serv	= displayList [row]. serviceName;
+	      QString chan	= displayList [row]. channelName;
+	      if (currentService != row) {
+	         displayList. removeAt (row);
+	         theDataBase . remove (chan, serv);
+	         theTable -> removeRow (row);
+	      }
+	      viewLocker. unlock ();
+	   }
+	   return;
+	}
 	if (column == 2) {	// change the fav settings
 	   switch (theMode) {
 	      case ENSEMBLEVIEW: 
@@ -920,11 +934,13 @@ void	serviceViewer::startButtons () {
 
 int	serviceViewer::add_to_displayList (const serviceDescriptor &sd) {
 //	if list is empty, just add,
+bool	Ok;
 
 	if (displayList. size () == 0) {
 	   displayList. append (sd);
            return displayList. size () - 1;
 	}
+
 //	insert at front
 	if (displayList [0]. channel > sd. channel) {
 	   displayList. insert (0, sd);

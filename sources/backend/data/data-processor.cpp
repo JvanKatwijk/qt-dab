@@ -311,9 +311,8 @@ int32_t pLength		= (getBits_2 (vec, 0) + 1) * 24;
 uint16_t address	= getBits (vec, 6, 10);
 
 //	we differentiate between the "data" packets and the "RS" packets
-//
 //	the "order" is first RSDIMS * FRAMESIZE packet elements
-//	with data, bext 9 * 22 bytes RS data
+//	with data, next 9 * 22 bytes RS data
 	if ((pLength == 24) && (address == 1022)) {	// RS packet
 	   uint8_t counter = getBits (vec, 2, 4);
 	   if (counter < 9) {	// zo hoort het

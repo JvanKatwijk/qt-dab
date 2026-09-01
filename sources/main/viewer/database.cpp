@@ -38,6 +38,7 @@ void	serviceBase::add		(const serviceDescriptor &sd) {
 	for (auto &ch :theData) {
 	   if (ch. channelName == sd. channelName) {
 	      ch. add (sd);
+	      changed = true;
 	      return;
 	   }
 	}
@@ -86,6 +87,7 @@ void	serviceBase::remove		(const QString &channel,
 	   for (uint16_t i = 0; i < ch. channelData. size (); i ++) {
 	      if (ch. channelData [i]. serviceName == service) {
 	         ch. channelData. erase (ch. channelData. begin () + i);
+	         changed = true;
 	         return;
 	      }
 	   }
@@ -169,7 +171,7 @@ QDomDocument xmlBOM;
 	      channel. channelName	= channelName;
 	      channel. ensembleName	= ensembleName;
 	      channel. countryName	= countryName;
-	      channel. channel = channelName. toInt (&b, 16);
+	      channel. channel		= channelName. toInt (&b, 16);
 	      if (!b)
 	         channel. channel = 0x5A;
 	      QDomElement subComp = component. firstChild (). toElement ();
@@ -177,6 +179,7 @@ QDomDocument xmlBOM;
 	         if (subComp. tagName () != "serviceDesc")
 	            continue;
 	         serviceDescriptor sd;
+	         sd. channel	= channel. channel;
 	         sd. channelName = channel. channelName;
 	         sd. serviceName = subComp. attribute ("serviceName", "??");
 	         QString tt	= subComp. attribute ("SID", "0");
@@ -209,8 +212,8 @@ QDomElement root = serviceDB. createElement ("serviceList");
         serviceDB. appendChild (root);
 
         for (auto &channel : theData) { 
-	   fprintf (stderr, "Channel %s gaat sluiten\n",
-	                                   channel. channelName. toLatin1 (). data ());
+//	   fprintf (stderr, "Channel %s gaat sluiten\n",
+//	                                   channel. channelName. toLatin1 (). data ());
 	   QDomElement channelElement = serviceDB.
 	                          createElement ("channel");
 	   channelElement. setAttribute ("channelName", channel. channelName);
