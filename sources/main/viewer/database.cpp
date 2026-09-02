@@ -81,6 +81,7 @@ void	serviceBase::set_countryName	(const QString &countryName,
 
 void	serviceBase::remove		(const QString &channel,
 	                                            const QString &service) {
+	
 	for (auto &ch : theData) {
 	   if (ch. channelName != channel)
 	      continue;

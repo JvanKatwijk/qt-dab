@@ -100,8 +100,34 @@ The options are
 \item {\em Clear the default servicelist}, with the obvious meaning;
 \item {\em Forget it} just in case you have econd thoughts, in the coming session the default list is used.
 \end{enumerate}
-Obviously, the color settings are kept between program invocations.
-\paragraph{Disclaimer}
+\paragraph{The database}
+In between program invocations, the data of the services list is maintined in a file. As mentioned in the previous paragraph, more "database"s may exist.
+The directory where these lists are kept is the directory {\em serviceLists}, a subdirectory in the directory  where Qt-DAB stores its data.
+\par
+The format in which the data is stored is xml, and the services are stored per channel.
+\begin{verbatim}
+<serviceList>
+ <channel channelName="5B" countryName="NL" ensembleName="5B Z-H/Zeeland  ">
+  <serviceDesc SID="841b" isFavorite="0" serviceName="Omroep Zeeland  " subChId="1"/>
+	...
+  <serviceDesc SID="841a" isFavorite="0" serviceName="Radio Rijnmond  " subChId="4"/>
+ </channel>
+ <channel channelName="9C" countryName="NL" ensembleName="9C              ">
+  <serviceDesc SID="8816" isFavorite="0" serviceName="Radio Maria     " subChId="7"/>
+	...
+  <serviceDesc SID="88c7" isFavorite="0" serviceName="538 GreatestHits" subChId="4"/>
+ </channel>
+ <channel channelName="12C" countryName="NL" ensembleName="NPO             ">
+  <serviceDesc SID="8202" isFavorite="1" serviceName="NPO Radio 2     " subChId="1"/>
+  <serviceDesc SID="8204" isFavorite="1" serviceName="NPO Klassiek    " subChId="3"/>
+  <serviceDesc SID="8212" isFavorite="0" serviceName="NPO SterrenNL   " subChId="8"/>
+	...
+ </channel>
+	...
+ </channel>
+</serviceList>
+\end{verbatim}
+\section{Disclaimer}
 Qt-DAB is developed as hobby program in spare time. Being retired I do have (some) spare time and programming Qt-DAB (and my other programs) is just hobby.
 It is important to notice that Qt-DAB is - both the sources as the precompiled
 versions - available {\em as is}.

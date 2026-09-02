@@ -2500,6 +2500,9 @@ void	RadioInterface::setPresetService () {
 	     theDeviceHandler -> isFileInput ())
 	   return;
 
+	if ((newServices != nullptr) && channel. realChannel)
+	   newServices -> check_Channel (channel. channelName);
+	
 	if (nextService. channel != channel. channelName)
 	   return;
 	
@@ -2507,7 +2510,8 @@ void	RadioInterface::setPresetService () {
 	   dynamicLabel -> setText ("ensemblename not yet found\n");
 	   return;
 	}
-	if (newServices != nullptr)
+
+	if (newServices != nullptr) 
 	   newServices -> reportService (channel. channelName, 
 	                                   nextService. serviceName);
 	QString presetName	= nextService. serviceName;

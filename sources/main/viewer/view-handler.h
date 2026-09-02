@@ -67,7 +67,7 @@ public:
 	int	getMode			();
 	void	set_channelIndex	(const QString &);
 	void	addService		(const descriptorType &);
-	void	remove			(const QString &, const QString &);
+	void	remove			(const QString, const QString);
 	void	reportService		(const QString &);
 	void	reportService		(const QString &, const QString &);
 	QString	extractName		(uint32_t);
@@ -78,6 +78,7 @@ public:
 	void	set_countryName		(const QString &);
 	void	clear_ensembleId	();
 	QTableWidget	*theTable;
+	void	check_Channel		(const QString &);
 private:	
 	RadioInterface	*theRadio;
 	void		startSession		(int, int, bool);

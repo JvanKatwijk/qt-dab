@@ -32,19 +32,21 @@
 
 class	serviceDescriptor {
 public:
-	QString	channelName;
-	int	channel;
-	QString	serviceName;
+	QString		channelName;
+	int		channel;
+	QString		serviceName;
 	uint32_t	SId;
 	uint8_t		SCIds;
 	uint16_t	subChId;
 	bool		isFavorite;
 	bool		accessible;
+	bool		isValid;
 	serviceDescriptor () {
 	   SId		= 0;
 	   subChId	= 0;
 	   isFavorite	= false;
 	   accessible	= false;
+	   isValid	= false;
 	}
 	~serviceDescriptor () {}
 };

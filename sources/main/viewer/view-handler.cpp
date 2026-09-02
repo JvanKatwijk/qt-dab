@@ -283,10 +283,24 @@ QString channel	= channelSelector -> currentText ();
 
 	for (auto &ssd: displayList) {
 	   if ((ssd. serviceName == ad. serviceName) &&
-	       (ssd. channelName == ad. channel))
+	       (ssd. channelName == channel) &&
+	       (ssd. subChId	== ad. subchId)) {
+	      ssd. isValid = true;
 	      return;
+	   }
 	}
 
+	if (theMode == ENSEMBLEVIEW) {
+//	The subChId can be changed
+	   for (auto &ssd : displayList) {
+	      if ((ssd. serviceName == ad. serviceName) &&
+                  (ssd. channelName == channel)) {
+	         remove (channel, ad. serviceName);
+	         break;
+	      }
+	   }
+	}
+ 
 	bool b;
 	serviceDescriptor sd;
 	sd.	channelName	= ad. channel;
@@ -297,6 +311,7 @@ QString channel	= channelSelector -> currentText ();
 	sd.	SId		= ad. SId;
 	sd.	SCIds		= ad. SCIds;
 	sd.	subChId		= ad. subchId;
+	sd.	isValid		= true;
 
 	int index	= -1;
 	switch (theMode) {
@@ -317,8 +332,8 @@ QString channel	= channelSelector -> currentText ();
 	}
 }
 
-void	serviceViewer::remove	(const QString &channel,
-	                            const QString &service) {
+void	serviceViewer::remove	(const QString channel,
+	                            const QString service) {
 	viewLocker. lock ();
 	for (uint16_t i = 0; i < displayList. size (); i ++) {
 	   auto &sd = displayList [i];
@@ -955,6 +970,19 @@ bool	Ok;
 	}
 	displayList. append (sd);
 	return displayList. size () - 1;
+}
+
+void	serviceViewer::check_Channel	(const QString &channelName) {
+	if (theMode != ENSEMBLEVIEW)
+	   return;
+	for (int i = 0; i < displayList. size () - 1; i ++) {
+	   if ((displayList [i]. channelName == channelName) &&
+	       (!displayList [i]. isValid)) {
+	      remove (displayList [i]. channelName,
+	                                   displayList [i]. serviceName);
+	      i --;
+	   }
+	}
 }
 
 void	serviceViewer::handle_channelDisplay	() {
