@@ -267,6 +267,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/backend/data/epg/epg-compiler.h 
 	   ./sources/backend/data/epg/xml-extractor.h 
 	   ./sources/output/converter-48000.h 
+	   ./sources/output/up-converter.h 
 	   ./sources/output/audio-player.h 
 	   ./sources/support/dump-display.h 
 	   ./sources/support/equalizer.h 
@@ -301,6 +302,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/support/uploader.h 
 	   ./sources/support/basic-print.h 
 	   ./sources/support/dc-filter.h
+	   ./sources/support/iq-filter.h
 	   ./sources/support/tables/charsets.h 
            ./sources/support/tables/dab-params.h 
            ./sources/support/tables/ITU-tables.h 
@@ -422,11 +424,13 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/backend/data/epg/epg-compiler.cpp 
 	   ./sources/backend/data/epg/xml-extractor.cpp 
 	   ./sources/output/converter-48000.cpp 
+	   ./sources/output/up-converter.cpp 
 	   ./sources/output/audio-player.cpp 
 	   ./sources/support/dump-display.cpp 
 	   ./sources/support/bandpass-filter.cpp 
 	   ./sources/support/basic-print.cpp 
 	   ./sources/support/dc-filter.cpp
+	   ./sources/support/iq-filter.cpp
 	   ./sources/support/content-table.cpp 
 	   ./sources/support/crc-handlers.cpp 
 	   ./sources/support/distances.cpp 
@@ -592,7 +596,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/forms-v7/dabradio-6.ui
 	     ./sources/main/forms-v7/config-helper.ui
 	     ./sources/main/forms-v7/scopewidget.ui
-	     ./sources/main/forms-v7/aboutdialog.ui
 	     ./sources/main/viewer/viewarea.ui
 	     ./sources/main/snr-viewer/snr-widget.ui
 	     ./sources/devices/filereaders/xml-filereader/xmlfiles.ui

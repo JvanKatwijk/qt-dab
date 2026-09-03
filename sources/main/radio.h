@@ -443,6 +443,7 @@ private:
 	QTimer			theTimer;
 	QTimer			startTimer;
 	QTimer			updateCheck_timer;
+	QTimer			announcement_timer;
 	bool			stillWaiting;
 	QString			path_for_files;
 	QString			path_for_serviceLists;
@@ -720,4 +721,7 @@ private slots:
 	void			color_audioSelectButton	();
 	void			color_etiButton		();
 	void			color_devicewidgetButton		();
+//
+//	special timer
+	void			handle_announcement_timeOut	();
 };

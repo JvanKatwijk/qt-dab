@@ -1,4 +1,4 @@
-									       #
+#
 /*
  *    Copyright (C)  2015 .. 2025
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -2175,17 +2175,40 @@ uint32_t startBit = 01;
 void	RadioInterface::announcement_start (uint16_t SId,  uint16_t flags) {
 	if (channel. currentService. SId != SId)
 	   return;
+	connect (&announcement_timer, &QTimer::timeout,
+	         this, &RadioInterface::handle_announcement_timeOut);
+	announcement_timer. start (60 * 1000);
 	serviceLabel	-> setStyleSheet ("QLabel {color : red}");
 	int pictureId	= bits (flags);
 	QPixmap p = fetchAnnouncement (pictureId);
 	displaySlide (p);
 	channel. announcing = true;
 }
+//
+//	timeout for announcement timer
+//	assuming that the timer was stopped on service or channel switching,
+//	and the announcement stop was not set, the announcement is
+//	on and we kill it.
+
+void	RadioInterface::handle_announcement_timeOut () {
+	announcement_timer. stop ();
+        disconnect (&announcement_timer, &QTimer::timeout,
+                    this, &RadioInterface::handle_announcement_timeOut);
+	serviceLabel    -> setStyleSheet (labelStyle);
+        channel. announcing = false;
+        show_pauzeSlide ();
+}
 
 void	RadioInterface::announcement_stop (uint16_t SId) {
+	
+        announcement_timer. stop ();
+	disconnect (&announcement_timer, &QTimer::timeout,
+	            this, &RadioInterface::handle_announcement_timeOut);
+
 	if (channel. currentService. SId != SId)
 	   return;
-	
+	if (!channel. announcing)
+	   return;
 	serviceLabel	-> setStyleSheet (labelStyle);
 	channel. announcing = false;
 	show_pauzeSlide ();
@@ -2639,8 +2662,10 @@ void	RadioInterface::stopChannel	() {
 
 //	note framedumping - if any - was already stopped
 //	ficDumping - if on - is stopped here
-	theOfdmHandler -> stopFicDump ();	// just in case ...
-	theOfdmHandler		-> stop ();
+	if (theOfdmHandler != nullptr) {
+	   theOfdmHandler -> stopFicDump ();	// just in case ...
+	   theOfdmHandler		-> stop ();
+	}
 	theDXDisplay. cleanUp ();
 	usleep (1000);
 	theTechWindow	-> cleanUp ();

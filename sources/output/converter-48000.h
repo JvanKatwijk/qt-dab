@@ -33,6 +33,7 @@
 #include	"fir-filters.h"
 #include	<vector>
 #include	<complex>
+#include	"up-converter.h"
 
 class	RadioInterface;
 
@@ -58,9 +59,9 @@ private:
 	                                         int, std::vector<float> &);
 	riffWriter	theWriter;
 	std::vector<std::complex<float>>	buffer_32_96;
-	LowPassFIR	filter_16_48;
-	LowPassFIR	filter_24_48;
-	LowPassFIR	filter_32_96;
+	upConverter	upFilter_16_48;
+	upConverter	upFilter_24_48;
+	upConverter	upFilter_32_96;
 	std::mutex	locker;
 	void		dump			(const float *, int);
 	void		dump			(const Complex *, int);

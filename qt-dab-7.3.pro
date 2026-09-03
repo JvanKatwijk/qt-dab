@@ -193,6 +193,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/backend/data/epg/epg-compiler.h \
 	   ./sources/backend/data/epg/xml-extractor.h \
 	   ./sources/output/converter-48000.h \
+	   ./sources/output/up-converter.h \
 	   ./sources/output/audio-player.h \
 	   ./sources/support/dump-display.h \
 	   ./sources/support/scantable-handler.h \
@@ -352,6 +353,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/backend/data/epg/epg-compiler.cpp \
 	   ./sources/backend/data/epg/xml-extractor.cpp \
 	   ./sources/output/converter-48000.cpp \
+	   ./sources/output/up-converter.cpp \
 	   ./sources/output/audio-player.cpp \
 	   ./sources/support/dump-display.cpp \
 	   ./sources/support/bandpass-filter.cpp \

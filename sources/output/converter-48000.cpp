@@ -26,9 +26,9 @@
 /*
  */
 	converter_48000::converter_48000 (RadioInterface *mr):
-	                                   filter_16_48 (5, 8000, 48000),
-	                                   filter_24_48 (5, 12000, 96000),
-	                                   filter_32_96 (5, 16000, 96000) {
+	                                   upFilter_16_48 (3, 9, 16000),
+	                                   upFilter_24_48 (2, 9, 24000),
+	                                   upFilter_32_96 (3, 9, 32000) {
 	(void)mr;
 	buffer_32_96. resize (0);
 	                              
@@ -74,15 +74,11 @@ int	teller = 0;
 	   std::complex<float> X =
 	                std::complex<float> (3 * real (V [i]) / 32767.0,
 	                                     3 *imag (V [i]) / 32767.0);
-	   X = filter_16_48. Pass (X);
-	   out [teller ++] = real (X); 
-	   out [teller ++] = imag (X);
-	   X = filter_16_48. Pass (std::complex<float> (0, 0));
-	   out [teller ++] = real (X); 
-	   out [teller ++] = imag (X);
-	   X = filter_16_48. Pass (std::complex<float> (0, 0));
-	   out [teller ++] = real (X); 
-	   out [teller ++] = imag (X);
+	   std::vector<std::complex<float>> V = upFilter_16_48. process (X);
+	   for (int i = 0; i < V. size (); i ++) {
+	      out [2 * i    ] = real (V [i]);
+	      out [2 * i + 1] = imag (V [i]);
+	   }
 	}
 	dump (out. data (), teller / 2);
 	return teller;
@@ -99,12 +95,12 @@ int teller	= 0;
 	   std::complex<float> X =
 	              std::complex<float> (2 * real (V [i]) / 32767.0,
 	                                   2 * imag (V [i]) / 32767.0);
-	   X = filter_24_48. Pass (X);
-	   out [teller ++] = real (X); 
-	   out [teller ++] = imag (X);
-	   X = filter_24_48. Pass (std::complex<float> (0, 0));
-	   out [teller ++] = real (X); 
-	   out [teller ++] = imag (X);
+	   std::vector<std::complex<float>> V = upFilter_24_48. process (X);
+
+	   for (int i = 0; i < V. size (); i ++) {
+	      out [2 * i    ] = real (V [i]);
+	      out [2 * i + 1] = imag (V [i]);
+	   }
 	}
 	dump (out. data (), teller / 2);
 	return teller;
@@ -119,14 +115,11 @@ int teller	= 0;
 	out. resize (3 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	              std::complex<float> (3 * real (V [i]) / 32768.0,
-                                           3 * imag (V [i]) / 32768.0);
-	   X = filter_32_96. Pass (X);
-	   buffer_32_96. push_back (X);
-	   X = filter_32_96. Pass (std::complex<float> (0, 0));
-	   buffer_32_96. push_back (X);
-	   X = filter_32_96. Pass  (std::complex<float> (0, 0));
-	   buffer_32_96. push_back (X); 
+	              std::complex<float> (real (V [i]) / 32768.0,
+                                           imag (V [i]) / 32768.0);
+	   std::vector<std::complex<float>> V = upFilter_32_96. process (X);
+	   for (int i = 0; i < V. size (); i ++)
+	      buffer_32_96. push_back (V [i]);
 	   if (buffer_32_96. size () >= 6) {	// should be 0 .. 6
 	      out [teller ++] = real (buffer_32_96 [0]);
 	      out [teller ++] = imag (buffer_32_96 [0]);
