@@ -484,7 +484,7 @@ CONFIG		+= spyServer-8
 CONFIG		+= fdk-aac
 #
 #	for performance experiments
-CONFIG		+= volk
+#CONFIG		+= volk
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -498,8 +498,8 @@ CONFIG		+= local-audio
 #CONFIG		+= viterbi-scalar
 #CONFIG		+= viterbi-sse
 #CONFIG		+= viterbi-avx2
-CONFIG		+= spiral-sse
-#CONFIG		+= spiral-no-sse
+#CONFIG		+= spiral-sse
+CONFIG		+= spiral-no-sse
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
