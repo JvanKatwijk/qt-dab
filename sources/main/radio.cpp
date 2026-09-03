@@ -200,6 +200,7 @@ char	LABEL_STYLE [] = "color:lightgreen";
 QString h;
 
 	theQSettings			= Si;
+	theOfdmHandler			= nullptr;
 	this	-> fmFrequency		= fmFreq;
 	this	-> dlTextFile		= nullptr;
 	this	-> thecopyrightLabel	= nullptr;
