@@ -85,8 +85,6 @@ void	setTranslator (QTranslator *theTranslator, QString Language) {
 //	   Language = "en_GB";
 //	}
 
-	fprintf (stderr, "The resulting locale is %s\n",
-	                                       Language. toLatin1 (). data ());
 	QLocale curLocale (QLocale (static_cast<const QString&>(Language)));
 	QLocale::setDefault (curLocale);
 }

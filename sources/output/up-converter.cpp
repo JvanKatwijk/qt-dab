@@ -23,7 +23,7 @@
 //
 //	code based on a proposal made by AI
 
-#include	<complex>
+#include	"dab-constants.h"
 #include	"up-converter.h"
 
 //

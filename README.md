@@ -44,7 +44,7 @@ Qt-DAB-7.3.1 and 7.3.0 ony differ in some details:
  - sorting the services list when adding a service contained a small error.
  - (automatically and manually) removing superfluous services from the services list is now supported.
  - a polyphase upconverter is now used to upsample audio rates to 48000 if needed
- - the CMakwLists.txt file is brought up to date
+ - the CMakeLists.txt file is brought up to date
 
 ------------------------------------------------------------------------------
 -----------------------------------------------------------------------------

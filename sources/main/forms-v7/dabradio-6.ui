@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>935</width>
+    <width>915</width>
     <height>523</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
     <widget class="QFrame" name="the_newFrame">
      <property name="minimumSize">
       <size>
-       <width>250</width>
+       <width>255</width>
        <height>505</height>
       </size>
      </property>
@@ -462,7 +462,7 @@
     <widget class="QFrame" name="techFrame">
      <property name="minimumSize">
       <size>
-       <width>255</width>
+       <width>260</width>
        <height>500</height>
       </size>
      </property>

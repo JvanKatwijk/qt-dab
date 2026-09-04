@@ -1681,17 +1681,17 @@ void	fibDecoder::check_announcements (uint8_t clusterId,
 	         uint16_t flags = (ac. ASUFlags & AswFlags);
 	         uint16_t theSId = 0;
 //
-	         fprintf (stderr, "announcement for %d\n",
-	                               subChId);
+//	         fprintf (stderr, "announcement for %d\n",
+//	                               subChId);
 //	we know that signalling is only for audio services
 	         for (auto & comp : currentConfig -> FIG02_stack) {
 	             for (auto &g : comp. components) {
-	               fprintf (stderr, "checking %X %d\n",
-	                                 comp. SId, g. subChId);
+//	               fprintf (stderr, "checking %X %d\n",
+//	                                 comp. SId, g. subChId);
 	               if (g. subChId == subChId) {
 	                  theSId = comp. SId;
-	                  fprintf (stderr, "signaling %X %o\n",
-	                                        theSId, flags);
+//	                  fprintf (stderr, "signaling %X %o\n",
+//	                                        theSId, flags);
 	                  signal_FIG019 (theSId, flags);
 	                  return;
 	               }

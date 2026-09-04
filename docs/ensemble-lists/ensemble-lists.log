@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.7.26)  31 AUG 2026 18:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.7.26)  4 SEP 2026 11:29
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -132,38 +132,81 @@ Underfull \hbox (badness 10000) in paragraph at lines 36--37
 <background-table.png, id=12, 690.58pt x 288.07625pt>
 File: background-table.png Graphic file (type png)
 <use background-table.png>
-Package pdftex.def Info: background-table.png  used on input line 73.
+Package pdftex.def Info: background-table.png  used on input line 94.
 (pdftex.def)             Requested size: 312.9803pt x 130.5606pt.
- [2 <./background-table.png>]
-<selectionload.png, id=18, 329.23pt x 327.2225pt>
+ [2]
+<selectionload.png, id=17, 329.23pt x 327.2225pt>
 File: selectionload.png Graphic file (type png)
 <use selectionload.png>
-Package pdftex.def Info: selectionload.png  used on input line 85.
+Package pdftex.def Info: selectionload.png  used on input line 106.
 (pdftex.def)             Requested size: 227.62204pt x 226.23813pt.
- [3 <./selectionload.png>] [4] (./ensemble-lists.aux)
+ [3 <./background-table.png> <./selectionload.png>]
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="841b" isFavorite="0" serviceName="Omr
+oep Zeeland  " subChId="1"/>[] 
+ []
+
+
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="841a" isFavorite="0" serviceName="Rad
+io Rijnmond  " subChId="4"/>[] 
+ []
+
+
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="8816" isFavorite="0" serviceName="Rad
+io Maria     " subChId="7"/>[] 
+ []
+
+
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="88c7" isFavorite="0" serviceName="538
+ GreatestHits" subChId="4"/>[] 
+ []
+
+
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="8202" isFavorite="1" serviceName="NPO
+ Radio 2     " subChId="1"/>[] 
+ []
+
+
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="8204" isFavorite="1" serviceName="NPO
+ Klassiek    " subChId="3"/>[] 
+ []
+
+
+Overfull \hbox (40.56468pt too wide) in paragraph at lines 142--142
+[]  \OT1/cmtt/m/n/10.95 <serviceDesc SID="8212" isFavorite="0" serviceName="NPO
+ SterrenNL   " subChId="8"/>[] 
+ []
+
+[4] [5] (./ensemble-lists.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-03-20>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 1648 strings out of 469652
- 25650 string characters out of 5475536
- 442951 words of memory out of 6000000
- 30184 multiletter control sequences out of 15000+600000
- 634542 words of font info for 67 fonts, out of 8000000 for 9000
+ 1653 strings out of 469652
+ 25743 string characters out of 5475536
+ 444951 words of memory out of 6000000
+ 30188 multiletter control sequences out of 15000+600000
+ 634710 words of font info for 68 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 57i,6n,65p,472b,222s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 57i,6n,65p,377b,222s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texli
 ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on ensemble-lists.pdf (4 pages, 128846 bytes).
+fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on ensemble-lists.pdf (5 pages, 151827 bytes).
 PDF statistics:
- 52 PDF objects out of 1000 (max. 8388607)
- 29 compressed objects within 1 object stream
+ 60 PDF objects out of 1000 (max. 8388607)
+ 34 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -41,22 +41,30 @@ It resembles my car radio, we drove a number times from the Netherlands to Spain
 It shows that some form of management of ensemble lists is needed.
 There are two forms, one is managing the current list, the other one is maintaining more than one list.
 \par
-As said, adding to the lists is beyond user control: the software adds (channelm service name) pairs whenever it detects one.
-Delering a service from the current list is also pisisble, see below.
+As said, adding to the lists is beyond user control: the software adds (channelm service name) pairs whenever it detects one, so lists will grow.
 \par
 In Qt-DAB, with its scanning possibilities one may need different service lists for different occasions and Qt-DAB provides the possibility of using different service lists on different occasions.
 \section{Running with different modes}
 \paragraph{Running the default mode}
 The default setting is that the selector {\em show only audio services} is set,
 When running with default settings with input from a {\em real} device, Qt-DAB just collects all names of audio (and EPG/SPI) services and maintains a list of these names between program invocations. (The EPG/SPI services remain invisble and, when the channel such a service is on, the EPG/SPI services runs invisible in the background).
-On selecting a service, Qt-DAB switches to a different
-channel - if needed. It may take a few seconds before the data describing the ensemble in that channel is collected.
 \par
-In the list of services one may set a service to become {\em favourite}, just by clicking on the third column in the row where the service is found.
-The favourites - I usually have somewhere between 5 and 10 services marked as favourite - can be shown as a short list, and - obviously - the marking as favourite is stored in the database. (Removing a service from the list of favourites is by clicking on the star in the thrd column).
+On selecting a service in ensemble mode or favorite mode,
+Qt-DAB may have to switch to a different channel, it may take
+a few seconds before the data describing the ensemble
+in that channel is collected.
+\paragraph{Favourites}
+In the list of services one may set a service to become {\em favourite, just by clicking on the third column in the row where the service is found}.
+The serviceis then marked by a small "*" in the third column.
 \par
-It sometimes happens that the content of an ensemble changes, one or more services out, and one or more in.
-In the current implementation, the {\em new} services appear in the list, however, the old services remain visible. While in a next version the services list will be updated automatically, in the current version one needs to remove the services from the list manually. Removing a service from the list is by clicking on the first column or the row where the service name is found, i.e. the column where the channelname is displayed.
+The favourites - I usually have somewhere between 5 and 10 services marked as favourite - can be shown as a short list by switching to mode {\em favorites}.
+Obviously, the marking as favourite is stored in the database. (Removing a service from the list of favourites is by clicking on the star in the third column in ensemble mode.).
+\paragraph{Handling changes in ensembles}
+It happens from time to time that the content of an ensemble changes, last september, our national NPO replaced a couple of services by a single new one.
+Now the software is such that it incorporates automatically services not yet seen before.
+{\em In ensemble mode, when switching to a new channel, the software will automatically remove services from the ensemble in that channel that no longer exist.}
+In favourite mode this is not (yet) the case, but services can be removed from the list manually as well.
+Just click with the mouse on the channel name in the row where the service name is depicted, and the service will be deleted from both the display list as from the database.
 
 \paragraph{Running with file input}
 Qt-DAB supports reading from a file. Of course, when running with input from a file, a number of options is meaningless: i.e. selecting a channel, setting a favourite are options with no meaning.
@@ -68,15 +76,20 @@ The {\em configuration and control} window contains a selector, labeled {\em sho
 \item packet services. such as TPEG and EPG are shown.
 \end{enumerate}
 The rationale is that you most likely only want to see packet services is you want to select them. Note that EPG/SPI services are always selected.
-A selected packet service (usually) does not generate audio, most TPEG type services are encoded in a way Qt-DAB cannot decode them.  Qt-DAB spits out the converted packets as udp packets, and from time to time I let a separate program listen to see if further deciphering is possible.
+A selected packet service (usually) does not generate audio, most TPEG type services are encoded in a way Qt-DAB cannot decode them, but Qt-DAB extracts frames from the data and sends these frames as {\em udp} packets through a TCP port.
+The {\em port} through which the packets are transmitted is by default 8888,
+but can be set in the {\em configuration and control} window.
+Note that (sources for a) prototype program to extract the data from the  {\em udp} packets is part of the source tree of Qt-DAB.
 
-That is why in Qt-DAB the choice was made to run a selected packet service  as a background service, just letting it sending output to the aforementioned port.
-This allows an audio service to be selected as forground task.
-(Note that EPG/SPI type services already ran in the background).
+That is why in Qt-DAB the choice was made to run packet services (as it does with EPG/SPI services) as a background service, just letting it sending output to the aforementioned port.
+It allows to run several packet services simultaneously, think on a EPG/SPI service that runs in the background, and
+it allows an audio service to be selected as forground task.
 \par
-The obvious question then is when a started packet service runs in the background, how to stop such a service.
-Qt-DAB provides a simple controller, showing services, running in background and foreground. Touching the number, given as value for the number of services running (a hidden button on the Configuration and control window), shows a
-mall separate window as shown below
+The obvious question then is when one or more  services runs in the background, how to stop them.
+Of course the system will stop them when switching a channel, however,
+Qt-DAB provides also a simple controller, showing all running services,
+services running in background and foreground.
+{\em Touching the number, given as value for the number of services running (a hidden button on the Configuration and control window), shows a small separate window as shown below}
 \begin{center}
 \includegraphics[width=110mm]{background-table.png}
 \end{center}
