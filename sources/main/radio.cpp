@@ -4078,7 +4078,7 @@ void	RadioInterface::set_latitude	(float lat) {
 
 void	RadioInterface::set_longitude	(float lon) {
 	store (theQSettings, MAP_HANDLING, HOME_LONGITUDE, lon);
-	localPos. latitude = lon;
+	localPos. longitude = lon;
 }          
 
 void	RadioInterface::handle_httpPort (int port) {
