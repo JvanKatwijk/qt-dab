@@ -64,11 +64,11 @@ int32_t p = 3;
 	double  xx =  (level - x0) / (x1 - x0);
 	xx = xx < 0 ? 0 : xx >= 1 ? 1 : xx;
 	return {
-	   static_cast<uint32_t>
+	   static_cast<int32_t>
 	            (cx0. red () + xx * (cx1. red () - cx0. red ())),
-	   static_cast<uint32_t>
+	   static_cast<int32_t>
 	            (cx0. green () + xx * (cx1. green () - cx0. green ())),
-	   static_cast<uint32_t>
+	   static_cast<int32_t>
 	            (cx0. blue ()  + xx * (cx1. blue () - cx0. blue () ))
 	};
 }

@@ -436,6 +436,7 @@ mac {
   DESTDIR      = ./mac-bin
   PKG_CONFIG = /usr/local/bin/pkg-config
   QT_CONFIG	-= no-pkg-config
+	DEFINES	+= __APPLE__
 }
 
 CONFIG		+= link_pkgconfig

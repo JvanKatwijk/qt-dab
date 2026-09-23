@@ -48,7 +48,27 @@ DABFLOAT length	= jan_abs (V);
 	   return Complex (0.001, 0.001);
 	return Complex (V) / length;
 }
-//
+
+#ifdef	__APPLE__
+// Apple's libc++ doesn't implement the C++17 special math functions
+// (cyl_bessel_i, etc.) - Abramowitz & Stegun 9.8.1/9.8.2 approximation
+// of the zeroth-order modified Bessel function of the first kind.
+static inline float bessel_I0 (float x) {
+float ax = std::fabs (x);
+    if (ax < 3.75f) {
+        float t = x / 3.75f;
+        t *= t;
+        return 1.0f + t * (3.5156229f + t * (3.0899424f + t * (1.2067492f +
+               t * (0.2659732f + t * (0.0360768f + t * 0.0045813f)))));
+    } else {
+        float t = 3.75f / ax;
+        return (std::exp (ax) / std::sqrt (ax)) *
+               (0.39894228f + t * (0.01328592f + t * (0.00225319f +
+               t * (-0.00157565f + t * (0.00916281f + t * (-0.02057706f +
+               t * (0.02635537f + t * (-0.01647633f + t * 0.00392377f))))))));
+    }
+}
+#else
 //	The bessel function is under windows too slow too work with
 //	that is why we created a table that is filled on startup
 DABFLOAT besselTable [2048];
@@ -56,7 +76,7 @@ static inline
 DABFLOAT IO_Bessel	(DABFLOAT x) {
 	return std::cyl_bessel_i (0.0f, x);
 }
-
+#endif
 // and table access is with this function
 static inline
 DABFLOAT IO (DABFLOAT x) {
