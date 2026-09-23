@@ -80,6 +80,8 @@ void	messageHandler::connection_set	() {
                  this, &messageHandler::dispatchMessage);
 	connect (this, &socketHandler::binDataAvailable,
                  this, &messageHandler::binDataAvailable);
+	
+	setProperty ("device_sample_rate", QString::number (2048000));
 	setFrequency (vfo_frequency);
 	askProperty ("device_sample_rate");
 //	emit connection_success	();

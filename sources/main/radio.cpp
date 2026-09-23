@@ -1932,7 +1932,7 @@ QString	dumpName;
                                            channel. tunedFrequency,
                                            bitDepth,
                                            deviceName);
-	   dumpDisplay_p	= new dumpDisplay ("dumping in a \"wav\" file",
+	   dumpDisplay_p	= new dumpDisplay ("dumping in a \"sdr\" file",
 	                                                    dumpName);
 	   return;
 	}
@@ -1962,7 +1962,7 @@ void	RadioInterface::stopSourceDumping	() {
 	   return;
 	delete dumpDisplay_p;
 	dumpDisplay_p	= nullptr;
-	if (!theDeviceHandler	-> providesDump ())
+	if (theOfdmHandler	-> isDumping ())
 	   theOfdmHandler	-> stopDumping ();
 	else
 	   theDeviceHandler	-> stopDump ();
@@ -4078,7 +4078,7 @@ void	RadioInterface::set_latitude	(float lat) {
 
 void	RadioInterface::set_longitude	(float lon) {
 	store (theQSettings, MAP_HANDLING, HOME_LONGITUDE, lon);
-	localPos. latitude = lon;
+	localPos. longitude = lon;
 }          
 
 void	RadioInterface::handle_httpPort (int port) {

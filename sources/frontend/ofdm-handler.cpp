@@ -644,6 +644,10 @@ void	ofdmHandler::stopDumping() {
 	theReader. stopDumping();
 }
 
+bool	ofdmHandler::isDumping		() {
+	return theReader. isDumping ();
+}
+
 void	ofdmHandler::startFicDump	(const QString &f) {
 	theFicHandler. startFICDump (f);
 }

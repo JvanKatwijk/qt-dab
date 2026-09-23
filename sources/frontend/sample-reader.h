@@ -58,6 +58,7 @@ public:
 	                                 int32_t n, float phase,  bool saving);
 	      void	startDumping	(const QString &, int, int, const QString);
 	      void	stopDumping	();
+	      bool	isDumping	();
 	      void	set_dcRemoval	(bool);
 	      void	set_iqBalance	(bool);
 private:
@@ -79,7 +80,7 @@ private:
 	      bool		dumping;
 	      int16_t		dumpIndex;
 	      int16_t		dumpScale;
-	      int16_t		dumpBuffer [DUMPSIZE];
+	      int16_t		dumpBuffer [2 * DUMPSIZE];
 //	      std::atomic<SNDFILE *>	dumpfilePointer;
 	      int		repetitionCounter;
 

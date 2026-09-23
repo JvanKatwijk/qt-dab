@@ -65,6 +65,7 @@ public:
 	void		startDumping		(const QString &, int, 
 	                                         int, const QString);
 	void		stopDumping		();
+	bool		isDumping		();
 	bool		startEtiGenerator	(const QString &);
 	void		stopEtiGenerator	();
 	void		resetEtiGenerator	();

@@ -114,7 +114,8 @@ char header [5];
            fread (&junkSize, 1, 4, filePointer);
 	   fprintf (stderr, "junksize %d\n", junkSize);
            char *junkBuffer = dynVec (char, junkSize);
-           fread (&junkBuffer, 1, junkSize, filePointer);
+           fread (junkBuffer, 1, junkSize, filePointer);
+//	   fread (&junkBuffer, 1, junkSize, filePointer);
            fread (header, 1, 4, filePointer);
         }
 	fprintf (stderr, "Header %s\n", header);
@@ -341,7 +342,6 @@ char header [5];
 
 void	riffReader::reset	() {
 	fsetpos (filePointer, &baseofData);
-	fprintf (stderr, "We gaan voor de volgende ronde\n");
 	remainingElements = nrElements;
 }
 

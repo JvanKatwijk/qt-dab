@@ -157,11 +157,14 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 
 //	if dumping is "on" dump
 	if (sourceDumper. isActive ()) {
-	   auto *dumpBuffer = dynVec (int16_t, 2 * nrSamples);
 	   for (int i = 0; i < nrSamples; i ++) {
-	      dumpBuffer [2 * i            ] = real (buffer [i]) * dumpScale;
-	      dumpBuffer [2 * dumpIndex + 1] = imag (buffer [i]) * dumpScale;
-	      sourceDumper. write (dumpBuffer, nrSamples);
+	      dumpBuffer [dumpIndex * 2] = real (buffer [i]) * dumpScale;
+	      dumpBuffer [dumpIndex * 2 + 1] = imag (buffer [i]) * dumpScale;
+	      dumpIndex ++;
+	      if (dumpIndex >= DUMPSIZE) {
+	         sourceDumper. write (dumpBuffer, DUMPSIZE);
+	         dumpIndex = 0;
+	      }
 	   }
 	}
 
@@ -235,7 +238,12 @@ void	sampleReader::startDumping (const QString &fileName,
 }
 
 void	sampleReader::stopDumping	() {
+	fprintf (stderr, "sourcedumper close\n");
 	sourceDumper.close ();
+}
+
+bool	sampleReader::isDumping		() {
+	return sourceDumper. isActive ();
 }
 
 void	sampleReader::set_dcRemoval	(bool b) {

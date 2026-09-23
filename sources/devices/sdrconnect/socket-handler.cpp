@@ -57,8 +57,10 @@
 }
 
 	socketHandler::~socketHandler	() {
-	if (socket != nullptr)
+	if (socket != nullptr) {
+	   socket -> close ();
 	   delete socket;
+	}
 }
 
 void	socketHandler::onConnected	() {
@@ -97,7 +99,8 @@ void	socketHandler::binaryMessageReceived	(const QByteArray &m) {
 int16_t *p	= (int16_t *)(m. data ());
 	if (p [0] != 2)
 	   return;
-	int written = _I_Buffer. putDataIntoBuffer (&(p [1]), (m. size () - 1)/ 4);
+	int written =
+	   _I_Buffer. putDataIntoBuffer (&(p [1]), (m. size () - 1)/ 4);
 	dropped	+= (m. size () - 1) / 4 - written;
 	if ((++dropCount % 100) == 0) {
            reportStatus (dropped);

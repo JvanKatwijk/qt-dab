@@ -161,9 +161,8 @@ void	riffWriter::close	() {
 	if (!isValid)
 	   return;
 	isValid		= false;
-	uint64_t nrBytes	= nrElements * 2 * sizeof (int16_t);
+	uint64_t nrBytes = nrElements * 2 * sizeof (int16_t);
 
-	fprintf (stderr, "nrBytes = %ld\n", nrBytes);
 //	reset the fp to the location where the nr bytes in the
 //	data chunk should be written
 	fseek (filePointer, 0, SEEK_SET);
