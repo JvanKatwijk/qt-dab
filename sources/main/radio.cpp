@@ -271,7 +271,7 @@ QString h;
 	if (p. load (":res/radio-pictures/folder_button.png", "png")) {
 	   folder_shower -> setPixmap (p. scaled (30,
 	                                         30, Qt::KeepAspectRatio));
-	   folder_shower -> setToolTip ("touhcing this tells the software to start a shell with the Qt-DAB-files directory");
+	   folder_shower -> setToolTip ("touching this tells the software to start a shell with the Qt-DAB-files directory");
 	}
 	if (p. load (":res/radio-pictures/epgLabel.png", "png")) {
 	   epgLabel	-> setPixmap (p. scaled (30, 30,
