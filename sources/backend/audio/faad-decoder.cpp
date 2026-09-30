@@ -99,7 +99,7 @@ uint8_t channels;
 	                                      &sample_rate,
 	                                      &channels);
 	if (init_result != 0) {
-/*      If some error initializing occured, skip the file */
+/*      If some error initializing occurred, skip the file */
 	   printf ("Error initializing decoder library: %s\n",
 	                         NeAACDecGetErrorMessage (-init_result));
 	   NeAACDecClose (aacHandle);
