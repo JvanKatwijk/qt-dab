@@ -4751,7 +4751,7 @@ void	RadioInterface::focusInEvent (QFocusEvent *evt) {
 //	This function is called whenever a key is touched
 //	that is not the return key
 //	as it turns out, our "beloved" windows does not let
-//	the Qt user catch the functon keys, we settle for Ctrl Ii
+//	the Qt user catch the function keys, we settle for Ctrl Ii
 bool	RadioInterface::handle_keyEvent (int theKey) {
 	if (theKey != Qt::Key_I)
 	   return false;
