@@ -322,7 +322,7 @@ int32_t s;
 #if defined(SSE_AVAILABLE)
 	FULL_SPIRAL_sse (nbits / 2,
 #elif defined(NEON_AVAILABLE)
-	FULL_SPIRAL_neon (nbits,
+	FULL_SPIRAL_neon (nbits / 2,
 #else
 	FULL_SPIRAL_no_sse (nbits / 2,
 #endif

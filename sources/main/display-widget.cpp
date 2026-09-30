@@ -80,6 +80,7 @@
 	merLabel	->
 	   setStyleSheet ("font-weight:bold; color: yellow");
 	dcOffset_display	-> show ();
+	unbalanceLabel		-> show ();
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(plotArea,
 	                                                 512, dabSettings_p,
@@ -468,14 +469,14 @@ void	displayWidget::showDCOffset	(float dcOffset) {
 }
 
 void	displayWidget::set_dcRemoval	(bool b) {
-	if (b) {
-	   dcOffset_display	-> show ();
-	   unbalanceLabel	-> show ();
-	}
-	else {
-	   dcOffset_display	-> hide ();
-	   unbalanceLabel	-> hide ();
-	}
+//	if (b) {
+//	   dcOffset_display	-> show ();
+//	   unbalanceLabel	-> show ();
+//	}
+//	else {
+//	   dcOffset_display	-> hide ();
+//	   unbalanceLabel	-> hide ();
+//	}
 }
 
 void	displayWidget::showFICBER	(float ber) {

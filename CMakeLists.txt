@@ -1025,16 +1025,24 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 #	the viterbi decoder
 #
 	if (VITERBI_NEON)
+	   if (NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm64|aarch64|ARM64)$")
+	      message (FATAL_ERROR "VITERBI_NEON needs an arm64/aarch64 target (found ${CMAKE_SYSTEM_PROCESSOR})")
+	   endif ()
 	   set(VITERBI_SSE false)
+	   include_directories (
+	      ./sources/support/viterbi-spiral
+	   )
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
+	        ./sources/support/viterbi-spiral/viterbi.h
 	        ./sources/support/viterbi-spiral/spiral-neon.h
 	   )
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
+	        ./sources/support/viterbi-spiral/viterbi.cpp
 	        ./sources/support/viterbi-spiral/spiral-neon.c
 	   )
-	   
+
 	   add_definitions (-DNEON_AVAILABLE)
 	elseif(VITERBI_SSE)
 	   include_directories (
@@ -1043,7 +1051,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   )
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./sources.support/viterbi-spiral/viterbi.h
+	        ./sources/support/viterbi-spiral/viterbi.h
 	        ./sources/support/viterbi-spiral/spiral-sse.h
 	   )
 	   set (${objectName}_SRCS
@@ -1143,6 +1151,12 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	                ${MOCS}
 	                resources.qrc
 	)
+
+	if (APPLE)
+	   set_target_properties (${objectName} PROPERTIES
+	                           BUILD_RPATH "/usr/local/lib"
+	                           INSTALL_RPATH "/usr/local/lib")
+	endif (APPLE)
 
 	target_link_libraries (${objectName}
 	                       PRIVATE

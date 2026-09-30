@@ -238,7 +238,7 @@ void	sampleReader::startDumping (const QString &fileName,
 }
 
 void	sampleReader::stopDumping	() {
-	fprintf (stderr, "sourcedumper close\n");
+//	fprintf (stderr, "sourcedumper close\n");
 	sourceDumper.close ();
 }
 
