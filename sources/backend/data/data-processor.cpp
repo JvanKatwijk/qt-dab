@@ -186,8 +186,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   return;
 
 	if (cntIdx != (last_cntIdx + 1) % 4) {
-	   fprintf (stderr, "packet  %d cntIdx %d expected %d address %d\n",
-	                                teller, cntIdx, last_cntIdx, paddr);
+//	   fprintf (stderr, "packet  %d cntIdx %d expected %d address %d\n",
+//	                                teller, cntIdx, last_cntIdx, paddr);
 //	packet is OK, so try to process it
 //	which obviously  only makes sense if flflg == 2,
 	   assembling = false;

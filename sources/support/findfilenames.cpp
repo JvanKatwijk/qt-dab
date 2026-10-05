@@ -68,7 +68,7 @@ QString suggestedFileName;
 	                     getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
-	                                      QString ("%1 (%2)").arg (extension, extension),
+	                                      QString ("%1 (*.%2)").arg (extension, extension),
 	                                      Q_NULLPTR);
 //	                                      useNativeFileDialog ?
 //	                                          QFileDialog::Options() :

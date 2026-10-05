@@ -302,7 +302,7 @@
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII detection takes place in a noisy environment. The software has to distinguish between &amp;quot;signal&amp;quot; and &amp;quot;noise&amp;quot;. The threshold for considering input to be &amp;quot;noise&amp;quot; can be set here.&lt;/p&gt;&lt;p&gt;Note that with srong signals, a low threshold leads to lots of false identifications.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>tti threshold</string>
+               <string>tii threshold</string>
               </property>
              </widget>
             </item>

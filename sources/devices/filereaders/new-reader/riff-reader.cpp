@@ -59,6 +59,7 @@ char header [5];
 	this	-> fileName	= fileName;
         fread (header, 1, 4, filePointer);
         fread (&segmentSize, 1, 4, filePointer);
+//	fprintf (stderr, "segmentsize %d\n", segmentSize);
         if (QString (header) == "RIFF") 
 	   setupFor_wavType (segmentSize);
 	else
@@ -106,19 +107,17 @@ char header [5];
               QString ("File '%1' is no valid SDR file").arg(fileName);
            throw device_exception (val. toStdString ());
         }
-//	fprintf (stderr, "Header %s\n", header);
 //      JUNK can be skipped
         fread (header, 1, 4, filePointer);
         if (QString (header) == "JUNK") {
            int junkSize;
            fread (&junkSize, 1, 4, filePointer);
-	   fprintf (stderr, "junksize %d\n", junkSize);
+//	   fprintf (stderr, "junksize %d\n", junkSize);
            char *junkBuffer = dynVec (char, junkSize);
            fread (junkBuffer, 1, junkSize, filePointer);
 //	   fread (&junkBuffer, 1, junkSize, filePointer);
            fread (header, 1, 4, filePointer);
         }
-	fprintf (stderr, "Header %s\n", header);
 
 	if (QString (header) != "fmt ") {
            QString val =
@@ -133,7 +132,7 @@ char header [5];
 	fread (&formatTag, 1, sizeof (uint16_t), filePointer);
 	fread (&nrChannels, 1, sizeof (uint16_t), filePointer);
 	fread (&samplingRate, 1, 4, filePointer);
-	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
+//	fprintf (stderr, "%d %d %d\n", formatTag, nrChannels, samplingRate);
 	if ((formatTag != 01) || (nrChannels != 02)) {
 	   QString val =
                    QString ("File '%1' is no valid SDR file").arg(fileName);
@@ -142,7 +141,7 @@ char header [5];
 
 	uint32_t bytesperSecond;
 	fread (&bytesperSecond, 1, 4, filePointer);
-//	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
+	fprintf (stderr, "bytes per second %d\n", bytesperSecond);
 
 	fread (&blockAlign, 1, 2, filePointer);
 	if (blockAlign == 4) 
@@ -169,7 +168,6 @@ char header [5];
 	fread (header, 1, 4, filePointer);
 	while (QString (header) != "data") {
 	   fread (&segmentSize, 1, 4, filePointer);
-//	   fprintf (stderr, "we read %s (%d)\n", header, segmentSize);
 	   if (QString (header) == "freq")
 	      fread (&tunedFrequency, 1, 4, filePointer);
 	   else
@@ -201,14 +199,12 @@ char header [5];
         }
 
 	uint32_t xxx;
+	uint32_t dataloc	= (uint32_t)ftell (filePointer);
+	basePosition		= ftell (filePointer);
 	fread (&xxx, 1, 4, filePointer);
-//	fprintf (stderr, "nrbytes in data %d\n", nrElements);
-	nrElements = xxx / blockAlign;
-//	fprintf (stderr, "nrElements %d\n", nrElements);
+	nrElements		= xxx / blockAlign;
 	remainingElements	= nrElements;
-	std::fgetpos (filePointer, &baseofData);
-	basePosition = ftell (filePointer);
-//	fprintf (stderr, "base = %d\n", (int)basePosition);
+//	std::fgetpos (filePointer, &baseofData);
 }
 
 void	riffReader::setupFor_bw64Type (uint32_t segmentSize) {
@@ -337,12 +333,20 @@ char header [5];
 //	fprintf (stderr, "nrbytes in data %d\n", nrElements);
 	nrElements = dataSize  / blockAlign;
 	remainingElements	= nrElements;
-	std::fgetpos (filePointer, &baseofData);
+//	std::fgetpos (filePointer, &baseofData);
+	fprintf (stderr, "Base is %d\n", (uint32_t) ftell (filePointer));
+	
 }
 
 void	riffReader::reset	() {
-	fsetpos (filePointer, &baseofData);
-	remainingElements = nrElements;
+	fseek (filePointer, basePosition, SEEK_SET);
+	uint32_t xxx;
+	fread (&xxx, 1, 4, filePointer);
+        nrElements              = xxx / blockAlign;
+        remainingElements       = nrElements;
+//	fprintf (stderr, "remaining %d elements\n", remainingElements);
+//	fprintf (stderr, "Base na reset is %d\n", (uint32_t) ftell (filePointer));
+//	remainingElements = nrElements;
 }
 
 int	riffReader::read (std::complex<float> *buffer, uint64_t nrSamples) {
@@ -374,16 +378,16 @@ int16_t *lBuf  = dynVec (int16_t, 2 * nrSamples);
 
 	if (nrSamples > remainingElements) {
 	   nrSamples = remainingElements;
-	   remainingElements	= 0;
 	}
+
 	int n =  fread (lBuf, sizeof (int16_t), 2 * nrSamples, filePointer);
 	for (int i = 0; i < n / 2; i ++)
 	   buffer [i] =
 	      std::complex<float> ((float)(lBuf [2 * i]) / denominator,
 	                           (float)(lBuf [2 * i + 1]) /denominator);
-	if (remainingElements != 0)
+	if (remainingElements >= 0) 
 	   remainingElements -= nrSamples;
-	return nrSamples;
+	return n / 2;
 }
 
 int	riffReader::read6Bytes (std::complex<float> *buffer,
@@ -404,10 +408,10 @@ int	next	= 0;
 	          lBuf [i + 3] << 24 | lBuf [i + 4] << 16 | lBuf [i + 5] << 8;
 	   buffer [next ++] = std::complex<float> (re / scaler, im / scaler);
 	}
-	if (remainingElements != 0)
-           remainingElements -= nrSamples;
+	if (remainingElements > 0)
+           remainingElements -= n / 6;
 
-	return nrSamples;
+	return n / 6;
 }
 
 int	riffReader::read8Bytes (std::complex<float> *Buffer,

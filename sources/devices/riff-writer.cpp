@@ -150,7 +150,8 @@ bool	riffWriter::init	(const QString &fileName, const int sampleRate,
 //
 //	start of the "data" chunk
 	fwrite (data, 1, 4, filePointer);
-	locationCounter		+= 4;
+	locationCounter		= (uint32_t)ftell (filePointer);
+	fprintf (stderr, "datacount op %d\n", locationCounter);
 
 	nrElements	= 0;
 	isValid		= true;
@@ -169,12 +170,14 @@ void	riffWriter::close	() {
 	if (nrBytes < (uint64_t)0xFFFFFFFF) {
 //	   fwrite (bw64, 1, 4, filePointer);
 	   fseek (filePointer, locationCounter, SEEK_SET);
-	   fwrite (&nrBytes, 1, 4, filePointer);
+	   fprintf (stderr, "locationCunter = %d (%d)\n",
+	                               locationCounter, nrBytes);
+	   uint32_t shortBytes = (uint32_t)nrBytes;
+	   fwrite (&shortBytes, 1, 4, filePointer);
 //
-//	compute the number if of to be recorded in the RIFF count
+//	compute the number  to be recorded in the RIFF count
 	   fseek (filePointer, 0, SEEK_END);
-	   int riffSize	= ftell (filePointer) - 8;
-//
+	   uint32_t riffSize	= ftell (filePointer) - 8;
 //	and record the value at loc 4
 	   fseek (filePointer, 4, SEEK_SET);
 	   fwrite (&riffSize, 1, 4, filePointer);

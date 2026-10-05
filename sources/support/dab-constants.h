@@ -134,7 +134,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"6.10"
+#define	CURRENT_VERSION	"7.3.1.1"
 
 //#define		DAB		0100
 //#define		DAB_PLUS	0101
@@ -214,10 +214,12 @@ public:
 	int16_t	length;
 	int16_t	bitRate;
 	QString	channel;	// just for presets
+	bool	onlyPAD;
 public:
 		descriptorType() {
 	defined		= false;
 	serviceName	= "";
+	onlyPAD		= false;
 	}
 virtual		~descriptorType() {}
 };

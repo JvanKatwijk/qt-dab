@@ -50,6 +50,7 @@
 	mp4Processor::mp4Processor (RadioInterface	*mr,
 	                            uint32_t		SId,
 	                            int16_t		bitRate,
+	                            bool		onlyPAD,
 	                            RingBuffer<complex16> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            FILE		*dump,
@@ -59,6 +60,7 @@
 	                                aacDecoder (mr, b) {
 	myRadioInterface	= mr;
 	this	-> bitRate	= bitRate;	// input rate
+	this	-> onlyPAD	= onlyPAD;
 	this	-> frameBuffer	= frameBuffer;
 	this	-> dump		= dump;
 	this	-> backgroundFlag	= backgroundFlag;
@@ -253,11 +255,11 @@ stream_parms    streamParameters;
 
 ///	sanity check 1
 	   if (au_start [i + 1] < au_start [i]) {
-	      QString errorReport =
-	         QString ("size problem %1 should be larger than %2").
-	                                                arg (au_start [i + 1]).
-	                                                arg (au_start [i]);
-	      qWarning () << errorReport;
+//	      QString errorReport =
+//	         QString ("size problem %1 should be larger than %2").
+//	                                                arg (au_start [i + 1]).
+//	                                                arg (au_start [i]);
+//	      qWarning () << errorReport;
 //	should not happen, all errors were corrected
 //	      aacDecoder. LostFrame (aac_frame_length, 
 //	                             streamParameters. sbrFlag,

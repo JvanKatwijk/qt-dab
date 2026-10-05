@@ -52,6 +52,7 @@ public:
 			mp4Processor	(RadioInterface *,
 	                                 uint32_t,	// SId
 	                                 int16_t,
+	                                 bool,		// onlyPAD
 	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,
 	                                 FILE		*,
@@ -70,6 +71,7 @@ private:
 #endif
 	firecodeChecker	fc;
 
+	bool		onlyPAD;
 	std::atomic<bool>	stopWorking;
 	std::mutex		locker;
 	bool		handleRS (const uint8_t *frameBytes,

@@ -1,4 +1,4 @@
-# Qt-DAB-7.3.1
+# Qt-DAB-7.3.1.1
 
 -------------------------------------------------------------------
 
@@ -8,7 +8,7 @@ About Qt-DAB
 ======================================================================
 
 *Qt-DAB* is software for Linux and Windows. It is to be used in combination with an SDR device for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**. 
-For the current version, *Qt-DAB-7.3.1*, predefined executables - for Linux an AppImage, for Windows an installer - will be available.
+For the current version, *Qt-DAB-7.3.1.1*, predefined executables - for Linux an AppImage, for Windows an installer - will be available.
 Sources can be compiled for e.g. Raspberry and Mac.
 
 ![7.3](/res/read_me/qt-dab-front-picture-1.png?raw=true)
@@ -17,7 +17,7 @@ Sources can be compiled for e.g. Raspberry and Mac.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.3.1](#What-is-new-in-Qt-DAB-7.3.1)
+* [What is new in Qt-DAB-7.3.1,1](#What-is-new-in-Qt-DAB-7.3.1,1)
 * [Windows and scopes](#windows-and-scopes)
 * [Managing service lists](#new-managing-service lists)
 * [Devices and device support](#devices-and-device-support)
@@ -28,13 +28,19 @@ Table of Contents
 * [Installation on Windows](#installation-on-Windows)
 * [Installation on Linux](#installation-on-Linux)
 * [Software for device support](#softare-for-device-support)
-* [Building an executable](#building-an-executable)
+* [Building on Linux](#building-on-Linux)
+* [Building on MaxOs NEW](#Building-on-MacOs-NEW)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.3.1
+What is new in Qt-DAB-7.3.1.1
 ======================================================================
 
-Qt-DAB-7.3.1 and 7.3.0 ony differ in some details:
+In Qt-DAB-7.3.1.1 two errors were corrected, one of them was sufficiently
+serious to create an updated version:
+ - (serious error) reading and writing ".sdr" dump files causes problems and crashes
+ - (annoying error) setting the longtitude of the local position did save the value correctly for the next program invocation, but in the current run the latitude value was set to the specified longitude value.
+
+Qt-DAB-7.3.1 (and therefore 7.3.1.1) and 7.3.0 ony differ in some details:
  - the adalm pluto device now runs fine under Fedora;
  - a couple of uninitialized (pointer and counter)variables gave sometimes nasty results, i.e. they could cause a crash in Qt-DAB;
  - color settings of the audio attributes was harmonized;
@@ -704,12 +710,21 @@ Note however, that in Qt_DAB 7.3.0 only Mode I is supported.
 
 and pass the file on program start-up with the `-A` command line switch. The channel name is just any identifier, the channel frequency is given in kHz. Your SDR device obviously has to support the frequencies for these channels.
 
-Building an executable
+Building an Linux
 =================================================================
 
 A detailed description on building the executable is in a separate
 document,
- - building-dab.txt
+ - building-dab-on-Linux.txt
+
+to be found in the "docs" directory.
+
+Building on MacOs NEW
+==================================================================
+
+A brief description on how to build Qt-DAB on MaxOs was kindly provided by
+Peter van der Post and is available as separate document
+ - building-dab-on-MacOs.txt
 
 to be found in the "docs" directory.
 

@@ -1,0 +1,44 @@
+# Qt-DAB installation on macOS
+
+Jan asked me to write a short instruction for building Qt-DAB on macOS. I'm using an SDRplay SDR receiver.
+Here are the steps:
+
+### Prerequisites:
+- SDRplay API 3.15 https://sdrplay.com/hardware-api/
+- MacPorts https://www.macports.org
+
+### Make sure MacPorts is up-to-date and install dependencies:
+```
+sudo port selfupdate
+sudo port install cmake pkgconfig qt6-qtbase qt6-qtmultimedia qt6-qtcharts fftw-3-single portaudio zlib libfdk-aac
+```
+
+### Create a directory for the source in your home directory and clone the repository
+```
+mkdir ~/source
+cd ~/source
+git clone https://github.com/JvanKatwijk/qt-dab.git
+```
+
+### Use cmake to set options and prepare for building
+```
+cd ~/source/qt-dab
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="/opt/local/libexec/qt6;/opt/local" -DSDRPLAY_V3=ON
+```
+
+### Build the application
+```
+make -j4
+```
+
+-j4 means: use 4 cores for parallel building
+
+### Run the application, specify the path for the SDRplay library
+```
+DYLD_LIBRARY_PATH=/usr/local/lib ./Qt-DAB
+```
+
+Have fun!  
+Peter van der Post (pvanderp), September 2026

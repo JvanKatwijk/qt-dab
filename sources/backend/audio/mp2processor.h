@@ -58,6 +58,7 @@ public:
 			mp2Processor	(RadioInterface *,
 	                                 uint32_t,	// SId
 	                                 int16_t,
+	                                 bool,		// onlyPAD
 	                                 RingBuffer<complex16> *,
 	                                 RingBuffer<uint8_t> *,
 	                                 FILE		*,
@@ -71,6 +72,7 @@ private:
 	RingBuffer<uint8_t>	*frameBuffer;
 	FILE		*dump;
 	int16_t		bitRate;
+	bool		onlyPAD;
 	padHandler	my_padhandler;
 	int32_t		mp2sampleRate	(std::vector<uint8_t> &);
 	int32_t		mp2decodeFrame	(std::vector<uint8_t> &, int16_t *);

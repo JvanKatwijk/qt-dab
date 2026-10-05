@@ -70,6 +70,7 @@ public:
 	QString		serviceName;
 	int		borf;
 	FILE		*dump;
+	bool		onlyPAD;
 
 	std::mutex	locker;
 private:

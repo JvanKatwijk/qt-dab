@@ -57,7 +57,7 @@ private:
 	int	read6Bytes		(std::complex<float> *, uint64_t);
 	int	read8Bytes		(std::complex<float> *, uint64_t);
 	FILE	*filePointer;
-	uint64_t	remainingElements;
+	int64_t		remainingElements;
 	uint64_t	nrElements;
 	uint16_t	blockAlign;
 	std::fpos_t	baseofData;

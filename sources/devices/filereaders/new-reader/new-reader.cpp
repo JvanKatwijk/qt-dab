@@ -88,7 +88,7 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	running. store (true);
 	nextStop	= getMyTime();
 	try {
-	   while (running. load()) {
+	   while (running. load ()) {
 	      while (theBuffer -> WriteSpace () < BUFFERSIZE) {
 	         if (!running. load())
 	            throw (33);
@@ -113,15 +113,13 @@ std::complex<float> inputBuffer [BUFFERSIZE];
 	      int n = theReader -> read (inputBuffer, BUFFERSIZE);
 	      if (n < BUFFERSIZE) {
 	         theReader -> reset ();
-	         for (int i = n; i < BUFFERSIZE; i ++)
-	            inputBuffer [i] = std::complex <float> (0, 0);
 	      }
 	      if (sampleRate == SAMPLERATE) {
-	         theBuffer -> putDataIntoBuffer (inputBuffer, BUFFERSIZE);
+	         theBuffer -> putDataIntoBuffer (inputBuffer, n);
 	      }
 	      else {
 	         std::complex<float> localBuf [SAMPLERATE / DIVIDER];
-	         for (int i = 0; i < BUFFERSIZE; i ++) {
+	         for (int i = 0; i < n; i ++) {
 	            convBuffer [convIndex ++] = inputBuffer [i];
 	            if (convIndex >= (sampleRate / DIVIDER + 1)) {
 	              for (int j = 0; j < SAMPLERATE / DIVIDER; j ++) {

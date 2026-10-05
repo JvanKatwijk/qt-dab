@@ -65,6 +65,7 @@
 	this	-> protLevel		= d -> protLevel;
 	this	-> subChId		= d -> subchId;
 	this	-> borf			= flag;
+	this	-> onlyPAD		= d -> onlyPAD;
 
 	interleaveData. resize (16);
 	for (int i = 0; i < 16; i ++) {
