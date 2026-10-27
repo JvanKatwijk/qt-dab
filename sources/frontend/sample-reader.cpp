@@ -74,6 +74,7 @@ static
 Complex oscillatorTable [SAMPLERATE];
 constexpr float ALPHA = 1.0f / SAMPLERATE;
 
+#define	FRAME_SIZE	(2048 * 96)
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig_i,
 	                            RingBuffer<Complex> *spectrumBuffer_i):
@@ -179,7 +180,7 @@ auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	      buffer [i]	= dcRemover. filter (buffer [i]);
 	   if (iqBalance)
 	      buffer [i]	= balancer. process (buffer [i]);
-	   sLevel = 0.00001 * jan_abs (buffer [i]) + (1 - 0.00001) * sLevel;
+	   sLevel = 0.000001 * jan_abs (buffer [i]) + (1 - 0.000001) * sLevel;
 	}
 	static int teller = 0; 
 	teller += nrSamples;

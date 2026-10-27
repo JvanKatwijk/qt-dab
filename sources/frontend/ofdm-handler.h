@@ -148,6 +148,7 @@ private:
 
 	uint8_t			selectedTII;
 	DABFLOAT		snr;
+	float			null_avg;
 	int16_t			tiiThreshold;
 	int			tiiCollision;
 	bool			tiiFilter_active;

@@ -138,7 +138,6 @@ int		output_size	= 8 * 2048;
 void	fdkAAC::LostFrame (uint32_t length, 
 	                                uint8_t sbrFlag, uint8_t psFlag) {
 AAC_DECODER_ERROR err;
-	fprintf (stderr, "a");
 	std::vector<INT_PCM> decoder_buf (8 * 2048);
 	uint32_t outputSize = 8 * 2048;
 
@@ -167,6 +166,5 @@ AAC_DECODER_ERROR err;
 	if (audioBuffer -> GetRingBufferReadAvailable () >
 	                                (uint32_t)info -> sampleRate / 8)
 	   newAudio (info -> frameSize, info -> sampleRate, psFlag, sbrFlag);
-	fprintf (stderr, "x");
 }
 

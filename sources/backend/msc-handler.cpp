@@ -96,6 +96,9 @@ void	mscHandler::stopBackend	(uint32_t SId, uint8_t SCIds) {
 	for (int i = 0; i < (int)(theBackends. size ());  i ++) {
 	   Backend *b = theBackends. at (i);
 	   if (((uint32_t)(b -> SId) ==  SId) && (b -> SCIds == SCIds)) {
+	      qInfo () << "halting backend" <<
+	                   b -> serviceName <<
+	                   QString::number (SId, 16);
 	      b -> stopRunning ();
 	      usleep (1000);
 	      delete b;
@@ -104,6 +107,7 @@ void	mscHandler::stopBackend	(uint32_t SId, uint8_t SCIds) {
 	   }
 	}
 	locker. unlock ();
+	           
 	theLogger -> log ("mscHandler",
 	                   QString ("stopping service ") +
 	                                 QString::number (SId, 16));
@@ -116,6 +120,10 @@ bool	mscHandler::startBackend (descriptorType &d,
 	                          RingBuffer<uint8_t> *dataBuffer,
 	                          FILE *dump, int flag) {
 
+	qInfo () << "start backend" <<
+	            theBackends. size () + 1 <<
+	            d. serviceName << QString::number (d. SId, 16);
+	         
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     theLogger,
 	                                     &d,

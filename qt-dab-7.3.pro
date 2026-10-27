@@ -145,6 +145,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/frontend/ofdm-decoder.h \
 	   ./sources/frontend/correlator.h \
 	   ./sources/frontend/estimator.h \
+	   ./sources/frontend/estimator-2.h \
 	   ./sources/frontend/freqsyncer.h \
 	   ./sources/frontend/phasetable.h \
 	   ./sources/frontend/freq-interleaver.h \
@@ -310,6 +311,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/frontend/ofdm-decoder.cpp \
 	   ./sources/frontend/correlator.cpp \
 	   ./sources/frontend/estimator.cpp \
+	   ./sources/frontend/estimator-2.cpp \
 	   ./sources/frontend/freqsyncer.cpp \
 	   ./sources/frontend/phasetable.cpp \
 	   ./sources/frontend/freq-interleaver.cpp \

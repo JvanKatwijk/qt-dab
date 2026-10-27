@@ -87,6 +87,7 @@
 	this	-> carriers		= get_carriers ();
 	this	-> carrierDiff		= get_carrierDiff ();
 
+	this	-> null_avg		= 0.2;
 	viewCarrier_mode		= 255;
 	starter				= true;
 	this	-> tiiDelay		= p -> tii_delay;
@@ -208,6 +209,7 @@ int	tryCounter	= 0;
 Complex *tester	= dynVec (Complex, T_u / 2);
 
 	this	-> snr		= 10; 	// until really computed
+	this	-> null_avg	= 0.2;
 	softbits. resize (2 * get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
@@ -442,7 +444,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
 //	" The TII signal shall fill the null symbol of each transmission
-//	frame comprising the CIFs of CIF count 0, 1, 2, 3
+//	frame comprising the CIFs of CIF count 0, 1, 2, 3"
 //	modulo 8 (transmission mode I).
 //	We have the CIF count of the previous frame
 	      int16_t CIF_hi, CIF_lo;
@@ -450,7 +452,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	      if ((CIF_lo & 0x07) >= 4) {
 	         static int t2 = 0;
 	         if (viewCarrier_mode == NULL_CARRIERS_TII) {
-	            if (++t2 >= 4) {
+	            if (++ t2 >= 4) {
 	               DABFLOAT *cBuf = dynVec (DABFLOAT, carriers);
 	               NullToCarriers (ofdmBuffer, cBuf);
 	               carrierBuffer -> putDataIntoBuffer (cBuf, carriers);
@@ -485,9 +487,13 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	         for (int i = 0; i < T_null; i ++)
 	            sum += jan_abs (ofdmBuffer [i]);
 	         sum /= T_null;
+	         null_avg	= 0.99 * null_avg + 0.01 * sum;
+
+	         float sLevel	= theReader. getSLevel ();
 	         float snrV	=
-	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	         this -> snr = 0.5 * this ->  snr + 0.5 * snrV;
+//	              20 * log10 ((sLevel + 0.005) / (null_avg));
+	              20 * log10 ((cLevel / cCount + 0.005) / (null_avg));
+	         this -> snr = 0.8 * this ->  snr + 0.2 * snrV;
 	         showSnr (snr);
 	      }
 /**

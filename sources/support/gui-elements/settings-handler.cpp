@@ -36,6 +36,12 @@ void	store (QSettings *s, QString paragraph, QString key, int value) {
 	s	-> endGroup ();
 }
 
+void	store_f (QSettings *s, QString paragraph, QString key, float value) {
+	s	-> beginGroup (paragraph);
+	s	-> setValue (key, value);
+	s	-> endGroup ();
+}
+
 int	value_i (QSettings *s, QString paragraph, QString key, int def) {
 int	res;
 	s	-> beginGroup (paragraph);

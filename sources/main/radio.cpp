@@ -544,7 +544,7 @@ QString h;
 	                                             channelNames,
 	                                             theQSettings,
 	                                             the_newFrame);
-	the_newFrame	-> setMinimumWidth (240);
+	the_newFrame	-> setMinimumWidth (275);
 	connect (theConfigHandler, &configHandler::set_serviceOrder,
 	         newServices, &serviceViewer::setServiceOrder);
 //
@@ -1618,7 +1618,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   delete theDeviceHandler;
 	   theDeviceHandler = nullptr;
 	}
-
+//	Part II
 	theDeviceHandler =  createDevice (deviceName);
 	if (theDeviceHandler == nullptr) {
 	   theDeviceHandler	= new deviceHandler ();	// the dummy one
@@ -1960,6 +1960,7 @@ QString	dumpName;
 void	RadioInterface::stopSourceDumping	() {
 	if (dumpDisplay_p == nullptr)
 	   return;
+
 	delete dumpDisplay_p;
 	dumpDisplay_p	= nullptr;
 	if (theOfdmHandler	-> isDumping ())
@@ -2875,8 +2876,6 @@ void	RadioInterface::stopScan_single () {
 	   fclose (scanDumper_p);
 	   scanDumper_p = nullptr;
 	}
-//	delete theScanTable;
-//	theScanTable	= nullptr;
 }
 
 void	RadioInterface::stopScan_continuous () {
@@ -3558,14 +3557,6 @@ void	RadioInterface::handle_snrLabel	() {
 	store (theQSettings, DAB_GENERAL, SNR_WIDGET_VISIBLE,
 	                          theSNRViewer. isHidden () ? 0 : 1);
 }
-
-//void	RadioInterface::handle_snrButton	() {
-//	if (running. load()) {
-//	   dynamicLabel	-> setStyleSheet (labelStyle);
-//	   QString SNR	= "SNR " + QString::number (channel. snr);
-//	   dynamicLabel	-> setText (SNR);
-//	}
-//}
 //
 //	called from the configHandler
 void	RadioInterface::handle_loadTable	 () {
@@ -4008,14 +3999,14 @@ void	RadioInterface::show_clock_error	(int d) {
 void	RadioInterface::show_dcOffset (float dcOffset) {
 	theNewDisplay. showDCOffset (dcOffset);
 }
-
+ 
 void	RadioInterface::show_channel	(uint32_t n) {
 std::vector<Complex> v (n);
 	theChannelBuffer. getDataFromBuffer (v. data (), n);
 	theChannelBuffer. FlushRingBuffer ();
-	if (!theNewDisplay. isHidden () &&
-	           (theNewDisplay. getTab () == SHOW_CHANNEL))
-	   theNewDisplay. showChannel (v);
+	if (!channelOn ())
+	   return;
+	theNewDisplay. showChannel (v);
 }
 	                                 
 bool	RadioInterface::channelOn () {
@@ -4072,12 +4063,12 @@ void	RadioInterface::set_iqBalance	(bool b) {
 }
 
 void	RadioInterface::set_latitude	(float lat) {
-	store (theQSettings, MAP_HANDLING, HOME_LATITUDE, lat);
+	store_f (theQSettings, MAP_HANDLING, HOME_LATITUDE, lat);
 	localPos. latitude = lat;
 }          
 
 void	RadioInterface::set_longitude	(float lon) {
-	store (theQSettings, MAP_HANDLING, HOME_LONGITUDE, lon);
+	store_f (theQSettings, MAP_HANDLING, HOME_LONGITUDE, lon);
 	localPos. longitude = lon;
 }          
 

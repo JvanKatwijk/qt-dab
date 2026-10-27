@@ -304,7 +304,7 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 DABFLOAT sum		= 0;
 DABFLOAT leftBit	= 0;
 DABFLOAT rightBit	= 0;
-DABFLOAT scaler		= 0;
+DABFLOAT scaler		= 10;
 //	Note that in case of file input, elements of the fft_buffer
 //	may contain a zero value.
 
@@ -331,6 +331,7 @@ DABFLOAT scaler		= 0;
 	   }
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
+
 //
 //	correction on the fftBin value using the approach from
 //	old-dab, see text above
@@ -393,7 +394,7 @@ DABFLOAT scaler		= 0;
 	  case DECODER_3:
 	     {  Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	        scaler		=  -140.0 / meanValue;
-
+	     
 	        leftBit		= real (R1) * scaler;
 	        rightBit	= imag (R1) * scaler;
 	        sum		+= jan_abs (R1);

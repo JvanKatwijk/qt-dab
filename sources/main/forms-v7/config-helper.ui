@@ -266,6 +266,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="latitudeSelector">
+              <property name="decimals">
+               <number>5</number>
+              </property>
               <property name="maximum">
                <double>9999.000000000000000</double>
               </property>
@@ -287,6 +290,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="longitudeSelector">
+              <property name="decimals">
+               <number>5</number>
+              </property>
               <property name="maximum">
                <double>999990.000000000000000</double>
               </property>

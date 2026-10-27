@@ -40,6 +40,7 @@
 //      It was found that enlarging the buffersize to e.g. 8192
 //      cannot be handled properly by the underlying system.
 #define DUMPSIZE                4096
+#define	CIR_BUFF_SIZE		(2048 * 97)
 
 class	RadioInterface;
 class	sampleReader : public QObject {
@@ -47,7 +48,7 @@ Q_OBJECT
 public:
 	      	sampleReader	(RadioInterface *mr,
 	                         	deviceHandler *theRig,
-	                         	RingBuffer<Complex> *spectrumBuffer = nullptr);
+	                         	RingBuffer<Complex> *spectrumBuffer);
 
 	      	~sampleReader		();
 	      void	setRunning	(bool b);
@@ -76,6 +77,7 @@ private:
 	      int32_t		bufferContent;
 	      float		sLevel;
 	      int32_t		sampleCount;
+	      int32_t		elCount;
 	      float		corrector;
 	      bool		dumping;
 	      int16_t		dumpIndex;
@@ -95,5 +97,6 @@ private:
 signals:
 	      void		show_spectrum	(int);
 	      void		show_dcOffset	(float);
+
 };
 

@@ -88,8 +88,6 @@ char*	get_ch_name (const char* type, int id) {
 	unsigned int major;
 	unsigned int minor;
 	iio_library_get_version (&major, &minor, git_tag);
-//	fprintf (stderr, "Library version %d %d %s\n", 
-//	                             major, minor, git_tag);
 	QString libV	= QString::number (major) + ":" +
 	                  QString::number (minor) + ":" +
 	                  QString (git_tag);
@@ -130,11 +128,6 @@ char*	get_ch_name (const char* type, int id) {
 //	step 1: establish a context
 //
 	ctx	= nullptr;
-//	ctx	= iio_create_default_context ();
-//	if (ctx == nullptr) {
-//	   ctx = iio_create_local_context ();
-//	}
-
 	if (ctx == nullptr) {
 //	   ctx = iio_create_network_context ("pluto.local");
 	   ctx = iio_create_network_context (context. toLatin1 (). data ());
@@ -169,6 +162,7 @@ char*	get_ch_name (const char* type, int id) {
 //	   else
 //	      fprintf (stderr, "no device found at index %d\n", i);	
 //	}
+
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
@@ -378,6 +372,7 @@ bool	plutoHandler::restartReader	(int32_t freq, int skipped) {
 int ret;
 iio_channel *lo_channel;
 iio_channel *gain_channel;
+
 	if (debugFlag)
 	   fprintf (stderr, "restart called with %d\n", freq);
 	if (!connected)		// should not happen

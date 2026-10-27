@@ -29,7 +29,7 @@ class audioLevel : public QWidget {
 Q_OBJECT
 public:
 	audioLevel (QWidget *parent = 0);
-	void	setLevel(qreal level);
+	void	setLevel (qreal level);
 
 protected:
 	void	paintEvent (QPaintEvent *event) override;
