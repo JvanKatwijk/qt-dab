@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.3.1.1\\\"
+DEFINES         += VERSION=\\\"7.3.1.2\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+= -Wvla
@@ -140,6 +140,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/mutetimeSelector.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/ofdm-handler.h \
+	   ./sources/frontend/coherent-demodulator.h \
 	   ./sources/frontend/timesyncer.h \
 	   ./sources/frontend/sample-reader.h \
 	   ./sources/frontend/ofdm-decoder.h \
@@ -306,6 +307,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/main/scan-handler.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
+	   ./sources/frontend/coherent-demodulator.cpp \
 	   ./sources/frontend/timesyncer.cpp \
 	   ./sources/frontend/sample-reader.cpp \
 	   ./sources/frontend/ofdm-decoder.cpp \
@@ -452,10 +454,10 @@ INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.3.1.1
+   TARGET               = qt-dab-qt5-7.3.1.2
 }
 else {
-   TARGET               = qt-dab-7.3.1.1
+   TARGET               = qt-dab-7.3.1.2
 }
 
 #mac {
@@ -522,7 +524,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.3.1.1
+        TARGET          = qt-dab-7.3.1.2
 	DEFINES		+= __BITS64__
 	DESTDIR		=  ./linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

@@ -1,4 +1,4 @@
-# Qt-DAB-7.3.1.1
+# Qt-DAB-7.3.1.2
 
 -------------------------------------------------------------------
 
@@ -17,9 +17,9 @@ Sources can be compiled for e.g. Raspberry and Mac.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.3.1,1](#What-is-new-in-Qt-DAB-7.3.1,1)
+* [What is new in Qt-DAB-7.3.1.2](#What-is-new-in-Qt-DAB-7.3.1.2)
 * [Windows and scopes](#windows-and-scopes)
-* [Managing service lists](#new-managing-service lists)
+* [Managing service lists](#new-managing-service-lists)
 * [Devices and device support](#devices-and-device-support)
 * [Handling packet services](#handling-packet-services)
 * [Scan control](#scan-cntrol)
@@ -32,8 +32,13 @@ Table of Contents
 * [Building on MaxOs NEW](#Building-on-MacOs-NEW)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.3.1.1
+What is new in Qt-DAB-7.3.1.2
 ======================================================================
+
+In Qt-DAB-7.3.1.2 there are three (minor) differences compared to the previous version:
+ * the setLatitude and setLongitude functions incorrectly forced the values to be int, rather than float: fixed
+ * the SNR viewer showed a periodic dip in the SNR. Applying some more filtering does the trick;
+ * the device list now has an entry labeled "stop device". Touching it halts - as the name strongly suggests - and disconnets the device (added on user's request);
 
 In Qt-DAB-7.3.1.1 two errors were corrected, one of them was sufficiently
 serious to create an updated version:
@@ -44,7 +49,7 @@ Qt-DAB-7.3.1 (and therefore 7.3.1.1) and 7.3.0 ony differ in some details:
  - the adalm pluto device now runs fine under Fedora;
  - a couple of uninitialized (pointer and counter)variables gave sometimes nasty results, i.e. they could cause a crash in Qt-DAB;
  - color settings of the audio attributes was harmonized;
- - the biasT setting in some devices was not remembered between program invocations, and now it is;
+ - the biasT setting in some devices was not maintained between program invocations, and now it is;
  - the font, font size and font color settings of the service list on the main window is now maintained between program invocations.
  - a selector is added for controlling a filter to balance the I and Q components of the incoming signal.
  - sorting the services list when adding a service contained a small error.
@@ -463,11 +468,19 @@ The window shows a selection:
 
 
 -------------------------------------------------------------------------
-Devices and device support
+Device, device selection and device support
 ======================================================================
 
 In the current set up, Qt-DAB supports 6 types of (physical) input devices,
 some network input, and file input in some common formats.
+
+As mentioned above, the small blue icon on the top line in the main window iss
+a "hidden" button, controlling the visibility of the **device selection** list.
+
+![7.3](/res/read_me/device-selector.png?raw=true)
+
+New is the top button in the list which reads **stop device**, touching it
+stops the currently selected device **without selecting another device**.
 
   * DABsticks (RTL2838U or similar), with separate libraries for the V3 and V4 versions of the stick in the precompiled Windows versions;
   * **All** SDRplay SDR models (RSP I,  RSP 1A and 1B, RSP II, RSP Duo, RSP Dx and RSPDxR2), with separate entries for the v2 and v3 library. **New** is extended support for the SDRPlay RspDuo. Tuner selection (and tuner 2 is connected to a port with biasT support) is now operational;

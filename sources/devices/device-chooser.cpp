@@ -29,6 +29,7 @@
 #include	"errorlog.h"
 
 #include	<QModelIndex>
+#define	DEFAULT_DEVICE		0100
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #ifdef	__MINGW32__
@@ -130,6 +131,8 @@
 	
 	
 	deviceList. push_back (deviceItem ("select input", NO_ENTRY));
+	deviceList. push_back (deviceItem ("stop running", DEFAULT_DEVICE));
+	addtoList ("stop device");
 	deviceList. push_back (deviceItem ("file input", FILE_INPUT));
 	addtoList ("file input");
 #ifdef	HAVE_SDRPLAY_V3
@@ -241,6 +244,9 @@ int	deviceNumber	= getDeviceIndex (s);
 	   return nullptr;
 
 	switch (deviceNumber) {
+	   case DEFAULT_DEVICE:
+	      return new deviceHandler ();
+
 #ifdef	HAVE_SDRPLAY_V3
 	   case SDRPLAY_V3_DEVICE:
 	      return new sdrplayHandler_v3 (dabSettings, version,

@@ -76,15 +76,23 @@ void	fftHandler::fft		(std::vector<Complex> &v) {
 	      v [i] = fftVector [i];
 }
 
-void	fftHandler::fft		(Complex  *v) {
-	for (int i = 0; i < size; i ++)
-	   fftVector [i] = v [i];
+void	fftHandler::fft		(Complex *v) {
+	if (dir)
+	   for (int i = 0; i < size; i ++)
+	      fftVector [i] = conj (v [i]);
+	else
+	   for (int i = 0; i < size; i ++)
+	      fftVector [i] = v [i];
 #ifdef	__WITH_DOUBLES__
 	fftw_execute (plan);
 #else
 	fftwf_execute (plan);
 #endif
-	for (int i = 0;  i < size; i ++)
-	   v [i] = fftVector [i];
+	if (dir)
+	   for (int i = 0;  i < size; i ++)
+	      v [i] = conj (fftVector [i]);
+	else
+	   for (int i = 0; i < size; i ++)
+	      v [i] = fftVector [i];
 }
 

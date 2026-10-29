@@ -49,53 +49,6 @@ DABFLOAT length	= jan_abs (V);
 	return Complex (V) / length;
 }
 
-#ifdef	__APPLE__
-// Apple's libc++ doesn't implement the C++17 special math functions
-// (cyl_bessel_i, etc.) - Abramowitz & Stegun 9.8.1/9.8.2 approximation
-// of the zeroth-order modified Bessel function of the first kind.
-DABFLOAT  IO_Bessel (DABFLOAT x) {
-DABFLOAT ax = abs (x);
-    if (ax < 3.75f) {
-        float t = x / 3.75f;
-        t *= t;
-        return 1.0f + t * (3.5156229f + t * (3.0899424f + t * (1.2067492f +
-               t * (0.2659732f + t * (0.0360768f + t * 0.0045813f)))));
-    } else {
-        float t = 3.75f / ax;
-        return (std::exp (ax) / std::sqrt (ax)) *
-               (0.39894228f + t * (0.01328592f + t * (0.00225319f +
-               t * (-0.00157565f + t * (0.00916281f + t * (-0.02057706f +
-               t * (0.02635537f + t * (-0.01647633f + t * 0.00392377f))))))));
-    }
-}
-#else
-//	The bessel function is under windows too slow too work with
-//	that is why we created a table that is filled on startup
-static inline
-DABFLOAT IO_Bessel	(DABFLOAT x) {
-	return std::cyl_bessel_i (0.0f, x);
-}
-#endif
-DABFLOAT besselTable [2048];
-// and table access is with this function
-static inline
-DABFLOAT IO (DABFLOAT x) {
-	return besselTable [((int)(x * 32)) % 2048];
-}
-
-static inline
-Complex w (DABFLOAT kn) {
-	DABFLOAT re	= cos (kn * M_PI / 4);
-	DABFLOAT im	= sin (kn * M_PI / 4);
-	return Complex (re, im);
-}
-
-static Complex W_table [8];
-static inline
-DABFLOAT makeA (int i, Complex S, Complex prevS) {
-	return jan_abs  (prevS + W_table [i] * S);
-}
-
 //
 //	Provided for computing the phase error by old-dab
 //	(aka Rolf Zerr)
@@ -129,13 +82,13 @@ Complex makeComplex (DABFLOAT phase) {
 //	their length, relative to each other,
 //	Ideally, the X and Y are of equal size, in practice they are not.
 //
-//	Decoder 3 is the simplified version, implementing formula 10 from
+//	Decoder 4 is the simplest version, implementing formula 10 from
 //	"Soft decisions for DQPSK demodulation for the Viterbi
 //	decoding of the convolutional codes"
 //	Thushara C Hewavithana and Mike Brooks
 //	essentially looking at the X and Y component of S[n] * conj (S [n - 1]))
 //
-//	Decoders 1 and 2 are based on formula 9, which essentially states
+//	Decoders 2 and 3 are based on formula 9, which essentially states
 //	sqrt (2) / (sigma [n] * (1 / snr + 2));
 //
 //	* if sigma is small the X and Y component are enlarged,
@@ -151,11 +104,12 @@ Complex makeComplex (DABFLOAT phase) {
 //	Decoders 1 and 2 differ in the way a scaling is determined for the
 //	different sizes of the input.
 //
-//	Decoder 4 is an interpretation of the so-called "Optimal 3" 
-//	version in the aforementioned paper.
-//	see formula 13 and 14.
+//	Decoder 1 is using a coherent demodulator, copied from
+//	welle.io (which itself was derived from Qt-DAB), and - according
+//	to the description, the coherent decoder  (CoherentDemodulator) was
+//	added with the help of an AI assistant (Claude Code).
+//	It seems to perform slightly better than 2 and 3
 //
-//	The decoders are all based o
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 int16_t	bitDepth,
 	                                 RingBuffer<float>   *devBuffer_i,
@@ -165,6 +119,7 @@ Complex makeComplex (DABFLOAT phase) {
 	                                    theTable	(),
 	                                    myMapper	(),
 	                                    fft (get_T_u (), false),
+	                                    coherent	(),
 	                                    devBuffer	(devBuffer_i),
 	                                    iqBuffer	(iqBuffer_i),
 	                                    phaseReference (get_T_u ()),
@@ -200,14 +155,6 @@ Complex makeComplex (DABFLOAT phase) {
 
 	sqrt_2			= 1.0 /sqrt (2);
 //
-//	Prefil some tables for faster access
-	for (int i = 0; i < 2048; i ++) {
-	   besselTable [i] = IO_Bessel (((float)i) / 32.0);
-	}
-
-	for (int i = 0; i < 8; i ++)
-	   W_table [i] = w (-i);
-
 	viewCarriers_mode	= 255;
 }
 
@@ -226,10 +173,12 @@ void	ofdmDecoder::reset ()	{
 	   meanPowerVector [i]		= 1;
 	}
 	meanValue	= 1.0f;
+	coherent. reset ();
 }
 //
 void	ofdmDecoder::processBlock_0 (std::vector <Complex> buffer) {
 	fft. fft (buffer);
+	coherent. processPRS (buffer. data ());
 //	we are now in the frequency domain, and we keep the carriers
 //	for their phases.
 	memcpy (phaseReference. data (), buffer. data (),
@@ -269,7 +218,6 @@ static float f_d = 1;
 }
 
 static	int	cnt	= 0;
-
 //
 
 //	Note for the reader
@@ -307,13 +255,18 @@ DABFLOAT rightBit	= 0;
 DABFLOAT scaler		= 10;
 //	Note that in case of file input, elements of the fft_buffer
 //	may contain a zero value.
-
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
 	fft. fft (fft_buffer. data ());
 
-//	here we really start
+	if ((this -> decoder == DECODER_1) && coherent. ready ()) {
+	   Complex guard (0, 0);
+	   for (int n = 0; n < T_g; n ++)
+	      guard += buffer [T_u + n] * conj (buffer [n]);
+	   coherent. demodulate (fft_buffer. data (), blkno, guard);
+	}
+//
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index		= myMapper.  mapIn (i);
 	   int16_t	binIndex	= index;
@@ -331,117 +284,88 @@ DABFLOAT scaler		= 10;
 	   }
 	   Complex prevS	= phaseReference [index];
 	   Complex fftBin	= current * normalize (conj (prevS));
-
 //
 //	correction on the fftBin value using the approach from
 //	old-dab, see text above
 
-	   DABFLOAT phaseError	= clockError / (DABFLOAT)carriers_2 * M_PI * 
+	   DABFLOAT phaseError = clockError / (DABFLOAT)carriers_2 * M_PI * 
 	                          (carriers_2 - binIndex) / (carriers_2);
 	   fftBin		*= makeComplex (-phaseError);
 	   conjVector [index]	= fftBin;
 
-//	updates
-	   DABFLOAT fftBinPower	= std::norm (fftBin);
-	   meanPowerVector [i] =
-	        compute_avg (meanPowerVector [i], fftBinPower, ALPHA);
-
-	   DABFLOAT binAbsLevel	= jan_abs (fftBin) * sqrt_2;
-	   DABFLOAT binAbsInv	= 1.0 / binAbsLevel;
-	   meanLevelVector [i] =
-	        compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
-
-	   DABFLOAT d_x		=  abs (real (fftBin)) -
-	                                  meanLevelVector [i] * binAbsInv;
-	   DABFLOAT d_y		=  abs (imag (fftBin)) -
-	                                  meanLevelVector [i] * binAbsInv;
-	   DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
-	   sigmaSQ_Vector [i] =
-	             compute_avg (sigmaSQ_Vector [i], sigmaSQ, ALPHA);
 //	actual decoding
 	   switch (this -> decoder) {
-	     default:
-	     case DECODER_1: //	The denomainator is (formula 9)
-	         {  DABFLOAT amplifier	= 
+	      default:
+	         if ((this -> decoder == DECODER_1) &&
+	                                       coherent. ready ()) {
+	            static const float llrScale	= 16.0f;
+                    leftBit	= -coherent. llrReal (index) * llrScale;
+                    rightBit	= -coherent. llrImag (index) * llrScale;
+	            break;
+	         }
+//	fall through
+	      case DECODER_2:
+	      {  Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
+	         scaler		=  -140.0 / meanValue;
+	     
+	         leftBit	= real (R1) * scaler;
+	         rightBit	= imag (R1) * scaler;
+	         sum		+= jan_abs (R1);
+	       }
+	       break;
+
+	      case DECODER_3: //	The denomainator is (formula 9)
+	      case DECODER_4: //	The denomainator is (formula 9)
+	      {
+	         DABFLOAT fftBinPower	= std::norm (fftBin);
+	         meanPowerVector [i] =
+	           compute_avg (meanPowerVector [i], fftBinPower, ALPHA);
+
+	         DABFLOAT binAbsLevel	= jan_abs (fftBin) * sqrt_2;
+	         DABFLOAT binAbsInv	= 1.0 / binAbsLevel;
+	         meanLevelVector [i] =
+	            compute_avg (meanLevelVector [i], binAbsLevel, ALPHA);
+
+	         DABFLOAT d_x	=  abs (real (fftBin)) -
+	                               meanLevelVector [i] * binAbsInv;
+	         DABFLOAT d_y	=  abs (imag (fftBin)) -
+	                               meanLevelVector [i] * binAbsInv;
+	         DABFLOAT sigmaSQ	= d_x * d_x + d_y * d_y;
+	         sigmaSQ_Vector [i] =
+	             compute_avg (sigmaSQ_Vector [i], sigmaSQ, ALPHA);
+	         if (this -> decoder == DECODER_3) {
+ 	            DABFLOAT amplifier	= 
 	   	                sqrt (abs (fftBin) * abs (prevS)) *
 	                                          meanPowerVector [i];
 	            amplifier	/= sigmaSQ_Vector [i];
 	            amplifier	/= 1.0 / snr + 3;
-	           Complex R1	= normalize (fftBin) * amplifier;
+	            Complex R1	= normalize (fftBin) * amplifier;
 //	scaler (due to old-dab)
-	           scaler	= -100 / meanValue;
-	           leftBit	= real (R1) * scaler;
-	           rightBit	= imag (R1) * scaler;
-	           sum		+= jan_abs (R1);
-	           break;
-	      }
-
-	   case DECODER_2:
-	      {  DABFLOAT amplifier	= 
+	            scaler	= -100 / meanValue;
+	            leftBit	= real (R1) * scaler;
+	            rightBit	= imag (R1) * scaler;
+	            sum		+= jan_abs (R1);
+	         }
+	         else { 	//DECODER_4
+	            DABFLOAT amplifier	= 
 	                        std::sqrt (abs (fftBin) * abs (prevS)) *
 	                                            meanLevelVector [i];
-	         amplifier	/= sigmaSQ_Vector [i] * abs (fftBin);
-	         amplifier	/= 1.0 / snr + 0.7f;
-	         Complex R1	= fftBin * amplifier;
+	            amplifier	/= sigmaSQ_Vector [i] * abs (fftBin);
+	            amplifier	/= 1.0 / snr + 0.7f;
+	            Complex R1	= fftBin * amplifier;
 //	scaler (due to old-dab)
-	         scaler		= -100 / meanValue;
-	         leftBit	= real (R1) * scaler;
-	         rightBit	= imag (R1) * scaler;
-	         sum		+= jan_abs (R1);
-	      }
-	      break;
-
-	  case DECODER_3:
-	     {  Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
-	        scaler		=  -140.0 / meanValue;
-	     
-	        leftBit		= real (R1) * scaler;
-	        rightBit	= imag (R1) * scaler;
-	        sum		+= jan_abs (R1);
-	      }
-	      break;
-
-	   case DECODER_4:
-	      {  DABFLOAT A	= 1.0 / sigmaSQ_Vector [i];
-	         DABFLOAT P1	= makeA (1, current, prevS) * A;
-	         DABFLOAT P7	= makeA (7, current, prevS) * A;
-	         DABFLOAT P3	= makeA (3, current, prevS) * A;
-	         DABFLOAT P5	= makeA (5, current, prevS) * A;
-
-	         DABFLOAT IO_P1 = IO (P1);
-	         DABFLOAT IO_P7 = IO (P7);
-	         DABFLOAT IO_P3 = IO (P3);
-	         DABFLOAT IO_P5 = IO (P5);
-
-	         DABFLOAT F1	= (IO_P1 + IO_P7) / (IO_P3 + IO_P5);
-	         DABFLOAT F2	= (IO_P1 + IO_P3) / (IO_P5 + IO_P7);
-	         if (std::isinf (F1))
-	            F1 = 10.0;
-	         if (std::isinf (F2))
-	            F2 = 10.0;
-	         if (F1 < 0.01)
-	            F1 = 0.01;
-	         if (F2 < 0.01)
-	            F2 = 0.01;
-	         DABFLOAT b1 = log (F1);
-	         DABFLOAT b2 = log (F2);
-
-	         if (std::isnan (b1))
-	            b1 = 0;
-	         if (std::isnan (b2))
-	            b2 = 0;
-	         scaler 	=  100.0 / meanValue;
-
-	         leftBit	=  - b1 * scaler;
-	         rightBit	=  - b2 * scaler;
-	         sum		+= jan_abs (Complex (b1, b2));
+	            scaler	= -100 / meanValue;
+	            leftBit	= real (R1) * scaler;
+	            rightBit	= imag (R1) * scaler;
+	            sum		+= jan_abs (R1);
+	         }
 	      }
 	      break;
 	   }
-	   softBits [i]		= std::clamp ((int)leftBit,
+	   softBits [i]	= std::clamp ((int)leftBit,
 	                                      -MAX_VITERBI, MAX_VITERBI);
-	   softBits [carriers + i]
-	                       = std::clamp ((int)rightBit,
+	   softBits [carriers + i] =
+	                  std::clamp ((int)rightBit,
 	                                      -MAX_VITERBI, MAX_VITERBI);
 	}
 	meanValue	= compute_avg (meanValue, sum /carriers, 0.1);

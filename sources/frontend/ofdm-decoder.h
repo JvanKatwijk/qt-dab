@@ -31,6 +31,8 @@
 #include	"freq-interleaver.h"
 #include	"fft-handler.h"
 #include	"phasetable.h"
+#include	"coherent-demodulator.h"
+
 class	RadioInterface;
 
 #define	SHOW_RAW	0100
@@ -69,6 +71,7 @@ private:
 	phaseTable		theTable;
 	interLeaver		myMapper;
 	fftHandler		fft;
+	CoherentDemodulator	coherent;
 	RingBuffer<float>	*devBuffer;
 	RingBuffer<DABFLOAT>	*carrierBuffer;
 	RingBuffer<Complex>	*iqBuffer;
