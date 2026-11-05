@@ -1,4 +1,4 @@
-# Qt-DAB-7.3.1.2
+# Qt-DAB-7.3.1.3
 
 -------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ Sources can be compiled for e.g. Raspberry and Mac.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.3.1.2](#What-is-new-in-Qt-DAB-7.3.1.2)
+* [What is new in Qt-DAB-7.3.1.3](#What-is-new-in-Qt-DAB-7.3.1.3)
 * [Windows and scopes](#windows-and-scopes)
 * [Managing service lists](#new-managing-service-lists)
 * [Devices and device support](#devices-and-device-support)
@@ -32,10 +32,10 @@ Table of Contents
 * [Building on MaxOs NEW](#Building-on-MacOs-NEW)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.3.1.2
+What is new in Qt-DAB-7.3.1.3
 ======================================================================
 
-In Qt-DAB-7.3.1.2 there are three (minor) differences compared to the previous version:
+In Qt-DAB-7.3.1.3 there are three (minor) differences compared to the previous version:
  * the setLatitude and setLongitude functions incorrectly forced the values to be int, rather than float: fixed
  * the SNR viewer showed a periodic dip in the SNR. Applying some more filtering does the trick;
  * the device list now has an entry labeled "stop device". Touching it halts - as the name strongly suggests - and disconnets the device (added on user's request);

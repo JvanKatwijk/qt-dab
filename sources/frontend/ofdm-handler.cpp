@@ -483,17 +483,18 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	               t3 = 0;
 	            }
 	         }
-	         float sum	= 0;
-	         for (int i = 0; i < T_null; i ++)
-	            sum += jan_abs (ofdmBuffer [i]);
-	         sum /= T_null;
-	         null_avg	= 0.99 * null_avg + 0.01 * sum;
 
-	         float sLevel	= theReader. getSLevel ();
+	         float sum	= 0;
+	         for (int i = 100; i < T_null - 100; i ++)
+	            sum += jan_abs (ofdmBuffer [i]);
+	         sum /= T_null - 200;
+	         null_avg	= 0.9 * null_avg + 0.1 * sum;
+
+//	         float sLevel	= theReader. getSLevel ();
 	         float snrV	=
 //	              20 * log10 ((sLevel + 0.005) / (null_avg));
 	              20 * log10 ((cLevel / cCount + 0.005) / (null_avg));
-	         this -> snr = 0.8 * this ->  snr + 0.2 * snrV;
+//	         this -> snr = 0.8 * this ->  snr + 0.2 * snrV;
 	         showSnr (snr);
 	      }
 /**
@@ -747,7 +748,7 @@ void	ofdmHandler::viewCarriers	(uint8_t carrierMode) {
 
 void	ofdmHandler::NullToCarriers (const std::vector<Complex> &in,
 	                             DABFLOAT *out) {
-Complex *buffer = dynVec (Complex, T_u);
+std::vector<Complex>buffer (T_u);
 	for (int i = 0; i < T_u; i ++)
 	   buffer [i] = in [i];
 	fft. fft (buffer);

@@ -29,70 +29,29 @@
 	this	-> size		= size;
 	this	-> dir		= dir;
 
-#ifdef	__WITH_DOUBLES__
-	fftVector		= (Complex *)
-	                          fftw_malloc (sizeof (Complex) * size);
-	plan			= fftw_plan_dft_1d (size,
-	                           reinterpret_cast <fftw_complex *>(fftVector),
-                                   reinterpret_cast <fftw_complex *>(fftVector),
-                                   FFTW_FORWARD, FFTW_ESTIMATE);
-#else
 	fftVector		= (Complex *)
 	                          fftwf_malloc (sizeof (Complex) * size);
 	plan			= fftwf_plan_dft_1d (size,
 	                           reinterpret_cast <fftwf_complex *>(fftVector),
                                    reinterpret_cast <fftwf_complex *>(fftVector),
-                                   FFTW_FORWARD, FFTW_ESTIMATE);
-#endif
+	                           dir ? FFTW_BACKWARD : FFTW_FORWARD,
+	                           FFTW_ESTIMATE);
 }
 
 	fftHandler::~fftHandler	() {
-#ifdef	__WITH_DOUBLES__
-	fftw_destroy_plan (plan);
-	fftw_free (fftVector);
-#else
 	fftwf_destroy_plan (plan);
 	fftwf_free (fftVector);
-#endif
 }
 
 void	fftHandler::fft		(std::vector<Complex> &v) {
-	if (dir)
-	   for (int i = 0; i < size; i ++)
-	      fftVector [i] = conj (v [i]);
-	else
-	   for (int i = 0; i < size; i ++)
-	      fftVector [i] = v [i];
-#ifdef	__WITH_DOUBLES__
-	fftw_execute (plan);
-#else
-	fftwf_execute (plan);
-#endif
-	if (dir)
-	   for (int i = 0;  i < size; i ++)
-	      v [i] = conj (fftVector [i]);
-	else
-	   for (int i = 0; i < size; i ++)
-	      v [i] = fftVector [i];
+	fft (v. data ());
 }
 
-void	fftHandler::fft		(Complex *v) {
-	if (dir)
-	   for (int i = 0; i < size; i ++)
-	      fftVector [i] = conj (v [i]);
-	else
-	   for (int i = 0; i < size; i ++)
-	      fftVector [i] = v [i];
-#ifdef	__WITH_DOUBLES__
-	fftw_execute (plan);
-#else
+void	fftHandler::fft		(Complex  *v) {
+	for (int i = 0; i < size; i ++)
+	   fftVector [i] = v [i];
 	fftwf_execute (plan);
-#endif
-	if (dir)
-	   for (int i = 0;  i < size; i ++)
-	      v [i] = conj (fftVector [i]);
-	else
-	   for (int i = 0; i < size; i ++)
-	      v [i] = fftVector [i];
+	for (int i = 0; i < size; i ++)
+	   v [i] = fftVector [i];
 }
 

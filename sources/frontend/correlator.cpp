@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016 .. 2023
+ *    Copyright (C) 2016 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -47,7 +47,7 @@
 	this	-> T_g		= get_T_g ();
 	this	-> carriers	= get_carriers ();
 
-	framesperSecond		= SAMPLERATE / get_T_F();
+	framesperSecond		= SAMPLERATE / get_T_F ();
 	displayCounter		= 0;
 	connect (this, &correlator::showCorrelation,
 	         mr, &RadioInterface::showCorrelation);
@@ -75,7 +75,7 @@ int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
-float	*lbuf 		= dynVec (float, T_u / 2);
+float	*peakValues	= dynVec (float, T_u / 2);
 
 const	int SEARCH_GAP	= 10;
 const	int SEARCH_OFFSET = T_g / 2;
@@ -84,9 +84,9 @@ const	int SEARCH_OFFSET = T_g / 2;
 //
 //	into the frequency domain, now correlate
 	for (i = 0; i < T_u; i ++) 
-//	   v [i] = v [i] * conj (theTable -> refTable [i]);
-	   v [i] = v [i] * Complex (real (theTable -> refTable [i]),
-	                           -imag (theTable -> refTable [i]));
+	   v [i] = v [i] * conj (theTable -> refTable [i]);
+//	   v [i] = v [i] * Complex (real (theTable -> refTable [i]),
+//	                           -imag (theTable -> refTable [i]));
 
 //	and, again, back into the time domain
 	fft_backwards. fft (v);
@@ -94,39 +94,34 @@ const	int SEARCH_OFFSET = T_g / 2;
   *	We compute the average and the max signal values
   */
 	for (i = 0; i < T_u / 2; i ++) {
-	   lbuf [i] = jan_abs (v [i]);
-	   sum	+= lbuf [i];
+	   peakValues [i]	= jan_abs (v [i]);
+	   sum			+= peakValues [i];
 	}
 
-	typedef struct {
-	   int index;
-	   float Value;
-	} corVal;
-	std::vector<corVal> workList;
 	sum /= T_u / 2;
-	QVector<int> indices;
+	if (sum == 0.0f)
+	   return - 1;
 
+	QVector<int> indices;
 	for (i = T_g - SEARCH_OFFSET; i < T_g + SEARCH_OFFSET; i ++) {
-	   if (lbuf [i] / sum > threshold)  {
+	   if (peakValues [i] / sum > threshold)  {
 	      bool foundOne = true;
 	      for (int j = 2; (j < SEARCH_GAP) &&
 	                              (i + j < T_g + SEARCH_OFFSET); j ++) {
-	         if (lbuf [i + j] > lbuf [i]) {
+	         if (peakValues [i + j] > peakValues [i]) {
 	            foundOne = false;
 	            break;
 	         }
 	      }
-	      if (foundOne) {
-	         corVal t;
-	         t. index = i;
-	         t. Value = lbuf [i];
-	         workList. push_back (t);
-	         if (lbuf [i] > Max){
-	            Max = lbuf [i];
-	            maxIndex = i;
-	         }
-	         i += SEARCH_GAP;
+	      if (!foundOne)
+	         continue;
+//	found one
+	      indices. push_back (i);
+	      if (peakValues [i] > Max){
+	         Max = peakValues [i];
+	         maxIndex = i;
 	      }
+	      i += SEARCH_GAP;
 	   }
 	}
 
@@ -134,18 +129,18 @@ const	int SEARCH_OFFSET = T_g / 2;
 	   return (- abs (Max / sum) - 1);
 	}
 
-	for (uint16_t i = 0; i < workList. size (); i ++)
-	   indices. push_back (workList [i]. index);
-
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
-	      response	-> putDataIntoBuffer (lbuf, T_u / 2);
+	      response	-> putDataIntoBuffer (peakValues, T_u / 2);
 	      showCorrelation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }
 	}
 
-	if ((firstFound) && (indices. size () > 0))
+	if (indices. size () == 0)
+	   return -1;
+
+	if (firstFound)
 	   return indices [0];
 	return maxIndex;
 }

@@ -42,7 +42,7 @@
 	displayBuffer	= new double [displaySize];
 	for (int i = 0; i < displaySize; i ++)
 	   displayBuffer [i] = 0;
-	spectrumBuffer		= new Complex [spectrumSize];
+	spectrumBuffer. resize (spectrumSize);
 
 //	create a blackman window
 	for (int i = 0; i < spectrumSize; i ++) 
@@ -53,7 +53,6 @@
 
 	audioDisplay::~audioDisplay () {
 	delete []	displayBuffer;
-	delete []	spectrumBuffer;
 }
 
 void	audioDisplay::createSpectrum  (std::complex<int16_t> *data,

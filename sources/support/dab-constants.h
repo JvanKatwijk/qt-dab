@@ -63,11 +63,7 @@ typedef	void	*HINSTANCE;
 #define	MAX_VITERBI	127
 #define	NR_TAPS		1024
 
-#ifdef	__WITH_DOUBLES__
-typedef	double	DABFLOAT;
-#else
 typedef	float	DABFLOAT;
-#endif
 typedef	std::complex<DABFLOAT> Complex;
 typedef std::complex<int16_t> complex16;
 

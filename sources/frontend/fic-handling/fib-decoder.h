@@ -149,6 +149,7 @@ private:
 	                                         uint16_t flags,
 	                                         uint8_t SubChId);
 
+	bool	EWS_active;
 	
 signals:
 	void	signal_FIG00	();	// change in confug
@@ -162,6 +163,7 @@ signals:
 	void	signal_FIG15	(const QString &, uint32_t);
 //	signal	FIG019	// 	service specific announcement change
 //	void	signal_FIG019	(de boodschap)
+	void	signal_ews	(bool);
 
 private:
 	

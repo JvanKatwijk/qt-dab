@@ -58,7 +58,7 @@ public:
 	void	decode			(std::vector<Complex> &,
 	                                 int32_t n,
 	                                 std::vector<int16_t> &,
-	                                 DABFLOAT, float);
+	                                 DABFLOAT &, float);
 	void	stop			();
 	void	reset			();
 	void	handle_iqSelector	();

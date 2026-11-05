@@ -28,7 +28,7 @@
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	<basic-scope.h>
-
+#include	<vector>
 #include	"fft-handler.h"
 class	RadioInterface;
 
@@ -46,7 +46,7 @@ private:
 	int16_t		displaySize;
 	int16_t		spectrumSize;
 	double		*displayBuffer;
-	Complex		*spectrumBuffer;
+	std::vector<Complex> spectrumBuffer;
 	DABFLOAT	Window [4 * 512];
 	fftHandler	fft;
 	float		get_db 		(float);

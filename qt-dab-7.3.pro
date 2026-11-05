@@ -8,7 +8,7 @@
 TEMPLATE	= app
 QT		+= widgets xml multimedia charts
 QT		+= network
-$CONFIG		+= console
+#CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 
@@ -19,16 +19,16 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.3.1.2\\\"
+DEFINES         += VERSION=\\\"7.3.1.3\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+= -Wvla
-QMAKE_CXXFLAGS	+=  -ffast-math -flto -fsingle-precision-constant
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto -fsingle-precision-constant
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 #QMAKE_CFLAGS	+=  -pg 
 #QMAKE_CXXFLAGS	+=  -pg 
 #QMAKE_LFLAGS	+=  -pg 
@@ -454,17 +454,15 @@ INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.3.1.2
+   TARGET               = qt-dab-qt5-7.3.1.3
 }
 else {
-   TARGET               = qt-dab-7.3.1.2
+   TARGET               = qt-dab-7.3.1.3
 }
 
 #mac {
 # Should be possible to make on non Macs as well.
 #}
-#CONFIG		+= double
-CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -488,6 +486,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
 #
+
+LIBS		+= -lfftw3f
 #	for performance experiments
 #CONFIG		+= volk
 #very experimental, simple server for connecting to a tdc handler
@@ -524,7 +524,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.3.1.2
+        TARGET          = qt-dab-7.3.1.3
 	DEFINES		+= __BITS64__
 	DESTDIR		=  ./linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -545,8 +545,6 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= spiral-no-sse
 #	CONFIG		+= viterbi-avx2
 #	CONFIG		+= spiral-sse
-#	CONFIG		+= double
-	CONFIG		+= single
 #
 	INCLUDEPATH	+= /usr/local/include
 	LIBS		+= -lportaudio
@@ -557,6 +555,7 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= -lws2_32
 	LIBS		+= -lusb-1.0
 	LIBS		+= -lz
+	LIBS		+= -lfftw3f
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
 #	CONFIG		+= fdk-aac
 	CONFIG		+= faad
@@ -891,18 +890,10 @@ fdk-aac {
 unix {
 	LIBS		+= -lfdk-aac
 }
+
 win32 {
 	LIBS		+= -lfdk-aac-2
 }
-}
-
-#double	{
-#	DEFINES		+= __WITH_DOUBLES__
-#	LIBS		+= -lfftw3
-#}
-
-single	{
-	LIBS		+= -lfftw3f
 }
 
 volk	{

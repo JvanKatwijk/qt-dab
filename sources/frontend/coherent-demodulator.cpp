@@ -2,6 +2,7 @@
 #include	"coherent-demodulator.h"
 #include	"dab-params.h"
 #include	"phasetable.h"
+#include	<math.h>
 
 //
 //	This file is copied - with asjustments for the local style and
@@ -17,6 +18,7 @@
 //	the thread calling for the demodulation, the
 //	fft handlers cannot be on the class level
 
+#define	M_SQRT1_2	(sqrt (2) / 2)
 //	Weight of the newest PRS in the average of the channel estimate. The
 //	first frames are averaged with equal weights.
 static const float channelAlpha = 0.15f;
@@ -241,7 +243,7 @@ fftHandler fftBackwards (T_u, true);
 	for (int c = 0; c < carriers; c++)
 	   cross [c] = hRaw [c] * std::conj (hAvg [c]);
 
-	Complex *time = dynVec (Complex, T_u);
+	Complex *time	= dynVec (Complex, T_u);
 	for (int i = 0; i < T_u; i ++)
 	   time [i] = Complex (0, 0);
 	for (int c = 0; c < carriers; c++)
@@ -282,7 +284,7 @@ fftHandler fftBackwards (T_u, true);
 //	The impulse response is short compared to T_u: keep only its taps,
 //	which removes most of the noise of the estimate
 void	CoherentDemodulator::smoothChannel () {
-Complex *time  	= dynVec (Complex, T_u);
+Complex	*time	= dynVec (Complex, T_u);
 fftHandler fftBackwards (T_u, true);
 fftHandler fftForward (T_u, false);
 	for (int i = 0; i < T_u; i ++)
@@ -323,7 +325,7 @@ fftHandler fftForward (T_u, false);
 	   inWindow [n] = true;
 	}
 
-	Complex *freq = dynVec (Complex, T_u);
+	Complex	*freq	= dynVec (Complex, T_u);
 	std::copy (kept. begin (), kept. end (), freq);
 	fftForward. fft (freq);
 	for (int c = 0; c < carriers; c++)

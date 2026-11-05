@@ -72,7 +72,8 @@ int16_t	freqSyncer::
 	for (int i = 0; i < TEST_SIZE; i ++)
 	   t2 [i] = t1 [i] * conj (t2 [i]);
 //	and go back
-	go_backwards. fft (t2);
+//	go_backwards. fft (t2);
+	go_forward. fft (t2);
 	int theCarrier	= -1000;
 	float mm	= -0;
 	for (int i = -SEARCH_RANGE / 2 ; i < SEARCH_RANGE / 2; i ++) {

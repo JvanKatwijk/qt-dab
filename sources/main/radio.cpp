@@ -1221,14 +1221,21 @@ const char *type;
 
 	if (theOfdmHandler	-> is_SPI (SId)) {
 	   QString path		= slidePath (true, SId, pictureName);
-	   FILE *x = fopen (path. toUtf8 (). data (), "w+b");
-	   if (x != nullptr) {
-	      theLogger. log ("slide written", pictureName);
-	      (void)fwrite (motData. data (), 1,
-	                          static_cast<size_t>(motData.length ()), x);
-	      fclose (x);
+	   if (std::filesystem::exists (path. toLatin1 (). data ())) {
+	      theLogger. log ("file exists ", path);
+	      fprintf (stderr, "file %s exists already\n", 
+	                            path. toLatin1 (). data ());
 	   }
-	   return;
+	   else {
+	      FILE *x = fopen (path. toUtf8 (). data (), "w+b");
+	      if (x != nullptr) {
+	         theLogger. log ("slide written", pictureName);
+	         (void)fwrite (motData. data (), 1,
+	                          static_cast<size_t>(motData.length ()), x);
+	         fclose (x);
+	      }
+	      return;
+	   }
 	}
 
 	if (channel. currentService. SId != SId)  // current service
@@ -1240,17 +1247,19 @@ const char *type;
 	                                      (!path_for_slides. isEmpty ()))) {
 	   QString thePath	= slidePath (dirs, SId, pictureName);
 	   QString pict		= thePath + pictureName;
-	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
-	   if (x != nullptr) {
-	      theLogger. log ("picture written", pict);
-	      (void)fwrite (motData. data(), 1,
-	                          static_cast<size_t>(motData.length ()), x);
-	      fclose (x);
+	   if (std::filesystem::exists (pict. toLatin1 (). data ())) {
+	      theLogger. log ("file exists ", pict);
+	      fprintf (stderr, "file %s exists already\n", 
+	                            pict. toLatin1 (). data ());
 	   }
 	   else {
-	      QString t = QString ("Problem opening picture file (writing) ") +
-	                                    pict;
-	      theErrorLogger. add ("main", t);
+	      FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
+	      if (x != nullptr) {
+	         theLogger. log ("picture written", pict);
+	         (void)fwrite (motData. data(), 1,
+	                          static_cast<size_t>(motData.length ()), x);
+	         fclose (x);
+	      }
 	   }
 	}
 
@@ -4939,4 +4948,8 @@ void	RadioInterface::viewCarriers		(uint8_t showType) {
 void	RadioInterface::enable_scheduler         (bool b) {
         scheduleButton  -> setEnabled (b);
 }
- 
+
+void	RadioInterface::signal_ews		(bool b) {
+	(void)b;
+}
+

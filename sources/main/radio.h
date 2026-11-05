@@ -575,6 +575,7 @@ public slots:
 	                                                 
 //	void			setFreqList		();
 	void			tell_programType	(uint32_t, int);
+	void			signal_ews		(bool);
 
 //	signals from the techWindow
 	void			handleAudiodumpButton 	();

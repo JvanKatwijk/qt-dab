@@ -49,6 +49,7 @@
 	currentConfig	= new fibConfig	(myRadioInterface);
 	nextConfig	= new fibConfig (myRadioInterface);
 	mjd		= 0;
+	EWS_active	= false;
 	reset ();
 	connect (this, &fibDecoder::signal_FIG00,
 	         myRadioInterface, &RadioInterface::handle_FIG00);
@@ -68,6 +69,8 @@
 	         myRadioInterface, &RadioInterface::handle_FIG14);
 	connect (this, &fibDecoder::signal_FIG15,
 	         myRadioInterface, &RadioInterface::handle_FIG15);
+	connect (this, &fibDecoder::signal_ews,
+	         myRadioInterface, &RadioInterface::signal_ews);
 }
 	
 	fibDecoder::~fibDecoder () {
@@ -795,12 +798,69 @@ FIG014 element;
 	      localBase -> FIG014_stack. push_back (element);
 	}
 }
-//
+
+#define	PRE_TRIGGER	0
+#define	TRIGGER		1
+#define	SUSTAIN		2
+#define	END		3
+
 //
 //	8.1.7
 //	CN_bit SIV, OE_bit Rfu and PD_bit special use
 void	fibDecoder::FIG0Extension15 (uint8_t *d) {
-	(void)d;
+int16_t	Length		= getBits_5 (d, 3);	// in Bytes
+const uint8_t	CN_bit	= getBits_1 (d, 8 + 0);
+const uint8_t	OE_bit	= getBits_1 (d, 8 + 1);
+const uint8_t	PD_bit	= getBits_1 (d, 8 + 2);
+int16_t	used		= 2;			// in Bytes
+int16_t	bitOffset	= 16;
+int16_t	endofFIC	= bitOffset + Length * 8;
+
+
+	if ((CN_bit == 1) && (Length == 0))	// heartbeat
+	   return;
+	if (PD_bit == 1)	// Discard
+	   return;
+	if (OE_bit == 1)	// other ensemble, for now, ignore
+	   return;
+
+	uint8_t phase	= getBits_2 (d, bitOffset);
+	bitOffset	+= 2;
+	uint8_t subChId	= getBits_6 (d, bitOffset + 2);
+	bitOffset	+= 6;
+//
+//	end of fixed area, now the chaos starts
+
+	switch (phase) {
+	   case PRE_TRIGGER:
+	   {  bitOffset += 2;	// Rfa field
+	      uint8_t Sec_count	= getBits_6 (d, bitOffset);
+	      bitOffset += 6;
+	      break;
+	   }
+	   case TRIGGER:
+	   {  uint8_t lastIndicator = getBits_1 (d, bitOffset);
+	      bitOffset += 1;
+	      uint8_t stage = getBits_3 (d, bitOffset);
+	      bitOffset += 3;
+	      uint8_t incident = getBits_4 (d, bitOffset);
+	      bitOffset += 4;
+	      if (!EWS_active) {
+	         EWS_active = true;
+	         signal_ews (true);
+	      }
+	      break;
+	   }
+	   case SUSTAIN:
+	      break;
+	   case END:
+	      EWS_active = false;
+	      signal_ews (false);
+	      break;
+	   default:	// cannot happen
+	      break;
+	}
+
 //	to be researched
 }
 //

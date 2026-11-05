@@ -37,10 +37,6 @@ public:
 private:
 	int		size;
 	bool		dir;
-#ifdef	__WITH_DOUBLES__
-	fftw_plan	plan;
-#else
 	fftwf_plan	plan;
-#endif
 	Complex *fftVector;
 };

@@ -247,7 +247,7 @@ static	int	cnt	= 0;
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t	blkno,
 	                     std::vector<int16_t> &softBits,
-	                     DABFLOAT	snr, float clockError) {
+	                     DABFLOAT	&snr, float clockError) {
 
 DABFLOAT sum		= 0;
 DABFLOAT leftBit	= 0;
@@ -258,7 +258,35 @@ DABFLOAT scaler		= 10;
 	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
-	fft. fft (fft_buffer. data ());
+	fft. fft (fft_buffer);
+//
+//#ifdef	OTHER_SNR
+//	Compute the noise level from the difference between the
+//	range where the carriers are and the endings
+//
+//	The potential issue is having a transmission in the next or
+//	previous channel, the frequency distance between successive channels
+//	is app 1.75 Mh.
+	float leftNoise		= 0;
+	float rightNoise	= 0;
+	int range		= T_u - carriers - 40;
+	for (int c = T_u / 2 + 30; c < T_u - carriers / 2 - 10 ; c ++)
+	   leftNoise += std::abs (fft_buffer [c]);
+	for (int c =  carriers / 2 + 10; c < T_u / 2 - 30; c ++)
+	   rightNoise += std::abs (fft_buffer [c]);
+	float noiseValue	= (leftNoise + rightNoise) / (2 * range);
+
+	float signalValue	= 0;
+	for (int c = T_u - carriers / 2; c <= T_u + carriers / 2; c ++)
+	   if (c % T_u != 0)
+	      signalValue	+= std::abs (fft_buffer [c % T_u]);
+	signalValue	/= carriers;
+
+	float local_snr =
+	             20 * log10 (signalValue / noiseValue + 0.0001);
+	snr		= local_snr;
+	snr		= 0.9 * snr + 0.1 * local_snr;
+//#endif
 
 	if ((this -> decoder == DECODER_1) && coherent. ready ()) {
 	   Complex guard (0, 0);
