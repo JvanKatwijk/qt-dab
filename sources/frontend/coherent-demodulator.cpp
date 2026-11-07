@@ -119,6 +119,9 @@ float z		= p - (float)w;
 //           * x=m*2^p => ln(x)=ln(m)+ln(2)p,
 //           * Remez algorithm
 
+//
+//	Testing showed that accuracy is up to the fourth decimal
+//	which seems sufficient. 
 // by Lingdong Huang, 2020. Public domain.
 static
 float	fast_log10f	(float x) {
