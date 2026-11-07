@@ -112,32 +112,75 @@ float z		= p - (float)w;
 	return v.f * fraction_part;
 }
 
+// simple, fast, accurate natural log approximation
+// when without <math.h>
+
+// featuring * floating point bit level hacking,
+//           * x=m*2^p => ln(x)=ln(m)+ln(2)p,
+//           * Remez algorithm
+
+// by Lingdong Huang, 2020. Public domain.
 static
 float	fast_log10f	(float x) {
-uint32_t i;
-//	Safe type-punning to extract raw bits avoiding
-//	strict-aliasing violations
+//	ASSUMING: 
+//	- non-denormalized numbers i.e. x > 2^−126
+//	- integer is 32 bit. float is IEEE 32 bit.
 
-	memcpy (&i, &x, sizeof(i));
-    
-//	1. Extract the IEEE 754 exponent component
-	int32_t exp = (int32_t)((i >> 23) & 0xFF) - 127;
-    
-//	2. Clear the exponent field and clear the sign bit to force 
-//	the mantissa into the range [1.0, 2.0)
+//	INSPIRED BY:
+//	- https://stackoverflow.com/a/44232045
+//	- http://mathonweb.com/help_ebook/html/algorithms.htm#ln
+//	- https://en.wikipedia.org/wiki/Fast_inverse_square_root
 
-	i = (i & 0x007FFFFF) | 0x3F800000;
+//	FORMULA:  x = m * 2^p =>  ln(x) = ln(m) + ln(2)p,
 
-	float m;
-	std::memcpy (&m, &i, sizeof (m));
+//	first normalize the value to between 1.0 and 2.0
+//	assuming normalized IEEE float
+//	sign  exp       frac
+//	0b 0    [00000000] 00000000000000000000000
+//	value = (-1)^s * M * 2 ^ (exp-127)
+//
+//	exp = 127 for x = 1,  so 2^(exp-127) is the multiplier
+//	evil floating point bit level hacking
 
-//	3rd-order minimax polynomial approximation for log2(m) over [1.0, 2.0)
-//	Coeffs optimized for minimax error bounds
-	float log2_m = -1.49278f +
-	               m * (2.11263f + m * (-0.729104f + m * 0.10969f));
+	unsigned int bx = * (unsigned int *) (&x);
+//	extract exp, since x>0, sign bit must be 0
+	unsigned int ex = bx >> 23;
+	signed int t = (signed int) ex- (signed int)127;
+	unsigned int s = (t < 0) ? (-t) : t;
 
-// Reconstruction: log10(x) = (exponent + log2(mantissa)) * log10(2)
-	return ((float) exp + log2_m) * 0.3010300f;
+//	reinterpret back to float
+//	127 << 23 = 1065353216
+//	0b11111111111111111111111 = 8388607
+	bx = 1065353216 | (bx & 8388607);
+	x = * (float *) (&bx);
+
+//	use remez algorithm to find approximation between [1,2]
+//	- see this answer https://stackoverflow.com/a/44232045
+//	- or this usage of C++/boost's remez implementation
+//	https://computingandrecording.wordpress.com/2017/04/24/
+//	e.g.
+//	boost::math::tools::remez_minimax<double> approx(
+//	           [](const double& x) { return log(x); },
+//	      4, 0, 1, 2, false, 0, 0, 64);
+//
+//	4th order is:
+//	{ -1.74178, 2.82117, -1.46994, 0.447178, -0.0565717 }
+// 
+//	3rd order is:
+//	{ -1.49278, 2.11263, -0.729104, 0.10969 }
+
+	float ln_e = 
+/* less accurate */
+//	-1.49278+(2.11263+(-0.729104+0.10969*x)*x)*x      
+/* OR more accurate */      
+	-1.7417939+(2.8212026+(-1.4699568+(0.44717955-0.056570851*x)*x)*x)*x
+
+/* compensate for the ln(2)s. ln(2)=0.6931471806 */    
+	                + 0.6931471806*t;
+
+//	Reconstruction: log10(x) = (exponent + log2(mantissa)) * log10 (2)
+float	Log10_2 = 0.4342944819f;  // == 1.0f / std::log(10.0f)
+	return ln_e * Log10_2;
 }
 
 #endif

@@ -849,6 +849,22 @@ int16_t	endofFIC	= bitOffset + Length * 8;
 	         EWS_active = true;
 	         signal_ews (true);
 	      }
+	      if (endofFIC > bitOffset) {	
+	         uint8_t NFF	= getBits_2 (d, bitOffset);
+	         bitOffset += 2;
+	         uint8_t Zone	= getBits_6 (d, bitOffset);
+	         bitOffset += 6;
+	         uint8_t SCF	= getBits_1 (d, bitOffset);
+	         bitOffset	+= 1;
+	         uint8_t numOtherDigits	= getBits_3 (d, bitOffset);
+	         bitOffset	+= 3;
+	         uint8_t Digit_1	= getBits_4 (d, bitOffset);
+	         bitOffset	+= 4;
+	         uint32_t otherDigits	= getLBits (d, bitOffset,
+	                                           numOtherDigits * 3);
+	         bitOffset	+= numOtherDigits * 3;
+	      }
+	      
 	      break;
 	   }
 	   case SUSTAIN:

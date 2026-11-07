@@ -143,6 +143,53 @@ const	int SEARCH_OFFSET = T_g / 2;
 	if (firstFound)
 	   return indices [0];
 
+//	Compute the location of a maximum with a mimumum ISI
+//	See equation 1 in
+//	"OFDM receivers - impact on coverage of inter-symbol interference and FFT window positioning"
+//	Use naming as in paper
+
+	int	oldIndex	= maxIndex;
+	int	count	= indices. length ();
+	float	maxCI	= -1.0f;
+	int	first	= indices [0];
+	int	last	= indices [count - 1];
+
+	for (int currIndex = first; currIndex <= last; currIndex++) {
+	   float Ci = 0.0f; // the total power of the effective useful signal
+	   float Ii = 0.0f; // the total effective interfering power
+
+	   for (int i = 0; i < count; i++) {
+	      float wi;		// the weighting coefficient
+	      float absVal	= peakValues [indices [i]];
+	      float power	= absVal * absVal;
+//	Three cases to consider:
+//	      A. before the guard interval
+//	      if (indices [i] < currIndex)
+//	         wi = (float)(T_u + indices [i] - currIndex) / T_u;
+//	      else
+////	      B. after the guard interval
+//	      if (indices [i] > currIndex + T_g) 
+	         wi = (float)(T_u + T_g + currIndex - indices [i]) / T_u;
+//	      else 
+////	      C. in the guard interval
+//	         wi = 1.0f;
+	      for (int j = 0; j < 50; j ++) {
+	         float absVal = peakValues [indices [i] + j];
+	         float power	= absVal * absVal;
+//	Update according to the formula in the paper
+	         wi *= wi;
+	         Ci += wi * power;
+	         Ii += (1.0f - wi) * power;
+	      }
+	   }
+
+	   if ((Ii > 0) && (Ci / Ii > maxCI)) {
+	      maxCI = Ci / Ii;
+	      maxIndex = currIndex;
+	   }
+	}
+	if (oldIndex != maxIndex)
+	   fprintf (stderr, "%d -> %d\n", oldIndex, maxIndex);
 	return maxIndex;
 }
 
