@@ -51,7 +51,11 @@ void	fftHandler::fft		(Complex  *v) {
 	for (int i = 0; i < size; i ++)
 	   fftVector [i] = v [i];
 	fftwf_execute (plan);
-	for (int i = 0; i < size; i ++)
-	   v [i] = fftVector [i];
+	if (dir)
+	   for (int i = 0; i < size; i ++)
+	      v [i] = fftVector [i] / (DABFLOAT)size;
+	else
+	   for (int i = 0; i < size; i ++)
+	      v [i] = fftVector [i];
 }
 

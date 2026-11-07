@@ -70,6 +70,17 @@ Complex makeComplex (DABFLOAT phase) {
 	return Complex (cosine, sine);
 }
 
+//      Google is your friend 
+static inline
+Complex fast_polar (float theta) {
+float sine, cosine;
+//       Computes both sin and cos in a single hardware
+//      instruction on many architectures
+        ::sincosf (theta, &sine, &cosine);
+        return Complex (cosine, sine);
+}
+
+
 //
 //	The elements of the ofdm decoder take as input the
 //	block of the DAB frame, apply an FFT and transform the
@@ -318,7 +329,7 @@ DABFLOAT scaler		= 10;
 
 	   DABFLOAT phaseError = clockError / (DABFLOAT)carriers_2 * M_PI * 
 	                          (carriers_2 - binIndex) / (carriers_2);
-	   fftBin		*= makeComplex (-phaseError);
+	   fftBin		*= fast_polar (-phaseError);
 	   conjVector [index]	= fftBin;
 
 //	actual decoding

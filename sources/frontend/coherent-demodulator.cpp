@@ -3,6 +3,8 @@
 #include	"dab-params.h"
 #include	"phasetable.h"
 #include	<math.h>
+#include	<stdint.h>
+#include	<string.h>
 
 //
 //	This file is copied - with asjustments for the local style and
@@ -14,11 +16,20 @@
 
 //
 //	Note:
-//	Since the class is instantiated in a thread different from
-//	the thread calling for the demodulation, the
-//	fft handlers cannot be on the class level
+//	The coherent demodulator is quite heavy in resource usage.
+//	profiling (unoptimized) code shows that between 35 and 38 
+//	percent of the CPU use is burned by the demodulator
+//	The main causes are (probably) the exp and log function.
+//
+//	Google provides alternatives, specified below.
+//	However, it turns out that the CPU usage, using these
+//	alternatibes the relative load goed up to in the 40-ies
 
+
+#ifndef	M_SQRT1_2
 #define	M_SQRT1_2	(sqrt (2) / 2)
+#endif
+
 //	Weight of the newest PRS in the average of the channel estimate. The
 //	first frames are averaged with equal weights.
 static const float channelAlpha = 0.15f;
@@ -59,6 +70,77 @@ static const int coarseTrackingDistance = 32;
 static const float timingGain = 0.5f;
 static const float rateGain = 0.03f;
 
+//	Google is your friend
+static inline
+Complex fast_polar (float theta) {
+float sine, cosine;
+//	 Computes both sin and cos in a single hardware
+//	instruction on many architectures
+	::sincosf (theta, &sine, &cosine); 
+	return Complex (cosine, sine);
+}
+
+#define	__FAST_COHERENT__
+#ifdef	__FAST_COHERENT__
+static
+inline float exp_f (float x) {
+// Convert base e to base 2 -> e^x = 2^(x * log2(e))
+float p	= x * 1.44269504f; 
+//	Extract integer and fractional components
+int32_t w	= (int32_t)p;
+float z		= p - (float)w;
+
+// Handle negative inputs cleanly
+	if (p < 0.0f) {
+	   z += 1.0f;
+	   w -= 1;
+	}
+    
+//	Fast exponent bit shift for the integer part 2^w
+	union {
+	   uint32_t i;
+	   float f;
+	} v;
+
+	v.i = (uint32_t)((w + 127) << 23);
+    
+//	Low-degree Taylor or Padé rational approximation
+//	for the fractional part (0 <= z < 1)
+//	This scales the bit-shifted integer by the fractional curve
+	float fraction_part = 1.0f +
+	                      z * (0.69314718f + z * (0.24022650f + z * 0.05550411f));
+	return v.f * fraction_part;
+}
+
+static
+float	fast_log10f	(float x) {
+uint32_t i;
+//	Safe type-punning to extract raw bits avoiding
+//	strict-aliasing violations
+
+	memcpy (&i, &x, sizeof(i));
+    
+//	1. Extract the IEEE 754 exponent component
+	int32_t exp = (int32_t)((i >> 23) & 0xFF) - 127;
+    
+//	2. Clear the exponent field and clear the sign bit to force 
+//	the mantissa into the range [1.0, 2.0)
+
+	i = (i & 0x007FFFFF) | 0x3F800000;
+
+	float m;
+	std::memcpy (&m, &i, sizeof (m));
+
+//	3rd-order minimax polynomial approximation for log2(m) over [1.0, 2.0)
+//	Coeffs optimized for minimax error bounds
+	float log2_m = -1.49278f +
+	               m * (2.11263f + m * (-0.729104f + m * 0.10969f));
+
+// Reconstruction: log10(x) = (exponent + log2(mantissa)) * log10(2)
+	return ((float) exp + log2_m) * 0.3010300f;
+}
+
+#endif
 //	Weight of a symbol in the average of the noise of the data symbols
 static const float dataNoiseAlpha = 0.05f;
 
@@ -69,26 +151,9 @@ static const float minProbability = 1e-15f;
 //	Largest timing rate: 0.33 samples per symbol (130 ppm)
 static const float maxTimingRate = 0.001f;
 
-//	an alternative for std::polar (with 1 as amplitude);
-static
-Complex makeComplex (DABFLOAT phase) {
-//      Minimax polynomial for sin(x) and cos(x) on [-pi/4, pi/4]
-//      Coefficients via Remez algorithm (Sollya)
-//      Max |error| < 1.5e-4 for sinus, < 6e-4 for cosinus
-
-        const DABFLOAT x2 =  phase * phase;
-        const DABFLOAT s1 =  0.99903142452239990234375f;
-        const DABFLOAT s2 = -0.16034401953220367431640625;
-        const DABFLOAT sine = phase * (x2 * s2 + s1);
-
-        const DABFLOAT c1 =  0.9994032382965087890625f;
-        const DABFLOAT c2 = -0.495580852031707763671875;
-        const DABFLOAT c3 =  3.679168224334716796875e-2;
-        const DABFLOAT cosine = c1 + x2 * (x2 * c3 + c2);
-        return Complex (cosine, sine);
-}
-
-	CoherentDemodulator::CoherentDemodulator () {
+	CoherentDemodulator::CoherentDemodulator ():
+	                                   fftForward (get_T_u (), false),
+	                                   fftBackward (get_T_u (), true) {
 	frames		= 0;
 	snr		= 0;
 	commonPhase	= 0;
@@ -120,18 +185,17 @@ Complex makeComplex (DABFLOAT phase) {
 	      continue;
            carrier. push_back (k);
            bin. push_back ((k + T_u) % T_u);
-//	   prs. push_back (makeComplex (float (table. get_Phi (k))));
-	   prs. push_back (std::polar (1.0f, float (table. get_Phi (k))));
+	   prs. push_back (fast_polar (float (table. get_Phi (k))));
 	}
 }
 
-// exp(-j (phase + slope * k)) for every carrier k, by multiplying
-// (std::polar for every carrier is too slow)
+//	exp(-j (phase + slope * k)) for every carrier k, by multiplying
+//	(std::polar for every carrier is too slow)
 void	CoherentDemodulator::rotation (float phase,
 	                               float slope,
 	                               std::vector<Complex>& out) const {
-const Complex step = std::polar(1.0f, -slope);
-Complex r = std::polar(1.0f, -(phase + slope * carrier[0]));
+const Complex step	= fast_polar (-slope);;
+Complex r		= fast_polar (-(phase + slope * carrier[0]));
 
 	out [0] = r;
 	for (int c = 1; c < carriers; c++) {
@@ -173,16 +237,16 @@ float avgPower = 0;
 	}
 
 //	Turn the average to the timing and the phase of this frame: a
-//	different FFT window position gives a phase that grows linearly with
+//	FFT window positions give a phase that grows linearly with
 //	the carrier number, the oscillator a common phase
 	const float phasePerCarrier = timingRotation ();
 	Complex common (0, 0);
 	for (int c = 0; c < carriers; c++) {
-	   hAvg [c] *= std::polar (1.0f, phasePerCarrier * carrier [c]);
-	   common += hRaw [c] * std::conj(hAvg [c]);
+	   hAvg [c] *= fast_polar (phasePerCarrier * carrier [c]);
+	   common += hRaw [c] * std::conj (hAvg [c]);
 	}
 
-	const Complex commonRotation = std::polar (1.0f, std::arg (common));
+	const Complex commonRotation = fast_polar (std::arg (common));
 
 //	A different channel (other ensemble, other antenna) most likely
 //	hardly correlates with the average;
@@ -206,7 +270,7 @@ float avgPower = 0;
 	const float beta = std::max (noiseAlpha, 1.0f / frames);
 	for (int c = 0; c < carriers; c++) {
 	   hAvg[c] *= commonRotation;
-	   const float e = std::norm(hRaw[c] - hAvg[c]) * noiseScale;
+	   const float e = std::norm (hRaw[c] - hAvg[c]) * noiseScale;
 	   noiseVar [c] = frames == 1 ? e : (1 - beta) * noiseVar[c] + beta * e;
 	   hAvg [c] = (1 - alpha) * hAvg[c] + alpha * hRaw[c];
 	} 
@@ -239,7 +303,7 @@ float	CoherentDemodulator::timingRotation () {
 //	The phase differences of neighbouring carriers would be
 //	biased by echoes whose strength changes a little from frame to frame;
 //	the maximum of the cross-correlation is not.
-fftHandler fftBackwards (T_u, true);
+//fftHandler fftBackward (T_u, true);
 	for (int c = 0; c < carriers; c++)
 	   cross [c] = hRaw [c] * std::conj (hAvg [c]);
 
@@ -248,7 +312,7 @@ fftHandler fftBackwards (T_u, true);
 	   time [i] = Complex (0, 0);
 	for (int c = 0; c < carriers; c++)
 	   time [bin [c]] = cross[c];
-	fftBackwards. fft (time);
+	fftBackward. fft (time);
 	int peak = 0;
 	for (int n = 1; n < T_u; n++) 
 	   if (std::norm (time [n]) > std::norm (time [peak]))
@@ -285,13 +349,13 @@ fftHandler fftBackwards (T_u, true);
 //	which removes most of the noise of the estimate
 void	CoherentDemodulator::smoothChannel () {
 Complex	*time	= dynVec (Complex, T_u);
-fftHandler fftBackwards (T_u, true);
-fftHandler fftForward (T_u, false);
+//fftHandler fftBackward (T_u, true);
+//fftHandler fftForward (T_u, false);
 	for (int i = 0; i < T_u; i ++)
 	   time [i] = Complex (0, 0);
 	for (int c = 0; c < carriers; c++)
 	   time [bin [c]] = hAvg [c];
-	fftBackwards. fft (time);
+	fftBackward. fft (time);
 
 	std::vector<float> power(T_u);
 	for (int n = 0; n < T_u; n ++)
@@ -338,7 +402,7 @@ fftHandler fftForward (T_u, false);
 	   time [i] = Complex (0, 0);
 	for (int c = 0; c < carriers; c++)
 	   time [bin [c]] = 1;
-	fftBackwards. fft (time);
+	fftBackward. fft (time);
 
 	for (int n = 0; n < T_u; n ++)
 	   freq [n] = inWindow [n] ? time [n] : Complex (0, 0);
@@ -481,8 +545,13 @@ void	CoherentDemodulator::demodulate (const Complex* spectrum,
                x *= maxLogLikelihood / largest;
                y *= maxLogLikelihood / largest;
            }
-           const float ex = std::exp (x);
-           const float ey = std::exp (y);
+#ifdef	__FAST_COHERENT__
+	   const float ex = exp_f (x);
+	   const float ey = exp_f (y);
+#else
+	   const float ex = std::exp (x);
+	   const float ey = std::exp (y);
+#endif
            std::array<float, 4> p = {ex, ey, 1 / ex, 1 / ey};
 	   const float norm = 1 / (p[0] + p[1] + p[2] + p[3]);
 	   for (auto& pm : p)
@@ -500,20 +569,27 @@ void	CoherentDemodulator::demodulate (const Complex* spectrum,
 //	The differences pi/4 and 7 pi/4 have a positive real part (bit 0),
 //	pi/4 and 3 pi/4 a positive imaginary part
 	   const float tiny = 1e-30f;
+#ifdef	__FAST_COHERENT__
+	   const float lre = fast_log10f ((pd [0] + pd [3] + tiny) /
+	                                           (pd [1] + pd [2] + tiny));
+	   const float lim = fast_log10f ((pd [0] + pd [1] + tiny) /
+	                                           (pd [2] + pd [3] + tiny));
+#else
 	   const float lre = std::log ((pd [0] + pd [3] + tiny) /
 	                                           (pd [1] + pd [2] + tiny));
 	   const float lim = std::log ((pd [0] + pd [1] + tiny) /
 	                                           (pd [2] + pd [3] + tiny));
+#endif
 	   const int b = bin [c];
 	   llrRe [b] = lre;
 	   llrIm [b] = lim;
 
 // exp(j (pi/4 - m pi/2)) for the most probable previous phase m
 	   static const Complex toDifference [4] = {
-            {float (M_SQRT1_2), float(M_SQRT1_2)},
-	    {float(M_SQRT1_2), -float(M_SQRT1_2)},
-            {-float(M_SQRT1_2), -float(M_SQRT1_2)},
-	    {-float(M_SQRT1_2), float(M_SQRT1_2)}
+            {float  (M_SQRT1_2), float  (M_SQRT1_2)},
+	    {float  (M_SQRT1_2), -float (M_SQRT1_2)},
+            {-float (M_SQRT1_2), -float (M_SQRT1_2)},
+	    {- float(M_SQRT1_2), float  (M_SQRT1_2)}
 	   };
 	   const int mPrev = std::max_element (q.begin(), q.end()) - q.begin();
 	   decisions [b] = v * toDifference [mPrev];

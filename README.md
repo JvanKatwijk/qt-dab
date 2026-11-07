@@ -38,7 +38,7 @@ What is new in Qt-DAB-7.3.1.3
 In Qt-DAB-7.3.1.3 there are three (minor) differences compared to the previous version:
  * the setLatitude and setLongitude functions incorrectly forced the values to be int, rather than float: fixed
  * the SNR viewer showed a periodic dip in the SNR. Applying some more filtering does the trick;
- * the device list now has an entry labeled "stop device". Touching it halts - as the name strongly suggests - and disconnets the device (added on user's request);
+ * the device list now has an entry labeled **stop device**. Touching it halts - as the name strongly suggests - and disconnets the device (added on user's request);
 
 In Qt-DAB-7.3.1.1 two errors were corrected, one of them was sufficiently
 serious to create an updated version:
@@ -139,6 +139,9 @@ The icons on the top line behave more or less as in previous versions
  * clicking on the **copyright symbol** shows some data on the Qt-DAB version and shows acknowledgements;
  * the yellow/blue  icon controls the visibility of the Qt-DAB-files directory (folder); 
  * the small blue icon controls the visibility of the device list;
+
+![7.2](/res/read_me/devicelist.png?raw=true)
+
  * the snr widget controls the visibility of a small window showing the progress of the SNR.
 
 ![7.2](/res/read_me/snr-window.png?raw=true)

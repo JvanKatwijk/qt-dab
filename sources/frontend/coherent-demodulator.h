@@ -65,6 +65,8 @@ private:
 	int T_u;
 	int T_s;
 
+	fftHandler	fftForward;
+	fftHandler	fftBackward;
     // Carrier number k and FFT bin of carrier c = 0 .. K-1
 	std::vector<int> carrier;
 	std::vector<int> bin;
