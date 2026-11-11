@@ -510,7 +510,7 @@ public slots:
 	void			handle_devicewidgetButton	();
 	void			handle_dlText			(bool);
 	void			handle_loadTable		();
-	void			handle_correlationSelector	(int);
+	void			handle_correlationSelector	(const QString &);
 	void			handle_LoggerButton		(int);
 	void			handle_etiButton		();
 	void			set_streamSelector		(const QString &, int);

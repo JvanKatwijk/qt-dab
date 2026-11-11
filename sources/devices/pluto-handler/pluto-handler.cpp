@@ -763,6 +763,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_find_channel == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_device_find_channel");
+//	   fprintf (stderr, "could not load ii_device_find_channel\n");
 	   return false;
 	}
 
@@ -772,6 +773,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_create_default_context == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_create_default_context");
+//	   fprintf (stderr, "could not load iio_create_default_context");
 	   return false;
 	}
 
@@ -781,6 +783,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_create_local_context == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_create_local_context");
+//	   fprintf (stderr, "could not load iio_create_local_context");
 	   return false;
 	}
 
@@ -790,6 +793,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_create_network_context == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_create_network_context");
+//	   fprintf (stderr, "could not load iio_create_network_context");
 	   return false;
 	}
 
@@ -799,6 +803,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_context_get_name == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
                              "could not load  iio_context_get_name");
+//	   fprintf (stderr, "could not load  iio_context_get_name");
 	   return false;
 	}
 
@@ -808,6 +813,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_context_get_devices_count == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_context_get_devices_count");
+//	   fprintf (stderr, "could not load iio_context_get_devices_count");
 	   return false;
 	}
 
@@ -817,6 +823,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_context_get_device == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_context_get_device");
+//	   fprintf (stderr, "could not load iio_context_get_device");
 	   return false;
 	}
 
@@ -826,6 +833,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_context_find_device == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_context_find_device");
+//	   fprintf (stderr, "could not load iio_context_find_device");
 	   return false;
 	}
 
@@ -835,6 +843,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_get_name == nullptr) {
 	   theErrorLogger -> add ("Pluto",
 	                       "could not load iio_device_get_name");
+//	   fprintf (stderr, "could not load iio_device_get_name");
 	   return false;
 	}
 
@@ -844,6 +853,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_attr_read_bool == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_device_attr_read_bool");
+//	   fprintf (stderr, "could not load iio_device_attr_read_bool");
 	   return false;
 	}
 
@@ -853,6 +863,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_attr_write_bool == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_device_attr_write_bool");
+//	   fprintf (stderr, "could not load iio_device_attr_write_bool");
 	   return false;
 	}
 
@@ -862,6 +873,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_channel_attr_read_bool == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_channel_attr_read_bool");
+//	   fprintf (stderr, "could not load iio_channel_attr_read_bool");
 	   return false;
 	}
 
@@ -871,6 +883,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_channel_attr_write_bool == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_channel_attr_write_bool");
+//	   fprintf (stderr, "could not load iio_channel_attr_write_bool");
 	   return false;
 	}
 
@@ -880,6 +893,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_channel_enable == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_channel_enable");
+//	   fprintf (stderr, "could not load iio_channel_enable");
 	   return false;
 	}
 
@@ -889,6 +903,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_channel_attr_write == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_channel_attr_write");
+//	   fprintf (stderr, "could not load iio_channel_attr_write");
 	   return false;
 	}
 
@@ -898,6 +913,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_channel_attr_write_longlong == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_channel_attr_write_longlong");
+//	   fprintf (stderr, "could not load iio_channel_attr_write_longlong");
 	   return false;
 	}
 
@@ -907,6 +923,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_attr_write_longlong == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_device_attr_write_longlong");
+//	   fprintf (stderr, "could not load iio_device_attr_write_longlong");
 	   return false;
 	}
 
@@ -916,6 +933,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_attr_write_raw == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_device_attr_write_raw");
+//	   fprintf (stderr, "could not load iio_device_attr_write_raw");
 	   return false;
 	}
 
@@ -925,6 +943,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_device_create_buffer == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_device_create_buffer");
+//	   fprintf (stderr, "could not load iio_device_create_buffer");
 	   return false;
 	}
 
@@ -934,6 +953,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_buffer_set_blocking_mode == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_buffer_set_blocking_mode");
+//	   fprintf (stderr, "could not load iio_buffer_set_blocking_mode");
 	   return false;
 	}
 
@@ -943,6 +963,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_buffer_destroy == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_buffer_destroy");
+//	   fprintf (stderr, "could not load iio_buffer_destroy");
 	   return false;
 	}
 
@@ -952,6 +973,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_context_destroy == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_context_destroy");
+//	   fprintf (stderr, "could not load iio_context_destroy");
 	   return false;
 	}
 
@@ -961,6 +983,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_buffer_refill == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_buffer_refill");
+//	   fprintf (stderr, "could not load iio_buffer_refill");
 	   return false;
 	}
 
@@ -970,6 +993,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_buffer_step == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_buffer_step");
+//	   fprintf (stderr, "could not load iio_buffer_step");
 	   return false;
 	}
 
@@ -979,6 +1003,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_buffer_end == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_buffer_end");
+//	   fprintf (stderr, "could not load iio_buffer_end");
 	   return false;
 	}
 
@@ -988,6 +1013,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_buffer_first == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_buffer_first");
+//	   fprintf (stderr, "could not load iio_buffer_first");
 	   return false;
 	}
 
@@ -997,6 +1023,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_library_get_version == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_library_get_version");
+//	   fprintf (stderr, "could not load iio_library_get_version");
 	   return false;
 	}
 
@@ -1006,6 +1033,7 @@ bool	plutoHandler::load_iioFunctions	() {
 	if (iio_strerror == nullptr) {
 	   theErrorLogger -> add ("Pluto", 
 	                     "could not load iio_strerror");
+//	   fprintf (stderr, "could not load iio_strerror");
 	   return false;
 	}
 	return true;

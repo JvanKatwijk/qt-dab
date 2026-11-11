@@ -92,15 +92,16 @@
 	starter				= true;
 	this	-> tiiDelay		= p -> tii_delay;
 	this	-> tiiCounter		= 0;
-	this	-> correlationOrder	= 
-	         value_i (dabSettings, CONFIG_HANDLER,
-	                             S_CORRELATION_ORDER, 0) != 0;
 	this	-> dxMode		=
 	 		                  value_i (dabSettings,
 	                                           CONFIG_HANDLER,
 	                                           S_DX_MODE, 0) != 0;
 	this	-> decoder		= value_i (dabSettings, CONFIG_HANDLER, 
 	                                           "decoders", DECODER_1); 
+	QString		 correlationText	=
+	         value_s (dabSettings, CONFIG_HANDLER,
+	                             S_CORRELATION_ORDER, "first found");
+	setCorrelationOrder (correlationText);
 
 	this	-> etiOn		= false;
 	ofdmBuffer. resize (3 * T_s);
@@ -260,7 +261,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 
 	         if (starter || (startIndex < 0)) { // no sync, try again
 	            if (!correctionNeeded) {
-	               setSyncLost();
+	               setSyncLost ();	
 	            }
 	            starter	= false;
 	            badFrames ++;
@@ -693,8 +694,14 @@ void	ofdmHandler::handleDecoderSelector	(int d) {
 	theOfdmDecoder. handle_decoderSelector (d);
 }
 
-void	ofdmHandler::setCorrelationOrder	(bool b) {
-	correlationOrder = b;
+void	ofdmHandler::setCorrelationOrder	(const QString & order) {
+	if (order == ISI_REDUCE)
+	   correlationOrder	= ISI_ONE;
+	else
+	if (order == MAX_CORR)
+	   correlationOrder	= MAX_ONE;
+	else
+	   correlationOrder	= FIRST_ONE;
 }
 
 void	ofdmHandler::setDXMode		(bool b) {

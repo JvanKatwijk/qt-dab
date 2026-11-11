@@ -68,7 +68,6 @@ public:
 	void	set_closeDirect		(bool);
 
 	void	enable_loadLib		();
-	bool	get_correlationSelector	();
 	bool	get_audioServices_only	();
 	bool	get_allTIISelector	();
 

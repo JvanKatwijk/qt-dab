@@ -124,7 +124,7 @@ public:
 	                                         RingBuffer<uint8_t> *, int);
 	void		handleIQSelector	();
 	void		handleDecoderSelector	(int);
-	void		setCorrelationOrder	(bool);
+	void		setCorrelationOrder	(const QString &);
 	void		setDXMode		(bool);
 	void		set_dcRemoval		(bool);
 	void		set_iqBalance		(bool);
@@ -186,7 +186,7 @@ private:
 //	QByteArray		transmitters;
 	bool			correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
-	bool			correlationOrder;
+	uint8_t			correlationOrder;
 	bool			dxMode;
 	bool			freqSpeedUp;
 	uint8_t			freqCorrelator;

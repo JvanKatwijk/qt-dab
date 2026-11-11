@@ -47,6 +47,9 @@
 #define	SSE_SUPPORT	0200
 #endif
 
+#define	FIRST_CORR	"first corr"
+#define	MAX_CORR	"max corr"
+#define	ISI_REDUCE	"isi reduce"
 
 #if defined (__MINGW32__) || defined (__WIN32)
 //#include	"iostream.h"

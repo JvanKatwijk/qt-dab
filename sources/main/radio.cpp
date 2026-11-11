@@ -4379,11 +4379,9 @@ void	RadioInterface::setVolume	(int n) {
 	}
 }
 
-void	RadioInterface::handle_correlationSelector	(int d) {
-	(void)d;
-	bool b =  theConfigHandler -> get_correlationSelector ();
-	store (theQSettings, CONFIG_HANDLER, S_CORRELATION_ORDER, b ? 1 : 0);
-	theOfdmHandler -> setCorrelationOrder (b);
+void	RadioInterface::handle_correlationSelector	(const QString &s) {
+	store (theQSettings, CONFIG_HANDLER, S_CORRELATION_ORDER, s);
+	theOfdmHandler -> setCorrelationOrder (s);
 }
 
 void	RadioInterface::show_changeLabel (const QStringList notInOld,

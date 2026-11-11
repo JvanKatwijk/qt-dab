@@ -329,6 +329,7 @@ int	index_for_key (int key) {
 
 	int k	= value_i (dabSettings, CONFIG_HANDLER,
 	                                 DECODERS, DECODER_1);
+
 	decoderSelector	-> setCurrentIndex (index_for_key (k));
 	connect (decoderSelector,
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
@@ -340,16 +341,24 @@ int	index_for_key (int key) {
 	connect (this, &configHandler::selectDecoder,
 	         myRadioInterface, &RadioInterface::selectDecoder);
 
-	b =  value_i (dabSettings, CONFIG_HANDLER,
-	                           S_CORRELATION_ORDER, 0) != 0;
-	this	-> correlationSelector -> setChecked (b);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-	connect (correlationSelector, &QCheckBox::checkStateChanged,
-#else
-	connect (correlationSelector, &QCheckBox::stateChanged,
-#endif
-	         myRadioInterface, &RadioInterface::handle_correlationSelector);
 
+	this ->  correlationSelector -> addItem (FIRST_CORR);
+	this ->  correlationSelector -> addItem (MAX_CORR);
+	this ->  correlationSelector -> addItem (ISI_REDUCE);
+
+	this	-> correlationSelector	-> setToolTip ("DAB can be transmitted in a so-called Single Frequency Network (SFN) where the transmitters are fully synchronized. Synchronization is based on correlating the incoming signal with a predefined data block. For syncing a choice can be made between syncing on the first peak in the correlation and the maximum peak. New is a third option where the peak is used where the Intersymbol Interference is (seems) to be minimal");
+	QString  corrOrder =  value_s (dabSettings, CONFIG_HANDLER,
+	                           S_CORRELATION_ORDER, "first found");
+	k = correlationSelector -> findText (corrOrder);
+	if (k != -1)
+           correlationSelector -> setCurrentIndex (k);
+        connect (correlationSelector,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
+                 &QComboBox::textActivated,
+#else   
+                 qOverload<const QString &>(&QComboBox::activated),
+#endif
+                 myRadioInterface, &RadioInterface::handle_correlationSelector);
 
 	b =  value_i (dabSettings, CONFIG_HANDLER, DC_REMOVAL, 0) != 0;
 	this -> dcRemovalSelector -> setChecked (b);
@@ -620,10 +629,6 @@ void	configHandler::showLoad		(float load) {
 
 void	configHandler::enable_loadLib	() {
 	loadTableButton	-> setEnabled (true);
-}
-
-bool	configHandler::get_correlationSelector () {
-	return correlationSelector -> isChecked ();
 }
 
 bool	configHandler::get_allTIISelector () {

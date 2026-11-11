@@ -70,12 +70,12 @@
 //	Note that "v" is being modified by the fft function
 //	that is why it is a value parameter
 int32_t	correlator::findIndex (std::vector <Complex> v,
-	                       bool firstFound, int threshold) {
+	                       uint8_t testMode, int threshold) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
-float	*peakValues	= dynVec (float, T_u / 2);
+float	*absValues	= dynVec (float, T_u);
 
 const	int SEARCH_GAP	= 10;
 const	int SEARCH_OFFSET = T_g / 2;
@@ -93,22 +93,22 @@ const	int SEARCH_OFFSET = T_g / 2;
 /**
   *	We compute the average and the max signal values
   */
-	for (i = 0; i < T_u / 2; i ++) {
-	   peakValues [i]	= jan_abs (v [i]);
-	   sum			+= peakValues [i];
+	for (i = 0; i < T_u; i ++) {
+	   absValues [i]	= jan_abs (v [i]);
+	   sum			+= absValues [i];
 	}
 
-	sum /= T_u / 2;
+	sum /= T_u;
 	if (sum == 0.0f)
 	   return - 1;
 
 	QVector<int> indices;
-	for (i = T_g - SEARCH_OFFSET; i < T_g + SEARCH_OFFSET; i ++) {
-	   if (peakValues [i] / sum > threshold)  {
+	for (i = 0; i < T_u - 50; i ++) {
+	   if (absValues [i] / sum > threshold)  {
 	      bool foundOne = true;
 	      for (int j = 2; (j < SEARCH_GAP) &&
-	                              (i + j < T_g + SEARCH_OFFSET); j ++) {
-	         if (peakValues [i + j] > peakValues [i]) {
+	                              (i + j < T_u); j ++) {
+	         if (absValues [i + j] > absValues [i]) {
 	            foundOne = false;
 	            break;
 	         }
@@ -116,9 +116,9 @@ const	int SEARCH_OFFSET = T_g / 2;
 	      if (!foundOne)
 	         continue;
 //	found one
-	      indices. push_back (i);
-	      if (peakValues [i] > Max){
-	         Max = peakValues [i];
+	      indices. push_back (i);	
+	      if (absValues [i] > Max){
+	         Max = absValues [i];
 	         maxIndex = i;
 	      }
 	      i += SEARCH_GAP;
@@ -131,7 +131,7 @@ const	int SEARCH_OFFSET = T_g / 2;
 
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
-	      response	-> putDataIntoBuffer (peakValues, T_u / 2);
+	      response	-> putDataIntoBuffer (absValues, T_u / 2);
 	      showCorrelation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }
@@ -140,9 +140,72 @@ const	int SEARCH_OFFSET = T_g / 2;
 	if (indices. size () == 0)
 	   return -1;
 
-	if (firstFound)
+	if ((testMode == FIRST_ONE) || (indices. size () == 1))
 	   return indices [0];
 
+	if (testMode == MAX_ONE)
+	   return maxIndex;
+
+//	Compute the location of a maximum with a mimumum ISI
+//	See equation 1 in
+//	"OFDM receivers - impact on coverage of inter-symbol interference and FFT window positioning"
+//	Paper pointed to by Olddab, 
+//	Use naming as in paper
+
+	int	oldIndex	= maxIndex;
+	maxIndex = -1;
+
+	int	count		= indices. size ();
+	float	maxCI		= 0;
+	int	first		= indices [0];
+
+//
+//	The basic idea is to look at each maximum and estimate the
+//	amount of ISI from the other max positions
+	for (int index = 0; index < count; index++) {
+	   int pos = indices [index];
+	   if (pos < first)
+	      continue;
+// the total power of the effective useful signal
+	   float Ci = 0.0f;
+// the total effective interfering power
+	   float Ii = 0.0f;
+	   float T_uf	= (float)T_u;
+
+	   for (int i = 0; i < count; i++) {
+	      float wi; // the weighting coefficient
+	      int testPos = indices [i];
+	      for (int j = 0; (j < SEARCH_GAP) &&
+	                          (testPos + SEARCH_GAP < T_u); j ++) {
+	         int tt = testPos + j;
+	         float absVal = absValues [tt];
+	         float power = absVal * absVal;
+
+	         if (tt < pos)  // before the guard interval
+	             wi = (float)(T_u + tt - pos) / T_uf;
+	         else
+	         if (tt > pos + T_g) // after the guard interval
+	            wi = (float)(T_u + T_g + pos - tt) / T_uf;
+	         else // in the guard interval
+	            wi = 1.0f;
+//	update data
+	         wi *= wi;
+	         Ci += wi * power;
+	         Ii += (1.0f - wi) * power;
+	      }
+	   }
+//
+//	alternatively, we could look at the 
+	   if (Ci / Ii > maxCI) {
+	      maxCI =  Ci / Ii;
+	      maxIndex = pos;
+	   }
+	}
+//	if (oldIndex != maxIndex) {
+//	   for (int i = 0; i < indices. size (); i ++)
+//	      fprintf (stderr, "%d ", indices [i]);
+//	   fprintf (stderr, "\n%d -> %d\n", oldIndex, maxIndex);
+//	}
 	return maxIndex;
 }
 

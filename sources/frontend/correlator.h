@@ -35,6 +35,10 @@
 
 class	RadioInterface;
 
+#define	FIRST_ONE	0100
+#define	MAX_ONE		0101
+#define	ISI_ONE		0102
+
 class correlator : public QObject {
 Q_OBJECT
 public:
@@ -43,7 +47,7 @@ public:
 	                                         phaseTable *);
 			~correlator		();
 	int32_t		findIndex		(std::vector<Complex>,
-	                                         bool,  int);
+	                                         uint8_t,  int);
 //	This one is used in the ofdm decoder
 private:
 	phaseTable	*theTable;

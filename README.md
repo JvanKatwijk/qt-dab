@@ -1,4 +1,4 @@
-# Qt-DAB-7.3.1.3
+# Qt-DAB-7.3.2.0
 
 -------------------------------------------------------------------
 
@@ -8,7 +8,7 @@ About Qt-DAB
 ======================================================================
 
 *Qt-DAB* is software for Linux and Windows. It is to be used in combination with an SDR device for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**. 
-For the current version, *Qt-DAB-7.3.1.1*, predefined executables - for Linux an AppImage, for Windows an installer - will be available.
+For the current version, *Qt-DAB-7.3.2.0*, predefined executables - for Linux an AppImage, for Windows an installer - will be available.
 Sources can be compiled for e.g. Raspberry and Mac.
 
 ![7.3](/res/read_me/qt-dab-front-picture-1.png?raw=true)
@@ -17,7 +17,7 @@ Sources can be compiled for e.g. Raspberry and Mac.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.3.1.3](#What-is-new-in-Qt-DAB-7.3.1.3)
+* [What is new in Qt-DAB-7.3.2.0](#What-is-new-in-Qt-DAB-7.3.2.0)
 * [Windows and scopes](#windows-and-scopes)
 * [Managing service lists](#new-managing-service-lists)
 * [Devices and device support](#devices-and-device-support)
@@ -32,8 +32,11 @@ Table of Contents
 * [Building on MaxOs NEW](#Building-on-MacOs-NEW)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.3.1.3
+What is new in Qt-DAB-7.3.2.0
 ======================================================================
+In Qt-DAB-7.3.2.0 a minor change to the GUI was introduced. Minor, but enough to cause the release numbering change in the third field. The changes themselves:
+ * a new type of **demodulator** was applied that turns out to be (slightly) more sensitive than the others. Selecting the **decoder a** causes that demodulator to be active. Its drawback is that it it is computationally more intensive.
+ * an addition was made to the **correlators** (responsible for the time synchronization), leading to changing a simple checkbox to a combobox on the configuration and control window.
 
 In Qt-DAB-7.3.1.3 there are three (minor) differences compared to the previous version:
  * the setLatitude and setLongitude functions incorrectly forced the values to be int, rather than float: fixed
@@ -85,7 +88,9 @@ In QtDAB-7.2 and 7.3 some GUI elements were changed:
 
 ![7.2](/res/read_me/channelView.png?raw=true)
 
- - the selector for setting the (maximum) mute time is moved from the configuration window. Click with the right hand mouse button on the speaker and a small window is activated where the time can be set.
+Clicking on a line in the channeldisplay has the same effect has clicking on the channelselector.
+ 
+- the selector for setting the (maximum) mute time is moved from the configuration window. Click with the right hand mouse button on the speaker and a small window is activated where the time can be set.
 
 Windows and scopes
 =========================================================================
@@ -105,15 +110,14 @@ Some other buttons are just replaced on the main window.
 ![7.3](/res/read_me/qt-dab-7.3-b.png?raw=true)
 
 The **main window** is visible as long as the program runs. The two pictures show the main window with and without the technical window visible.
-The icon left of the service name (Here **Radio Poland**) controls the visibility of the frame containing the tech window data.
-
+The icon left of the service name (Here **RockStar**) controls the visibility of the frame containing the tech window data.
 
 The left (almost) half is mainly reserved for selecting channel and service.
-    * the top line, displaying the ensemble name implements as clickable item as well
-    * clicking with the left mouse button, controls the visibility of the content table;
+ - the top line, displaying the ensemble name implements as clickable item as well
+ - clicking with the left mouse button, controls the visibility of the content table;
 ![7.0](/res/read_me/content-table.png)
 
-    * clicking with the right mouse button control **dumping** the input.
+ - clicking with the right mouse button control **dumping** the input.
 
 ![7.2](/res/read_me/dumping.png?raw=true)
 
@@ -127,11 +131,10 @@ In ensemble mode, clicking with the **right hand** mouse button on an audio serv
 
  * in **file mode** obviously only the services of the recording are shown and neither a mode selector nor a channel selector are visible. Furthermore, the **channelview button** is meaningless in this mode.
 
- * the channelview button controls the visibility of the channeldisplay. The display shows an overview of the channels in the current database and is - obviously - meaningless in **file** mode.
+ * the channelview button controls the visibility of the channeldisplay (see avove).
+The display shows an overview of the channels in the current database and is - obviously - meaningless in **file** mode.
 
-![7.2](/res/read_me/channelView.png?raw=true) 
 
-Clicking on a line in the channeldisplay has the same effect has clicking on the channelselector.
 
 ============================================================================
 

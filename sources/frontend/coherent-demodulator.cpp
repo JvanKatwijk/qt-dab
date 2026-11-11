@@ -80,7 +80,7 @@ float sine, cosine;
 	return Complex (cosine, sine);
 }
 
-#define	__FAST_COHERENT__
+//#define	__FAST_COHERENT__
 #ifdef	__FAST_COHERENT__
 static
 inline float exp_f (float x) {
