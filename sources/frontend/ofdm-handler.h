@@ -59,7 +59,6 @@ public:
 	                         uint8_t);
 		~ofdmHandler			();
 	void		start			();
-//	void		start			(int32_t);
 	void		stop			();
 
 	void		startDumping		(const QString &, int, 

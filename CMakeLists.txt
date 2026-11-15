@@ -216,6 +216,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/mutetimeSelector.h 
 	   ./sources/eti-handler/eti-generator.h 
 	   ./sources/frontend/ofdm-handler.h 
+	   ./sources/frontend/coherent-demodulator.h
 	   ./sources/frontend/timesyncer.h 
 	   ./sources/frontend/sample-reader.h 
 	   ./sources/frontend/ofdm-decoder.h 
@@ -378,6 +379,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/mutetimeSelector.cpp 
 	   ./sources/eti-handler/eti-generator.cpp 
 	   ./sources/frontend/ofdm-handler.cpp 
+	   ./sources/frontend/coherent-demodulator.cpp 
 	   ./sources/frontend/timesyncer.cpp 
 	   ./sources/frontend/sample-reader.cpp 
 	   ./sources/frontend/ofdm-decoder.cpp 
