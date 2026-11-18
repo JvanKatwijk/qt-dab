@@ -25,8 +25,8 @@
 /*
  *	Based on user requests (Peter L.G) a secondary frontend
  *	path for handling  eti files for input is added.
- *	the original ofdm handler is - together with an (almost) copy
- *	of the front end handling of the eti backend made into a
+ *	The original ofdm handler is - together with an (almost) copy
+ *	of the front end handling of the eti backend - made into a
  *	derived version of a "frontend-handler"
  *	Note that the eti frontend hamdling here is much, much simpler and
  *	GUI buttons  and elements related to raw input signals are 
@@ -42,7 +42,6 @@
 #include	<cstdint>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"fft-handler.h"
 
 class	RadioInterface;
 class	processParams;
@@ -78,7 +77,8 @@ virtual void		audioData		(uint32_t, uint8_t,
 virtual void		packetData		(uint32_t, uint8_t,
 	                                                   packetdata &);
 virtual	uint32_t	julianDate		();
-virtual	QList<contentType>	contentPrint	();
+virtual	QList<contentType>
+	                contentPrint		();
 virtual	void		set_dataTracer		(bool);
 virtual	bool		serviceRuns		(uint32_t SId, uint8_t SCIds);
 virtual	void		stopService		(uint32_t, uint8_t);
@@ -87,7 +87,8 @@ virtual	bool		setAudioChannel		(audiodata &,
 	                                         FILE *, int);
 virtual	bool		setDataChannel		(packetdata &,
 	                                         RingBuffer<uint8_t> *, int);
-virtual	std::vector<basicService> getServices	();
+virtual	std::vector<basicService>
+	                getServices		();
 	      
 //
 //	Functions only useful in the regular processing path

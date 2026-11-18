@@ -20,7 +20,7 @@
  *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"ofdm-handler.h"
+#include	"ofdm-processor.h"
 
 #include	<utility>
 #include	"radio.h"
@@ -39,14 +39,14 @@
 #include	"tii-detector-1.h"
 
 /**
-  *	\brief ofdmHandler
-  *	The ofdmHandler class is the driver of the processing
+  *	\brief ofdmProcessor
+  *	The ofdmProcessor class is the driver of the processing
   *	of the samplestream.
   *	It is the main interface to the "radio" program, that
   *	controls the GUI and the various processing elements
   */
 
-	ofdmHandler::ofdmHandler	(RadioInterface	*mr,
+	ofdmProcessor::ofdmProcessor	(RadioInterface	*mr,
 	                                 deviceHandler	*inputDevice,
 	                                 processParams	*p,
 	                                 QSettings	*dabSettings,
@@ -115,25 +115,25 @@
 	totalFrames			= 0;
 	scanMode			= false;
 
-	connect (this, &ofdmHandler::setSynced,
+	connect (this, &ofdmProcessor::setSynced,
 	         radioInterface_p, &RadioInterface::set_synced);
-	connect (this, &ofdmHandler::setSyncLost,
+	connect (this, &ofdmProcessor::setSyncLost,
 	         radioInterface_p, &RadioInterface::set_sync_lost);
-	connect (this, &ofdmHandler::showTIIData,
+	connect (this, &ofdmProcessor::showTIIData,
 	         radioInterface_p, &RadioInterface::show_tiiData);
-	connect (this, &ofdmHandler::showTIIspectrum,
+	connect (this, &ofdmProcessor::showTIIspectrum,
 	         radioInterface_p, &RadioInterface::show_tii_spectrum);
-	connect (this, static_cast<void (ofdmHandler::*)(float)>(&ofdmHandler::showSnr),
+	connect (this, static_cast<void (ofdmProcessor::*)(float)>(&ofdmProcessor::showSnr),
 	         mr, &RadioInterface::show_snr);
-	connect (this, &ofdmHandler::showClockError,
+	connect (this, &ofdmProcessor::showClockError,
 	         mr,  &RadioInterface::show_clock_error);
-	connect (this, &ofdmHandler::showNull,
+	connect (this, &ofdmProcessor::showNull,
 	         mr, &RadioInterface::show_null);
-	connect (this, &ofdmHandler::showChannel,
+	connect (this, &ofdmProcessor::showChannel,
 	         mr, &RadioInterface::show_channel);
-	connect (this, &ofdmHandler::showCorrector,
+	connect (this, &ofdmProcessor::showCorrector,
 	         mr,  &RadioInterface::show_Corrector);
-	connect (this, &ofdmHandler::show_carriers,
+	connect (this, &ofdmProcessor::show_carriers,
 	         radioInterface_p, &RadioInterface::show_carriers);
 	tiiThreshold = value_i (settings_p, CONFIG_HANDLER,
                                              TII_THRESHOLD, 6);
@@ -144,7 +144,7 @@
 	this	-> snr		= 10;	// until we know better
 }
 
-	ofdmHandler::~ofdmHandler () {
+	ofdmProcessor::~ofdmProcessor () {
 	   if (isRunning ()) {
 	      theReader. setRunning (false);
 	                                // exception to be raised
@@ -156,15 +156,15 @@
 	}
 }
 
-void	ofdmHandler::setTIIThreshold	(int16_t threshold) {
+void	ofdmProcessor::setTIIThreshold	(int16_t threshold) {
 	tiiThreshold = threshold;
 }
 
-void	ofdmHandler::setTIICollisions	(int subId) {
+void	ofdmProcessor::setTIICollisions	(int subId) {
 	tiiCollision = subId;
 }
 
-void	ofdmHandler::start () {
+void	ofdmProcessor::start () {
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
 	attempts			= 0;
@@ -179,7 +179,7 @@ void	ofdmHandler::start () {
 	QThread::start ();
 }
 
-void	ofdmHandler::stop	() {
+void	ofdmProcessor::stop	() {
 	theReader. setRunning (false);
 	while (isRunning ())
 //	   wait ();
@@ -194,7 +194,7 @@ void	ofdmHandler::stop	() {
    *	and sending them to the ofdmDecoder who will transfer the results
    *	Finally, estimating the small frequency error
    */
-void	ofdmHandler::run	() {
+void	ofdmProcessor::run	() {
 timeSyncer	myTimeSyncer	(&theReader);
 TII_Detector	theTIIDetector	(&theTable);
 freqSyncer	myFreqSyncer	(radioInterface_p, &theTable);
@@ -528,18 +528,18 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 	   }
 	}
 	catch (int e) {
-//	   fprintf (stderr, "ofdmHandler is stopping\n");
+//	   fprintf (stderr, "ofdmProcessor is stopping\n");
 	   ;
 	}
 }
 //
 //
-void	ofdmHandler::setScanMode	(bool b) {
+void	ofdmProcessor::setScanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
 
-void	ofdmHandler::getFrameQuality	(int	*totalFrames,
+void	ofdmProcessor::getFrameQuality	(int	*totalFrames,
 	                                 int	*goodFrames,
 	                                 int	*badFrames) {
 	*totalFrames		= this	-> totalFrames;
@@ -552,77 +552,77 @@ void	ofdmHandler::getFrameQuality	(int	*totalFrames,
 //
 //	just convenience functions
 
-bool	ofdmHandler::isPrimaryService		(uint32_t SId, uint8_t SCIds) {
+bool	ofdmProcessor::isPrimaryService		(uint32_t SId, uint8_t SCIds) {
 	return theFicHandler. isPrimaryService (SId, SCIds);
 }
 
-bool	ofdmHandler::isAudioService		(uint32_t SId, uint8_t SCIds) {
+bool	ofdmProcessor::isAudioService		(uint32_t SId, uint8_t SCIds) {
 	return theFicHandler. isAudioService (SId, SCIds);
 }
 
-bool	ofdmHandler::isPacketService		(uint32_t SId, uint8_t SCIds) {
+bool	ofdmProcessor::isPacketService		(uint32_t SId, uint8_t SCIds) {
 	return theFicHandler. isPacketService (SId, SCIds);
 }
 
-bool	ofdmHandler::is_SPI			(uint32_t SId) {
+bool	ofdmProcessor::is_SPI			(uint32_t SId) {
 	return theFicHandler. is_SPI (SId);
 }
 
 std::vector<uint8_t>
-        ofdmHandler::get_secondaryServices	(uint32_t SId) {
+        ofdmProcessor::get_secondaryServices	(uint32_t SId) {
 	return theFicHandler. get_secondaryServices (SId);
 }
 
-int	ofdmHandler::FIG07_value		() {
+int	ofdmProcessor::FIG07_value		() {
 	return theFicHandler. FIG07_value ();
 }
 
-void	ofdmHandler::getFreqs			(uint32_t SId,
+void	ofdmProcessor::getFreqs			(uint32_t SId,
 	                                           std::vector<uint32_t> &fl) {
 	theFicHandler. getFreqs (SId, fl);
 }
 
-void	ofdmHandler::getServiceName		(QString &serviceName,
+void	ofdmProcessor::getServiceName		(QString &serviceName,
 	                                         QString &shortName,
 	                                         uint32_t SId, uint8_t SCIds) {
 	theFicHandler. getServiceName (serviceName, shortName, SId, SCIds);
 }
 
-void	ofdmHandler::mapNameToId		(const QString &name,
+void	ofdmProcessor::mapNameToId		(const QString &name,
                                                     uint32_t &SId,
 	                                                  uint8_t &SCIds) {
 	theFicHandler. mapNameToId (name, SId, SCIds);
 }
 
-void	ofdmHandler::audioData			(uint32_t SId, uint8_t SCIds,
+void	ofdmProcessor::audioData			(uint32_t SId, uint8_t SCIds,
 	                                                audiodata &d) {
 	theFicHandler. audioData (SId, SCIds, d);
 }
 
-void	ofdmHandler::packetData			(uint32_t SId, uint8_t SCIds,
+void	ofdmProcessor::packetData			(uint32_t SId, uint8_t SCIds,
 	                                                packetdata &pd) {
 	theFicHandler. packetData (SId, SCIds, pd);
 }
 
-QList<contentType> ofdmHandler::contentPrint	() {
+QList<contentType> ofdmProcessor::contentPrint	() {
 	QList<contentType> res = theFicHandler. contentPrint ();
 	for (auto &ct : res) 
 	   ct. isRunning = serviceRuns (ct. SId, ct. SCIds);
 	return res;
 }
 
-int	ofdmHandler::freeSpace		() {
+int	ofdmProcessor::freeSpace		() {
 	return theFicHandler. freeSpace ();
 }
 
 //	controlling functions
 //
-void	ofdmHandler::stopService (uint32_t SId, uint8_t SCIds) {
+void	ofdmProcessor::stopService (uint32_t SId, uint8_t SCIds) {
 	if (!scanMode)
 	   theMscHandler. stopBackend (SId, SCIds);
 }
 
-bool    ofdmHandler::setAudioChannel (audiodata &d,
+bool    ofdmProcessor::setAudioChannel (audiodata &d,
 	                               RingBuffer<std::complex<int16_t>> *b,
 	                               FILE *dump, int flag) {
 	if (!scanMode)
@@ -632,7 +632,7 @@ bool    ofdmHandler::setAudioChannel (audiodata &d,
 	   return false;
 }
 
-bool    ofdmHandler::setDataChannel (packetdata &d,
+bool    ofdmProcessor::setDataChannel (packetdata &d,
 	                               RingBuffer<uint8_t> *b, int flag) {
 	if (!scanMode)
 	   return theMscHandler. startBackend (d,
@@ -643,58 +643,58 @@ bool    ofdmHandler::setDataChannel (packetdata &d,
 }
 
 //
-void	ofdmHandler::startDumping	(const QString &f, int freq,
+void	ofdmProcessor::startDumping	(const QString &f, int freq,
 	                                 int bitDepth, const QString creator) {
 	theReader. startDumping (f, freq, bitDepth, creator);
 }
 
-void	ofdmHandler::stopDumping() {
+void	ofdmProcessor::stopDumping() {
 	theReader. stopDumping();
 }
 
-bool	ofdmHandler::isDumping		() {
+bool	ofdmProcessor::isDumping		() {
 	return theReader. isDumping ();
 }
 
-void	ofdmHandler::startFicDump	(const QString &f) {
+void	ofdmProcessor::startFicDump	(const QString &f) {
 	theFicHandler. startFICDump (f);
 }
 
-bool	ofdmHandler::ficDumping_on	() {
+bool	ofdmProcessor::ficDumping_on	() {
 	return theFicHandler. ficDumping_on ();
 }
 
-void	ofdmHandler::stopFicDump	() {
+void	ofdmProcessor::stopFicDump	() {
 	theFicHandler. stopFICDump ();
 }
 
-uint32_t ofdmHandler::julianDate	()  {
+uint32_t ofdmProcessor::julianDate	()  {
 	return theFicHandler. julianDate ();
 }
 
-bool	ofdmHandler::startEtiGenerator	(const QString &s) {
+bool	ofdmProcessor::startEtiGenerator	(const QString &s) {
 	etiOn = theEtiGenerator. start_etiGenerator (s);
 	return etiOn;
 }
 
-void	ofdmHandler::stopEtiGenerator		() {
+void	ofdmProcessor::stopEtiGenerator		() {
 	etiOn		= false;
 	theEtiGenerator. stop_etiGenerator ();
 }
 
-void	ofdmHandler::resetEtiGenerator	() {
+void	ofdmProcessor::resetEtiGenerator	() {
 	theEtiGenerator. reset ();
 }
 
-void	ofdmHandler::handleIQSelector	() {
+void	ofdmProcessor::handleIQSelector	() {
 	theOfdmDecoder. handle_iqSelector ();
 }
 
-void	ofdmHandler::handleDecoderSelector	(int d) {
+void	ofdmProcessor::handleDecoderSelector	(int d) {
 	theOfdmDecoder. handle_decoderSelector (d);
 }
 
-void	ofdmHandler::setCorrelationOrder	(const QString & order) {
+void	ofdmProcessor::setCorrelationOrder	(const QString & order) {
 	if (order == ISI_REDUCE)
 	   correlationOrder	= ISI_ONE;
 	else
@@ -704,24 +704,24 @@ void	ofdmHandler::setCorrelationOrder	(const QString & order) {
 	   correlationOrder	= FIRST_ONE;
 }
 
-void	ofdmHandler::setDXMode		(bool b) {
+void	ofdmProcessor::setDXMode		(bool b) {
 	dxMode	= b;
 }
 
-void	ofdmHandler::setSpeedUp	(bool b) {
+void	ofdmProcessor::setSpeedUp	(bool b) {
 	freqSpeedUp	= b;
 	store (settings_p, CONFIG_HANDLER, "SPEED_UP", b ? 1 : 0);
 }
 
-void	ofdmHandler::setFreqCorrelator	(uint8_t corr) {
+void	ofdmProcessor::setFreqCorrelator	(uint8_t corr) {
 	store (settings_p, CONFIG_HANDLER, "SELECT_CORR", corr);
 }
 
-bool	ofdmHandler::serviceRuns	(uint32_t SId, uint8_t SCIds) {
+bool	ofdmProcessor::serviceRuns	(uint32_t SId, uint8_t SCIds) {
 	return theMscHandler. serviceRuns (SId, SCIds);
 }
 
-void	ofdmHandler::generate_CI (const std::vector<Complex> &rawBuffer,
+void	ofdmProcessor::generate_CI (const std::vector<Complex> &rawBuffer,
 	                          int startIndex) {
 estimator myEstimator (&theTable);
 std::vector<Complex> CI_Vector (NR_TAPS);
@@ -732,28 +732,28 @@ std::vector<Complex> CI_Vector (NR_TAPS);
 	emit showChannel (CI_Vector. size ());
 }
 
-void	ofdmHandler::set_dcRemoval	(bool b) {
+void	ofdmProcessor::set_dcRemoval	(bool b) {
 	theReader. set_dcRemoval (b);
 }
 
-void	ofdmHandler::set_iqBalance	(bool b) {
+void	ofdmProcessor::set_iqBalance	(bool b) {
 	theReader. set_iqBalance (b);
 }
 
-void	ofdmHandler::set_dataTracer	(bool b) {
+void	ofdmProcessor::set_dataTracer	(bool b) {
 	theMscHandler. set_dataTracer (b);
 }
 
-std::vector<basicService>  ofdmHandler::getServices	() {
+std::vector<basicService>  ofdmProcessor::getServices	() {
 	return theFicHandler. getServices ();
 }
 
-void	ofdmHandler::viewCarriers	(uint8_t carrierMode) {
+void	ofdmProcessor::viewCarriers	(uint8_t carrierMode) {
 	viewCarrier_mode	= carrierMode;
 	theOfdmDecoder. viewCarriers	(carrierMode);
 }
 
-void	ofdmHandler::NullToCarriers (const std::vector<Complex> &in,
+void	ofdmProcessor::NullToCarriers (const std::vector<Complex> &in,
 	                             DABFLOAT *out) {
 std::vector<Complex>buffer (T_u);
 	for (int i = 0; i < T_u; i ++)

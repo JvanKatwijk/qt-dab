@@ -143,7 +143,7 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/frontend-handler.h \
 	   ./sources/frontend/eti-processor.h \
-	   ./sources/frontend/ofdm-handler.h \
+	   ./sources/frontend/ofdm-processor.h \
 	   ./sources/frontend/coherent-demodulator.h \
 	   ./sources/frontend/timesyncer.h \
 	   ./sources/frontend/sample-reader.h \
@@ -314,7 +314,7 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/scan-handler.cpp \
 	   ./sources/frontend/frontend-handler.cpp \
 	   ./sources/frontend/eti-processor.cpp \
-	   ./sources/frontend/ofdm-handler.cpp \
+	   ./sources/frontend/ofdm-processor.cpp \
 	   ./sources/frontend/coherent-demodulator.cpp \
 	   ./sources/frontend/timesyncer.cpp \
 	   ./sources/frontend/sample-reader.cpp \

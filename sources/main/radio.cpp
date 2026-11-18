@@ -43,7 +43,7 @@
 #include	<vector>
 #include	"radio.h"
 #include	"config-handler.h"
-#include	"ofdm-handler.h"
+#include	"ofdm-processor.h"
 #include	"eti-processor.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
@@ -310,6 +310,10 @@ QString h;
         font. setPointSize (13);
 	localTimeDisplay	-> setStyleSheet (labelStyle);
 	localTimeDisplay	-> setFont (font);
+        
+        p	= strengthLabels. at (0);
+        this -> snrLabel -> setAlignment(Qt::AlignRight);
+        this -> snrLabel -> setPixmap (p. scaled (25, 25, Qt::KeepAspectRatio));
 
 	programTypeLabel	-> setStyleSheet (labelStyle);
 
@@ -736,7 +740,7 @@ void	RadioInterface::startDirect	() {
 	                                            &theLogger,
 	                                            this -> cpuSupport);
 	else
-	   theFrontendHandler	= new ofdmHandler  (this,
+	   theFrontendHandler	= new ofdmProcessor  (this,
 	                                    theDeviceHandler,
 	                                    &globals, theQSettings,
 	                                    &theLogger, this -> cpuSupport);
@@ -1037,7 +1041,6 @@ void	RadioInterface::handle_motObject (QByteArray	result,
 	                                  bool		dirElement,
 	                                  uint32_t	SId) {
 
-	fprintf (stderr, "mot object from %d\n", SId);
 	if (!theFrontendHandler	-> is_SPI (SId) &&
 	   (channel. currentService. SId != SId))
 	   return;
@@ -1939,6 +1942,8 @@ QString	dumpName;
 
 	if ((newServices -> getMode () != ENSEMBLEVIEW) ||
 	                                  (theSCANHandler. active ()))
+	   return;
+	if (theDeviceHandler -> deviceType () != 0)
 	   return;
 
 	if (!theConfigHandler -> dumpmode_set () ||
@@ -3662,7 +3667,7 @@ void	RadioInterface::handle_httpButton	() {
 	}
 
 	if (theDeviceHandler -> deviceType () != 0)
-	   httpButton	-> setEnabled (false);
+	   return;
 
 	if (mapViewer == nullptr)  {
 	   try {

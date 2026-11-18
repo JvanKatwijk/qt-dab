@@ -27,16 +27,7 @@
  *	to the ofdm processing and preparation for further decoding
  */
 
-
-#include	"dab-constants.h"
-#include	<QThread>
-#include	<QObject>
-#include	<QByteArray>
-#include	<QStringList>
-#include	<QSettings>
-#include	<vector>
-#include	<cstdint>
-#include	"dab-constants.h"
+#include	"frontend-handler.h"
 #include	"sample-reader.h"
 #include	"fic-handler.h"
 #include	"msc-handler.h"
@@ -46,22 +37,16 @@
 #include	"fft-handler.h"
 #include	"eti-generator.h"
 
-#include	"frontend-handler.h"
-class	RadioInterface;
-class	processParams;
-class	logger;
-
-class ofdmHandler: public frontendHandler {
-//class ofdmHandler: public QThread {
+class ofdmProcessor: public frontendHandler {
 Q_OBJECT
 public:
-		ofdmHandler  	(RadioInterface *,
+		ofdmProcessor  	(RadioInterface *,
 	                         deviceHandler *,
 	                         processParams *,
 	                         QSettings	*,
 	                         logger		*,
 	                         uint8_t);
-		~ofdmHandler			();
+		~ofdmProcessor			();
 	void		start			();
 	void		stop			();
 

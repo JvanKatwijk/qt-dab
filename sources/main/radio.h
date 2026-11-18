@@ -72,7 +72,6 @@
 #include	"errorlog.h"
 
 #include	"frontend-handler.h"
-//#include	"ofdm-handler.h"
 
 #include	<QScopedPointer>
 #include	"journaline-datahandler.h"
