@@ -92,3 +92,7 @@ void	deviceHandler::startDump	(const QString & fileName,
 void	deviceHandler::stopDump		() {
 }
 
+uint8_t	deviceHandler::deviceType	() {
+	return 0;
+}
+

@@ -717,7 +717,7 @@ void	ofdmHandler::setFreqCorrelator	(uint8_t corr) {
 	store (settings_p, CONFIG_HANDLER, "SELECT_CORR", corr);
 }
 
-bool	ofdmHandler::serviceRuns	(uint32_t SId, uint16_t SCIds) {
+bool	ofdmHandler::serviceRuns	(uint32_t SId, uint8_t SCIds) {
 	return theMscHandler. serviceRuns (SId, SCIds);
 }
 

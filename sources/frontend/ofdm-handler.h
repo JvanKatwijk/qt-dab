@@ -26,6 +26,8 @@
  *	the ofdmHandler is the embodying of all functionality related
  *	to the ofdm processing and preparation for further decoding
  */
+
+
 #include	"dab-constants.h"
 #include	<QThread>
 #include	<QObject>
@@ -44,11 +46,13 @@
 #include	"fft-handler.h"
 #include	"eti-generator.h"
 
+#include	"frontend-handler.h"
 class	RadioInterface;
 class	processParams;
 class	logger;
 
-class ofdmHandler: public QThread {
+class ofdmHandler: public frontendHandler {
+//class ofdmHandler: public QThread {
 Q_OBJECT
 public:
 		ofdmHandler  	(RadioInterface *,
@@ -74,7 +78,7 @@ public:
 	void		set_dataTracer		(bool);
 //
 //	just a gadget
-	bool		serviceRuns		(uint32_t SId, uint16_t SCIds);
+	bool		serviceRuns		(uint32_t SId, uint8_t SCIds);
 //
 //	showing carriers (or not)
 	void		viewCarriers		(uint8_t);
@@ -82,7 +86,7 @@ public:
 //	for the tii settings
 	void		setTIIThreshold		(int16_t);
 	void		setTIICollisions	(int);
-	void		setTIIFilter		(bool);
+//	void		setTIIFilter		(bool);
 //	servicing our subordinates
 //	for the ficHandler:
 //	uint16_t	getAnnouncing		(uint16_t);
@@ -197,20 +201,20 @@ virtual	void			run		();
 
 
 signals:
-	void		setSynced		(bool);
-	void		noSignalFound		();
-	void		setSyncLost		();
-	void		showTIIData		(QVector<tiiData>, int);
-	void		showTIIspectrum		();
-	void		showSpectrum		(int);
-	void		showSnr			(float);
-	void		showSnr			(float, float, float,
-	                                                  float, float);
-	void		showClockError		(int);
-	void		showNull		(int, int);
-	void		showChannel		(int);
-	void		showCorrector		(int, float);
-
-	void		show_carriers		(int, int);
+//	void		setSynced		(bool);
+//	void		noSignalFound		();
+//	void		setSyncLost		();
+//	void		showTIIData		(QVector<tiiData>, int);
+//	void		showTIIspectrum		();
+//	void		showSpectrum		(int);
+//	void		showSnr			(float);
+//	void		showSnr			(float, float, float,
+//	                                                  float, float);
+//	void		showClockError		(int);
+//	void		showNull		(int, int);
+//	void		showChannel		(int);
+//	void		showCorrector		(int, float);
+//
+//	void		show_carriers		(int, int);
 };
 

@@ -75,8 +75,6 @@
 #include	"uhd-handler.h"
 #define	USRP_DEVICE		0212
 #endif
-#ifdef	__MINGW32__
-#endif
 #ifdef	HAVE_RTL_TCP
 #include	"rtl-tcp-client.h"
 #define	RTL_TCP_DEVICE		0213
@@ -102,6 +100,7 @@
 //#include	"wavfiles.h"
 #include	"newfiles.h"
 #include	"rawfiles.h"
+#include	"eti-files.h"
 //
 //	file reading devices are always configured
 //
@@ -111,6 +110,7 @@
 #define	RAW_FILE_IQ	0102
 #define	WAV_FILE	0103
 #define	XML_FILE	0104
+#define	ETI_FILE	0105
 
 	deviceChooser::deviceChooser (errorLogger *theErrorLogger,
 	                              QSettings *dabSettings):
@@ -372,6 +372,8 @@ int	deviceNumber	= getDeviceIndex (s);
 	      QString fileName	= getFileName (fileType);
 	      if (fileName == "")
 	         throw (device_exception ("no file"));
+	      if (fileType == ETI_FILE)
+	         return new etiFiles (dabSettings, fileName);
 	      FILE *test = fopen (fileName. toLatin1 (). data (), "r");
 	      char buffer [10];
 	      int s = fread (buffer, 1, 10, test);
@@ -406,6 +408,7 @@ QString TYPE_SDR	= "sdr-wav (*.sdr)";
 QString TYPE_WAV	= "sdr-wav (*.wav)";
 QString TYPE_RAW	= "raw (*.raw)";
 QString TYPE_IQ		= "IQ-RAW (*.iq)";
+QString TYPE_ETI	= "ETI (*.eti)";
 
 	dabSettings	-> beginGroup ("Filetypes");
 	QString	lastDir		= dabSettings	-> value ("lastFileDir",
@@ -423,7 +426,8 @@ QString fileName =
 	                                     TYPE_SDR + ";;" +
 	                                     TYPE_WAV + ";;" +
 	                                     TYPE_RAW + ";;" +
-	                                     TYPE_IQ,
+	                                     TYPE_IQ  + ";;" +
+	                                     TYPE_ETI,
                                              &selectedType,
 	                                     QFileDialog::DontUseNativeDialog);
 	
@@ -436,7 +440,7 @@ QString fileName =
 	QString dumper  = QDir::fromNativeSeparators (fileName);
 	dabSettings     -> setValue ("lastFileDir", fileName);
 	dabSettings	-> endGroup ();
-	
+
 	if ((selectedType == TYPE_XML) || (selectedType == TYPE_UFF))
 	  fileType	= XML_FILE;
 	else
@@ -448,6 +452,9 @@ QString fileName =
 	else
 	if (selectedType == TYPE_IQ)
 	   fileType	= RAW_FILE_IQ;
+	else
+	if (selectedType == TYPE_ETI)
+	   fileType	= ETI_FILE;
 	else
 	   fileType	= 0;
 

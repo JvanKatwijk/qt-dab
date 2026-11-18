@@ -183,6 +183,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/devices/filereaders/new-reader
 	           ./sources/devices/filereaders/rawfiles-new
 	           ./sources/devices/filereaders/xml-filereader
+	           ./sources/devices/filereaders/eti-reader
 	           ./sources/update
 	           /usr/include/
 	)
@@ -215,6 +216,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/scan-handler.h 
 	   ./sources/main/mutetimeSelector.h 
 	   ./sources/eti-handler/eti-generator.h 
+	   ./sources/frontend/frontend-handler.h
+	   ./sources/frontend/eti-processor.h
 	   ./sources/frontend/ofdm-handler.h 
 	   ./sources/frontend/coherent-demodulator.h
 	   ./sources/frontend/timesyncer.h 
@@ -342,6 +345,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/devices/filereaders/new-reader/riff-reader.h 
 	   ./sources/devices/filereaders/rawfiles-new/rawfiles.h 
 	   ./sources/devices/filereaders/rawfiles-new/raw-reader.h 
+	   ./sources/devices/filereaders/eti-reader/eti-files.h 
+	   ./sources/devices/filereaders/eti-reader/eti-reader.h 
 	   ./sources/devices/filereaders/xml-filereader/element-reader.h 
 	   ./sources/devices/filereaders/xml-filereader/xml-filereader.h 
 	   ./sources/devices/filereaders/xml-filereader/xml-reader.h 
@@ -378,6 +383,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/scan-handler.cpp 
 	   ./sources/main/mutetimeSelector.cpp 
 	   ./sources/eti-handler/eti-generator.cpp 
+	   ./sources/frontend/frontend-handler.cpp 
+	   ./sources/frontend/eti-processor.cpp 
 	   ./sources/frontend/ofdm-handler.cpp 
 	   ./sources/frontend/coherent-demodulator.cpp 
 	   ./sources/frontend/timesyncer.cpp 
@@ -489,6 +496,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
            ./sources/devices/filereaders/new-reader/newfiles.cpp 
            ./sources/devices/filereaders/new-reader/new-reader.cpp 
            ./sources/devices/filereaders/new-reader/riff-reader.cpp 
+           ./sources/devices/filereaders/eti-reader/eti-files.cpp 
+           ./sources/devices/filereaders/eti-reader/eti-reader.cpp 
 	   ./sources/devices/filereaders/xml-filereader/xml-filereader.cpp 
 	   ./sources/devices/filereaders/xml-filereader/xml-reader.cpp 
 	   ./sources/devices/filereaders/xml-filereader/xml-descriptor.cpp 
@@ -521,6 +530,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/update/updatechecker.h
 	     ./sources/main/process-monitor.h
 	     ./sources/main/scan-handler.h 
+	     ./sources/frontend/frontend-handler.h
+	     ./sources/frontend/eti-processor.h
 	     ./sources/frontend/ofdm-handler.h
 	     ./sources/frontend/sample-reader.h
 	     ./sources/frontend/ofdm-decoder.h
@@ -588,6 +599,8 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	    ./sources/devices/filereaders/new-reader/riff-reader.h 
 	    ./sources/devices/filereaders/rawfiles-new/rawfiles.h 
 	    ./sources/devices/filereaders/rawfiles-new/raw-reader.h 
+	    ./sources/devices/filereaders/eti-reader/eti-files.h 
+	    ./sources/devices/filereaders/eti-reader/eti-reader.h 
 	    ./sources/devices/filereaders/xml-filereader/element-reader.h 
 	    ./sources/devices/filereaders/xml-filereader/xml-filereader.h 
 	    ./sources/devices/filereaders/xml-filereader/xml-reader.h 

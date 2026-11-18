@@ -46,6 +46,7 @@
 #define	SWITCH_STAY_SETTING	"switchStay"
 #define	SERVICE_ORDER_SETTING	"servicOrder"
 
+#define	ETI_SETTINGS		"eti-settings"
 #define	IQ_BALANCE		"iq-balance"
 //#define	LOG_MODE		"logMode"
 //#define	EPG2XML_SETTING		"epg2xml"

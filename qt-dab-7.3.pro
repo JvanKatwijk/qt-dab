@@ -19,7 +19,7 @@ QMAKE_CXXFLAGS	+=  -O3 -ffast-math -g
 QMAKE_LFLAGS	+=  -O3 -ffast-math -g
 }
 
-DEFINES         += VERSION=\\\"7.3.2.0\\\"
+DEFINES         += VERSION=\\\"7.4.0.0\\\"
 unix {
 #QMAKE_CXXFLAGS += -pedantic -Wextra -Wcast-align  -Winit-self -Wlogical-op -Wmissing-declarations  -Woverloaded-virtual -Wredundant-decls   -Wstrict-null-sentinel  -Wundef -Werror -Wno-unused
 QMAKE_CXXFLAGS	+= -Wvla
@@ -75,6 +75,7 @@ DEPENDPATH += . \
 	      ./sources/devices/filereaders/new-reader \
 	      ./sources/devices/filereaders/rawfiles-new \
 	      ./sources/devices/filereaders/xml-filereader \
+	      ./sources/devices/filereaders/eti-reader \
 	      ./sources/update
 	
 
@@ -107,6 +108,7 @@ INCLUDEPATH += . \
 	      ./sources/devices/filereaders/new-reader \
 	      ./sources/devices/filereaders/rawfiles-new \
 	      ./sources/devices/filereaders/xml-filereader \
+	      ./sources/devices/filereaders/eti-reader \
 	      ./sources/update
 	
 
@@ -139,6 +141,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/scan-handler.h \
 	   ./sources/main/mutetimeSelector.h \
 	   ./sources/eti-handler/eti-generator.h \
+	   ./sources/frontend/frontend-handler.h \
+	   ./sources/frontend/eti-processor.h \
 	   ./sources/frontend/ofdm-handler.h \
 	   ./sources/frontend/coherent-demodulator.h \
 	   ./sources/frontend/timesyncer.h \
@@ -264,6 +268,8 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/devices/filereaders/new-reader/riff-reader.h \
 	   ./sources/devices/filereaders/rawfiles-new/rawfiles.h \
 	   ./sources/devices/filereaders/rawfiles-new/raw-reader.h \
+	   ./sources/devices/filereaders/eti-reader/eti-files.h \
+	   ./sources/devices/filereaders/eti-reader/eti-reader.h \
 	   ./sources/devices/filereaders/xml-filereader/element-reader.h \
 	   ./sources/devices/filereaders/xml-filereader/xml-filereader.h \
 	   ./sources/devices/filereaders/xml-filereader/xml-reader.h \
@@ -306,6 +312,8 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/mutetimeSelector.cpp \
 	   ./sources/eti-handler/eti-generator.cpp \
 	   ./sources/main/scan-handler.cpp \
+	   ./sources/frontend/frontend-handler.cpp \
+	   ./sources/frontend/eti-processor.cpp \
 	   ./sources/frontend/ofdm-handler.cpp \
 	   ./sources/frontend/coherent-demodulator.cpp \
 	   ./sources/frontend/timesyncer.cpp \
@@ -414,6 +422,8 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/devices/xml-filewriter.cpp \
 	   ./sources/devices/filereaders/rawfiles-new/rawfiles.cpp \
 	   ./sources/devices/filereaders/rawfiles-new/raw-reader.cpp \
+	   ./sources/devices/filereaders/eti-reader/eti-files.cpp \
+	   ./sources/devices/filereaders/eti-reader/eti-reader.cpp \
            ./sources/devices/filereaders/new-reader/newfiles.cpp \
            ./sources/devices/filereaders/new-reader/new-reader.cpp \
            ./sources/devices/filereaders/new-reader/riff-reader.cpp \
@@ -454,10 +464,10 @@ INCLUDEPATH	+= /usr/local/include
 
 INCLUDEPATH	+= /usr/local/include
 equals (QT_MAJOR_VERSION, 5) {
-   TARGET               = qt-dab-qt5-7.3.2.0
+   TARGET               = qt-dab-qt5-7.4.0.0
 }
 else {
-   TARGET               = qt-dab-7.3.2.0
+   TARGET               = qt-dab-7.4.0.0
 }
 
 #mac {

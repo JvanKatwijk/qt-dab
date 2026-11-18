@@ -77,8 +77,6 @@ public:
 	void		getCIFcount		(int16_t &, int16_t &);
 	uint32_t	julianDate		();
 	int		freeSpace		();
-
-protected:
 	void		processFIB		(uint8_t *, uint16_t);
 private:
 	RadioInterface	*myRadioInterface;

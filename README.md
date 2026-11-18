@@ -1,4 +1,4 @@
-# Qt-DAB-7.3.2.0
+# Qt-DAB-7.4.0.0
 
 -------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ Sources can be compiled for e.g. Raspberry and Mac.
 
 Table of Contents
 =================================================================
-* [What is new in Qt-DAB-7.3.2.0](#What-is-new-in-Qt-DAB-7.3.2.0)
+* [What is new in Qt-DAB-7.4.0.0](#What-is-new-in-Qt-DAB-7.4.0.0)
 * [Windows and scopes](#windows-and-scopes)
 * [Managing service lists](#new-managing-service-lists)
 * [Devices and device support](#devices-and-device-support)
@@ -32,8 +32,15 @@ Table of Contents
 * [Building on MaxOs NEW](#Building-on-MacOs-NEW)
 * [Copyright and acknowledgements](#copyright-and-acknowledgements)
 
-What is new in Qt-DAB-7.3.2.0
+What is new in Qt-DAB-7.4.0.0
 ======================================================================
+
+In Qt-DAB-7.4.0.0 a major change was made wrt to eti handling. While generating eti files was increaded for quite some time, reading eti files was delegated to the eti backend in the eti-stuff repository or by using other programs.
+In Qt-DAB-7.4.0.0 reading and processing eti files is implemented,
+The file selector (in the device list) now contains and entry for "eti" files.
+Since integration of the eti backend code as "etiProcessor" resulted in
+significant modifications to the code, the version number was changed.
+
 In Qt-DAB-7.3.2.0 a minor change to the GUI was introduced. Minor, but enough to cause the release numbering change in the third field. The changes themselves:
  * a new type of **demodulator** was applied that turns out to be (slightly) more sensitive than the others. Selecting the **decoder a** causes that demodulator to be active. Its drawback is that it it is computationally more intensive.
  * an addition was made to the **correlators** (responsible for the time synchronization), leading to changing a simple checkbox to a combobox on the configuration and control window.

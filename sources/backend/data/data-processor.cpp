@@ -144,7 +144,6 @@ void	dataProcessor::handlePackets (const uint8_t *data, int16_t length) {
 void	dataProcessor::handlePacket (const uint8_t *vec) {
 	if (traceFlag)
 	   teller ++;
-
 	uint8_t Length	= (getBits (vec, 0, 2) + 1) * 24;
 	if (!check_CRC_bits (vec, Length * 8)) {
 	   if (traceFlag) {
@@ -160,6 +159,7 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 //	   assembling = false;
 	   return;
 	}
+	
 	
 	if (traceFlag && (teller >= 2000)) {
 	   fprintf (stderr, "in %d packets, we had %d crc errors\n",
@@ -186,8 +186,8 @@ void	dataProcessor::handlePacket (const uint8_t *vec) {
 	   return;
 
 	if (cntIdx != (last_cntIdx + 1) % 4) {
-//	   fprintf (stderr, "packet  %d cntIdx %d expected %d address %d\n",
-//	                                teller, cntIdx, last_cntIdx, paddr);
+	   fprintf (stderr, "packet  %d cntIdx %d expected %d address %d\n",
+	                                teller, cntIdx, last_cntIdx, paddr);
 //	packet is OK, so try to process it
 //	which obviously  only makes sense if flflg == 2,
 	   assembling = false;

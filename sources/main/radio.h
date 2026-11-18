@@ -41,7 +41,6 @@
 #include	"ringbuffer.h"
 #include	"process-params.h"
 #include	"converter-48000.h"
-//#include	"scanlist-handler.h"
 #include	"dl-cache.h"
 #include	"content-table.h"
 #include	"dxDisplay.h"
@@ -49,7 +48,6 @@
 #include	<memory>
 #include	<mutex>
 #include	"udp-broadcaster.h"
-//#include	"tcp-server.h"
 #include	"scan-handler.h"
 #include	"epg-compiler.h"
 #include	"xml-extractor.h"
@@ -73,7 +71,8 @@
 #include	"logger.h"
 #include	"errorlog.h"
 
-#include	"ofdm-handler.h"
+#include	"frontend-handler.h"
+//#include	"ofdm-handler.h"
 
 #include	<QScopedPointer>
 #include	"journaline-datahandler.h"
@@ -296,7 +295,7 @@ private:
 	serviceViewer			*newServices;
 	configHandler			*theConfigHandler;
 	techWindow			*theTechWindow;
-	ofdmHandler			*theOfdmHandler;
+	frontendHandler			*theFrontendHandler;
 	deviceHandler			*theDeviceHandler;
 	journaline_dataHandler		*journalineHandler;
 	httpHandler			*mapViewer;
