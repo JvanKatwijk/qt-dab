@@ -76,8 +76,8 @@ int	teller = 0;
 	                                     3 *imag (V [i]) / 32767.0);
 	   std::vector<std::complex<float>> V = upFilter_16_48. process (X);
 	   for (int i = 0; i < V. size (); i ++) {
-	      out [2 * i    ] = real (V [i]);
-	      out [2 * i + 1] = imag (V [i]);
+	      out [teller ++] = real (V [i]);
+	      out [teller ++] = imag (V [i]);
 	   }
 	}
 	dump (out. data (), teller / 2);
@@ -98,8 +98,8 @@ int teller	= 0;
 	   std::vector<std::complex<float>> V = upFilter_24_48. process (X);
 
 	   for (int i = 0; i < V. size (); i ++) {
-	      out [2 * i    ] = real (V [i]);
-	      out [2 * i + 1] = imag (V [i]);
+	      out [teller ++] = real (V [i]);
+	      out [teller ++] = imag (V [i]);
 	   }
 	}
 	dump (out. data (), teller / 2);
