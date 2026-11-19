@@ -1237,8 +1237,8 @@ const char *type;
 	   QString path		= slidePath (true, SId, pictureName);
 	   if (std::filesystem::exists (path. toLatin1 (). data ())) {
 	      theLogger. log ("file exists ", path);
-	      fprintf (stderr, "file %s exists already\n", 
-	                            path. toLatin1 (). data ());
+//	      fprintf (stderr, "file %s exists already\n", 
+//	                            path. toLatin1 (). data ());
 	   }
 	   else {
 	      FILE *x = fopen (path. toUtf8 (). data (), "w+b");
@@ -3821,6 +3821,9 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 /////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_etiButton	() {
+static
+dumpDisplay * etiDisplay_p = nullptr;
+
         if (newServices -> getMode () == FAVORITEVIEW)
 	   return;
 
@@ -3830,13 +3833,18 @@ void	RadioInterface::handle_etiButton	() {
 	if (!channel. etiActive) {
 	   stopScanning ();
 	   start_etiHandler ();
+	   if (etiDisplay_p == nullptr)
+	      etiDisplay_p	= new dumpDisplay ("writing eti file", "");
 	   channel. etiActive	= true;
 	   return;
 	}
 //	eti stops, set the button color back
 	stop_etiHandler ();		// just in case
-
 	channel. etiActive	= false;
+	if (etiDisplay_p != nullptr) {
+	   delete etiDisplay_p;
+	   etiDisplay_p = nullptr;
+	}
 }
 
 void	RadioInterface::stop_etiHandler () {
@@ -3874,10 +3882,9 @@ void	RadioInterface::start_etiHandler () {
 
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QString fname	= theDateTime. toString () + ".eti";
-//	QString fname = QDate::currentDate (). toString () + ".eti";
 	fname. replace (QRegularExpression (" "), "-");
 	etiFile +=  fname;
-	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
+//	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
 	if (etiFile. isEmpty ())
 	   return;
 

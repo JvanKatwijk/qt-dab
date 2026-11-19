@@ -26,9 +26,10 @@
 /*
  */
 	converter_48000::converter_48000 (RadioInterface *mr):
-	                                   upFilter_16_48 (3, 9, 16000),
-	                                   upFilter_24_48 (2, 9, 24000),
-	                                   upFilter_32_96 (3, 9, 32000) {
+	                                      upFilter_16_48 (3, 9, 16000),
+                                              upFilter_24_48 (2, 9, 24000),
+                                              upFilter_32_96 (3, 9, 32000) {
+
 	(void)mr;
 	buffer_32_96. resize (0);
 	                              
@@ -65,20 +66,20 @@ void	converter_48000::stop_audioDump          () {
 
 //	scale up from 16 -> 48
 //	amount gives number of pairs
-int	converter_48000::convert_16000  (complex16 *V, int amount,
+int	converter_48000::convert_16000  (complex16 *inV, int amount,
 	                                 std::vector<float> &out) {
 int	teller = 0;
 
 	out. resize (2 * 3 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	                std::complex<float> (3 * real (V [i]) / 32767.0,
-	                                     3 *imag (V [i]) / 32767.0);
+	                std::complex<float> (3 * real (inV [i]) / 32767.0,
+	                                     3 * imag (inV [i]) / 32767.0);
 	   std::vector<std::complex<float>> V = upFilter_16_48. process (X);
 	   for (int i = 0; i < V. size (); i ++) {
-	      out [teller ++] = real (V [i]);
-	      out [teller ++] = imag (V [i]);
-	   }
+	      out [2 * i    ] = real (V [i]);
+	      out [2 * i + 1] = imag (V [i]);
+           }
 	}
 	dump (out. data (), teller / 2);
 	return teller;
@@ -86,20 +87,20 @@ int	teller = 0;
 
 //	scale up from 24000 -> 48000
 //	amount gives number of pairs
-int	converter_48000::convert_24000	(complex16 *V,
+int	converter_48000::convert_24000	(complex16 *inV,
 	                                 int amount,
 	                                 std::vector<float> &out) {
 int teller	= 0;
 	out. resize (2 * 2 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	              std::complex<float> (2 * real (V [i]) / 32767.0,
-	                                   2 * imag (V [i]) / 32767.0);
+	              std::complex<float> (2 * real (inV [i]) / 32767.0,
+	                                   2 * imag (inV [i]) / 32767.0);
 	   std::vector<std::complex<float>> V = upFilter_24_48. process (X);
 
 	   for (int i = 0; i < V. size (); i ++) {
-	      out [teller ++] = real (V [i]);
-	      out [teller ++] = imag (V [i]);
+	      out [2 * i    ] = real (V [i]);
+	      out [2 * i + 1] = imag (V [i]);
 	   }
 	}
 	dump (out. data (), teller / 2);

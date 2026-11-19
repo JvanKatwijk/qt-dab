@@ -365,6 +365,7 @@ int	index	= -1;
 //	if Index < 0, we have to create an additional deconvolver
 //	and descrambler for the given parameters
 	   if (index < 0) {
+	      int16_t bitRate, protLevel; bool uepFlag;
 	      index = key;
 	      protection *p;
 	      if (t -> uepFlag)
@@ -376,6 +377,7 @@ int	index	= -1;
 	                                      t -> protLevel,
 	                                      cpuSupport);
 	      protTable. push_back (p);
+
 	      memset (shiftRegister, 1, 9);
 	      descrambler. push_back (new uint8_t [24 * t -> bitRate]);
 
