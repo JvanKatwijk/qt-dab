@@ -35,7 +35,7 @@
                                         outSize (24 * bitRate),
 	                                indexTable   (outSize * 4 + 24),
                                         viterbiBlock (outSize * 4 + 24){
-	(void)protLevel;
+	this	-> protLevel	= protLevel;
 	this	-> bitRate	= bitRate;
 }
 
