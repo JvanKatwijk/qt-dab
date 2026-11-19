@@ -59,9 +59,9 @@ private:
 	                                         int, std::vector<float> &);
 	riffWriter	theWriter;
 	std::vector<std::complex<float>>	buffer_32_96;
-	upConverter     upFilter_16_48;
-        upConverter     upFilter_24_48;
-        upConverter     upFilter_32_96;
+	LowPassFIR	lowpass_16_48;
+	LowPassFIR	lowpass_24_48;
+	upConverter	upFilter_32_96;
 	std::mutex	locker;
 	void		dump			(const float *, int);
 	void		dump			(const Complex *, int);

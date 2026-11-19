@@ -26,10 +26,9 @@
 /*
  */
 	converter_48000::converter_48000 (RadioInterface *mr):
-	                                      upFilter_16_48 (3, 9, 16000),
-                                              upFilter_24_48 (2, 9, 24000),
-                                              upFilter_32_96 (3, 9, 32000) {
-
+	                                   lowpass_16_48 (5,  8, 48000),
+	                                   lowpass_24_48 (5, 12, 48000),
+	                                   upFilter_32_96 (3, 9, 32000) {
 	(void)mr;
 	buffer_32_96. resize (0);
 	                              
@@ -73,13 +72,17 @@ int	teller = 0;
 	out. resize (2 * 3 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	                std::complex<float> (3 * real (inV [i]) / 32767.0,
-	                                     3 * imag (inV [i]) / 32767.0);
-	   std::vector<std::complex<float>> V = upFilter_16_48. process (X);
-	   for (int i = 0; i < V. size (); i ++) {
-	      out [2 * i    ] = real (V [i]);
-	      out [2 * i + 1] = imag (V [i]);
-           }
+	                std::complex<float> (3 * real (V [i]) / 32767.0,
+	                                     3 *imag (V [i]) / 32767.0);
+	   X = lowpass_16_48. Pass (X);
+	   out [teller ++] = real (X);
+	   out [teller ++] = imag (X);
+	   X = lowpass_16_48. Pass (std::complex<float> (0, 0));
+	   out [teller ++] = real (X);
+	   out [teller ++] = imag (X);
+	   X = lowpass_16_48. Pass (std::complex<float> (0, 0));
+	   out [teller ++] = real (X);
+	   out [teller ++] = imag (X);
 	}
 	dump (out. data (), teller / 2);
 	return teller;
@@ -94,14 +97,15 @@ int teller	= 0;
 	out. resize (2 * 2 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	              std::complex<float> (2 * real (inV [i]) / 32767.0,
-	                                   2 * imag (inV [i]) / 32767.0);
-	   std::vector<std::complex<float>> V = upFilter_24_48. process (X);
+	              std::complex<float> (2 * real (V [i]) / 32767.0,
+	                                   2 * imag (V [i]) / 32767.0);
 
-	   for (int i = 0; i < V. size (); i ++) {
-	      out [2 * i    ] = real (V [i]);
-	      out [2 * i + 1] = imag (V [i]);
-	   }
+	   X = lowpass_24_48. Pass (X);
+	   out [teller ++] = real (X);
+	   out [teller ++] = imag (X);
+	   X = lowpass_24_48. Pass (std::complex<float> (0, 0));
+	   out [teller ++] = real (X);
+	   out [teller ++] = imag (X);
 	}
 	dump (out. data (), teller / 2);
 	return teller;
