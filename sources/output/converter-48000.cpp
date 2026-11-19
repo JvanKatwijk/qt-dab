@@ -72,8 +72,8 @@ int	teller = 0;
 	out. resize (2 * 3 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	                std::complex<float> (3 * real (V [i]) / 32767.0,
-	                                     3 *imag (V [i]) / 32767.0);
+	                std::complex<float> (3 * real (inV [i]) / 32767.0,
+	                                     3 * imag (inV [i]) / 32767.0);
 	   X = lowpass_16_48. Pass (X);
 	   out [teller ++] = real (X);
 	   out [teller ++] = imag (X);
@@ -97,8 +97,8 @@ int teller	= 0;
 	out. resize (2 * 2 * amount);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> X =
-	              std::complex<float> (2 * real (V [i]) / 32767.0,
-	                                   2 * imag (V [i]) / 32767.0);
+	              std::complex<float> (2 * real (inV [i]) / 32767.0,
+	                                   2 * imag (inV [i]) / 32767.0);
 
 	   X = lowpass_24_48. Pass (X);
 	   out [teller ++] = real (X);

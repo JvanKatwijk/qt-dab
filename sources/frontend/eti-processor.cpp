@@ -31,10 +31,16 @@
 //	The code is taken from the eti-backend and integrated here.
 //	eti frames are described in ETS 300 799 (Figure 5)
 //
-//	The approach taken here is to cmpletely decouple the processing
+//	The approach taken here is to completely decouple the processing
 //	of eti input from the regular processing, 
-//	In a previous version eti handling was incorpoated in the
-//	ofdm handler, which lead to unreadable code
+//
+//	Note that the ofdmProcessor calls on the FIC handler to prepare
+//	processing in the fibDecoder, while the etiProcessor directly
+//	calls on the fibDecoder.
+//	It may be worthwhile to have the ofdmProcessor include the
+//	FIC processing, such that the ofdmProcessor calls the fibDecoder
+//	functions directly and a while bunch of function definitions
+//	can be shifted to the frontend-handler
 
 #include	<QSettings>
 #include	"frontend-handler.h"
@@ -72,6 +78,15 @@
 	fibCounter      = 1;
         successRatio    = 0;
 	running. store (false);
+//
+//	Note that the ofdmProcessor calls on the FIC handler to prepare
+//	processing in the fibDecoder, while the etiProcessor directly
+//	calls on the fibDecoder.
+//	It may be worthwhile to have the ofdmProcessor include the
+//	FIC processing, such that the ofdmProcessor calls the fibDecoder
+//	functions directly and a while bunch of function definitions
+//	can be shifted to the frontend-handler
+
 	connect (this, &etiProcessor::showFICQuality,
                  mr, &RadioInterface::show_ficQuality);
 }
@@ -139,15 +154,12 @@ uint32_t etiProcessor::julianDate	() {
 	return 	my_fibDecoder. julianDate ();
 }
 
+#define	FRAME_SIZE	6144
 void	etiProcessor::run		() {
-uint8_t buffer [6144];
-int16_t n_frame;
+uint8_t buffer [FRAME_SIZE];
 fibElement fe;
-int16_t subChannelId;
 int16_t data_offset;
 int16_t data_length     = -1;
-int     n;
-int16_t NST, FICF;
 int64_t	startTime;
 int	counter		= 0;
 	running. store (true);
@@ -156,17 +168,12 @@ int	counter		= 0;
 //	for 24 msec audio in each frame
 	while (running. load ()) {
 	   while (running. load () &&
-	           ((etiFiles *) theDevice) -> Samples () < 6144)
+	           ((etiFiles *) theDevice) -> Samples () < FRAME_SIZE)
 	      usleep (100);
 	   if (!running. load ())
 	      return;
 
-	   n = ((etiFiles *)theDevice) -> getSamples (buffer, 6144);
-//	   if (n == 0) {
-//	      fprintf (stderr, "end of file, (counter = %d) we quit\n", counter);
-//	         return;
-//	      }
-//
+	   int n  = ((etiFiles *)theDevice) -> getSamples (buffer, FRAME_SIZE);
 	   if (n < 0) {
 	      perror ("Read error, exiting");
 	      return;
@@ -178,20 +185,21 @@ int	counter		= 0;
 	   if (buffer [0] == 0)		// error frame
 	      continue;
 
-	   FICF			= (buffer [5] & 0x80) >> 7;
-	   NST			=  buffer [5] & 0x7F;
+	   int16_t FICF		= (buffer [5] & 0x80) >> 7;
+	   int16_t NST		=  buffer [5] & 0x7F;
 	   int16_t fibBase	= 12 + 4 * NST;
 	   if (FICF != 0) {
 	      memcpy (fe. fibdata, &buffer [fibBase], 96);
 	      fe. fibno = buffer [4] & 0x03;
 	      process_FIC (fe. fibdata, fe. fibno);
 	   }
+	   else
+	      continue;	// do process erroneous frames
 //
 //	In the loop we look for running services getting their data
 //	Characteristic parameters of running services are on
 //	a "runStack"
 //	While checking we do not want to be interfered
-	   locker. lock ();
 	   for (auto &s : runStack) {
 	      int data_offset = 0;
 	       for (int i = 0; i < NST; i++) {
@@ -207,6 +215,7 @@ int	counter		= 0;
 //	               "Extracting channel: SCID=%d, SAD=%d, TPL=%d, STL=%d\n",
 //	                                         SCID,SAD,TPL,STL);
 	            int index = 12 + 4 * NST + FICF * 96 + data_offset;
+	            locker. lock ();
 	            if (s. p_a != nullptr) {
 	               std::vector<uint8_t> dataVector (24 * s. bitRate);
 	               for (int i = 0; i < 24 * s. bitRate / 8; i ++) {
@@ -217,11 +226,11 @@ int	counter		= 0;
 	               }
 	               s. p_a -> addtoFrame (dataVector);
 	            }
+	            locker. unlock ();
                  } 
 	         data_offset += STL * 8;
               }
 	   }
-	   locker. unlock ();
 	}
 }
 

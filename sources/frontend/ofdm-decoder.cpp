@@ -299,7 +299,7 @@ DABFLOAT scaler		= 10;
 	snr		= 0.9 * snr + 0.1 * local_snr;
 //#endif
 
-	if ((this -> decoder == DECODER_1) && coherent. ready ()) {
+	if ((this -> decoder == DECODER_3) && coherent. ready ()) {
 	   Complex guard (0, 0);
 	   for (int n = 0; n < T_g; n ++)
 	      guard += buffer [T_u + n] * conj (buffer [n]);
@@ -335,7 +335,7 @@ DABFLOAT scaler		= 10;
 //	actual decoding
 	   switch (this -> decoder) {
 	      default:
-	         if ((this -> decoder == DECODER_1) &&
+	         if ((this -> decoder == DECODER_3) &&
 	                                       coherent. ready ()) {
 	            static const float llrScale	= 16.0f;
                     leftBit	= -coherent. llrReal (index) * llrScale;
@@ -343,7 +343,7 @@ DABFLOAT scaler		= 10;
 	            break;
 	         }
 //	fall through
-	      case DECODER_2:
+	      case DECODER_4:
 	      {  Complex R1	= fftBin * (DABFLOAT)(jan_abs (prevS));
 	         scaler		=  -140.0 / meanValue;
 	     
@@ -353,8 +353,8 @@ DABFLOAT scaler		= 10;
 	       }
 	       break;
 
-	      case DECODER_3: //	The denomainator is (formula 9)
-	      case DECODER_4: //	The denomainator is (formula 9)
+	      case DECODER_1: //	The denomainator is (formula 9)
+	      case DECODER_2: //	The denomainator is (formula 9)
 	      {
 	         DABFLOAT fftBinPower	= std::norm (fftBin);
 	         meanPowerVector [i] =

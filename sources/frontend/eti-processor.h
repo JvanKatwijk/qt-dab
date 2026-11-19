@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2024 .. 2026
+ *    Copyright (C) 2016 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,6 +27,8 @@
 //
 //	It also implements the interface to the backends (i.e.
 //	the mscBackend class in the regular processing line
+//	It is essentially a copy of the eti processor of the
+//	etiBackend in the eti-stuff  repository
 //
 #pragma once
 /*

@@ -24,11 +24,11 @@
 /*
  *	Based on user requests a secondary fromtend path for handling 
  *	eti files for inputr is added.
- *	the original ofdm handler is - together with an (almost) copy
- *	of the front end handling of the eti backend made into a
- *	derived version of a "frontend-handler"
- *	Note that the eti frontend hamdling here is simpler and
- *	not all GUI buttons are supported
+ *	In the original set up (Qt-DAB-6.3A) the processing of eti
+ *	input was combined with the regular input.
+ *	In the approach here, there is a complete separation between
+ *	the eti processing and the raw sample processing.
+ *	Both processors share an interface, given here
  */
 
 #include	"frontend-handler.h"
@@ -37,6 +37,8 @@
 		frontendHandler::~frontendHandler	() {}
 	void frontendHandler::start			() {}
 	void frontendHandler::stop			() {}
+//
+//	Many functions only have effect with rw input
 	void frontendHandler::startDumping		(const QString & a,
 	                                                 int b, int c, 
 	                                                 const QString d) {
@@ -51,16 +53,30 @@
 	void frontendHandler::stopEtiGenerator		() {}
 	void frontendHandler::resetEtiGenerator		() {}
 	void frontendHandler::setScanMode		(bool b) { (void)b;}
-//	void frontendHandler::getFrameQuality		(int *, int*, int *);
+	void frontendHandler::viewCarriers		(uint8_t x) {(void)x;}
+	void frontendHandler::setTIIThreshold		(int16_t x) {(void)x;}
+	void frontendHandler::setTIICollisions		(int x) {(void)x;}
+	int frontendHandler::freeSpace			() {return -1;}
+	void frontendHandler::startFicDump		(const QString &s) {}
+	bool frontendHandler::ficDumping_on		() {return false;}
+	void frontendHandler::stopFicDump		() {}
+	void frontendHandler::setFreqCorrelator		(uint8_t m) {
+	   (void)m;
+	}
+	void frontendHandler::handleIQSelector		()	{}
+	void frontendHandler::handleDecoderSelector	(int d)	{ (void)d;}
+	void frontendHandler::setCorrelationOrder	(const QString &s) {}
+	void frontendHandler::setDXMode			(bool b) { (void)b;}
+	void frontendHandler::set_dcRemoval		(bool b) { (void)b;}
+	void frontendHandler::set_iqBalance		(bool b) { (void)b;}
+//
+//	other functions  make sense for both streams
 	void frontendHandler::set_dataTracer		(bool b) {(void)b;}
 	bool frontendHandler::serviceRuns		(uint32_t SId,
 	                                                 uint8_t SCIds) {
 	   (void)SId, (void)SCIds;
 	   return false;
 	}
-	void frontendHandler::viewCarriers		(uint8_t x) {(void)x;}
-	void frontendHandler::setTIIThreshold		(int16_t x) {(void)x;}
-	void frontendHandler::setTIICollisions		(int x) {(void)x;}
 	bool frontendHandler::isPrimaryService		(uint32_t SId,
 	                                                 uint8_t x) {
 	   (void)SId; (void)x;
@@ -117,18 +133,11 @@
 	   (void)SId;
 	   (void)SCIds;
 	}
+
 	uint32_t frontendHandler::julianDate		() {return 0;}
 	QList<contentType> frontendHandler::contentPrint	() {
 	   QList<contentType> res;
 	   return res;
-	}
-	int frontendHandler::freeSpace			() {return -1;}
-	void frontendHandler::startFicDump		(const QString &s) {}
-	bool frontendHandler::ficDumping_on		() {return false;}
-	void frontendHandler::stopFicDump		() {}
-//	void frontendHandler::setSpeedUp		(bool);
-	void frontendHandler::setFreqCorrelator		(uint8_t m) {
-	   (void)m;
 	}
 	void frontendHandler::stopService		(uint32_t SId,
 	                                                 uint8_t SCIds) {
@@ -145,12 +154,6 @@
 	   (void)b; (void)flag;
 	}
 
-	void frontendHandler::handleIQSelector		()	{}
-	void frontendHandler::handleDecoderSelector	(int d)	{ (void)d;}
-	void frontendHandler::setCorrelationOrder	(const QString &s) {}
-	void frontendHandler::setDXMode			(bool b) { (void)b;}
-	void frontendHandler::set_dcRemoval		(bool b) { (void)b;}
-	void frontendHandler::set_iqBalance		(bool b) { (void)b;}
 	std::vector<basicService>
 	               frontendHandler::getServices	() {
 	   std::vector<basicService> res;
