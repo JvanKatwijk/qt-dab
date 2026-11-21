@@ -166,6 +166,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ./sources/support/tables
 	           ./sources/support/gui-elements
 	           ./sources/frontend
+	           ./sources/frontend/raw-input-handling
 	           ./sources/frontend/fic-handling
 	           ./sources/backend
 	           ./sources/backend/audio
@@ -217,18 +218,18 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/mutetimeSelector.h 
 	   ./sources/eti-handler/eti-generator.h 
 	   ./sources/frontend/frontend-handler.h
-	   ./sources/frontend/eti-processor.h
-	   ./sources/frontend/ofdm-handler.h 
-	   ./sources/frontend/coherent-demodulator.h
-	   ./sources/frontend/timesyncer.h 
-	   ./sources/frontend/sample-reader.h 
-	   ./sources/frontend/ofdm-decoder.h 
-	   ./sources/frontend/correlator.h 
-	   ./sources/frontend/estimator.h 
-	   ./sources/frontend/freqsyncer.h 
-	   ./sources/frontend/phasetable.h 
-	   ./sources/frontend/freq-interleaver.h 
 	   ./sources/frontend/tii-detector-1.h 
+	   ./sources/frontend/eti-processor.h
+	   ./sources/frontend/raw-input-handling/ofdm-processor.h 
+	   ./sources/frontend/raw-input-handling/coherent-demodulator.h
+	   ./sources/frontend/raw-input-handling/timesyncer.h 
+	   ./sources/frontend/raw-input-handling/sample-reader.h 
+	   ./sources/frontend/raw-input-handling/ofdm-decoder.h 
+	   ./sources/frontend/raw-input-handling/correlator.h 
+	   ./sources/frontend/raw-input-handling/estimator.h 
+	   ./sources/frontend/raw-input-handling/freqsyncer.h 
+	   ./sources/frontend/raw-input-handling/phasetable.h 
+	   ./sources/frontend/raw-input-handling/freq-interleaver.h 
 	   ./sources/frontend/fic-handling/fic-handler.h 
 	   ./sources/frontend/fic-handling/fib-dbtypes.h  
 	   ./sources/frontend/fic-handling/fib-config.h  
@@ -384,18 +385,18 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   ./sources/main/mutetimeSelector.cpp 
 	   ./sources/eti-handler/eti-generator.cpp 
 	   ./sources/frontend/frontend-handler.cpp 
-	   ./sources/frontend/eti-processor.cpp 
-	   ./sources/frontend/ofdm-handler.cpp 
-	   ./sources/frontend/coherent-demodulator.cpp 
-	   ./sources/frontend/timesyncer.cpp 
-	   ./sources/frontend/sample-reader.cpp 
-	   ./sources/frontend/ofdm-decoder.cpp 
-	   ./sources/frontend/correlator.cpp 
-	   ./sources/frontend/estimator.cpp 
-	   ./sources/frontend/freqsyncer.cpp 
-	   ./sources/frontend/phasetable.cpp 
-	   ./sources/frontend/freq-interleaver.cpp 
 	   ./sources/frontend/tii-detector-1.cpp 
+	   ./sources/frontend/eti-processor.cpp 
+	   ./sources/frontend/raw-input-handling/ofdm-processor.cpp 
+	   ./sources/frontend/raw-input-handling/coherent-demodulator.cpp 
+	   ./sources/frontend/raw-input-handling/timesyncer.cpp 
+	   ./sources/frontend/raw-input-handling/sample-reader.cpp 
+	   ./sources/frontend/raw-input-handling/ofdm-decoder.cpp 
+	   ./sources/frontend/raw-input-handling/correlator.cpp 
+	   ./sources/frontend/raw-input-handling/estimator.cpp 
+	   ./sources/frontend/raw-input-handling/freqsyncer.cpp 
+	   ./sources/frontend/raw-input-handling/phasetable.cpp 
+	   ./sources/frontend/raw-input-handling/freq-interleaver.cpp 
 	   ./sources/frontend/fic-handling/fic-handler.cpp 
 	   ./sources/frontend/fic-handling/fib-config.cpp  
 	   ./sources/frontend/fic-handling/fib-decoder.cpp  
@@ -531,17 +532,17 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./sources/main/process-monitor.h
 	     ./sources/main/scan-handler.h 
 	     ./sources/frontend/frontend-handler.h
-	     ./sources/frontend/eti-processor.h
-	     ./sources/frontend/ofdm-handler.h
-	     ./sources/frontend/sample-reader.h
-	     ./sources/frontend/ofdm-decoder.h
-	     ./sources/frontend/correlator.h
-	     ./sources/frontend/freqsyncer.h
 	     ./sources/frontend/tii-detector.h
+	     ./sources/frontend/eti-processor.h
+	     ./sources/frontend/raw-input-handling/ofdm-processor.h
+	     ./sources/frontend/raw-input-handling/sample-reader.h
+	     ./sources/frontend/raw-input-handling/ofdm-decoder.h
+	     ./sources/frontend/raw-input-handling/correlator.h
+	     ./sources/frontend/raw-input-handling/freqsyncer.h
+	     ./sources/frontend/raw-input-handling/estimator.h
 	     ./sources/frontend/fic-handling/fic-handler.h
 	     ./sources/frontend/fic-handling/fib-decoder.h
 	     ./sources/frontend/fic-handling/fib-config.h
-	     ./sources/frontend/estimator.h
 	     ./sources/support/gui-elements/presetcombobox.h
 	     ./sources/support/gui-elements/clickable-label.h 
 	     ./sources/support/gui-elements/clickable-chart.h 

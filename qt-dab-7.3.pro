@@ -62,6 +62,7 @@ DEPENDPATH += . \
 	      ./sources/main/snr-viewer \
 	      ./sources/main/viewer \
 	      ./sources/frontend \
+	      ./sources/frontend/raw-input-handling \
 	      ./sources/frontend/fic-handling \
 	      ./sources/output \
 	      ./sources/output/portaudio \
@@ -95,6 +96,7 @@ INCLUDEPATH += . \
 	      ./sources/main/snr-viewer \
 	      ./sources/main/viewer \
 	      ./sources/frontend \
+	      ./sources/frontend/raw-input-handling \
 	      ./sources/frontend/fic-handling \
 	      ./sources/output \
 	      ./sources/output/portaudio \
@@ -142,19 +144,18 @@ HEADERS += ./sources/main/radio.h \
 	   ./sources/main/mutetimeSelector.h \
 	   ./sources/eti-handler/eti-generator.h \
 	   ./sources/frontend/frontend-handler.h \
-	   ./sources/frontend/eti-processor.h \
-	   ./sources/frontend/ofdm-processor.h \
-	   ./sources/frontend/coherent-demodulator.h \
-	   ./sources/frontend/timesyncer.h \
-	   ./sources/frontend/sample-reader.h \
-	   ./sources/frontend/ofdm-decoder.h \
-	   ./sources/frontend/correlator.h \
-	   ./sources/frontend/estimator.h \
-	   ./sources/frontend/estimator-2.h \
-	   ./sources/frontend/freqsyncer.h \
-	   ./sources/frontend/phasetable.h \
-	   ./sources/frontend/freq-interleaver.h \
 	   ./sources/frontend/tii-detector-1.h \
+	   ./sources/frontend/eti-processor.h \
+	   ./sources/frontend/raw-input-handling/ofdm-processor.h \
+	   ./sources/frontend/raw-input-handling/coherent-demodulator.h \
+	   ./sources/frontend/raw-input-handling/timesyncer.h \
+	   ./sources/frontend/raw-input-handling/sample-reader.h \
+	   ./sources/frontend/raw-input-handling/ofdm-decoder.h \
+	   ./sources/frontend/raw-input-handling/correlator.h \
+	   ./sources/frontend/raw-input-handling/estimator.h \
+	   ./sources/frontend/raw-input-handling/freqsyncer.h \
+	   ./sources/frontend/raw-input-handling/phasetable.h \
+	   ./sources/frontend/raw-input-handling/freq-interleaver.h \
 	   ./sources/frontend/fic-handling/fic-handler.h \
 	   ./sources/frontend/fic-handling/fib-dbtypes.h  \
 	   ./sources/frontend/fic-handling/fib-config.h  \
@@ -314,18 +315,17 @@ SOURCES += ./sources/main/main.cpp \
 	   ./sources/main/scan-handler.cpp \
 	   ./sources/frontend/frontend-handler.cpp \
 	   ./sources/frontend/eti-processor.cpp \
-	   ./sources/frontend/ofdm-processor.cpp \
-	   ./sources/frontend/coherent-demodulator.cpp \
-	   ./sources/frontend/timesyncer.cpp \
-	   ./sources/frontend/sample-reader.cpp \
-	   ./sources/frontend/ofdm-decoder.cpp \
-	   ./sources/frontend/correlator.cpp \
-	   ./sources/frontend/estimator.cpp \
-	   ./sources/frontend/estimator-2.cpp \
-	   ./sources/frontend/freqsyncer.cpp \
-	   ./sources/frontend/phasetable.cpp \
-	   ./sources/frontend/freq-interleaver.cpp \
 	   ./sources/frontend/tii-detector-1.cpp \
+	   ./sources/frontend/raw-input-handling/ofdm-processor.cpp \
+	   ./sources/frontend/raw-input-handling/coherent-demodulator.cpp \
+	   ./sources/frontend/raw-input-handling/timesyncer.cpp \
+	   ./sources/frontend/raw-input-handling/sample-reader.cpp \
+	   ./sources/frontend/raw-input-handling/ofdm-decoder.cpp \
+	   ./sources/frontend/raw-input-handling/correlator.cpp \
+	   ./sources/frontend/raw-input-handling/estimator.cpp \
+	   ./sources/frontend/raw-input-handling/freqsyncer.cpp \
+	   ./sources/frontend/raw-input-handling/phasetable.cpp \
+	   ./sources/frontend/raw-input-handling/freq-interleaver.cpp \
 	   ./sources/frontend/fic-handling/fic-handler.cpp \
 	   ./sources/frontend/fic-handling/fib-config.cpp  \
 	   ./sources/frontend/fic-handling/fib-decoder.cpp  \
@@ -534,7 +534,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #only 64 bit
-        TARGET          = qt-dab-7.3.2.0
+        TARGET          = qt-dab-7.4.0.0
 	DEFINES		+= __BITS64__
 	DESTDIR		=  ./linux-bin
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

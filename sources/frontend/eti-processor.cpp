@@ -26,17 +26,16 @@
 //	the FIB/FIG data and passed it on to the fib decoder
 //
 //	It also implements the interface to the backends (i.e.
-//	the mscBackend class in the regular processing line
-//
-//	The code is taken from the eti-backend and integrated here.
-//	eti frames are described in ETS 300 799 (Figure 5)
+//	similar to the mscBackend class in the regular processing line)
 //
 //	The approach taken here is to completely decouple the processing
 //	of eti input from the regular processing, 
 //
-//	Note that the ofdmProcessor calls on the FIC handler to prepare
-//	processing in the fibDecoder, while the etiProcessor directly
-//	calls on the fibDecoder.
+//	The code is taken from the eti-backend and integrated here.
+//	eti frames are described in ETS 300 799 (Figure 5)
+//
+//	Note that the ofdmProcessor calls indirectly, through the FIC handler,
+//	the fib decoder, while the etiProcessor calls fibDecoder directly
 //	It may be worthwhile to have the ofdmProcessor include the
 //	FIC processing, such that the ofdmProcessor calls the fibDecoder
 //	functions directly and a while bunch of function definitions
@@ -51,7 +50,7 @@
 #include	"radio.h"
 #include        <sys/time.h>
 #include        <time.h>
-#include	"device-handler.h"
+#include	"eti-files.h"
 #include	"process-params.h"
 #include	"logger.h"
 
@@ -61,13 +60,18 @@
 #include	"mp4processor.h"
 #include	"data-processor.h"
 
+typedef struct {
+        int fibno;
+        uint8_t fibdata [96];
+} fibElement;
+//
 	etiProcessor::etiProcessor  	(RadioInterface *mr,
-	                                 deviceHandler	*theDevice,
+	                                 etiFiles	*theDevice,
 	                                 processParams	*p,
 	                                 QSettings	*dabSettings,
 	                                 logger		*theLogger,
 	                                 uint8_t	cpuSupport):
-	                                   my_fibDecoder (mr) {
+	                                     my_fibDecoder (mr) {
 	this	-> myRadioInterface	= mr;
 	this	-> theDevice		= theDevice;
 	this	-> p			= p;
@@ -122,6 +126,11 @@ std::vector<uint8_t>
 	return my_fibDecoder. get_secondaryServices (SId);
 }
 
+void	etiProcessor::getFreqs		(uint32_t SId,
+                                                   std::vector<uint32_t> &fl) {
+	my_fibDecoder. getFreqs (SId, fl);
+}
+
 void etiProcessor::getServiceName	(QString & serviceName,
 	                                 QString & shortName,
                                          uint32_t SId, uint8_t SCIds) {
@@ -158,9 +167,9 @@ uint32_t etiProcessor::julianDate	() {
 void	etiProcessor::run		() {
 uint8_t buffer [FRAME_SIZE];
 fibElement fe;
-int16_t data_offset;
+//int16_t data_offset;
 int16_t data_length     = -1;
-int64_t	startTime;
+//int64_t	startTime;
 int	counter		= 0;
 	running. store (true);
 //	OK, ready to read a frame
@@ -168,12 +177,12 @@ int	counter		= 0;
 //	for 24 msec audio in each frame
 	while (running. load ()) {
 	   while (running. load () &&
-	           ((etiFiles *) theDevice) -> Samples () < FRAME_SIZE)
+	           (theDevice -> Samples () < FRAME_SIZE))
 	      usleep (100);
 	   if (!running. load ())
 	      return;
 
-	   int n  = ((etiFiles *)theDevice) -> getSamples (buffer, FRAME_SIZE);
+	   int n  = theDevice -> getSamples (buffer, FRAME_SIZE);
 	   if (n < 0) {
 	      perror ("Read error, exiting");
 	      return;
@@ -270,10 +279,10 @@ uint8_t	buffer [768];
 //	For starting and stopping
 void	etiProcessor::stopService	(uint32_t SId, uint8_t SCIds) {
 	for (int i = 0; i < (int)(runStack. size ()); i ++) {
-           if (((uint32_t)(runStack. at (i). SId) ==  SId) &&
+           if ((runStack. at (i). SId ==  SId) &&
 	                 (runStack. at (i). SCIds == SCIds)) {
-              qInfo () << "halting backend" <<
-                           QString::number (SId, 16);
+//	      qInfo () << "halting backend" <<
+//	                  QString::number (SId, 16);
 	      locker. lock ();
 	      if (runStack. at (i). p_a != nullptr)
 	         delete runStack. at (i). p_a;
@@ -288,15 +297,15 @@ bool	etiProcessor::setAudioChannel	(audiodata & ad,
                                          RingBuffer<std::complex<int16_t>> *b,
                                          FILE *f, int flag) {
 runElement el;
+	for (auto &r : runStack) 
+	   if ((ad. SId == r. SId) && (ad. SCIds == r. SCIds))
+	      return false;	// already running
+
 	el. SId	= ad. SId;
 	el. SCIds	= ad. SCIds;
 	el. subChId	= ad. subchId;
 	el. bitRate	= ad. bitRate;
 	el. p_a		= nullptr;
-
-	for (auto &r : runStack) 
-	   if ((ad. SId == r. SId) && (ad. SCIds == r. SCIds))
-	      return false;	// already running
 
 	if (ad.  ASCTy == DAB_PLUS) {
 	   el. p_a	=  new mp4Processor (myRadioInterface,
@@ -349,6 +358,11 @@ runElement el;
 	locker. unlock ();
 	return true;
 }
+
+std::vector<basicService>
+	etiProcessor::getServices   () {
+        return my_fibDecoder. getServices ();
+}                                                
 
 bool	etiProcessor::serviceRuns	(uint32_t SId, uint8_t SCIds) {
 	for (auto &r : runStack) 

@@ -33,69 +33,133 @@
 
 #include	"frontend-handler.h"
 
-		frontendHandler::frontendHandler	() {}
-		frontendHandler::~frontendHandler	() {}
-	void frontendHandler::start			() {}
-	void frontendHandler::stop			() {}
+		frontendHandler::frontendHandler	() {
+	}
+
+		frontendHandler::~frontendHandler	() {
+	}
+
+	void frontendHandler::start			() {
+	}
+
+	void frontendHandler::stop			() {
+	}
 //
-//	Many functions only have effect with rw input
+//	Many functions only have effect with raw input
 	void frontendHandler::startDumping		(const QString & a,
 	                                                 int b, int c, 
 	                                                 const QString d) {
 	   (void)a; (void)b; (void)c; (void)d;
 	}
-	void frontendHandler::stopDumping		() {}
-	bool frontendHandler::isDumping			() { return false; }
+
+	void frontendHandler::stopDumping		() {
+	}
+
+	bool frontendHandler::isDumping			() {
+	   return false;
+	}
+
 	bool frontendHandler::startEtiGenerator		(const QString &a) {
 	   (void)a;
 	   return false;
 	}
-	void frontendHandler::stopEtiGenerator		() {}
-	void frontendHandler::resetEtiGenerator		() {}
-	void frontendHandler::setScanMode		(bool b) { (void)b;}
-	void frontendHandler::viewCarriers		(uint8_t x) {(void)x;}
-	void frontendHandler::setTIIThreshold		(int16_t x) {(void)x;}
-	void frontendHandler::setTIICollisions		(int x) {(void)x;}
-	int frontendHandler::freeSpace			() {return -1;}
-	void frontendHandler::startFicDump		(const QString &s) {}
-	bool frontendHandler::ficDumping_on		() {return false;}
-	void frontendHandler::stopFicDump		() {}
+
+	void frontendHandler::stopEtiGenerator		() {
+	}
+
+	void frontendHandler::resetEtiGenerator		() {
+	}
+
+	void frontendHandler::setScanMode		(bool b) {
+	   (void)b;
+	}
+
+	void frontendHandler::viewCarriers		(uint8_t x) {
+	   (void)x;
+	}
+
+	void frontendHandler::setTIIThreshold		(int16_t x) {
+	   (void)x;
+	}
+
+	void frontendHandler::setTIICollisions		(int x) {
+	   (void)x;
+	}
+
+	int frontendHandler::freeSpace			() {
+	   return -1;
+	}
+
+	void frontendHandler::startFicDump		(const QString &s) {
+	}
+
+	void frontendHandler::stopFicDump		() {
+	}
+
+	bool frontendHandler::ficDumping_on		() {
+	   return false;
+	}
+
 	void frontendHandler::setFreqCorrelator		(uint8_t m) {
 	   (void)m;
 	}
-	void frontendHandler::handleIQSelector		()	{}
-	void frontendHandler::handleDecoderSelector	(int d)	{ (void)d;}
-	void frontendHandler::setCorrelationOrder	(const QString &s) {}
-	void frontendHandler::setDXMode			(bool b) { (void)b;}
-	void frontendHandler::set_dcRemoval		(bool b) { (void)b;}
-	void frontendHandler::set_iqBalance		(bool b) { (void)b;}
+
+	void frontendHandler::handleIQSelector		()	{
+	}
+
+	void frontendHandler::handleDecoderSelector	(int d)	{
+	   (void)d;
+	}
+
+	void frontendHandler::setCorrelationOrder	(const QString &s) {
+	}
+
+	void frontendHandler::setDXMode			(bool b) {
+	   (void)b;
+	}
+
+	void frontendHandler::set_dcRemoval		(bool b) {
+	   (void)b;
+	}
+
+	void frontendHandler::set_iqBalance		(bool b) {
+	   (void)b;
+	}
 //
 //	other functions  make sense for both streams
-	void frontendHandler::set_dataTracer		(bool b) {(void)b;}
+	void frontendHandler::set_dataTracer		(bool b) {
+	   (void)b;
+	}
+
 	bool frontendHandler::serviceRuns		(uint32_t SId,
 	                                                 uint8_t SCIds) {
 	   (void)SId, (void)SCIds;
 	   return false;
 	}
+
 	bool frontendHandler::isPrimaryService		(uint32_t SId,
 	                                                 uint8_t x) {
 	   (void)SId; (void)x;
 	   return false;
 	}
+
 	bool frontendHandler::isAudioService		(uint32_t x,
 	                                                 uint8_t y) {
 	   (void)x; (void)y;
 	   return false;
 	}
+
 	bool frontendHandler::isPacketService		(uint32_t x,
 	                                                 uint8_t y)  {
 	   (void)x; (void)y;
 	   return false;
 	}
+
 	bool frontendHandler::is_SPI			(uint32_t x) {
 	   (void)x;
 	   return false;
 	}
+
 	std::vector<uint8_t>
                  frontendHandler::get_secondaryServices	(uint32_t SId) {
 	   (void)SId;
@@ -103,35 +167,39 @@
 	   return res;
 	}
 
-	int frontendHandler::FIG07_value		() { return -1;}
+	int frontendHandler::FIG07_value		() {
+	   return -1;
+	}
+
 	void frontendHandler::getFreqs			(uint32_t x,
 	                                                 std::vector<uint32_t> & y) {
 	   (void)x; (void)y;
 	}
+
 	void frontendHandler::getServiceName		(QString & s1,
 	                                                 QString & s2,
 	                                                 uint32_t v1,
 	                                                 uint8_t v2) {
 	   (void)s1; (void)s2; (void)v1; (void)v2;
 	}
+
 	void frontendHandler::mapNameToId		(const QString &s1,
 	                                                 uint32_t &SId,
 	                                                 uint8_t &SCIds) {
 	   (void)s1;
-	   SId		= 0;
-	   SCIds	= 0;
+	   SId		= 0; SCIds	= 0;
 	}
+
         void frontendHandler::audioData			(uint32_t SId,
 	                                                 uint8_t SCIds,
 	                                                 audiodata &ad) {
-	   (void)SId;
-	   (void)SCIds;
+	   (void)SId; (void)SCIds;
 	}
+
         void frontendHandler::packetData		(uint32_t SId,
 	                                                 uint8_t SCIds,
 	                                                 packetdata &pd) {
-	   (void)SId;
-	   (void)SCIds;
+	   (void)SId; (void)SCIds;
 	}
 
 	uint32_t frontendHandler::julianDate		() {return 0;}
@@ -139,19 +207,24 @@
 	   QList<contentType> res;
 	   return res;
 	}
+
 	void frontendHandler::stopService		(uint32_t SId,
 	                                                 uint8_t SCIds) {
 	   (void)SId; (void)SCIds;
 	}
+
 	bool frontendHandler::setAudioChannel		(audiodata & ad,
 	                                         RingBuffer<std::complex<int16_t>> *b,
 	                                         FILE *f, int flag) {
 	   (void)b; (void)f; (void)flag;
+	   return false;
 	}
+
 	bool frontendHandler::setDataChannel		(packetdata &pd,
 	                                                 RingBuffer<uint8_t> *b,
 	                                                int flag) {
 	   (void)b; (void)flag;
+	   return false;
 	}
 
 	std::vector<basicService>

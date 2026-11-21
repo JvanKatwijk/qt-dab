@@ -325,7 +325,7 @@ private:
 
 //
 	bool			autoStart_http		();
-	void			start_etiHandler	();
+	bool			start_etiHandler	();
 	void			stop_etiHandler		();
 	void			startAudioservice	(audiodata &);
 	void			startAudioDumping	();

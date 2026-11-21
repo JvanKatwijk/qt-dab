@@ -37,25 +37,19 @@
 #include	"frontend-handler.h"
 #include	"fib-decoder.h"
 #include	<atomic>
-
 #include	"frame-processor.h"
+
 class		RadioInterface;
-class		deviceHandler;
+class		etiFiles;
 class		processParams;
 class		logger;
 class		dataprocessor;;
-
-typedef struct {
-        int fibno; 
-        uint8_t fibdata [96];
-} fibElement;
-
 
 class etiProcessor: public frontendHandler {
 Q_OBJECT
 public:
 		etiProcessor  	(RadioInterface *,
-	                         deviceHandler	*,
+	                         etiFiles	*,
 	                         processParams	*,
 	                         QSettings	*,
 	                         logger		*,
@@ -78,6 +72,8 @@ public:
                                                          audiodata &ad);
         void	packetData		(uint32_t SId, uint8_t SCIds,
                                                          packetdata &pd);
+	void	getFreqs		(uint32_t SId, 
+	                                       std::vector<uint32_t> &fl);
         uint32_t julianDate		();
 	QList<contentType> 
 	         contentPrint		();
@@ -87,11 +83,13 @@ public:
                                          FILE *f, int flag);
         bool	setDataChannel		(packetdata &pd,
                                          RingBuffer<uint8_t> *b, int flag);
+	std::vector<basicService>
+	    	getServices		();
 
 private:
 	fibDecoder	my_fibDecoder;
 	RadioInterface	*myRadioInterface;
-	deviceHandler	*theDevice;
+	etiFiles	*theDevice;
 	processParams	*p;
 	QSettings	*dabSettings;
 	logger		*theLogger;
@@ -105,6 +103,11 @@ private:
 
 	QMutex          locker;
         bool            audioService;
+//
+//	We maintain a stack of active services (similar to mscBackend
+//	The first two parmaeters are to identify the service from
+//	the caller side, the latter are required for identification
+//	in the eti datastream
 	typedef struct {
 	   uint32_t	SId;	// Sid and SCIds for identification
 	   uint8_t	SCIds;
@@ -112,7 +115,6 @@ private:
 	   int		bitRate;
 	   frameProcessor	*p_a;
 	} runElement;
-
 	std::vector<runElement>  runStack;
 
 protected:	

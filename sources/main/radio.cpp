@@ -734,7 +734,7 @@ void	RadioInterface::startDirect	() {
 
 	if (theDeviceHandler -> deviceType () != 0)
 	   theFrontendHandler	= new etiProcessor (this,
-	                                            theDeviceHandler,
+	                                            (etiFiles *)theDeviceHandler,
 	                                            &globals,
 	                                            theQSettings,
 	                                            &theLogger,
@@ -3574,6 +3574,8 @@ void	RadioInterface::handle_snrLabel	() {
 	if (!running. load ())
 	   return;
 
+	if (theDeviceHandler -> deviceType () != 0)
+	   return;
 	if (theSNRViewer. isHidden ())
 	   theSNRViewer. show ();
 	else
@@ -3832,7 +3834,8 @@ dumpDisplay * etiDisplay_p = nullptr;
 
 	if (!channel. etiActive) {
 	   stopScanning ();
-	   start_etiHandler ();
+	   if (!start_etiHandler ())
+	      return;
 	   if (etiDisplay_p == nullptr)
 	      etiDisplay_p	= new dumpDisplay ("writing eti file", "");
 	   channel. etiActive	= true;
@@ -3867,13 +3870,10 @@ void	RadioInterface::stop_etiHandler () {
 	etiButton	-> setText ("eti");
 }
 
-void	RadioInterface::start_etiHandler () {
+bool	RadioInterface::start_etiHandler () {
 	if (channel. etiActive)
-	   return;
+	   return false;
 	QString	etiFile		= path_for_eti;
-        etiFile = QDir::toNativeSeparators (etiFile);
-        if (!QDir (etiFile). exists ())
-           QDir (). mkpath (etiFile);
 	QString name	= channel. ensembleName. trimmed () + "/";
 	etiFile += name;
         etiFile = QDir::toNativeSeparators (etiFile);
@@ -3883,18 +3883,19 @@ void	RadioInterface::start_etiHandler () {
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QString fname	= theDateTime. toString () + ".eti";
 	fname. replace (QRegularExpression (" "), "-");
-	etiFile +=  fname;
+	fname. replace (QRegularExpression (":"), "-");
+	etiFile += fname;
 //	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
 	if (etiFile. isEmpty ())
-	   return;
+	   return false;
 
 	channel. etiActive = theFrontendHandler -> startEtiGenerator (etiFile);
-	fprintf (stderr, "etigenerator returns %d\n", channel. etiActive);
 	if (channel. etiActive) {
 	   QString temp = "QPushButton {background-color: %1; color: %2}";
 	   etiButton       -> setStyleSheet (temp. arg (RED, WHITE));
 	   etiButton -> setText ("eti runs");
 	}
+	return channel. etiActive;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -3993,13 +3994,13 @@ QPixmap p;
 	   theNewDisplay. showSNR (snr);
 	channel. snr	= snr;
 
-	if (snr < 5) 
+	if (snr < 30) 
 	   p = strengthLabels. at (0);
 	else
-	if (snr < 8)
+	if (snr < 35)
 	   p = strengthLabels. at (1);
 	else
-	if (snr < 12)
+	if (snr < 40)
 	   p = strengthLabels. at (2);
 	else
 	   p = strengthLabels. at (3);
