@@ -27,7 +27,10 @@
 #include	<cstring>
 #include	<cstdint>
 #include	<vector>
-#include	"mot-object.h"
+//#include	"mot-object.h"
+#include	"mot-handler.h"
+#include	"tdc-datahandler.h"
+#include	"journaline-controller.h"
 #include	<QScopedPointer>
 
 class	RadioInterface;
@@ -53,6 +56,7 @@ Q_OBJECT
 public:
 			padHandler		(RadioInterface *,
 	                                         uint32_t,	// SId
+	                                         int16_t,	// AppType
 	                                         bool);
 			~padHandler		();
 	void		processPAD		(const uint8_t *,
@@ -60,6 +64,7 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	uint32_t	SId;
+	int16_t		contentType;
 	bool		backgroundFlag;
 	void		handle_variablePAD	(const uint8_t *,
 	                                             int16_t, uint8_t);
@@ -69,11 +74,17 @@ private:
 	                                             int16_t, uint8_t);
 	void		new_MSC_element		(const std::vector<uint8_t> &);
 	void		add_MSC_element		(const std::vector<uint8_t> &);
-	void		build_MSC_segment	(const std::vector<uint8_t> &);
+	void		dispatch_MSC_segment	(const std::vector<uint8_t> &);
+	void		process_mot		(const std::vector<uint8_t> &);
+	void		process_tdc		(const std::vector<uint8_t> &);
+	void		process_journaline	(const std::vector<uint8_t> &);
 	bool		pad_crc			(uint8_t *, int16_t);
 	QByteArray	dynamicLabelText;
 	int16_t		charSet;
-	QScopedPointer<motObject>	currentSlide;
+	QScopedPointer<motHandler>	my_motHandler;
+	QScopedPointer<tdc_dataHandler>	my_tdcHandler;
+//	QScopedPointer<motObject>	currentSlide;
+	QScopedPointer<journalineController>	my_journalineController;
 	uint8_t		last_appType;
 	bool		mscGroupElement;
 	int		xpadLength;

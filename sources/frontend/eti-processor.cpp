@@ -93,6 +93,8 @@ typedef struct {
 
 	connect (this, &etiProcessor::showFICQuality,
                  mr, &RadioInterface::show_ficQuality);
+	connect (this, &etiProcessor::activeServices,
+	         mr, &RadioInterface::nrActiveServices);
 }
 
 	etiProcessor::~etiProcessor	() {}
@@ -182,7 +184,7 @@ int	counter		= 0;
 	   if (!running. load ())
 	      return;
 
-	   int n  = theDevice -> getSamples (buffer, FRAME_SIZE);
+	   int n  = theDevice -> getBytes (buffer, FRAME_SIZE);
 	   if (n < 0) {
 	      perror ("Read error, exiting");
 	      return;
@@ -288,6 +290,7 @@ void	etiProcessor::stopService	(uint32_t SId, uint8_t SCIds) {
 	         delete runStack. at (i). p_a;
               runStack. erase (runStack. begin () + i);
 	      locker. unlock ();
+	      activeServices ((int)runStack. size ());
 	      return;
 	   }
 	}
@@ -301,7 +304,7 @@ runElement el;
 	   if ((ad. SId == r. SId) && (ad. SCIds == r. SCIds))
 	      return false;	// already running
 
-	el. SId	= ad. SId;
+	el. SId		= ad. SId;
 	el. SCIds	= ad. SCIds;
 	el. subChId	= ad. subchId;
 	el. bitRate	= ad. bitRate;
@@ -311,7 +314,7 @@ runElement el;
 	   el. p_a	=  new mp4Processor (myRadioInterface,
 	                                     ad. SId,
 	                                     ad. bitRate,
-	                                     false,
+	                                     ad. appType,
 	                                     b,
 	                                     p	-> frameBuffer,
 	                                     f,
@@ -319,6 +322,7 @@ runElement el;
 	   locker. lock ();
 	   runStack. push_back (el);
 	   locker. unlock ();
+	   activeServices ((int)runStack. size ());
 	   return true;
 	}
 	else
@@ -326,7 +330,7 @@ runElement el;
 	   el. p_a	= new mp2Processor (myRadioInterface,
 	                                    ad. SId,
 	                                    ad. bitRate,
-	                                    false,
+	                                    ad. appType,
 	                                    b,
 	                                    p  -> frameBuffer,
 	                                    f,
@@ -334,6 +338,7 @@ runElement el;
 	   locker. lock ();
 	   runStack. push_back (el);
 	   locker. unlock ();
+	   activeServices ((int)runStack. size ());
 	   return true;
 	}
 	return false;
@@ -356,6 +361,7 @@ runElement el;
 	locker. lock ();
 	runStack. push_back (el);
 	locker. unlock ();
+	activeServices ((int)runStack. size ());
 	return true;
 }
 

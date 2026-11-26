@@ -103,8 +103,15 @@ void	etiFiles::stopReader	() {
 	}
 }
 
+int32_t	etiFiles::getSamples	(std::complex<float> *v,
+	                                    int32_t amount) {
+	(void)v;
+	(void)amount;
+	return 0;
+}
+
 //	size is in I/Q pairs, file contains 8 bits values
-int32_t	etiFiles::getSamples	(uint8_t *V, int32_t size) {
+int32_t	etiFiles::getBytes	(uint8_t *V, int32_t size) {
 int32_t	amount;
 
 	if (filePointer == nullptr)
@@ -132,8 +139,8 @@ bool	etiFiles::isFileInput	() {
 	return true;
 }
 
-uint8_t	etiFiles::deviceType	() {
-	return 1;
+bool	etiFiles::isEti		() {
+	return true;
 }
 
 QString	etiFiles::deviceName	() {

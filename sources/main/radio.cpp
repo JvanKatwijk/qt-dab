@@ -411,6 +411,7 @@ QString h;
 
 	theTechWindow	= new techWindow (techFrame,
 	                                  this, theQSettings, &theTechData);
+
 	if (value_i (theQSettings, DAB_GENERAL, TECHDATA_VISIBLE, 1) != 0) {
 	   techFrame	-> show ();
 	}
@@ -421,6 +422,7 @@ QString h;
 	   theNewDisplay. hide ();
 
 	dumpDisplay_p		= nullptr;
+	etiDisplay_p		= nullptr;
 	etiActivated		= false;
 	channel. etiActive	= false;
 	channel. cleanChannel ();
@@ -732,7 +734,7 @@ void	RadioInterface::doStart (const QString &dev) {
 void	RadioInterface::startDirect	() {
 	cpuLabel -> setText (VITERBI);
 
-	if (theDeviceHandler -> deviceType () != 0)
+	if (theDeviceHandler -> isEti ())
 	   theFrontendHandler	= new etiProcessor (this,
 	                                            (etiFiles *)theDeviceHandler,
 	                                            &globals,
@@ -742,8 +744,10 @@ void	RadioInterface::startDirect	() {
 	else
 	   theFrontendHandler	= new ofdmProcessor  (this,
 	                                    theDeviceHandler,
-	                                    &globals, theQSettings,
-	                                    &theLogger, this -> cpuSupport);
+	                                    &globals,
+	                                    theQSettings,
+	                                    &theLogger,
+	                                    this -> cpuSupport);
 	if (theFrontendHandler == nullptr) {
 	   QMessageBox::warning (this, tr ("Warning"),
                                        tr ("Fatal error, call expert 11"));
@@ -758,7 +762,7 @@ void	RadioInterface::startDirect	() {
 
 	if (theDeviceHandler -> isFileInput ()) {
 	   newServices	-> startMode (FILEINPUT, 
-	                              get_serviceOrder (), true);
+	                              get_serviceOrder (), false);
 //	                              !theConfigHandler ->
 //	                                     get_audioServices_only ());
 	   enable_scheduler (false);
@@ -1491,6 +1495,7 @@ void	RadioInterface::TerminateProcess () {
 	if (theControl != nullptr)
 	   delete theControl;
 	theControl		= nullptr;
+
 	mapHandler_locker. unlock ();
 	theSCANHandler. hide ();
 	channelTimer.	stop	();
@@ -1502,6 +1507,10 @@ void	RadioInterface::TerminateProcess () {
 	stopAudioDumping	();
 	if (channel. etiActive)
 	   stop_etiHandler      ();     // probably done by stopChannel
+	if (dumpDisplay_p != nullptr)
+	   delete dumpDisplay_p;
+        if (etiDisplay_p != nullptr)
+	   delete etiDisplay_p;
 //
 //	after a scan is stopped, the scanTable is of no further use
 	if (theScanTable != nullptr) {
@@ -1943,7 +1952,7 @@ QString	dumpName;
 	if ((newServices -> getMode () != ENSEMBLEVIEW) ||
 	                                  (theSCANHandler. active ()))
 	   return;
-	if (theDeviceHandler -> deviceType () != 0)
+	if (theDeviceHandler -> isEti ())
 	   return;
 
 	if (!theConfigHandler -> dumpmode_set () ||
@@ -2300,9 +2309,12 @@ void	RadioInterface::localSelect (const QString &service,
 void	RadioInterface::handle_contentSelector (const QString &serviceName) {
 	uint32_t SId; uint8_t SCIds;
 	theFrontendHandler -> mapNameToId (serviceName, SId, SCIds);
-	if (theFrontendHandler -> isPacketService (SId, SCIds))	
+	if (!theFrontendHandler -> isPrimaryService (SId, SCIds))	
 	   return;
 	newServices	-> reportService (serviceName);
+	fprintf (stderr, "We are going to start %s in %s\n",
+	                             serviceName. toLatin1 (). data (),
+	                             channel. channelName. toLatin1 (). data ());
 	localSelect_SS (serviceName, channel. channelName);
 	theLogger. log ("selecting from content table", serviceName);
 }
@@ -3574,7 +3586,7 @@ void	RadioInterface::handle_snrLabel	() {
 	if (!running. load ())
 	   return;
 
-	if (theDeviceHandler -> deviceType () != 0)
+	if (theDeviceHandler -> isEti ())
 	   return;
 	if (theSNRViewer. isHidden ())
 	   theSNRViewer. show ();
@@ -3668,7 +3680,7 @@ void	RadioInterface::handle_httpButton	() {
 	   return;
 	}
 
-	if (theDeviceHandler -> deviceType () != 0)
+	if (theDeviceHandler -> isEti ())
 	   return;
 
 	if (mapViewer == nullptr)  {
@@ -3823,31 +3835,48 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 /////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_etiButton	() {
-static
-dumpDisplay * etiDisplay_p = nullptr;
 
         if (newServices -> getMode () == FAVORITEVIEW)
 	   return;
 
-	if (theDeviceHandler	-> deviceType () != 0)
+	if (theDeviceHandler	-> isEti ())
 	   return;
 
-	if (!channel. etiActive) {
-	   stopScanning ();
-	   if (!start_etiHandler ())
-	      return;
-	   if (etiDisplay_p == nullptr)
-	      etiDisplay_p	= new dumpDisplay ("writing eti file", "");
-	   channel. etiActive	= true;
+	if (channel. etiActive) {
+//	eti stops, set the button color back
+	   stop_etiHandler ();		// just in case
+	   channel. etiActive	= false;
+	   if (etiDisplay_p != nullptr) {
+	      delete etiDisplay_p;
+	      etiDisplay_p = nullptr;
+	   }
 	   return;
 	}
-//	eti stops, set the button color back
-	stop_etiHandler ();		// just in case
-	channel. etiActive	= false;
-	if (etiDisplay_p != nullptr) {
-	   delete etiDisplay_p;
-	   etiDisplay_p = nullptr;
-	}
+
+//	channel. Active is false, so let's start
+	stopScanning ();
+
+	QString etiFile	= path_for_eti;
+        QString name	= channel. ensembleName. trimmed () + "/";
+        etiFile		+= name;
+        etiFile		= QDir::toNativeSeparators (etiFile);
+        if (!QDir (etiFile). exists ())
+           QDir (). mkpath (etiFile);
+
+        QDateTime theDateTime   = QDateTime::currentDateTime ();
+        QString fname   = theDateTime. toString () + ".eti";
+        fname. replace (QRegularExpression (" "), "-");
+	fname. replace (QRegularExpression (":"), "-");
+        etiFile		+= fname;
+//      fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
+        if (etiFile. isEmpty ())
+           return;
+
+	if (!start_etiHandler (etiFile))
+	   return;
+	if (etiDisplay_p == nullptr)
+	   etiDisplay_p	= new dumpDisplay ("writing eti file", etiFile);
+	channel. etiActive	= true;
 }
 
 void	RadioInterface::stop_etiHandler () {
@@ -3856,6 +3885,10 @@ void	RadioInterface::stop_etiHandler () {
 
 	theFrontendHandler -> stopEtiGenerator ();
 	channel. etiActive = false;
+	if (etiDisplay_p != nullptr) {
+	   delete etiDisplay_p;
+	   etiDisplay_p = nullptr;
+	}
 	QString etiButton_color =
 	   value_s (theQSettings, COLOR_SETTINGS, ETI_BUTTON + "_color",
                                                                    GREEN);
@@ -3870,23 +3903,8 @@ void	RadioInterface::stop_etiHandler () {
 	etiButton	-> setText ("eti");
 }
 
-bool	RadioInterface::start_etiHandler () {
-	if (channel. etiActive)
-	   return false;
-	QString	etiFile		= path_for_eti;
-	QString name	= channel. ensembleName. trimmed () + "/";
-	etiFile += name;
-        etiFile = QDir::toNativeSeparators (etiFile);
-        if (!QDir (etiFile). exists ())
-           QDir (). mkpath (etiFile);
-
-	QDateTime theDateTime	= QDateTime::currentDateTime ();
-	QString fname	= theDateTime. toString () + ".eti";
-	fname. replace (QRegularExpression (" "), "-");
-	fname. replace (QRegularExpression (":"), "-");
-	etiFile += fname;
-//	fprintf (stderr, "eti filename %s\n", etiFile. toLatin1 (). data ());
-	if (etiFile. isEmpty ())
+bool	RadioInterface::start_etiHandler (const QString &etiFile) {
+	if (channel. etiActive)	// should not happen
 	   return false;
 
 	channel. etiActive = theFrontendHandler -> startEtiGenerator (etiFile);
@@ -3994,13 +4012,13 @@ QPixmap p;
 	   theNewDisplay. showSNR (snr);
 	channel. snr	= snr;
 
-	if (snr < 30) 
+	if (snr < 10) 
 	   p = strengthLabels. at (0);
 	else
-	if (snr < 35)
+	if (snr < 20)
 	   p = strengthLabels. at (1);
 	else
-	if (snr < 40)
+	if (snr < 30)
 	   p = strengthLabels. at (2);
 	else
 	   p = strengthLabels. at (3);

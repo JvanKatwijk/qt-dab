@@ -30,12 +30,18 @@
 /**
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
+  *	20-11: Never realized that tdc and journaline data vould be
+  *	send through PAD
+  *	So, we now pass the appType of the service and 
+  *	start processing the mscDataGroups depending on the appType
   */
 	padHandler::padHandler	(RadioInterface *mr,
 	                         uint32_t	SId,
+	                         int16_t	contentType,
 	                         bool backgroundFlag):
 	                              myRadioInterface (mr) {
 	this	-> SId			= SId;
+	this	-> contentType		= contentType;
 	this	-> backgroundFlag	= backgroundFlag;
 
 	connect (this, &padHandler::showLabel,
@@ -77,9 +83,13 @@
 	DL2_record. composer	= "";
 	DL2_record. stationname	= "";
 	DL2_record. currentProgram	= "";
+	my_motHandler. reset ();
+	my_tdcHandler. reset ();
+	my_journalineController. reset ();
 }
 
-	padHandler::~padHandler() {
+	padHandler::~padHandler () {
+	fprintf (stderr, "padHandler stopt\n");
 }
 
 //	Data is stored reverse, we pass the vector and the index of the
@@ -248,6 +258,18 @@ std::vector<uint8_t> data;		// for the local addition
 	            dynamicLabel((uint8_t *)(data.data()), xpadLength, 3);
 	            break;
 
+	         case  4:
+	         case  5:
+	         case  6:
+	         case  7:
+	         case  8:
+	         case  9:
+	         case 10:
+	         case 11:
+	            fprintf (stderr, "User defined application type %d\n",
+	                                                  last_appType);
+	            break;
+	
 	         case 12:   // MOT, start of X-PAD data group
 	         case 13:   // MOT, continuation of X-PAD data group
 	            if (mscGroupElement)
@@ -310,11 +332,11 @@ std::vector<uint8_t> data;		// for the local addition
 	                        data. size(), CI_table [i]);
 	         break;
 
-	      case 12:	 // MOT, start of X-PAD data group
+	      case 12:	 // start of MSCdataGroup
 	         new_MSC_element (data);
 	         break;
 
- 	      case 13:	 // MOT, continuation of X-PAD data group
+ 	      case 13:	 // continuation of MSC data group
 	         add_MSC_element (data);
 	         break;
 	   }
@@ -465,9 +487,8 @@ void	padHandler::new_MSC_element (const std::vector<uint8_t> &data) {
 	if (data. size () >= (uint16_t)dataGroupLength) {
 // msc element is single item
 	   msc_dataGroupBuffer. clear();
-	   build_MSC_segment (data);
+	   dispatch_MSC_segment (data);
 	   mscGroupElement = false;
-	   show_mothandling (true);
 //	   fprintf (stderr, "msc element is single\n");
 	   return;
 	}
@@ -475,7 +496,6 @@ void	padHandler::new_MSC_element (const std::vector<uint8_t> &data) {
 	mscGroupElement		= true;
 	msc_dataGroupBuffer. clear();
 	msc_dataGroupBuffer	= data;
-	show_mothandling (true);
 }
 
 //
@@ -490,114 +510,93 @@ int32_t	currentLength = msc_dataGroupBuffer. size();
 
 	msc_dataGroupBuffer. insert (std::end (msc_dataGroupBuffer),
 	                             std::begin (data), std::end (data));
-	if (msc_dataGroupBuffer. size() >= (uint32_t)dataGroupLength) {
-	   build_MSC_segment (msc_dataGroupBuffer);
+	if (msc_dataGroupBuffer. size () >= (uint32_t)dataGroupLength) {
+	   dispatch_MSC_segment (msc_dataGroupBuffer);
 	   msc_dataGroupBuffer. clear();
-//	   mscGroupElement	= false;
 	   show_mothandling (false);
 	}
 }
 
-void	padHandler::build_MSC_segment (const std::vector<uint8_t> &data) {
-//	we have a MOT segment, let us look what is in it
-//	according to DAB 300 401 (page 37) the header (MSC data group)
-//	is
-int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
-	                                            dataGroupLength;
+void	padHandler::dispatch_MSC_segment (const std::vector<uint8_t> &data) {
+static uint8_t bits [] = {
+        0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01
+};
+
+int32_t	size	= data. size () < (uint32_t)dataGroupLength ?
+	                                data. size () : dataGroupLength;
 
 	if (size < 2) {
-//	   qWarning () << "build_MSC_segment: data size < 2\n";
+	   qWarning () << "build_MSC_segment: data size < 2\n";
 	   return;
 	}
-	   
-const uint8_t	groupType	=  data [0] & 0xF;
-//uint8_t	continuityIndex = (data [1] & 0xF0) >> 4;
-//uint8_t	repetitionIndex =  data [1] & 0xF;
-uint16_t	transportId	= 0;	// default
-int16_t		segmentNumber	= -1;		// default
-bool		lastFlag	= false;	// default
-uint16_t	index;
-
-	if ((data [0] & 0x40) != 0) {
-	   bool res	= check_crc_bytes (data. data(), size - 2);
-	   if (!res) {
-//	      qWarning () << "build_MSC_segment fails on crc check";
-	      return;
-	   }
-//	   else
-//	      fprintf (stderr, "crc success ");
+	
+	std::vector<uint8_t> newData (size);
+	std::vector<uint8_t> unpacked_data (8 * size);
+	
+	for (int i = 0; i < size; i ++) {
+	   newData [i] = data [i];
+	   for (int j = 0; j < 8; j ++)
+	      unpacked_data [8 * i + j] = (data [i] & bits [j]) == 0 ? 0 : 1;
 	}
 
-	if ((groupType != 3) && (groupType != 4)) {
-//	   fprintf (stderr, "groupType %d\n", groupType);
-	   return;		// do not know yet
-	}
-//	extensionflag
-	bool	extensionFlag	= (data [0] & 0x80) != 0;
-//	if the segmentflag is on, then a lastflag and segmentnumber are
-//	available, i.e. 2 bytes more.
-//	Theoretically, the segment number can be as large as 16384
-	index			= extensionFlag ? 4 : 2;
-	bool	segmentFlag	=  (data [0] & 0x20) != 0;
-	if ((segmentFlag) != 0) {
-	   lastFlag		= data [index] & 0x80;
-	   segmentNumber	= ((data [index] & 0x7F) << 8) |
-	                                               data [index + 1];
-	   index += 2;
-	}
-
-//	if the user access flag is on there is a user accessfield
-	if ((data [0] & 0x10) != 0) {
-	   int16_t lengthIndicator = data [index] & 0x0F;
-	   if ((data [index] & 0x10) != 0) { //transportid flag
-	      transportId = data [index + 1] << 8 |
-	                    data [index + 2];
-//	      fprintf (stderr, "transportId = %d\n", transportId);
-	      index += 3;
-	   }
-//	   else {
-//	      fprintf (stderr, "sorry no transportId\n");
-//	      return;
-//	   }
-	   index += (lengthIndicator - 2);
-	}
-
-//	if (transportId == 0)	// no idea wat it means
-//	   return;
-
-	uint32_t segmentSize	= ((data [index + 0] & 0x1F) << 8) |
-	                            data [index + 1];
-
-//	handling MOT in the PAD, we only deal here with type 3/4
-	switch (groupType) {
-	   case 3:
-	      if (currentSlide. isNull () ||
-	          (currentSlide -> get_transportId() != transportId))
-	          currentSlide. reset (new motObject (myRadioInterface,
-	                                              SId,
-	                                              false,
-	                                              transportId,
-	                                              &data [index + 2],
-	                                              segmentSize,
-	                                              lastFlag));
+	switch (contentType) {
+	   case 0x000:		// Reserved for future defintion
+	   case 0x001:		// Not used
 	      break;
-
-	   case 4: {
-	      if (currentSlide. isNull () ||
-	          (currentSlide -> get_transportId() != transportId))
-	         return;
-	      currentSlide -> addBodySegment (&data [index + 2],
-	                                      segmentNumber,
-	                                      segmentSize,
-	                                      lastFlag);
-	      }
+	   case 0x002:		// Slideshow
+	      show_mothandling (true);
+	      process_mot	(unpacked_data);
 	      break;
-
-	   default:		// cannot (should not) happen
-//	      qWarning () << " grouptype not yet handled mot in pad" <<
-//	                                          groupType;
+	   case 0x003:		// Not used
+	      break;
+	   case 0x004:		// TPEG
+	      process_tdc	(unpacked_data);
+	      show_mothandling (false);
+	      break;
+	   case 0x005:		// Not used
+	   case 0x006:		// Not used
+	   case 0x007:		// SPI
+	      break;
+	   case 0x008:		// Not used
+	   case 0x009:		// DMB
+	      break;
+	   case 0x00a:		// not used
+	   case 0x00b:		// not used
+	   case 0x00c:		// not used
+	   case 0x00d:		// Filecasting
+	   case 0x00e:		// FIS
+	      break;
+	   case 0x44a:		// journaline
+	      process_journaline (unpacked_data);
+	      show_mothandling (false);
+	      break;
+	   default:		// All reserved for future definition
 	      break;
 	}
+}
+
+//	we have aan MSC segment, for use with slide shows
+//	according to DAB 300 401 (page 37) the header (MSC data group)
+//	is
+
+void	padHandler::process_mot (const std::vector<uint8_t> &data) {
+	if (my_motHandler. isNull ())
+	   my_motHandler. reset (new motHandler (myRadioInterface, SId));
+	my_motHandler	-> add_mscDatagroup (data);
+}
+//
+//	tdc - if any - through the PAD is handled for the main component
+void	padHandler::process_tdc	(const std::vector<uint8_t> &data) {
+	if (my_tdcHandler. isNull ())
+	   my_tdcHandler. reset (new tdc_dataHandler (myRadioInterface, SId, 0));
+	my_tdcHandler -> add_mscDatagroup (data);
+}
+
+void	padHandler::process_journaline	(const std::vector<uint8_t> &data) {
+	if (my_journalineController. isNull ())
+	   my_journalineController.
+	                 reset (new journalineController (myRadioInterface));
+	my_journalineController -> add_mscDatagroup (data);
 }
 //
 //	Experimental code to extract titles and composers from

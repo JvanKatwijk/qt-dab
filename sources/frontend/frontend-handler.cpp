@@ -193,16 +193,21 @@
         void frontendHandler::audioData			(uint32_t SId,
 	                                                 uint8_t SCIds,
 	                                                 audiodata &ad) {
-	   (void)SId; (void)SCIds;
+	   SId		= 0;
+	   SCIds	= 0;
 	}
 
         void frontendHandler::packetData		(uint32_t SId,
 	                                                 uint8_t SCIds,
 	                                                 packetdata &pd) {
-	   (void)SId; (void)SCIds;
+	   SId		= 0;
+	   SCIds	= 0;
 	}
 
-	uint32_t frontendHandler::julianDate		() {return 0;}
+	uint32_t frontendHandler::julianDate		() {
+	   return 0;
+	}
+
 	QList<contentType> frontendHandler::contentPrint	() {
 	   QList<contentType> res;
 	   return res;

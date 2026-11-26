@@ -148,16 +148,6 @@ QByteArray buffer;
 int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 	                                     int32_t offset,
 	                                     int32_t length) {
-//uint8_t	*buffer = (uint8_t *) alloca (length * sizeof (uint8_t));
-int	lOffset;
-int	llengths = length - 4;
-#ifdef PRINT_TDC
-	fprintf (stderr, " frametype 1  (length %d) met offset %d %d %d %d\n", length, offset,
-	                             getBits (data, offset,      8),
-	                             getBits (data, offset + 8,  8),
-	                             getBits (data, offset + 16, 8));
-	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
-#endif
 QByteArray buffer;
 	buffer. resize (8);
 	buffer [0]	= 0xFF;

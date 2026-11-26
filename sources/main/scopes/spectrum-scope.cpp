@@ -102,7 +102,7 @@ int amount 	= minimum (v. size (), 4 * displaySize);
 }
 
 float   spectrumScope::get_db (float x) {
-        return 20 * log10 ((x + 1) / (float)(normalizer));
+        return 10 * log10 ((x + 0.1) / (float)(normalizer));
 }
 
 void	spectrumScope::set_bitDepth	(int d) {

@@ -162,8 +162,13 @@ uint16_t	rawContentType = 0;
 	               break;
 
 	            case 16:	// Mime type
+	            {  QByteArray mimeText;
+	               for (int i = 0; i < length; i ++)
+	                  mimeText. append (segment [pointer + i]);
+	               QString mimeType = QString (mimeText);
                        pointer += length;	// 6.2.2.1.2
 	               break;
+	            }
 
 	            case 17:	// compression type
 //	               fprintf (stderr, "we have compression type\n");
@@ -204,10 +209,11 @@ void	motObject::addBodySegment (const uint8_t	*bodySegment,
 
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
-//
+
 //	check already exists
-	if (motMap. find (segmentNumber) != motMap. end ())
+	if (motMap. find (segmentNumber) != motMap. end ()) {
 	   return;
+	}
 
 //      Note that the last segment may have a different size
         if (!lastFlag && (this -> segmentSize == -1))
@@ -218,21 +224,22 @@ void	motObject::addBodySegment (const uint8_t	*bodySegment,
 	for (int16_t i = 0; i < segmentSize; i ++)
 	   segment [i] = bodySegment [i];
 	motMap. insert (std::make_pair (segmentNumber, segment));
-//
+	
         if (lastFlag)
            numofSegments = segmentNumber + 1;
 
 	if (numofSegments == -1)
 	   return;
-//
+
 //	once we know how many segments there are/should be,
 //	we check for completeness
 
 	for (int16_t i = 0; i < numofSegments; i ++) {
-	   if (motMap. find (i) == motMap. end())
+	   if (motMap. find (i) == motMap. end ()) {
 	      return;
-	}
-//	The motObject is (seems to be) complete
+	   }
+	} //	The motObject is (seems to be) complete
+
 	handleComplete ();
 }
 

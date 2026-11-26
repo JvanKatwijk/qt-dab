@@ -1544,6 +1544,12 @@ void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
 	         }
 	      }
 	      ad. programType = 0;	// default
+	      for (auto &h : currentConfig ->  FIG013_stack) {
+	         if (ad. SId == h. SId) {
+	            ad. appType = h. Apptype;
+	            break;
+	         }
+	      }
 	      for (auto &h : FIG017_stack) {
 	         if (h. SId == ad. SId) {
 	            ad. programType = h. typecode;

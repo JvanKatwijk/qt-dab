@@ -214,11 +214,13 @@ public:
 	int16_t	bitRate;
 	QString	channel;	// just for presets
 	bool	onlyPAD;
+	int16_t	appType;
 public:
 		descriptorType() {
 	defined		= false;
 	serviceName	= "";
 	onlyPAD		= false;
+	appType		= -1;
 	}
 virtual		~descriptorType() {}
 };
@@ -229,7 +231,6 @@ public:
 	int16_t		DSCTy;
 	int16_t		FEC_scheme;
 	int16_t		DG_flag;
-	int16_t		appType;
 	uint16_t	SCId;
 	int16_t		compnr;
 	int16_t		packetAddress;

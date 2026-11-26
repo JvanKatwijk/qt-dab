@@ -48,11 +48,14 @@ public:
  	               ~etiFiles	();
 	bool		restartReader	(int32_t, int skipped = 0);
 	void		stopReader	();
-	int32_t		getSamples	(uint8_t *, int32_t);
+	int32_t		getSamples	(std::complex<float> *, int32_t);
+//
+//	Incompatible with deviceHandler
+	int32_t		getBytes	(uint8_t *, int32_t);
 	int32_t		Samples		();
 	QString		deviceName	();
 	bool		isFileInput	();
-	uint8_t		deviceType	();
+	bool		isEti		();
 
 private:
 	RingBuffer<uint8_t>	_I_Buffer;

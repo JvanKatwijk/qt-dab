@@ -294,7 +294,7 @@ DABFLOAT scaler		= 10;
 	signalValue	/= carriers;
 
 	float local_snr =
-	             20 * log10 (signalValue / noiseValue + 0.0001);
+	             10 * log10 (signalValue / noiseValue + 0.0001);
 	snr		= local_snr;
 	snr		= 0.9 * snr + 0.1 * local_snr;
 //#endif

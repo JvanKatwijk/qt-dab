@@ -26,10 +26,10 @@ QMAKE_CXXFLAGS	+= -Wvla
 QMAKE_CXXFLAGS	+=  -ffast-math -flto -fsingle-precision-constant
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address 
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
-#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg
+#QMAKE_CFLAGS	+=  -g -fsanitize=address  -O3 -fsingle-precision-constant
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address  -O3
+#QMAKE_LFLAGS	+=  -g -fsanitize=address  -O3
+#QMAKE_CFLAGS	+=  -O3 -ffast-math -pg -fsingle-precision-constant
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math -pg
 #QMAKE_LFLAGS	+=  -O3 -ffast-math -pg
 }

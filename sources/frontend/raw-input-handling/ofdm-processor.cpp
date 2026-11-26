@@ -494,7 +494,7 @@ Complex *tester	= dynVec (Complex, T_u / 2);
 //	         float sLevel	= theReader. getSLevel ();
 	         float snrV	=
 //	              20 * log10 ((sLevel + 0.005) / (null_avg));
-	              20 * log10 ((cLevel / cCount + 0.005) / (null_avg));
+	              10 * log10 ((cLevel / cCount + 0.005) / (null_avg));
 //	         this -> snr = 0.8 * this ->  snr + 0.2 * snrV;
 	         showSnr (snr);
 	      }

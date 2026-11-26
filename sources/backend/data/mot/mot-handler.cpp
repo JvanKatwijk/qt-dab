@@ -68,7 +68,7 @@ struct motTable_ {
 }
 
 void	motHandler::add_mscDatagroup (const std::vector<uint8_t> &msc) {
-uint8_t *data		= (uint8_t *)(msc. data());
+uint8_t *data		= (uint8_t *)(msc. data ());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
 bool	segmentFlag	= getBits_1 (data, 2) != 0;
@@ -81,15 +81,22 @@ uint16_t segmentNumber	= 0;
 bool transportIdFlag	= false;
 uint16_t transportId	= 0;
 uint8_t	lengthInd;
-int32_t	i;
 
 	(void)CI;
 	if (msc. size () <= 0) {
 	   return;
 	}
 
+	std::vector<uint8_t> testData (msc. size () / 8);
+	for (int i = 0; i < testData. size (); i ++)
+	   testData [i] = getBits (data, i * 8, 8);
+
+	if (crcFlag && !check_crc_bytes (testData. data (),
+	                                        testData. size () - 2))
+	   fprintf (stderr, "segment fails with byte crc\n");
 	if (crcFlag && !check_CRC_bits (data, msc. size ())) {
-	   return;
+	   fprintf (stderr, "segment fails with bit crc\n");
+//	   return;
 	}
 
 	if (extensionFlag)
@@ -114,12 +121,12 @@ int32_t	i;
 	int32_t	 sizeinBits	=
 	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
 
-	if (!transportIdFlag)
-	   return;
+//	if (!transportIdFlag)
+//	   return;
 
 	std::vector<uint8_t> motVector;
 	motVector. resize (sizeinBits / 8);
-	for (i = 0; i < sizeinBits / 8; i ++) {
+	for (int i = 0; i < sizeinBits / 8; i ++) {
 	   uint8_t t = 0;
 	   for (int j = 0; j < 8; j ++)
 	      t = (t << 1) | data [next + 8 * i + j];

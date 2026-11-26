@@ -325,7 +325,7 @@ private:
 
 //
 	bool			autoStart_http		();
-	bool			start_etiHandler	();
+	bool			start_etiHandler	(const QString &);
 	void			stop_etiHandler		();
 	void			startAudioservice	(audiodata &);
 	void			startAudioDumping	();
@@ -456,6 +456,7 @@ private:
 	int32_t			port;
 #endif
 	dumpDisplay		*dumpDisplay_p;
+	dumpDisplay		*etiDisplay_p;
 	bool			audioDumping;
 
 	QTimer			displayTimer;

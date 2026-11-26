@@ -50,17 +50,19 @@
 	mp4Processor::mp4Processor (RadioInterface	*mr,
 	                            uint32_t		SId,
 	                            int16_t		bitRate,
-	                            bool		onlyPAD,
+	                            int16_t		appType,
 	                            RingBuffer<complex16> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            FILE		*dump,
 	                            bool		backgroundFlag):
-	                                my_padhandler (mr, SId, backgroundFlag),
+	                                my_padhandler (mr, SId,
+	                                               appType,
+	                                               backgroundFlag),
  	                                my_rsDecoder (8, 0435, 0, 1, 10),
 	                                aacDecoder (mr, b) {
 	myRadioInterface	= mr;
 	this	-> bitRate	= bitRate;	// input rate
-	this	-> onlyPAD	= onlyPAD;
+	this	-> appType	= appType;
 	this	-> frameBuffer	= frameBuffer;
 	this	-> dump		= dump;
 	this	-> backgroundFlag	= backgroundFlag;

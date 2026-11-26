@@ -49,7 +49,7 @@ virtual		int16_t	bitDepth	() { return 10;}
 virtual		QString deviceName	();
 virtual		bool	isFileInput	();
 virtual		bool	providesDump	();
-virtual		uint8_t	deviceType	();
+virtual		bool	isEti		();
 virtual		int32_t	getVFOFrequency	();
 
 virtual		void	startDump	(const QString &, int dumpMode);
