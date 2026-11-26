@@ -121,16 +121,17 @@ uint16_t	rawContentType = 0;
 	               break;
 
 	            case 5:	// trigger time
-//	               fprintf (stderr, "trigger time seen\m");
+	               fprintf (stderr, "trigger time seen\m");
 	               pointer += length;	// 
 	               break;
 
 	            case 7:	// retransmsission distance
+	               fprintf (stderr, "retransmission time seen\m");
 	               pointer += length;	// 6.3.4.1.5
 	               break;
 
 	            case 9:	// expiration time
-//	               fprintf (stderr, "expiration time\n");
+	               fprintf (stderr, "expiration time\n");
 	               pointer += length;	//6.2.3.1.1
 	               break;
 

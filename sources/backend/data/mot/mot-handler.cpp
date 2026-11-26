@@ -87,16 +87,9 @@ uint8_t	lengthInd;
 	   return;
 	}
 
-	std::vector<uint8_t> testData (msc. size () / 8);
-	for (int i = 0; i < testData. size (); i ++)
-	   testData [i] = getBits (data, i * 8, 8);
-
-	if (crcFlag && !check_crc_bytes (testData. data (),
-	                                        testData. size () - 2))
-	   fprintf (stderr, "segment fails with byte crc\n");
 	if (crcFlag && !check_CRC_bits (data, msc. size ())) {
-	   fprintf (stderr, "segment fails with bit crc\n");
-//	   return;
+//	   fprintf (stderr, "segment fails with bit crc\n");
+	   return;
 	}
 
 	if (extensionFlag)

@@ -83,8 +83,8 @@
 	DL2_record. composer	= "";
 	DL2_record. stationname	= "";
 	DL2_record. currentProgram	= "";
-	my_motHandler. reset ();
-	my_tdcHandler. reset ();
+	my_motHandler. 		reset ();
+	my_tdcHandler.		reset ();
 	my_journalineController. reset ();
 }
 
@@ -270,8 +270,8 @@ std::vector<uint8_t> data;		// for the local addition
 	                                                  last_appType);
 	            break;
 	
-	         case 12:   // MOT, start of X-PAD data group
-	         case 13:   // MOT, continuation of X-PAD data group
+	         case 12:   // MOT, start of MSC data group
+	         case 13:   // MOT, continuation of MSC data group
 	            if (mscGroupElement)
 	               add_MSC_element(data);
 	            break;
@@ -525,16 +525,19 @@ static uint8_t bits [] = {
 int32_t	size	= data. size () < (uint32_t)dataGroupLength ?
 	                                data. size () : dataGroupLength;
 
+//
+//	The motHandler 
+//	* needs segments with one bit per byte
+//	* corrected length
+
 	if (size < 2) {
 	   qWarning () << "build_MSC_segment: data size < 2\n";
 	   return;
 	}
 	
-	std::vector<uint8_t> newData (size);
 	std::vector<uint8_t> unpacked_data (8 * size);
 	
 	for (int i = 0; i < size; i ++) {
-	   newData [i] = data [i];
 	   for (int j = 0; j < 8; j ++)
 	      unpacked_data [8 * i + j] = (data [i] & bits [j]) == 0 ? 0 : 1;
 	}
@@ -555,7 +558,7 @@ int32_t	size	= data. size () < (uint32_t)dataGroupLength ?
 	      break;
 	   case 0x005:		// Not used
 	   case 0x006:		// Not used
-	   case 0x007:		// SPI
+	   case 0x007:		// SPI, assumed to be in a separate service
 	      break;
 	   case 0x008:		// Not used
 	   case 0x009:		// DMB
@@ -563,8 +566,8 @@ int32_t	size	= data. size () < (uint32_t)dataGroupLength ?
 	   case 0x00a:		// not used
 	   case 0x00b:		// not used
 	   case 0x00c:		// not used
-	   case 0x00d:		// Filecasting
-	   case 0x00e:		// FIS
+	   case 0x00d:		// Filecasting, not (yet) supported
+	   case 0x00e:		// FIS, not (yet) supported
 	      break;
 	   case 0x44a:		// journaline
 	      process_journaline (unpacked_data);
@@ -575,8 +578,6 @@ int32_t	size	= data. size () < (uint32_t)dataGroupLength ?
 	}
 }
 
-//	we have aan MSC segment, for use with slide shows
-//	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is
 
 void	padHandler::process_mot (const std::vector<uint8_t> &data) {
@@ -593,9 +594,11 @@ void	padHandler::process_tdc	(const std::vector<uint8_t> &data) {
 }
 
 void	padHandler::process_journaline	(const std::vector<uint8_t> &data) {
-	if (my_journalineController. isNull ())
+	if (my_journalineController. isNull ()) {
 	   my_journalineController.
 	                 reset (new journalineController (myRadioInterface));
+	   fprintf (stderr, "we start journaline in pad\n");
+	}
 	my_journalineController -> add_mscDatagroup (data);
 }
 //

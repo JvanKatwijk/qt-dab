@@ -4015,7 +4015,7 @@ QPixmap p;
 	if (snr < 10) 
 	   p = strengthLabels. at (0);
 	else
-	if (snr < 20)
+	if (snr < 15)
 	   p = strengthLabels. at (1);
 	else
 	if (snr < 30)

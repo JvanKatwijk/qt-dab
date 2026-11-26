@@ -773,11 +773,10 @@ FIG013 element;
 	   int16_t length	= getBits_5 (d, bitOffset + 11);
 	   element. Apptype	= appType;
 	   bitOffset 		+= (11 + 5 + 8 * length);
-	                
+	   if (localBase -> in_FIG013_stack (element))
+	      continue;
+	   localBase -> FIG013_stack. push_back (element);
 	}
-	if (localBase -> in_FIG013_stack (element))
-	   return bitOffset / 8;
-	localBase -> FIG013_stack. push_back (element);
 	return bitOffset / 8;
 }
 
@@ -1545,7 +1544,7 @@ void	fibDecoder::audioData (uint32_t SId, uint8_t SCIds, audiodata &ad) {
 	      }
 	      ad. programType = 0;	// default
 	      for (auto &h : currentConfig ->  FIG013_stack) {
-	         if (ad. SId == h. SId) {
+	         if ((ad. SId == h. SId) && (ad. SCIds == h. SCIds)) {
 	            ad. appType = h. Apptype;
 	            break;
 	         }
