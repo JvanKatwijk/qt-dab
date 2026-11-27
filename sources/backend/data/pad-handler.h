@@ -81,10 +81,6 @@ private:
 	bool		pad_crc			(uint8_t *, int16_t);
 	QByteArray	dynamicLabelText;
 	int16_t		charSet;
-	QScopedPointer<motHandler>	my_motHandler;
-	QScopedPointer<tdc_dataHandler>	my_tdcHandler;
-//	QScopedPointer<motObject>	currentSlide;
-	QScopedPointer<journalineController>	my_journalineController;
 	uint8_t		last_appType;
 	bool		mscGroupElement;
 	int		xpadLength;
@@ -104,7 +100,11 @@ private:
 //
 //      The msc_dataGroupBuffer is - as the name suggests - used for
 //      assembling the msc_data group.
-        std::vector<uint8_t> msc_dataGroupBuffer;
+//	
+        std::vector<uint8_t>		msc_dataGroupBuffer;
+	QScopedPointer<motHandler>	my_motHandler;
+	QScopedPointer<tdc_dataHandler>	my_tdcHandler;
+	QScopedPointer<journalineController>	my_journalineController;
 
 //	Experimental
 	struct {

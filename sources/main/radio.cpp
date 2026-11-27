@@ -1871,7 +1871,6 @@ void	RadioInterface::set_sync_lost	() {
 }
 //
 /////////////////////////////////////////////////////////////////////////
-//	dump handling
 
 static inline
 void	setButtonFont (QPushButton *b, QString text, int size) {
@@ -1881,6 +1880,10 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 	b		-> setText (text);
 	b		-> update ();
 }
+//
+//////////////////////////////////////////////////////////////////////
+//	dumping the audio stream
+//////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handleAudiodumpButton () {
 	if (!running. load () || theSCANHandler. active ())
@@ -1904,7 +1907,6 @@ void	RadioInterface::stopAudioDumping	() {
 void	RadioInterface::startAudioDumping () {
 	if (audioDumping)	// should not happen
 	   return;
-
 	QString audioDumpName	=
 	      theFilenameFinder.
 	           find_audioDump_fileName  (channel. currentService. serviceName, true);
@@ -1915,8 +1917,67 @@ void	RadioInterface::startAudioDumping () {
 	theAudioConverter. start_audioDump (audioDumpName);
 	audioDumping	= true;
 }
-
 //
+///////////////////////////////////////////////////////////////////////////
+//	dumping the MP2 or AAC frames
+//////////////////////////////////////////////////////////////////////////
+
+
+void	RadioInterface::handleFramedumpButton () {
+	if (!running. load () || theSCANHandler. active ())
+	   return;
+
+	if (channel. currentService. frameDumper != nullptr) 
+	   stopFrameDumping ();
+	else
+	   startFrameDumping ();
+}
+
+void	RadioInterface::stopFrameDumping () {
+	if (channel. currentService. frameDumper == nullptr)
+	   return;
+
+	fclose (channel. currentService. frameDumper);
+	theTechWindow ->  framedumpButton_text ("AAC/MP2", 10);
+	channel. currentService. frameDumper	= nullptr;
+}
+
+void	RadioInterface::startFrameDumping () {
+	if (!channel. currentService. isAudio)
+	   return;
+	channel. currentService. frameDumper	=
+	     theFilenameFinder.
+	      find_frameDump_fileName (channel. currentService. serviceName,
+	                              channel. currentService. ASCTy, true);
+	if (channel. currentService. frameDumper == nullptr)
+	   return;
+	QString mode = channel. currentService. ASCTy == DAB_PLUS ?
+	                                       "rec aac" : "rec mp2";
+	theTechWindow ->  framedumpButton_text (mode, 12);
+}
+
+void	RadioInterface::scheduled_frameDumping (const QString &s) {
+	if (channel. currentService. frameDumper != nullptr) {
+	   fclose (channel. currentService. frameDumper);
+	   theTechWindow ->  framedumpButton_text ("frame dump", 10);
+	   channel. currentService. frameDumper	= nullptr;
+	   return;
+	}
+	audiodata ad;
+	uint32_t SId;
+	uint8_t SCIds;
+	theFrontendHandler -> mapNameToId (s, SId, SCIds);
+	theFrontendHandler -> audioData (SId, SCIds, ad);
+	if (!ad. defined)
+	   return;
+	
+	channel. currentService. frameDumper	=
+	     theFilenameFinder. find_frameDump_fileName (s, ad. ASCTy, false);
+	if (channel. currentService. frameDumper == nullptr)
+	   return;
+	theTechWindow ->  framedumpButton_text ("recording", 12);
+}
+
 //	called from the mp4 handler, using a signal
 void	RadioInterface::newFrame        (uint32_t amount) {
 uint8_t	*buffer = dynVec (uint8_t, amount);
@@ -1935,10 +1996,19 @@ uint8_t	*buffer = dynVec (uint8_t, amount);
 	}
 }
 
-//	on sourcedumping
+////////////////////////////////////////////////////////////////////////
+//	source dumping is using either the raw values from the device
+//	in xml mode or a dump in RIFF mode
+///////////////////////////////////////////////////////////////////////
 void	RadioInterface::handle_dump () {
-	if (dumpDisplay_p == nullptr)
+	if (dumpDisplay_p == nullptr) {
+	   if ((newServices -> getMode () != ENSEMBLEVIEW) ||
+	                                  (theSCANHandler. active ()))
+	      return;
+	   if (theDeviceHandler -> isEti ())
+	      return;
 	   startSourceDumping ();
+	}
 	else
 	   stopSourceDumping ();
 }
@@ -1949,23 +2019,18 @@ int	bitDepth	= theDeviceHandler	-> bitDepth	();
 QString channelName	= channel. channelName;
 QString	dumpName;
 
-	if ((newServices -> getMode () != ENSEMBLEVIEW) ||
-	                                  (theSCANHandler. active ()))
-	   return;
-	if (theDeviceHandler -> isEti ())
-	   return;
-
 	if (!theConfigHandler -> dumpmode_set () ||
 	          !theDeviceHandler	-> providesDump ()) {
 	   dumpName	=
-	         theFilenameFinder. find_rawDump_fileName (deviceName, channelName);
+	         theFilenameFinder.
+	                find_rawDump_fileName (deviceName, channelName);
 	   if (dumpName. isEmpty ())
 	      return;
 
 	   theFrontendHandler -> startDumping (dumpName,
-                                           channel. tunedFrequency,
-                                           bitDepth,
-                                           deviceName);
+                                               channel. tunedFrequency,
+                                               bitDepth,
+                                               deviceName);
 	   dumpDisplay_p	= new dumpDisplay ("dumping in a \"sdr\" file",
 	                                                    dumpName);
 	   return;
@@ -1974,14 +2039,8 @@ QString	dumpName;
 	if (!theDeviceHandler -> providesDump ()) 
 	   return;
 
-	try {
-	   dumpName     =
-                  theFilenameFinder.
-	              find_xmlName (deviceName,  channelName, true);
-	} catch (...) {
-	   return;
-	}
-
+	dumpName     = theFilenameFinder.
+	                        find_xmlName (deviceName,  channelName, true);
 	if (dumpName. isEmpty ())
 	   return;
 
@@ -1992,15 +2051,14 @@ QString	dumpName;
 }
 
 void	RadioInterface::stopSourceDumping	() {
-	if (dumpDisplay_p == nullptr)
-	   return;
-
-	delete dumpDisplay_p;
-	dumpDisplay_p	= nullptr;
-	if (theFrontendHandler	-> isDumping ())
+	if (theFrontendHandler	-> isDumping ()) 
 	   theFrontendHandler	-> stopDumping ();
 	else
 	   theDeviceHandler	-> stopDump ();
+
+	if (dumpDisplay_p != nullptr)
+	   delete dumpDisplay_p;
+	dumpDisplay_p = nullptr;
 }
 
 //	End of section on dumping
@@ -3464,62 +3522,6 @@ void	RadioInterface::scheduledAudioDumping () {
 	theAudioConverter. start_audioDump (audioDumpName);
 	audioDumping		= true;
 }
-
-void	RadioInterface::handleFramedumpButton () {
-	if (!running. load () || theSCANHandler. active ())
-	   return;
-
-	if (channel. currentService. frameDumper != nullptr) 
-	   stopFrameDumping ();
-	else
-	   startFrameDumping ();
-}
-
-void	RadioInterface::stopFrameDumping () {
-	if (channel. currentService. frameDumper == nullptr)
-	   return;
-
-	fclose (channel. currentService. frameDumper);
-	theTechWindow ->  framedumpButton_text ("AAC/MP2", 10);
-	channel. currentService. frameDumper	= nullptr;
-}
-
-void	RadioInterface::startFrameDumping () {
-	if (!channel. currentService. isAudio)
-	   return;
-	channel. currentService. frameDumper	=
-	     theFilenameFinder.
-	      find_frameDump_fileName (channel. currentService. serviceName,
-	                              channel. currentService. ASCTy, true);
-	if (channel. currentService. frameDumper == nullptr)
-	   return;
-	QString mode = channel. currentService. ASCTy == DAB_PLUS ?
-	                                       "rec aac" : "rec mp2";
-	theTechWindow ->  framedumpButton_text (mode, 12);
-}
-
-void	RadioInterface::scheduled_frameDumping (const QString &s) {
-	if (channel. currentService. frameDumper != nullptr) {
-	   fclose (channel. currentService. frameDumper);
-	   theTechWindow ->  framedumpButton_text ("frame dump", 10);
-	   channel. currentService. frameDumper	= nullptr;
-	   return;
-	}
-	audiodata ad;
-	uint32_t SId;
-	uint8_t SCIds;
-	theFrontendHandler -> mapNameToId (s, SId, SCIds);
-	theFrontendHandler -> audioData (SId, SCIds, ad);
-	if (!ad. defined)
-	   return;
-	
-	channel. currentService. frameDumper	=
-	     theFilenameFinder. find_frameDump_fileName (s, ad. ASCTy, false);
-	if (channel. currentService. frameDumper == nullptr)
-	   return;
-	theTechWindow ->  framedumpButton_text ("recording", 12);
-}
-
 void	RadioInterface::scheduledFICDumping () {
 	if (theFrontendHandler -> ficDumping_on ()) {
 	   theFrontendHandler	-> stopFicDump ();
@@ -3606,10 +3608,6 @@ QString home	= QDir::homePath ();
 	home	= QDir::fromNativeSeparators (home);
 	theTIIProcessor. reload (home);
 }
-//
-void	RadioInterface::handle_LoggerButton (int s) {
-	(void)s;
-}
 
 void	RadioInterface::set_transmitters_local  (bool isChecked) {
 	channel. targetPos	= position {0, 0};
@@ -3634,9 +3632,9 @@ void	RadioInterface:: set_streamSelector (const QString &channel, int k) {
 }
 //
 //////////////////////////////////////////////////////////////////////////
-//
 //	http handling
-//
+//////////////////////////////////////////////////////////////////////////
+
 bool	RadioInterface::autoStart_http () {
 	if (localPos. latitude == 0) 	// cannot happen
 	   return false;
@@ -3764,24 +3762,17 @@ void	RadioInterface::cleanUp_mapHandler () {
 void	RadioInterface::http_terminate	() {
 	stillWaiting = false;
 }
-//
 ///////////////////////////////////////////////////////////////////////////
+//	show slides
+//////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::displaySlide	(const QPixmap &p, const QString &t) {
-int w   = 320;
-int h   = 3 * w / 4;
 	if (channel. announcing)
 	   return;
 	pauzeTimer. stop ();
 	pictureLabel	-> setPicture (p);
-//	pictureLabel	-> setAlignment(Qt::AlignCenter);
-//	if ((p. width () != 320) || (p. height () != 240))
-//	   pictureLabel ->
-//	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-//	else
-//	   pictureLabel -> setPixmap (p);
-	pictureLabel -> setToolTip (t);
-	pictureLabel -> show ();
+	pictureLabel	-> setToolTip (t);
+	pictureLabel	-> show ();
 }
 
 void	RadioInterface::show_pauzeSlide () {
@@ -3830,8 +3821,7 @@ QString slideName	= ":res/radio-pictures/pauze-slide-%1.png";
 }
 
 //////////////////////////////////////////////////////////////////////////
-//	Experimental: handling eti
-//
+//	handling the eti generator
 /////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_etiButton	() {

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2023
+ *    Copyright (C) 2015 .. 2026
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -89,7 +89,9 @@
 }
 
 	padHandler::~padHandler () {
-	fprintf (stderr, "padHandler stopt\n");
+	my_motHandler. reset ();
+	my_tdcHandler. reset ();
+	my_journalineController. reset ();
 }
 
 //	Data is stored reverse, we pass the vector and the index of the
@@ -163,7 +165,8 @@ int16_t	i;
 	                                 (char *)(dynamicLabelText. data()),
 	                                 (CharacterSet)charSet,
 	                                 dynamicLabelText. size());
-	               showLabel (displayText, (int)charSet);
+	               if (!backgroundFlag)
+	                  showLabel (displayText, (int)charSet);
 	            }
 	            dynamicLabelText = "";
 	         }
@@ -212,8 +215,8 @@ int16_t	i;
 	                               (const char *)dynamicLabelText. data (),
 	                               (CharacterSet) charSet,
 	                               dynamicLabelText. size ());
-//	            fprintf (stderr, "%s \n", displayText. toLatin1 (). data ());
-	            showLabel (displayText, (int)charSet);
+	            if (!backgroundFlag)
+	               showLabel (displayText, (int)charSet);
 	         }
 	         dynamicLabelText. clear();
 	      }
@@ -266,8 +269,8 @@ std::vector<uint8_t> data;		// for the local addition
 	         case  9:
 	         case 10:
 	         case 11:
-	            fprintf (stderr, "User defined application type %d\n",
-	                                                  last_appType);
+//	            fprintf (stderr, "User defined application type %d\n",
+//	                                                  last_appType);
 	            break;
 	
 	         case 12:   // MOT, start of MSC data group
@@ -525,6 +528,8 @@ static uint8_t bits [] = {
 int32_t	size	= data. size () < (uint32_t)dataGroupLength ?
 	                                data. size () : dataGroupLength;
 
+	if (backgroundFlag)
+	   return;
 //
 //	The motHandler 
 //	* needs segments with one bit per byte
